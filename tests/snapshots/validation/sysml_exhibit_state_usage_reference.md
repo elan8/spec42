@@ -4,8 +4,12 @@ description=SysML 8.3.18.2 validateExhibitStateUsageReference requires the featu
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.2 validateExhibitStateUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.2:validateExhibitStateUsageReference
+blocked_by=lowering-part-definition-members
 type=file
-skip_validation=the exhibit state usage parses (src/parser/part exhibit_state_as_state_usage) but sysml_resolution reports it as unsupported_part_definition_member, so no ExhibitStateUsage reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -94,6 +98,8 @@ package States {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component::inner"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine::operating"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine"))) (provenance implied))
   )
   (evaluation
   )

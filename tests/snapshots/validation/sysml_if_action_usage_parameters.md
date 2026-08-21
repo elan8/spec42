@@ -4,8 +4,12 @@ description=SysML 8.3.17.10 validateIfActionUsageParameters requires an IfAction
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.10 validateIfActionUsageParameters
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.10:validateIfActionUsageParameters
+blocked_by=parser-gap-76-action-body-members
 type=file
-skip_validation=the implied input parameters of this action form are not published, so the rule has no parameter list to count; only the accepted side is authored here
 ~~~
 # SOURCE
 ~~~sysml
@@ -54,12 +58,14 @@ package Actions {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (kind action) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,6 +4,10 @@ description=KerML 8.3.4.11.2 validateMultiplicityRangeBounds requires the lowerB
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.11.2 validateMultiplicityRangeBounds
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.11.2:validateMultiplicityRangeBounds
 type=file
 ~~~
 # SOURCE

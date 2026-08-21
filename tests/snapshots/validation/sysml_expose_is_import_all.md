@@ -4,6 +4,10 @@ description=SysML 8.3.26.2 validateExposeIsImportAll requires an Expose to impor
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.26.2 validateExposeIsImportAll
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.26.2:validateExposeIsImportAll
 type=file
 ~~~
 # SOURCE
@@ -59,6 +63,7 @@ package Views {
   )
   (relationships
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/sysml_expose_is_import_all.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_expose_is_import_all.md") (qualified-name "Views::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_expose_is_import_all.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_expose_is_import_all.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_expose_is_import_all.md") (qualified-name "Views::exposed"))) (provenance implied))
   )
   (evaluation
   )

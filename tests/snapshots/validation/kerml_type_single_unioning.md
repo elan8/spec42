@@ -4,6 +4,10 @@ description=KerML 8.3.3.1.10 validateTypeOwnedUnioningNotOne forbids a Type from
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.1.10 validateTypeOwnedUnioningNotOne
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.1.10:validateTypeOwnedUnioningNotOne
 type=file
 ~~~
 # SOURCE

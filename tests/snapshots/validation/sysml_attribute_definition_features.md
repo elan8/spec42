@@ -4,8 +4,12 @@ description=SysML 8.3.7.2 validateAttributeDefinitionFeatures requires all featu
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.7.2 validateAttributeDefinitionFeatures
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.7.2:validateAttributeDefinitionFeatures
+blocked_by=semantic-attribute-feature-composite
 type=file
-skip_validation=no semantic rule rejects a composite feature of an attribute definition; the canonical code attribute_feature_composite does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -66,6 +70,8 @@ package Attributes {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Bad::owned"))) (target (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Bad::owned"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Bad::owned"))) (target (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Good::reading"))) (target (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Good"))) (provenance implied))
   )
   (evaluation
   )

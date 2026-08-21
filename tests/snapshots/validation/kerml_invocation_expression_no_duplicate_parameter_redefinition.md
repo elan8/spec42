@@ -4,8 +4,12 @@ description=KerML 8.3.4.8.8 validateInvocationExpressionNoDuplicateParameterRede
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.8 validateInvocationExpressionNoDuplicateParameterRedefinition
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.8:validateInvocationExpressionNoDuplicateParameterRedefinition
+blocked_by=semantic-invocation-duplicate-parameter-redefinition
 type=file
-skip_validation=no semantic rule detects two invocation arguments redefining the same input parameter; the canonical code invocation_duplicate_parameter_redefinition does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -116,6 +120,13 @@ package Expressions {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::left"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::left"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::result"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::result"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::right"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::right"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder::a"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder::b"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder::bad"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder::good"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::left"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::result"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair::right"))) (target (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Pair"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_invocation_expression_no_duplicate_parameter_redefinition.md") (qualified-name "Expressions::Holder::bad"))) (state non-constant))

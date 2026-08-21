@@ -4,8 +4,12 @@ description=KerML 8.3.4.11.2 validateMultiplicityRangeBoundResultTypes requires 
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.11.2 validateMultiplicityRangeBoundResultTypes
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.11.2:validateMultiplicityRangeBoundResultTypes
+blocked_by=semantic-multiplicity-bound-invalid
 type=file
-skip_validation=no semantic rule checks the result type or sign of a multiplicity bound expression; the canonical code multiplicity_bound_invalid does not exist yet
 ~~~
 # SOURCE
 ~~~kerml

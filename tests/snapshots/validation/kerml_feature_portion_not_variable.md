@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeaturePortionNotVariable forbids a Feature 
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeaturePortionNotVariable
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeaturePortionNotVariable
+blocked_by=semantic-portion-feature-is-variable
 type=file
-skip_validation=no semantic rule rejects a portion feature that is also variable; the canonical code portion_feature_is_variable does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -66,6 +70,7 @@ package Portions {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::shifting"))) (target (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::shifting"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::stable"))) (target (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::stable"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::stable"))) (target (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner"))) (provenance implied))
   )
   (evaluation
   )
@@ -75,7 +80,6 @@ package Portions {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner::shifting")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner")))
       (type (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Thing")) (scopes any))

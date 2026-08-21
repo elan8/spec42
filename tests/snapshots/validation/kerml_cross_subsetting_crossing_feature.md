@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.2 validateCrossSubsettingCrossingFeature requires the 
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.2 validateCrossSubsettingCrossingFeature
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.2:validateCrossSubsettingCrossingFeature
+blocked_by=lowering-kerml-feature-relationships
 type=file
-skip_validation=the crosses clause now lowers to a crossSubsetting relationship, but its target settles as unsupported_reference, so no resolved crossFeature is published for the rule to inspect
 ~~~
 # SOURCE
 ~~~kerml
@@ -106,6 +110,11 @@ package Crossings {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary::target"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary::target"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::crossing"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::crossing"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::plain"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::plain"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary::crossing"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary::source"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary::target"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::crossing"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder::plain"))) (target (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Holder"))) (provenance implied))
   )
   (evaluation
   )

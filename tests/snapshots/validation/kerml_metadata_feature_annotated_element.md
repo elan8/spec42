@@ -4,8 +4,12 @@ description=KerML 8.3.4.12.3 validateMetadataFeatureAnnotatedElement requires th
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.12.3 validateMetadataFeatureAnnotatedElement
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureAnnotatedElement
+blocked_by=lowering-metadata-feature-facts
 type=file
-skip_validation=the metaclass annotatedElement declaration that would restrict the admissible annotated elements is not published for a KerML metaclass, so metadata_annotated_element_incompatible never fires here
 ~~~
 # SOURCE
 ~~~kerml

@@ -4,6 +4,10 @@ description=SysML 8.3.12.5 validatePortDefinitionConjugatedPortDefinition requir
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.12.5 validatePortDefinitionConjugatedPortDefinition
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.12.5:validatePortDefinitionConjugatedPortDefinition
 type=file
 ~~~
 # SOURCE

@@ -4,9 +4,13 @@ description=KerML 8.3.4.5.3 validateConnectorBinarySpecialization forbids a Conn
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.5.3 validateConnectorBinarySpecialization
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.5.3:validateConnectorBinarySpecialization
+blocked_by=parser-gap-69-connector-end-body
 type=file
 libraries=standard
-skip_validation=the pinned parser has no production for a connector declaration that carries both a specializes clause and an end-feature body, so the three-ended connector never reaches semantics
 ~~~
 # SOURCE
 ~~~kerml
@@ -88,6 +92,12 @@ package Connectors {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::a"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::b"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::c"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::a"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::a"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::b"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::b"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::c"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::c"))) (target (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder"))) (provenance implied))
   )
   (evaluation
   )
@@ -101,18 +111,24 @@ package Connectors {
       (type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::b")))
       (featured-by (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder")))
       (type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::c")))
       (featured-by (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder")))
       (type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Thing")))
       (subtype (node (document "memory://snapshot/kerml_connector_binary_specialization.md") (qualified-name "Connectors::Holder::a")) (scopes any))

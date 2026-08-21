@@ -158,6 +158,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::RenderingUsage
         | ElementKind::MetadataUsage
         | ElementKind::ReferenceUsage
+        | ElementKind::AcceptActionUsage
         | ElementKind::PerformActionUsage
         | ElementKind::TransitionUsage
         | ElementKind::AssignmentActionUsage

@@ -4,6 +4,10 @@ description=KerML 8.3.4.8.8 validateInvocationExpressionOwnedFeatures requires e
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.8 validateInvocationExpressionOwnedFeatures
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.8:validateInvocationExpressionOwnedFeatures
 type=file
 ~~~
 # SOURCE
@@ -97,6 +101,12 @@ package Expressions {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::left"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::left"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::result"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::result"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::right"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::right"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::a"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::b"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::left"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::result"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::right"))) (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (state non-constant))

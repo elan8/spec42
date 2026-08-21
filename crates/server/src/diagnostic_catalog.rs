@@ -696,6 +696,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
             "show_standard_library_info",
         ]),
     },
+    DiagnosticCatalogEntry {
+        code: "missing_library_anchor",
+        severity: "information",
+        meaning: "The required standard-library anchor is not available in this publication.",
+        typical_fix: "Admit the pinned standard library that provides the required language anchor.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "ambiguous_library_anchor",
+        severity: "warning",
+        meaning: "The required standard-library anchor is ambiguous in this publication.",
+        typical_fix: "Ensure the admitted standard library provides exactly one required language anchor.",
+        editor_quick_fixes: None,
+    },
 ];
 
 /// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.

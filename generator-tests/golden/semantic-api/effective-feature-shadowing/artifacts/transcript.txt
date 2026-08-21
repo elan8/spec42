@@ -39,13 +39,15 @@ effective_features(Inheritance::Leaf): 4 element(s)
 children(Inheritance::Leaf::onlyLeaf): 0 element(s)
 element(Inheritance::Leaf::onlyLeaf): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Leaf::onlyLeaf): <untyped>
-relationships(Inheritance::Leaf::onlyLeaf): 0 edge(s)
+relationships(Inheritance::Leaf::onlyLeaf): 1 edge(s)
+  typeFeaturing Inheritance::Leaf::onlyLeaf -> Inheritance::Leaf implied=true
 effective_features(Inheritance::Leaf::onlyLeaf): 0 element(s)
 children(Inheritance::Leaf::shared): 0 element(s)
 element(Inheritance::Leaf::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Leaf::shared): <untyped>
-relationships(Inheritance::Leaf::shared): 1 edge(s)
+relationships(Inheritance::Leaf::shared): 2 edge(s)
   redefinition Inheritance::Leaf::shared -> Inheritance::Middle::shared implied=true
+  typeFeaturing Inheritance::Leaf::shared -> Inheritance::Leaf implied=true
 effective_features(Inheritance::Leaf::shared): 0 element(s)
 children(Inheritance::Middle): 2 element(s)
   Inheritance::Middle::onlyMiddle [AttributeUsage] name=onlyMiddle library=false
@@ -61,13 +63,15 @@ effective_features(Inheritance::Middle): 3 element(s)
 children(Inheritance::Middle::onlyMiddle): 0 element(s)
 element(Inheritance::Middle::onlyMiddle): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Middle::onlyMiddle): <untyped>
-relationships(Inheritance::Middle::onlyMiddle): 0 edge(s)
+relationships(Inheritance::Middle::onlyMiddle): 1 edge(s)
+  typeFeaturing Inheritance::Middle::onlyMiddle -> Inheritance::Middle implied=true
 effective_features(Inheritance::Middle::onlyMiddle): 0 element(s)
 children(Inheritance::Middle::shared): 0 element(s)
 element(Inheritance::Middle::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Middle::shared): <untyped>
-relationships(Inheritance::Middle::shared): 1 edge(s)
+relationships(Inheritance::Middle::shared): 2 edge(s)
   redefinition Inheritance::Middle::shared -> Inheritance::Root::shared implied=true
+  typeFeaturing Inheritance::Middle::shared -> Inheritance::Middle implied=true
 effective_features(Inheritance::Middle::shared): 0 element(s)
 children(Inheritance::Root): 2 element(s)
   Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
@@ -81,11 +85,13 @@ effective_features(Inheritance::Root): 2 element(s)
 children(Inheritance::Root::onlyRoot): 0 element(s)
 element(Inheritance::Root::onlyRoot): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Root::onlyRoot): <untyped>
-relationships(Inheritance::Root::onlyRoot): 0 edge(s)
+relationships(Inheritance::Root::onlyRoot): 1 edge(s)
+  typeFeaturing Inheritance::Root::onlyRoot -> Inheritance::Root implied=true
 effective_features(Inheritance::Root::onlyRoot): 0 element(s)
 children(Inheritance::Root::shared): 0 element(s)
 element(Inheritance::Root::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Root::shared): <untyped>
-relationships(Inheritance::Root::shared): 0 edge(s)
+relationships(Inheritance::Root::shared): 1 edge(s)
+  typeFeaturing Inheritance::Root::shared -> Inheritance::Root implied=true
 effective_features(Inheritance::Root::shared): 0 element(s)
 element(<bogus>): error

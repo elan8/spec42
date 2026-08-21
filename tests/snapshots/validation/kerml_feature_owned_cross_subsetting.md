@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureOwnedCrossSubsetting allows a Feature
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureOwnedCrossSubsetting
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureOwnedCrossSubsetting
+blocked_by=lowering-kerml-feature-relationships
 type=file
-skip_validation=the crosses clause now lowers to a crossSubsetting relationship, but its target settles as unsupported_reference, so no resolved crossFeature is published for the rule to inspect; KermlFeature.crosses is also a single Option, so a second crosses clause is silently discarded and the "at most one" violation is unobservable
 ~~~
 # SOURCE
 ~~~kerml
@@ -98,6 +102,10 @@ package Crossings {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::source"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::target"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::one"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::source"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::target"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link::two"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md") (qualified-name "Crossings::Link"))) (provenance implied))
   )
   (evaluation
   )

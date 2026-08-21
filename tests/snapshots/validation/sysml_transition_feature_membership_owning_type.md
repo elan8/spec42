@@ -4,8 +4,12 @@ description=SysML 8.3.18.8 validateTransitionFeatureMembershipOwningType require
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.8 validateTransitionFeatureMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.8:validateTransitionFeatureMembershipOwningType
+blocked_by=lowering-transition-feature-memberships
 type=file
-skip_validation=the transition feature memberships of a transition usage are not published, so the rule has no transitionFeature to inspect
 ~~~
 # SOURCE
 ~~~sysml
@@ -75,6 +79,9 @@ package Transitions {
   (relationships
     (relationship (kind transitionSource) (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine::idle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine::idle"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine::running"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (qualified-name "Transitions::Machine"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sysml_transition_feature_membership_owning_type.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))

@@ -4,8 +4,12 @@ description=KerML 8.3.4.8.15 validateMetadataAccessExpressionReferencedElement r
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.15 validateMetadataAccessExpressionReferencedElement
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.15:validateMetadataAccessExpressionReferencedElement
+blocked_by=lowering-metadata-expressions
 type=file
-skip_validation=a metadata access expression parses but sysml_resolution reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics; only the accepted side is authored here
 ~~~
 # SOURCE
 ~~~kerml
@@ -60,6 +64,7 @@ package Expressions {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (state unsupported))

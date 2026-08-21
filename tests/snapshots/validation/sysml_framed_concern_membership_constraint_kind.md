@@ -4,6 +4,10 @@ description=SysML 8.3.21.5 validateFramedConcernMembershipConstraintKind require
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.21.5 validateFramedConcernMembershipConstraintKind
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.21.5:validateFramedConcernMembershipConstraintKind
 type=file
 ~~~
 # SOURCE
@@ -60,6 +64,8 @@ package Roles {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited::item"))) (target (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited::item"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited::item"))) (target (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited::safety"))) (target (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited"))) (provenance implied))
   )
   (evaluation
   )

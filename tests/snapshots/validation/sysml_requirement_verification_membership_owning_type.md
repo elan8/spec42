@@ -4,8 +4,12 @@ description=SysML 8.3.24.2 validateRequirementVerificationMembershipOwningType r
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.24.2 validateRequirementVerificationMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.24.2:validateRequirementVerificationMembershipOwningType
+blocked_by=parser-gap-79-membership-owner-forms
 type=file
-skip_validation=a verify requirement member parses but sysml_resolution reports it as unsupported, so no RequirementVerificationMembership reaches semantics on either side
 ~~~
 # SOURCE
 ~~~sysml
@@ -83,6 +87,8 @@ package Verification {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good::item"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good::objective"))) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good"))) (provenance implied))
   )
   (evaluation
   )

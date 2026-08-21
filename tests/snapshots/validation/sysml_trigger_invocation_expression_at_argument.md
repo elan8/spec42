@@ -4,8 +4,12 @@ description=SysML 8.3.17.17 validateTriggerInvocationExpressionAtArgument requir
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.17 validateTriggerInvocationExpressionAtArgument
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.17:validateTriggerInvocationExpressionAtArgument
+blocked_by=parser-gap-76-action-body-members
 type=file
-skip_validation=no semantic rule checks the argument of an at trigger; the canonical code trigger_at_argument_not_time_instant does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -86,6 +90,8 @@ package Triggers {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
   )
   (evaluation
   )

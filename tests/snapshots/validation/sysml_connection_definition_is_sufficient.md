@@ -4,6 +4,10 @@ description=SysML 8.3.13.3 validateConnectionDefinitionIsSufficient requires a C
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.13.3 validateConnectionDefinitionIsSufficient
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.13.3:validateConnectionDefinitionIsSufficient
 type=file
 ~~~
 # SOURCE
@@ -62,6 +66,8 @@ package Connections {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::source"))) (target (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::target"))) (target (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::source"))) (target (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::target"))) (target (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link"))) (provenance implied))
   )
   (evaluation
   )

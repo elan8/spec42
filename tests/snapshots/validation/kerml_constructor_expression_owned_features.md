@@ -4,6 +4,10 @@ description=KerML 8.3.4.8.3 validateConstructorExpressionOwnedFeatures forbids a
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.3 validateConstructorExpressionOwnedFeatures
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.3:validateConstructorExpressionOwnedFeatures
 type=file
 ~~~
 # SOURCE
@@ -91,6 +95,11 @@ package Expressions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::origin"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::origin"))) (kind invocationCallee) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::x"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::x"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::y"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::y"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::a"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::b"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::origin"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::x"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point::y"))) (target (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Point"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_constructor_expression_owned_features.md") (qualified-name "Expressions::Holder::origin"))) (state non-constant))

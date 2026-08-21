@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureCrossFeatureType requires the crossFe
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureCrossFeatureType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureCrossFeatureType
+blocked_by=lowering-kerml-feature-relationships
 type=file
-skip_validation=the crosses clause now lowers to a crossSubsetting relationship, but its target settles as unsupported_reference, so no resolved crossFeature is published for the rule to inspect
 ~~~
 # SOURCE
 ~~~kerml
@@ -99,6 +103,10 @@ package Crossings {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::sameType"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::sameType"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::otherType"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::sameType"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link"))) (provenance implied))
   )
   (evaluation
   )

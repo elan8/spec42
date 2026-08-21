@@ -4,8 +4,12 @@ description=SysML 8.3.17.2 validateAcceptActionUsageParameters requires an Accep
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.2 validateAcceptActionUsageParameters
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.2:validateAcceptActionUsageParameters
+blocked_by=parser-gap-76-action-body-members
 type=file
-skip_validation=the implied input parameters of this action form are not published, so the rule has no parameter list to count; only the accepted side is authored here
 ~~~
 # SOURCE
 ~~~sysml

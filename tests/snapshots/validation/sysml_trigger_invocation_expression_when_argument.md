@@ -4,8 +4,12 @@ description=SysML 8.3.17.17 validateTriggerInvocationExpressionWhenArgument requ
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.17 validateTriggerInvocationExpressionWhenArgument
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.17:validateTriggerInvocationExpressionWhenArgument
+blocked_by=parser-gap-76-action-body-members
 type=file
-skip_validation=no semantic rule checks the argument of a when trigger; the canonical code trigger_when_argument_not_boolean does not exist yet
 ~~~
 # SOURCE
 ~~~sysml

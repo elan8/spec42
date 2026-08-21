@@ -27,14 +27,13 @@ use sysml_v2_parser::{
         CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
         CaseUsage as ParserCaseUsage, CommentAnnotation, ConcernUsage as ParserConcernUsage,
         ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ControlNodeDeclaration, FeatureRelationshipPart, SequenceExpressionList,
-        VariantUsageForm,
         ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
-        DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
-        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
-        EnumerationUsage as ParserEnumerationUsage, ExhibitState as ParserExhibitState, ExitAction,
-        ExposeMember, Expression, ExtendedDefinition, FeaturePrefix, FeaturePrefixHead,
+        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, ControlNodeDeclaration,
+        DefaultReferenceUsage, DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency,
+        DoAction, DocComment, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        EnumerationBodyElement, EnumerationUsage as ParserEnumerationUsage,
+        ExhibitState as ParserExhibitState, ExitAction, ExposeMember, Expression,
+        ExtendedDefinition, FeaturePrefix, FeaturePrefixHead, FeatureRelationshipPart,
         FeatureValue, FeatureValueKind as ParserFeatureValueKind, FeatureVariability, FinalState,
         FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember,
         IfStmt, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
@@ -56,16 +55,16 @@ use sysml_v2_parser::{
         RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
         RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
-        StakeholderMember, StateDef, StateDefBody, StateDefBodyElement,
-        StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
-        TerminateStmt, TextualRepresentation, ThenAction, ThenStmt, ThenTarget, Transition,
-        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage,
-        VerificationCaseDef, VerificationCaseUsage as ParserVerificationCaseUsage,
-        VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
-        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
+        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload,
+        SequenceExpressionList, Span, StakeholderMember, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
+        SubsettingRelationship, TerminateStmt, TextualRepresentation, ThenAction, ThenStmt,
+        ThenTarget, Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef,
+        UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage,
+        VariantTypedUsage, VariantUsage, VariantUsageForm, VerificationCaseDef,
+        VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
+        ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
+        ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -161,6 +160,10 @@ pub(crate) enum DeclarationKind {
     /// `PartUsage`, `ActionUsage`'s typing is a structured `TypingRelationship` (not a bare
     /// `QualifiedReferenceId`).
     ActionUsage,
+    /// An action usage with the typed parser's `accept` clause. The OMG metaclass distinction is
+    /// semantic: ordinary action usages and accept actions share grammar infrastructure, but only
+    /// the latter own the `isTriggerAction` specialization predicates.
+    AcceptActionUsage,
     /// An anonymous succession feature synthesized for a `first X then Y;` control-flow
     /// statement (BNF `FirstStmt`) found in an action def/usage body. Owned by the enclosing
     /// action def/usage declaration (mirroring `EndDecl`'s nested `ConnectionUsage` children),
@@ -935,6 +938,12 @@ pub(crate) enum ReferenceKind {
     MembershipImport,
     FilterImport,
     FeatureTyping,
+    /// An authored KerML `featured by` target. This is a `TypeFeaturing` relationship from the
+    /// feature declaration to a Type, and remains distinct from ordinary `FeatureTyping`.
+    TypeFeaturing,
+    /// An authored KerML `chains` target. Derived featuring facts consume this canonical
+    /// relationship after resolution; no consumer reconstructs it from source text.
+    FeatureChaining,
     Subclassification,
     Subsetting,
     Redefinition,
@@ -1755,7 +1764,10 @@ fn literal_expression_value(parsed: &ParsedDocument, node: &Expression) -> Optio
 /// shape -- a computed unit such as `N * m`, or a multi-operand list -- returns `None`, so the
 /// caller falls through to `NonConstant`/`Unsupported` exactly as before rather than inventing a
 /// unit.
-fn quantity_unit_text(parsed: &ParsedDocument, operands: &SequenceExpressionList) -> Option<String> {
+fn quantity_unit_text(
+    parsed: &ParsedDocument,
+    operands: &SequenceExpressionList,
+) -> Option<String> {
     let [element] = operands.elements.as_slice() else {
         return None;
     };
@@ -1806,7 +1818,11 @@ fn classify_constraint_node(
             }
             let mut children = Vec::with_capacity(elements.len());
             for element in elements {
-                children.push(classify_constraint_node(parsed, &element.expression.value, ordinal)?);
+                children.push(classify_constraint_node(
+                    parsed,
+                    &element.expression.value,
+                    ordinal,
+                )?);
             }
             Some(EvalNode::Invocation(children))
         }
@@ -1894,22 +1910,22 @@ fn classify_filter_predicate(node: &Expression, metadata_ordinal: &mut u32) -> F
                 metadata_ordinal,
             )
         }
-        Expression::BinaryOp { op, left, right }
-            if matches!(op, BinaryOperator::And | BinaryOperator::BitAnd) =>
-        {
-            FilterPredicate::And(
-                Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
-                Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
-            )
-        }
-        Expression::BinaryOp { op, left, right }
-            if matches!(op, BinaryOperator::Or | BinaryOperator::BitOr) =>
-        {
-            FilterPredicate::Or(
-                Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
-                Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
-            )
-        }
+        Expression::BinaryOp {
+            op: BinaryOperator::And | BinaryOperator::BitAnd,
+            left,
+            right,
+        } => FilterPredicate::And(
+            Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
+            Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
+        ),
+        Expression::BinaryOp {
+            op: BinaryOperator::Or | BinaryOperator::BitOr,
+            left,
+            right,
+        } => FilterPredicate::Or(
+            Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
+            Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
+        ),
         _ => FilterPredicate::Unsupported,
     }
 }
@@ -1945,7 +1961,11 @@ fn classify_calc_node(
             }
             let mut children = Vec::with_capacity(elements.len());
             for element in elements {
-                children.push(classify_calc_node(parsed, &element.expression.value, ordinal)?);
+                children.push(classify_calc_node(
+                    parsed,
+                    &element.expression.value,
+                    ordinal,
+                )?);
             }
             Some(EvalNode::Invocation(children))
         }
@@ -2088,7 +2108,10 @@ fn state_action_body_has_content(body: &StateDefBody) -> bool {
 /// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
 /// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
 /// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
-fn classify_constraint_expression(parsed: &ParsedDocument, node: &Expression) -> ExpressionEvalShape {
+fn classify_constraint_expression(
+    parsed: &ParsedDocument,
+    node: &Expression,
+) -> ExpressionEvalShape {
     classify_constraint_expression_from(parsed, node, 0)
 }
 
@@ -2414,8 +2437,26 @@ struct DeclarationFacts {
     portion_kind: Option<PortionKind>,
     direction: Option<ParameterDirection>,
     multiplicity: Option<MultiplicityRecord>,
-    /// Authored polarity for an anonymous satisfy relationship declaration.
-    satisfy_negated: Option<bool>,
+    /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
+    ///
+    /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but
+    /// generated library-specialization predicates consume this one canonical semantic fact.
+    negated: Option<bool>,
+    /// Whether this `AcceptActionUsage` is the typed trigger action of a transition. The parser
+    /// records the trigger shape on `TransitionAccept`; lowering publishes it on the synthesized
+    /// accept action so generated rules never infer it from an owner name or reference spelling.
+    is_trigger_action: Option<bool>,
+    /// Whether this `IfActionUsage` has its typed `elseAction` branch. The parser records this as
+    /// `IfStmt::else_body`; lowering publishes the presence bit so generated specialization rules
+    /// select their anchor without reconstructing control-flow syntax.
+    has_else_action: Option<bool>,
+    /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
+    ///
+    /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the
+    /// only flow-use form this lowering admits. It is intentionally absent for unsupported named
+    /// or typed flow forms, so generated specialization predicates cannot turn an incomplete
+    /// lowering into a positive result.
+    owned_end_feature_count: Option<u32>,
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///
     /// Present only on a declaration lowered from an `end` member of a connection/interface/
@@ -3662,7 +3703,11 @@ impl SemanticModelBuilder {
 
     /// The evaluation shape of a calculation-body expression. See
     /// [`Self::constraint_evaluation_shape`] for why the arena is threaded through.
-    fn calc_evaluation_shape(&self, document: DocumentId, node: &Expression) -> ExpressionEvalShape {
+    fn calc_evaluation_shape(
+        &self,
+        document: DocumentId,
+        node: &Expression,
+    ) -> ExpressionEvalShape {
         let parsed = Arc::clone(&self.documents[document.index()].parsed);
         classify_calc_expression(&parsed, node)
     }
@@ -4416,11 +4461,19 @@ impl SemanticModelBuilder {
                     }
                     PartDefBodyElement::Package(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     PartDefBodyElement::LibraryPackage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     PartDefBodyElement::AttributeDef(attribute) => {
                         self.lower_attribute_def(document, Some(declaration), attribute)?;
@@ -5242,11 +5295,19 @@ impl SemanticModelBuilder {
                 }
                 AttributeBodyElement::DefaultReferenceUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(document, UnsupportedFamily::AttributeMember, node.span.clone());
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::AttributeMember,
+                        node.span.clone(),
+                    );
                 }
                 AttributeBodyElement::VariantUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(document, UnsupportedFamily::AttributeMember, node.span.clone());
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::AttributeMember,
+                        node.span.clone(),
+                    );
                 }
                 AttributeBodyElement::Annotating(member) => {
                     self.lower_annotating_member(
@@ -5588,8 +5649,8 @@ impl SemanticModelBuilder {
     /// Lowers the `FeatureRelationshipPart` list a KerML feature declaration carries.
     ///
     /// `unions`/`intersects`/`disjoint from`/`differences` reuse the existing type-relationship
-    /// lowering. `chains`, `inverse of` and `featured by` are typed upstream but have no semantic
-    /// fact here yet, so each stays visible as an unsupported member instead of being dropped.
+    /// lowering. `chains` and `featured by` lower to their own canonical relationship kinds;
+    /// `inverse of` remains explicitly unsupported because it needs a separate inverse-fact owner.
     fn lower_kerml_feature_relationship_parts(
         &mut self,
         document: DocumentId,
@@ -5606,9 +5667,45 @@ impl SemanticModelBuilder {
                         std::slice::from_ref(relationship),
                     )?;
                 }
-                FeatureRelationshipPart::Chaining { .. }
-                | FeatureRelationshipPart::Inverting { .. }
-                | FeatureRelationshipPart::TypeFeaturing(_) => {
+                FeatureRelationshipPart::Chaining { target } => {
+                    let span = self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(*target)
+                        .ok_or(ConstructionError::InvalidParserReference)?
+                        .metadata
+                        .span
+                        .clone();
+                    self.push_reference(PendingReference {
+                        source,
+                        kind: ReferenceKind::FeatureChaining,
+                        document,
+                        local: *target,
+                        flags: RelationshipFlags::default(),
+                        span,
+                        import: None,
+                    })?;
+                }
+                FeatureRelationshipPart::TypeFeaturing(featuring) => {
+                    for target in featuring.value.targets.iter().copied() {
+                        let span = self.documents[document.index()]
+                            .parsed
+                            .qualified_reference(target)
+                            .ok_or(ConstructionError::InvalidParserReference)?
+                            .metadata
+                            .span
+                            .clone();
+                        self.push_reference(PendingReference {
+                            source,
+                            kind: ReferenceKind::TypeFeaturing,
+                            document,
+                            local: target,
+                            flags: RelationshipFlags::default(),
+                            span,
+                            import: None,
+                        })?;
+                    }
+                }
+                FeatureRelationshipPart::Inverting { .. } => {
                     self.push_unsupported(document, family, part.span.clone());
                 }
             }
@@ -5787,7 +5884,10 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.calc_evaluation_shape(document, &expression.value),
+            );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
@@ -6012,9 +6112,9 @@ impl SemanticModelBuilder {
     /// the `CalcDefBody` grammar (not `ConstraintDefBody`, unlike `AssertConstraintMember`), so it
     /// is walked through the existing `lower_calc_def_body` -- the same
     /// `classify_calc_expression`/`lower_calc_expression` pipeline already used for
-    /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). `is_negated` is
-    /// not modeled as a distinct fact here (mirrors `AssertConstraintMember`'s own `is_negated`
-    /// scope boundary).
+    /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). Its typed
+    /// `is_negated` parser field is published as the canonical declaration polarity fact; the
+    /// evaluator may still report an unrelated unsupported expression shape explicitly.
     fn lower_kerml_invariant_member(
         &mut self,
         document: DocumentId,
@@ -6028,9 +6128,10 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlInvariant,
             name,
             node.span.clone(),
-            // `ast::KermlInvariantMember` carries only `is_negated`, which is an invariant-polarity
-            // fact rather than a declaration modifier, and is already lowered as such.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                negated: Some(node.value.is_negated),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -6140,7 +6241,10 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.calc_evaluation_shape(document, &expression.value),
+            );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -6328,7 +6432,10 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.calc_evaluation_shape(document, &expression.value),
+            );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -6408,7 +6515,10 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.calc_evaluation_shape(document, &expression.value),
+            );
             self.lower_calc_expression(
                 document,
                 declaration,
@@ -6509,7 +6619,10 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.calc_evaluation_shape(document, &expression.value),
+            );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -7325,11 +7438,19 @@ impl SemanticModelBuilder {
             }
             ActionDefBodyElement::Import(node) => {
                 // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(document, UnsupportedFamily::ActionDefinitionMember, node.span.clone());
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node.span.clone(),
+                );
             }
             ActionDefBodyElement::VariantUsage(node) => {
                 // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(document, UnsupportedFamily::ActionDefinitionMember, node.span.clone());
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node.span.clone(),
+                );
             }
             ActionDefBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
@@ -7520,8 +7641,8 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `action` feature member (BNF ActionUsage), e.g.
     /// `action validateRoute;` or `action a : SomeAction;`, mirroring `lower_part_usage`.
     /// `ActionUsage`'s typing is a structured `TypingRelationship` (like `PartUsage.typing`), not
-    /// a bare `QualifiedReferenceId`. Behavioral clauses (`accept`/`send`/`via`/`to`, parameters,
-    /// abstract/variation/individual prefixes) are explicitly out of scope; owned members lower
+    /// a bare `QualifiedReferenceId`. Its typed `accept` suffix is retained as an
+    /// `AcceptActionUsage` metaclass and its payload/via facts lower below; owned members lower
     /// through the same `lower_action_def_body` as an `action def`'s body (BNF `ActionUsageBody`
     /// is a structurally near-identical production, differing only in the extra `VariantUsage`
     /// alternative, which is itself out of scope and so folds into the same unsupported family).
@@ -7533,10 +7654,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let is_accept_action = node.value.accept.is_some();
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::ActionUsage,
+            if is_accept_action {
+                DeclarationKind::AcceptActionUsage
+            } else {
+                DeclarationKind::ActionUsage
+            },
             name,
             node.span.clone(),
             DeclarationFacts {
@@ -7546,9 +7672,15 @@ impl SemanticModelBuilder {
                     variation: node.value.is_variation,
                     individual: node.value.is_individual,
                     reference: node.value.is_reference,
+                    // ActionUsage has no standalone `composite` token: its BNF's `ref action`
+                    // branch is the non-composite alternative, so the parser's explicit
+                    // reference fact is the authoritative source for the derived composite
+                    // state needed by the normative `isComposite` predicates.
+                    composite: !node.value.is_reference,
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                is_trigger_action: is_accept_action.then_some(false),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -7703,7 +7835,11 @@ impl SemanticModelBuilder {
             }
             ActionUsageBodyElement::Import(node) => {
                 // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, node.span.clone());
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionUsageMember,
+                    node.span.clone(),
+                );
             }
             ActionUsageBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
@@ -8284,7 +8420,10 @@ impl SemanticModelBuilder {
             ReferenceKind::AssignTarget,
             &node.lhs,
         )?;
-        self.push_evaluation_fact(declaration, self.constraint_evaluation_shape(document, &node.rhs.value));
+        self.push_evaluation_fact(
+            declaration,
+            self.constraint_evaluation_shape(document, &node.rhs.value),
+        );
         self.lower_constraint_expression(document, declaration, family, &node.rhs)
     }
 
@@ -8354,8 +8493,12 @@ impl SemanticModelBuilder {
             DeclarationKind::If,
             None,
             span.clone(),
-            // A synthesized scope for the conditional's guard and branches.
-            DeclarationFacts::none(),
+            // A synthesized scope for the conditional's guard and branches. `else_body` is a
+            // typed parser distinction, so publish its presence once at this lowering boundary.
+            DeclarationFacts {
+                has_else_action: Some(node.else_body.is_some()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8554,7 +8697,10 @@ impl SemanticModelBuilder {
             node.span.clone(),
             // `ast::FlowUsage` carries no modifier, multiplicity, direction, or short name; its
             // payload/from/to facts are lowered as references.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                owned_end_feature_count: Some(2),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8702,7 +8848,12 @@ impl SemanticModelBuilder {
                 // Grouping and comma-list spelling share one production; lowering recurses into
                 // each operand either way.
                 for element in &operands.value.elements {
-                    self.lower_constraint_expression(document, declaration, family, &element.expression)?;
+                    self.lower_constraint_expression(
+                        document,
+                        declaration,
+                        family,
+                        &element.expression,
+                    )?;
                 }
                 Ok(())
             }
@@ -9214,11 +9365,19 @@ impl SemanticModelBuilder {
                 }
                 StateDefBodyElement::PartUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, node.span.clone());
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::StateDefinitionMember,
+                        node.span.clone(),
+                    );
                 }
                 StateDefBodyElement::ConstraintUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, node.span.clone());
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::StateDefinitionMember,
+                        node.span.clone(),
+                    );
                 }
                 StateDefBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;
@@ -9570,13 +9729,19 @@ impl SemanticModelBuilder {
             &node.value.target,
         )?;
         if let Some(guard) = &node.value.guard {
-            self.push_evaluation_fact(declaration, self.constraint_evaluation_shape(document, &guard.value));
+            self.push_evaluation_fact(
+                declaration,
+                self.constraint_evaluation_shape(document, &guard.value),
+            );
             self.lower_constraint_expression(
                 document,
                 declaration,
                 UnsupportedFamily::StateDefinitionMember,
                 guard,
             )?;
+        }
+        if node.value.accept.is_some() {
+            self.lower_transition_trigger_action(document, declaration, node.span.clone())?;
         }
         match &node.value.accept {
             None => {}
@@ -9648,6 +9813,43 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.
+    ///
+    /// The parser represents this grammar branch as `TransitionAccept` on the transition rather
+    /// than a standalone action-usage node, but the OMG metamodel gives it a distinct
+    /// `AcceptActionUsage` element. Keeping that distinction at lowering is what makes the exact
+    /// `isTriggerAction()` specialization contract consume a canonical fact rather than inspect a
+    /// transition's syntax downstream.
+    fn lower_transition_trigger_action(
+        &mut self,
+        document: DocumentId,
+        transition: DeclarationId,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::AcceptActionUsage,
+            None,
+            span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    composite: true,
+                    ..DeclarationModifiers::default()
+                },
+                is_trigger_action: Some(true),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        Ok(declaration)
+    }
+
     /// Lowers one `Transition` operand (`source`/`target`/shorthand `accept`/`Expression`
     /// effect): its path expression is a structured `Expression` (not a flattened string), so a
     /// simple/qualified name (`Expression::FeatureRef`) resolves as an authored reference of
@@ -9714,7 +9916,7 @@ impl SemanticModelBuilder {
     ///
     /// `by` is optional in the production, so a satisfy usage written without one carries no
     /// `SatisfyTarget` reference at all -- the satisfied requirement is never copied over to
-    /// fabricate a subject. The `assert` prefix and the `not` negation (`satisfy_negated`) do not
+    /// fabricate a subject. The `assert` prefix and the `not` negation (`negated`) do not
     /// change how the references resolve.
     ///
     /// Out of scope, left as an explicit `family` unsupported diagnostic: the
@@ -9741,7 +9943,7 @@ impl SemanticModelBuilder {
             node.span.clone(),
             // Negation is a satisfaction-polarity fact rather than a declaration modifier.
             DeclarationFacts {
-                satisfy_negated: Some(node.value.not_span.is_some()),
+                negated: Some(node.value.not_span.is_some()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -11346,7 +11548,10 @@ impl SemanticModelBuilder {
                 // the same `classify_calc_expression`/`lower_calc_expression` pipeline a calc def's
                 // bare body expression uses.
                 UseCaseDefBodyElement::Expression(expression) => {
-                    self.push_evaluation_fact(owner, self.calc_evaluation_shape(document, &expression.value));
+                    self.push_evaluation_fact(
+                        owner,
+                        self.calc_evaluation_shape(document, &expression.value),
+                    );
                     self.lower_calc_expression(document, owner, unsupported, expression)?;
                 }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
@@ -11415,7 +11620,11 @@ impl SemanticModelBuilder {
                     }
                     PortDefBodyElement::VariantUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::PortDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PortDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     PortDefBodyElement::AttributeDef(attribute) => {
                         self.lower_attribute_def(document, Some(declaration), attribute)?;
@@ -11546,11 +11755,19 @@ impl SemanticModelBuilder {
                     }
                     PortBodyElement::OccurrenceUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::PortUsageMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PortUsageMember,
+                            node.span.clone(),
+                        );
                     }
                     PortBodyElement::VariantUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::PortUsageMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PortUsageMember,
+                            node.span.clone(),
+                        );
                     }
                     PortBodyElement::AttributeUsage(attribute) => {
                         self.lower_attribute_usage(document, Some(declaration), attribute)?;
@@ -12030,7 +12247,11 @@ impl SemanticModelBuilder {
                     }
                     InterfaceDefBodyElement::ConstraintUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::InterfaceDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::InterfaceDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     InterfaceDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
@@ -12334,11 +12555,19 @@ impl SemanticModelBuilder {
                     }
                     ViewDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ViewDefBodyElement::RenderingUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ViewDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
@@ -12474,11 +12703,19 @@ impl SemanticModelBuilder {
                     }
                     ViewBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ViewBodyElement::RenderingUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ViewBodyElement::Annotating(member) => {
                         self.lower_annotating_member(
@@ -12698,11 +12935,19 @@ impl SemanticModelBuilder {
                     }
                     ConstraintDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ConstraintDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ConstraintDefBodyElement::ReturnDecl(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::ConstraintDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
@@ -12839,9 +13084,6 @@ impl SemanticModelBuilder {
     /// 1, `4ca42166`) applies unchanged.
     ///
     /// Deferred (falls through to `family`'s unsupported diagnostic):
-    /// - `assert not constraint ...` (`is_negated`): negation is a distinct semantic (the
-    ///   asserted truth value is the logical complement of the inner expression's evaluation) that
-    ///   the current evaluation-fact shape has no representation for yet.
     /// - `assert <path> { ... }` shorthand (`target` set, no `constraint` keyword): references an
     ///   existing constraint by path rather than declaring one inline; out of scope for this
     ///   slice, which targets the `constraint`-keyword forms only.
@@ -12852,7 +13094,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<AssertConstraintMember>,
     ) -> Result<(), ConstructionError> {
-        if node.value.is_negated || node.value.target.is_some() {
+        if node.value.target.is_some() {
             self.push_unsupported(document, family, node.span.clone());
             return Ok(());
         }
@@ -12869,10 +13111,10 @@ impl SemanticModelBuilder {
             DeclarationKind::AssertConstraintUsage,
             name,
             node.span.clone(),
-            // `ast::AssertConstraintMember`'s remaining field is `is_negated`, an
-            // assertion-polarity fact rather than a declaration modifier, and the negated form is
-            // routed to the unsupported diagnostic above.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                negated: Some(node.value.is_negated),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -13031,11 +13273,19 @@ impl SemanticModelBuilder {
                     }
                     CalcDefBodyElement::FlowUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::CalcDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     CalcDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::CalcDefinitionMember, node.span.clone());
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            node.span.clone(),
+                        );
                     }
                     CalcDefBodyElement::CalcUsage(calc_usage) => {
                         self.lower_calc_usage(document, Some(declaration), calc_usage)?;
@@ -13424,10 +13674,14 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
-                    OccurrenceBodyElement::Bind(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(document, UnsupportedFamily::OccurrenceDefinitionMember, node.span.clone());
-                    }
+            OccurrenceBodyElement::Bind(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    node.span.clone(),
+                );
+            }
             OccurrenceBodyElement::Annotating(member) => {
                 self.lower_annotating_member(
                     document,
@@ -14261,12 +14515,18 @@ impl SemanticModelBuilder {
                     VariantTypedUsage::Perform(perform) => {
                         self.lower_perform(document, owner, perform.as_ref())
                     }
-                    VariantTypedUsage::Part(part) => self.lower_part_usage(document, owner, part.as_ref()),
+                    VariantTypedUsage::Part(part) => {
+                        self.lower_part_usage(document, owner, part.as_ref())
+                    }
                     VariantTypedUsage::Attribute(attribute) => {
                         self.lower_attribute_usage(document, owner, attribute.as_ref())
                     }
-                    VariantTypedUsage::Item(item) => self.lower_item_usage(document, owner, item.as_ref()),
-                    VariantTypedUsage::Port(port) => self.lower_port_usage(document, owner, port.as_ref()),
+                    VariantTypedUsage::Item(item) => {
+                        self.lower_item_usage(document, owner, item.as_ref())
+                    }
+                    VariantTypedUsage::Port(port) => {
+                        self.lower_port_usage(document, owner, port.as_ref())
+                    }
                     VariantTypedUsage::Action(action) => {
                         self.lower_action_usage(document, owner, action.as_ref())
                     }
@@ -18789,8 +19049,8 @@ mod tests {
             "expected an extended-definition declaration, got:\n{output}"
         );
         assert!(
-            output.contains("(qualified-name \"Demo::Failure::cause\"))) (kind attribute-def)"),
-            "expected Failure's nested attribute usage declaration, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Failure::cause\"))) (kind attribute)"),
+            "expected Failure's nested attribute usage, got:\n{output}"
         );
         assert!(
             output.contains(

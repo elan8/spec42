@@ -4,6 +4,10 @@ description=SysML 8.3.17.5 validateAssignmentActionUsageReferent requires an Ass
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.5 validateAssignmentActionUsageReferent
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.5:validateAssignmentActionUsageReferent
 type=file
 ~~~
 # SOURCE
@@ -58,6 +62,8 @@ package Actions {
   )
   (relationships
     (relationship (kind assignTarget) (source (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (qualified-name "Actions::Act::counter"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (qualified-name "Actions::Act::counter"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sysml_assignment_action_usage_referent.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))

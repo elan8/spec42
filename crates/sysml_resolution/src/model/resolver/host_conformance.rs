@@ -96,6 +96,7 @@ fn is_action_kind(kind: DeclarationKind) -> bool {
         kind,
         DeclarationKind::ActionDefinition
             | DeclarationKind::ActionUsage
+            | DeclarationKind::AcceptActionUsage
             | DeclarationKind::PerformActionUsage
             | DeclarationKind::Decide
             | DeclarationKind::Merge
@@ -207,6 +208,7 @@ fn is_action_body_kind(kind: DeclarationKind) -> bool {
         kind,
         DeclarationKind::ActionDefinition
             | DeclarationKind::ActionUsage
+            | DeclarationKind::AcceptActionUsage
             | DeclarationKind::PerformActionUsage
             | DeclarationKind::VerificationCaseDefinition
             | DeclarationKind::VerificationCaseUsage

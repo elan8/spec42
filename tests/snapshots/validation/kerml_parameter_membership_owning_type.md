@@ -4,8 +4,12 @@ description=KerML 8.3.4.6.4 validateParameterMembershipOwningType requires a Par
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.6.4 validateParameterMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.6.4:validateParameterMembershipOwningType
+blocked_by=semantic-parameter-membership-invalid-owner
 type=file
-skip_validation=no semantic rule checks the owningType of a parameter membership; the canonical code parameter_membership_invalid_owner does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -70,6 +74,8 @@ package Parameters {
   (relationships
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder"))) (provenance implied))
   )
   (evaluation
   )

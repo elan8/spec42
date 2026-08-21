@@ -296,8 +296,14 @@ pub(crate) struct TypeIndex {
     subtypes: Rows<(DeclarationId, u8)>,
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
     effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
-    /// The type each declaration is featured by, indexed by declaration ordinal.
-    featuring: Box<[Option<DeclarationId>]>,
+    /// Effective featuring types, derived solely from settled TypeFeaturing and FeatureChaining
+    /// relationships. This replaces the former ownership-only shortcut so authored and implied
+    /// facts have one canonical representation.
+    featuring: Rows<(DeclarationId, FactProvenance)>,
+    /// A `var` FeatureMembership requires the owner's canonical `snapshots` feature. Lowering
+    /// does not publish that prerequisite yet, so callers receive an explicit incomplete outcome
+    /// instead of the ordinary non-variable owning-type implication.
+    variable_featuring_requires_snapshots: Box<[bool]>,
     /// The KerML type-relationship operands each type owns, in authored order.
     ///
     /// Deliberately outside [`SpecializationClosure`]. `Unioning`, `Intersecting`, `Differencing`
@@ -336,55 +342,6 @@ pub(crate) enum SetOperator {
     Disjoint,
 }
 
-/// Whether a declaration is a namespace-like container rather than a KerML `Type`.
-///
-/// Only these five own members without featuring them. Everything else -- every definition, every
-/// usage, every KerML classifier and feature -- is a `Type`, and a member it owns is featured by
-/// it.
-fn is_namespace_like(kind: DeclarationKind) -> bool {
-    matches!(
-        kind,
-        DeclarationKind::Namespace
-            | DeclarationKind::Package
-            | DeclarationKind::LibraryPackage
-            | DeclarationKind::Import
-            | DeclarationKind::Alias
-    )
-}
-
-/// The innermost enclosing type of `declaration`, or `None` for a declaration owned only by
-/// namespaces.
-///
-/// The sibling compiler needs a second rule here: it materializes an inherited copy of every
-/// feature, so a purely implied copy has to walk implied redefinition edges back to the type that
-/// actually declared it. This engine never materializes inherited features -- every declaration in
-/// it was authored where it stands -- so ownership alone is the answer, and adding the walk would
-/// invent a provenance the model does not have.
-fn featuring_owner(
-    storage: &SemanticModelStorage,
-    declaration: DeclarationId,
-) -> Result<Option<DeclarationId>, ResolutionError> {
-    let mut cursor = storage
-        .declaration(declaration)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .owner;
-    let mut visited = 0usize;
-    while let Some(current) = cursor {
-        visited += 1;
-        if visited > storage.declarations.len() {
-            return Err(ResolutionError::InvalidStorage);
-        }
-        let owner = storage
-            .declaration(current)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        if !is_namespace_like(owner.kind) {
-            return Ok(Some(current));
-        }
-        cursor = owner.owner;
-    }
-    Ok(None)
-}
-
 impl TypeIndex {
     pub(crate) fn build(
         storage: &SemanticModelStorage,
@@ -394,6 +351,8 @@ impl TypeIndex {
         let specialization = SpecializationClosure::build(storage, resolution)?;
 
         let mut direct_types = Vec::new();
+        let mut direct_featuring = Vec::new();
+        let mut chaining = Vec::new();
         let mut supertypes = Vec::new();
         let mut subtypes = Vec::new();
         let mut edge = |source: DeclarationId,
@@ -406,6 +365,12 @@ impl TypeIndex {
             }
             if kind == ReferenceKind::FeatureTyping {
                 direct_types.push((source, (target, provenance)));
+            }
+            if kind == ReferenceKind::TypeFeaturing {
+                direct_featuring.push((source, (target, provenance)));
+            }
+            if kind == ReferenceKind::FeatureChaining {
+                chaining.push((source, (target, provenance)));
             }
         };
 
@@ -431,6 +396,8 @@ impl TypeIndex {
         }
 
         let direct_types = Rows::build(count, direct_types)?;
+        let direct_featuring = Rows::build(count, direct_featuring)?;
+        let chaining = Rows::build(count, chaining)?;
         let supertypes = Rows::build(count, supertypes)?;
         let subtypes = Rows::build(count, subtypes)?;
 
@@ -512,11 +479,65 @@ impl TypeIndex {
             }
         }
 
-        let mut featuring = Vec::with_capacity(count);
+        // `deriveFeatureFeaturingType` is an owner-side fixed point over canonical facts: direct
+        // TypeFeaturing targets are retained with their provenance, while a chaining feature
+        // contributes the already-derived featuring types of its first/only resolved target. Each
+        // pass reads a complete prior vector and publishes a new one, so traversal order cannot
+        // affect the answer. A path adds at most one declaration per hop; `count` passes therefore
+        // cover every simple path, including cycles with a reachable direct fact.
+        let mut featuring_rows = Vec::with_capacity(count);
         for index in 0..count {
             let declaration =
                 DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            featuring.push(featuring_owner(storage, declaration)?);
+            featuring_rows.push(
+                direct_featuring
+                    .row(declaration)
+                    .iter()
+                    .copied()
+                    .collect::<std::collections::BTreeSet<_>>(),
+            );
+        }
+        for _ in 0..count {
+            let mut next = featuring_rows.clone();
+            for (index, next_row) in next.iter_mut().enumerate() {
+                let source =
+                    DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+                for (target, _) in chaining.row(source) {
+                    let Some(target_row) = featuring_rows.get(target.index()) else {
+                        return Err(ResolutionError::InvalidStorage);
+                    };
+                    next_row.extend(
+                        target_row
+                            .iter()
+                            .map(|(featuring, _)| (*featuring, FactProvenance::Implied)),
+                    );
+                }
+            }
+            if next == featuring_rows {
+                break;
+            }
+            featuring_rows = next;
+        }
+        let mut featuring = Vec::new();
+        for (index, targets) in featuring_rows.into_iter().enumerate() {
+            let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            featuring.extend(targets.into_iter().map(|target| (source, target)));
+        }
+        let featuring = Rows::build(count, featuring)?;
+        let mut variable_featuring_requires_snapshots = vec![false; count];
+        for membership in storage.memberships.iter() {
+            if membership.kind != MembershipKind::Feature {
+                continue;
+            }
+            let Some(facts) = storage.declaration_facts(membership.member) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if facts.modifiers.var {
+                let slot = variable_featuring_requires_snapshots
+                    .get_mut(membership.member.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *slot = true;
+            }
         }
 
         Ok(Self {
@@ -525,16 +546,35 @@ impl TypeIndex {
             supertypes,
             subtypes,
             effective_types,
-            featuring: featuring.into_boxed_slice(),
+            featuring,
+            variable_featuring_requires_snapshots: variable_featuring_requires_snapshots
+                .into_boxed_slice(),
             set_operands,
             authored_ends: authored_ends.into_boxed_slice(),
             effective_ends: effective_ends.into_boxed_slice(),
         })
     }
 
-    /// The type `declaration` is featured by, if any.
+    /// The single featuring type of `declaration`, if its canonical fact row has one target.
+    /// Call [`Self::featuring_types`] when a consumer can represent every authored/derived target.
     pub(crate) fn featuring_type(&self, declaration: DeclarationId) -> Option<DeclarationId> {
-        self.featuring.get(declaration.index()).copied().flatten()
+        let row = self.featuring.row(declaration);
+        (row.len() == 1).then(|| row[0].0)
+    }
+
+    /// Every canonical effective featuring type, with its provenance.
+    pub(crate) fn featuring_types(
+        &self,
+        declaration: DeclarationId,
+    ) -> &[(DeclarationId, FactProvenance)] {
+        self.featuring.row(declaration)
+    }
+
+    pub(crate) fn featuring_requires_snapshots(&self, declaration: DeclarationId) -> bool {
+        self.variable_featuring_requires_snapshots
+            .get(declaration.index())
+            .copied()
+            .unwrap_or(false)
     }
 
     pub(crate) fn specialization(&self) -> &SpecializationClosure {

@@ -4,8 +4,12 @@ description=SysML 8.3.12.5 validatePortDefinitionOwnedUsagesNotComposite require
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.12.5 validatePortDefinitionOwnedUsagesNotComposite
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.12.5:validatePortDefinitionOwnedUsagesNotComposite
+blocked_by=parser-gap-75-port-owned-usage
 type=file
-skip_validation=the pinned parser has no production for a part usage inside a port definition body, so the composite member is reported as unexpected_keyword_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -67,6 +71,7 @@ package Ports {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_definition_owned_usages_not_composite.md") (qualified-name "Ports::Good::reading"))) (target (node (document "memory://snapshot/sysml_port_definition_owned_usages_not_composite.md") (qualified-name "Ports::Good"))) (provenance implied))
   )
   (evaluation
   )

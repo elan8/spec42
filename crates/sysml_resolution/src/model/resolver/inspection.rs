@@ -303,7 +303,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
+    pub(super) fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
         slice_range(
             &self.facts.documentation_order,
             &self.facts.documentation,
@@ -399,9 +399,33 @@ impl ResolvedSemanticModel {
     }
 
     pub(super) fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
+        self.relationships_matching(id, |_| true)
+    }
+
+    /// A typed subset of this declaration's canonical authored and implied relationship facts.
+    ///
+    /// The predicate is evaluated against the private `ReferenceKind`, before presentation turns
+    /// it into a rendered name. Derived-property consumers therefore cannot reclassify a
+    /// relationship from text or accidentally omit an unresolved target.
+    pub(super) fn relationships_of_kinds(
+        &self,
+        id: DeclarationId,
+        kinds: &[ReferenceKind],
+    ) -> Box<[ElementRelationship]> {
+        self.relationships_matching(id, |kind| kinds.contains(&kind))
+    }
+
+    fn relationships_matching(
+        &self,
+        id: DeclarationId,
+        accepts: impl Fn(ReferenceKind) -> bool,
+    ) -> Box<[ElementRelationship]> {
         let mut relationships = Vec::new();
         for reference_id in slice_range(&self.facts.reference_order, &self.facts.references, id) {
             let reference = &self.storage.references[reference_id.index()];
+            if !accepts(reference.kind) {
+                continue;
+            }
             let Ok(range) = document_range(
                 &self.storage,
                 self.storage
@@ -458,6 +482,9 @@ impl ResolvedSemanticModel {
         // both are absent rather than fabricated from the rule that produced them.
         for index in slice_range(&self.facts.implied_order, &self.facts.implied, id) {
             let implied = &self.resolution.implied_relationships[*index as usize];
+            if !accepts(implied.kind) {
+                continue;
+            }
             let Some(target) = self.symbol_identity(implied.target) else {
                 continue;
             };
@@ -537,7 +564,10 @@ impl ResolvedSemanticModel {
         Some(ElementInspection {
             identity: self.symbol_identity(id)?,
             kind: element_kind::element_kind(declaration.kind),
-            role: element_kind::membership_role(declaration.kind),
+            role: element_kind::membership_role_with_trigger(
+                declaration.kind,
+                facts.is_trigger_action,
+            ),
             name: declaration
                 .name
                 .and_then(|name| self.storage.symbol(name))

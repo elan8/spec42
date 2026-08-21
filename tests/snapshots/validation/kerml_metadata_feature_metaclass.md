@@ -4,8 +4,12 @@ description=KerML 8.3.4.12.3 validateMetadataFeatureMetaclass requires a Metadat
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.12.3 validateMetadataFeatureMetaclass
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureMetaclass
+blocked_by=semantic-metadata-type-not-metaclass
 type=file
-skip_validation=no semantic rule checks that a metadata feature type is a Metaclass; the canonical code metadata_type_not_metaclass does not exist yet
 ~~~
 # SOURCE
 ~~~kerml

@@ -1,0 +1,22 @@
+[package]
+name = "spec42-constraint-manifest"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Extract and audit deterministic KerML and SysML constraint manifests"
+
+[[bin]]
+name = "spec42-constraint-manifest"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+quick-xml = "0.41"
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+toml = "0.8"
+
+[dev-dependencies]
+tempfile = "3"

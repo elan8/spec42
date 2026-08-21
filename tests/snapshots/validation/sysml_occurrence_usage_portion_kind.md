@@ -4,8 +4,12 @@ description=SysML 8.3.9.4 validateOccurrenceUsagePortionKind requires the owning
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.9.4 validateOccurrenceUsagePortionKind
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.9.4:validateOccurrenceUsagePortionKind
+blocked_by=semantic-portion-owner-not-occurrence
 type=file
-skip_validation=no semantic rule checks the owningType of a portion occurrence usage; the canonical code portion_owner_not_occurrence does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -70,6 +74,8 @@ package Occurrences {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Event"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad::instant"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Good::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Event"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Good::instant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Good::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Good"))) (provenance implied))
   )
   (evaluation
   )

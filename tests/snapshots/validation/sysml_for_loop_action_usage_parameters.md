@@ -4,6 +4,10 @@ description=SysML 8.3.17.9 validateForLoopActionUsageParameters requires a ForLo
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.9 validateForLoopActionUsageParameters
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.9:validateForLoopActionUsageParameters
 type=file
 ~~~
 # SOURCE
@@ -51,7 +55,7 @@ package Actions {
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (kind for-loop) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "components")))))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "c"))))) (kind for-loop-variable) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "step"))))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "step"))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference) (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
@@ -66,6 +70,10 @@ package Actions {
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components"))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "c"))))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "step"))))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components"))) (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (state non-constant))

@@ -4,8 +4,12 @@ description=SysML 8.3.25.2 validateIncludeUseCaseUsageReference requires the fea
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.25.2 validateIncludeUseCaseUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.25.2:validateIncludeUseCaseUsageReference
+blocked_by=parser-gap-73-include-use-case-membership
 type=file
-skip_validation=the pinned parser has no production for an include use case member, so it is reported as unexpected_keyword_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -94,6 +98,9 @@ package UseCases {
     (relationship (kind includeUseCase) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library::operate"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main"))) (kind includeUseCase) (ordinal 0)))
     (relationship (kind includeUseCase) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library::other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main"))) (kind includeUseCase) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main::item"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main::item"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library::operate"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library::other"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Library"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main::item"))) (target (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Main"))) (provenance implied))
   )
   (evaluation
   )

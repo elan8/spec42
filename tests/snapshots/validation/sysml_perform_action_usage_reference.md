@@ -4,8 +4,12 @@ description=SysML 8.3.17.14 validatePerformActionUsageReference requires the fea
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.14 validatePerformActionUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.14:validatePerformActionUsageReference
+blocked_by=parser-gap-72-perform-action-usage
 type=file
-skip_validation=the pinned parser rejects `perform <action usage>` -- the conforming side is reported as recovered_action_body_element -- and perform_target_invalid_kind is not raised for the non-action target that does parse
 ~~~
 # SOURCE
 ~~~sysml
@@ -74,7 +78,7 @@ package Actions {
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Good"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
-    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind featureTyping) (ordinal 0))
@@ -83,6 +87,8 @@ package Actions {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (provenance implied))
   )
   (evaluation
   )

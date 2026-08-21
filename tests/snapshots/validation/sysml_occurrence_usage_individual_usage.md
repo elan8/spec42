@@ -4,8 +4,12 @@ description=SysML 8.3.9.4 validateOccurrenceUsageIndividualUsage requires an Occ
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.9.4 validateOccurrenceUsageIndividualUsage
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.9.4:validateOccurrenceUsageIndividualUsage
+blocked_by=semantic-individual-usage-without-individual-definition
 type=file
-skip_validation=no semantic rule requires an individual occurrence usage to have an individual definition; the canonical code individual_usage_without_individual_definition does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -68,6 +72,8 @@ package Occurrences {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::bad"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Plain"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::bad"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::good"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Identified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::good"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::bad"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder::good"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder"))) (provenance implied))
   )
   (evaluation
   )

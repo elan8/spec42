@@ -4,8 +4,12 @@ description=SysML 8.3.18.5 validateStateDefinitionStateSubactionKind forbids a S
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.5 validateStateDefinitionStateSubactionKind
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.5:validateStateDefinitionStateSubactionKind
+blocked_by=lowering-state-subaction-memberships
 type=file
-skip_validation=the subaction of an `entry`/`do`/`exit` member parses but its name settles as unresolved_reference, so no StateSubactionMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -110,6 +114,11 @@ package States {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
   )
   (evaluation
   )

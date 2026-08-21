@@ -199,8 +199,8 @@ fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
 /// The canonical S-expression adapter over the publication's typed diagnostics.
 ///
 /// It decides layout and nothing else: every code, severity, origin, range, and related location
-/// below is read from [`crate::Diagnostic`]. Other adapters read the same values, so no two
-/// surfaces can disagree about what a publication reported.
+/// below is read from [`crate::Diagnostic`]. Categories stay available on that typed contract but
+/// are deliberately absent from this compatibility S-expression.
 pub(super) fn write_diagnostics(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
@@ -1257,6 +1257,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ItemUsage => "item",
         DeclarationKind::ActionDefinition => "action-def",
         DeclarationKind::ActionUsage => "action",
+        DeclarationKind::AcceptActionUsage => "accept-action",
         DeclarationKind::Succession => "succession",
         DeclarationKind::StateDefinition => "state-def",
         DeclarationKind::StateUsage => "state",
@@ -1379,6 +1380,8 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::MembershipImport => "membershipImport",
         ReferenceKind::FilterImport => "filterImport",
         ReferenceKind::FeatureTyping => "featureTyping",
+        ReferenceKind::TypeFeaturing => "typeFeaturing",
+        ReferenceKind::FeatureChaining => "featureChaining",
         ReferenceKind::Subclassification => "specialization",
         ReferenceKind::Subsetting => "subsetting",
         ReferenceKind::Redefinition => "redefinition",
@@ -1442,6 +1445,8 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
 pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
     match kind {
         ReferenceKind::FeatureTyping => Some("typing"),
+        ReferenceKind::TypeFeaturing => Some("typeFeaturing"),
+        ReferenceKind::FeatureChaining => Some("featureChaining"),
         ReferenceKind::Subclassification => Some("specialization"),
         ReferenceKind::Subsetting => Some("subsetting"),
         ReferenceKind::Redefinition => Some("redefinition"),
@@ -1549,6 +1554,7 @@ mod tests {
         .unwrap();
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
+        let bindings = binding::BindingConnectorIndex::build(&storage, &resolution).unwrap();
         let type_facts = types::TypeIndex::build(&storage, &resolution).unwrap();
         let mut model = ResolvedSemanticModel {
             storage,
@@ -1560,6 +1566,7 @@ mod tests {
             reverse_references,
             effective_scopes,
             facts,
+            bindings,
             types: type_facts,
             resolution,
             evaluation,

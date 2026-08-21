@@ -4,8 +4,12 @@ description=SysML 8.3.9.2 validateEventOccurrenceUsageReference requires the fea
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.9.2 validateEventOccurrenceUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.9.2:validateEventOccurrenceUsageReference
+blocked_by=lowering-event-occurrence-reference
 type=file
-skip_validation=the referenced feature of an event occurrence usage parses but sysml_resolution settles it as unsupported_reference, so the reference target never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -79,6 +83,10 @@ package Events {
       (outcome (status unsupported)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::milestone"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::reading"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
   )
   (evaluation
   )

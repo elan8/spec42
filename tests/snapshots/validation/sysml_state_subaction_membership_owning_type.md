@@ -4,8 +4,12 @@ description=SysML 8.3.18.4 validateStateSubactionMembershipOwningType requires t
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.4 validateStateSubactionMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=by_construction
+rule_id=sysml-2.0:8.3.18.4:validateStateSubactionMembershipOwningType
+blocked_by=abstract-syntax-invalid-state-subaction-owner
 type=file
-skip_validation=the pinned parser has no production for an entry subaction outside a state, so the invalid owner is reported as unexpected_keyword_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -14,27 +18,7 @@ package States {
     state def Good {
         entry action started;
     }
-
-    // Invalid: the subaction membership is owned by a part definition.
-    part def Bad {
-        entry action started;
-    }
 }
-~~~
-# EXPECTED DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "state_subaction_invalid_owner")
-        (source "semantic")
-        (range (start 7 4) (end 7 18))
-      )
-    )
-  )
-)
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -47,12 +31,6 @@ package States {
         (source "semantic")
         (range (start 3 21) (end 3 28))
       )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 8 8) (end 9 4))
-      )
     )
   )
 )
@@ -60,10 +38,9 @@ package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:34572facffb3e244c6ac56335bdf455920fef4d657e5fc15de94e1fad71c6042") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b995c4fe9333c16fe09a1a2a335e210b820facda254707fd7da38590a5ac0dc9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "started")))))
   )
@@ -73,6 +50,7 @@ package States {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (provenance implied))
   )
   (evaluation
   )

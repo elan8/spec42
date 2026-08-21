@@ -4,8 +4,12 @@ description=KerML 8.3.4.7.8 validateReturnParameterMembershipOwningType requires
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.7.8 validateReturnParameterMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.7.8:validateReturnParameterMembershipOwningType
+blocked_by=semantic-return-parameter-membership-invalid-owner
 type=file
-skip_validation=no semantic rule checks the owningType of a return parameter membership; the canonical code return_parameter_membership_invalid_owner does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -70,6 +74,8 @@ package Returns {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing::result"))) (target (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing::result"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object::result"))) (target (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object::result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing::result"))) (target (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object::result"))) (target (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object"))) (provenance implied))
   )
   (evaluation
   )

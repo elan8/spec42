@@ -4,6 +4,10 @@ description=KerML 8.3.4.6.4 validateParameterMembershipParameterDirection requir
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.6.4 validateParameterMembershipParameterDirection
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.6.4:validateParameterMembershipParameterDirection
 type=file
 ~~~
 # SOURCE
@@ -75,6 +79,10 @@ package Parameters {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::input"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::output"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::output"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::result"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::both"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::input"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::output"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::result"))) (target (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (provenance implied))
   )
   (evaluation
   )

@@ -125,6 +125,8 @@ jobs:
           cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo test (core workspace)
+        env:
+          RUST_MIN_STACK: 16777216
         run: |
           cargo test --workspace --exclude server --exclude lsp_server
           cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
@@ -434,6 +436,9 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
+
       - name: Build extension
         run: cd vscode && npm run compile
 
@@ -550,6 +555,9 @@ jobs:
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
+
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
 
       - name: Build extension
         run: cd vscode && npm run compile

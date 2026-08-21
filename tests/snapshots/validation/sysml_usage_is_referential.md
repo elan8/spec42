@@ -4,8 +4,12 @@ description=SysML 8.3.6.4 validateUsageIsReferential requires a Usage that is di
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.6.4 validateUsageIsReferential
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.6.4:validateUsageIsReferential
+blocked_by=semantic-directed-usage-not-referential
 type=file
-skip_validation=no semantic rule pairs a usage direction with its referential status; the canonical code directed_usage_not_referential does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -66,6 +70,8 @@ package References {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedComposite"))) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedComposite"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedReference"))) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedReference"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedComposite"))) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedReference"))) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder"))) (provenance implied))
   )
   (evaluation
   )

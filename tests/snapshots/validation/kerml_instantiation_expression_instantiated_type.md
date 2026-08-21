@@ -4,8 +4,12 @@ description=KerML 8.3.4.8.7 validateInstantiationExpressionInstantiatedType requ
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.7 validateInstantiationExpressionInstantiatedType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.7:validateInstantiationExpressionInstantiatedType
+blocked_by=semantic-instantiation-expression-validation
 type=file
-skip_validation=the unresolved instantiated type is reported by reference resolution rather than by an instantiation-expression rule, and its range covers the reference token rather than the owning expression
 ~~~
 # SOURCE
 ~~~kerml
@@ -101,6 +105,11 @@ package Expressions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::wrong"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::source"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::wrong"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::input"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::input"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::result"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::copied"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::source"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::wrong"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::input"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity::result"))) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Identity"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::copied"))) (state non-constant))

@@ -4,8 +4,12 @@ description=SysML 8.3.26.10 validateViewRenderingMembershipOwningType requires t
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.26.10 validateViewRenderingMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.26.10:validateViewRenderingMembershipOwningType
+blocked_by=parser-gap-79-membership-owner-forms
 type=file
-skip_validation=a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

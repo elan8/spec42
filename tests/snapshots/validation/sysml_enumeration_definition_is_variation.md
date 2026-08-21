@@ -4,6 +4,10 @@ description=SysML 8.3.8.2 validateEnumerationDefinitionIsVariation requires an E
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.8.2 validateEnumerationDefinitionIsVariation
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.8.2:validateEnumerationDefinitionIsVariation
 type=file
 ~~~
 # SOURCE
@@ -52,6 +56,8 @@ package Enumerations {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
   )
   (evaluation
   )

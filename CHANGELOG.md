@@ -12,11 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   -- 88 in KerML 1.0 and 92 in SysML 2.0 -- across 179 fixtures, each carrying its specification,
   OMG document identifier, exact clause, constraint name, a conforming and a violating example, and
   an authored `EXPECTED DIAGNOSTICS`. Rules the compiler does not enforce yet stay visible as
-  `SKIPPED` with a concrete reason naming the layer that declines the construct.
-  `planning/VALIDATION_RULE_INVENTORY.md` records the reconciliation, and why the corpus is 180
-  rules rather than the 415 constraint names the documents contain: `derive*` defines derived
-  properties and `check*` is the semantic-constraint family a tool may satisfy by implication, so
-  neither is the validation contract a conformant tool must report.
+  `BLOCKED` by a typed issue that names the owning layer and concrete gap.
+  The snapshot report now reconciles fixture evidence against the generated constraint manifest;
+  `derive*` and `check*` are represented alongside `validate*` constraints rather than hidden by
+  a separate planning inventory.
 
 - **Bumped the pinned `sysml-v2-parser` revision `ec47463` -> `49bdf3f`.** Control nodes are the
   visible behavior change: `ControlNodeDeclaration` makes `merge continue;` a *declaration* rather

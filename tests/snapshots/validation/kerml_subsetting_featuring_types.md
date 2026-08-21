@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.10 validateSubsettingFeaturingTypes requires the subse
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.10 validateSubsettingFeaturingTypes
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingFeaturingTypes
+blocked_by=semantic-subsetting-target-not-accessible
 type=file
-skip_validation=no semantic rule checks that a subsetted feature is accessible from the subsetting feature; the canonical code subsetting_target_not_accessible does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -89,6 +93,9 @@ package Subsettings {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Conforming::narrowed"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Base::inherited"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Conforming::narrowed"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated::foreign"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated::foreign"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated::foreign"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Base::inherited"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated::foreign"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Base::inherited"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Conforming::narrowed"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Conforming"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated::foreign"))) (target (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Unrelated"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=SysML 8.3.18.6 validateStateUsageStateSubactionKind forbids a StateU
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.6 validateStateUsageStateSubactionKind
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.6:validateStateUsageStateSubactionKind
+blocked_by=lowering-state-subaction-memberships
 type=file
-skip_validation=the subaction of an `entry`/`do`/`exit` member parses but its name settles as unresolved_reference, so no StateSubactionMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -114,6 +118,12 @@ package States {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::bad"))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Machine")) (named (kind state) (name "bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Machine")) (named (kind state) (name "bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::good"))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Machine")) (named (kind state) (name "good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Machine")) (named (kind state) (name "good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_state_subaction_kind.md") (qualified-name "States::Machine::good"))) (provenance implied))
   )
   (evaluation
   )

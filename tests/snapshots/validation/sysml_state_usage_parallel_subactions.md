@@ -4,8 +4,12 @@ description=SysML 8.3.18.6 validateStateUsageParallelSubactions forbids the nest
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.6 validateStateUsageParallelSubactions
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.6:validateStateUsageParallelSubactions
+blocked_by=semantic-parallel-state-substate-transition
 type=file
-skip_validation=no semantic rule checks whether the substates of a parallel state carry transitions; the canonical code parallel_state_substate_transition does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -76,6 +80,13 @@ package States {
   (relationships
     (relationship (kind transitionSource) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::left"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::right"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::left"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::right"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good::left"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good::right"))) (target (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good"))) (provenance implied))
   )
   (evaluation
   )

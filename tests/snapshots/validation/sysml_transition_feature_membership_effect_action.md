@@ -4,8 +4,12 @@ description=SysML 8.3.18.8 validateTransitionFeatureMembershipEffectAction requi
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.8 validateTransitionFeatureMembershipEffectAction
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.8:validateTransitionFeatureMembershipEffectAction
+blocked_by=parser-gap-77-transition-body-members
 type=file
-skip_validation=the transition feature memberships of a transition usage are not published, so the rule has no transitionFeature to inspect
 ~~~
 # SOURCE
 ~~~sysml
@@ -67,12 +71,15 @@ package Transitions {
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
   )
   (evaluation
   )

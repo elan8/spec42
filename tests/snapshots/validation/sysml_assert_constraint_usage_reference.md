@@ -4,8 +4,12 @@ description=SysML 8.3.20.2 validateAssertConstraintUsageReference requires the f
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.20.2 validateAssertConstraintUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.20.2:validateAssertConstraintUsageReference
+blocked_by=lowering-part-definition-members
 type=file
-skip_validation=an assert constraint member parses but sysml_resolution reports it as unsupported_part_definition_member, so no AssertConstraintUsage reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -85,6 +89,8 @@ package Constraints {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::limit"))) (target (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Bound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::limit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::other"))) (target (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::other"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::limit"))) (target (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library::other"))) (target (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Library"))) (provenance implied))
   )
   (evaluation
   )

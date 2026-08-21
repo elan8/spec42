@@ -4,8 +4,12 @@ description=KerML 8.3.4.7.3 validateExpressionResultParameterMembership requires
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.7.3 validateExpressionResultParameterMembership
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.7.3:validateExpressionResultParameterMembership
+blocked_by=semantic-expression-result-parameter-count
 type=file
-skip_validation=no semantic rule counts the result parameter memberships of an expression; the canonical code expression_result_parameter_count does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -93,6 +97,10 @@ package Expressions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One::result"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One::result"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None::input"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One::result"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two"))) (provenance implied))
   )
   (evaluation
   )
