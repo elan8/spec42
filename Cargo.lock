@@ -1850,7 +1850,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "spec42-sysml-parser",
  "sysml_query",
  "tempfile",
  "tokio",
