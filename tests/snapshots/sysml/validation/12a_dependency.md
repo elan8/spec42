@@ -43,9 +43,9 @@ package '12a-Dependency' {
     (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Use"))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Application Layer")) (dependencySupplier (reference "Service Layer")))))
-    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::x"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::y"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::z"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::x"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::y"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::z"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/12a_dependency.md") (path (named (kind package) (name "12a-Dependency")) (anonymous (kind dependency) (ordinal 0))))) (kind dependencyClient) (ordinal 0))

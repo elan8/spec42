@@ -93,7 +93,7 @@ package MultiplicityTest {
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::e"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::f"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper unbounded))))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::g"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper expression))))
-    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (kind attribute-def) (membership (kind owning) (visibility default)) (feature-value (kind bind)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A::i"))) (kind featureTyping) (ordinal 0))

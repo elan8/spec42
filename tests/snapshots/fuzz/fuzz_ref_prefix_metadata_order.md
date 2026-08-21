@@ -18,7 +18,7 @@ package P {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "recovered_calc_body_element")
         (source "parser")
         (range (start 2 8) (end 3 4))
       )

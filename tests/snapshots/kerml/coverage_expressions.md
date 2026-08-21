@@ -84,7 +84,7 @@ package ExpressionCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::Item"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::all_v"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
-    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items")))))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items")))))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::cond"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items")))))
@@ -97,6 +97,9 @@ package ExpressionCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "items")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
     (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (kind expressionOperand) (ordinal 0))
       (authored-target "items")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
@@ -111,6 +114,7 @@ package ExpressionCoverage {
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind featureTyping) (ordinal 0)))
@@ -128,7 +132,6 @@ package ExpressionCoverage {
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::s"))) (state literal) (value (kind string) (value "hello")))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::sel"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (state non-constant))
-    (unit (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (ordinal 0) (authored "0") (start 11 24) (end 11 25) (outcome (status catalog-unavailable)))
   )
 )
 ~~~
@@ -148,6 +151,11 @@ package ExpressionCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_expressions.md") (range (start 11 18) (end 11 23)) (probe (position 11 18))
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (kind expressionOperand) (ordinal 0) (authored-target "items")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
+    )
+  )
   (query (document "memory://snapshot/coverage_expressions.md") (range (start 15 19) (end 15 24)) (probe (position 15 19))
     (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (kind expressionOperand) (ordinal 0) (authored-target "items")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))

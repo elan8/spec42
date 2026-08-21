@@ -44,7 +44,7 @@ package Constants {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening::fixed"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening::fixed"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers constant)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

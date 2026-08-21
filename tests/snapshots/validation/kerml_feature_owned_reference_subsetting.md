@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureOwnedReferenceSubsetting
 type=file
-skip_validation=sysml_resolution does not lower KermlFeatureMember.references -- the parser types the clause, lower_kerml_feature_member reads only typing/subsets/redefines -- so no ReferenceSubsetting relationship is published; the AST also holds a single Option, so a second references clause is silently discarded
+skip_validation=the references clause now lowers to a referenceSubsetting relationship, but its target settles as unsupported_reference, so no resolved referenced feature is published for the rule to inspect; KermlFeature.references is also a single Option, so a second references clause is silently discarded and the "at most one" violation is unobservable
 ~~~
 # SOURCE
 ~~~kerml
@@ -43,6 +43,24 @@ package References {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 7 31) (end 7 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 10 31) (end 10 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 10 48) (end 10 54))
+      )
     )
   )
 )
@@ -55,18 +73,27 @@ package References {
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::one"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::one"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "first")))))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::second"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "first")) (referenceSubsetting (reference "second")))))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::one"))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "first")
+      (outcome (status unsupported)))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::second"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "first")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 1))
+      (authored-target "second")
+      (outcome (status unsupported)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first"))) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first"))) (kind featureTyping) (ordinal 0)))
@@ -111,9 +138,24 @@ package References {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
     )
   )
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 7 31) (end 7 36)) (probe (position 7 31))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::one"))) (kind referenceSubsetting) (ordinal 0) (authored-target "first")
+      (outcome (status unsupported)))
+    )
+  )
   (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 4 25) (end 4 30)) (probe (position 4 25))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::second"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 31) (end 10 36)) (probe (position 10 31))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 0) (authored-target "first")
+      (outcome (status unsupported)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 48) (end 10 54)) (probe (position 10 48))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 1) (authored-target "second")
+      (outcome (status unsupported)))
     )
   )
 )

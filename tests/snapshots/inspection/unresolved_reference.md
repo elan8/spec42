@@ -50,7 +50,7 @@ probe unresolved_reference.md 5 25
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Known")))))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::missing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Absent")))))
-    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind attribute-def) (membership (kind owning) (visibility default)) (feature-value (kind bind)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "undefinedName")))))
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "undefinedName")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind featureTyping) (ordinal 0))
@@ -110,7 +110,7 @@ probe unresolved_reference.md 5 25
   (probe (document "memory://snapshot/unresolved_reference.md") (position 3 22)
     (target (status unresolved))
     (rename (status unresolved))
-    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeDefinition"))))
+    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeUsage"))))
     (inspection
       (status resolved)
       (containing
@@ -132,7 +132,7 @@ probe unresolved_reference.md 5 25
     (target (status resolved) (candidate (name "missing") (location (document "memory://snapshot/unresolved_reference.md") (range (start 3 9) (end 3 16)) (role Declaration))))
     (references (locations (location (document "memory://snapshot/unresolved_reference.md") (range (start 3 9) (end 3 16)) (role Declaration))))
     (rename (status ready) (name "missing") (range (start 3 9) (end 3 16)) (occurrences 1))
-    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeDefinition"))))
+    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeUsage"))))
     (inspection
       (status resolved)
       (containing
@@ -154,7 +154,7 @@ probe unresolved_reference.md 5 25
     (target (status resolved) (candidate (name "Known") (location (document "memory://snapshot/unresolved_reference.md") (range (start 1 13) (end 1 18)) (role Declaration))))
     (references (locations (location (document "memory://snapshot/unresolved_reference.md") (range (start 1 13) (end 1 18)) (role Declaration)) (location (document "memory://snapshot/unresolved_reference.md") (range (start 4 17) (end 4 22)) (role Reference))))
     (rename (status ready) (name "Known") (range (start 4 17) (end 4 22)) (occurrences 2))
-    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeDefinition"))))
+    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeUsage"))))
     (inspection
       (status resolved)
       (containing
@@ -185,16 +185,16 @@ probe unresolved_reference.md 5 25
   (probe (document "memory://snapshot/unresolved_reference.md") (position 5 25)
     (target (status unresolved))
     (rename (status unresolved))
-    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeDefinition"))))
+    (visible-members (candidates (member (name "Broken") (qualified-name "Broken") (kind "Package")) (member (name "Known") (qualified-name "Broken::Known") (kind "PartDefinition")) (member (name "known") (qualified-name "Broken::known") (kind "PartUsage")) (member (name "missing") (qualified-name "Broken::missing") (kind "PartUsage")) (member (name "size") (qualified-name "Broken::size") (kind "AttributeUsage"))))
     (inspection
       (status resolved)
       (containing
-        (element (kind "AttributeDefinition")
+        (element (kind "AttributeUsage")
           (name "size")
           (qualified-name "Broken::size")
           (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration))
           (declaration (range (start 5 4) (end 5 39)))
-          (membership (kind owning) (visibility public) (provenance default))
+          (membership (kind feature) (visibility public) (provenance default))
           (value (kind bind) (default false) (operator true))
           (evaluation unresolved-operand)
           (relationship (kind "expressionOperand") (provenance authored) (authored "undefinedName") (target unresolved))
@@ -209,7 +209,7 @@ probe unresolved_reference.md 5 25
     (symbol (kind "PartDefinition") (name "Known") (qualified-name "Broken::Known") (location (document "memory://snapshot/unresolved_reference.md") (range (start 1 13) (end 1 18)) (role Declaration)) (declaration (range (start 1 4) (end 1 19))))
     (symbol (kind "PartUsage") (name "missing") (qualified-name "Broken::missing") (location (document "memory://snapshot/unresolved_reference.md") (range (start 3 9) (end 3 16)) (role Declaration)) (declaration (range (start 3 4) (end 3 26))))
     (symbol (kind "PartUsage") (name "known") (qualified-name "Broken::known") (location (document "memory://snapshot/unresolved_reference.md") (range (start 4 9) (end 4 14)) (role Declaration)) (declaration (range (start 4 4) (end 4 23))))
-    (symbol (kind "AttributeDefinition") (name "size") (qualified-name "Broken::size") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration)) (declaration (range (start 5 4) (end 5 39))))
+    (symbol (kind "AttributeUsage") (name "size") (qualified-name "Broken::size") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration)) (declaration (range (start 5 4) (end 5 39))))
   )
 )
 ~~~

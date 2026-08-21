@@ -71,16 +71,16 @@ package 'Variation Definitions' {
         (range (start 4 27) (end 4 43))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 25 2) (end 26 2))
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 25 2) (end 25 43))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 26 2) (end 27 1))
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 26 2) (end 26 44))
       )
     )
   )
@@ -89,7 +89,7 @@ package 'Variation Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9d9386d4bb621cb0255685478bfebdac9bd473f33ba854a1631b1b875876e1dc") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9d9386d4bb621cb0255685478bfebdac9bd473f33ba854a1631b1b875876e1dc") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

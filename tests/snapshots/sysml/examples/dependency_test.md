@@ -49,9 +49,9 @@ package DependencyTest {
     (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::Use"))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Application Layer")) (dependencySupplier (reference "Service Layer")))))
-    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::x"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::y"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::z"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::x"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::y"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::z"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/dependency_test.md") (path (named (kind package) (name "DependencyTest")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

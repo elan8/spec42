@@ -212,10 +212,10 @@ package AHFNorwaySequences {
         (range (start 44 3) (end 45 58))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 46 3) (end 48 3))
+        (severity warning)
+        (code "unsupported_occurrence_definition_member")
+        (source "semantic")
+        (range (start 46 3) (end 46 45))
       )
       (diagnostic
         (severity warning)
@@ -230,10 +230,10 @@ package AHFNorwaySequences {
         (range (start 50 3) (end 51 58))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 52 3) (end 53 3))
+        (severity warning)
+        (code "unsupported_occurrence_definition_member")
+        (source "semantic")
+        (range (start 52 3) (end 52 45))
       )
       (diagnostic
         (severity warning)
@@ -286,7 +286,7 @@ package AHFNorwaySequences {
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (path (named (kind package) (name "AHFNorwaySequences")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFNorway") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (path (named (kind package) (name "AHFNorwaySequences")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
-    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (documentation (comment (text " How to express that this event sends a Return_AllItems? "))))
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime::apsc"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (path (named (kind package) (name "AHFNorwaySequences")) (named (kind part) (name "AHFN_LocalCloudDD_Seqs")) (named (kind occurrence-def) (name "APIS_transfer_lifetime")) (named (kind part) (name "apsc")) (anonymous (kind occurrence) (ordinal 0))))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MQTTforwarding")))))
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (path (named (kind package) (name "AHFNorwaySequences")) (named (kind part) (name "AHFN_LocalCloudDD_Seqs")) (named (kind occurrence-def) (name "APIS_transfer_lifetime")) (named (kind part) (name "apsc")) (anonymous (kind occurrence) (ordinal 1))))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MQTTforwarding")))))

@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.6.5 validateVariantMembershipOwningNamespace
 type=file
-skip_validation=a variant member parses but sysml_resolution reports it as unsupported_part_definition_member, so no VariantMembership reaches semantics
+skip_validation=the pinned parser rejects a `variant` member inside a non-variation part def, reporting recovered_package_body_element, so no VariantMembership reaches semantics on the violating side
 ~~~
 # SOURCE
 ~~~sysml
@@ -49,12 +49,6 @@ package Variations {
         (source "parser")
         (range (start 4 4) (end 9 4))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 10 8) (end 10 34))
-      )
     )
   )
 )
@@ -66,11 +60,16 @@ package Variations {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small"))) (target (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -79,10 +78,24 @@ package Variations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small")))
+      (featured-by (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad")))
+      (type (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")))
+      (subtype (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small")) (scopes any))
+    )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (range (start 10 29) (end 10 33)) (probe (position 10 29))
+    (reference (id (source (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base")))))
+    )
+  )
 )
 ~~~

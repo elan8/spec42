@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.6 validateControlNodeOwningType
 type=file
-skip_validation=the parser models a control-node statement only as a reference: JoinStmt.join, ForkStmt.fork and DecisionStmt.decide are each a Node<Expression> path with no declared-name field, so `join good;` publishes an anonymous control node with an unresolved joinInput reference to `good` rather than declaring a named ControlNode
+skip_validation=the pinned parser rejects a control node outside an action body, reporting unexpected_keyword_in_scope, so the invalidly owned control node never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -42,12 +42,6 @@ package Actions {
   (document "memory://snapshot/sysml_control_node_owning_type.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 3 13) (end 3 14))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -64,13 +58,10 @@ package Actions {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind fork) (ordinal 0))))) (kind fork) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (forkInput (reference "f")))))
+    (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions::Act::f"))) (kind fork) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_control_node_owning_type.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind fork) (ordinal 0))))) (kind forkInput) (ordinal 0))
-      (authored-target "f")
-      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -81,7 +72,7 @@ package Actions {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind fork) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions::Act::f")))
       (featured-by (node (document "memory://snapshot/sysml_control_node_owning_type.md") (qualified-name "Actions::Act")))
     )
 )
@@ -89,10 +80,5 @@ package Actions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_control_node_owning_type.md") (range (start 3 13) (end 3 14)) (probe (position 3 13))
-    (reference (id (source (node (document "memory://snapshot/sysml_control_node_owning_type.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind fork) (ordinal 0))))) (kind forkInput) (ordinal 0) (authored-target "f")
-      (outcome (status unresolved)))
-    )
-  )
 )
 ~~~

@@ -913,7 +913,9 @@ fn collect_semantic_ranges_attribute_body(
             | AttributeBodyElement::Connection(_)
             | AttributeBodyElement::CalcDef(_)
             | AttributeBodyElement::CalcUsage(_)
-            | AttributeBodyElement::ConstraintUsage(_) => {}
+            | AttributeBodyElement::ConstraintUsage(_)
+            | AttributeBodyElement::DefaultReferenceUsage(_)
+            | AttributeBodyElement::VariantUsage(_) => {}
         }
     }
 }
@@ -1057,6 +1059,8 @@ fn collect_semantic_ranges_state_def_body_element(
         SDBE::AttributeUsage(_)
         | SDBE::ActionUsage(_)
         | SDBE::SuccessionUsage(_)
+        | SDBE::PartUsage(_)
+        | SDBE::ConstraintUsage(_)
         | SDBE::AssertConstraint(_) => {}
     }
 }
@@ -1119,7 +1123,11 @@ fn collect_semantic_ranges_occurrence_body_element(
             }
         }
         OBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
-        OBE::Error(_) | OBE::AssertConstraint(_) | OBE::Allocate(_) | OBE::SuccessionUsage(_) => {}
+        OBE::Error(_)
+        | OBE::AssertConstraint(_)
+        | OBE::Allocate(_)
+        | OBE::Bind(_)
+        | OBE::SuccessionUsage(_) => {}
         // Member kinds this collector assigns no token of their own.
         OBE::Annotating(_)
         | OBE::MetadataKeywordUsage(_)
@@ -1710,6 +1718,8 @@ fn collect_semantic_ranges_action_def_body_element(
             );
         }
         ADBE::Bind(_)
+        | ADBE::Import(_)
+        | ADBE::VariantUsage(_)
         | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
         | ADBE::MergeStmt(_)
@@ -1808,6 +1818,7 @@ fn collect_semantic_ranges_action_usage_body_element(
             );
         }
         AUBE::Bind(_)
+        | AUBE::Import(_)
         | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)

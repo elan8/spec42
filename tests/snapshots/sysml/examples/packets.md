@@ -132,10 +132,10 @@ package Packets {
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "Packets::packet data field::user data field")))))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field::temperature"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field::timestamp"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DateTime")))))
-    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "packet header")))))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field"))) (kind attribute) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/packets.md") (path (named (kind package) (name "Packets")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

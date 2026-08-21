@@ -52,7 +52,7 @@ package 'Comment Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " This is a comment, which is a part of the model, \n\t * annotating (by default) it's owning namespace. ")) (comment (text " This is a named comment. ")) (comment (text " This is an unnamed comment, annotating an \n\t * explicitly specified element. \n\t "))))
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile")))))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (documentation (comment (text "\n\t\t * This is a comment annotating its owning\n\t\t * element.\n\t\t "))) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile")))))
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue")))))
   )
   (references

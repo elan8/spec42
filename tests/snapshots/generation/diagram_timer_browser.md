@@ -49,7 +49,7 @@ package TimerBrowser {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:99c1310d9730051b05961eec7a044627ee7d94f72f17cb43d9d87ceb856c9a8a") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:951676c6738e60498b9c8818f69f6de23ddcc2da16e318c7240429543b2aea15") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (qualified-name "TimerBrowser"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (path (named (kind package) (name "TimerBrowser")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -205,13 +205,13 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Battery-powered kitchen timer; PCB with MCU, display, buttons, buzzer driver; buzzer off-board. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::mcu::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::display::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buttons::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buzzerDriver::pwrIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "pcb::buzzerDriver::buzzerPwrOut")) (memberAccessOperand (reference "buzzer::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Battery")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buttons::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Buzzer")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buzzerDriver::pwrIn")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "pcb::buzzerDriver::buzzerPwrOut")) (memberAccessOperand (reference "buzzer::pwr")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::display::pwr")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::mcu::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerPCB")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " MCU on PCB with built-in LCD controller; runs timer firmware; COM/SEG to display glass, GPIO to buttons. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonInputPort") (conjugated true)))))
@@ -225,13 +225,13 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerStateMachine")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " PCB assembly; display and buttons mounted on board; MCU and buzzer driver. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "buttons::output")) (memberAccessOperand (reference "mcu::buttonIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "buttons::output")) (memberAccessOperand (reference "mcu::buttonIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::displayOut")) (memberAccessOperand (reference "display::cmd")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::lcdDrive")) (memberAccessOperand (reference "display::lcdIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::buzzerOut")) (memberAccessOperand (reference "buzzerDriver::ctrlIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonInterface")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::buzzerOut")) (memberAccessOperand (reference "buzzerDriver::ctrlIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BuzzerDriver")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Display")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::displayOut")) (memberAccessOperand (reference "display::cmd")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::lcdDrive")) (memberAccessOperand (reference "display::lcdIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Microcontroller")))))
   )
   (references
@@ -607,42 +607,42 @@ package TimerBrowser {
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "maxCurrent")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "pcb::buzzerDriver::buzzerPwrOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::mcu::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::display::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::buttons::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::buzzerDriver::pwrIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "buzzer::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0))
       (authored-target "Battery")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::buttons::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0))
       (authored-target "Buzzer")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::buzzerDriver::pwrIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "pcb::buzzerDriver::buzzerPwrOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "buzzer::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::display::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::mcu::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind featureTyping) (ordinal 0))
       (authored-target "TimerPCB")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))))
@@ -676,39 +676,39 @@ package TimerBrowser {
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind featureTyping) (ordinal 0))
       (authored-target "TimerStateMachine")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "buttons::output")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::displayOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::lcdDrive")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::buzzerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
       (authored-target "mcu::buttonIn")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "display::cmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "display::lcdIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "buzzerDriver::ctrlIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0))
       (authored-target "ButtonInterface")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::buzzerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "buzzerDriver::ctrlIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind featureTyping) (ordinal 0))
       (authored-target "BuzzerDriver")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0))
       (authored-target "Display")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::displayOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "display::cmd")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::lcdDrive")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "display::lcdIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind featureTyping) (ordinal 0))
       (authored-target "Microcontroller")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))))
@@ -815,18 +815,18 @@ package TimerBrowser {
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (kind featureTyping) (ordinal 0)))
@@ -838,17 +838,17 @@ package TimerBrowser {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -995,6 +995,9 @@ package TimerBrowser {
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::ScalarQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::TensorQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::VectorQuantityValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::scalarQuantities")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::tensorQuantities")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::vectorQuantities")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any))
@@ -1521,32 +1524,32 @@ package TimerBrowser {
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
@@ -1646,7 +1649,16 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput")))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons")))
@@ -1654,9 +1666,6 @@ package TimerBrowser {
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
@@ -1669,12 +1678,6 @@ package TimerBrowser {
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
@@ -2307,64 +2310,64 @@ package TimerBrowser {
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))))
     )
   )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 10) (end 76 26)) (probe (position 76 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 10) (end 77 26)) (probe (position 77 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 10) (end 78 26)) (probe (position 78 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 10) (end 79 26)) (probe (position 79 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 10) (end 80 39)) (probe (position 80 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0) (authored-target "pcb::buzzerDriver::buzzerPwrOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 30) (end 76 41)) (probe (position 76 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::mcu::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 30) (end 77 45)) (probe (position 77 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::display::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 30) (end 78 45)) (probe (position 78 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buttons::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 30) (end 79 52)) (probe (position 79 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buzzerDriver::pwrIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 43) (end 80 53)) (probe (position 80 43))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzer::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
+    )
+  )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 73 17) (end 73 24)) (probe (position 73 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0) (authored-target "Battery")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 33) (end 78 49)) (probe (position 78 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 53) (end 78 68)) (probe (position 78 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buttons::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
-    )
-  )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 74 16) (end 74 22)) (probe (position 74 16))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0) (authored-target "Buzzer")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 39) (end 79 55)) (probe (position 79 39))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 59) (end 79 81)) (probe (position 79 59))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buzzerDriver::pwrIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 33) (end 80 62)) (probe (position 80 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "pcb::buzzerDriver::buzzerPwrOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 66) (end 80 76)) (probe (position 80 66))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzer::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 34) (end 77 50)) (probe (position 77 34))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 54) (end 77 69)) (probe (position 77 54))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::display::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 30) (end 76 46)) (probe (position 76 30))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 50) (end 76 61)) (probe (position 76 50))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::mcu::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 72 13) (end 72 21)) (probe (position 72 13))
@@ -2422,29 +2425,49 @@ package TimerBrowser {
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 33) (end 56 47)) (probe (position 56 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0) (authored-target "buttons::output")
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 10) (end 56 24)) (probe (position 56 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "buttons::output")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 51) (end 56 63)) (probe (position 56 51))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1) (authored-target "mcu::buttonIn")
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 10) (end 57 24)) (probe (position 57 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::displayOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 10) (end 58 22)) (probe (position 58 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::lcdDrive")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 10) (end 59 23)) (probe (position 59 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::buzzerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 28) (end 56 40)) (probe (position 56 28))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "mcu::buttonIn")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 28) (end 57 39)) (probe (position 57 28))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::cmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 26) (end 58 39)) (probe (position 58 26))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::lcdIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 27) (end 59 46)) (probe (position 59 27))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzerDriver::ctrlIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 54 17) (end 54 32)) (probe (position 54 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0) (authored-target "ButtonInterface")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 36) (end 59 49)) (probe (position 59 36))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::buzzerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 53) (end 59 72)) (probe (position 59 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzerDriver::ctrlIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 55 22) (end 55 34)) (probe (position 55 22))
@@ -2455,26 +2478,6 @@ package TimerBrowser {
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 53 17) (end 53 24)) (probe (position 53 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0) (authored-target "Display")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 37) (end 57 51)) (probe (position 57 37))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::displayOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 55) (end 57 66)) (probe (position 57 55))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::cmd")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 37) (end 58 49)) (probe (position 58 37))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::lcdDrive")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 53) (end 58 66)) (probe (position 58 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::lcdIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 52 13) (end 52 28)) (probe (position 52 13))
@@ -2489,7 +2492,7 @@ package TimerBrowser {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:3319ceb8c4ae4a57028a5045e41a55b716393412171be3947fe22392158b1620",
+  "modelDigest": "blake3:a53f57b3554f713a4b24497fa032456b350dfa460602755a0ce1b4a4780b459c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_browser.md",
@@ -3640,7 +3643,16 @@ package TimerBrowser {
       "document": 4,
       "range": [
         56,
-        13,
+        2,
+        56,
+        41
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        56,
+        10,
         56,
         24
       ]
@@ -3649,99 +3661,90 @@ package TimerBrowser {
       "document": 4,
       "range": [
         56,
-        33,
+        28,
         56,
+        40
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        57,
+        2,
+        57,
+        40
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        57,
+        10,
+        57,
+        24
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        57,
+        28,
+        57,
+        39
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        58,
+        2,
+        58,
+        40
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        58,
+        10,
+        58,
+        22
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        58,
+        26,
+        58,
+        39
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        59,
+        2,
+        59,
         47
       ]
     },
     {
       "document": 4,
       "range": [
-        56,
-        51,
-        56,
-        63
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        57,
-        13,
-        57,
-        28
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        57,
-        37,
-        57,
-        51
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        57,
-        55,
-        57,
-        66
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        58,
-        13,
-        58,
-        28
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        58,
-        37,
-        58,
-        49
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        58,
-        53,
-        58,
-        66
+        59,
+        10,
+        59,
+        23
       ]
     },
     {
       "document": 4,
       "range": [
         59,
-        13,
+        27,
         59,
-        27
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        59,
-        36,
-        59,
-        49
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        59,
-        53,
-        59,
-        72
+        46
       ]
     },
     {
@@ -3874,9 +3877,18 @@ package TimerBrowser {
       "document": 4,
       "range": [
         76,
-        13,
+        2,
         76,
-        21
+        42
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        76,
+        10,
+        76,
+        26
       ]
     },
     {
@@ -3885,124 +3897,115 @@ package TimerBrowser {
         76,
         30,
         76,
+        41
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        77,
+        2,
+        77,
         46
       ]
     },
     {
       "document": 4,
       "range": [
-        76,
-        50,
-        76,
-        61
+        77,
+        10,
+        77,
+        26
       ]
     },
     {
       "document": 4,
       "range": [
         77,
-        13,
+        30,
         77,
-        25
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        77,
-        34,
-        77,
-        50
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        77,
-        54,
-        77,
-        69
+        45
       ]
     },
     {
       "document": 4,
       "range": [
         78,
-        13,
+        2,
         78,
-        24
-      ]
-    },
-    {
-      "document": 4,
-      "range": [
-        78,
-        33,
-        78,
-        49
+        46
       ]
     },
     {
       "document": 4,
       "range": [
         78,
-        53,
+        10,
         78,
-        68
+        26
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        78,
+        30,
+        78,
+        45
       ]
     },
     {
       "document": 4,
       "range": [
         79,
-        13,
+        2,
         79,
-        30
+        53
       ]
     },
     {
       "document": 4,
       "range": [
         79,
-        39,
+        10,
         79,
-        55
+        26
       ]
     },
     {
       "document": 4,
       "range": [
         79,
-        59,
+        30,
         79,
-        81
+        52
       ]
     },
     {
       "document": 4,
       "range": [
         80,
-        13,
+        2,
         80,
-        24
+        54
       ]
     },
     {
       "document": 4,
       "range": [
         80,
-        33,
+        10,
         80,
-        62
+        39
       ]
     },
     {
       "document": 4,
       "range": [
         80,
-        66,
+        43,
         80,
-        76
+        53
       ]
     }
   ],
@@ -4345,37 +4348,17 @@ package TimerBrowser {
     {
       "document": 4,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer::battery"
     },
     {
       "document": 4,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buttonPower"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzer"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzerPower"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::displayPower"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::mcuPower"
     },
     {
       "document": 4,
@@ -4445,17 +4428,12 @@ package TimerBrowser {
     {
       "document": 4,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::buttonInput"
+      "qualifiedName": "KitchenTimerStructure::TimerPCB::"
     },
     {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::TimerPCB::buttons"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::buzzerCommands"
     },
     {
       "document": 4,
@@ -4466,16 +4444,6 @@ package TimerBrowser {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::TimerPCB::display"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::displayCommands"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::lcdDriveSignals"
     },
     {
       "document": 4,
@@ -4559,9 +4527,72 @@ package TimerBrowser {
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 149,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 152,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 155,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 158,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 161,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Microcontroller::pwr",
       "source": 81,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 123,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 126,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 129,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 132,
       "sourceDomain": "workspace"
     },
     {
@@ -4584,31 +4615,31 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 92,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 93,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 94,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 95,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "ordinal": 96,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -4854,25 +4885,25 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 61,
       "relationshipKind": "typing",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "ordinal": 73,
       "relationshipKind": "typing",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "ordinal": 80,
       "relationshipKind": "typing",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "ordinal": 85,
       "relationshipKind": "typing",
       "source": 28
     },
@@ -4884,7 +4915,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 103,
       "relationshipKind": "typing",
       "source": 28
     },
@@ -4896,7 +4927,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 67,
       "relationshipKind": "typing",
       "source": 31
     },
@@ -4908,7 +4939,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 68,
       "relationshipKind": "typing",
       "source": 32
     },
@@ -4920,7 +4951,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 65,
       "relationshipKind": "typing",
       "source": 33
     },
@@ -4932,7 +4963,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 66,
       "relationshipKind": "typing",
       "source": 34
     },
@@ -4944,7 +4975,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 64,
       "relationshipKind": "typing",
       "source": 35
     },
@@ -4956,7 +4987,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 75,
+      "ordinal": 83,
       "relationshipKind": "typing",
       "source": 37
     },
@@ -4968,7 +4999,7 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 71,
       "relationshipKind": "typing",
       "source": 39
     },
@@ -4980,75 +5011,51 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 76,
       "relationshipKind": "typing",
       "source": 41
     },
     {
       "kind": "relationship",
-      "ordinal": 94,
+      "ordinal": 104,
       "relationshipKind": "typing",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
+      "ordinal": 105,
       "relationshipKind": "typing",
       "source": 44
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 98,
       "relationshipKind": "containment",
       "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 94,
+      "ordinal": 99,
       "relationshipKind": "containment",
       "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
+      "ordinal": 100,
       "relationshipKind": "containment",
       "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "ordinal": 102,
       "relationshipKind": "typing",
       "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
+      "ordinal": 106,
       "relationshipKind": "typing",
       "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "containment",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "containment",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "containment",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "containment",
-      "source": 48
     },
     {
       "kind": "relationship",
@@ -5058,43 +5065,67 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 55,
+      "ordinal": 57,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
       "relationshipKind": "typing",
       "source": 48
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "containment",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "containment",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "containment",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 51,
       "relationshipKind": "containment",
       "source": 49
     },
     {
       "kind": "relationship",
       "ordinal": 52,
-      "relationshipKind": "typing",
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "containment",
       "source": 49
     },
     {
       "kind": "relationship",
       "ordinal": 54,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "typing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
       "relationshipKind": "redefinition",
       "source": 50
     },
@@ -5142,182 +5173,230 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "ordinal": 81,
       "relationshipKind": "containment",
       "source": 56
     },
     {
       "kind": "relationship",
-      "ordinal": 78,
+      "ordinal": 82,
       "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 84,
+      "relationshipKind": "typing",
       "source": 56
     },
     {
       "kind": "relationship",
       "ordinal": 79,
       "relationshipKind": "containment",
-      "source": 56
+      "source": 57
     },
     {
       "kind": "relationship",
-      "ordinal": 76,
+      "ordinal": 82,
       "relationshipKind": "typing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "containment",
       "source": 57
     },
     {
       "kind": "relationship",
       "ordinal": 74,
-      "relationshipKind": "typing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
       "relationshipKind": "containment",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 75,
       "relationshipKind": "containment",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "ordinal": 76,
       "relationshipKind": "containment",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 77,
       "relationshipKind": "containment",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 79,
       "relationshipKind": "typing",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 81,
       "relationshipKind": "redefinition",
       "source": 59
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 63,
       "relationshipKind": "containment",
       "source": 61
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 70,
       "relationshipKind": "typing",
       "source": 61
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 77,
       "relationshipKind": "typing",
       "source": 62
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "ordinal": 70,
       "relationshipKind": "containment",
       "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "typing",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "containment",
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "containment",
+      "source": 64
     },
     {
       "kind": "relationship",
       "ordinal": 67,
-      "relationshipKind": "typing",
-      "source": 63
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
       "relationshipKind": "containment",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 68,
       "relationshipKind": "containment",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 72,
       "relationshipKind": "typing",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "ordinal": 74,
       "relationshipKind": "redefinition",
       "source": 65
     },
     {
       "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "memberAccessOperand",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
       "ordinal": 92,
-      "relationshipKind": "containment",
+      "relationshipKind": "memberAccessOperand",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "memberAccessOperand",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "memberAccessOperand",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
       "ordinal": 96,
-      "relationshipKind": "containment",
+      "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
       "ordinal": 97,
-      "relationshipKind": "containment",
+      "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
       "ordinal": 98,
-      "relationshipKind": "containment",
-      "source": 67
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "typing",
+      "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
       "ordinal": 99,
       "relationshipKind": "memberAccessOperand",
-      "source": 68
+      "source": 67
     },
     {
       "kind": "relationship",
       "ordinal": 100,
       "relationshipKind": "memberAccessOperand",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 97,
+      "relationshipKind": "containment",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "containment",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 102,
+      "relationshipKind": "containment",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "containment",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "typing",
       "source": 68
     },
     {
@@ -5340,495 +5419,447 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "memberAccessOperand",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "memberAccessOperand",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "memberAccessOperand",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 102,
-      "relationshipKind": "memberAccessOperand",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "memberAccessOperand",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "memberAccessOperand",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "memberAccessOperand",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 98,
-      "relationshipKind": "memberAccessOperand",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 45,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 46,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 47,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 80,
+      "ordinal": 48,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "ordinal": 49,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 61,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 83,
+      "ordinal": 72,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
-      "source": 74
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "typing",
-      "source": 76
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "containment",
-      "source": 77
+      "source": 73
     },
     {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "typing",
-      "source": 77
+      "source": 73
     },
     {
       "kind": "relationship",
       "ordinal": 50,
       "relationshipKind": "typing",
-      "source": 78
+      "source": 74
     },
     {
       "kind": "relationship",
       "ordinal": 41,
       "relationshipKind": "containment",
-      "source": 79
+      "source": 75
     },
     {
       "kind": "relationship",
       "ordinal": 46,
       "relationshipKind": "typing",
-      "source": 79
+      "source": 75
     },
     {
       "kind": "relationship",
       "ordinal": 49,
       "relationshipKind": "typing",
-      "source": 80
+      "source": 76
     },
     {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "containment",
-      "source": 81
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "typing",
-      "source": 81
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "typing",
-      "source": 82
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "redefinition",
-      "source": 83
+      "source": 79
     },
     {
       "kind": "relationship",
       "ordinal": 48,
       "relationshipKind": "typing",
-      "source": 84
+      "source": 80
     },
     {
       "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 19,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 20,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 28,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 30,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 32,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 38,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "typing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "typing",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 73,
+      "relationshipKind": "containment",
       "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 78,
-      "relationshipKind": "memberAccessOperand",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "memberAccessOperand",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
       "relationshipKind": "containment",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "containment",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "typing",
-      "source": 88
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 80,
-      "relationshipKind": "memberAccessOperand",
-      "source": 89
+      "relationshipKind": "containment",
+      "source": 85
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "memberAccessOperand",
-      "source": 89
+      "ordinal": 78,
+      "relationshipKind": "typing",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "containment",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
+      "relationshipKind": "containment",
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 69,
       "relationshipKind": "containment",
-      "source": 90
+      "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 74,
+      "ordinal": 71,
       "relationshipKind": "containment",
-      "source": 90
+      "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "containment",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 69,
       "relationshipKind": "typing",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "containment",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "containment",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "containment",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "containment",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "typing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "memberAccessOperand",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "memberAccessOperand",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "memberAccessOperand",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "memberAccessOperand",
-      "source": 93
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 42,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 43,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 44,
       "relationshipKind": "containment",
-      "source": 94
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "typing",
-      "source": 94
+      "source": 87
     }
   ],
   "selectedView": {
@@ -5847,7 +5878,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 143,
         "provenance": "implied",
-        "reference": 109,
+        "reference": 111,
         "source": 0,
         "target": 6
       },
@@ -5855,7 +5886,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 115,
         "provenance": "implied",
-        "reference": 246,
+        "reference": 248,
         "source": 6,
         "target": 23
       },
@@ -5863,7 +5894,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 79,
         "provenance": "implied",
-        "reference": 310,
+        "reference": 312,
         "source": 23,
         "target": 26
       },
@@ -5871,7 +5902,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 269,
+        "reference": 271,
         "source": 26,
         "target": 29
       },
@@ -5879,7 +5910,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 270,
+        "reference": 272,
         "source": 26,
         "target": 28
       },
@@ -5887,7 +5918,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 271,
+        "reference": 273,
         "source": 26,
         "target": 27
       },
@@ -5895,7 +5926,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 81,
         "provenance": "authored",
-        "reference": 272,
+        "reference": 274,
         "source": 26,
         "target": 30
       },
@@ -5903,7 +5934,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 71,
         "provenance": "implied",
-        "reference": 311,
+        "reference": 313,
         "source": 23,
         "target": 31
       },
@@ -5911,7 +5942,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 51,
         "provenance": "implied",
-        "reference": 255,
+        "reference": 257,
         "source": 31,
         "target": 32
       },
@@ -5919,7 +5950,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 256,
+        "reference": 258,
         "source": 31,
         "target": 33
       },
@@ -5927,7 +5958,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 49,
         "provenance": "implied",
-        "reference": 257,
+        "reference": 259,
         "source": 31,
         "target": 34
       },
@@ -5935,7 +5966,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 57,
         "provenance": "implied",
-        "reference": 258,
+        "reference": 260,
         "source": 31,
         "target": 35
       },
@@ -5943,7 +5974,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 259,
+        "reference": 261,
         "source": 31,
         "target": 36
       },
@@ -5951,7 +5982,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 75,
         "provenance": "implied",
-        "reference": 312,
+        "reference": 314,
         "source": 23,
         "target": 37
       },
@@ -5959,7 +5990,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 61,
         "provenance": "implied",
-        "reference": 267,
+        "reference": 269,
         "source": 37,
         "target": 38
       },
@@ -5967,7 +5998,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 77,
         "provenance": "implied",
-        "reference": 313,
+        "reference": 315,
         "source": 23,
         "target": 39
       },
@@ -5975,7 +6006,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 63,
         "provenance": "implied",
-        "reference": 261,
+        "reference": 263,
         "source": 39,
         "target": 40
       },
@@ -5983,7 +6014,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 83,
         "provenance": "implied",
-        "reference": 314,
+        "reference": 316,
         "source": 23,
         "target": 41
       },
@@ -5991,7 +6022,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 5,
         "provenance": "implied",
-        "reference": 276,
+        "reference": 278,
         "source": 41,
         "target": 51
       },
@@ -5999,7 +6030,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 9,
         "provenance": "implied",
-        "reference": 277,
+        "reference": 279,
         "source": 41,
         "target": 52
       },
@@ -6007,7 +6038,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 3,
         "provenance": "implied",
-        "reference": 278,
+        "reference": 280,
         "source": 41,
         "target": 50
       },
@@ -6015,7 +6046,7 @@ package TimerBrowser {
         "kind": "initial-state",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 119,
+        "reference": 121,
         "source": 50,
         "target": 51
       },
@@ -6023,7 +6054,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 11,
         "provenance": "implied",
-        "reference": 279,
+        "reference": 281,
         "source": 41,
         "target": 53
       },
@@ -6031,7 +6062,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 7,
         "provenance": "implied",
-        "reference": 280,
+        "reference": 282,
         "source": 41,
         "target": 54
       },
@@ -6039,7 +6070,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 25,
         "provenance": "implied",
-        "reference": 281,
+        "reference": 283,
         "source": 41,
         "target": 49
       },
@@ -6047,7 +6078,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 135,
+        "reference": 137,
         "source": 54,
         "target": 52
       },
@@ -6055,7 +6086,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 29,
         "provenance": "implied",
-        "reference": 282,
+        "reference": 284,
         "source": 41,
         "target": 42
       },
@@ -6063,7 +6094,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 138,
         "source": 54,
         "target": 53
       },
@@ -6071,7 +6102,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 13,
         "provenance": "implied",
-        "reference": 283,
+        "reference": 285,
         "source": 41,
         "target": 43
       },
@@ -6079,7 +6110,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 125,
+        "reference": 127,
         "source": 51,
         "target": 54
       },
@@ -6087,7 +6118,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 21,
         "provenance": "implied",
-        "reference": 284,
+        "reference": 286,
         "source": 41,
         "target": 44
       },
@@ -6095,7 +6126,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 126,
+        "reference": 128,
         "source": 51,
         "target": 51
       },
@@ -6103,7 +6134,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 17,
         "provenance": "implied",
-        "reference": 285,
+        "reference": 287,
         "source": 41,
         "target": 45
       },
@@ -6111,7 +6142,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 127,
+        "reference": 129,
         "source": 51,
         "target": 51
       },
@@ -6119,7 +6150,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 33,
         "provenance": "implied",
-        "reference": 286,
+        "reference": 288,
         "source": 41,
         "target": 46
       },
@@ -6127,7 +6158,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 132,
+        "reference": 134,
         "source": 52,
         "target": 54
       },
@@ -6135,7 +6166,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 37,
         "provenance": "implied",
-        "reference": 287,
+        "reference": 289,
         "source": 41,
         "target": 47
       },
@@ -6143,7 +6174,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 133,
+        "reference": 135,
         "source": 52,
         "target": 51
       },
@@ -6151,7 +6182,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 41,
         "provenance": "implied",
-        "reference": 288,
+        "reference": 290,
         "source": 41,
         "target": 48
       },
@@ -6159,7 +6190,7 @@ package TimerBrowser {
         "kind": "transition",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 123,
+        "reference": 125,
         "source": 53,
         "target": 51
       },
@@ -6167,7 +6198,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 73,
         "provenance": "implied",
-        "reference": 315,
+        "reference": 317,
         "source": 23,
         "target": 24
       },
@@ -6175,7 +6206,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 59,
         "provenance": "implied",
-        "reference": 264,
+        "reference": 266,
         "source": 24,
         "target": 25
       },
@@ -6183,7 +6214,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 69,
         "provenance": "implied",
-        "reference": 316,
+        "reference": 318,
         "source": 23,
         "target": 56
       },
@@ -6191,7 +6222,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 67,
         "provenance": "implied",
-        "reference": 317,
+        "reference": 319,
         "source": 23,
         "target": 57
       },
@@ -6199,15 +6230,47 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 65,
         "provenance": "implied",
-        "reference": 318,
+        "reference": 320,
         "source": 23,
         "target": 55
       },
       {
         "kind": "containment",
+        "navigation": 123,
+        "provenance": "implied",
+        "reference": 249,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 126,
+        "provenance": "implied",
+        "reference": 250,
+        "source": 6,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 129,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 6,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 132,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 6,
+        "target": 10
+      },
+      {
+        "kind": "containment",
         "navigation": 119,
         "provenance": "implied",
-        "reference": 247,
+        "reference": 253,
         "source": 6,
         "target": 58
       },
@@ -6215,7 +6278,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 105,
         "provenance": "implied",
-        "reference": 292,
+        "reference": 300,
         "source": 58,
         "target": 59
       },
@@ -6223,7 +6286,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 192,
+        "reference": 194,
         "source": 59,
         "target": 62
       },
@@ -6231,7 +6294,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 193,
+        "reference": 195,
         "source": 59,
         "target": 61
       },
@@ -6239,7 +6302,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 194,
+        "reference": 196,
         "source": 59,
         "target": 60
       },
@@ -6247,7 +6310,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 107,
         "provenance": "authored",
-        "reference": 195,
+        "reference": 197,
         "source": 59,
         "target": 63
       },
@@ -6255,7 +6318,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 103,
         "provenance": "implied",
-        "reference": 293,
+        "reference": 301,
         "source": 58,
         "target": 64
       },
@@ -6263,7 +6326,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 51,
         "provenance": "implied",
-        "reference": 186,
+        "reference": 188,
         "source": 64,
         "target": 65
       },
@@ -6271,7 +6334,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 187,
+        "reference": 189,
         "source": 64,
         "target": 66
       },
@@ -6279,7 +6342,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 49,
         "provenance": "implied",
-        "reference": 188,
+        "reference": 190,
         "source": 64,
         "target": 67
       },
@@ -6287,7 +6350,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 57,
         "provenance": "implied",
-        "reference": 189,
+        "reference": 191,
         "source": 64,
         "target": 68
       },
@@ -6295,7 +6358,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 190,
+        "reference": 192,
         "source": 64,
         "target": 69
       },
@@ -6303,7 +6366,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 117,
         "provenance": "implied",
-        "reference": 248,
+        "reference": 254,
         "source": 6,
         "target": 70
       },
@@ -6311,7 +6374,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 95,
         "provenance": "implied",
-        "reference": 301,
+        "reference": 307,
         "source": 70,
         "target": 71
       },
@@ -6319,7 +6382,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 59,
         "provenance": "implied",
-        "reference": 217,
+        "reference": 219,
         "source": 71,
         "target": 72
       },
@@ -6327,7 +6390,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 99,
         "provenance": "implied",
-        "reference": 302,
+        "reference": 308,
         "source": 70,
         "target": 73
       },
@@ -6335,7 +6398,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 222,
+        "reference": 224,
         "source": 73,
         "target": 76
       },
@@ -6343,7 +6406,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 223,
+        "reference": 225,
         "source": 73,
         "target": 75
       },
@@ -6351,7 +6414,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 224,
+        "reference": 226,
         "source": 73,
         "target": 74
       },
@@ -6359,7 +6422,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 101,
         "provenance": "authored",
-        "reference": 225,
+        "reference": 227,
         "source": 73,
         "target": 77
       },
@@ -6367,7 +6430,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 97,
         "provenance": "implied",
-        "reference": 303,
+        "reference": 309,
         "source": 70,
         "target": 78
       },
@@ -6375,7 +6438,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 61,
         "provenance": "implied",
-        "reference": 220,
+        "reference": 222,
         "source": 78,
         "target": 79
       },
@@ -6383,7 +6446,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 93,
         "provenance": "implied",
-        "reference": 304,
+        "reference": 310,
         "source": 70,
         "target": 80
       },
@@ -6391,7 +6454,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 121,
         "provenance": "implied",
-        "reference": 249,
+        "reference": 255,
         "source": 6,
         "target": 11
       },
@@ -6399,7 +6462,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 87,
         "provenance": "implied",
-        "reference": 297,
+        "reference": 303,
         "source": 11,
         "target": 16
       },
@@ -6407,7 +6470,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 211,
+        "reference": 213,
         "source": 16,
         "target": 19
       },
@@ -6415,7 +6478,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 212,
+        "reference": 214,
         "source": 16,
         "target": 18
       },
@@ -6423,7 +6486,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 213,
+        "reference": 215,
         "source": 16,
         "target": 17
       },
@@ -6431,7 +6494,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 89,
         "provenance": "authored",
-        "reference": 214,
+        "reference": 216,
         "source": 16,
         "target": 20
       },
@@ -6439,7 +6502,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 85,
         "provenance": "implied",
-        "reference": 298,
+        "reference": 304,
         "source": 11,
         "target": 21
       },
@@ -6447,7 +6510,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 63,
         "provenance": "implied",
-        "reference": 209,
+        "reference": 211,
         "source": 21,
         "target": 22
       },
@@ -6455,7 +6518,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 91,
         "provenance": "implied",
-        "reference": 299,
+        "reference": 305,
         "source": 11,
         "target": 12
       },
@@ -6463,7 +6526,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 205,
+        "reference": 207,
         "source": 12,
         "target": 15
       },
@@ -6471,7 +6534,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 206,
+        "reference": 208,
         "source": 12,
         "target": 14
       },
@@ -6479,47 +6542,15 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 207,
+        "reference": 209,
         "source": 12,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 123,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 132,
-        "provenance": "implied",
-        "reference": 251,
-        "source": 6,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 126,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 6,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 129,
-        "provenance": "implied",
-        "reference": 253,
-        "source": 6,
-        "target": 10
-      },
-      {
-        "kind": "containment",
         "navigation": 147,
         "provenance": "implied",
-        "reference": 110,
+        "reference": 112,
         "source": 0,
         "target": 81
       },
@@ -6527,7 +6558,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 111,
         "provenance": "implied",
-        "reference": 235,
+        "reference": 245,
         "source": 81,
         "target": 82
       },
@@ -6535,7 +6566,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 199,
+        "reference": 201,
         "source": 82,
         "target": 85
       },
@@ -6543,7 +6574,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 47,
         "provenance": "implied",
-        "reference": 200,
+        "reference": 202,
         "source": 82,
         "target": 84
       },
@@ -6551,7 +6582,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 201,
+        "reference": 203,
         "source": 82,
         "target": 83
       },
@@ -6559,7 +6590,7 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 113,
         "provenance": "authored",
-        "reference": 202,
+        "reference": 204,
         "source": 82,
         "target": 86
       },
@@ -6567,85 +6598,13 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 109,
         "provenance": "implied",
-        "reference": 236,
+        "reference": 246,
         "source": 81,
         "target": 87
       },
       {
         "kind": "containment",
-        "navigation": 145,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 0,
-        "target": 88
-      },
-      {
-        "kind": "containment",
-        "navigation": 141,
-        "provenance": "implied",
-        "reference": 228,
-        "source": 88,
-        "target": 89
-      },
-      {
-        "kind": "containment",
-        "navigation": 45,
-        "provenance": "implied",
-        "reference": 181,
-        "source": 89,
-        "target": 92
-      },
-      {
-        "kind": "containment",
-        "navigation": 47,
-        "provenance": "implied",
-        "reference": 182,
-        "source": 89,
-        "target": 91
-      },
-      {
-        "kind": "containment",
-        "navigation": 48,
-        "provenance": "implied",
-        "reference": 183,
-        "source": 89,
-        "target": 90
-      },
-      {
-        "kind": "containment",
-        "navigation": 135,
-        "provenance": "implied",
-        "reference": 229,
-        "source": 88,
-        "target": 95
-      },
-      {
-        "kind": "containment",
-        "navigation": 137,
-        "provenance": "implied",
-        "reference": 230,
-        "source": 88,
-        "target": 93
-      },
-      {
-        "kind": "containment",
-        "navigation": 139,
-        "provenance": "implied",
-        "reference": 231,
-        "source": 88,
-        "target": 94
-      },
-      {
-        "kind": "containment",
         "navigation": 149,
-        "provenance": "implied",
-        "reference": 112,
-        "source": 0,
-        "target": 5
-      },
-      {
-        "kind": "containment",
-        "navigation": 155,
         "provenance": "implied",
         "reference": 113,
         "source": 0,
@@ -6653,7 +6612,7 @@ package TimerBrowser {
       },
       {
         "kind": "containment",
-        "navigation": 161,
+        "navigation": 152,
         "provenance": "implied",
         "reference": 114,
         "source": 0,
@@ -6661,7 +6620,7 @@ package TimerBrowser {
       },
       {
         "kind": "containment",
-        "navigation": 152,
+        "navigation": 155,
         "provenance": "implied",
         "reference": 115,
         "source": 0,
@@ -6674,6 +6633,78 @@ package TimerBrowser {
         "reference": 116,
         "source": 0,
         "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 161,
+        "provenance": "implied",
+        "reference": 117,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 145,
+        "provenance": "implied",
+        "reference": 118,
+        "source": 0,
+        "target": 88
+      },
+      {
+        "kind": "containment",
+        "navigation": 141,
+        "provenance": "implied",
+        "reference": 240,
+        "source": 88,
+        "target": 89
+      },
+      {
+        "kind": "containment",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 183,
+        "source": 89,
+        "target": 92
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 184,
+        "source": 89,
+        "target": 91
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 185,
+        "source": 89,
+        "target": 90
+      },
+      {
+        "kind": "containment",
+        "navigation": 135,
+        "provenance": "implied",
+        "reference": 241,
+        "source": 88,
+        "target": 95
+      },
+      {
+        "kind": "containment",
+        "navigation": 137,
+        "provenance": "implied",
+        "reference": 242,
+        "source": 88,
+        "target": 93
+      },
+      {
+        "kind": "containment",
+        "navigation": 139,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 88,
+        "target": 94
       }
     ],
     "exposedRoots": [
@@ -6728,11 +6759,11 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buttonPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 68,
-        "source": 155,
+        "reference": 101,
+        "source": 149,
         "typing": {
           "status": "absent"
         }
@@ -6740,22 +6771,10 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 71,
-        "source": 161,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": "displayPower",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 72,
+        "reference": 102,
         "source": 152,
         "typing": {
           "status": "absent"
@@ -6764,10 +6783,22 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerDriverPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 70,
+        "reference": 103,
+        "source": 155,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 104,
         "source": 158,
         "typing": {
           "status": "absent"
@@ -6776,11 +6807,11 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "mcuPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 73,
-        "source": 149,
+        "reference": 105,
+        "source": 161,
         "typing": {
           "status": "absent"
         }
@@ -6812,14 +6843,14 @@ package TimerBrowser {
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 74,
+        "reference": 70,
         "source": 143,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "TimerPCB",
-              "reference": 86
+              "reference": 82
             }
           ]
         }
@@ -6827,10 +6858,10 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buttonInput",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 87,
+        "reference": 107,
         "source": 123,
         "typing": {
           "status": "absent"
@@ -6839,22 +6870,10 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerCommands",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 89,
-        "source": 132,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": "displayCommands",
-        "notationRole": "usage",
-        "owner": 6,
-        "reference": 92,
+        "reference": 108,
         "source": 126,
         "typing": {
           "status": "absent"
@@ -6863,11 +6882,23 @@ package TimerBrowser {
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "lcdDriveSignals",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 93,
+        "reference": 109,
         "source": 129,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 110,
+        "source": 132,
         "typing": {
           "status": "absent"
         }
@@ -6888,7 +6919,7 @@ package TimerBrowser {
         "name": "buzzerDriver",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 90,
+        "reference": 85,
         "source": 121,
         "typing": {
           "status": "resolved",
@@ -6965,7 +6996,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -7042,7 +7073,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -7053,7 +7084,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 16,
-        "reference": 106,
+        "reference": 99,
         "source": 89,
         "typing": {
           "status": "partial",
@@ -7099,7 +7130,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7138,14 +7169,14 @@ package TimerBrowser {
         "name": "mcu",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 94,
+        "reference": 87,
         "source": 115,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Microcontroller",
-              "reference": 75
+              "reference": 71
             }
           ]
         }
@@ -7164,7 +7195,7 @@ package TimerBrowser {
         "name": "displayOut",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 79,
+        "reference": 75,
         "source": 73,
         "typing": {
           "status": "resolved",
@@ -7189,7 +7220,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "String",
-              "reference": 102
+              "reference": 95
             }
           ]
         }
@@ -7217,7 +7248,7 @@ package TimerBrowser {
         "name": "pwr",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 82,
+        "reference": 78,
         "source": 79,
         "typing": {
           "status": "resolved",
@@ -7266,7 +7297,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -7277,7 +7308,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 26,
-        "reference": 108,
+        "reference": 106,
         "source": 81,
         "typing": {
           "status": "partial",
@@ -7302,7 +7333,7 @@ package TimerBrowser {
         "name": "buttonIn",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 76,
+        "reference": 72,
         "source": 71,
         "typing": {
           "status": "resolved",
@@ -7327,7 +7358,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7345,7 +7376,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7363,7 +7394,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7381,7 +7412,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7399,7 +7430,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7418,7 +7449,7 @@ package TimerBrowser {
         "name": "lcdDrive",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 81,
+        "reference": 77,
         "source": 75,
         "typing": {
           "status": "resolved",
@@ -7443,7 +7474,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "String",
-              "reference": 102
+              "reference": 95
             }
           ]
         }
@@ -7462,7 +7493,7 @@ package TimerBrowser {
         "name": "buzzerOut",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 77,
+        "reference": 73,
         "source": 77,
         "typing": {
           "status": "resolved",
@@ -7487,7 +7518,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7509,7 +7540,7 @@ package TimerBrowser {
         "name": "timerMode",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 85,
+        "reference": 81,
         "source": 83,
         "typing": {
           "status": "resolved",
@@ -7623,7 +7654,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "unsupported",
         "owner": 41,
-        "reference": 103,
+        "reference": 96,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -7707,14 +7738,14 @@ package TimerBrowser {
         "name": "clockFrequency",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 78,
+        "reference": 74,
         "source": 65,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "FrequencyValue",
-              "reference": 99
+              "reference": 92
             }
           ]
         }
@@ -7725,14 +7756,14 @@ package TimerBrowser {
         "name": "ramSize",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 84,
+        "reference": 80,
         "source": 69,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 101
+              "reference": 94
             }
           ]
         }
@@ -7743,14 +7774,14 @@ package TimerBrowser {
         "name": "flashSize",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 80,
+        "reference": 76,
         "source": 67,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 101
+              "reference": 94
             }
           ]
         }
@@ -7770,7 +7801,7 @@ package TimerBrowser {
         "name": "buttons",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 88,
+        "reference": 84,
         "source": 119,
         "typing": {
           "status": "resolved",
@@ -7854,7 +7885,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -7865,7 +7896,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 59,
-        "reference": 104,
+        "reference": 97,
         "source": 107,
         "typing": {
           "status": "partial",
@@ -7915,7 +7946,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7933,7 +7964,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7951,7 +7982,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7969,7 +8000,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -7987,7 +8018,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "Boolean",
-              "reference": 100
+              "reference": 93
             }
           ]
         }
@@ -8015,7 +8046,7 @@ package TimerBrowser {
         "name": "display",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 91,
+        "reference": 86,
         "source": 117,
         "typing": {
           "status": "resolved",
@@ -8066,7 +8097,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "String",
-              "reference": 102
+              "reference": 95
             }
           ]
         }
@@ -8143,7 +8174,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -8154,7 +8185,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 73,
-        "reference": 107,
+        "reference": 100,
         "source": 101,
         "typing": {
           "status": "partial",
@@ -8200,7 +8231,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "String",
-              "reference": 102
+              "reference": 95
             }
           ]
         }
@@ -8218,7 +8249,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "String",
-              "reference": 102
+              "reference": 95
             }
           ]
         }
@@ -8328,7 +8359,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -8339,7 +8370,7 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 82,
-        "reference": 105,
+        "reference": 98,
         "source": 113,
         "typing": {
           "status": "partial",
@@ -8359,7 +8390,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "DurationValue",
-              "reference": 95
+              "reference": 88
             }
           ]
         }
@@ -8387,7 +8418,7 @@ package TimerBrowser {
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 67,
+        "reference": 68,
         "source": 145,
         "typing": {
           "status": "resolved",
@@ -8464,7 +8495,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "electricPower",
-              "reference": 98
+              "reference": 91
             }
           ]
         }
@@ -8482,7 +8513,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "ElectricPotentialDifferenceValue",
-              "reference": 97
+              "reference": 90
             }
           ]
         }
@@ -8500,7 +8531,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "DurationValue",
-              "reference": 95
+              "reference": 88
             }
           ]
         }
@@ -8518,7 +8549,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "ElectricChargeValue",
-              "reference": 96
+              "reference": 89
             }
           ]
         }
@@ -8529,7 +8560,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 119,
         "source": 0,
         "target": {
           "reference": 66,
@@ -8540,10 +8571,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 144,
         "provenance": "authored",
-        "reference": 254,
+        "reference": 256,
         "source": 6,
         "target": {
-          "reference": 86,
+          "reference": 82,
           "status": "resolved"
         }
       },
@@ -8551,10 +8582,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 116,
         "provenance": "authored",
-        "reference": 319,
+        "reference": 321,
         "source": 23,
         "target": {
-          "reference": 75,
+          "reference": 71,
           "status": "resolved"
         }
       },
@@ -8562,7 +8593,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 80,
         "provenance": "authored",
-        "reference": 273,
+        "reference": 275,
         "source": 26,
         "target": {
           "reference": 26,
@@ -8573,10 +8604,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 46,
         "provenance": "authored",
-        "reference": 156,
+        "reference": 158,
         "source": 29,
         "target": {
-          "reference": 98,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -8584,7 +8615,7 @@ package TimerBrowser {
         "kind": "redefinition",
         "navigation": 82,
         "provenance": "authored",
-        "reference": 274,
+        "reference": 276,
         "source": 30,
         "target": {
           "node": 27,
@@ -8595,7 +8626,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 72,
         "provenance": "authored",
-        "reference": 260,
+        "reference": 262,
         "source": 31,
         "target": {
           "reference": 30,
@@ -8606,10 +8637,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 52,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 173,
         "source": 32,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8617,10 +8648,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 167,
+        "reference": 169,
         "source": 33,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8628,10 +8659,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 169,
+        "reference": 171,
         "source": 34,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8639,10 +8670,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 58,
         "provenance": "authored",
-        "reference": 163,
+        "reference": 165,
         "source": 35,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8650,10 +8681,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 165,
+        "reference": 167,
         "source": 36,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8661,7 +8692,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 76,
         "provenance": "authored",
-        "reference": 268,
+        "reference": 270,
         "source": 37,
         "target": {
           "reference": 40,
@@ -8672,10 +8703,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 62,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 179,
         "source": 38,
         "target": {
-          "reference": 102,
+          "reference": 95,
           "status": "resolved"
         }
       },
@@ -8683,7 +8714,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 78,
         "provenance": "authored",
-        "reference": 262,
+        "reference": 264,
         "source": 39,
         "target": {
           "reference": 36,
@@ -8694,10 +8725,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 64,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 175,
         "source": 40,
         "target": {
-          "reference": 100,
+          "reference": 93,
           "status": "resolved"
         }
       },
@@ -8705,7 +8736,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 84,
         "provenance": "authored",
-        "reference": 289,
+        "reference": 291,
         "source": 41,
         "target": {
           "reference": 12,
@@ -8716,7 +8747,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 128,
+        "reference": 130,
         "source": 51,
         "target": {
           "reference": 5,
@@ -8727,7 +8758,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 134,
+        "reference": 136,
         "source": 52,
         "target": {
           "reference": 7,
@@ -8738,7 +8769,7 @@ package TimerBrowser {
         "kind": "initialState",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 118,
+        "reference": 120,
         "source": 50,
         "target": {
           "node": 51,
@@ -8749,7 +8780,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 124,
+        "reference": 126,
         "source": 53,
         "target": {
           "reference": 4,
@@ -8760,7 +8791,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 139,
         "source": 54,
         "target": {
           "reference": 9,
@@ -8771,7 +8802,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 147,
+        "reference": 149,
         "source": 49,
         "target": {
           "node": 54,
@@ -8782,7 +8813,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 148,
+        "reference": 150,
         "source": 49,
         "target": {
           "node": 52,
@@ -8793,7 +8824,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 149,
+        "reference": 151,
         "source": 49,
         "target": {
           "reference": 11,
@@ -8804,7 +8835,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 138,
+        "reference": 140,
         "source": 42,
         "target": {
           "node": 54,
@@ -8815,7 +8846,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 141,
         "source": 42,
         "target": {
           "node": 53,
@@ -8826,7 +8857,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 140,
+        "reference": 142,
         "source": 42,
         "target": {
           "reference": 2,
@@ -8837,7 +8868,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 150,
+        "reference": 152,
         "source": 43,
         "target": {
           "node": 51,
@@ -8848,7 +8879,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 151,
+        "reference": 153,
         "source": 43,
         "target": {
           "node": 54,
@@ -8859,7 +8890,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 152,
+        "reference": 154,
         "source": 43,
         "target": {
           "reference": 10,
@@ -8870,7 +8901,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 120,
+        "reference": 122,
         "source": 44,
         "target": {
           "node": 51,
@@ -8881,7 +8912,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 121,
+        "reference": 123,
         "source": 44,
         "target": {
           "node": 51,
@@ -8892,7 +8923,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 122,
+        "reference": 124,
         "source": 44,
         "target": {
           "reference": 3,
@@ -8903,7 +8934,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 129,
+        "reference": 131,
         "source": 45,
         "target": {
           "node": 51,
@@ -8914,7 +8945,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 130,
+        "reference": 132,
         "source": 45,
         "target": {
           "node": 51,
@@ -8925,7 +8956,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 19,
         "provenance": "authored",
-        "reference": 131,
+        "reference": 133,
         "source": 45,
         "target": {
           "reference": 6,
@@ -8936,7 +8967,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 153,
+        "reference": 155,
         "source": 46,
         "target": {
           "node": 52,
@@ -8947,7 +8978,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 154,
+        "reference": 156,
         "source": 46,
         "target": {
           "node": 54,
@@ -8958,7 +8989,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 155,
+        "reference": 157,
         "source": 46,
         "target": {
           "reference": 10,
@@ -8969,7 +9000,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 146,
         "source": 47,
         "target": {
           "node": 52,
@@ -8980,7 +9011,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 145,
+        "reference": 147,
         "source": 47,
         "target": {
           "node": 51,
@@ -8991,7 +9022,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 39,
         "provenance": "authored",
-        "reference": 146,
+        "reference": 148,
         "source": 47,
         "target": {
           "reference": 8,
@@ -9002,7 +9033,7 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 141,
+        "reference": 143,
         "source": 48,
         "target": {
           "node": 53,
@@ -9013,7 +9044,7 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 44,
         "provenance": "authored",
-        "reference": 142,
+        "reference": 144,
         "source": 48,
         "target": {
           "node": 51,
@@ -9024,7 +9055,7 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 143,
+        "reference": 145,
         "source": 48,
         "target": {
           "reference": 8,
@@ -9035,7 +9066,7 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 74,
         "provenance": "authored",
-        "reference": 265,
+        "reference": 267,
         "source": 24,
         "target": {
           "reference": 38,
@@ -9046,10 +9077,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 60,
         "provenance": "authored",
-        "reference": 175,
+        "reference": 177,
         "source": 25,
         "target": {
-          "reference": 102,
+          "reference": 95,
           "status": "resolved"
         }
       },
@@ -9057,10 +9088,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 70,
         "provenance": "authored",
-        "reference": 275,
+        "reference": 277,
         "source": 56,
         "target": {
-          "reference": 101,
+          "reference": 94,
           "status": "resolved"
         }
       },
@@ -9068,10 +9099,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 68,
         "provenance": "authored",
-        "reference": 266,
+        "reference": 268,
         "source": 57,
         "target": {
-          "reference": 101,
+          "reference": 94,
           "status": "resolved"
         }
       },
@@ -9079,307 +9110,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 66,
         "provenance": "authored",
-        "reference": 263,
+        "reference": 265,
         "source": 55,
         "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 294,
-        "source": 58,
-        "target": {
-          "reference": 47,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 106,
-        "provenance": "authored",
-        "reference": 196,
-        "source": 59,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 157,
-        "source": 62,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 108,
-        "provenance": "authored",
-        "reference": 197,
-        "source": 63,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 191,
-        "source": 64,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 52,
-        "provenance": "authored",
-        "reference": 172,
-        "source": 65,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 168,
-        "source": 66,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 50,
-        "provenance": "authored",
-        "reference": 170,
-        "source": 67,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 58,
-        "provenance": "authored",
-        "reference": 164,
-        "source": 68,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 56,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 69,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 118,
-        "provenance": "authored",
-        "reference": 305,
-        "source": 70,
-        "target": {
-          "reference": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 96,
-        "provenance": "authored",
-        "reference": 218,
-        "source": 71,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
-        "reference": 176,
-        "source": 72,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 226,
-        "source": 73,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 158,
-        "source": 76,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 102,
-        "provenance": "authored",
-        "reference": 227,
-        "source": 77,
-        "target": {
-          "node": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 98,
-        "provenance": "authored",
-        "reference": 221,
-        "source": 78,
-        "target": {
-          "reference": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 62,
-        "provenance": "authored",
-        "reference": 178,
-        "source": 79,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 94,
-        "provenance": "authored",
-        "reference": 219,
-        "source": 80,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 122,
-        "provenance": "authored",
-        "reference": 300,
-        "source": 11,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 88,
-        "provenance": "authored",
-        "reference": 215,
-        "source": 16,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 159,
-        "source": 19,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 90,
-        "provenance": "authored",
-        "reference": 216,
-        "source": 20,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 86,
-        "provenance": "authored",
-        "reference": 210,
-        "source": 21,
-        "target": {
-          "reference": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 64,
-        "provenance": "authored",
-        "reference": 174,
-        "source": 22,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 92,
-        "provenance": "authored",
-        "reference": 208,
-        "source": 12,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 160,
-        "source": 15,
-        "target": {
-          "reference": 98,
+          "reference": 92,
           "status": "resolved"
         }
       },
@@ -9387,7 +9121,7 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 124,
         "provenance": "authored",
-        "reference": 290,
+        "reference": 292,
         "source": 7,
         "target": {
           "node": 64,
@@ -9398,7 +9132,7 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 125,
         "provenance": "authored",
-        "reference": 291,
+        "reference": 293,
         "source": 7,
         "target": {
           "node": 31,
@@ -9407,32 +9141,10 @@ package TimerBrowser {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 133,
-        "provenance": "authored",
-        "reference": 295,
-        "source": 8,
-        "target": {
-          "node": 39,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 134,
-        "provenance": "authored",
-        "reference": 296,
-        "source": 8,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
         "navigation": 127,
         "provenance": "authored",
-        "reference": 306,
-        "source": 9,
+        "reference": 294,
+        "source": 8,
         "target": {
           "node": 24,
           "status": "resolved"
@@ -9442,8 +9154,8 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 128,
         "provenance": "authored",
-        "reference": 307,
-        "source": 9,
+        "reference": 295,
+        "source": 8,
         "target": {
           "node": 71,
           "status": "resolved"
@@ -9453,8 +9165,8 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 130,
         "provenance": "authored",
-        "reference": 308,
-        "source": 10,
+        "reference": 296,
+        "source": 9,
         "target": {
           "node": 37,
           "status": "resolved"
@@ -9464,30 +9176,261 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 131,
         "provenance": "authored",
-        "reference": 309,
-        "source": 10,
+        "reference": 297,
+        "source": 9,
         "target": {
           "node": 78,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 148,
+        "kind": "memberAccessOperand",
+        "navigation": 133,
         "provenance": "authored",
-        "reference": 237,
-        "source": 81,
+        "reference": 298,
+        "source": 10,
         "target": {
-          "reference": 51,
+          "node": 39,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 134,
+        "provenance": "authored",
+        "reference": 299,
+        "source": 10,
+        "target": {
+          "node": 21,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 112,
+        "navigation": 120,
         "provenance": "authored",
-        "reference": 203,
-        "source": 82,
+        "reference": 302,
+        "source": 58,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 106,
+        "provenance": "authored",
+        "reference": 198,
+        "source": 59,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 159,
+        "source": 62,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 108,
+        "provenance": "authored",
+        "reference": 199,
+        "source": 63,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 193,
+        "source": 64,
+        "target": {
+          "reference": 30,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 52,
+        "provenance": "authored",
+        "reference": 174,
+        "source": 65,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 170,
+        "source": 66,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 172,
+        "source": 67,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 166,
+        "source": 68,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 168,
+        "source": 69,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 118,
+        "provenance": "authored",
+        "reference": 311,
+        "source": 70,
+        "target": {
+          "reference": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 96,
+        "provenance": "authored",
+        "reference": 220,
+        "source": 71,
+        "target": {
+          "reference": 38,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 60,
+        "provenance": "authored",
+        "reference": 178,
+        "source": 72,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 228,
+        "source": 73,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 160,
+        "source": 76,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 229,
+        "source": 77,
+        "target": {
+          "node": 74,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 98,
+        "provenance": "authored",
+        "reference": 223,
+        "source": 78,
+        "target": {
+          "reference": 40,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 62,
+        "provenance": "authored",
+        "reference": 180,
+        "source": 79,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 94,
+        "provenance": "authored",
+        "reference": 221,
+        "source": 80,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 122,
+        "provenance": "authored",
+        "reference": 306,
+        "source": 11,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 88,
+        "provenance": "authored",
+        "reference": 217,
+        "source": 16,
         "target": {
           "reference": 26,
           "status": "resolved"
@@ -9498,51 +9441,51 @@ package TimerBrowser {
         "navigation": 46,
         "provenance": "authored",
         "reference": 161,
-        "source": 85,
+        "source": 19,
         "target": {
-          "reference": 98,
+          "reference": 91,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": 114,
+        "navigation": 90,
         "provenance": "authored",
-        "reference": 204,
-        "source": 86,
+        "reference": 218,
+        "source": 20,
         "target": {
-          "node": 83,
+          "node": 17,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 110,
+        "navigation": 86,
         "provenance": "authored",
-        "reference": 198,
-        "source": 87,
+        "reference": 212,
+        "source": 21,
         "target": {
-          "reference": 95,
+          "reference": 36,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 146,
+        "navigation": 64,
         "provenance": "authored",
-        "reference": 232,
-        "source": 88,
+        "reference": 176,
+        "source": 22,
         "target": {
-          "reference": 42,
+          "reference": 93,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 142,
+        "navigation": 92,
         "provenance": "authored",
-        "reference": 184,
-        "source": 89,
+        "reference": 210,
+        "source": 12,
         "target": {
           "reference": 26,
           "status": "resolved"
@@ -9553,42 +9496,64 @@ package TimerBrowser {
         "navigation": 46,
         "provenance": "authored",
         "reference": 162,
-        "source": 92,
+        "source": 15,
         "target": {
-          "reference": 98,
+          "reference": 91,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 136,
+        "navigation": 148,
         "provenance": "authored",
-        "reference": 179,
-        "source": 95,
+        "reference": 247,
+        "source": 81,
         "target": {
-          "reference": 96,
+          "reference": 51,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 138,
+        "navigation": 112,
         "provenance": "authored",
-        "reference": 180,
-        "source": 93,
+        "reference": 205,
+        "source": 82,
         "target": {
-          "reference": 97,
+          "reference": 26,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 140,
+        "navigation": 46,
         "provenance": "authored",
-        "reference": 185,
-        "source": 94,
+        "reference": 163,
+        "source": 85,
         "target": {
-          "reference": 95,
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 114,
+        "provenance": "authored",
+        "reference": 206,
+        "source": 86,
+        "target": {
+          "node": 83,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 110,
+        "provenance": "authored",
+        "reference": 200,
+        "source": 87,
+        "target": {
+          "reference": 88,
           "status": "resolved"
         }
       },
@@ -9596,8 +9561,8 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 150,
         "provenance": "authored",
-        "reference": 244,
-        "source": 5,
+        "reference": 230,
+        "source": 1,
         "target": {
           "node": 89,
           "status": "resolved"
@@ -9607,8 +9572,8 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 151,
         "provenance": "authored",
-        "reference": 245,
-        "source": 5,
+        "reference": 231,
+        "source": 1,
         "target": {
           "node": 26,
           "status": "resolved"
@@ -9616,54 +9581,10 @@ package TimerBrowser {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 156,
-        "provenance": "authored",
-        "reference": 233,
-        "source": 1,
-        "target": {
-          "node": 89,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 157,
-        "provenance": "authored",
-        "reference": 234,
-        "source": 1,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 162,
-        "provenance": "authored",
-        "reference": 240,
-        "source": 2,
-        "target": {
-          "node": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 163,
-        "provenance": "authored",
-        "reference": 241,
-        "source": 2,
-        "target": {
-          "node": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
         "navigation": 153,
         "provenance": "authored",
-        "reference": 242,
-        "source": 3,
+        "reference": 232,
+        "source": 2,
         "target": {
           "node": 89,
           "status": "resolved"
@@ -9673,8 +9594,8 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 154,
         "provenance": "authored",
-        "reference": 243,
-        "source": 3,
+        "reference": 233,
+        "source": 2,
         "target": {
           "node": 73,
           "status": "resolved"
@@ -9682,9 +9603,31 @@ package TimerBrowser {
       },
       {
         "kind": "memberAccessOperand",
+        "navigation": 156,
+        "provenance": "authored",
+        "reference": 234,
+        "source": 3,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 157,
+        "provenance": "authored",
+        "reference": 235,
+        "source": 3,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
         "navigation": 159,
         "provenance": "authored",
-        "reference": 238,
+        "reference": 236,
         "source": 4,
         "target": {
           "node": 89,
@@ -9695,10 +9638,98 @@ package TimerBrowser {
         "kind": "memberAccessOperand",
         "navigation": 160,
         "provenance": "authored",
-        "reference": 239,
+        "reference": 237,
         "source": 4,
         "target": {
           "node": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 162,
+        "provenance": "authored",
+        "reference": 238,
+        "source": 5,
+        "target": {
+          "node": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 163,
+        "provenance": "authored",
+        "reference": 239,
+        "source": 5,
+        "target": {
+          "node": 82,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 146,
+        "provenance": "authored",
+        "reference": 244,
+        "source": 88,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 142,
+        "provenance": "authored",
+        "reference": 186,
+        "source": 89,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 164,
+        "source": 92,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 136,
+        "provenance": "authored",
+        "reference": 181,
+        "source": 95,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 138,
+        "provenance": "authored",
+        "reference": 182,
+        "source": 93,
+        "target": {
+          "reference": 90,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 140,
+        "provenance": "authored",
+        "reference": 187,
+        "source": 94,
+        "target": {
+          "reference": 88,
           "status": "resolved"
         }
       }

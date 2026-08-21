@@ -54,9 +54,9 @@ package Parameters {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

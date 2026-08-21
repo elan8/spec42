@@ -33,27 +33,9 @@ package P {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 4 8) (end 4 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 4 13) (end 4 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 4 18) (end 4 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 4 21) (end 4 25))
+        (range (start 4 8) (end 4 26))
       )
       (diagnostic
         (severity error)
@@ -68,26 +50,14 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d48ca10a6f48f735e0a0bb7d958924cd9a3d725bd7fff02b464f78b88fd73630") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d48ca10a6f48f735e0a0bb7d958924cd9a3d725bd7fff02b464f78b88fd73630") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "flow")) (expressionOperand (reference "to")) (memberAccessOperand (reference "a1::y")) (memberAccessOperand (reference "a2::x")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a1")) (succession (reference "a2")))))
     (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (kind kerml-step) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action1")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "flow")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind expressionOperand) (ordinal 1))
-      (authored-target "to")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "a1::y")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "a2::x")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "a1")
       (outcome (status resolved) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1")))))
@@ -102,10 +72,6 @@ package P {
     (relationship (kind succession) (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (state unsupported))
   )
 )
 ~~~
@@ -123,26 +89,6 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 4 8) (end 4 12)) (probe (position 4 8))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind expressionOperand) (ordinal 0) (authored-target "flow")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 4 18) (end 4 20)) (probe (position 4 18))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind expressionOperand) (ordinal 1) (authored-target "to")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 4 13) (end 4 17)) (probe (position 4 13))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind memberAccessOperand) (ordinal 0) (authored-target "a1::y")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 4 21) (end 4 25)) (probe (position 4 21))
-    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind memberAccessOperand) (ordinal 1) (authored-target "a2::x")
-      (outcome (status unresolved)))
-    )
-  )
   (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 3 19) (end 3 21)) (probe (position 3 19))
     (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "a1")
       (outcome (status resolved) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1")))))

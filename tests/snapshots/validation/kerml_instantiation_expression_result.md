@@ -53,7 +53,7 @@ package Expressions {
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Holder::copied"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "source")) (invocationCallee (reference "Identity")))))
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Holder::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity::input"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
@@ -83,7 +83,7 @@ package Expressions {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Holder::copied"))) (state non-constant))
-    (invocation (declaration (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Holder::copied"))) (callee (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity"))) (supplied 1) (required 1) (start 13 25) (end 13 49))
+    (invocation (declaration (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Holder::copied"))) (callee (node (document "memory://snapshot/kerml_instantiation_expression_result.md") (qualified-name "Expressions::Identity"))) (supplied 1) (required 0) (start 13 25) (end 13 49))
   )
 )
 ~~~

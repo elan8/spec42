@@ -71,12 +71,6 @@ package RationaleMetadataExample {
         (source "semantic")
         (range (start 16 36) (end 16 46))
       )
-      (diagnostic
-        (severity error)
-        (code "recovered_use_case_body_element")
-        (source "parser")
-        (range (start 17 8) (end 17 70))
-      )
     )
   )
 )
@@ -84,7 +78,7 @@ package RationaleMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Example: the following provides the rationale for selecting the engine4cyl based on a trade study analysis. \n    The rationale could be contained in the vehicle configuration with the selected engine "))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Rationale") (import (shape membership) (recursive false))))))
@@ -96,6 +90,7 @@ package RationaleMetadataExample {
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "engineTradeOffAnalysis")))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (kind analysis) (membership (kind feature) (visibility default)) (documentation (comment (text " ... "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TradeStudy")))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::alternatives"))) (kind subject) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine")))))
   )
   (references
@@ -155,6 +150,9 @@ package RationaleMetadataExample {
     )
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text")))
       (featured-by (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale")))
+    )
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::alternatives")))
+      (featured-by (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis")))
     )
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine")))
       (featured-by (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis")))

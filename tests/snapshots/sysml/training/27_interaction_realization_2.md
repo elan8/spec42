@@ -256,10 +256,10 @@ package 'Interaction Realization-2' {
         (range (start 54 12) (end 54 24))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 55 4) (end 56 3))
+        (severity warning)
+        (code "unsupported_port_usage_member")
+        (source "semantic")
+        (range (start 55 4) (end 55 31))
       )
       (diagnostic
         (severity warning)
@@ -274,10 +274,10 @@ package 'Interaction Realization-2' {
         (range (start 61 13) (end 61 25))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 62 5) (end 63 4))
+        (severity warning)
+        (code "unsupported_port_usage_member")
+        (source "semantic")
+        (range (start 62 5) (end 62 46))
       )
       (diagnostic
         (severity warning)
@@ -292,10 +292,10 @@ package 'Interaction Realization-2' {
         (range (start 66 13) (end 66 28))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 67 5) (end 68 4))
+        (severity warning)
+        (code "unsupported_port_usage_member")
+        (source "semantic")
+        (range (start 67 5) (end 67 40))
       )
       (diagnostic
         (severity warning)
@@ -310,10 +310,10 @@ package 'Interaction Realization-2' {
         (range (start 71 13) (end 71 28))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 72 5) (end 73 4))
+        (severity warning)
+        (code "unsupported_port_usage_member")
+        (source "semantic")
+        (range (start 72 5) (end 72 39))
       )
       (diagnostic
         (severity error)

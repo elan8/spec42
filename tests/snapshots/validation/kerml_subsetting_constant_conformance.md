@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.10 validateSubsettingConstantConformance
 type=file
-skip_validation=sysml_resolution does not lower KermlFeatureMember.is_const -- the parser types the modifier, lower_kerml_feature_member copies every sibling flag but not is_const -- so isConstant is never published
+skip_validation=both sides now publish their variability -- (modifiers constant) and (modifiers var) -- but no semantic rule pairs a subsetting feature's constancy with the subsetted feature's; the canonical code subsetting_constant_mismatch does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -53,8 +53,8 @@ package Subsettings {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::fixed"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")) (subsetting (reference "base")))))
+    (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers constant)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::fixed"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers constant)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")) (subsetting (reference "base")))))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers var)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")) (subsetting (reference "base")))))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )

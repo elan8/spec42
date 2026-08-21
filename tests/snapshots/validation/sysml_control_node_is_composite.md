@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.6 validateControlNodeIsComposite
 type=file
-skip_validation=the parser models a control-node statement only as a reference: JoinStmt.join, ForkStmt.fork and DecisionStmt.decide are each a Node<Expression> path with no declared-name field, so `join good;` publishes an anonymous control node with an unresolved joinInput reference to `good` rather than declaring a named ControlNode
+skip_validation=the pinned parser rejects a `ref` prefix on a control node, reporting recovered_action_body_element, so the referential control node never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

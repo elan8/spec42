@@ -97,10 +97,10 @@ package PartTest {
         (range (start 20 6) (end 20 17))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 22 2) (end 24 2))
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 22 2) (end 22 15))
       )
       (diagnostic
         (severity warning)

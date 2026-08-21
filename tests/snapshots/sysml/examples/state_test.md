@@ -84,6 +84,12 @@ package StateTest {
   (document "memory://snapshot/state_test.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2 2) (end 2 4))
+      )
+      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -205,7 +211,6 @@ package StateTest {
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S::S3::S3a"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S::T"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionTarget (reference "S1")) (memberAccessOperand (reference "S2::S3")))))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::Sig"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::Sig::x"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::act"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::p"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s"))) (kind state) (membership (kind feature) (visibility default)))
@@ -328,9 +333,6 @@ package StateTest {
     )
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S::T")))
       (featured-by (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S")))
-    )
-    (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::Sig::x")))
-      (featured-by (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::Sig")))
     )
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s0::s1")))
       (featured-by (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s0")))

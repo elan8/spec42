@@ -44,12 +44,6 @@ package Filters {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 11 15) (end 11 19))
-      )
     )
   )
 )
@@ -68,17 +62,18 @@ package Filters {
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (kind expressionOperand) (ordinal 0))
       (authored-target "flag")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag")))))
     (reference (id (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Thing")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (target (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag"))) (target (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
     (filter (owner (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Accepted"))) (form package-import) (state literal) (start 5 15) (end 5 19) (value (kind boolean) (boolean true)))
-    (filter (owner (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (form package-import) (state unresolved-operand) (start 11 15) (end 11 19))
+    (filter (owner (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (form package-import) (state non-constant) (start 11 15) (end 11 19))
   )
 )
 ~~~
@@ -100,7 +95,7 @@ package Filters {
 (navigation
   (query (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (range (start 11 15) (end 11 19)) (probe (position 11 15))
     (reference (id (source (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected"))) (kind expressionOperand) (ordinal 0) (authored-target "flag")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Rejected::flag")))))
     )
   )
   (query (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (range (start 10 23) (end 10 28)) (probe (position 10 23))

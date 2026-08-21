@@ -303,21 +303,9 @@ standard library package Requirements {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 40 2) (end 40 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 40 9) (end 40 15))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_constraint_body_element")
-        (source "parser")
-        (range (start 40 16) (end 46 1))
+        (range (start 40 2) (end 45 3))
       )
       (diagnostic
         (severity warning)
@@ -404,7 +392,7 @@ standard library package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for requirements and related elements in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (path (named (kind library-package) (name "Requirements")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
@@ -439,7 +427,7 @@ standard library package Requirements {
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::stakeholders"))) (kind ref) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * The Parts that represent stakeholders interested in the concern being checked.\n\t\t\t * (Note: This is not itself a stakeholder parameter, because specific stakeholder\n\t\t\t * parameters will be added for specific RequirementChecks.)\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part")))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::subj"))) (kind subject) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::subrequirements"))) (kind requirement) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Nested requirements, which are also required constraints.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "requirementChecks")) (subsetting (reference "constraints")))))
-    (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind constraint-def) (membership (kind owning) (visibility private)) (documentation (doc (text "\n\t\t * RequirementConstraintCheck is the base ConstraintCheck for RequirementCheck, defining the\n\t\t * separate assumptions and required constraints such that, if all the assumptions are true,\n\t\t * then all the required constraints must be true.\n\t\t "))) (authored (membership (kind owning) (visibility private)) (relationships (expressionOperand (reference "return")) (expressionOperand (reference "result")))))
+    (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind constraint-def) (membership (kind owning) (visibility private)) (documentation (doc (text "\n\t\t * RequirementConstraintCheck is the base ConstraintCheck for RequirementCheck, defining the\n\t\t * separate assumptions and required constraints such that, if all the assumptions are true,\n\t\t * then all the required constraints must be true.\n\t\t "))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::assumptions"))) (kind constraint) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Assumptions that must hold for the required constraints to apply.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "constraintChecks")) (subsetting (reference "subperformances")))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints"))) (kind constraint) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * The required constraints that are to be checked.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "constraintChecks")) (subsetting (reference "subperformances")))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::concernChecks"))) (kind concern) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t * concernChecks is the base feature of all ConcernUsages.\n\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ConcernCheck")) (subsetting (reference "requirementChecks")))))
@@ -556,12 +544,6 @@ standard library package Requirements {
     (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::subrequirements"))) (kind subsetting) (ordinal 1))
       (authored-target "constraints")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")))))
-    (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "return")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind expressionOperand) (ordinal 1))
-      (authored-target "result")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::assumptions"))) (kind subsetting) (ordinal 0))
       (authored-target "constraintChecks")
       (outcome (status unresolved)))
@@ -626,8 +608,6 @@ standard library package Requirements {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (target (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -971,16 +951,6 @@ standard library package Requirements {
   (query (document "memory://snapshot/requirements.md") (range (start 89 67) (end 89 78)) (probe (position 89 67))
     (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::subrequirements"))) (kind subsetting) (ordinal 1) (authored-target "constraints")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")))))
-    )
-  )
-  (query (document "memory://snapshot/requirements.md") (range (start 40 2) (end 40 8)) (probe (position 40 2))
-    (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind expressionOperand) (ordinal 0) (authored-target "return")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/requirements.md") (range (start 40 9) (end 40 15)) (probe (position 40 9))
-    (reference (id (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (kind expressionOperand) (ordinal 1) (authored-target "result")
-      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/requirements.md") (range (start 26 34) (end 26 50)) (probe (position 26 34))

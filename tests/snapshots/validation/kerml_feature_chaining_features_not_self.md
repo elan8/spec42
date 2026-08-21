@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureChainingFeaturesNotSelf
 type=file
-skip_validation=sysml_resolution does not lower KermlFeatureMember.chains -- the parser types the clause, lower_kerml_feature_member reads only typing/subsets/redefines -- so no featureChaining relationship is published
+skip_validation=the chains clause reaches semantics as FeatureRelationshipPart::Chaining, which lower_kerml_feature_relationship_parts reports as an unsupported member, so no featureChaining relationship is published
 ~~~
 # SOURCE
 ~~~kerml
@@ -44,6 +44,18 @@ package Chains {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_chaining_features_not_self.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 8 21) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 11 20) (end 11 36))
+      )
     )
   )
 )
@@ -51,7 +63,7 @@ package Chains {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a72a36a73aca7458eec31e78f726dcdfa82e1002afe576dfa7b8e344918f9d7f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a72a36a73aca7458eec31e78f726dcdfa82e1002afe576dfa7b8e344918f9d7f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_features_not_self.md") (qualified-name "Chains"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_features_not_self.md") (qualified-name "Chains::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

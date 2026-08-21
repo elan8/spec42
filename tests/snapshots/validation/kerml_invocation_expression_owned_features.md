@@ -57,9 +57,9 @@ package Expressions {
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "a")) (expressionOperand (reference "b")) (invocationCallee (reference "Pair")))))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::left"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::left"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::right"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair::right"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
@@ -100,7 +100,7 @@ package Expressions {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (state non-constant))
-    (invocation (declaration (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (callee (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (supplied 2) (required 2) (start 16 26) (end 16 51))
+    (invocation (declaration (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::invoked"))) (callee (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Pair"))) (supplied 2) (required 0) (start 16 26) (end 16 51))
   )
 )
 ~~~

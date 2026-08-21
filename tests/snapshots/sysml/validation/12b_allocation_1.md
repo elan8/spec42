@@ -230,7 +230,6 @@ package '12b-Allocation-1' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0))))) (state unsupported))
-    (unit (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0))))) (ordinal 0) (authored "N*m") (start 10 44) (end 10 47) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

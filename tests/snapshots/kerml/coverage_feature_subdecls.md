@@ -28,15 +28,15 @@ package FeatureSubDeclCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 7 4) (end 7 28))
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 14) (end 7 27))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 7 4) (end 7 28))
+        (range (start 8 14) (end 8 26))
       )
       (diagnostic
         (severity warning)
@@ -69,7 +69,7 @@ package FeatureSubDeclCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:56790a4770c6a0b4a8ca03565fcc54cf91c0375d06d134beee99b07b504c474b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56790a4770c6a0b4a8ca03565fcc54cf91c0375d06d134beee99b07b504c474b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))))
@@ -78,6 +78,7 @@ package FeatureSubDeclCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::d"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind assign)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::e"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind assign) (default true)))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::h"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
