@@ -1,7 +1,7 @@
 use sysml_tokens::{
     ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_KEYWORD, TYPE_PROPERTY, TYPE_TYPE,
 };
-use sysml_v2_parser::parse_for_editor;
+use sysml_v2_parser::next::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -60,7 +60,7 @@ fn definition_keywords_stay_keyword_after_ast_merge() {
   item def StartMissionEvent;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -133,7 +133,7 @@ fn state_def_body_tokenizes_final_state_and_transition_target() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "done"), "final state name");
@@ -152,7 +152,7 @@ fn nested_state_usage_tokenizes_name_and_type() {
   state def Idle;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -185,7 +185,7 @@ fn action_usage_tokenizes_send_payload() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "payload"));
@@ -201,7 +201,7 @@ fn interface_def_body_tokenizes_end_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "source"));

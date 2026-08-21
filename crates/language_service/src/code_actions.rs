@@ -1,11 +1,11 @@
 //! Neutral quick-fix text edit suggesters.
 
 use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
-use sysml_v2_parser::ast::{PackageBody, RootElement};
+use sysml_v2_parser::next::ast::{PackageBody, RootElement};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
-use crate::syntax::identification_name;
+use crate::syntax::qualified_identification_name;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagnosticLine {
@@ -629,7 +629,7 @@ fn suggest_create_usage_from_definition_impl(
 }
 
 pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSuggestion> {
-    let root = sysml_v2_parser::parse(source).ok()?;
+    let root = sysml_v2_parser::next::parse(source).ok()?;
     let packages: Vec<_> = root
         .elements
         .iter()
@@ -642,11 +642,11 @@ pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSugge
         return None;
     }
     let pkg = packages[0];
-    if !identification_name(&pkg.identification).is_empty() {
+    if !qualified_identification_name(&root, &pkg.identification).is_empty() {
         return None;
     }
     let has_members = match &pkg.body {
-        PackageBody::Brace { elements } => !elements.is_empty(),
+        PackageBody::Brace { elements, .. } => !elements.is_empty(),
         _ => false,
     };
     if !has_members {

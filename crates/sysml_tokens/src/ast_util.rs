@@ -1,8 +1,7 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use sysml_v2_parser::ast::Identification;
-use sysml_v2_parser::ast::TypingRelationship;
-use sysml_v2_parser::Span;
+use sysml_v2_parser::next::ast::Identification;
+use sysml_v2_parser::next::Span;
 
 /// Accept both legacy textual type names and parser 0.35 typed relationships.
 pub trait TypeNameRef {
@@ -18,15 +17,6 @@ impl TypeNameRef for str {
 impl TypeNameRef for String {
     fn type_name_ref(&self) -> &str {
         self
-    }
-}
-
-impl TypeNameRef for TypingRelationship {
-    fn type_name_ref(&self) -> &str {
-        self.target
-            .first()
-            .and_then(|target| target.value.local_name())
-            .unwrap_or_default()
     }
 }
 
@@ -318,5 +308,23 @@ pub fn push_word_token(
     let local = name.rsplit("::").next().unwrap_or(name);
     if let Some(r) = word_range_within_span(source, &span_to_source_range(span), local) {
         out.push((r, token_type));
+    }
+}
+
+/// The authored label of a namespace-owning declaration.
+///
+/// A package name may be a qualified path, which the document's arena owns rather than the node.
+pub fn qualified_identification_name(
+    document: &sysml_v2_parser::next::ParsedDocument,
+    identification: &sysml_v2_parser::next::ast::QualifiedIdentification,
+) -> String {
+    use sysml_v2_parser::next::ast::DeclarationName;
+    match identification.name.as_ref() {
+        Some(DeclarationName::Simple(name)) => name.clone(),
+        Some(DeclarationName::Qualified(name)) => document
+            .qualified_declaration_name(*name)
+            .map(|view| view.authored_text().to_string())
+            .unwrap_or_default(),
+        None => identification.short_name.clone().unwrap_or_default(),
     }
 }

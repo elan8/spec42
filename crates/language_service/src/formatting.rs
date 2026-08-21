@@ -91,8 +91,8 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
 }
 
 fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
-    match sysml_v2_parser::parse(source) {
-        Ok(original) => sysml_v2_parser::parse(candidate).is_ok_and(|reparsed| {
+    match sysml_v2_parser::next::parse(source) {
+        Ok(original) => sysml_v2_parser::next::parse(candidate).is_ok_and(|reparsed| {
             original.normalize_for_test_comparison() == reparsed.normalize_for_test_comparison()
         }),
         Err(_) => recovery_equivalent(source, candidate),
@@ -100,16 +100,16 @@ fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
 }
 
 fn recovery_equivalent(source: &str, candidate: &str) -> bool {
-    let source = sysml_v2_parser::parse_for_editor(source);
-    let candidate = sysml_v2_parser::parse_for_editor(candidate);
+    let source = sysml_v2_parser::next::parse_for_editor(source);
+    let candidate = sysml_v2_parser::next::parse_for_editor(candidate);
     !candidate.is_ok()
-        && source.root.normalize_for_test_comparison()
-            == candidate.root.normalize_for_test_comparison()
+        && source.document.normalize_for_test_comparison()
+            == candidate.document.normalize_for_test_comparison()
         && recovery_diagnostic_signature(&source.errors)
             == recovery_diagnostic_signature(&candidate.errors)
 }
 
-fn recovery_diagnostic_signature(errors: &[sysml_v2_parser::ParseError]) -> Vec<String> {
+fn recovery_diagnostic_signature(errors: &[sysml_v2_parser::next::ParseError]) -> Vec<String> {
     errors
         .iter()
         .map(|error| {
@@ -326,11 +326,29 @@ part x;
         assert_eq!(format_document_text(source, default_options()), source);
     }
 
+    /// This fuzz-derived source used to parse strictly, and the test existed because reformatting
+    /// it produced a different tree -- the negative case of `preserves_parse_meaning`'s `Ok` arm.
+    ///
+    /// The pinned parser rejects `in<f;` outright, so the input now travels the
+    /// `recovery_equivalent` path instead: original and candidate fail identically, recover to the
+    /// same normalized tree, and carry the same diagnostic signature, so reformatting is provably
+    /// safe and is applied. That is the same guarantee
+    /// `format_document_recovers_unbalanced_blocks_without_changing_tokens` pins.
+    ///
+    /// No known *valid* source now trips the strict-parse negative branch, so that branch has no
+    /// fixture; the branch itself is still implemented and still correct. Recorded in
+    /// planning/UPSTREAM_PARSER_GAPS.md rather than left as a silently dead assertion.
     #[test]
-    fn format_document_preserves_source_when_layout_changes_the_strict_parse_tree() {
+    fn format_document_reformats_a_recovery_equivalent_source() {
         let source = "package ion {\n  class A {\n    in<f;\n  }\n\n  class A { in #su f;\n  }\n}";
-        assert!(sysml_v2_parser::parse(source).is_ok());
-        assert_eq!(format_document_text(source, default_options()), source);
+        assert!(
+            sysml_v2_parser::next::parse(source).is_err(),
+            "the parser accepted this again; restore the strict-parse arm of this test"
+        );
+        assert_eq!(
+            format_document_text(source, default_options()),
+            "package ion {\n    class A {\n        in<f;\n    }\n\n    class A { in #su f;\n    }\n}\n"
+        );
     }
 
     #[test]

@@ -382,16 +382,31 @@ fn package_name_from_strict_ast(path: &str, bytes: &[u8]) -> Result<Option<Strin
     let source = std::str::from_utf8(bytes).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' is not valid UTF-8: {error}"))
     })?;
-    let ast = sysml_v2_parser::parse(source).map_err(|error| {
+    let document = sysml_v2_parser::next::parse(source).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' failed strict parsing: {error}"))
     })?;
-    let names = ast
+    // A package name may be a qualified path (`package A::B { ... }`), which the arena owns rather
+    // than the node: the simple alternative carries its own label, the qualified one is a document
+    // identity that only `qualified_declaration_name` can render back to authored text.
+    let declaration_name =
+        |identification: &sysml_v2_parser::next::ast::QualifiedIdentification| match identification
+            .name
+            .as_ref()?
+        {
+            sysml_v2_parser::next::ast::DeclarationName::Simple(name) => Some(name.clone()),
+            sysml_v2_parser::next::ast::DeclarationName::Qualified(name) => document
+                .qualified_declaration_name(*name)
+                .map(|view| view.authored_text().to_string()),
+        };
+    let names = document
         .elements
         .iter()
         .filter_map(|element| match &element.value {
-            sysml_v2_parser::RootElement::Package(package) => package.identification.name.clone(),
-            sysml_v2_parser::RootElement::LibraryPackage(package) => {
-                package.identification.name.clone()
+            sysml_v2_parser::next::RootElement::Package(package) => {
+                declaration_name(&package.identification)
+            }
+            sysml_v2_parser::next::RootElement::LibraryPackage(package) => {
+                declaration_name(&package.identification)
             }
             _ => None,
         })

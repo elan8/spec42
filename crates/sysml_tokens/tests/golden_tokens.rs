@@ -7,7 +7,7 @@ use sysml_tokens::{
     ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_FUNCTION, TYPE_KEYWORD,
     TYPE_PROPERTY, TYPE_TYPE,
 };
-use sysml_v2_parser::parse_for_editor;
+use sysml_v2_parser::next::parse_for_editor;
 
 fn fixture_path(relative: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -68,7 +68,7 @@ fn state_machine_demo_fixture_tokens() {
     let path = fixture_path("vscode/testFixture/workspaces/state-view/StateMachineDemo.sysml");
     let content = fs::read_to_string(&path).expect("read StateMachineDemo.sysml");
     let parsed = parse_for_editor(&content);
-    let ranges = ast_semantic_ranges(&parsed.root, &content);
+    let ranges = ast_semantic_ranges(&parsed.document, &content);
     let (tokens, _) = semantic_tokens_full(&content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -109,7 +109,7 @@ fn constraint_def_package_member_tokens() {
   enum def Status;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 

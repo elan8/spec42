@@ -152,7 +152,7 @@ fn server_state_from_built(
             document.uri.clone(),
             IndexEntry {
                 content: document.content.clone(),
-                parsed: Some(crate::common::util::parse_for_editor(&document.content).root),
+                parsed: Some(crate::common::util::parse_for_editor(&document.content).document),
                 parse_metadata: ParseMetadata::default(),
                 admitted_to_publication: true,
             },

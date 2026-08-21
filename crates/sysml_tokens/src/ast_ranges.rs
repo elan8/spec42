@@ -1,45 +1,103 @@
 //! AST-driven semantic token ranges: collects (SourceRange, type_index) from parsed AST.
 
-use sysml_v2_parser::ast::{
+use sysml_v2_parser::next::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
-    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, EnumerationBody, FinalState,
-    InterfaceDefBody, InterfaceDefBodyElement, MetadataAnnotation, MetadataKeywordUsage,
-    OccurrenceBodyElement, OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody,
-    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PayloadClause, PortBody,
-    PortBodyElement, PortDefBody, PortDefBodyElement, RequireConstraintBody, RequirementDefBody,
-    RequirementDefBodyElement, RootElement, StateDefBody, StateDefBodyElement, StateUsage,
-    ThenStmt, Transition, TransitionAccept,
+    ConstraintDefBody, ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement,
+    EndIdentity, EnumerationBody, FinalState, InterfaceDefBody, InterfaceDefBodyElement,
+    MetadataAnnotation, MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody,
+    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
+    PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
+    PortDefBodyElement, RequirementDefBody, RequirementDefBodyElement, RootElement, StateDefBody,
+    StateDefBodyElement, StateUsage, ThenStmt, Transition, TransitionAccept,
 };
-use sysml_v2_parser::RootNamespace;
+use sysml_v2_parser::next::{ParsedDocument, QualifiedReferenceId};
 
 use crate::ast_util::{
     identification_name, modeled_decl_name, push_ident_definition_spans,
-    push_usage_name_type_spans, push_word_token, span_to_source_range, SourceRange,
+    push_usage_name_type_spans, push_word_token, qualified_identification_name,
+    span_to_source_range, SourceRange,
 };
 use crate::types::*;
-use sysml_v2_parser::ast::{Dependency, Satisfy};
+use sysml_v2_parser::next::ast::{Dependency, SatisfyRequirementUsage as Satisfy};
+
+/// The four annotating members the grammar folds into one `AnnotatingMember` production.
+///
+/// `Doc`, `Comment` and `TextualRep` classify as ordinary comment trivia and contribute no
+/// semantic-token ranges; only a metadata annotation names elements worth highlighting.
+fn collect_semantic_ranges_annotating(
+    member: &sysml_v2_parser::next::ast::AnnotatingMember,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use sysml_v2_parser::next::ast::AnnotatingMember as AM;
+    match member {
+        AM::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        AM::Doc(_) | AM::Comment(_) | AM::TextualRep(_) => {}
+    }
+}
+
+/// `SendPayload` is the send half of the payload grammar: either a typed parameter or an
+/// expression. The accept half keeps its own `PayloadClause` collector.
+fn collect_semantic_ranges_send_payload(
+    ctx: &RangeCtx<'_>,
+    payload: &sysml_v2_parser::next::ast::SendPayload,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use sysml_v2_parser::next::ast::SendPayload as SP;
+    match payload {
+        SP::Typed(clause) => collect_semantic_ranges_payload_clause(clause, out),
+        SP::Expression(expression) => {
+            push_word_token(ctx.source, &expression.span, "", TYPE_PROPERTY, out);
+        }
+    }
+}
 
 struct RangeCtx<'a> {
     source: &'a str,
+    document: &'a ParsedDocument,
+}
+
+impl<'a> RangeCtx<'a> {
+    /// Authored text of an arena-backed type reference.
+    ///
+    /// Type names are `QualifiedReferenceId`s now, not owned strings: the document owns the
+    /// segments, separators and spans, so the only way back to what the author wrote is through
+    /// its arena. Returning `&'a str` keeps the borrow tied to the document rather than copying
+    /// every type name on every token pass.
+    /// Authored text of a typing relationship's first target.
+    ///
+    /// `TypingRelationship.target` is a `Vec<QualifiedReferenceId>` now, so the relationship
+    /// cannot answer "what type is this" on its own -- it needs the document that owns the arena.
+    fn typing_text(
+        &self,
+        relationship: Option<&sysml_v2_parser::next::ast::TypingRelationship>,
+    ) -> Option<&'a str> {
+        self.type_text(relationship?.target.first().copied())
+    }
+
+    fn type_text(&self, reference: Option<QualifiedReferenceId>) -> Option<&'a str> {
+        self.document
+            .qualified_reference(reference?)
+            .map(|view| view.authored_text())
+    }
 }
 
 /// Build (SourceRange, token_type_index) from AST for semantic_tokens_full/range.
-pub fn ast_semantic_ranges(root: &RootNamespace, source: &str) -> Vec<(SourceRange, u32)> {
-    let ctx = RangeCtx { source };
+pub fn ast_semantic_ranges(document: &ParsedDocument, source: &str) -> Vec<(SourceRange, u32)> {
+    let ctx = RangeCtx { source, document };
     let mut out = Vec::new();
-    for node in &root.elements {
+    for node in &document.elements {
         let elements = match &node.value {
             RootElement::Package(p) => match &p.body {
-                PackageBody::Brace { elements } => elements,
+                PackageBody::Brace { elements, .. } => elements,
                 _ => continue,
             },
             RootElement::Namespace(n) => match &n.body {
-                PackageBody::Brace { elements } => elements,
+                PackageBody::Brace { elements, .. } => elements,
                 _ => continue,
             },
             RootElement::LibraryPackage(lp) => match &lp.body {
-                PackageBody::Brace { elements } => elements,
+                PackageBody::Brace { elements, .. } => elements,
                 _ => continue,
             },
             RootElement::Import(_) => continue,
@@ -54,30 +112,33 @@ pub fn ast_semantic_ranges(root: &RootNamespace, source: &str) -> Vec<(SourceRan
 
 fn collect_semantic_ranges_package_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
-            let name = identification_name(&pkg_node.identification);
+            let name = qualified_identification_name(ctx.document, &pkg_node.identification);
             if !name.is_empty() {
                 push_ident_definition_spans(&pkg_node.span, None, TYPE_NAMESPACE, out);
             }
             match &pkg_node.body {
-                PackageBody::Brace { elements } => {
+                PackageBody::Brace { elements, .. } => {
                     for n in elements {
                         collect_semantic_ranges_package_body_element(ctx, n, out);
                     }
                 }
-                PackageBody::Semicolon => {}
+                PackageBody::Semicolon { .. } => {}
             }
         }
         PBE::Import(imp_node) => {
             // Use the precise target span so only the qualified name is highlighted,
             // not the leading `import` keyword or trailing `::*` suffix.
+            // The target is an arena identity now, so its precise span -- the qualified name
+            // without the leading `import` keyword or a trailing `::*` -- comes from the document
+            // rather than a span field on the node.
             out.push((
-                span_to_source_range(&imp_node.value.target_span),
+                span_to_source_range(&imp_node.value.target.span),
                 TYPE_NAMESPACE,
             ));
         }
@@ -93,12 +154,12 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
             match &pd_node.body {
-                PartDefBody::Brace { elements } => {
+                PartDefBody::Brace { elements, .. } => {
                     for n in elements {
                         collect_semantic_ranges_part_def_body_element(ctx, n, out);
                     }
                 }
-                PartDefBody::Semicolon => {}
+                PartDefBody::Semicolon { .. } => {}
             }
         }
         PBE::PartUsage(pu_node) => {
@@ -109,34 +170,34 @@ fn collect_semantic_ranges_package_body_element(
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
             match &pu_node.body {
-                PartUsageBody::Brace { elements } => {
+                PartUsageBody::Brace { elements, .. } => {
                     for n in elements {
                         collect_semantic_ranges_part_usage_body_element(ctx, n, out);
                     }
                 }
-                PartUsageBody::Semicolon => {}
+                PartUsageBody::Semicolon { .. } => {}
             }
         }
         PBE::PortDef(pd_node) => {
             push_ident_definition_spans(&pd_node.span, None, TYPE_TYPE, out);
             match &pd_node.body {
-                PortDefBody::Brace { elements } => {
+                PortDefBody::Brace { elements, .. } => {
                     for n in elements {
                         collect_semantic_ranges_port_def_body_element(n, out);
                     }
                 }
-                PortDefBody::Semicolon => {}
+                PortDefBody::Semicolon { .. } => {}
             }
         }
         PBE::InterfaceDef(id_node) => {
             push_ident_definition_spans(&id_node.span, None, TYPE_INTERFACE, out);
             match &id_node.body {
-                InterfaceDefBody::Brace { elements } => {
+                InterfaceDefBody::Brace { elements, .. } => {
                     for n in elements {
                         collect_semantic_ranges_interface_def_body_element(n, out);
                     }
                 }
-                InterfaceDefBody::Semicolon => {}
+                InterfaceDefBody::Semicolon { .. } => {}
             }
         }
         PBE::AttributeDef(ad_node) => {
@@ -144,7 +205,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &ad_node.span,
                 &ad_node.value.name,
-                ad_node.value.typing.as_deref(),
+                ctx.typing_text(ad_node.value.typing.as_deref()),
                 ad_node.value.name_span.as_ref(),
                 ad_node.value.typing_span.as_ref(),
                 out,
@@ -162,12 +223,12 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
             match &ad_node.body {
-                ActionDefBody::Brace { elements } => {
+                ActionDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_action_def_body_element(ctx, element, out);
                     }
                 }
-                ActionDefBody::Semicolon => {}
+                ActionDefBody::Semicolon { .. } => {}
             }
         }
         PBE::RequirementDef(rd_node) => {
@@ -182,12 +243,12 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
             match &rd_node.body {
-                RequirementDefBody::Brace { elements } => {
+                RequirementDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
-                RequirementDefBody::Semicolon => {}
+                RequirementDefBody::Semicolon { .. } => {}
             }
         }
         PBE::RequirementUsage(ru_node) => {
@@ -195,18 +256,18 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &ru_node.span,
                 &ru_node.value.name,
-                ru_node.value.type_name.as_deref(),
+                ctx.type_text(ru_node.value.type_name),
                 None,
                 None,
                 out,
             );
             match &ru_node.body {
-                RequirementDefBody::Brace { elements } => {
+                RequirementDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
-                RequirementDefBody::Semicolon => {}
+                RequirementDefBody::Semicolon { .. } => {}
             }
         }
         PBE::ActionUsage(au_node) => {
@@ -216,13 +277,10 @@ fn collect_semantic_ranges_package_body_element(
             if let Some(ref s) = au_node.value.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
-            match &au_node.body {
-                ActionUsageBody::Brace { elements } => {
-                    for n in elements {
-                        collect_semantic_ranges_action_usage_body_element(ctx, n, out);
-                    }
+            if let Some(ActionUsageBody::Brace { elements, .. }) = &au_node.body {
+                for n in elements {
+                    collect_semantic_ranges_action_usage_body_element(ctx, n, out);
                 }
-                ActionUsageBody::Semicolon => {}
             }
         }
         PBE::AliasDef(ad_node) => {
@@ -242,7 +300,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &vu_node.span,
                 &vu_node.value.name,
-                vu_node.value.type_name.as_deref(),
+                ctx.type_text(vu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -253,7 +311,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &vpu_node.span,
                 &vpu_node.value.name,
-                Some(&vpu_node.value.type_name),
+                ctx.type_text(vpu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -264,7 +322,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &ru_node.span,
                 &ru_node.value.name,
-                ru_node.value.type_name.as_deref(),
+                ctx.type_text(ru_node.value.type_name),
                 None,
                 None,
                 out,
@@ -341,7 +399,7 @@ fn collect_semantic_ranges_package_body_element(
                     ctx.source,
                     &flow_node.span,
                     name,
-                    flow_node.value.type_name.as_deref(),
+                    ctx.type_text(flow_node.value.type_name),
                     None,
                     None,
                     out,
@@ -373,7 +431,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
-            if let StateDefBody::Brace { elements } = &sd_node.body {
+            if let StateDefBody::Brace { elements, .. } = &sd_node.body {
                 for element in elements {
                     collect_semantic_ranges_state_def_body_element(ctx, element, out);
                 }
@@ -384,7 +442,7 @@ fn collect_semantic_ranges_package_body_element(
         }
         PBE::ConnectionDef(conn_node) => {
             push_ident_definition_spans(&conn_node.span, None, TYPE_INTERFACE, out);
-            if let ConnectionDefBody::Brace { elements } = &conn_node.body {
+            if let ConnectionDefBody::Brace { elements, .. } = &conn_node.body {
                 for element in elements {
                     collect_semantic_ranges_connection_def_body_element(element, out);
                 }
@@ -421,9 +479,18 @@ fn collect_semantic_ranges_package_body_element(
             // members (`entry;`, `standard;`, ...) any color of their own. They read like named
             // constants, same as `EnumerationUsage`'s own name elsewhere in this file, so give
             // them the matching token instead of leaving them accidentally uncolored.
-            if let EnumerationBody::Brace { values } = &enum_node.value.body {
-                for value in values {
-                    out.push((span_to_source_range(&value.span), TYPE_PROPERTY));
+            if let EnumerationBody::Brace { elements, .. } = &enum_node.value.body {
+                use sysml_v2_parser::next::ast::EnumerationBodyElement as EBE;
+                for element in elements {
+                    match &element.value {
+                        EBE::Value(value) => {
+                            out.push((span_to_source_range(&value.span), TYPE_PROPERTY));
+                        }
+                        EBE::Annotating(member) => {
+                            collect_semantic_ranges_annotating(member, out);
+                        }
+                        EBE::Error(_) => {}
+                    }
                 }
             }
         }
@@ -480,7 +547,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &mu_node.span,
                 &mu_node.value.name,
-                mu_node.value.type_name.as_deref(),
+                ctx.type_text(mu_node.value.type_reference),
                 None,
                 None,
                 out,
@@ -492,12 +559,12 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &ou_node.span,
                 &ou_node.value.name,
-                ou_node.value.type_name.as_deref(),
+                ctx.type_text(ou_node.value.type_name),
                 None,
                 None,
                 out,
             );
-            if let OccurrenceUsageBody::Brace { elements } = &ou_node.value.body {
+            if let OccurrenceUsageBody::Brace { elements, .. } = &ou_node.value.body {
                 for element in elements {
                     collect_semantic_ranges_occurrence_body_element(ctx, element, out);
                 }
@@ -508,7 +575,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &au_node.span,
                 &au_node.value.name,
-                au_node.value.type_name.as_deref(),
+                ctx.type_text(au_node.value.type_name),
                 None,
                 None,
                 out,
@@ -520,18 +587,18 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &cu_node.span,
                 &cu_node.value.name,
-                cu_node.value.type_name.as_deref(),
+                ctx.type_text(cu_node.value.type_name),
                 None,
                 None,
                 out,
             );
             match &cu_node.value.body {
-                RequirementDefBody::Brace { elements } => {
+                RequirementDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
-                RequirementDefBody::Semicolon => {}
+                RequirementDefBody::Semicolon { .. } => {}
             }
         }
         PBE::UseCaseUsage(ucu_node) => {
@@ -539,7 +606,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &ucu_node.span,
                 &ucu_node.value.name,
-                ucu_node.value.type_name.as_deref(),
+                ctx.type_text(ucu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -550,7 +617,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &vcu_node.span,
                 &vcu_node.value.name,
-                vcu_node.value.type_name.as_deref(),
+                ctx.type_text(vcu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -561,7 +628,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &cu_node.span,
                 &cu_node.value.name,
-                cu_node.value.type_name.as_deref(),
+                ctx.type_text(cu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -572,7 +639,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &acu_node.span,
                 &acu_node.value.name,
-                acu_node.value.type_name.as_deref(),
+                ctx.type_text(acu_node.value.type_name),
                 None,
                 None,
                 out,
@@ -626,6 +693,20 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
         }
+        // `datatype Magnitude;`, `struct S { ... }`, `feature baseType;` -- these arrive as typed
+        // nodes now, where they used to be opaque `KermlSemanticDecl`/`KermlFeatureDecl` raw text
+        // whose declared name had to be recovered by re-scanning the source. Classify them from
+        // the node instead, which is both cheaper and exact.
+        PBE::KermlClassifier(decl) => {
+            if let Some(name) = decl.value.identification.name.as_deref() {
+                push_word_token(ctx.source, &decl.span, name, TYPE_CLASS, out);
+            }
+        }
+        PBE::KermlFeature(decl) => {
+            if !decl.value.name.is_empty() {
+                push_word_token(ctx.source, &decl.span, &decl.value.name, TYPE_PROPERTY, out);
+            }
+        }
         PBE::ExtendedLibraryDecl(decl) => {
             collect_semantic_ranges_modeled_decl(
                 ctx,
@@ -642,45 +723,62 @@ fn collect_semantic_ranges_package_body_element(
 
 fn collect_semantic_ranges_satisfy(
     ctx: &RangeCtx<'_>,
-    satisfy: &sysml_v2_parser::Node<Satisfy>,
+    satisfy: &sysml_v2_parser::next::Node<Satisfy>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    out.push((
-        span_to_source_range(&satisfy.value.source.span),
-        TYPE_PROPERTY,
-    ));
-    out.push((
-        span_to_source_range(&satisfy.value.target.span),
-        TYPE_PROPERTY,
-    ));
-    if let Some(inline) = &satisfy.value.inline_requirement {
-        push_word_token(ctx.source, &satisfy.span, &inline.name, TYPE_PROPERTY, out);
-        if let Some(type_name) = inline.type_name.as_deref() {
-            push_word_token(ctx.source, &satisfy.span, type_name, TYPE_TYPE, out);
+    // The production's two mutually exclusive requirement clauses: a reference to an existing
+    // requirement, or an inline declaration of one. The `by` subject is a separate optional clause.
+    use sysml_v2_parser::next::ast::SatisfiedRequirement;
+    match &satisfy.value.requirement {
+        SatisfiedRequirement::Reference { reference } => {
+            if let Some(view) = ctx.document.qualified_reference(*reference) {
+                out.push((span_to_source_range(&view.metadata.span), TYPE_PROPERTY));
+            }
+        }
+        SatisfiedRequirement::Declaration(declaration) => {
+            if let Some(name) = declaration.value.identification.name.as_deref() {
+                push_word_token(ctx.source, &satisfy.span, name, TYPE_PROPERTY, out);
+            }
+        }
+    }
+    if let Some(subject) = &satisfy.value.subject {
+        if let Some(view) = ctx.document.qualified_reference(subject.value.reference) {
+            out.push((span_to_source_range(&view.metadata.span), TYPE_PROPERTY));
+        }
+    }
+    if let Some(relationship) = &satisfy.value.typing {
+        if let Some(target) = relationship.value.target.first() {
+            if let Some(view) = ctx.document.qualified_reference(*target) {
+                out.push((span_to_source_range(&view.metadata.span), TYPE_TYPE));
+            }
         }
     }
 }
 
 fn collect_semantic_ranges_dependency(
     ctx: &RangeCtx<'_>,
-    dependency: &sysml_v2_parser::Node<Dependency>,
+    dependency: &sysml_v2_parser::next::Node<Dependency>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     if let Some(ident) = &dependency.value.identification {
         let name = identification_name(ident);
         push_word_token(ctx.source, &dependency.span, &name, TYPE_PROPERTY, out);
     }
-    for client in &dependency.value.clients {
-        push_word_token(ctx.source, &dependency.span, client, TYPE_PROPERTY, out);
-    }
-    for supplier in &dependency.value.suppliers {
-        push_word_token(ctx.source, &dependency.span, supplier, TYPE_PROPERTY, out);
+    for reference in dependency
+        .value
+        .clients
+        .iter()
+        .chain(dependency.value.suppliers.iter())
+    {
+        if let Some(view) = ctx.document.qualified_reference(*reference) {
+            out.push((span_to_source_range(&view.metadata.span), TYPE_PROPERTY));
+        }
     }
 }
 
 fn collect_semantic_ranges_modeled_decl(
     ctx: &RangeCtx<'_>,
-    span: &sysml_v2_parser::Span,
+    span: &sysml_v2_parser::next::Span,
     keyword: &str,
     text: &str,
     token_type: u32,
@@ -697,7 +795,7 @@ fn collect_semantic_ranges_definition_body(
     body: &DefinitionBody,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    let DefinitionBody::Brace { elements } = body else {
+    let DefinitionBody::Brace { elements, .. } = body else {
         return;
     };
     for node in elements {
@@ -705,9 +803,9 @@ fn collect_semantic_ranges_definition_body(
             DefinitionBodyElement::OccurrenceMember(member) => {
                 collect_semantic_ranges_occurrence_body_element(ctx, member, out);
             }
-            DefinitionBodyElement::Doc(_)
-            | DefinitionBodyElement::Error(_)
-            | DefinitionBodyElement::Other(_) => {}
+            DefinitionBodyElement::Error(_) => {}
+            // Member kinds this collector assigns no token of their own.
+            DefinitionBodyElement::Unsupported(_) => {}
         }
     }
 }
@@ -717,7 +815,7 @@ fn collect_semantic_ranges_attribute_body(
     body: &AttributeBody,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    let AttributeBody::Brace { elements } = body else {
+    let AttributeBody::Brace { elements, .. } = body else {
         return;
     };
     for node in elements {
@@ -727,7 +825,7 @@ fn collect_semantic_ranges_attribute_body(
                     ctx.source,
                     &attribute.span,
                     &attribute.value.name,
-                    attribute.value.typing.as_deref(),
+                    ctx.typing_text(attribute.value.typing.as_deref()),
                     attribute.value.name_span.as_ref(),
                     attribute.value.typing_span.as_ref(),
                     out,
@@ -738,21 +836,19 @@ fn collect_semantic_ranges_attribute_body(
                     ctx.source,
                     &attribute.span,
                     &attribute.value.name,
-                    attribute.value.typing.as_deref(),
+                    ctx.typing_text(attribute.value.typing.as_deref()),
                     attribute.value.name_span.as_ref(),
                     attribute.value.typing_span.as_ref(),
                     out,
                 );
             }
             AttributeBodyElement::MetadataKeywordUsage(mk_node) => {
-                collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+                collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
             }
             // §6 G27: this body is shared with `item def`/`item` usage bodies. `Connect` has no
             // dedicated highlighting elsewhere in this file either (see e.g. `PDBE::Connect`).
             AttributeBodyElement::OccurrenceUsage(_) | AttributeBodyElement::Connect(_) => {}
-            AttributeBodyElement::Doc(_)
-            | AttributeBodyElement::Error(_)
-            | AttributeBodyElement::Other(_) => {}
+            AttributeBodyElement::Error(_) => {}
             // `ref`/`ref part` members (validation `15_11`/`15_19`/`17a`/`17b`) -- same
             // collector every other body kind's `RefDecl` arm already uses.
             AttributeBodyElement::RefDecl(ref_decl) => {
@@ -767,7 +863,7 @@ fn collect_semantic_ranges_attribute_body(
                 if let Some(ref span) = part_usage.value.type_ref_span {
                     out.push((span_to_source_range(span), TYPE_TYPE));
                 }
-                if let PartUsageBody::Brace { elements } = &part_usage.value.body {
+                if let PartUsageBody::Brace { elements, .. } = &part_usage.value.body {
                     for child in elements {
                         collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                     }
@@ -776,33 +872,44 @@ fn collect_semantic_ranges_attribute_body(
             // No dedicated highlighting yet (mirrors every other body kind's `AssertConstraint`
             // arm in this file).
             AttributeBodyElement::AssertConstraint(_) => {}
+            // Member kinds this collector assigns no token of their own.
+            AttributeBodyElement::Unsupported(_)
+            | AttributeBodyElement::Annotating(_)
+            | AttributeBodyElement::ItemUsage(_)
+            | AttributeBodyElement::KermlFeature(_)
+            | AttributeBodyElement::Invariant(_)
+            | AttributeBodyElement::KermlConnector(_)
+            | AttributeBodyElement::KermlClassifier(_)
+            | AttributeBodyElement::Bind(_)
+            | AttributeBodyElement::Connection(_)
+            | AttributeBodyElement::CalcDef(_)
+            | AttributeBodyElement::CalcUsage(_)
+            | AttributeBodyElement::ConstraintUsage(_) => {}
         }
     }
 }
 
 fn collect_semantic_ranges_metadata_keyword_usage(
-    node: &sysml_v2_parser::Node<MetadataKeywordUsage>,
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::next::Node<MetadataKeywordUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    out.push((
-        span_to_source_range(&node.value.keyword_span),
-        TYPE_PROPERTY,
-    ));
-    if let Some(ref span) = node.value.type_span {
-        out.push((span_to_source_range(span), TYPE_TYPE));
+    out.push((span_to_source_range(&node.value.hash_span), TYPE_PROPERTY));
+    if let Some(view) = ctx.document.qualified_reference(node.value.reference) {
+        out.push((span_to_source_range(&view.metadata.span), TYPE_TYPE));
     }
 }
 
 fn collect_semantic_ranges_metadata_annotation(
-    node: &sysml_v2_parser::Node<MetadataAnnotation>,
+    node: &sysml_v2_parser::next::Node<MetadataAnnotation>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    if let Some(ref span) = node.value.head_span {
-        out.push((span_to_source_range(span), TYPE_PROPERTY));
-    }
-    if let Some(ref span) = node.value.type_span {
-        out.push((span_to_source_range(span), TYPE_TYPE));
-    }
+    use sysml_v2_parser::next::ast::MetadataFeatureIntroducer as MFI;
+    let introducer = match &node.value.introducer {
+        MFI::At { span } | MFI::Metadata { span } => span,
+    };
+    out.push((span_to_source_range(introducer), TYPE_PROPERTY));
+    out.push((span_to_source_range(&node.value.type_span), TYPE_TYPE));
 }
 
 fn collect_semantic_ranges_payload_clause(
@@ -832,9 +939,13 @@ fn collect_semantic_ranges_transition_accept(
     }
 }
 
-fn collect_semantic_ranges_then_stmt(then_stmt: &ThenStmt, out: &mut Vec<(SourceRange, u32)>) {
-    if let Some(ref span) = then_stmt.name_span {
-        out.push((span_to_source_range(span), TYPE_PROPERTY));
+fn collect_semantic_ranges_then_stmt(
+    ctx: &RangeCtx<'_>,
+    then_stmt: &ThenStmt,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if let Some(view) = ctx.document.qualified_reference(then_stmt.state_reference) {
+        out.push((span_to_source_range(&view.metadata.span), TYPE_PROPERTY));
     }
 }
 
@@ -846,7 +957,7 @@ fn collect_semantic_ranges_final_state(
 }
 
 fn collect_semantic_ranges_transition(
-    transition: &sysml_v2_parser::Node<Transition>,
+    transition: &sysml_v2_parser::next::Node<Transition>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     out.push((span_to_source_range(&transition.span), TYPE_PROPERTY));
@@ -859,52 +970,51 @@ fn collect_semantic_ranges_transition(
 
 fn collect_semantic_ranges_state_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<StateDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<StateDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use StateDefBodyElement as SDBE;
     match &node.value {
         SDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
-        SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(&then_stmt.value, out),
+        SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(ctx, &then_stmt.value, out),
         SDBE::FinalState(final_state) => {
             collect_semantic_ranges_final_state(&final_state.value, out)
         }
         SDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         SDBE::MetadataKeywordUsage(mk_node) => {
-            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
-        SDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        SDBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         SDBE::RequirementUsage(ru_node) => {
             push_usage_name_type_spans(
                 ctx.source,
                 &ru_node.span,
                 &ru_node.value.name,
-                ru_node.value.type_name.as_deref(),
+                ctx.type_text(ru_node.value.type_name),
                 None,
                 None,
                 out,
             );
-            if let RequirementDefBody::Brace { elements } = &ru_node.body {
+            if let RequirementDefBody::Brace { elements, .. } = &ru_node.body {
                 for element in elements {
                     collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                 }
             }
         }
         SDBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
-        SDBE::Entry(_)
-        | SDBE::Do(_)
-        | SDBE::Exit(_)
-        | SDBE::Doc(_)
-        | SDBE::Error(_)
-        | SDBE::Annotation(_)
-        | SDBE::Other(_) => {}
+        SDBE::Entry(_) | SDBE::Do(_) | SDBE::Exit(_) | SDBE::Error(_) => {}
+        // Member kinds this collector assigns no token of their own.
+        SDBE::AttributeUsage(_)
+        | SDBE::ActionUsage(_)
+        | SDBE::SuccessionUsage(_)
+        | SDBE::AssertConstraint(_) => {}
     }
 }
 
 fn collect_semantic_ranges_occurrence_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<OccurrenceBodyElement>,
+    node: &sysml_v2_parser::next::Node<OccurrenceBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use OccurrenceBodyElement as OBE;
@@ -914,7 +1024,7 @@ fn collect_semantic_ranges_occurrence_body_element(
                 ctx.source,
                 &attribute.span,
                 &attribute.value.name,
-                attribute.value.typing.as_deref(),
+                ctx.typing_text(attribute.value.typing.as_deref()),
                 attribute.value.name_span.as_ref(),
                 attribute.value.typing_span.as_ref(),
                 out,
@@ -927,7 +1037,7 @@ fn collect_semantic_ranges_occurrence_body_element(
             if let Some(ref span) = part_usage.value.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
-            if let PartUsageBody::Brace { elements } = &part_usage.body {
+            if let PartUsageBody::Brace { elements, .. } = &part_usage.body {
                 for child in elements {
                     collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
@@ -935,7 +1045,7 @@ fn collect_semantic_ranges_occurrence_body_element(
         }
         OBE::OccurrenceUsage(occurrence_usage) => {
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
-            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+            if let OccurrenceUsageBody::Brace { elements, .. } = &occurrence_usage.body {
                 for child in elements {
                     collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
@@ -949,57 +1059,57 @@ fn collect_semantic_ranges_occurrence_body_element(
         // `end name : Type;` (or nested forms) inside allocation/connection-like definition
         // bodies -- same highlighting `CDBE::EndDecl`/`IDBE::EndDecl` already use.
         OBE::EndDecl(end_decl) => {
-            if let Some(ref span) = end_decl.name_span {
-                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            if let EndIdentity::Declaration(label) = &end_decl.value.identity {
+                out.push((span_to_source_range(&label.span), TYPE_PROPERTY));
             }
             if let Some(ref span) = end_decl.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
         }
         OBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
-        OBE::Doc(_)
-        | OBE::Error(_)
-        | OBE::Annotation(_)
-        | OBE::AssertConstraint(_)
-        | OBE::Allocate(_)
-        | OBE::Other(_)
-        | OBE::SuccessionUsage(_) => {}
+        OBE::Error(_) | OBE::AssertConstraint(_) | OBE::Allocate(_) | OBE::SuccessionUsage(_) => {}
+        // Member kinds this collector assigns no token of their own.
+        OBE::Annotating(_)
+        | OBE::MetadataKeywordUsage(_)
+        | OBE::ItemUsage(_)
+        | OBE::RefDecl(_)
+        | OBE::ConnectionUsage(_) => {}
     }
 }
 
 fn collect_semantic_ranges_connection_def_body_element(
-    node: &sysml_v2_parser::Node<ConnectionDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<ConnectionDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use ConnectionDefBodyElement as CDBE;
     match &node.value {
         CDBE::EndDecl(end_decl) => {
-            if let Some(ref span) = end_decl.name_span {
-                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            if let EndIdentity::Declaration(label) = &end_decl.value.identity {
+                out.push((span_to_source_range(&label.span), TYPE_PROPERTY));
             }
             if let Some(ref span) = end_decl.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
         }
         CDBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
-        CDBE::ConnectStmt(_) | CDBE::Doc(_) | CDBE::Error(_) => {}
+        CDBE::ConnectStmt(_) | CDBE::Error(_) => {}
         _ => {}
     }
 }
 
 fn collect_semantic_ranges_part_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<PartDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => {
             push_usage_name_type_spans(
                 ctx.source,
                 &n.span,
                 &n.value.name,
-                n.value.typing.as_deref(),
+                ctx.typing_text(n.value.typing.as_deref()),
                 n.value.name_span.as_ref(),
                 n.value.typing_span.as_ref(),
                 out,
@@ -1010,7 +1120,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 ctx.source,
                 &n.span,
                 &n.value.name,
-                n.value.typing.as_deref(),
+                ctx.typing_text(n.value.typing.as_deref()),
                 n.value.name_span.as_ref(),
                 n.value.typing_span.as_ref(),
                 out,
@@ -1024,7 +1134,7 @@ fn collect_semantic_ranges_part_def_body_element(
             if let Some(ref span) = pu_node.value.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
-            if let PartUsageBody::Brace { elements } = &pu_node.body {
+            if let PartUsageBody::Brace { elements, .. } = &pu_node.body {
                 for child in elements {
                     collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
@@ -1049,7 +1159,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 ctx.source,
                 &item_node.span,
                 &item_node.value.name,
-                item_node.value.type_name.as_deref(),
+                ctx.type_text(item_node.value.type_name),
                 None,
                 None,
                 out,
@@ -1067,7 +1177,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 TYPE_CLASS,
                 out,
             );
-            if let PartDefBody::Brace { elements } = &pd_node.body {
+            if let PartDefBody::Brace { elements, .. } = &pd_node.body {
                 for element in elements {
                     collect_semantic_ranges_part_def_body_element(ctx, element, out);
                 }
@@ -1075,7 +1185,7 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::OccurrenceUsage(occurrence_usage) => {
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
-            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+            if let OccurrenceUsageBody::Brace { elements, .. } = &occurrence_usage.body {
                 for child in elements {
                     collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
@@ -1083,7 +1193,7 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::InterfaceDef(id_node) => {
             out.push((span_to_source_range(&id_node.span), TYPE_INTERFACE));
-            if let InterfaceDefBody::Brace { elements } = &id_node.body {
+            if let InterfaceDefBody::Brace { elements, .. } = &id_node.body {
                 for element in elements {
                     collect_semantic_ranges_interface_def_body_element(element, out);
                 }
@@ -1091,7 +1201,7 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::Connection(connection_usage) => {
             out.push((span_to_source_range(&connection_usage.span), TYPE_PROPERTY));
-            if let ConnectionDefBody::Brace { elements } = &connection_usage.value.body {
+            if let ConnectionDefBody::Brace { elements, .. } = &connection_usage.value.body {
                 for element in elements {
                     collect_semantic_ranges_connection_def_body_element(element, out);
                 }
@@ -1103,12 +1213,17 @@ fn collect_semantic_ranges_part_def_body_element(
                 ctx.source,
                 &exhibit.span,
                 &exhibit.value.name,
-                exhibit.value.type_name.as_deref(),
+                exhibit
+                    .value
+                    .typing
+                    .as_ref()
+                    .and_then(|relationship| relationship.value.target.first().copied())
+                    .and_then(|target| ctx.type_text(Some(target))),
                 None,
                 None,
                 out,
             );
-            if let StateDefBody::Brace { elements } = &exhibit.value.body {
+            if let StateDefBody::Brace { elements, .. } = &exhibit.value.body {
                 for element in elements {
                     collect_semantic_ranges_state_def_body_element(ctx, element, out);
                 }
@@ -1123,26 +1238,26 @@ fn collect_semantic_ranges_part_def_body_element(
             collect_semantic_ranges_attribute_body(ctx, &enum_node.body, out);
         }
         PDBE::MetadataKeywordUsage(mk_node) => {
-            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
-        PDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        PDBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         PDBE::RequirementUsage(ru_node) => {
             push_usage_name_type_spans(
                 ctx.source,
                 &ru_node.span,
                 &ru_node.value.name,
-                ru_node.value.type_name.as_deref(),
+                ctx.type_text(ru_node.value.type_name),
                 None,
                 None,
                 out,
             );
             match &ru_node.body {
-                RequirementDefBody::Brace { elements } => {
+                RequirementDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
-                RequirementDefBody::Semicolon => {}
+                RequirementDefBody::Semicolon { .. } => {}
             }
         }
         PDBE::FlowUsage(flow) => {
@@ -1157,13 +1272,8 @@ fn collect_semantic_ranges_part_def_body_element(
         | PDBE::InterfaceUsage(_)
         | PDBE::Allocate(_)
         | PDBE::Bind(_)
-        | PDBE::OpaqueMember(_)
-        | PDBE::Annotation(_)
         | PDBE::Error(_)
-        | PDBE::Doc(_)
-        | PDBE::Comment(_)
-        | PDBE::AssertConstraint(_)
-        | PDBE::Other(_) => {}
+        | PDBE::AssertConstraint(_) => {}
         PDBE::VariantUsage(n) => {
             out.push((span_to_source_range(&n.span), TYPE_PROPERTY));
         }
@@ -1173,17 +1283,17 @@ fn collect_semantic_ranges_part_def_body_element(
 
 fn collect_semantic_ranges_part_usage_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::next::Node<PartUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => {
             push_usage_name_type_spans(
                 ctx.source,
                 &n.span,
                 &n.value.name,
-                n.value.typing.as_deref(),
+                ctx.typing_text(n.value.typing.as_deref()),
                 n.value.name_span.as_ref(),
                 n.value.typing_span.as_ref(),
                 out,
@@ -1196,7 +1306,7 @@ fn collect_semantic_ranges_part_usage_body_element(
             if let Some(ref s) = n.value.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
-            if let PartUsageBody::Brace { elements } = &n.body {
+            if let PartUsageBody::Brace { elements, .. } = &n.body {
                 for child in elements {
                     collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
@@ -1221,7 +1331,7 @@ fn collect_semantic_ranges_part_usage_body_element(
 }
 
 fn collect_semantic_ranges_port_usage(
-    n: &sysml_v2_parser::Node<sysml_v2_parser::ast::PortUsage>,
+    n: &sysml_v2_parser::next::Node<sysml_v2_parser::next::ast::PortUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     if let Some(ref s) = n.value.name_span {
@@ -1230,7 +1340,7 @@ fn collect_semantic_ranges_port_usage(
     if let Some(ref s) = n.value.type_ref_span {
         out.push((span_to_source_range(s), TYPE_TYPE));
     }
-    if let PortBody::Brace { elements } = &n.body {
+    if let PortBody::Brace { elements, .. } = &n.body {
         for child in elements {
             collect_semantic_ranges_port_body_element(child, out);
         }
@@ -1238,7 +1348,7 @@ fn collect_semantic_ranges_port_usage(
 }
 
 fn collect_semantic_ranges_port_body_element(
-    node: &sysml_v2_parser::Node<PortBodyElement>,
+    node: &sysml_v2_parser::next::Node<PortBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use PortBodyElement as PBE;
@@ -1247,16 +1357,16 @@ fn collect_semantic_ranges_port_body_element(
         PBE::InOutDecl(w) => {
             out.push((span_to_source_range(&w.span), TYPE_PROPERTY));
         }
-        PBE::Error(_) | PBE::Doc(_) => {}
+        PBE::Error(_) => {}
         _ => {}
     }
 }
 
 fn collect_semantic_ranges_port_def_body_element(
-    node: &sysml_v2_parser::Node<PortDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<PortDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
+    use sysml_v2_parser::next::ast::PortDefBodyElement as PDBE;
     match &node.value {
         PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         PDBE::InOutDecl(w) => {
@@ -1267,28 +1377,28 @@ fn collect_semantic_ranges_port_def_body_element(
 }
 
 fn collect_semantic_ranges_interface_def_body_element(
-    node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<InterfaceDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::InterfaceDefBodyElement as IDBE;
+    use sysml_v2_parser::next::ast::InterfaceDefBodyElement as IDBE;
     match &node.value {
         IDBE::EndDecl(n) => {
-            if let Some(ref s) = n.name_span {
-                out.push((span_to_source_range(s), TYPE_PROPERTY));
+            if let EndIdentity::Declaration(label) = &n.value.identity {
+                out.push((span_to_source_range(&label.span), TYPE_PROPERTY));
             }
             if let Some(ref s) = n.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
         }
         IDBE::RefDecl(n) => {
-            if let Some(ref s) = n.name_span {
+            if let Some(ref s) = n.value.name_span {
                 out.push((span_to_source_range(s), TYPE_PROPERTY));
             }
             if let Some(ref s) = n.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
         }
-        IDBE::ConnectStmt(_) | IDBE::Doc(_) => {}
+        IDBE::ConnectStmt(_) => {}
         _ => {}
     }
 }
@@ -1308,9 +1418,9 @@ fn collect_semantic_ranges_action_usage(
         collect_semantic_ranges_payload_clause(accept, out);
     }
     if let Some(ref send) = usage.send {
-        collect_semantic_ranges_payload_clause(send, out);
+        collect_semantic_ranges_send_payload(ctx, send, out);
     }
-    if let ActionUsageBody::Brace { elements } = &usage.body {
+    if let Some(ActionUsageBody::Brace { elements, .. }) = &usage.body {
         for element in elements {
             collect_semantic_ranges_action_usage_body_element(ctx, element, out);
         }
@@ -1318,7 +1428,7 @@ fn collect_semantic_ranges_action_usage(
 }
 
 fn collect_semantic_ranges_ref_decl(
-    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::RefDecl>,
+    node: &sysml_v2_parser::next::Node<sysml_v2_parser::next::ast::RefDecl>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     let value = &node.value;
@@ -1334,19 +1444,19 @@ fn collect_semantic_ranges_ref_decl(
 
 fn collect_semantic_ranges_state_usage(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<StateUsage>,
+    node: &sysml_v2_parser::next::Node<StateUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     push_usage_name_type_spans(
         ctx.source,
         &node.span,
         &node.value.name,
-        node.value.type_name.as_deref(),
+        ctx.type_text(node.value.type_name),
         None,
         None,
         out,
     );
-    if let StateDefBody::Brace { elements } = &node.value.body {
+    if let StateDefBody::Brace { elements, .. } = &node.value.body {
         for element in elements {
             collect_semantic_ranges_state_def_body_element(ctx, element, out);
         }
@@ -1355,7 +1465,7 @@ fn collect_semantic_ranges_state_usage(
 
 fn collect_semantic_ranges_requirement_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<RequirementDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<RequirementDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use RequirementDefBodyElement as RDBE;
@@ -1364,23 +1474,19 @@ fn collect_semantic_ranges_requirement_def_body_element(
             out.push((span_to_source_range(&subject.span), TYPE_PROPERTY));
         }
         RDBE::Stakeholder(stakeholder) => {
-            out.push((
-                span_to_source_range(&stakeholder.value.name_span),
-                TYPE_PROPERTY,
-            ));
+            out.push((span_to_source_range(&stakeholder.span), TYPE_PROPERTY));
         }
         RDBE::Purpose(purpose) => {
-            out.push((
-                span_to_source_range(&purpose.value.target_span),
-                TYPE_PROPERTY,
-            ));
+            if let Some(view) = ctx.document.qualified_reference(purpose.value.target) {
+                out.push((span_to_source_range(&view.metadata.span), TYPE_PROPERTY));
+            }
         }
         RDBE::AttributeDef(attribute) => {
             push_usage_name_type_spans(
                 ctx.source,
                 &attribute.span,
                 &attribute.value.name,
-                attribute.value.typing.as_deref(),
+                ctx.typing_text(attribute.value.typing.as_deref()),
                 attribute.value.name_span.as_ref(),
                 attribute.value.typing_span.as_ref(),
                 out,
@@ -1391,7 +1497,7 @@ fn collect_semantic_ranges_requirement_def_body_element(
                 ctx.source,
                 &attribute.span,
                 &attribute.value.name,
-                attribute.value.typing.as_deref(),
+                ctx.typing_text(attribute.value.typing.as_deref()),
                 attribute.value.name_span.as_ref(),
                 attribute.value.typing_span.as_ref(),
                 out,
@@ -1403,14 +1509,14 @@ fn collect_semantic_ranges_requirement_def_body_element(
             }
         }
         RDBE::RequireConstraint(constraint) => {
-            if let RequireConstraintBody::Brace { elements } = &constraint.value.body {
+            if let ConstraintDefBody::Brace { elements, .. } = &constraint.value.body {
                 for element in elements {
                     match &element.value {
                         ConstraintDefBodyElement::InOutDecl(param) => {
                             out.push((span_to_source_range(&param.span), TYPE_PROPERTY));
                         }
-                        ConstraintDefBodyElement::MetadataAnnotation(meta) => {
-                            collect_semantic_ranges_metadata_annotation(meta, out);
+                        ConstraintDefBodyElement::Annotating(member) => {
+                            collect_semantic_ranges_annotating(&member.clone(), out);
                         }
                         _ => {}
                     }
@@ -1420,26 +1526,20 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::Frame(frame) => {
             out.push((span_to_source_range(&frame.span), TYPE_NAMESPACE));
             match &frame.value.body {
-                RequirementDefBody::Brace { elements } => {
+                RequirementDefBody::Brace { elements, .. } => {
                     for element in elements {
                         collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
-                RequirementDefBody::Semicolon => {}
+                RequirementDefBody::Semicolon { .. } => {}
             }
         }
         RDBE::Import(import) => out.push((
-            span_to_source_range(&import.value.target_span),
+            span_to_source_range(&import.value.target.span),
             TYPE_NAMESPACE,
         )),
-        RDBE::TextualRep(textual) => {
-            if let Some(ref span) = textual.value.language_span {
-                out.push((span_to_source_range(span), TYPE_STRING));
-            }
-            out.push((span_to_source_range(&textual.span), TYPE_PROPERTY));
-        }
         RDBE::MetadataKeywordUsage(mk_node) => {
-            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
         RDBE::RequirementActorDecl(actor) => {
             out.push((span_to_source_range(&actor.span), TYPE_PROPERTY));
@@ -1449,19 +1549,19 @@ fn collect_semantic_ranges_requirement_def_body_element(
                 ctx.source,
                 &requirement.span,
                 &requirement.value.name,
-                requirement.value.type_name.as_deref(),
+                ctx.type_text(requirement.value.type_name),
                 None,
                 None,
                 out,
             );
-            if let RequirementDefBody::Brace { elements } = &requirement.value.body {
+            if let RequirementDefBody::Brace { elements, .. } = &requirement.value.body {
                 for element in elements {
                     collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                 }
             }
         }
-        RDBE::Doc(_) | RDBE::Error(_) | RDBE::Other(_) | RDBE::Annotation(_) => {}
-        RDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        RDBE::Error(_) => {}
+        RDBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         // `subject;` shorthand (concern/viewpoint bodies, validation `11a`) -- mirrors
         // `RDBE::SubjectDecl`'s simple whole-span highlight (no separate name to point at).
         RDBE::SubjectRef(subject_ref) => {
@@ -1476,12 +1576,29 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::Constraint(constraint) => {
             out.push((span_to_source_range(&constraint.span), TYPE_PROPERTY));
         }
+        // Member kinds this collector assigns no token of their own.
+        RDBE::Dependency(_)
+        | RDBE::RequirementDef(_)
+        | RDBE::RefDecl(_)
+        | RDBE::ConcernUsage(_)
+        | RDBE::CalcUsage(_)
+        | RDBE::PortUsage(_)
+        | RDBE::AllocationUsage(_)
+        | RDBE::Satisfy(_)
+        | RDBE::ActionUsage(_)
+        | RDBE::SuccessionUsage(_)
+        | RDBE::Perform(_)
+        | RDBE::StateUsage(_)
+        | RDBE::ItemUsage(_)
+        | RDBE::PartUsage(_)
+        | RDBE::Connect(_)
+        | RDBE::ConnectionUsage(_) => {}
     }
 }
 
 fn collect_semantic_ranges_action_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<ActionDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<ActionDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use ActionDefBodyElement as ADBE;
@@ -1491,7 +1608,8 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::ThenAction(then_action) => {
             // `then merge <name>;`/`then <name>;` (§6 G23) aren't action-usage declarations --
             // nothing to highlight beyond what's already emitted for the enclosing statement.
-            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
+            if let sysml_v2_parser::next::ast::ThenTarget::Action(action_node) =
+                &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }
@@ -1506,7 +1624,7 @@ fn collect_semantic_ranges_action_def_body_element(
                 ctx.source,
                 &default_ref.span,
                 &default_ref.value.name,
-                default_ref.value.typing.as_deref(),
+                ctx.typing_text(default_ref.value.typing.as_deref()),
                 default_ref.value.name_span.as_ref(),
                 default_ref.value.typing_span.as_ref(),
                 out,
@@ -1519,17 +1637,14 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::DecisionStmt(_)
         | ADBE::JoinStmt(_)
         | ADBE::ForkStmt(_)
-        | ADBE::Decl(_)
         | ADBE::Error(_)
-        | ADBE::Doc(_)
-        | ADBE::Annotation(_)
         | ADBE::TerminateStmt(_)
         | ADBE::WhileStmt(_)
         | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
-        ADBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        ADBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         ADBE::MetadataKeywordUsage(mk_node) => {
-            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
         ADBE::PartUsage(pu_node) => {
             if let Some(ref span) = pu_node.value.name_span {
@@ -1538,7 +1653,7 @@ fn collect_semantic_ranges_action_def_body_element(
             if let Some(ref span) = pu_node.value.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
-            if let PartUsageBody::Brace { elements } = &pu_node.body {
+            if let PartUsageBody::Brace { elements, .. } = &pu_node.body {
                 for child in elements {
                     collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
@@ -1549,7 +1664,7 @@ fn collect_semantic_ranges_action_def_body_element(
                 ctx.source,
                 &item_node.span,
                 &item_node.value.name,
-                item_node.value.type_name.as_deref(),
+                ctx.type_text(item_node.value.type_name),
                 None,
                 None,
                 out,
@@ -1557,28 +1672,35 @@ fn collect_semantic_ranges_action_def_body_element(
         }
         ADBE::OccurrenceUsage(occurrence_usage) => {
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
-            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+            if let OccurrenceUsageBody::Brace { elements, .. } = &occurrence_usage.body {
                 for child in elements {
                     collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
             }
         }
         ADBE::AssertConstraint(_) => {}
+        // Member kinds this collector assigns no token of their own.
+        ADBE::Dependency(_)
+        | ADBE::MetadataUsage(_)
+        | ADBE::AttributeUsage(_)
+        | ADBE::CalcUsage(_)
+        | ADBE::ActionDef(_) => {}
     }
 }
 
 fn collect_semantic_ranges_action_usage_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::Node<ActionUsageBodyElement>,
+    node: &sysml_v2_parser::next::Node<ActionUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::ast::ActionUsageBodyElement as AUBE;
+    use sysml_v2_parser::next::ast::ActionUsageBodyElement as AUBE;
     match &node.value {
         AUBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
         AUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         AUBE::ThenAction(then_action) => {
             // See ADBE::ThenAction above.
-            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
+            if let sysml_v2_parser::next::ast::ThenTarget::Action(action_node) =
+                &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }
@@ -1592,7 +1714,7 @@ fn collect_semantic_ranges_action_usage_body_element(
                 ctx.source,
                 &default_ref.span,
                 &default_ref.value.name,
-                default_ref.value.typing.as_deref(),
+                ctx.typing_text(default_ref.value.typing.as_deref()),
                 default_ref.value.name_span.as_ref(),
                 default_ref.value.typing_span.as_ref(),
                 out,
@@ -1606,16 +1728,13 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::JoinStmt(_)
         | AUBE::ForkStmt(_)
         | AUBE::Error(_)
-        | AUBE::Doc(_)
-        | AUBE::Annotation(_)
-        | AUBE::Decl(_)
         | AUBE::TerminateStmt(_)
         | AUBE::WhileStmt(_)
         | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}
-        AUBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        AUBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         AUBE::MetadataKeywordUsage(mk_node) => {
-            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
         AUBE::PartUsage(pu_node) => {
             if let Some(ref span) = pu_node.value.name_span {
@@ -1624,7 +1743,7 @@ fn collect_semantic_ranges_action_usage_body_element(
             if let Some(ref span) = pu_node.value.type_ref_span {
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
-            if let PartUsageBody::Brace { elements } = &pu_node.body {
+            if let PartUsageBody::Brace { elements, .. } = &pu_node.body {
                 for child in elements {
                     collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
@@ -1635,7 +1754,7 @@ fn collect_semantic_ranges_action_usage_body_element(
                 ctx.source,
                 &item_node.span,
                 &item_node.value.name,
-                item_node.value.type_name.as_deref(),
+                ctx.type_text(item_node.value.type_name),
                 None,
                 None,
                 out,
@@ -1643,12 +1762,19 @@ fn collect_semantic_ranges_action_usage_body_element(
         }
         AUBE::OccurrenceUsage(occurrence_usage) => {
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
-            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+            if let OccurrenceUsageBody::Brace { elements, .. } = &occurrence_usage.body {
                 for child in elements {
                     collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
             }
         }
         AUBE::AssertConstraint(_) => {}
+        // Member kinds this collector assigns no token of their own.
+        AUBE::Dependency(_)
+        | AUBE::MetadataUsage(_)
+        | AUBE::AttributeUsage(_)
+        | AUBE::CalcUsage(_)
+        | AUBE::ActionDef(_)
+        | AUBE::VariantUsage(_) => {}
     }
 }

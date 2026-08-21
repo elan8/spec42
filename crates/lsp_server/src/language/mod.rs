@@ -523,7 +523,7 @@ mod tests {
 
     #[test]
     fn test_collect_named_elements_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::next::parse("").expect("parse empty");
         let el = collect_named_elements(&root);
         assert!(el.is_empty());
     }
@@ -531,7 +531,7 @@ mod tests {
     #[test]
     fn test_collect_named_elements_from_package() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::next::parse(text).expect("parse");
         let el = collect_named_elements(&root);
         assert_eq!(el.len(), 2); // package P + part Engine
         let names: Vec<_> = el.iter().map(|(n, _)| n.as_str()).collect();
@@ -542,7 +542,7 @@ mod tests {
     #[test]
     fn test_collect_named_elements_feature_and_classifier_decls() {
         let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::next::parse(text).expect("parse");
         let el = collect_named_elements(&root);
         let pairs: Vec<_> = el.iter().map(|(n, d)| (n.as_str(), d.as_str())).collect();
         assert!(pairs.contains(&("myFeature", "feature decl 'myFeature'")));
@@ -595,7 +595,7 @@ mod tests {
 
     #[test]
     fn test_collect_document_symbols_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::next::parse("").expect("parse empty");
         let symbols = collect_document_symbols(&root);
         assert!(symbols.is_empty());
     }
@@ -603,7 +603,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_package() {
         let text = "package P { }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::next::parse(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -614,7 +614,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_nested() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::next::parse(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -628,7 +628,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_feature_and_classifier_decls() {
         let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::next::parse(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         let children = symbols[0].children.as_ref().expect("children");
         assert!(children.iter().any(|child| {
@@ -1138,7 +1138,7 @@ mod tests {
             return; // skip when Vehicle Example not present (e.g. SYSML_V2_RELEASE_DIR unset)
         }
         let content = std::fs::read_to_string(&path).expect("read VehicleDefinitions.sysml");
-        let root = sysml_v2_parser::parse(&content).expect("parse");
+        let root = sysml_v2_parser::next::parse(&content).expect("parse");
         // Semantic tokens (using server's ast_semantic_ranges)
         let ranges = crate::semantic_tokens::ast_semantic_ranges(&root, &content);
         let target_dir = std::env::var_os("CARGO_TARGET_DIR")

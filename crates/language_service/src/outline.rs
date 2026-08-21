@@ -1,20 +1,20 @@
 //! Document outline and folding ranges from parsed AST.
 
-use sysml_v2_parser::ast::{
+use sysml_v2_parser::next::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
-use sysml_v2_parser::RootNamespace;
+use sysml_v2_parser::next::ParsedDocument;
 
 use crate::dto::{FoldingRangeDto, FoldingRangeKindDto, OutlineSymbol};
-use crate::syntax::{identification_name, span_to_range};
+use crate::syntax::{identification_name, qualified_identification_name, span_to_range};
 
-pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
+pub fn document_symbols(document: &ParsedDocument) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
-    for node in &root.elements {
+    for node in &document.elements {
         let sym = match &node.value {
             RootElement::Package(p) => {
-                let name = identification_name(&p.identification);
+                let name = qualified_identification_name(document, &p.identification);
                 let name = if name.is_empty() {
                     "(top level)".to_string()
                 } else {
@@ -22,9 +22,9 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 };
                 let range = span_to_range(&p.span);
                 let children = match &p.body {
-                    PackageBody::Brace { elements } => elements
+                    PackageBody::Brace { elements, .. } => elements
                         .iter()
-                        .filter_map(outline_symbol_from_element)
+                        .filter_map(|element| outline_symbol_from_element(document, element))
                         .collect(),
                     _ => vec![],
                 };
@@ -37,7 +37,7 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 })
             }
             RootElement::Namespace(n) => {
-                let name = identification_name(&n.identification);
+                let name = qualified_identification_name(document, &n.identification);
                 let name = if name.is_empty() {
                     "(top level)".to_string()
                 } else {
@@ -45,9 +45,9 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 };
                 let range = span_to_range(&n.span);
                 let children = match &n.body {
-                    PackageBody::Brace { elements } => elements
+                    PackageBody::Brace { elements, .. } => elements
                         .iter()
-                        .filter_map(outline_symbol_from_element)
+                        .filter_map(|element| outline_symbol_from_element(document, element))
                         .collect(),
                     _ => vec![],
                 };
@@ -60,7 +60,7 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 })
             }
             RootElement::LibraryPackage(lp) => {
-                let name = identification_name(&lp.identification);
+                let name = qualified_identification_name(document, &lp.identification);
                 let name = if name.is_empty() {
                     "(top level)".to_string()
                 } else {
@@ -68,9 +68,9 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 };
                 let range = span_to_range(&lp.span);
                 let children = match &lp.body {
-                    PackageBody::Brace { elements } => elements
+                    PackageBody::Brace { elements, .. } => elements
                         .iter()
-                        .filter_map(outline_symbol_from_element)
+                        .filter_map(|element| outline_symbol_from_element(document, element))
                         .collect(),
                     _ => vec![],
                 };
@@ -83,7 +83,7 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 })
             }
             RootElement::Import(_) => None,
-            RootElement::Member(member) => outline_symbol_from_element(member),
+            RootElement::Member(member) => outline_symbol_from_element(document, member),
         };
         if let Some(s) = sym {
             out.push(s);
@@ -111,8 +111,8 @@ fn normalize_outline_symbols(symbols: &mut [OutlineSymbol]) {
 
 /// Collects folding ranges from the AST. This reuses the document-symbol outline ranges and
 /// produces one folding range per symbol whose extent spans multiple lines.
-pub fn folding_ranges(root: &RootNamespace) -> Vec<FoldingRangeDto> {
-    let symbols = document_symbols(root);
+pub fn folding_ranges(document: &ParsedDocument) -> Vec<FoldingRangeDto> {
+    let symbols = document_symbols(document);
     let mut out = Vec::new();
 
     fn push_symbol(symbol: &OutlineSymbol, out: &mut Vec<FoldingRangeDto>) {
@@ -174,22 +174,23 @@ fn sanitize_identifier(s: &str) -> String {
 }
 
 fn outline_symbol_from_element(
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
+    document: &ParsedDocument,
+    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
 ) -> Option<OutlineSymbol> {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
     let range = span_to_range(&node.span);
     match &node.value {
         PBE::Package(p) => {
-            let name = identification_name(&p.identification);
+            let name = qualified_identification_name(document, &p.identification);
             let name = if name.is_empty() {
                 "(top level)".to_string()
             } else {
                 name
             };
             let children = match &p.body {
-                PackageBody::Brace { elements } => elements
+                PackageBody::Brace { elements, .. } => elements
                     .iter()
-                    .filter_map(outline_symbol_from_element)
+                    .filter_map(|element| outline_symbol_from_element(document, element))
                     .collect(),
                 _ => vec![],
             };
@@ -207,7 +208,7 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PartDefBody::Brace { elements } => outline_symbols_from_part_def_body(elements),
+                PartDefBody::Brace { elements, .. } => outline_symbols_from_part_def_body(elements),
                 _ => vec![],
             };
             Some(OutlineSymbol {
@@ -220,7 +221,9 @@ fn outline_symbol_from_element(
         }
         PBE::PartUsage(p) => {
             let children = match &p.body {
-                PartUsageBody::Brace { elements } => outline_symbols_from_part_usage_body(elements),
+                PartUsageBody::Brace { elements, .. } => {
+                    outline_symbols_from_part_usage_body(elements)
+                }
                 _ => vec![],
             };
             Some(OutlineSymbol {
@@ -237,7 +240,7 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PortDefBody::Brace { elements } => outline_symbols_from_port_def_body(elements),
+                PortDefBody::Brace { elements, .. } => outline_symbols_from_port_def_body(elements),
                 _ => vec![],
             };
             Some(OutlineSymbol {
@@ -268,6 +271,34 @@ fn outline_symbol_from_element(
             selection_range: range,
             children: vec![],
         }),
+        // `feature myFeature : BaseFeature;` and `class VehicleClass;` arrive as typed nodes now,
+        // where they used to be opaque `FeatureDecl`/`ClassifierDecl` raw text whose declared name
+        // had to be recovered by re-scanning it. Same published symbol kinds, read from the node.
+        PBE::KermlFeature(p) => {
+            if p.value.name.is_empty() {
+                return None;
+            }
+            Some(OutlineSymbol {
+                name: p.value.name.clone(),
+                kind: "feature decl".to_string(),
+                range,
+                selection_range: range,
+                children: vec![],
+            })
+        }
+        PBE::KermlClassifier(p) => {
+            let name = identification_name(&p.value.identification);
+            if name.is_empty() {
+                return None;
+            }
+            Some(OutlineSymbol {
+                name,
+                kind: "classifier decl".to_string(),
+                range,
+                selection_range: range,
+                children: vec![],
+            })
+        }
         PBE::FeatureDecl(p) => {
             let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
             if name.is_empty() {
@@ -380,11 +411,11 @@ fn outline_symbol_from_element(
 }
 
 fn outline_symbols_from_part_def_body(
-    elements: &[sysml_v2_parser::Node<PartDefBodyElement>],
+    elements: &[sysml_v2_parser::next::Node<PartDefBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
+        use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PDBE::AttributeDef(n) => out.push(OutlineSymbol {
@@ -408,11 +439,11 @@ fn outline_symbols_from_part_def_body(
 }
 
 fn outline_symbols_from_part_usage_body(
-    elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
+    elements: &[sysml_v2_parser::next::Node<PartUsageBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
+        use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PUBE::AttributeUsage(n) => out.push(OutlineSymbol {
@@ -424,7 +455,7 @@ fn outline_symbols_from_part_usage_body(
             }),
             PUBE::PartUsage(n) => {
                 let children = match &n.body {
-                    PartUsageBody::Brace { elements } => {
+                    PartUsageBody::Brace { elements, .. } => {
                         outline_symbols_from_part_usage_body(elements)
                     }
                     _ => vec![],
@@ -458,11 +489,11 @@ fn outline_symbols_from_part_usage_body(
 }
 
 fn outline_symbols_from_port_def_body(
-    elements: &[sysml_v2_parser::Node<PortDefBodyElement>],
+    elements: &[sysml_v2_parser::next::Node<PortDefBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
+        use sysml_v2_parser::next::ast::PortDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         if let PDBE::PortUsage(n) = &node.value {
             out.push(OutlineSymbol {

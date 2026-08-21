@@ -3,16 +3,16 @@
 
 use crate::common::text_span::to_lsp_range;
 #[cfg(test)]
-use crate::syntax::ast_util::identification_name;
+use crate::syntax::ast_util::{identification_name, qualified_identification_name};
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
 #[cfg(test)]
-use sysml_v2_parser::ast::{
+use sysml_v2_parser::next::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, RootElement,
 };
-use sysml_v2_parser::RootNamespace;
+use sysml_v2_parser::next::ParsedDocument;
 use tower_lsp::lsp_types::{
     DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
 };
@@ -106,7 +106,7 @@ fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
 }
 
 /// Collects document symbols (outline) from the AST.
-pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
+pub fn collect_document_symbols(root: &ParsedDocument) -> Vec<DocumentSymbol> {
     ls_document_symbols(root)
         .into_iter()
         .map(map_outline_symbol)
@@ -114,7 +114,7 @@ pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
 }
 
 /// Collects folding ranges from the AST.
-pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
+pub fn collect_folding_ranges(root: &ParsedDocument) -> Vec<FoldingRange> {
     ls_folding_ranges(root)
         .into_iter()
         .map(|range| FoldingRange {
@@ -148,30 +148,30 @@ pub struct SymbolEntry {
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).
 #[cfg(test)]
-pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
+pub fn collect_named_elements(root: &ParsedDocument) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for node in &root.elements {
         let (name, elements) = match &node.value {
             RootElement::Package(p) => {
-                let name = identification_name(&p.identification);
+                let name = qualified_identification_name(root, &p.identification);
                 let elements = match &p.body {
-                    PackageBody::Brace { elements } => elements,
+                    PackageBody::Brace { elements, .. } => elements,
                     _ => continue,
                 };
                 (name, elements)
             }
             RootElement::Namespace(n) => {
-                let name = identification_name(&n.identification);
+                let name = qualified_identification_name(root, &n.identification);
                 let elements = match &n.body {
-                    PackageBody::Brace { elements } => elements,
+                    PackageBody::Brace { elements, .. } => elements,
                     _ => continue,
                 };
                 (name, elements)
             }
             RootElement::LibraryPackage(lp) => {
-                let name = identification_name(&lp.identification);
+                let name = qualified_identification_name(root, &lp.identification);
                 let elements = match &lp.body {
-                    PackageBody::Brace { elements } => elements,
+                    PackageBody::Brace { elements, .. } => elements,
                     _ => continue,
                 };
                 (name, elements)
@@ -182,7 +182,7 @@ pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
             out.push((name.clone(), format!("package '{}'", name)));
         }
         for el in elements {
-            collect_named_from_element(el, &mut out);
+            collect_named_from_element(root, el, &mut out);
         }
     }
     out
@@ -190,19 +190,20 @@ pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
 
 #[cfg(test)]
 fn collect_named_from_element(
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
+    document: &ParsedDocument,
+    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(p) => {
-            let name = identification_name(&p.identification);
+            let name = qualified_identification_name(document, &p.identification);
             if !name.is_empty() {
                 out.push((name.clone(), format!("package '{}'", name)));
             }
-            if let PackageBody::Brace { elements } = &p.body {
+            if let PackageBody::Brace { elements, .. } = &p.body {
                 for child in elements {
-                    collect_named_from_element(child, out);
+                    collect_named_from_element(document, child, out);
                 }
             }
         }
@@ -211,7 +212,7 @@ fn collect_named_from_element(
             if !name.is_empty() {
                 out.push((name.clone(), format!("part def '{}'", name)));
             }
-            if let PartDefBody::Brace { elements } = &p.body {
+            if let PartDefBody::Brace { elements, .. } = &p.body {
                 for child in elements {
                     collect_named_from_part_def_body(child, out);
                 }
@@ -219,7 +220,7 @@ fn collect_named_from_element(
         }
         PBE::PartUsage(p) => {
             out.push((p.name.clone(), format!("part usage '{}'", p.name)));
-            if let PartUsageBody::Brace { elements } = &p.body {
+            if let PartUsageBody::Brace { elements, .. } = &p.body {
                 for child in elements {
                     collect_named_from_part_usage_body(child, out);
                 }
@@ -238,6 +239,21 @@ fn collect_named_from_element(
             }
         }
         PBE::AttributeDef(p) => out.push((p.name.clone(), format!("attribute def '{}'", p.name))),
+        // Typed now, where they used to be opaque raw text; same published names.
+        PBE::KermlFeature(p) => {
+            if !p.value.name.is_empty() {
+                out.push((
+                    p.value.name.clone(),
+                    format!("feature decl '{}'", p.value.name),
+                ));
+            }
+        }
+        PBE::KermlClassifier(p) => {
+            let name = identification_name(&p.value.identification);
+            if !name.is_empty() {
+                out.push((name.clone(), format!("classifier decl '{}'", name)));
+            }
+        }
         PBE::FeatureDecl(p) => {
             let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
             if !name.is_empty() {
@@ -289,10 +305,10 @@ fn collect_named_from_element(
 
 #[cfg(test)]
 fn collect_named_from_part_def_body(
-    node: &sysml_v2_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::next::Node<PartDefBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((n.name.clone(), format!("attribute def '{}'", n.name))),
         PDBE::PortUsage(n) => out.push((n.name.clone(), format!("port usage '{}'", n.name))),
@@ -302,15 +318,15 @@ fn collect_named_from_part_def_body(
 
 #[cfg(test)]
 fn collect_named_from_part_usage_body(
-    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::next::Node<PartUsageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => out.push((n.name.clone(), format!("attribute '{}'", n.name))),
         PUBE::PartUsage(n) => {
             out.push((n.name.clone(), format!("part usage '{}'", n.name)));
-            if let PartUsageBody::Brace { elements } = &n.body {
+            if let PartUsageBody::Brace { elements, .. } = &n.body {
                 for child in elements {
                     collect_named_from_part_usage_body(child, out);
                 }

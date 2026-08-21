@@ -1,5 +1,5 @@
 use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_PROPERTY};
-use sysml_v2_parser::parse_for_editor;
+use sysml_v2_parser::next::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -61,7 +61,7 @@ fn part_def_body_tokenizes_ref_and_part_usage_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "axle"));
@@ -77,7 +77,7 @@ fn item_def_body_tokenizes_inner_attribute_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
@@ -95,7 +95,7 @@ fn item_def_body_tokenizes_short_and_long_attribute_names_as_properties() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -117,7 +117,7 @@ fn metadata_def_body_tokenizes_inner_attribute_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
