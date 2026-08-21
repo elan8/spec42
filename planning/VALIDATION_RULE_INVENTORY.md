@@ -68,46 +68,16 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.7.2 AttributeDefinition
-  - `validateAttributeDefinitionFeatures`
 
-- 8.3.7.3 AttributeUsage
-  - `validateAttributeUsageFeatures`
-  - `validateAttributeUsageIsReference`
 
-- 8.3.8.2 EnumerationDefinition
-  - `validateEnumerationDefinitionIsVariation`
 
-- 8.3.9.2 EventOccurrenceUsage
-  - `validateEventOccurrenceUsageIsReference`
-  - `validateEventOccurrenceUsageReference`
 
-- 8.3.9.4 OccurrenceUsage
-  - `validateOccurrenceUsageIndividualDefinition`
-  - `validateOccurrenceUsageIndividualUsage`
-  - `validateOccurrenceUsageIsPortion`
-  - `validateOccurrenceUsagePortionKind`
 
-- 8.3.11.3 PartUsage
-  - `validatePartUsagePartDefinition`
 
-- 8.3.12.2 ConjugatedPortDefinition
-  - `validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty`
-  - `validateConjugatedPortDefinitionOriginalPortDefinition`
 
-- 8.3.12.5 PortDefinition
-  - `validatePortDefinitionConjugatedPortDefinition`
-  - `validatePortDefinitionOwnedUsagesNotComposite`
 
-- 8.3.12.6 PortUsage
-  - `validatePortUsageIsReference`
-  - `validatePortUsageNestedUsagesNotComposite`
 
-- 8.3.13.3 ConnectionDefinition
-  - `validateConnectionDefinitionIsSufficient`
 
-- 8.3.16.2 FlowDefinition
-  - `validateFlowDefinitionFlowEnds`
 
 - 8.3.17.2 AcceptActionUsage
   - `validateAcceptActionUsageParameters`
