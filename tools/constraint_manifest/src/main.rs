@@ -12,7 +12,7 @@ use std::process::Command as ProcessCommand;
 
 use clap::{Parser, Subcommand, ValueEnum};
 use quick_xml::events::{BytesStart, Event};
-use quick_xml::Reader;
+use quick_xml::{Reader, XmlVersion};
 use sha2::{Digest, Sha256};
 use spec42_constraint_manifest::{
     ActionDerivedFactContract, ActionDerivedFactKind, BindingConnectorCheckContract,
@@ -1521,7 +1521,7 @@ fn attributes(
         let attribute = attribute.map_err(|error| format!("invalid XML attribute: {error}"))?;
         let key = local_name(attribute.key.as_ref()).to_string();
         let value = attribute
-            .unescape_value()
+            .normalized_value(XmlVersion::Implicit1_0)
             .map_err(|error| format!("invalid XML attribute value: {error}"))?
             .into_owned();
         if values.insert(key.clone(), value).is_some() {

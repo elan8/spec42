@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap.workspace = true
-quick-xml = "0.37"
+quick-xml = "0.41"
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
