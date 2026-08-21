@@ -6,14 +6,14 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
-use sysml_v2_parser::ast::{
-    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Identification, Import,
-    ItemUsage, LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody,
-    PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-    PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-    PortUsage, RefDecl, RootElement,
+use sysml_v2_parser::next::ast::{
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ItemUsage,
+    LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody, PackageBodyElement, PartDef,
+    PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
+    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, QualifiedIdentification,
+    RefDecl, RootElement,
 };
-use sysml_v2_parser::{Node, RootNamespace as ParsedRoot};
+use sysml_v2_parser::next::{Node, ParsedDocument as ParsedRoot};
 use walkdir::WalkDir;
 
 /// Workspace file path and text used to seed the library import closure.

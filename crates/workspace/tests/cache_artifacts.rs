@@ -30,7 +30,7 @@ fn isolated_store() -> (TempDir, FileCacheStore) {
 fn parse_outcome_strict_success_round_trips_through_the_real_store() {
     let (_dir, store) = isolated_store();
     let src = "package RoundTrip;";
-    let result = sysml_v2_parser::parse(src);
+    let result = sysml_v2_parser::next::parse(src);
     assert!(result.is_ok());
     let outcome = ParseOutcome::from_strict(&result);
 
@@ -56,7 +56,7 @@ fn parse_outcome_editor_recovery_retains_complete_diagnostics_on_a_warm_hit() {
     // empty diagnostic list.
     let (_dir, store) = isolated_store();
     let src = "package P { this is not valid sysml @@@ ";
-    let cold = sysml_v2_parser::parse_for_editor(src);
+    let cold = sysml_v2_parser::next::parse_for_editor(src);
     assert!(!cold.errors.is_empty(), "fixture must produce diagnostics");
     let cold_outcome = ParseOutcome::from_editor_recovery(&cold);
     assert!(!cold_outcome.diagnostics.is_empty());
@@ -87,7 +87,7 @@ fn parse_outcome_editor_recovery_retains_complete_diagnostics_on_a_warm_hit() {
 fn parse_outcome_expected_negative_round_trips_under_the_same_complete_key() {
     let (_dir, store) = isolated_store();
     let src = "package P { @@@ not valid ";
-    let result = sysml_v2_parser::parse(src);
+    let result = sysml_v2_parser::next::parse(src);
     assert!(result.is_err());
     let outcome = ParseOutcome::from_strict(&result);
     assert_eq!(
@@ -116,7 +116,7 @@ fn parse_outcome_identical_content_at_a_different_path_hits() {
     // confirming they collide on the same cache key/entry.
     let (_dir, store) = isolated_store();
     let src = "package Shared;";
-    let outcome = ParseOutcome::from_strict(&sysml_v2_parser::parse(src));
+    let outcome = ParseOutcome::from_strict(&sysml_v2_parser::next::parse(src));
 
     let id_at_path_a = ParseOutcomeIdentity {
         content_digest: ContentDigest::of_bytes(src.as_bytes()),
@@ -162,7 +162,7 @@ fn parse_outcome_key_completeness_per_input() {
 fn parse_outcome_corruption_falls_back_cold_as_a_typed_miss() {
     let (_dir, store) = isolated_store();
     let src = "package Corrupt;";
-    let outcome = ParseOutcome::from_strict(&sysml_v2_parser::parse(src));
+    let outcome = ParseOutcome::from_strict(&sysml_v2_parser::next::parse(src));
     let id = ParseOutcomeIdentity {
         content_digest: ContentDigest::of_bytes(src.as_bytes()),
         mode: ParseMode::StrictSemantic,

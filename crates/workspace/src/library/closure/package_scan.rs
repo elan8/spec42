@@ -1,4 +1,5 @@
 use super::*;
+use sysml_v2_parser::next::ParsedDocument;
 
 pub(crate) struct PackageIndex {
     pub(crate) packages: HashMap<PackageKey, Vec<IndexedFile>>,
@@ -134,10 +135,15 @@ pub(crate) fn is_stdlib_slice_root(root: &str) -> bool {
         .ends_with("sysml.library")
 }
 
-pub(crate) fn package_declared_name(identification: &Identification) -> Option<String> {
+/// The declared label of a namespace-owning declaration.
+///
+/// Only the simple alternative carries its own label; a qualified path (`package A::B { ... }`) is
+/// an arena identity, and a package key built from it belongs to the document that owns it. The
+/// callers here key packages by simple name, so a qualified declaration yields no key -- the same
+/// answer the old `Option<String>` field gave, now stated rather than incidental.
+pub(crate) fn package_declared_name(identification: &QualifiedIdentification) -> Option<String> {
     identification
-        .name
-        .as_deref()
+        .simple_name()
         .map(str::trim)
         .filter(|name| !name.is_empty())
         .map(str::to_string)
@@ -168,7 +174,7 @@ pub fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
 
 /// Qualified names of packages declared in SysML source (includes nested packages).
 pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
         return HashSet::new();
     };
     declared_packages_from_parsed(&parsed)
@@ -189,11 +195,18 @@ pub(crate) fn for_each_package_in_parsed(
     }
 }
 
-pub(crate) fn for_each_package_in_content(content: &str, visit: impl FnMut(String, &PackageBody)) {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+/// Visits every package in `content`, handing the visitor the document that owns the arena.
+///
+/// The body alone is no longer enough: a member's targets are `QualifiedReferenceId`s, and only
+/// the parsed document can render them back to authored text.
+pub(crate) fn for_each_package_in_content(
+    content: &str,
+    mut visit: impl FnMut(&ParsedDocument, String, &PackageBody),
+) {
+    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
         return;
     };
-    for_each_package_in_parsed(&parsed, visit);
+    for_each_package_in_parsed(&parsed, |qualified, body| visit(&parsed, qualified, body));
 }
 
 pub(crate) fn visit_package_tree(
@@ -233,7 +246,7 @@ pub(crate) fn walk_nested_packages(
     parent: Option<&str>,
     visit: &mut impl FnMut(String, &PackageBody),
 ) {
-    let PackageBody::Brace { elements } = body else {
+    let PackageBody::Brace { elements, .. } = body else {
         return;
     };
     for member in elements {
@@ -247,9 +260,12 @@ pub(crate) fn walk_nested_packages(
     }
 }
 
-pub(crate) fn collect_import_targets_from_package_body(body: &PackageBody) -> Vec<String> {
+pub(crate) fn collect_import_targets_from_package_body(
+    document: &ParsedDocument,
+    body: &PackageBody,
+) -> Vec<String> {
     let mut out = Vec::new();
-    walk_package_body(body, &mut out);
+    walk_package_body(document, body, &mut out);
     out
 }
 
@@ -350,18 +366,18 @@ pub(crate) fn enqueue_imports_from_workspace_package(
     queue: &mut VecDeque<PackageKey>,
 ) {
     for source in workspace {
-        for_each_package_in_content(source.content, |qualified, body| {
+        for_each_package_in_content(source.content, |document, qualified, body| {
             if qualified != pkg.0 {
                 return;
             }
-            for target in collect_import_targets_from_package_body(body) {
+            for target in collect_import_targets_from_package_body(document, body) {
                 for next in package_keys_for_import_target(&target) {
                     queue.push_back(PackageKey(next));
                 }
             }
             if options.bootstrap_typing_references {
                 let mut type_targets = Vec::new();
-                collect_type_reference_targets_from_package_body(body, &mut type_targets);
+                collect_type_reference_targets_from_package_body(document, body, &mut type_targets);
                 for target in type_targets {
                     for next in package_keys_for_import_target(&target) {
                         queue.push_back(PackageKey(next));
@@ -373,7 +389,7 @@ pub(crate) fn enqueue_imports_from_workspace_package(
 }
 
 pub(crate) fn collect_import_targets_from_content(content: &str) -> Vec<String> {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
         return Vec::new();
     };
     let mut out = Vec::new();
@@ -381,43 +397,87 @@ pub(crate) fn collect_import_targets_from_content(content: &str) -> Vec<String> 
     out
 }
 
-pub(crate) fn collect_import_targets_from_root(root: &ParsedRoot, out: &mut Vec<String>) {
-    for element in &root.elements {
+pub(crate) fn collect_import_targets_from_root(document: &ParsedRoot, out: &mut Vec<String>) {
+    for element in &document.elements {
         match &element.value {
-            RootElement::Package(package) => walk_package_imports(package, out),
-            RootElement::LibraryPackage(package) => walk_library_package_imports(package, out),
+            RootElement::Package(package) => walk_package_imports(document, package, out),
+            RootElement::LibraryPackage(package) => {
+                walk_library_package_imports(document, package, out)
+            }
             _ => {}
         }
     }
 }
 
-pub(crate) fn walk_package_body(body: &PackageBody, out: &mut Vec<String>) {
-    let PackageBody::Brace { elements } = body else {
+pub(crate) fn walk_package_body(
+    document: &ParsedDocument,
+    body: &PackageBody,
+    out: &mut Vec<String>,
+) {
+    let PackageBody::Brace { elements, .. } = body else {
         return;
     };
     for member in elements {
         match &member.value {
-            PackageBodyElement::Import(import) => push_import_target(import, out),
-            PackageBodyElement::Package(nested) => walk_package_imports(nested, out),
-            PackageBodyElement::LibraryPackage(nested) => walk_library_package_imports(nested, out),
+            PackageBodyElement::Import(import) => push_import_target(document, import, out),
+            PackageBodyElement::Package(nested) => walk_package_imports(document, nested, out),
+            PackageBodyElement::LibraryPackage(nested) => {
+                walk_library_package_imports(document, nested, out)
+            }
             _ => {}
         }
     }
 }
 
-pub(crate) fn walk_package_imports(package: &Node<Package>, out: &mut Vec<String>) {
-    walk_package_body(&package.value.body, out);
+pub(crate) fn walk_package_imports(
+    document: &ParsedDocument,
+    package: &Node<Package>,
+    out: &mut Vec<String>,
+) {
+    walk_package_body(document, &package.value.body, out);
 }
 
-pub(crate) fn walk_library_package_imports(package: &Node<LibraryPackage>, out: &mut Vec<String>) {
-    walk_package_body(&package.value.body, out);
+pub(crate) fn walk_library_package_imports(
+    document: &ParsedDocument,
+    package: &Node<LibraryPackage>,
+    out: &mut Vec<String>,
+) {
+    walk_package_body(document, &package.value.body, out);
 }
 
-pub(crate) fn push_import_target(import: &Node<Import>, out: &mut Vec<String>) {
-    let target = import.value.target.trim();
-    if !target.is_empty() {
-        out.push(target.to_string());
+pub(crate) fn push_import_target(
+    document: &ParsedDocument,
+    import: &Node<Import>,
+    out: &mut Vec<String>,
+) {
+    let Some(view) = document.qualified_reference(import.value.target.reference) else {
+        return;
+    };
+    let target = view.authored_text().trim();
+    if target.is_empty() {
+        return;
     }
+    // The arena owns the qualified name; the `::*` / `::**` suffix is the *shape* of the import,
+    // not part of the name. The seed key spells the authored form, so reattach it.
+    use sysml_v2_parser::next::ast::ImportShape;
+    let suffix = match &import.value.target.shape {
+        ImportShape::Membership {
+            recursive_suffix: Some(_),
+        } => "::**",
+        ImportShape::Membership {
+            recursive_suffix: None,
+        } => "",
+        ImportShape::Namespace {
+            recursive_suffix: Some(_),
+            ..
+        } => "::*::**",
+        ImportShape::Namespace {
+            recursive_suffix: None,
+            ..
+        } => "::*",
+        ImportShape::Filter { .. } => "",
+    };
+    out.push(format!("{target}{suffix}"));
 }
 
 pub(crate) fn push_type_reference(target: &str, out: &mut Vec<String>) {
