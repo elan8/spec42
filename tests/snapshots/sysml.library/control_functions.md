@@ -178,12 +178,6 @@ standard library package ControlFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 18 5) (end 18 10))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 22 11) (end 22 18))
@@ -662,7 +656,7 @@ standard library package ControlFunctions {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (kind expressionOperand) (ordinal 0))
       (authored-target "chain")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::.::chain")))))
     (reference (id (source (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::.::source"))) (kind featureTyping) (ordinal 0))
       (authored-target "Anything")
       (outcome (status unresolved)))
@@ -863,6 +857,7 @@ standard library package ControlFunctions {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::.::chain"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "allTrue")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::allTrue::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "allTrue")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "anyTrue")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::anyTrue::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "anyTrue")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "maximize")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::maximize::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "maximize")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
@@ -870,7 +865,7 @@ standard library package ControlFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "selectOne")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::selectOne::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "selectOne")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "allTrue")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "anyTrue")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "maximize")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
@@ -1139,7 +1134,7 @@ standard library package ControlFunctions {
   )
   (query (document "memory://snapshot/control_functions.md") (range (start 18 5) (end 18 10)) (probe (position 18 5))
     (reference (id (source (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (kind expressionOperand) (ordinal 0) (authored-target "chain")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::.::chain")))))
     )
   )
   (query (document "memory://snapshot/control_functions.md") (range (start 14 22) (end 14 30)) (probe (position 14 22))

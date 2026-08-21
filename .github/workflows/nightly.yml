@@ -80,7 +80,12 @@ jobs:
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
       - name: Clone SysML-v2-Release
-        run: git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+        run: git clone --depth 1 --branch 2026-04 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+
+      - name: Check SysML graphical notation inventory
+        env:
+          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
+        run: node scripts/generate-notation-inventory.mjs --check
 
       - name: Run workspace scan test with SysML release
         env:

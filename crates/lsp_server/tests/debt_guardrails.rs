@@ -48,7 +48,7 @@ fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
 fn frontend_normalize_payload_line_count_does_not_increase() {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let repo_root = manifest.parent().and_then(Path::parent).expect("repo root");
-    let normalize_path = repo_root.join("shared/diagram-renderer/src/prepare/normalize-payload.ts");
+    let normalize_path = repo_root.join("vscode/diagram-renderer/src/prepare/normalize-payload.ts");
     let contents = fs::read_to_string(normalize_path).expect("normalize-payload.ts");
     const MAX_NORMALIZE_PAYLOAD_LINES: usize = 100;
     let line_count = contents.lines().count();
@@ -74,11 +74,81 @@ fn frontend_skipped_test_count_does_not_increase() {
     );
 }
 
+#[test]
+fn lsp_workspace_does_not_own_semantic_build_or_library_cache() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+    for forbidden in [
+        "BuildRequest::resolved",
+        "resolved_with_library",
+        "LibraryStratum::build",
+        "CachedLibraryStratum",
+    ] {
+        assert_eq!(
+            count_occurrences(&root, forbidden),
+            0,
+            "the LSP workspace must publish through workspace::PublicationCoordinator; found {forbidden}"
+        );
+    }
+}
+
+#[test]
+fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+    let state = fs::read_to_string(root.join("workspace/state.rs")).expect("workspace state");
+    assert!(
+        !state.contains("recover_short_name_search_symbols"),
+        "the committed symbol table must contain only exact PublishedModel query results"
+    );
+
+    // Recovery has one declaration and four deliberately search-only call sites. A new use must
+    // make its non-admitted provenance explicit and update this architectural gate deliberately.
+    assert_eq!(
+        count_occurrences(&root, "recover_short_name_search_symbols"),
+        5,
+        "syntax-recovery search projection escaped its reviewed boundary"
+    );
+    assert_eq!(
+        count_occurrences(&root, "normalized_library_symbol_name"),
+        0,
+        "library search must not replace typed-query names by re-parsing source text"
+    );
+}
+
+#[test]
+fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+    assert_eq!(
+        count_occurrences(&root, "workspace_uris_importing_declarations_from"),
+        0,
+        "syntax inspection must not masquerade as a resolved import graph"
+    );
+    assert_eq!(
+        count_occurrences(&root, "conservatively_affected_diagnostic_documents"),
+        0,
+        "diagnostic dependency selection must use the PublishedModel query"
+    );
+    assert_eq!(
+        count_occurrences(&root, "collect_import_targets_from_root"),
+        0,
+        "LSP code must not reconstruct semantic dependencies by walking parser imports"
+    );
+}
+
 fn count_pattern(root: &Path, pattern: &str) -> usize {
     let mut count = 0usize;
     visit_rs_files(root, &mut |path| {
         if let Ok(contents) = fs::read_to_string(path) {
             count += count_attribute_lines(&contents, pattern);
+        }
+    });
+    count
+}
+
+fn count_occurrences(root: &Path, pattern: &str) -> usize {
+    let mut count = 0;
+    visit_rs_files(root, &mut |path| {
+        if let Ok(contents) = fs::read_to_string(path) {
+            count += contents.matches(pattern).count();
         }
     });
     count

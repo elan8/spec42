@@ -410,7 +410,7 @@ probe element_details.md 22 15
           (relationship (kind "featureTyping") (provenance authored) (authored "Wheel") (target resolved))
           (relationship (kind "featureTyping") (provenance authored) (authored "Missing") (target unresolved))
           (typing (outcome partial) (target "Details::Wheel"))
-          (effective-typing (outcome resolved) (type (qualified-name "Details::Wheel") (origin direct)))
+          (effective-typing (outcome partial) (type (qualified-name "Details::Wheel") (origin direct)))
           (outgoing (kind "typing") (peer "Details::Wheel") (provenance authored))
         )
       )

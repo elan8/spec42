@@ -22,3 +22,5 @@ __pycache__/
 
 # Agent worktrees created by Claude Code
 .claude/worktrees/
+
+*.vsix

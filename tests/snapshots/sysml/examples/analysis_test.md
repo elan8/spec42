@@ -50,12 +50,6 @@ package AnalysisTest {
   (document "memory://snapshot/analysis_test.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 19 2) (end 19 5))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -91,7 +85,7 @@ package AnalysisTest {
   (references
     (reference (id (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "v::m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m")))))
     (reference (id (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (kind featureTyping) (ordinal 0))
       (authored-target "AnalysisObjective")
       (outcome (status resolved) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisObjective")))))
@@ -112,6 +106,7 @@ package AnalysisTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V")))))
   )
   (relationships
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisObjective"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::v"))) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::v"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (kind featureTyping) (ordinal 0)))
@@ -198,7 +193,7 @@ package AnalysisTest {
 (navigation
   (query (document "memory://snapshot/analysis_test.md") (range (start 19 2) (end 19 5)) (probe (position 19 2))
     (reference (id (source (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (kind memberAccessOperand) (ordinal 0) (authored-target "v::m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m")))))
     )
   )
   (query (document "memory://snapshot/analysis_test.md") (range (start 15 18) (end 15 35)) (probe (position 15 18))

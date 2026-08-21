@@ -1176,6 +1176,7 @@ fn settled_filters(
             form: condition.form,
             span: condition.span.clone(),
             state: state_of(condition),
+            predicate: condition.predicate.clone(),
         })
         .collect()
 }
@@ -1289,6 +1290,116 @@ impl ResolvedSemanticModel {
             PublicationCompleteness::ParseRecovery => PublicCompleteness::ParseRecovery,
             PublicationCompleteness::UnsupportedSyntax => PublicCompleteness::UnsupportedSyntax,
             PublicationCompleteness::NonConverged => PublicCompleteness::NonConverged,
+        }
+    }
+
+    pub(crate) fn affected_documents(
+        &self,
+        changed_document: &str,
+    ) -> QueryOutcome<Box<[crate::AffectedDocument]>> {
+        let Some(changed) = self
+            .storage
+            .documents
+            .iter()
+            .position(|document| document.identity.as_ref() == changed_document)
+            .map(|index| DocumentId(index as u32))
+        else {
+            return QueryOutcome::Unresolved;
+        };
+
+        // `provider -> consumer`. Both resolved and ambiguous outcomes are owned facts: every
+        // ambiguous candidate can affect the consumer if it changes. Unresolved/unsupported
+        // dependency-shaping references remain explicit through the publication completeness or
+        // the conservative result below; they are never guessed from authored text.
+        let mut reverse = vec![Vec::<DocumentId>::new(); self.storage.documents.len()];
+        let mut unsettled_dependency = false;
+        for (ordinal, reference) in self.storage.references.iter().enumerate() {
+            if !matches!(
+                reference.kind,
+                ReferenceKind::NamespaceImport
+                    | ReferenceKind::MembershipImport
+                    | ReferenceKind::FilterImport
+                    | ReferenceKind::AliasBinding
+            ) {
+                continue;
+            }
+            let Some(source_document) = self
+                .storage
+                .declaration(reference.source)
+                .map(|declaration| declaration.document)
+            else {
+                unsettled_dependency = true;
+                continue;
+            };
+            let reference_id = AuthoredReferenceId(ordinal as u32);
+            let targets: Vec<DeclarationId> = match self.resolution.outcome(reference_id) {
+                Some(ResolutionStatus::Resolved(target)) => vec![target],
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    self.resolution.ambiguous_candidates(range).to_vec()
+                }
+                Some(
+                    ResolutionStatus::Unresolved
+                    | ResolutionStatus::Unsupported
+                    | ResolutionStatus::NonConverged,
+                )
+                | None => {
+                    unsettled_dependency = true;
+                    continue;
+                }
+            };
+            for target in targets {
+                if let Some(target_document) = self
+                    .storage
+                    .declaration(target)
+                    .map(|declaration| declaration.document)
+                {
+                    if target_document != source_document {
+                        reverse[target_document.index()].push(source_document);
+                    }
+                }
+            }
+        }
+
+        let mut seen = vec![false; self.storage.documents.len()];
+        let mut pending = vec![changed];
+        seen[changed.index()] = true;
+        while let Some(provider) = pending.pop() {
+            for consumer in reverse[provider.index()].iter().copied() {
+                if !seen[consumer.index()] {
+                    seen[consumer.index()] = true;
+                    pending.push(consumer);
+                }
+            }
+        }
+        let mut affected = seen
+            .into_iter()
+            .enumerate()
+            .filter(|(index, affected)| *affected && *index != changed.index())
+            .filter_map(|(index, _)| self.storage.documents.get(index))
+            .map(|document| crate::AffectedDocument {
+                identity: document.identity.clone(),
+                source: match document.role {
+                    source_identity::SourceRole::Workspace => crate::ElementSource::Workspace,
+                    source_identity::SourceRole::StandardLibrary => {
+                        crate::ElementSource::StandardLibrary
+                    }
+                    source_identity::SourceRole::Library => crate::ElementSource::Library,
+                    source_identity::SourceRole::External => crate::ElementSource::External,
+                },
+            })
+            .collect::<Vec<_>>();
+        affected.sort_by(|left, right| left.identity.cmp(&right.identity));
+        let affected = affected.into_boxed_slice();
+        if unsettled_dependency {
+            match self.metadata.completeness {
+                PublicationCompleteness::NonConverged => QueryOutcome::Incomplete,
+                PublicationCompleteness::UnsupportedSyntax => {
+                    QueryOutcome::UnsupportedWith(affected)
+                }
+                _ => QueryOutcome::Recovered(affected),
+            }
+        } else {
+            self.resolved_outcome(affected)
         }
     }
 
@@ -1747,10 +1858,10 @@ impl ResolvedSemanticModel {
                         None => UNCODED_PARSE_ERROR.into(),
                     }),
                     severity: match error.severity {
-                        Some(sysml_v2_parser_next::DiagnosticSeverity::Warning) => {
+                        Some(sysml_v2_parser::next::DiagnosticSeverity::Warning) => {
                             DiagnosticSeverity::Warning
                         }
-                        Some(sysml_v2_parser_next::DiagnosticSeverity::Error) | None => {
+                        Some(sysml_v2_parser::next::DiagnosticSeverity::Error) | None => {
                             DiagnosticSeverity::Error
                         }
                     },
@@ -3226,11 +3337,15 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     if let Some(seed) = seed {
         outcomes[..settled].copy_from_slice(seed);
     }
-    let import_slots: Vec<usize> = references
+    let all_import_slots: Vec<usize> = references
         .iter()
         .enumerate()
-        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
+        .collect();
+    let import_slots: Vec<usize> = all_import_slots
+        .iter()
+        .copied()
+        .filter(|index| *index >= settled)
         .collect();
     // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
     // by FeatureTyping is built directly from settled Subclassification outcomes; splitting the two
@@ -3381,8 +3496,6 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::TransitionEffect
                     | ReferenceKind::SatisfySource
                     | ReferenceKind::SatisfyTarget
-                    | ReferenceKind::AllocateSource
-                    | ReferenceKind::AllocateTarget
                     | ReferenceKind::BindSource
                     | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
@@ -3421,7 +3534,13 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::MemberAccessOperand).then_some(index)
+            matches!(
+                reference.kind(),
+                ReferenceKind::MemberAccessOperand
+                    | ReferenceKind::AllocateSource
+                    | ReferenceKind::AllocateTarget
+            )
+            .then_some(index)
         })
         .collect();
     let mut work = ResolutionWork {
@@ -3472,7 +3591,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             declarations,
             &memberships,
             references,
-            &import_slots,
+            &all_import_slots,
             &exported_names,
             &exported_imports,
             &outcomes,
@@ -4676,10 +4795,15 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         } else {
             DeclarationDomain::Any
         };
+        let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
+            Some(reference.source())
+        } else {
+            source.owner
+        };
         lookup_lexical_into(
             declarations,
             &indexes,
-            source.owner,
+            lexical_scope,
             segments[0],
             LookupTarget {
                 domain: first_segment_domain,
@@ -4849,9 +4973,10 @@ fn lookup_lexical_into(
 /// `SemanticModelBuilder::push_member_access_reference` -- the root segment(s) followed by each
 /// subsequent dotted member segment, all in one `SymbolPathId`.
 ///
-/// The root segment resolves through the ordinary `DeclarationDomain::Any` lexical lookup every
-/// other operand kind's single-segment path uses (`lookup_lexical_into`, walking `owner`'s
-/// enclosing-namespace chain). Each subsequent segment is then looked up as a member OWNED
+/// The root segment resolves through `DeclarationDomain::Any` lexical lookup, beginning in the
+/// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
+/// constraint/calc expression reach its own parameters without changing the enclosing-scope result
+/// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
 /// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
 /// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
 /// time this runs has already been extended with usage-typing entries
@@ -4879,7 +5004,7 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         // lowering side today.
         return Ok(ResolutionStatus::Unsupported);
     }
-    let source = declarations
+    let _source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
     scratch.candidates.clear();
@@ -4887,7 +5012,7 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
     lookup_lexical_into(
         declarations,
         &indexes,
-        source.owner,
+        Some(reference.source()),
         segments[0],
         // A member-access chain is never a Redefinition reference.
         LookupTarget {
@@ -5016,6 +5141,7 @@ mod tests {
                 form: FilterForm::View,
                 span: Span::dummy(),
                 shape: ExpressionEvalShape::Literal(EvaluatedValue::Integer(5)),
+                predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),
         }

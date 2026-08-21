@@ -1,4 +1,4 @@
-info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.2.0
 roots: 1 element(s)
   Inheritance [Package] name=Inheritance library=false
 find(None): 10 element(s)

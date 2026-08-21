@@ -39,6 +39,8 @@ struct WireSchema {
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
     requirement_verification: RequirementVerification,
+    diagram_view_summary: DiagramViewSummary,
+    diagram_view_projection: DiagramViewProjection,
     verification_requirement: VerificationRequirement,
     verification_outcome: VerificationOutcome,
     level: Level,
@@ -397,6 +399,7 @@ impl std::fmt::Display for Metaclass {
 /// string purely to cross the ABI boundary.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Schema)]
 pub enum RelationshipKind {
+    Containment,
     Typing,
     Specializes,
     Subsetting,
@@ -416,6 +419,17 @@ pub enum RelationshipKind {
     Derivation,
     Transition,
     InitialState,
+    ViewExposure,
+    ConnectorEnd,
+    FlowSource,
+    FlowTarget,
+    FlowPayloadType,
+    Succession,
+    TransitionSource,
+    TransitionTarget,
+    TransitionTrigger,
+    TransitionGuard,
+    TransitionEffect,
     Annotation,
     PortConjugation,
     /// A value this Spec42 produced that the enumeration above does not name.
@@ -430,6 +444,7 @@ pub enum RelationshipKind {
 impl RelationshipKind {
     pub fn as_str(&self) -> &str {
         match self {
+            Self::Containment => "containment",
             Self::Typing => "typing",
             Self::Specializes => "specializes",
             Self::Subsetting => "subsetting",
@@ -449,6 +464,17 @@ impl RelationshipKind {
             Self::Derivation => "derivation",
             Self::Transition => "transition",
             Self::InitialState => "initialState",
+            Self::ViewExposure => "viewExpose",
+            Self::ConnectorEnd => "connectorEnd",
+            Self::FlowSource => "flowSource",
+            Self::FlowTarget => "flowTarget",
+            Self::FlowPayloadType => "flowPayloadType",
+            Self::Succession => "succession",
+            Self::TransitionSource => "transitionSource",
+            Self::TransitionTarget => "transitionTarget",
+            Self::TransitionTrigger => "transitionTrigger",
+            Self::TransitionGuard => "transitionGuard",
+            Self::TransitionEffect => "transitionEffect",
             Self::Annotation => "annotation",
             Self::PortConjugation => "portConjugation",
             Self::Unrecognized(value) => value,
@@ -458,6 +484,7 @@ impl RelationshipKind {
     /// Maps a Spec42-internal spelling onto this enumeration.
     pub fn parse(value: &str) -> Self {
         match value {
+            "containment" => Self::Containment,
             "typing" => Self::Typing,
             "specializes" => Self::Specializes,
             "subsetting" => Self::Subsetting,
@@ -477,6 +504,17 @@ impl RelationshipKind {
             "derivation" => Self::Derivation,
             "transition" => Self::Transition,
             "initialState" => Self::InitialState,
+            "viewExpose" => Self::ViewExposure,
+            "connectorEnd" => Self::ConnectorEnd,
+            "flowSource" => Self::FlowSource,
+            "flowTarget" => Self::FlowTarget,
+            "flowPayloadType" => Self::FlowPayloadType,
+            "succession" => Self::Succession,
+            "transitionSource" => Self::TransitionSource,
+            "transitionTarget" => Self::TransitionTarget,
+            "transitionTrigger" => Self::TransitionTrigger,
+            "transitionGuard" => Self::TransitionGuard,
+            "transitionEffect" => Self::TransitionEffect,
             "annotation" => Self::Annotation,
             "portConjugation" => Self::PortConjugation,
             other => Self::Unrecognized(other.to_owned()),
@@ -648,6 +686,417 @@ pub struct RequirementVerification {
     pub outcome: VerificationOutcome,
     pub recovered: bool,
 }
+
+/// Source provenance carried by notation-ready semantic projections.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SourceReference {
+    pub uri: String,
+    pub range: SourceRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagramSourceDomain {
+    Workspace,
+    StandardLibrary,
+    Library,
+    External,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramSemanticReference {
+    Qualified {
+        document: String,
+        qualified_name: String,
+        source_domain: DiagramSourceDomain,
+    },
+    ToolingElementId {
+        element_id: String,
+        source_domain: DiagramSourceDomain,
+    },
+    SourceAnchor {
+        document: String,
+        owner_qualified_name: Option<String>,
+        metaclass: Metaclass,
+        source_domain: DiagramSourceDomain,
+        range: SourceRange,
+    },
+    Relationship {
+        document: String,
+        source_qualified_name: String,
+        relationship_kind: RelationshipKind,
+        ordinal: u32,
+        source_domain: DiagramSourceDomain,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagramViewKind {
+    GeneralView,
+    InterconnectionView,
+    ActionFlowView,
+    StateTransitionView,
+    SequenceView,
+    BrowserView,
+    GridView,
+    GeometryView,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramViewSummary {
+    pub handle: String,
+    pub reference: DiagramSemanticReference,
+    pub kind: DiagramViewKind,
+    pub name: String,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramIncompleteReason {
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
+    ExposureUnresolved { exposure: DiagramSemanticReference },
+    ExposureAmbiguous { exposure: DiagramSemanticReference },
+    ExposureUnsupported { exposure: DiagramSemanticReference },
+    RelationshipUnresolved { relationship_kind: String },
+    RelationshipAmbiguous { relationship_kind: String },
+    RelationshipUnsupported { relationship_kind: String },
+    ViewFilterUnresolved,
+    ViewFilterAmbiguous,
+    ViewFilterUnsupported,
+    GeometryFactsUnavailable,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramElement {
+    pub occurrence: DiagramOccurrenceIdentity,
+    pub reference: DiagramSemanticReference,
+    pub metaclass: Metaclass,
+    pub notation_role: DiagramNotationRole,
+    pub name: Option<String>,
+    pub typing: DiagramElementTyping,
+    pub owner: Option<DiagramOccurrenceIdentity>,
+    pub source: SourceReference,
+    pub compartments: Vec<DiagramCompartment>,
+}
+
+/// Contextual identity of one projected occurrence. The semantic references remain canonical
+/// model identities; the path distinguishes the same inherited declaration below different
+/// exposed usages without inventing a model element.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramOccurrenceIdentity {
+    pub semantic_path: Vec<DiagramSemanticReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramElementTyping {
+    Absent,
+    Resolved(Vec<DiagramElementType>),
+    Partial(Vec<DiagramElementType>),
+    Ambiguous(Vec<DiagramSemanticReference>),
+    Unresolved,
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramElementType {
+    pub reference: DiagramSemanticReference,
+    pub label: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramCompartmentKind {
+    Attributes,
+    Parts,
+    Ports,
+    Items,
+    Constraints,
+    Requirements,
+    Actions,
+    States,
+    Calculations,
+    Connections,
+    Interfaces,
+    Occurrences,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramCompartmentProvenance {
+    Direct,
+    Inherited,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramCompartment {
+    pub kind: DiagramCompartmentKind,
+    pub provenance: DiagramCompartmentProvenance,
+    pub members: Vec<DiagramOccurrenceIdentity>,
+}
+
+/// Structural notation role owned by the diagram projection.
+///
+/// Renderers consume this value directly instead of rediscovering semantics from a metaclass's
+/// display spelling.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramNotationRole {
+    Definition,
+    Usage,
+    ReferenceUsage,
+    Namespace,
+    Annotation,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramRelationshipTarget {
+    Resolved(DiagramRelationshipEndpoint),
+    Ambiguous(Vec<DiagramRelationshipEndpoint>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramRelationshipEndpoint {
+    pub reference: DiagramSemanticReference,
+    pub occurrence: DiagramEndpointOccurrence,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramEndpointOccurrence {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous(Vec<DiagramOccurrenceIdentity>),
+    OutsideProjection,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramRelationship {
+    pub reference: DiagramSemanticReference,
+    pub source_element: DiagramSemanticReference,
+    pub source_occurrence: DiagramOccurrenceIdentity,
+    pub kind: RelationshipKind,
+    pub target: DiagramRelationshipTarget,
+    pub provenance: RelationshipProvenance,
+    pub source: Option<SourceReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramEdgeKind {
+    Containment,
+    Connector,
+    Flow,
+    Succession,
+    Transition,
+    InitialState,
+    Relationship(RelationshipKind),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramEdge {
+    pub reference: DiagramSemanticReference,
+    pub source_element: DiagramSemanticReference,
+    pub target_element: DiagramSemanticReference,
+    pub source_occurrence: DiagramOccurrenceIdentity,
+    pub target_occurrence: DiagramOccurrenceIdentity,
+    pub kind: DiagramEdgeKind,
+    pub provenance: RelationshipProvenance,
+    pub source: Option<SourceReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramGridCell {
+    pub row: DiagramOccurrenceIdentity,
+    pub column: RelationshipKind,
+    pub relationship: DiagramSemanticReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramViewMetadata {
+    General {
+        roots: Vec<DiagramOccurrenceIdentity>,
+    },
+    Interconnection {
+        parts: Vec<DiagramOccurrenceIdentity>,
+        ports: Vec<DiagramOccurrenceIdentity>,
+        connectors: Vec<DiagramOccurrenceIdentity>,
+    },
+    ActionFlow {
+        actions: Vec<DiagramOccurrenceIdentity>,
+        control_nodes: Vec<DiagramOccurrenceIdentity>,
+    },
+    StateTransition {
+        states: Vec<DiagramOccurrenceIdentity>,
+        initial_nodes: Vec<DiagramOccurrenceIdentity>,
+        final_nodes: Vec<DiagramOccurrenceIdentity>,
+    },
+    Sequence {
+        participants: Vec<DiagramOccurrenceIdentity>,
+        messages: Vec<DiagramOccurrenceIdentity>,
+    },
+    Browser {
+        roots: Vec<DiagramOccurrenceIdentity>,
+    },
+    Grid {
+        rows: Vec<DiagramOccurrenceIdentity>,
+        columns: Vec<RelationshipKind>,
+        cells: Vec<DiagramGridCell>,
+    },
+    Geometry {
+        elements: Vec<DiagramOccurrenceIdentity>,
+        primitives: Vec<DiagramOccurrenceIdentity>,
+    },
+}
+
+/// Normative graphical scene selected by the semantic diagram projection.
+///
+/// The discriminator is exhaustive even while individual scene families are migrated. This keeps
+/// renderers from treating a specialized view as an undifferentiated node-edge graph. A scene
+/// variant gains its typed payload when that notation family becomes supported.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramScene {
+    General,
+    Interconnection,
+    ActionFlow,
+    StateTransition(StateTransitionScene),
+    Sequence,
+    Browser,
+    Grid,
+    Geometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionScene {
+    pub machine: Option<StateMachineSummary>,
+    pub vertices: Vec<StateTransitionNode>,
+    pub transitions: Vec<StateTransitionEdge>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramViewProjection {
+    pub schema_version: u32,
+    pub model_digest: String,
+    pub view: DiagramViewSummary,
+    pub completeness: ProjectionCompleteness,
+    pub incomplete_reasons: Vec<DiagramIncompleteReason>,
+    pub exposed_roots: Vec<DiagramOccurrenceIdentity>,
+    pub elements: Vec<DiagramElement>,
+    pub relationships: Vec<DiagramRelationship>,
+    pub edges: Vec<DiagramEdge>,
+    pub metadata: DiagramViewMetadata,
+    pub scene: DiagramScene,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct ElementIdentity {
+    pub semantic_id: String,
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateMachineIdentity {
+    pub semantic_id: String,
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionViewSummary {
+    pub handle: String,
+    pub semantic_id: String,
+    pub name: String,
+    pub exposed_machine: StateMachineIdentity,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateMachineSummary {
+    pub semantic_id: String,
+    pub label: String,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum StateTransitionNodeKind {
+    Initial,
+    State,
+    Final,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionNode {
+    pub semantic_id: String,
+    pub label: String,
+    pub kind: StateTransitionNodeKind,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct UnsupportedReason {
+    pub code: String,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ProjectionFeature {
+    Absent,
+    Supported {
+        label: String,
+        source: SourceReference,
+    },
+    Unsupported {
+        reason: UnsupportedReason,
+    },
+    Unresolved,
+    Ambiguous,
+    Recovery,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum TransitionTrigger {
+    None,
+    Accept {
+        label: String,
+        target: Option<ElementIdentity>,
+        source: SourceReference,
+    },
+    Unsupported {
+        reason: UnsupportedReason,
+    },
+    Unresolved,
+    Ambiguous,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionEdge {
+    pub semantic_id: String,
+    pub label: Option<String>,
+    pub source: String,
+    pub target: String,
+    pub trigger: TransitionTrigger,
+    pub guard: ProjectionFeature,
+    pub effect: ProjectionFeature,
+    pub provenance: RelationshipProvenance,
+    pub source_reference: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ProjectionCompleteness {
+    Complete,
+    Incomplete { reasons: Vec<UnsupportedReason> },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionViewProjection {
+    pub schema_version: u32,
+    pub model_digest: String,
+    pub view: StateTransitionViewSummary,
+    pub machine: StateMachineSummary,
+    pub nodes: Vec<StateTransitionNode>,
+    pub transitions: Vec<StateTransitionEdge>,
+    pub completeness: ProjectionCompleteness,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -732,7 +1181,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0410_39af_27dd_4a86,
+            SCHEMA_FINGERPRINT, 0xc866_694d_05d9_4950,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -740,7 +1189,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xa785_0467_6b7c_86ee,
+            COMPATIBILITY_TOKEN, 0x24da_ed65_34b4_630d,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

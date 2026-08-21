@@ -20,3 +20,8 @@ pub use path::{
     ArtifactPath, ArtifactPathError, MAX_ARTIFACT_PATH_BYTES, MAX_ARTIFACT_SEGMENT_BYTES,
     RESERVED_MANIFEST_NAME,
 };
+pub use spec42_generator_protocol::{
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
+    DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind,
+    DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+};

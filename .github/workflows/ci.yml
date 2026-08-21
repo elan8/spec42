@@ -144,9 +144,12 @@ jobs:
 
       - name: Sandboxed Rust generator smoke
         run: |
-          cargo build --release --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+          scripts/build-repository-generator-plugins.sh
+          git diff --exit-code vscode/generators/diagram.wasm
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate vscode/generators/diagram.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/diagram-generator-smoke -- general-view
+          rg -q '"status": "incomplete"' target/diagram-generator-smoke/diagram.json
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
@@ -269,23 +272,23 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: |
-            shared/diagram-renderer/package-lock.json
+            vscode/diagram-renderer/package-lock.json
             vscode/package-lock.json
 
       - name: npm ci (diagram renderer)
-        run: cd shared/diagram-renderer && npm ci
+        run: cd vscode/diagram-renderer && npm ci
 
       - name: npm audit (diagram renderer)
-        run: cd shared/diagram-renderer && npm audit --omit=dev
+        run: cd vscode/diagram-renderer && npm audit --omit=dev
 
       - name: npm typecheck (diagram renderer)
-        run: cd shared/diagram-renderer && npm run typecheck
+        run: cd vscode/diagram-renderer && npm run typecheck
 
       - name: npm test (diagram renderer)
-        run: cd shared/diagram-renderer && npm test
+        run: cd vscode/diagram-renderer && npm test
 
       - name: npm test:coverage (diagram renderer)
-        run: cd shared/diagram-renderer && npm run test:coverage
+        run: cd vscode/diagram-renderer && npm run test:coverage
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
@@ -295,6 +298,12 @@ jobs:
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
+
+      - name: Build diagram webview
+        run: cd vscode && npm run build:diagram-webview
+
+      - name: Diagram viewer unit tests
+        run: cd vscode && npm run test:diagram-unit
 
       - name: LM CLI argv unit tests
         run: cd vscode && npm run test:lm-cli-unit

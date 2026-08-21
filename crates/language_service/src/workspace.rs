@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use sysml_query::resolved_slice::TextPosition;
-use sysml_source::{SysmlDocument, SysmlDocumentProvider};
+use sysml_source::SysmlDocument;
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
@@ -49,30 +49,6 @@ pub trait WorkspaceSnapshot {
 }
 
 impl InMemoryWorkspace {
-    /// Build a workspace from pre-loaded SysML documents (workspace + optional library docs).
-    pub fn from_documents(documents: Vec<SysmlDocument>) -> Result<Self, String> {
-        let sources = documents
-            .iter()
-            .map(|document| {
-                sysml_query::resolved_slice::SourceDocument::from_uri(
-                    document.uri.as_str(),
-                    document.content.clone(),
-                    sysml_query::resolved_slice::SourceKind::Workspace,
-                )
-                .map_err(|error| error.to_string())
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let request = sysml_query::resolved_slice::BuildRequest::resolved(
-            sources,
-            sysml_query::resolved_slice::ConstructionStrategy::Sequential,
-        )
-        .map_err(|error| error.to_string())?;
-        let published_model = Arc::new(
-            sysml_query::resolved_slice::build(request).map_err(|error| error.to_string())?,
-        );
-        Self::from_documents_and_publication(documents, published_model)
-    }
-
     /// Index documents against the exact immutable publication owned by the host.
     pub fn from_documents_and_publication(
         documents: Vec<SysmlDocument>,
@@ -127,11 +103,6 @@ impl InMemoryWorkspace {
             published_model,
             symbol_table,
         })
-    }
-
-    pub fn from_provider(provider: &impl SysmlDocumentProvider) -> Result<Self, String> {
-        let documents = provider.load_documents()?;
-        Self::from_documents(documents)
     }
 }
 

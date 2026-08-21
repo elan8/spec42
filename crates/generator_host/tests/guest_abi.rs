@@ -182,6 +182,7 @@ fn fuel_exhaustion_is_resource_exhaustion_when_a_budget_is_requested() {
     let spin = guest(COMPATIBILITY_TOKEN, "(loop $forever (br $forever))", "");
     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
         fuel_metering: true,
+        compilation_cache: false,
     })
     .expect("runtime");
     let error = runtime

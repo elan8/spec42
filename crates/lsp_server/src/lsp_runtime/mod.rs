@@ -3,6 +3,7 @@ pub(crate) mod custom;
 mod diagnostics;
 mod documents;
 mod features;
+mod generation;
 mod hierarchy;
 mod lifecycle;
 mod navigation;
@@ -24,6 +25,10 @@ use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
+use generation::{
+    DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
+    StateTransitionViewsParams, StateTransitionViewsResult,
+};
 
 struct Backend {
     client: Client,
@@ -35,6 +40,7 @@ struct Backend {
     /// everywhere else without touching the actor. LSP guarantees
     /// `initialize` precedes every other request.
     runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
+    generator_service: Arc<std::result::Result<GeneratorService, String>>,
 }
 
 #[tower_lsp::async_trait]
@@ -440,6 +446,110 @@ impl Backend {
         })
     }
 
+    async fn spec42_generate(&self, params: GenerateParams) -> Result<GenerateResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.handle.snapshot();
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = state.published_model.clone().into_model();
+        let module_bytes = params
+            .module_bytes()
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)?;
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.generate(
+                &module_bytes,
+                publication,
+                &params.args,
+                params.expected_model_digest.as_deref(),
+            )
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "generator worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_state_transition_views(
+        &self,
+        params: StateTransitionViewsParams,
+    ) -> Result<StateTransitionViewsResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.handle.snapshot();
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = state.published_model.clone().into_model();
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.state_transition_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "state-transition catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_diagram_views(&self, params: DiagramViewsParams) -> Result<DiagramViewsResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.handle.snapshot();
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = state.published_model.clone().into_model();
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.diagram_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "diagram catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
     async fn sysml_library_search(
         &self,
         params: serde_json::Value,
@@ -483,12 +593,15 @@ fn make_custom_rpc_handler(
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
-    let handle = WorkspaceHandle::spawn(ServerState::default());
+    let handle = WorkspaceHandle::spawn(ServerState::with_publication_coordinator(Arc::clone(
+        &config.publication_coordinator,
+    )));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
     let service_config = Arc::clone(&config);
     let runtime_config = Arc::new(std::sync::OnceLock::<RuntimeConfig>::new());
+    let generator_service = Arc::new(GeneratorService::new());
 
     let mut builder = LspService::build(move |client| Backend {
         client,
@@ -497,13 +610,20 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         start_time,
         server_name: server_name.clone(),
         runtime_config: Arc::clone(&runtime_config),
+        generator_service: Arc::clone(&generator_service),
     })
     // TODO(follow-up): Model projections and diagrams return as generator plugins consuming
     // typed immutable-model queries. Do not restore the legacy graph DTO custom methods.
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
-    .custom_method("sysml/librarySearch", Backend::sysml_library_search);
+    .custom_method("sysml/librarySearch", Backend::sysml_library_search)
+    .custom_method("spec42/generate", Backend::spec42_generate)
+    .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method(
+        "spec42/stateTransitionViews",
+        Backend::spec42_state_transition_views,
+    );
 
     for method in custom_rpc_methods {
         let method_name: &'static str = Box::leak(method.into_boxed_str());

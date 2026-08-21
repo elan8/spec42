@@ -9,7 +9,8 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/sysml_resolution` owns semantic construction, resolution, and every diagnostic a host reports, settled at the publication barrier; `crates/sysml_query` is the typed read-only facade over it.
 - `crates/sysml_diagnostics` owns transport-neutral diagnostic values and the host reporting policy over them. It decides nothing semantic and depends only on `sysml_query`.
 - `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
-- `crates/diagram` owns shared diagram projection utilities used by Spec42 and other consumers.
+- `generator-plugins` contains the repository-owned Rust WebAssembly generators. Diagram
+  semantics enter plugins only through typed queries over the immutable publication.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
@@ -17,6 +18,8 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
+  Its `diagram-renderer` package owns D3/ELK layout and drawing for generator-produced render
+  products; it does not derive model semantics.
 
 Keep semantic construction and diagnostic rules in `sysml_resolution`; all consumers use the typed
 `sysml_query` facade. Keep editor intelligence that is shared across hosts in `language_service`;
@@ -324,6 +327,22 @@ cargo run -p server --no-default-features --bin spec42 -- bundle ../sysml-domain
 The VS Code **Examples** sidebar lists folders from the canonical root `examples/` only (not both `vscode/examples` and `../examples`). Hidden directories such as `.github` are excluded.
 
 ## Testing the Extension Manually
+
+On macOS, prepare a packaged, isolated QA installation with:
+
+```bash
+scripts/setup-macos-vscode-qa.sh
+```
+
+The script builds the repository generator plugins and embedded-stdlib server, installs locked npm
+dependencies, packages and installs the VSIX beneath the repository-local, gitignored
+`.cache/vscode-qa-<ABI token>` directory, creates a compact state-transition QA workspace, and opens
+it with isolated extension and user-data directories. The durable profile retains workspace trust
+and QA-specific settings across rebuilds. Pass `--no-open` to prepare the environment without
+launching VS Code. Set `SPEC42_VSCODE_QA_DIR` to use a different state directory, including a
+throwaway directory when testing profile initialization.
+
+For the lighter Extension Development Host workflow:
 
 1. Build the Rust server: `cargo build` or `cargo build --release`.
 2. Open the `vscode/` folder in VS Code.

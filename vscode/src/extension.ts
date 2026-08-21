@@ -28,6 +28,7 @@ import {
   registerWorkspaceIndexing,
   resetSemanticIndexTracking,
 } from "./activation/workspaceIndexing";
+import { registerDiagramViewer } from "./diagram/diagramViewer";
 
 export function activate(context: vscode.ExtensionContext): void {
   const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -118,6 +119,7 @@ export function activate(context: vscode.ExtensionContext): void {
     examplesViewProvider,
   );
   registerLibraryCommands(context, libraryWebviewProvider, handles);
+  registerDiagramViewer(context, handles);
 
   registerRestartServerCommand(context, handles, {
     onBeforeRestart: resetSemanticIndexTracking,

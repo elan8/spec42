@@ -14,6 +14,7 @@ mod diagnostics_postprocess;
 mod experimental_capabilities;
 mod experimental_requests;
 mod feature_inspector;
+mod generation;
 mod harness;
 mod hover;
 mod lifecycle;

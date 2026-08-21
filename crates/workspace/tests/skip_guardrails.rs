@@ -182,8 +182,10 @@ fn visit_rust_files(root: &Path, visit: &mut dyn FnMut(&Path)) {
         let path = entry.path();
         let name = entry.file_name();
         if path.is_dir() {
-            if !matches!(name.to_str(), Some(".git" | "target" | "node_modules"))
-                && !is_nested_checkout(&path)
+            if !matches!(
+                name.to_str(),
+                Some(".git" | ".cache" | "target" | "node_modules")
+            ) && !is_nested_checkout(&path)
             {
                 visit_rust_files(&path, visit);
             }

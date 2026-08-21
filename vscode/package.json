@@ -173,6 +173,17 @@
         "category": "SysML"
       },
       {
+        "command": "spec42.diagram.open",
+        "title": "Open Diagram",
+        "icon": "$(type-hierarchy-sub)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.diagram.copyJson",
+        "title": "Copy Diagram JSON",
+        "category": "Spec42"
+      },
+      {
         "command": "spec42.examples.refresh",
         "title": "Refresh Examples View",
         "icon": "$(refresh)",
@@ -522,6 +533,11 @@
           "default": "spec42",
           "description": "Path to the Spec42 server binary (or 'spec42' if on PATH)."
         },
+        "spec42.diagramViewer.pluginPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a compatible Spec42 diagram Wasm plugin. When empty, the extension uses its packaged generators/diagram.wasm artifact."
+        },
         "spec42.libraryPaths": {
           "type": "array",
           "items": {
@@ -604,8 +620,10 @@
     "vscode:prepublish": "npm run stage:package-content && npm run compile",
     "stage:package-content": "node scripts/stage-package-content.js",
     "build:extension": "node scripts/build-extension.js",
-    "compile": "npm run typecheck && tsc -p ./ && npm run build:extension",
+    "build:diagram-webview": "node scripts/build-diagram-webview.js",
+    "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
+    "test:diagram-unit": "tsc -p ./ && node --test out/test/suite/diagramViewerCore.test.js",
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",

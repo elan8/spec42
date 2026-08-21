@@ -10,11 +10,9 @@
 //! (`crates/lsp_server/src/workspace/coordinator.rs`), generalized from "one hard-coded
 //! lifecycle enum" to "any embedder-owned state struct `M`".
 //!
-//! **Status: standalone scaffold, not yet used by any consumer.** `lsp_server`'s
-//! `ensure_render_snapshot`/`build_view_catalog` (`crates/lsp_server/src/views/workspace_artifacts.rs`)
-//! and `babel42-app`'s per-session `update_document`-under-mutex path
-//! (`babel42-v2/backend/crates/babel42-app/src/editor.rs`) are the two motivating call sites;
-//! wiring either up is deliberately out of scope here.
+//! [`SemanticPublicationAuthority`] is the production boundary which composes canonical build/cache
+//! ownership with the atomic publication barrier. Protocol hosts share it rather than owning
+//! private semantic construction or publication policy.
 //!
 //! This crate deliberately depends on `tokio` and on `workspace`, but not on any
 //! protocol/binary-layer crate (`tower-lsp`, `axum`, `rmcp`, `clap`, `lsp_server`) — see
@@ -27,8 +25,10 @@ mod snapshot;
 
 pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
 pub use semantic_model::{
-    PublishedModelSnapshot, SemanticBuildFailureKind, SemanticBuildToken,
-    SemanticPublicationOutcome, SemanticPublicationSession,
+    PublishedModelSnapshot, SemanticAuthorityBeginError, SemanticAuthorityBuild,
+    SemanticAuthorityCompletion, SemanticAuthorityResult, SemanticBuildFailureKind,
+    SemanticBuildToken, SemanticPublicationAuthority, SemanticPublicationOutcome,
+    SemanticPublicationSession,
 };
 pub use snapshot::SnapshotHandle;
 

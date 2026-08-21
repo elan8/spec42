@@ -9,7 +9,8 @@ use serde::{de::DeserializeOwned, Serialize};
 
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
-    Artifact, ElementDetail, ElementSummary, Multiplicity, Relationship,
+    Artifact, DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementSummary,
+    Multiplicity, Relationship,
 };
 
 /// Starting size of the query response buffer. Responses larger than this cost one extra
@@ -133,9 +134,19 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 
 pub mod model {
     pub use spec42_generator_protocol::{
-        ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship,
+        DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+        DiagramEdgeKind, DiagramElement, DiagramElementType, DiagramElementTyping,
+        DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramNotationRole,
+        DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+        DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+        DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+        ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo, Multiplicity,
+        ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
         RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
-        SatisfyPolarity, SatisfyRelationship, SourceRange, TypingProvenance, VerificationOutcome,
+        SatisfyPolarity, SatisfyRelationship, SourceRange, SourceReference, StateMachineIdentity,
+        StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
+        StateTransitionScene, StateTransitionViewProjection, StateTransitionViewSummary,
+        TransitionTrigger, TypingProvenance, UnsupportedReason, VerificationOutcome,
         VerificationRequirement,
     };
 
@@ -184,6 +195,14 @@ pub mod model {
 
     pub fn effective_features(element: &str) -> Result<Vec<ElementSummary>, String> {
         call::<query::EffectiveFeatures>(&element.to_owned())
+    }
+
+    pub fn diagram_views() -> Result<Vec<DiagramViewSummary>, String> {
+        call::<query::DiagramViews>(&())
+    }
+
+    pub fn diagram_view(handle: &str) -> Result<DiagramViewProjection, String> {
+        call::<query::DiagramView>(&handle.to_owned())
     }
 }
 

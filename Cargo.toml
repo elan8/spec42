@@ -1,7 +1,7 @@
 ﻿[workspace]
 resolver = "2"
 members = [
-  "crates/diagram",
+  "crates/sysml_parser",
   "crates/generator_api",
   "crates/generator_conformance",
   "crates/generator_host",
@@ -11,6 +11,7 @@ members = [
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/semantic_publication",
   "crates/source_identity",
   "crates/sysml_source",
   "crates/sysml_diagnostics",
@@ -44,7 +45,7 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
-sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
-sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "204ca48000c452970beb7568d84e0ac80898a767", package = "sysml-v2-parser", features = ["serde"] }
+semantic_publication = { path = "crates/semantic_publication" }
+sysml-v2-parser = { package = "spec42-sysml-parser", path = "crates/sysml_parser" }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"

@@ -13,5 +13,5 @@ pub(crate) use scan::scan_sysml_files;
 // caches are portable, protocol-neutral logic — see
 // Incremental workspace consolidation history lives in git.
 pub(crate) use services::{parse_scanned_entries, rebuild_publication_inputs_staged};
-pub(crate) use state::{IndexEntry, RuntimeConfig, ServerState};
+pub(crate) use state::{RuntimeConfig, ServerState};
 pub(crate) use workspace::parse_cache;

@@ -56,8 +56,9 @@ pub(crate) fn index_library_paths_for_search(
                 admitted_to_publication: false,
             },
         );
-        let mut symbols = Vec::new();
-        library_search::add_short_name_symbol_entries(&mut symbols, &entry.content, &uri_norm);
+        let symbols = library_search::recover_short_name_search_symbols(&entry.content, &uri_norm)
+            .into_iter()
+            .map(library_search::RecoverySearchSymbol::into_search_only_symbol);
         state.symbol_table_mut().extend(symbols);
         indexed += 1;
     }
@@ -83,24 +84,19 @@ pub(crate) fn rebuild_all_document_links(
     let mut all_symbols = Vec::new();
     for (uri, index_entry) in state.index() {
         if !index_entry.admitted_to_publication {
-            let mut search_symbols = Vec::new();
-            library_search::add_short_name_symbol_entries(
-                &mut search_symbols,
-                &index_entry.content,
-                uri,
+            all_symbols.extend(
+                library_search::recover_short_name_search_symbols(&index_entry.content, uri)
+                    .into_iter()
+                    .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
-            all_symbols.extend(search_symbols);
             continue;
         }
-        // TODO(follow-up): rebuild workspace-symbol projection from the committed immutable
-        // publication.
-        let mut new_entries = Vec::new();
-        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
-        all_symbols.extend(new_entries);
+        if let Some(model) = state.published_model() {
+            all_symbols.extend(crate::language::symbol_entries_for_uri(model, uri));
+        }
     }
     let uri_count = state.index().len();
     *state.symbol_table_mut() = all_symbols;
-    crate::workspace::state::refresh_published_model(state);
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
     // The old internal phase breakdown lived inside this function's hand-written construction
@@ -157,20 +153,13 @@ pub(crate) fn rebuild_publication_inputs_staged(
     let mut all_symbols = Vec::new();
     for (uri, index_entry) in index {
         if !index_entry.admitted_to_publication {
-            let mut search_symbols = Vec::new();
-            library_search::add_short_name_symbol_entries(
-                &mut search_symbols,
-                &index_entry.content,
-                uri,
+            all_symbols.extend(
+                library_search::recover_short_name_search_symbols(&index_entry.content, uri)
+                    .into_iter()
+                    .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
-            all_symbols.extend(search_symbols);
             continue;
         }
-        // TODO(follow-up): rebuild workspace-symbol projection from the committed immutable
-        // publication.
-        let mut new_entries = Vec::new();
-        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
-        all_symbols.extend(new_entries);
     }
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 

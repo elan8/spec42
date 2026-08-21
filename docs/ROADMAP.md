@@ -24,8 +24,10 @@ The release-gating surfaces are:
 
 These are not compatibility promises for 1.0:
 
-- Built-in Model Explorer, diagrams, view catalogs, and diagram export are removed. Diagram support
-  should return as a pinned generator plugin with typed model inputs and a versioned render product.
+- Built-in Model Explorer, diagram semantics, view catalogs, and diagram export remain removed. The
+  repository-owned diagram generator and VS Code renderer now validate the versioned plugin-to-view
+  path for all eight view kinds. State transitions consume a typed projection; the other views stay
+  explicitly incomplete until their owner-defined typed queries exist.
 - `model-summary` reports validation only. Structural nodes and relationships require a bounded
   typed query owned by the immutable publication.
 - Call hierarchy and monikers require typed behavior/`perform` relationships.

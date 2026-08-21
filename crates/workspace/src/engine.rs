@@ -21,6 +21,7 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
+    publication: Arc<crate::PublicationCoordinator>,
 }
 
 #[derive(Debug, Default)]
@@ -59,6 +60,10 @@ impl Spec42Engine {
 
     pub fn metadata(&self) -> &HostEngineMetadata {
         &self.metadata
+    }
+
+    pub fn publication_coordinator(&self) -> Arc<crate::PublicationCoordinator> {
+        Arc::clone(&self.publication)
     }
 
     pub fn schema_versions(&self) -> HostSchemaVersions {
@@ -182,6 +187,7 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
+            publication: Arc::new(crate::PublicationCoordinator::new()),
         })
     }
 

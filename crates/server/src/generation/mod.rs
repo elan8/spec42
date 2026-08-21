@@ -117,6 +117,10 @@ pub struct GenerationTimings {
     pub guest_execution_ms: u128,
     /// Microseconds, because a guest run routinely rounds to 0 ms.
     pub guest_execution_us: u128,
+    pub compilation_cache_enabled: bool,
+    pub compilation_cache_hits: usize,
+    pub compilation_cache_misses: usize,
+    pub compilation_cache_error: Option<String>,
     pub output_plan_ms: u128,
     pub output_commit_ms: u128,
 }
@@ -187,6 +191,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     // asked for a budget, which is also what makes `fuel_consumed` reportable.
     let runtime = match GeneratorRuntime::with_options(RuntimeOptions {
         fuel_metering: args.max_fuel.is_some(),
+        compilation_cache: true,
     }) {
         Ok(runtime) => runtime,
         Err(error) => return emit_host_failure(args.format, &error),
@@ -260,7 +265,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let publication = snapshot.published_model_arc();
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(&publication),
-        publication.publication().source_digest(),
+        publication.publication().model_digest(),
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
@@ -382,6 +387,10 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
             validation_ms,
             guest_execution_ms: execution.duration.as_millis(),
             guest_execution_us: execution.duration.as_micros(),
+            compilation_cache_enabled: runtime.compilation_cache_enabled(),
+            compilation_cache_hits: runtime.compilation_cache_hits(),
+            compilation_cache_misses: runtime.compilation_cache_misses(),
+            compilation_cache_error: runtime.compilation_cache_error().map(str::to_owned),
             output_plan_ms,
             output_commit_ms,
         },

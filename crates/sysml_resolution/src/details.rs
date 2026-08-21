@@ -102,6 +102,9 @@ pub struct EffectiveTyping {
     pub outcome: RelationshipOutcome,
     /// The effective types, in canonical order.
     pub types: Box<[EffectiveTypeEntry]>,
+    /// Candidate effective types retained when an authored typing or inherited typing path is
+    /// ambiguous. Candidates are never promoted to settled types.
+    pub candidates: Box<[EffectiveTypeEntry]>,
 }
 
 /// One feature an element has through a type or supertype rather than by declaring it.
@@ -112,6 +115,28 @@ pub struct EffectiveTyping {
 pub struct InheritedFeature {
     pub feature: SymbolEntry,
     pub declared_in: SymbolEntry,
+}
+
+/// The candidate-dependent result of applying all effective conditions of a view to one element.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ViewSelectionOutcome {
+    Included,
+    Excluded,
+    Indeterminate(Box<[ViewSelectionObstacle]>),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ViewSelectionObstacle {
+    UnresolvedPredicate,
+    AmbiguousPredicate(Box<[crate::SymbolIdentity]>),
+    UnsupportedPredicate,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ViewSelection {
+    pub view: crate::SymbolIdentity,
+    pub candidate: crate::SymbolIdentity,
+    pub outcome: ViewSelectionOutcome,
 }
 
 /// One settled relationship between an element and a peer, in one direction.

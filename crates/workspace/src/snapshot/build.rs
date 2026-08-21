@@ -150,7 +150,10 @@ pub(crate) fn build_workspace_snapshot(
 
     // Publish once per coherent snapshot. Every immutable semantic consumer below shares this
     // exact identity rather than independently rebuilding equivalent-looking model state.
-    let published_model = Arc::new(crate::snapshot::publication::publish_documents(&documents)?);
+    let published_model = engine
+        .publication_coordinator()
+        .publish(&documents, [])
+        .map_err(|error| WorkspaceError::internal_invariant_failure(error.to_string()))?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
     let validation_report = if request.validation_timing == ValidationTiming::Eager {

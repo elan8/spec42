@@ -23,7 +23,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 - **A capable SysML v2 / KerML editor** — diagnostics, semantic highlighting, completion, hover, navigation, rename, symbols, and formatting for day-to-day modeling.
 - **Ways to understand the model, not just the text** — navigation and Feature Inspector consume typed semantic queries for resolved typing, inheritance, relationships, and values.
 - **Validation you can trust in automation** — the same engine in `spec42 check`, with text/JSON/SARIF/JUnit output for local scripts and CI quality gates.
-- **Extensible model products** — generators consume the immutable publication; diagram generation is being rebuilt as a generator plugin rather than a built-in semantic subsystem.
+- **Extensible model products** — generators consume the immutable publication; the VS Code diagram experience is backed by a repository-owned generator plugin and a versioned render product rather than a built-in semantic subsystem.
 - **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain and method libraries, with room for your own library roots.
 - **Room for assistants** — Copilot Language Model Tools in VS Code, plus CLI helpers for other AI hosts.
 

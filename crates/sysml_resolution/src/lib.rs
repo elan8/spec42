@@ -11,21 +11,33 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 
 mod details;
 mod diagnostics;
+mod diagram_query;
 mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod qualified_reference;
 mod traceability;
 mod type_query;
 mod verification;
 
 pub use details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
+    ViewSelectionObstacle, ViewSelectionOutcome,
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
     PublishedDiagnostics, RelatedLocation,
+};
+pub use diagram_query::{
+    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+    DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
+    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
+    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
+    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection,
 };
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -39,6 +51,9 @@ pub use inspection::{
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+};
+pub use qualified_reference::{
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
 };
 pub use traceability::{SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship};
 pub use type_query::{
@@ -61,12 +76,22 @@ pub struct BuildMeasurements {
     pub resolution: std::time::Duration,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SourceKind {
     Workspace,
     StandardLibrary,
     Library,
     External,
+}
+
+/// One admitted document whose settled semantic dependencies reach a changed document.
+///
+/// The source role is carried by the semantic publication so hosts never reconstruct provenance
+/// from URI layout.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AffectedDocument {
+    pub identity: Box<str>,
+    pub source: ElementSource,
 }
 
 /// Which authored source domain an element search may observe.
@@ -235,6 +260,7 @@ pub enum ConstructionSchedule {
 pub struct PublicationIdentity {
     source_digest: RootDigest,
     semantic_contract_version: Box<str>,
+    evaluation_policy: EvaluationPolicy,
     /// The admitted documents the host asked to have reported beyond its workspace, in canonical
     /// order. Part of the identity because it changes what the publication answers.
     reported_documents: Box<[Box<str>]>,
@@ -247,6 +273,28 @@ impl PublicationIdentity {
 
     pub fn semantic_contract_version(&self) -> &str {
         &self.semantic_contract_version
+    }
+
+    pub fn evaluation_policy(&self) -> EvaluationPolicy {
+        self.evaluation_policy
+    }
+
+    /// Dependency-complete identity of every input that can change published semantic answers.
+    pub fn model_digest(&self) -> String {
+        let mut digest = blake3::Hasher::new();
+        digest.update(b"spec42-publication-model-v1\0");
+        digest.update(self.source_digest.to_string().as_bytes());
+        digest.update(b"\0");
+        digest.update(self.semantic_contract_version.as_bytes());
+        digest.update(&[match self.evaluation_policy {
+            EvaluationPolicy::Evaluate => 0,
+            EvaluationPolicy::Skip => 1,
+        }]);
+        for document in &self.reported_documents {
+            digest.update(&(document.len() as u64).to_le_bytes());
+            digest.update(document.as_bytes());
+        }
+        format!("blake3:{}", digest.finalize().to_hex())
     }
 
     /// The admitted documents reported beyond the workspace, in canonical order.
@@ -372,6 +420,7 @@ impl BuildRequest {
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
+                evaluation_policy: EvaluationPolicy::default(),
                 reported_documents: Box::default(),
             },
         })
@@ -434,6 +483,7 @@ impl BuildRequest {
     /// expression or having one that could not be folded.
     pub fn with_evaluation_policy(mut self, policy: EvaluationPolicy) -> Self {
         self.policy = policy;
+        self.identity.evaluation_policy = policy;
         self
     }
 
@@ -532,6 +582,16 @@ pub fn build_measured(
 impl PublishedResolution {
     pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
+    }
+
+    /// Documents transitively dependent on `changed_document` through settled imports and alias
+    /// bindings. Recovery and unsupported publications are exposed by the typed outcome; callers
+    /// may then deliberately over-invalidate without pretending the dependency graph was settled.
+    pub fn affected_documents(
+        &self,
+        changed_document: &str,
+    ) -> QueryOutcome<Box<[AffectedDocument]>> {
+        self.model.affected_documents(changed_document)
     }
 
     pub fn debug(&self) -> DebugQueries<'_> {
@@ -670,6 +730,15 @@ impl PublishedResolution {
     /// Effective features, direct first and inherited nearest-first with name shadowing.
     pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
+    }
+
+    /// Applies every owned and inherited condition of `view` to one candidate element.
+    pub fn view_selection(
+        &self,
+        view: &SymbolIdentity,
+        candidate: &SymbolIdentity,
+    ) -> QueryOutcome<ViewSelection> {
+        self.model.view_selection(view, candidate)
     }
 
     /// The types a feature declares.
@@ -872,6 +941,218 @@ mod tests {
         )
         .unwrap();
         build(request).unwrap()
+    }
+
+    #[test]
+    fn state_transition_scene_owns_vertices_and_composed_transitions() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    "standard library package StandardViewDefinitions { view def StateTransitionView; }".to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://timer.sysml",
+                    concat!(
+                        "package Timer { import StandardViewDefinitions::*; item def StartPressed; ",
+                        "state def Machine { entry; then idle; state idle; state running; ",
+                        "transition start first idle accept StartPressed then running; } ",
+                        "view stateView : StateTransitionView { expose Machine; } }",
+                    ).to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        ).unwrap();
+        let published = build(request).unwrap();
+        let catalog = match published.diagram_view_catalog() {
+            QueryOutcome::Resolved(catalog) => catalog,
+            other => panic!("expected diagram catalog, got {other:?}"),
+        };
+        let view = catalog
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::StateTransition)
+            .unwrap();
+        let projection = match published.diagram_view(&view.semantic_id) {
+            QueryOutcome::Resolved(projection) => projection,
+            other => panic!("expected state scene, got {other:?}"),
+        };
+        let DiagramScene::StateTransition(scene) = projection.scene else {
+            panic!("expected typed State Transition scene");
+        };
+        assert_eq!(
+            scene
+                .vertices
+                .iter()
+                .filter(|vertex| vertex.kind == DiagramStateVertexKind::Initial)
+                .count(),
+            1
+        );
+        assert_eq!(
+            scene
+                .vertices
+                .iter()
+                .filter(|vertex| vertex.kind == DiagramStateVertexKind::State)
+                .count(),
+            2
+        );
+        assert_eq!(scene.transitions.len(), 2);
+        assert!(scene.transitions.iter().any(|transition| matches!(
+            &transition.trigger,
+            DiagramTransitionFeature::Resolved { label, .. } if label.as_ref() == "StartPressed"
+        )));
+        assert!(!scene
+            .vertices
+            .iter()
+            .any(|vertex| vertex.label.as_ref() == "start"));
+    }
+
+    #[test]
+    fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    concat!(
+                        "standard library package StandardViewDefinitions { view def GeneralView; ",
+                        "view def StateTransitionView; } standard library package SysML { ",
+                        "metaclass PartUsage; }",
+                    ).to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    concat!(
+                        "package Model { import StandardViewDefinitions::*; ",
+                        "part def Board; part def Assembly { part pcb : Board; } part root : Assembly; ",
+                        "state def Machine { state idle; state running; transition start first idle then running; } ",
+                        "view structure : GeneralView { expose root; filter @SysML::PartUsage; } ",
+                        "view behavior : StateTransitionView { expose Machine; } }",
+                    ).to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        ).unwrap();
+        let published = build(request).unwrap();
+        let catalog = match published.diagram_view_catalog() {
+            QueryOutcome::Resolved(catalog) | QueryOutcome::UnsupportedWith(catalog) => catalog,
+            other => panic!("expected diagram catalog, got {other:?}"),
+        };
+        let structure = catalog
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::General)
+            .unwrap();
+        let projection = match published.diagram_view(&structure.semantic_id) {
+            QueryOutcome::Resolved(projection) => projection,
+            other => panic!("expected General View projection, got {other:?}"),
+        };
+        let root = projection
+            .elements
+            .iter()
+            .find(|element| element.name.as_deref() == Some("root"))
+            .unwrap();
+        assert!(matches!(root.typing, DiagramElementTyping::Resolved(_)));
+        assert!(projection.relationships.iter().any(|relationship| {
+            relationship.source == root.occurrence_id
+                && relationship.source_semantic_id == root.semantic_id
+                && relationship.kind.as_ref() == "featureTyping"
+        }));
+
+        let behavior = catalog
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::StateTransition)
+            .unwrap();
+        let projection = match published.diagram_view(&behavior.semantic_id) {
+            QueryOutcome::Resolved(projection) => projection,
+            other => panic!("expected State Transition projection, got {other:?}"),
+        };
+        let DiagramScene::StateTransition(scene) = projection.scene else {
+            panic!("expected State Transition scene");
+        };
+        assert_eq!(scene.transitions.len(), 1);
+    }
+
+    #[test]
+    fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    "standard library package StandardViewDefinitions { view def GeneralView; }"
+                        .to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    concat!(
+                        "package Model { import StandardViewDefinitions::*; ",
+                        "part def Board; part def Module { part pcb : Board; part spare : Board; connection wire connect pcb to spare; } ",
+                        "part def Assembly { part left : Module; part right : Module; } ",
+                        "part root : Assembly; view structure : GeneralView { expose root; } }",
+                    )
+                    .to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        let published = build(request).unwrap();
+        let catalog = match published.diagram_view_catalog() {
+            QueryOutcome::Resolved(catalog) | QueryOutcome::UnsupportedWith(catalog) => catalog,
+            other => panic!("expected diagram catalog, got {other:?}"),
+        };
+        let view = catalog
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::General)
+            .unwrap();
+        let projection = match published.diagram_view(&view.semantic_id) {
+            QueryOutcome::Resolved(projection) => projection,
+            other => panic!("expected General View projection, got {other:?}"),
+        };
+
+        let pcbs = projection
+            .elements
+            .iter()
+            .filter(|element| element.name.as_deref() == Some("pcb"))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            pcbs.len(),
+            2,
+            "one declaration must occur under both module usages"
+        );
+        assert_eq!(pcbs[0].semantic_id, pcbs[1].semantic_id);
+        assert_ne!(pcbs[0].occurrence_id, pcbs[1].occurrence_id);
+        assert_ne!(pcbs[0].owner, pcbs[1].owner);
+        assert!(pcbs
+            .iter()
+            .all(|pcb| pcb.occurrence_id.semantic_path.len() == 3));
+
+        let connectors = projection
+            .edges
+            .iter()
+            .filter(|edge| edge.kind == DiagramEdgeKind::Connector)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            connectors.len(),
+            2,
+            "the inherited connector occurs in both modules"
+        );
+        assert_eq!(
+            connectors[0].source_semantic_id,
+            connectors[1].source_semantic_id
+        );
+        assert_eq!(
+            connectors[0].target_semantic_id,
+            connectors[1].target_semantic_id
+        );
+        assert_ne!(connectors[0].source, connectors[1].source);
+        assert_ne!(connectors[0].target, connectors[1].target);
     }
 
     /// The standard-view rule needs a library-admitted definition, and the source role that makes
@@ -1214,8 +1495,7 @@ mod tests {
             "expected a succession reference for both the `first` and `then` ends, got: {sexpr}"
         );
         assert!(
-            !sexpr.contains("(status unresolved)")
-                || !sexpr.contains("succession"),
+            !sexpr.contains("(status unresolved)") || !sexpr.contains("succession"),
             "did not expect an unresolved succession outcome for two declared siblings, got: {sexpr}"
         );
     }
@@ -3858,7 +4138,17 @@ package P {
         )
     }
 
-    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+    fn seeded_and_unseeded_with_library(library_source: &str, workspace: &str) -> (String, String) {
+        let library = || {
+            std::sync::Arc::new(
+                build_library_stratum(vec![SourceInput::new(
+                    "memory://lib.sysml",
+                    library_source.to_string(),
+                    SourceKind::StandardLibrary,
+                )])
+                .expect("library stratum"),
+            )
+        };
         let seeded = build(
             BuildRequest::with_library(
                 vec![SourceInput::new(
@@ -3868,7 +4158,7 @@ package P {
                 )],
                 ConstructionSchedule::Sequential,
                 "contract-v1",
-                library_stratum(),
+                library(),
             )
             .expect("seeded request"),
         )
@@ -3883,7 +4173,7 @@ package P {
                     ),
                     SourceInput::new(
                         "memory://lib.sysml",
-                        LIBRARY_SOURCE.to_string(),
+                        library_source.to_string(),
                         SourceKind::StandardLibrary,
                     ),
                 ],
@@ -3914,6 +4204,10 @@ package P {
         (render(&seeded), render(&unseeded))
     }
 
+    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+        seeded_and_unseeded_with_library(LIBRARY_SOURCE, workspace)
+    }
+
     /// Reusing settled outcomes is an optimisation, so it has to be invisible. Everything the
     /// publication owns -- facts, type answers and diagnostics -- must come out identical.
     #[test]
@@ -3928,6 +4222,39 @@ package P {
         assert!(
             seeded.contains("Lib::Base"),
             "the workspace should reach the library's own supertypes, got: {seeded}"
+        );
+    }
+
+    /// A settled library contributes its resolved import references to the effective import
+    /// indexes rebuilt for a workspace publication. Omitting the settled prefix makes a public
+    /// import disappear only on the warm path, so a qualified metadata filter becomes unresolved
+    /// even though the same source resolves in a cold/full build.
+    #[test]
+    fn a_seeded_publication_preserves_publicly_reexported_filter_metadata() {
+        let library = concat!(
+            "standard library package Lib { ",
+            "public import Systems::*; ",
+            "package Systems { metadata def PartUsage; } ",
+            "}"
+        );
+        let workspace = concat!(
+            "package W { ",
+            "part candidate; ",
+            "view selected { expose candidate; filter @Lib::PartUsage; } ",
+            "}"
+        );
+        let (seeded, unseeded) = seeded_and_unseeded_with_library(library, workspace);
+        assert_eq!(
+            seeded, unseeded,
+            "publicly re-exported metadata must resolve identically with a library stratum"
+        );
+        assert!(
+            seeded.contains("(filterMetadataTest (reference \"Lib::PartUsage\"))"),
+            "the parity fixture must exercise the metadata filter reference: {seeded}"
+        );
+        assert!(
+            !seeded.contains("(unresolved (reference \"Lib::PartUsage\"))"),
+            "the publicly re-exported metadata reference must settle: {seeded}"
         );
     }
 
@@ -4473,6 +4800,78 @@ package P {
             "an ambiguous family must publish no chosen target"
         );
         assert_eq!(usage.typing.candidates.len(), 2, "{:?}", usage.typing);
+        assert_eq!(
+            usage
+                .effective_typing
+                .candidates
+                .iter()
+                .map(|candidate| candidate.element.qualified_name.as_ref())
+                .collect::<Vec<_>>(),
+            vec!["P::A::Shared", "P::B::Shared"]
+        );
+        assert_eq!(
+            usage.effective_typing.outcome,
+            RelationshipOutcome::Ambiguous
+        );
+    }
+
+    #[test]
+    fn effective_typing_preserves_partial_and_inherited_ambiguous_candidates() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                concat!(
+                    "package P {\n",
+                    "  part def A; part def B;\n",
+                    "  package Left { part shared : A; }\n",
+                    "  package Right { part shared : B; }\n",
+                    "  package Use { import Left::*; import Right::*;\n",
+                    "    part partial : A, Missing;\n",
+                    "    part inherited subsets shared;\n",
+                    "  }\n",
+                    "}\n",
+                ),
+            )],
+            ConstructionSchedule::Sequential,
+        );
+
+        let partial = details_of(&published, "memory://model.sysml", "P::Use::partial");
+        assert_eq!(
+            partial.effective_typing.outcome,
+            RelationshipOutcome::Partial,
+            "a settled type must not hide another typing that failed"
+        );
+        assert_eq!(
+            names(
+                &partial
+                    .effective_typing
+                    .types
+                    .iter()
+                    .map(|entry| entry.element.clone())
+                    .collect::<Vec<_>>()
+            ),
+            vec!["A"]
+        );
+
+        let inherited = details_of(&published, "memory://model.sysml", "P::Use::inherited");
+        assert_eq!(
+            inherited.effective_typing.outcome,
+            RelationshipOutcome::Ambiguous
+        );
+        assert_eq!(
+            inherited
+                .effective_typing
+                .candidates
+                .iter()
+                .map(|entry| entry.element.name.as_deref().unwrap_or_default())
+                .collect::<Vec<_>>(),
+            vec!["A", "B"]
+        );
+        assert!(inherited
+            .effective_typing
+            .candidates
+            .iter()
+            .all(|entry| { matches!(entry.origin, EffectiveTypeOrigin::Inherited(_)) }));
     }
 
     /// Effective typing is a fact about the declaration, so its outcome distinguishes a feature
@@ -4520,6 +4919,86 @@ package P {
                 .all(|entry| matches!(entry.origin, EffectiveTypeOrigin::Inherited(_))),
             "a type reached through subsetting is inherited, not direct: {:?}",
             selected.effective_typing
+        );
+    }
+
+    #[test]
+    fn view_selection_applies_inherited_metadata_disjunctions_and_conjoins_conditions() {
+        let document = "memory://views.sysml";
+        let published = detail_publication(
+            &[(
+                (document),
+                concat!(
+                    "package P {\n",
+                    "  metadata def Safety; metadata def Security;\n",
+                    "  part safe { @Safety; }\n",
+                    "  part secure { @Security; }\n",
+                    "  part both { @Safety; @Security; }\n",
+                    "  part plain;\n",
+                    "  view def Classified { filter @Safety | @Security; filter true; }\n",
+                    "  view selected : Classified;\n",
+                    "  view requiresBoth { filter @Safety; filter @Security; }\n",
+                    "}\n",
+                ),
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let view = identity_of(&published, document, "P::selected");
+        for name in ["P::safe", "P::secure"] {
+            let candidate = identity_of(&published, document, name);
+            assert_eq!(
+                settled(published.view_selection(&view, &candidate)).outcome,
+                ViewSelectionOutcome::Included
+            );
+        }
+        let plain = identity_of(&published, document, "P::plain");
+        assert_eq!(
+            settled(published.view_selection(&view, &plain)).outcome,
+            ViewSelectionOutcome::Excluded
+        );
+        let requires_both = identity_of(&published, document, "P::requiresBoth");
+        let safe = identity_of(&published, document, "P::safe");
+        assert_eq!(
+            settled(published.view_selection(&requires_both, &safe)).outcome,
+            ViewSelectionOutcome::Excluded
+        );
+        let both = identity_of(&published, document, "P::both");
+        assert_eq!(
+            settled(published.view_selection(&requires_both, &both)).outcome,
+            ViewSelectionOutcome::Included
+        );
+    }
+
+    #[test]
+    fn view_selection_keeps_unresolved_and_unsupported_predicates_explicit() {
+        let document = "memory://views.sysml";
+        let published = detail_publication(
+            &[(
+                document,
+                concat!(
+                    "package P {\n",
+                    "  part candidate;\n",
+                    "  view unresolved { filter @Missing; }\n",
+                    "  view unsupported { filter 1; }\n",
+                    "}\n",
+                ),
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let candidate = identity_of(&published, document, "P::candidate");
+        let unresolved = identity_of(&published, document, "P::unresolved");
+        assert_eq!(
+            settled(published.view_selection(&unresolved, &candidate)).outcome,
+            ViewSelectionOutcome::Indeterminate(Box::new([
+                ViewSelectionObstacle::UnresolvedPredicate
+            ]))
+        );
+        let unsupported = identity_of(&published, document, "P::unsupported");
+        assert_eq!(
+            settled(published.view_selection(&unsupported, &candidate)).outcome,
+            ViewSelectionOutcome::Indeterminate(Box::new([
+                ViewSelectionObstacle::UnsupportedPredicate
+            ]))
         );
     }
 
@@ -4957,5 +5436,62 @@ package P {
             },
         ));
         assert_eq!(at.referenced, ReferencedDetails::None);
+    }
+
+    #[test]
+    fn affected_documents_are_transitive_across_public_imports_and_aliases() {
+        let sources = vec![
+            SourceInput::new(
+                "memory://a.sysml",
+                "package A { part def T; }".into(),
+                SourceKind::Workspace,
+            ),
+            SourceInput::new(
+                "memory://b.sysml",
+                "package B { public import A::*; alias AliasT for T; }".into(),
+                SourceKind::Workspace,
+            ),
+            SourceInput::new(
+                "memory://c.sysml",
+                "package C { import B::*; part p : AliasT; }".into(),
+                SourceKind::Workspace,
+            ),
+        ];
+        let published = build(
+            BuildRequest::new(sources, ConstructionSchedule::Sequential, "contract-v1").unwrap(),
+        )
+        .unwrap();
+        let QueryOutcome::Resolved(affected) = published.affected_documents("memory://a.sysml")
+        else {
+            panic!("complete imports must publish a settled dependency outcome")
+        };
+        assert_eq!(
+            affected
+                .iter()
+                .map(|document| document.identity.as_ref())
+                .collect::<Vec<_>>(),
+            vec!["memory://b.sysml", "memory://c.sysml"]
+        );
+    }
+
+    #[test]
+    fn an_unresolved_import_makes_dependency_selection_explicitly_recovered() {
+        let published = build(
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://a.sysml",
+                    "package A { import Missing::*; }".into(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            published.affected_documents("memory://a.sysml"),
+            QueryOutcome::Recovered(_)
+        ));
     }
 }

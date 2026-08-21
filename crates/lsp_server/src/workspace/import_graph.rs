@@ -1,185 +1,139 @@
-//! Import relationships between workspace documents (for incremental diagnostic republish).
+//! Semantic dependency selection for incremental diagnostic republish.
 
-use sysml_v2_parser::ast::{
-    Import, LibraryPackage, Node, Package, PackageBody, PackageBodyElement, RootElement,
-};
-use sysml_v2_parser::RootNamespace;
+use sysml_query::resolved_slice::{ElementSource, PublishedModel, QueryOutcome};
 use tower_lsp::lsp_types::Url;
 
-use crate::common::util;
-use crate::syntax::ast_util::identification_name;
-use crate::workspace::state::IndexEntry;
+/// Workspace documents whose diagnostics may change with a provider.
+///
+/// The URI set comes from the publication's settled import/alias facts. Only an explicitly
+/// incomplete semantic outcome permits conservative over-invalidation.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct AffectedDiagnosticDocuments {
+    uris: Vec<Url>,
+    pub(crate) conservative: bool,
+}
 
-/// Workspace documents (excluding `provider_uri`) that import a top-level package from
-/// `provider_uri`. Takes `index`/`library_paths` directly (rather than a `ServerState`) since
-/// this only ever reads raw source/parsed data, never published semantics — callers already
-/// have these values on hand (e.g. from a relink snapshot) without needing to read back
-/// post-commit state.
-pub(crate) fn workspace_uris_importing_declarations_from(
-    index: &std::collections::HashMap<Url, IndexEntry>,
-    library_paths: &[Url],
+impl AffectedDiagnosticDocuments {
+    pub(crate) fn into_uris(self) -> Vec<Url> {
+        self.uris
+    }
+}
+
+pub(crate) fn affected_diagnostic_documents(
+    model: &PublishedModel,
+    workspace_uris: impl IntoIterator<Item = Url>,
     provider_uri: &Url,
-) -> Vec<Url> {
-    let Some(provider) = index.get(provider_uri) else {
-        return Vec::new();
-    };
-    let exported = top_level_package_names(provider.parsed.as_ref(), &provider.content);
-    if exported.is_empty() {
-        return Vec::new();
-    }
+) -> AffectedDiagnosticDocuments {
+    let mut all_workspace = workspace_uris.into_iter().collect::<Vec<_>>();
+    all_workspace.sort();
+    all_workspace.dedup();
+    all_workspace.retain(|uri| uri != provider_uri);
 
-    index
-        .iter()
-        .filter(|(uri, _)| *uri != provider_uri)
-        .filter(|(uri, _)| !util::uri_under_any_library(uri, library_paths))
-        .filter(|(_, entry)| {
-            document_imports_any_package(entry.parsed.as_ref(), &entry.content, &exported)
-        })
-        .map(|(uri, _)| uri.clone())
-        .collect()
-}
-
-fn top_level_package_names(parsed: Option<&RootNamespace>, content: &str) -> Vec<String> {
-    if let Some(root) = parsed {
-        return package_names_from_root(root);
-    }
-    sysml_v2_parser::parse(content)
-        .ok()
-        .map(|root| package_names_from_root(&root))
-        .unwrap_or_default()
-}
-
-fn package_names_from_root(root: &RootNamespace) -> Vec<String> {
-    root.elements
-        .iter()
-        .filter_map(|element| match &element.value {
-            RootElement::Package(package) => Some(identification_name(&package.identification)),
-            RootElement::LibraryPackage(package) => {
-                Some(identification_name(&package.identification))
-            }
-            _ => None,
-        })
-        .filter(|name| !name.is_empty())
-        .collect()
-}
-
-fn document_imports_any_package(
-    parsed: Option<&RootNamespace>,
-    content: &str,
-    packages: &[String],
-) -> bool {
-    let targets = import_targets_from_document(parsed, content);
-    packages.iter().any(|package| {
-        targets
-            .iter()
-            .any(|target| import_references_package(target, package))
-    })
-}
-
-fn import_targets_from_document(parsed: Option<&RootNamespace>, content: &str) -> Vec<String> {
-    if let Some(root) = parsed {
-        let mut out = Vec::new();
-        collect_import_targets_from_root(root, &mut out);
-        return out;
-    }
-    sysml_v2_parser::parse(content)
-        .ok()
-        .map(|root| {
-            let mut out = Vec::new();
-            collect_import_targets_from_root(&root, &mut out);
-            out
-        })
-        .unwrap_or_default()
-}
-
-fn collect_import_targets_from_root(root: &RootNamespace, out: &mut Vec<String>) {
-    for element in &root.elements {
-        match &element.value {
-            RootElement::Package(package) => walk_package_imports(package, out),
-            RootElement::LibraryPackage(package) => walk_library_package_imports(package, out),
-            _ => {}
+    let outcome = model
+        .dependencies()
+        .affected_documents(provider_uri.as_str());
+    let (documents, conservative) = match outcome {
+        QueryOutcome::Resolved(documents) => (documents, false),
+        QueryOutcome::Recovered(documents) | QueryOutcome::UnsupportedWith(documents) => {
+            (documents, true)
         }
-    }
-}
-
-fn walk_package_body(body: &PackageBody, out: &mut Vec<String>) {
-    let PackageBody::Brace { elements } = body else {
-        return;
-    };
-    for member in elements {
-        match &member.value {
-            PackageBodyElement::Import(import) => push_import_target(import, out),
-            PackageBodyElement::Package(nested) => walk_package_imports(nested, out),
-            PackageBodyElement::LibraryPackage(nested) => walk_library_package_imports(nested, out),
-            _ => {}
+        QueryOutcome::Unresolved
+        | QueryOutcome::Ambiguous(_)
+        | QueryOutcome::Unsupported
+        | QueryOutcome::Recovery
+        | QueryOutcome::Incomplete => {
+            return AffectedDiagnosticDocuments {
+                uris: all_workspace,
+                conservative: true,
+            };
         }
+    };
+    if conservative {
+        return AffectedDiagnosticDocuments {
+            uris: all_workspace,
+            conservative: true,
+        };
     }
-}
-
-fn walk_package_imports(package: &Node<Package>, out: &mut Vec<String>) {
-    walk_package_body(&package.value.body, out);
-}
-
-fn walk_library_package_imports(package: &Node<LibraryPackage>, out: &mut Vec<String>) {
-    walk_package_body(&package.value.body, out);
-}
-
-fn push_import_target(import: &Node<Import>, out: &mut Vec<String>) {
-    let target = import.value.target.trim();
-    if !target.is_empty() {
-        out.push(target.to_string());
+    let mut uris = documents
+        .iter()
+        .filter(|document| document.source == ElementSource::Workspace)
+        .filter_map(|document| Url::parse(&document.identity).ok())
+        .collect::<Vec<_>>();
+    uris.sort();
+    uris.dedup();
+    AffectedDiagnosticDocuments {
+        uris,
+        conservative: false,
     }
-}
-
-fn import_references_package(import_target: &str, package: &str) -> bool {
-    let target = import_target
-        .trim()
-        .trim_end_matches("::*")
-        .trim_end_matches("::**");
-    target == package || target.starts_with(&format!("{package}::"))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::workspace::state::ParseMetadata;
-    use std::collections::HashMap;
+    use std::sync::Arc;
+    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
-    fn entry(content: &str) -> IndexEntry {
-        let parsed = sysml_v2_parser::parse(content).ok();
-        IndexEntry {
-            content: content.to_string(),
-            parsed,
-            parse_metadata: ParseMetadata::default(),
-            admitted_to_publication: true,
-        }
+    fn model(sources: &[(&str, &str)]) -> Arc<PublishedModel> {
+        let documents = sources
+            .iter()
+            .map(|(uri, content)| SysmlDocument {
+                uri: Url::parse(uri).unwrap(),
+                content: (*content).to_owned(),
+                path_hint: None,
+                source_kind: SysmlDocumentSourceKind::Workspace,
+                content_digest: None,
+                byte_size: None,
+            })
+            .collect::<Vec<_>>();
+        workspace::PublicationCoordinator::default()
+            .publish(&documents, [])
+            .unwrap()
+    }
+
+    fn uri(value: &str) -> Url {
+        Url::parse(value).unwrap()
     }
 
     #[test]
-    fn detects_importer_of_top_level_package() {
-        let provider = Url::parse("file:///workspace/a.sysml").unwrap();
-        let importer = Url::parse("file:///workspace/b.sysml").unwrap();
-        let mut index = HashMap::new();
-        index.insert(provider.clone(), entry("package A { attribute def Name; }"));
-        index.insert(
-            importer.clone(),
-            entry("package B { import A::*; part def P { attribute n : Name; } }"),
-        );
-        let peers = workspace_uris_importing_declarations_from(&index, &[], &provider);
-        assert_eq!(peers, vec![importer]);
+    fn follows_nested_public_imports_transitively() {
+        let a = "file:///workspace/a.sysml";
+        let b = "file:///workspace/b.sysml";
+        let c = "file:///workspace/c.sysml";
+        let model = model(&[
+            (a, "package A { part def T; }"),
+            (b, "package B { package Nested { public import A::*; } }"),
+            (c, "package C { import B::Nested::*; part p : T; }"),
+        ]);
+        let affected = affected_diagnostic_documents(&model, [uri(a), uri(b), uri(c)], &uri(a));
+        assert!(!affected.conservative);
+        assert_eq!(affected.into_uris(), vec![uri(b), uri(c)]);
     }
 
     #[test]
-    fn ignores_unrelated_workspace_files() {
-        let provider = Url::parse("file:///workspace/a.sysml").unwrap();
-        let other = Url::parse("file:///workspace/c.sysml").unwrap();
-        let mut index = HashMap::new();
-        index.insert(provider.clone(), entry("package A { }"));
-        index.insert(
-            other.clone(),
-            entry("package C { import Other::*; part def P; }"),
-        );
-        let peers = workspace_uris_importing_declarations_from(&index, &[], &provider);
-        assert!(peers.is_empty());
+    fn alias_binding_is_a_semantic_dependency() {
+        let a = "file:///workspace/a.sysml";
+        let b = "file:///workspace/b.sysml";
+        let model = model(&[
+            (a, "package A { part def Thing; }"),
+            (b, "package B { alias PublicThing for A::Thing; }"),
+        ]);
+        let affected = affected_diagnostic_documents(&model, [uri(a), uri(b)], &uri(a));
+        assert!(!affected.conservative);
+        assert_eq!(affected.into_uris(), vec![uri(b)]);
+    }
+
+    #[test]
+    fn recovery_is_explicit_and_overinvalidates() {
+        let a = "file:///workspace/a.sysml";
+        let b = "file:///workspace/b.sysml";
+        let c = "file:///workspace/c.sysml";
+        let model = model(&[
+            (a, "package A {}"),
+            (b, "package B { import Missing::*;"),
+            (c, "package C {}"),
+        ]);
+        let affected = affected_diagnostic_documents(&model, [uri(a), uri(b), uri(c)], &uri(a));
+        assert!(affected.conservative);
+        assert_eq!(affected.into_uris(), vec![uri(b), uri(c)]);
     }
 }

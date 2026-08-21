@@ -75,18 +75,53 @@ package Model {}
 The parser/updater unit tests cover only Markdown mechanics. Semantic behavior belongs in the
 checked-in source snapshots and their canonical S-expression sections.
 
+Readable qualified-reference queries can be exercised directly without embedding opaque identity
+encodings. Use a named source document or `*` for publication-wide lookup, followed by the KerML
+qualified name and an expected `ElementKind` (or `*`):
+
+```markdown
+# QUALIFIED REFERENCE QUERIES
+~~~text
+resolve model.sysml Example::selected ViewUsage
+resolve * StandardViewDefinitions::GeneralView ViewDefinition
+~~~
+```
+
+The runner owns the corresponding `QUALIFIED REFERENCE RESULTS` section and checks it for
+sequential/parallel parity.
+
 ## Generator snapshots
 
-A fixture with `type=generate` names a repository-owned WebAssembly test plugin in `META`:
+A fixture with `type=generate` selects a repository-owned WebAssembly plugin in `META`. Plugin
+selection is closed: fixtures cannot provide filesystem paths. Conformance fixtures use the
+canonical `conformance:<name>` form (the legacy bare name remains accepted), while diagram
+fixtures use `repository:diagram`:
 
 ```markdown
 # META
 ~~~ini
 type=generate
 libraries=standard
-plugin=requirements_csv
+plugin=conformance:requirements_csv
 ~~~
 ```
+
+Diagram fixtures select one authored view with its source-document name, KerML qualified name and
+typed view kind. The semantic query owner resolves that readable reference to the canonical opaque
+identity; the runner then finds the identical catalog entry and passes its opaque handle to the
+guest. It never guesses from a display label or embeds the identity encoding in fixture metadata:
+
+```ini
+plugin=repository:diagram
+viewKind=general-view
+viewDocument=model.sysml
+viewQualifiedName=Example::selected
+```
+
+All three selection keys must occur together and are invalid for conformance plugins. A document
+name is normalized by the same `SourceDocument` constructor used to admit fixture source; the
+qualified name is resolved only within that document. Unresolved, wrong-kind and ambiguous
+references are errors rather than fallback selections.
 
 The runner executes that plugin against both the sequential and parallel immutable publications.
 Outcome, diagnostics, artifact paths, and exact artifact bytes must agree before the canonical

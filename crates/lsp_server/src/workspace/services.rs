@@ -155,13 +155,12 @@ fn update_symbol_table_for_uri(
 }
 
 fn refresh_symbols_for_uri(state: &mut impl DocumentStore, uri: &Url) {
-    // TODO(follow-up): query symbols from the committed immutable publication after the actor
-    // publishes the edit. The graph-derived symbol path is intentionally retired.
-    let mut new_entries = Vec::new();
-    if let Some(index_entry) = state.index().get(uri) {
-        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
-    }
-    update_symbol_table_for_uri(state, uri, Some(&new_entries));
+    // Admitted documents are projected from the exact committed publication. Avoid a
+    // source-derived interim result that could masquerade as successfully resolved semantics.
+    let entries = state
+        .published_model()
+        .map(|model| crate::language::symbol_entries_for_uri(model, uri));
+    update_symbol_table_for_uri(state, uri, entries.as_deref());
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -185,7 +184,6 @@ pub(crate) fn store_parsed_document_text(
             admitted_to_publication: true,
         },
     );
-    crate::workspace::state::refresh_published_model(state);
     refresh_symbols_for_uri(state, uri_norm);
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
@@ -275,7 +273,6 @@ pub(crate) fn ingest_parsed_scan_entries(
         );
         loaded.push((uri_norm, warning));
     }
-    crate::workspace::state::refresh_published_model(state);
     loaded
 }
 
@@ -305,7 +302,6 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
         );
         loaded.push((uri_norm, warning));
     }
-    crate::workspace::state::refresh_published_model(state);
     loaded
 }
 

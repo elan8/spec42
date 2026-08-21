@@ -158,11 +158,12 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
     assert_eq!(
         actual_dependencies,
         BTreeSet::from([
+            "blake3".to_owned(),
             "hashbrown".to_owned(),
             "rayon".to_owned(),
             "serde".to_owned(),
             "source_identity".to_owned(),
-            "sysml-v2-parser-next".to_owned(),
+            "sysml-v2-parser".to_owned(),
         ]),
         "the immutable resolution owner dependency boundary changed"
     );
@@ -310,7 +311,7 @@ fn migrated_validation_paths_cannot_return_to_the_graph() {
     let root = repository_root();
     let migrated = [
         "crates/workspace/src/snapshot/validation.rs",
-        "crates/workspace/src/snapshot/publication.rs",
+        "crates/semantic_publication/src/lib.rs",
         "crates/lsp_server/src/analysis/diagnostics_core.rs",
         "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
         "crates/lsp_server/src/lsp_runtime/diagnostics.rs",

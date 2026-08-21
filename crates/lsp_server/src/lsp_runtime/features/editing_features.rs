@@ -301,7 +301,8 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "ambiguous_reference"
         );
         if is_ambiguous_name_reference {
-            if let Some(model) = state.published_model.as_deref() {
+            {
+                let model = state.published_model.model();
                 for action in
                     suggest_qualify_ambiguous_name_quick_fixes(&text, &uri, diagnostic, model)
                 {
@@ -314,11 +315,12 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions = state
-                .published_model
-                .as_deref()
-                .map(|model| suggest_add_import_quick_fixes(&text, &uri, diagnostic, model))
-                .unwrap_or_default();
+            let import_actions = suggest_add_import_quick_fixes(
+                &text,
+                &uri,
+                diagnostic,
+                state.published_model.model(),
+            );
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));

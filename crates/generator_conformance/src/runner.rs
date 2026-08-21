@@ -14,10 +14,10 @@ use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
 use rayon::prelude::*;
+use semantic_publication::PublicationCoordinator;
 use serde::Serialize;
-use sysml_query::resolved_slice::{
-    build, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument, SourceKind,
-};
+use sysml_query::resolved_slice::PublishedModel;
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
 use crate::case::{Case, Expectation};
 
@@ -127,6 +127,7 @@ impl Corpus {
                     }
                     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
                         fuel_metering: metered,
+                        compilation_cache: false,
                     })
                     .map_err(|error| error.to_string())?;
                     let module =
@@ -160,17 +161,17 @@ impl Corpus {
         }
         let content = std::fs::read_to_string(&path)
             .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
-        let source = SourceDocument::from_memory_path(
+        let source = SysmlDocument::from_memory_path(
             "generator-conformance",
             "model.sysml",
             content,
-            SourceKind::Workspace,
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
         )
         .map_err(|error| error.to_string())?;
-        let request = BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential)
-            .map_err(|error| error.to_string())?;
-        build(request)
-            .map(Arc::new)
+        PublicationCoordinator::new()
+            .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))
     }
 }
@@ -186,7 +187,7 @@ fn run_one(
     // masking exactly the unknown-handle behaviour the suite exists to pin.
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(snapshot),
-        snapshot.publication().source_digest(),
+        snapshot.publication().model_digest(),
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
