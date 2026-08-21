@@ -4,8 +4,12 @@ description=KerML 8.3.4.12.3 validateMetadataFeatureMetaclassNotAbstract forbids
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.12.3 validateMetadataFeatureMetaclassNotAbstract
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureMetaclassNotAbstract
+blocked_by=semantic-metadata-metaclass-abstract
 type=file
-skip_validation=no semantic rule checks the abstractness of a metadata feature metaclass; the canonical code metadata_metaclass_abstract does not exist yet
 ~~~
 # SOURCE
 ~~~kerml

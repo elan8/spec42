@@ -4,6 +4,10 @@ description=SysML 8.3.7.3 validateAttributeUsageIsReference requires an Attribut
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.7.3 validateAttributeUsageIsReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.7.3:validateAttributeUsageIsReference
 type=file
 ~~~
 # SOURCE
@@ -56,6 +60,7 @@ package Attributes {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_attribute_usage_is_reference.md") (qualified-name "Attributes::Holder::measured"))) (target (node (document "memory://snapshot/sysml_attribute_usage_is_reference.md") (qualified-name "Attributes::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_attribute_usage_is_reference.md") (qualified-name "Attributes::Holder::measured"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_usage_is_reference.md") (qualified-name "Attributes::Holder::measured"))) (target (node (document "memory://snapshot/sysml_attribute_usage_is_reference.md") (qualified-name "Attributes::Holder"))) (provenance implied))
   )
   (evaluation
   )

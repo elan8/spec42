@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureEndIsConstant requires a Feature with
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureEndIsConstant
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureEndIsConstant
+blocked_by=parser-gap-67-end-restriction-modifiers
 type=file
-skip_validation=the pinned parser accepts `const end feature` -- which publishes (modifiers end constant) -- but rejects `var end feature`, reporting unrecognized_declaration_in_scope, so the violating variable end feature never reaches semantics
 ~~~
 # SOURCE
 ~~~kerml
@@ -67,6 +71,7 @@ package Ends {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants::fixed"))) (target (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants::fixed"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants::fixed"))) (target (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants"))) (provenance implied))
   )
   (evaluation
   )

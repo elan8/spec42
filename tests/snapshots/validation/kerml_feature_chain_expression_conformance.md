@@ -4,8 +4,12 @@ description=KerML 8.3.4.8.4 validateFeatureChainExpressionConformance requires t
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.4 validateFeatureChainExpressionConformance
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.4:validateFeatureChainExpressionConformance
+blocked_by=lowering-kerml-feature-relationships
 type=file
-skip_validation=the non-conforming chain target is reported by reference resolution rather than by a feature-chain-expression rule, and its range covers the reference token rather than the owning expression
 ~~~
 # SOURCE
 ~~~kerml
@@ -94,6 +98,11 @@ package Expressions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::outer"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Other::elsewhere"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Other::elsewhere"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing::inner"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::bad"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::good"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Other::elsewhere"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Other"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::bad"))) (state unsupported))

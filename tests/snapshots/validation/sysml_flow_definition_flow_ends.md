@@ -4,6 +4,10 @@ description=SysML 8.3.16.2 validateFlowDefinitionFlowEnds forbids a FlowDefiniti
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.16.2 validateFlowDefinitionFlowEnds
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.16.2:validateFlowDefinitionFlowEnds
 type=file
 ~~~
 # SOURCE
@@ -93,6 +97,11 @@ package Flows {
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::middle"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::middle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::source"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::target"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Binary::source"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Binary::target"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::middle"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::source"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary::target"))) (target (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Ternary"))) (provenance implied))
   )
   (evaluation
   )

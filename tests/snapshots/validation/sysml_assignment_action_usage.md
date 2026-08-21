@@ -4,8 +4,12 @@ description=SysML 8.3.17.5 validateAssignmentActionUsage requires the featureTar
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.5 validateAssignmentActionUsage
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.5:validateAssignmentActionUsage
+blocked_by=parser-gap-76-action-body-members
 type=file
-skip_validation=no semantic rule checks whether an assignment target may have time-varying values; the canonical code assignment_target_not_time_varying does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -88,6 +92,9 @@ package Actions {
   (relationships
     (relationship (kind assignTarget) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::constant"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::constant"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::constant"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::constant"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))

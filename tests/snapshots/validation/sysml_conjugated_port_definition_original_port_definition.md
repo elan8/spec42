@@ -4,8 +4,12 @@ description=SysML 8.3.12.2 validateConjugatedPortDefinitionOriginalPortDefinitio
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.12.2 validateConjugatedPortDefinitionOriginalPortDefinition
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.12.2:validateConjugatedPortDefinitionOriginalPortDefinition
+blocked_by=lowering-conjugated-port-definition
 type=file
-skip_validation=ConjugatedPortDefinition is not published as a distinct declaration, so neither side of the rule can be observed in SMG
 ~~~
 # SOURCE
 ~~~sysml
@@ -62,6 +66,7 @@ package Ports {
   )
   (relationships
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md") (qualified-name "Ports::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md") (qualified-name "Ports::Holder"))) (provenance implied))
   )
   (evaluation
   )

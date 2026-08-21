@@ -4,8 +4,12 @@ description=KerML 8.3.4.5.2 validateBindingConnectorIsBinary requires a BindingC
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.5.2 validateBindingConnectorIsBinary
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.5.2:validateBindingConnectorIsBinary
+blocked_by=parser-gap-69-connector-end-body
 type=file
-skip_validation=the pinned parser has no production for a binding connector with an end-feature body, so the three-ended binding never reaches semantics and is reported as unexpected_keyword_in_scope
 ~~~
 # SOURCE
 ~~~kerml
@@ -87,6 +91,9 @@ package Bindings {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::a"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::b"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::c"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::a"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::b"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder::c"))) (target (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=SysML 8.3.26.2 validateExposeOwningNamespace requires the importOwni
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.26.2 validateExposeOwningNamespace
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.26.2:validateExposeOwningNamespace
+blocked_by=parser-gap-79-membership-owner-forms
 type=file
-skip_validation=no semantic rule checks the owning namespace of an expose; the canonical code expose_invalid_owner does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -71,6 +75,7 @@ package Views {
   )
   (relationships
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (qualified-name "Views::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (path (named (kind package) (name "Views")) (named (kind view) (name "exposed")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (qualified-name "Views::exposed"))) (provenance implied))
   )
   (evaluation
   )

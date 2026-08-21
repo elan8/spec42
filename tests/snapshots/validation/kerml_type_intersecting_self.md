@@ -4,8 +4,12 @@ description=KerML 8.3.3.1.10 validateTypeIntersectingTypesNotSelf forbids a Type
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.1.10 validateTypeIntersectingTypesNotSelf
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.1.10:validateTypeIntersectingTypesNotSelf
+blocked_by=semantic-type-relationship-operand-is-self
 type=file
-skip_validation=no semantic rule rejects a type-relationship operand that is the declaring type itself; the canonical code type_relationship_operand_is_self does not exist yet
 ~~~
 # SOURCE
 ~~~kerml

@@ -9,27 +9,41 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod action_query;
+mod definition_usage_query;
 mod details;
 mod diagnostics;
 mod diagram_query;
 mod element_kind;
 mod evaluation;
+mod feature_query;
 mod inspection;
 mod model;
+mod namespace_query;
 mod qualified_reference;
+mod redefinition_query;
+mod requirement_query;
+mod specialization_query;
 pub mod syntax;
 mod traceability;
 mod type_query;
 mod verification;
 
+pub use action_query::{
+    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
+    ActionDerivedFactPrerequisite,
+};
+pub use definition_usage_query::{
+    DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
+};
 pub use details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
     InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
     ViewSelectionObstacle, ViewSelectionOutcome,
 };
 pub use diagnostics::{
-    Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
-    PublishedDiagnostics, RelatedLocation,
+    Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
+    DiagnosticSeverity, PublishedDiagnostics, RelatedLocation,
 };
 pub use diagram_query::{
     DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
@@ -47,19 +61,40 @@ pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,
     EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
 };
+pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{
-    AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
-    ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
-    MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
-    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    AnnotationForm, AuthoredValue, DerivedElementOwner, Documentation,
+    ElementDerivedDocumentationCollection, ElementInspection, ElementInspectionAt, ElementModifier,
+    ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound,
+    MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance, RelationshipTarget,
+    SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
+pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use qualified_reference::{
     QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
 };
-pub use traceability::{SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship};
+pub use redefinition_query::{
+    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
+};
+pub use requirement_query::{
+    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite,
+};
+pub use specialization_query::{
+    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+};
+pub use traceability::{
+    BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
+    BindingConnectorValidationPrerequisite, BindingEndpoint, SatisfyEndpoint, SatisfyPolarity,
+    SatisfyRelationship,
+};
 pub use type_query::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
-    SpecializationScope, SubsettingConformance, TypeReference,
+    SpecializationScope, SubsettingConformance, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
+    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeReference,
 };
 pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
 
@@ -210,6 +245,17 @@ pub enum QueryOutcome<T> {
     Unsupported,
     Recovery,
     Incomplete,
+}
+
+/// Which canonical anchor branch a generated conditional library-specialization rule selects.
+///
+/// Most rules own only [`Self::Default`]. Exact XMI `if … then … else … endif` contracts publish
+/// both branches atomically, and consumers select the predicate-true branch without encoding a
+/// stringly anchor convention.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum LibrarySpecializationAnchorBranch {
+    Default,
+    PredicateTrue,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -675,6 +721,23 @@ impl PublishedResolution {
         self.model.inspect(symbol)
     }
 
+    /// The exact derived `Element::owner` fact from the canonical ownership structure.
+    pub fn derived_element_owner(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<DerivedElementOwner> {
+        self.model.derived_element_owner(symbol)
+    }
+
+    /// One exact derived `Element` documentation collection from canonical documentation facts.
+    pub fn element_derived_documentation(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: ElementDerivedDocumentationCollection,
+    ) -> QueryOutcome<Box<[Documentation]>> {
+        self.model.element_derived_documentation(symbol, collection)
+    }
+
     /// The element whose declaration encloses `position`, and the element a reference there
     /// resolves to.
     ///
@@ -723,6 +786,138 @@ impl PublishedResolution {
         self.model.satisfy_relationships()
     }
 
+    /// One exact derived relationship collection for a lowered Feature.
+    ///
+    /// The collection is a projection of canonical authored/implied relationships; it does not
+    /// reconstruct a relationship from names or source text.
+    pub fn feature_derived_relationships(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: FeatureDerivedRelationshipCollection,
+    ) -> QueryOutcome<Box<[ElementRelationship]>> {
+        self.model.feature_derived_relationships(symbol, collection)
+    }
+
+    /// One exact Type relationship collection or operand projection from the canonical
+    /// relationship store.
+    pub fn type_derived_relationships(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedRelationshipCollection,
+    ) -> QueryOutcome<Box<[ElementRelationship]>> {
+        self.model.type_derived_relationships(symbol, collection)
+    }
+
+    /// One exact Type element-valued derivation over canonical declaration ownership and
+    /// membership facts. The result never creates a public Membership relationship identity.
+    pub fn type_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedElementCollection,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.type_derived_elements(symbol, collection)
+    }
+
+    /// One exact Type derivation with an explicit unavailable-fact outcome where no canonical
+    /// result owner exists yet.
+    pub fn type_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedFactCollection,
+    ) -> QueryOutcome<TypeDerivedFactOutcome> {
+        self.model.type_derived_fact(symbol, collection)
+    }
+
+    /// One exact Systems::DefinitionAndUsage derivation selected by the manifest-owned closed
+    /// kind. Direct owner/member projections are resolved from canonical facts; inherited,
+    /// variant, and time-variation predicates retain a typed unavailable-fact outcome.
+    pub fn definition_usage_derived(
+        &self,
+        symbol: &SymbolIdentity,
+        kind: DefinitionUsageDerivedKind,
+    ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
+        self.model.definition_usage_derived(symbol, kind)
+    }
+
+    pub fn action_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: ActionDerivedFactCollection,
+    ) -> QueryOutcome<ActionDerivedFactOutcome> {
+        self.model.action_derived_fact(symbol, collection)
+    }
+
+    /// One exact Systems::Requirements derivation over the publication's canonical membership
+    /// roles or documentation records.
+    pub fn requirement_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: RequirementDerivedFactCollection,
+    ) -> QueryOutcome<RequirementDerivedFactOutcome> {
+        self.model.requirement_derived_fact(symbol, collection)
+    }
+
+    /// The rule-scoped outcome for one closed exact TypeFeaturing check, derived only from the
+    /// canonical FeatureMembership and TypeFeaturing publication.
+    pub fn type_featuring_check(
+        &self,
+        symbol: &SymbolIdentity,
+        rule: TypeFeaturingCheckKind,
+    ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
+        self.model.type_featuring_check(symbol, rule)
+    }
+
+    /// The manifest-scoped outcome for an exact redefinition check. This query consumes only
+    /// resolver-owned relationship facts and published applicability facts; unavailable
+    /// prerequisites remain typed rather than being reconstructed from source or display names.
+    pub fn redefinition_check(
+        &self,
+        rule: RedefinitionCheckKind,
+    ) -> QueryOutcome<RedefinitionCheckOutcome> {
+        self.model.redefinition_check(rule)
+    }
+
+    /// The manifest-scoped outcome for one complete specialization check whose exact predicate
+    /// needs more than a generic graph edge.  Missing role facts are published as typed outcomes.
+    pub fn specialization_check(
+        &self,
+        rule: SpecializationCheckKind,
+    ) -> QueryOutcome<SpecializationCheckOutcome> {
+        self.model.specialization_check(rule)
+    }
+
+    /// One exact Namespace element-valued derivation over canonical declaration ownership and
+    /// membership facts. Unsupported and incomplete outcomes remain explicit.
+    pub fn namespace_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: NamespaceDerivedElementCollection,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.namespace_derived_elements(symbol, collection)
+    }
+
+    /// Exact `NamespaceImport::importedElement` projections for the direct anonymous imports a
+    /// Namespace owns. Each result carries the canonical import identity and target outcome.
+    pub fn namespace_import_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
+        self.model.namespace_import_derived_elements(symbol)
+    }
+
+    /// Workspace-authored binding connectors with their paired canonical endpoints.
+    pub fn binding_connectors(&self) -> QueryOutcome<Box<[BindingConnector]>> {
+        self.model.binding_connectors()
+    }
+
+    /// The explicit applicability outcome for a closed named binding-connector validation.
+    pub fn binding_connector_validation(
+        &self,
+        rule: BindingConnectorCheckKind,
+    ) -> QueryOutcome<BindingConnectorValidationOutcome> {
+        self.model.binding_connector_validation(rule)
+    }
+
     /// Workspace-authored requirement-verification memberships in canonical declaration order.
     pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
         self.model.requirement_verifications()
@@ -759,6 +954,50 @@ impl PublishedResolution {
         self.model.effective_types(symbol)
     }
 
+    /// The canonical standard-library target used to satisfy
+    /// `checkPartDefinitionSpecialization`.
+    ///
+    /// This is the semantic owner's typed anchor outcome, not a lookup reconstructed from a
+    /// display name. A missing library is `Unresolved`; competing library declarations are
+    /// returned as `Ambiguous` candidates.
+    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+        self.model.part_definition_specialization_anchor()
+    }
+
+    /// The canonical anchor outcome for one generated unconditional library-specialization rule.
+    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+        self.model.library_specialization_anchor(rule_id)
+    }
+
+    /// The canonical anchor outcome for one typed branch of a generated conditional
+    /// specialization rule. [`LibrarySpecializationAnchorBranch::Default`] is the compatible
+    /// single-anchor view used by [`Self::library_specialization_anchor`].
+    pub fn library_specialization_anchor_branch(
+        &self,
+        rule_id: &str,
+        branch: LibrarySpecializationAnchorBranch,
+    ) -> QueryOutcome<SymbolIdentity> {
+        self.model
+            .library_specialization_anchor_branch(rule_id, branch)
+    }
+
+    /// The canonical anchor outcome for any generated exact library rule.
+    ///
+    /// Unlike [`Self::library_specialization_anchor`], this includes generated
+    /// `redefinesFromLibrary` contracts. The stable manifest rule ID is the only selector;
+    /// callers cannot recover a rule from a display name or metaclass spelling.
+    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+        self.model.library_rule_anchor(rule_id)
+    }
+
+    /// Whether a generated exact `redefinesFromLibrary` rule has a lowered source projection.
+    ///
+    /// An exact manifest rule that the current parser cannot represent is `Unsupported`, rather
+    /// than an invented relationship or a misleading successful no-op.
+    pub fn library_redefinition_applicability(&self, rule_id: &str) -> QueryOutcome<()> {
+        self.model.library_redefinition_applicability(rule_id)
+    }
+
     /// The supertypes one specialization edge away.
     pub fn direct_supertypes(
         &self,
@@ -789,6 +1028,14 @@ impl PublishedResolution {
     /// The type that features `symbol`, if any.
     pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
         self.model.featuring_type(symbol)
+    }
+
+    /// Every effective TypeFeaturing target, retaining whether it was authored or implied.
+    ///
+    /// A variable FeatureMembership without a canonical `snapshots` prerequisite is explicitly
+    /// unsupported rather than treated as an unfeatured ordinary member.
+    pub fn featuring_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.featuring_types(symbol)
     }
 
     /// Whether `specific` conforms to `general` (KerML §8.4.3.2), reflexively and transitively.
@@ -1414,6 +1661,10 @@ mod tests {
             assert!(
                 !diagnostic.message.trim().is_empty(),
                 "empty message: {diagnostic:#?}"
+            );
+            assert!(
+                !diagnostic.category().as_str().is_empty(),
+                "diagnostic has no typed category: {diagnostic:#?}"
             );
         }
     }
@@ -3567,6 +3818,364 @@ package Trace {
     }
 
     #[test]
+    fn binding_connector_query_pairs_ends_preserves_duplicates_and_unresolved_outcomes() {
+        let published = publication_for(&[(
+            "memory://binding.sysml",
+            r#"
+package Binding {
+    action def Act {
+        action start;
+        action done;
+        bind start = done;
+        bind Missing = done;
+        bind start = done;
+    }
+}
+"#,
+        )]);
+        let values = match published.binding_connectors() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved binding connectors, got {other:?}"),
+        };
+        assert_eq!(
+            values.len(),
+            3,
+            "each authored binding must remain a separate fact"
+        );
+        let actions = match published.search_elements(ElementSearch {
+            kind: ElementKind::ActionUsage,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected actions, got {other:?}"),
+        };
+        let start = actions
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Binding::Act::start")
+            .expect("start action");
+        let done = actions
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Binding::Act::done")
+            .expect("done action");
+        assert!(
+            matches!(&values[0].source, BindingEndpoint::Resolved(value) if value == &start.identity)
+        );
+        assert!(
+            matches!(&values[0].target, BindingEndpoint::Resolved(value) if value == &done.identity)
+        );
+        assert!(matches!(values[1].source, BindingEndpoint::Unresolved));
+        assert!(
+            matches!(&values[2].source, BindingEndpoint::Resolved(value) if value == &start.identity)
+        );
+        assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
+        assert_ne!(values[0].identity, values[2].identity);
+    }
+
+    #[test]
+    fn binding_connector_query_uses_the_same_paired_fact_for_kerml_binding_members() {
+        let published = publication_for(&[(
+            "memory://kerml-binding.sysml",
+            r#"
+package Binding {
+    classifier C {
+        feature left : Integer;
+        feature right : Integer;
+        binding left = right;
+    }
+}
+"#,
+        )]);
+        let values = match published.binding_connectors() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved binding connector, got {other:?}"),
+        };
+        assert_eq!(values.len(), 1);
+        assert!(matches!(values[0].source, BindingEndpoint::Resolved(_)));
+        assert!(matches!(values[0].target, BindingEndpoint::Resolved(_)));
+        assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
+    }
+
+    #[test]
+    fn feature_reference_expression_binding_check_is_explicitly_unsupported_without_owned_facts() {
+        let published = publication_for(&[(
+            "memory://binding-rule.sysml",
+            "package Binding { action def Act { action start; action done; bind start = done; } }",
+        )]);
+        assert!(matches!(
+            published.binding_connector_validation(
+                BindingConnectorCheckKind::FeatureReferenceExpression
+            ),
+            QueryOutcome::Resolved(BindingConnectorValidationOutcome::Unsupported {
+                prerequisite:
+                    BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
+            })
+        ));
+        assert!(matches!(
+            published.binding_connectors(),
+            QueryOutcome::Resolved(values) if values.len() == 1
+        ));
+    }
+
+    #[test]
+    fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
+        let published = publication_for(&[(
+            "memory://binding-rule-family.sysml",
+            "package Binding { action def Act { action start; action done; bind start = done; } }",
+        )]);
+        let expected = [
+            (
+                BindingConnectorCheckKind::FeatureValue,
+                BindingConnectorValidationPrerequisite::FeatureValueEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::ExpressionResult,
+                BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::FunctionResult,
+                BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd,
+                BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
+            ),
+            (
+                BindingConnectorCheckKind::FeatureReferenceExpression,
+                BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
+            ),
+            (
+                BindingConnectorCheckKind::InvocationExpressionBehavior,
+                BindingConnectorValidationPrerequisite::InvocationExpressionBehaviorEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::InvocationExpressionDefaultValueTbd,
+                BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
+            ),
+            (
+                BindingConnectorCheckKind::AcceptActionUsageReceiver,
+                BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::TransitionUsageSource,
+                BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::TransitionUsageSuccession,
+                BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts,
+            ),
+            (
+                BindingConnectorCheckKind::SatisfyRequirementUsage,
+                BindingConnectorValidationPrerequisite::SatisfyRequirementUsageEndpointFacts,
+            ),
+        ];
+
+        for (rule, prerequisite) in expected {
+            let outcome = match published.binding_connector_validation(rule) {
+                QueryOutcome::Resolved(outcome) => outcome,
+                other => panic!("expected resolved validation outcome for {rule:?}, got {other:?}"),
+            };
+            assert_eq!(
+                outcome,
+                BindingConnectorValidationOutcome::Unsupported { prerequisite },
+                "{rule:?} must not be mistaken for a satisfied predicate before its canonical endpoint facts exist"
+            );
+        }
+    }
+
+    #[test]
+    fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
+        let published = publication_for(&[(
+            "memory://redefinition-rule-family.sysml",
+            "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
+        )]);
+        let expected = [
+            (
+                RedefinitionCheckKind::FeatureEnd,
+                RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
+            ),
+            (
+                RedefinitionCheckKind::FeatureFlowFeature,
+                RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
+            ),
+            (
+                RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
+                RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints,
+            ),
+            (
+                RedefinitionCheckKind::FeatureParameter,
+                RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
+            ),
+            (
+                RedefinitionCheckKind::FeatureResult,
+                RedefinitionCheckPrerequisite::FunctionOrExpressionResult,
+            ),
+            (
+                RedefinitionCheckKind::ConstructorExpressionResultFeature,
+                RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures,
+            ),
+            (
+                RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
+                RedefinitionCheckPrerequisite::FeatureChainSourceTarget,
+            ),
+            (
+                RedefinitionCheckKind::FeatureChainExpressionTarget,
+                RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor,
+            ),
+            (
+                RedefinitionCheckKind::ActionUsageStateAction,
+                RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
+            ),
+            (
+                RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
+                RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
+            ),
+            (
+                RedefinitionCheckKind::AssignmentActionUsageReferent,
+                RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
+            ),
+            (
+                RedefinitionCheckKind::AssignmentActionUsageStartingAt,
+                RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
+            ),
+            (
+                RedefinitionCheckKind::ForLoopActionUsageVar,
+                RedefinitionCheckPrerequisite::ForLoopVariableProjection,
+            ),
+            (
+                RedefinitionCheckKind::RequirementUsageObjective,
+                RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective,
+            ),
+            (
+                RedefinitionCheckKind::RenderingUsage,
+                RedefinitionCheckPrerequisite::ViewRenderingMembership,
+            ),
+        ];
+
+        for (rule, prerequisite) in expected {
+            assert_eq!(
+                published.redefinition_check(rule),
+                QueryOutcome::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
+                "{rule:?} must expose its first missing canonical prerequisite rather than infer a relationship"
+            );
+        }
+    }
+
+    #[test]
+    fn redefinition_check_outcomes_have_cold_warm_and_schedule_parity() {
+        let sources = [(
+            "memory://redefinition-parity.sysml",
+            "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            [
+                RedefinitionCheckKind::FeatureEnd,
+                RedefinitionCheckKind::FeatureFlowFeature,
+                RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
+                RedefinitionCheckKind::FeatureParameter,
+                RedefinitionCheckKind::FeatureResult,
+                RedefinitionCheckKind::ConstructorExpressionResultFeature,
+                RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
+                RedefinitionCheckKind::FeatureChainExpressionTarget,
+                RedefinitionCheckKind::ActionUsageStateAction,
+                RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
+                RedefinitionCheckKind::AssignmentActionUsageReferent,
+                RedefinitionCheckKind::AssignmentActionUsageStartingAt,
+                RedefinitionCheckKind::ForLoopActionUsageVar,
+                RedefinitionCheckKind::RequirementUsageObjective,
+                RedefinitionCheckKind::RenderingUsage,
+            ]
+            .map(|rule| settled(published.redefinition_check(rule)))
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success() {
+        let sources = [(
+            "memory://specialization-check-rule-family.sysml",
+            "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let expected = [
+            (
+                SpecializationCheckKind::FeatureOwnedCrossFeature,
+                SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes,
+            ),
+            (
+                SpecializationCheckKind::ConstructorExpressionResult,
+                SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType,
+            ),
+            (
+                SpecializationCheckKind::UsageVariationUsage,
+                SpecializationCheckPrerequisite::UsageVariationOwner,
+            ),
+            (
+                SpecializationCheckKind::TransitionUsageSuccessionSource,
+                SpecializationCheckPrerequisite::TransitionSuccessionSource,
+            ),
+        ];
+        let query = |published: &PublishedResolution| {
+            expected.map(|(rule, prerequisite)| {
+                assert_eq!(
+                    published.specialization_check(rule),
+                    QueryOutcome::Resolved(SpecializationCheckOutcome::Unsupported { prerequisite }),
+                    "{rule:?} must not treat the model's authored/implied specialization facts as proof of its richer predicate"
+                );
+                settled(published.specialization_check(rule))
+            })
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn binding_connector_facts_have_sequential_parallel_and_source_order_parity() {
+        let sources = [
+            (
+                "memory://z.sysml",
+                "package Z { action def Act { action start; action done; bind start = done; } }",
+            ),
+            ("memory://a.sysml", "package A { action def Other; }"),
+        ];
+        let build_with = |sources: &[(&str, &str)], schedule| {
+            build(
+                BuildRequest::new(
+                    sources
+                        .iter()
+                        .map(|(identity, source)| {
+                            SourceInput::new(
+                                *identity,
+                                (*source).to_string(),
+                                SourceKind::Workspace,
+                            )
+                        })
+                        .collect(),
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let permuted = [sources[1], sources[0]];
+        let render = |published: &PublishedResolution| match published.binding_connectors() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected binding facts, got {other:?}"),
+        };
+        let sequential = build_with(&sources, ConstructionSchedule::Sequential);
+        let parallel = build_with(&sources, ConstructionSchedule::Parallel);
+        let reordered = build_with(&permuted, ConstructionSchedule::Sequential);
+        assert_eq!(render(&sequential), render(&parallel));
+        assert_eq!(render(&sequential), render(&reordered));
+    }
+
+    #[test]
     fn verification_query_owns_case_direction_endpoint_status_and_unsupported_outcome() {
         let published = publication_for(&[(
             "memory://verification.sysml",
@@ -4589,6 +5198,233 @@ package P {
         );
     }
 
+    #[test]
+    fn derived_element_owner_projects_the_canonical_ownership_fact() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { part def Vehicle { attribute mass; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let package = identity_of(&published, "memory://model.sysml", "Model");
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
+
+        assert_eq!(
+            settled(published.derived_element_owner(&mass)),
+            DerivedElementOwner::Owner(vehicle.clone())
+        );
+        assert_eq!(
+            settled(published.derived_element_owner(&package)),
+            DerivedElementOwner::NoOwner
+        );
+        assert_eq!(
+            settled(published.inspect(&mass)).owner,
+            Some(vehicle),
+            "the exact derivation must read the same canonical owner inspection publishes"
+        );
+    }
+
+    #[test]
+    fn derived_element_owner_has_cold_warm_and_schedule_parity() {
+        let sources = [(
+            "memory://model.sysml",
+            "package Model { part def Vehicle { attribute mass; } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            let mass = identity_of(published, "memory://model.sysml", "Model::Vehicle::mass");
+            settled(published.derived_element_owner(&mass))
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn derived_element_documentation_filters_canonical_typed_forms() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { action def Vehicle { doc /* vehicle documentation */ language \"Alf\" /* vehicle implementation */ } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let documentation = settled(published.element_derived_documentation(
+            &vehicle,
+            ElementDerivedDocumentationCollection::Documentation,
+        ));
+        assert_eq!(documentation.len(), 1);
+        assert_eq!(documentation[0].form, AnnotationForm::Documentation);
+        assert_eq!(&*documentation[0].text, " vehicle documentation ");
+        assert!(documentation[0].language.is_none());
+
+        let representations = settled(published.element_derived_documentation(
+            &vehicle,
+            ElementDerivedDocumentationCollection::TextualRepresentation,
+        ));
+        assert_eq!(representations.len(), 1);
+        assert_eq!(
+            representations[0].form,
+            AnnotationForm::TextualRepresentation
+        );
+        assert_eq!(representations[0].language.as_deref(), Some("Alf"));
+        assert_eq!(&*representations[0].text, " vehicle implementation ");
+    }
+
+    #[test]
+    fn derived_element_documentation_has_cold_warm_and_schedule_parity() {
+        let sources = [(
+            "memory://model.sysml",
+            "package Model { action def Vehicle { doc /* vehicle documentation */ language \"Alf\" /* vehicle implementation */ } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            let vehicle = identity_of(published, "memory://model.sysml", "Model::Vehicle");
+            [
+                ElementDerivedDocumentationCollection::Documentation,
+                ElementDerivedDocumentationCollection::TextualRepresentation,
+            ]
+            .into_iter()
+            .map(|collection| {
+                settled(published.element_derived_documentation(&vehicle, collection))
+            })
+            .collect::<Vec<_>>()
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
+        let published = detail_publication(
+            &[
+                (
+                    "memory://library.sysml",
+                    "package Library { part def Imported; }",
+                ),
+                (
+                    "memory://model.sysml",
+                    "package Model { import Library::*; part def Owned; }",
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+        );
+        let model = identity_of(&published, "memory://model.sysml", "Model");
+        let owned = identity_of(&published, "memory://model.sysml", "Model::Owned");
+
+        let members = settled(
+            published
+                .namespace_derived_elements(&model, NamespaceDerivedElementCollection::OwnedMember),
+        );
+        assert_eq!(members.as_ref(), std::slice::from_ref(&owned));
+        let imports = settled(
+            published
+                .namespace_derived_elements(&model, NamespaceDerivedElementCollection::OwnedImport),
+        );
+        assert_eq!(imports.len(), 1);
+        assert_eq!(
+            settled(published.inspect(&imports[0])).kind,
+            ElementKind::Import,
+            "the owned-import derivation returns the canonical lowered import declaration"
+        );
+        assert!(matches!(
+            published.namespace_derived_elements(
+                &owned,
+                NamespaceDerivedElementCollection::OwnedMember,
+            ),
+            QueryOutcome::Unsupported
+        ));
+    }
+
+    #[test]
+    fn namespace_derived_elements_have_cold_warm_and_schedule_parity() {
+        let sources = [
+            (
+                "memory://library.sysml",
+                "package Library { part def Imported; }",
+            ),
+            (
+                "memory://model.sysml",
+                "package Model { import Library::*; part def Owned; }",
+            ),
+        ];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            let model = identity_of(published, "memory://model.sysml", "Model");
+            [
+                NamespaceDerivedElementCollection::OwnedMember,
+                NamespaceDerivedElementCollection::OwnedImport,
+            ]
+            .into_iter()
+            .map(|collection| settled(published.namespace_derived_elements(&model, collection)))
+            .collect::<Vec<_>>()
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn namespace_import_derived_elements_preserve_canonical_target_outcomes() {
+        let published = detail_publication(
+            &[
+                (
+                    "memory://library.sysml",
+                    "package Library { part def Imported; }",
+                ),
+                (
+                    "memory://model.sysml",
+                    "package Model { import Library::*; part def Owned; }",
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+        );
+        let model = identity_of(&published, "memory://model.sysml", "Model");
+        let library = identity_of(&published, "memory://library.sysml", "Library");
+        let values = settled(published.namespace_import_derived_elements(&model));
+        assert_eq!(values.len(), 1);
+        assert_eq!(values[0].relationship.kind, "namespaceImport");
+        assert_eq!(
+            values[0].relationship.provenance,
+            RelationshipProvenance::Authored
+        );
+        assert_eq!(
+            values[0].relationship.target,
+            RelationshipTarget::Resolved(library),
+            "the scalar derivation must retain the import reference's canonical target outcome"
+        );
+    }
+
+    #[test]
+    fn namespace_import_derived_elements_have_cold_warm_and_schedule_parity() {
+        let sources = [
+            (
+                "memory://library.sysml",
+                "package Library { part def Imported; }",
+            ),
+            (
+                "memory://model.sysml",
+                "package Model { import Library::*; part def Owned; }",
+            ),
+        ];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            let model = identity_of(published, "memory://model.sysml", "Model");
+            settled(published.namespace_import_derived_elements(&model))
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
     // --- Element details --------------------------------------------------------------------
 
     fn detail_publication(
@@ -5315,6 +6151,1976 @@ package P {
             render_details(&details_of(&full, "memory://model.sysml", "W::w")),
             render_details(&details_of(&warm, "memory://model.sysml", "W::w")),
         );
+    }
+
+    fn part_definition_library() -> SourceInput {
+        SourceInput::new(
+            "memory://parts.sysml",
+            concat!(
+                "standard library package Parts { ",
+                "part def Part; ",
+                "part def Vehicle specializes Part; ",
+                "}"
+            )
+            .to_string(),
+            SourceKind::StandardLibrary,
+        )
+    }
+
+    fn part_definition_workspace() -> SourceInput {
+        SourceInput::new(
+            "memory://model.sysml",
+            concat!(
+                "package Model { import Parts::*; ",
+                "part def Component; ",
+                "part def Equivalent specializes Part; ",
+                "part def Specific specializes Vehicle; ",
+                "}"
+            )
+            .to_string(),
+            SourceKind::Workspace,
+        )
+    }
+
+    fn specialization_relationships(
+        published: &PublishedResolution,
+        document: &str,
+        qualified_name: &str,
+    ) -> Vec<ElementRelationship> {
+        settled(published.inspect(&identity_of(published, document, qualified_name)))
+            .relationships
+            .into_vec()
+            .into_iter()
+            .filter(|relationship| relationship.kind == "specialization")
+            .collect()
+    }
+
+    fn type_featuring_relationships(
+        published: &PublishedResolution,
+        document: &str,
+        qualified_name: &str,
+    ) -> Vec<ElementRelationship> {
+        settled(published.inspect(&identity_of(published, document, qualified_name)))
+            .relationships
+            .into_vec()
+            .into_iter()
+            .filter(|relationship| relationship.kind == "typeFeaturing")
+            .collect()
+    }
+
+    #[test]
+    fn feature_membership_publishes_an_implied_type_featuring_fact() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { part def Vehicle { attribute mass; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
+        assert_eq!(
+            type_featuring_relationships(
+                &published,
+                "memory://model.sysml",
+                "Model::Vehicle::mass"
+            ),
+            vec![ElementRelationship {
+                kind: "typeFeaturing",
+                provenance: RelationshipProvenance::Implied,
+                authored: None,
+                target: RelationshipTarget::Resolved(vehicle.clone()),
+                location: None,
+            }]
+        );
+        assert_eq!(
+            settled(published.featuring_types(&mass))
+                .into_vec()
+                .into_iter()
+                .map(|value| (value.symbol, value.provenance))
+                .collect::<Vec<_>>(),
+            vec![(vehicle.clone(), RelationshipProvenance::Implied)]
+        );
+        assert_eq!(settled(published.featuring_type(&mass)), Some(vehicle));
+    }
+
+    #[test]
+    fn authored_type_featuring_suppresses_the_membership_implication() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { feature mass featured by Vehicle; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
+        let relationships = type_featuring_relationships(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::mass",
+        );
+        assert_eq!(relationships.len(), 1);
+        assert_eq!(
+            relationships[0].provenance,
+            RelationshipProvenance::Authored
+        );
+        assert_eq!(relationships[0].authored.as_deref(), Some("Vehicle"));
+        assert_eq!(
+            relationships[0].target,
+            RelationshipTarget::Resolved(vehicle.clone())
+        );
+        assert_eq!(
+            settled(published.featuring_types(&mass))[0].provenance,
+            RelationshipProvenance::Authored
+        );
+    }
+
+    #[test]
+    fn feature_membership_type_featuring_is_canonical_across_cold_warm_and_parallel_publications() {
+        let library = SourceInput::new(
+            "memory://library.sysml",
+            "standard library package Library { classifier Marker; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { part def Vehicle { attribute mass; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let publish = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let cold = publish(ConstructionSchedule::Sequential);
+        let parallel = publish(ConstructionSchedule::Parallel);
+        let warm = build(
+            BuildRequest::with_library(
+                vec![workspace],
+                ConstructionSchedule::Parallel,
+                "contract-v1",
+                std::sync::Arc::new(build_library_stratum(vec![library]).unwrap()),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let render = |published: &PublishedResolution| {
+            let mass = identity_of(published, "memory://model.sysml", "Model::Vehicle::mass");
+            settled(published.featuring_types(&mass))
+                .into_vec()
+                .into_iter()
+                .map(|reference| (reference.symbol, reference.provenance))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(render(&cold), render(&parallel));
+        assert_eq!(render(&cold), render(&warm));
+        assert!(matches!(
+            render(&cold).as_slice(),
+            [(target, RelationshipProvenance::Implied)]
+                if target == &identity_of(&cold, "memory://model.sysml", "Model::Vehicle")
+        ));
+    }
+
+    #[test]
+    fn feature_membership_type_featuring_check_uses_the_manifest_scoped_canonical_outcome() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { feature mass; var feature snapshot; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
+        let snapshot = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::snapshot",
+        );
+        assert_eq!(
+            settled(
+                published
+                    .type_featuring_check(&mass, TypeFeaturingCheckKind::FeatureFeatureMembership,)
+            ),
+            TypeFeaturingCheckOutcome::Satisfied,
+        );
+        assert_eq!(
+            settled(
+                published.type_featuring_check(
+                    &snapshot,
+                    TypeFeaturingCheckKind::FeatureFeatureMembership,
+                )
+            ),
+            TypeFeaturingCheckOutcome::Unsupported {
+                prerequisite: TypeFeaturingCheckPrerequisite::VariableFeatureSnapshots,
+            },
+        );
+        assert_eq!(
+            settled(
+                published.type_featuring_check(
+                    &vehicle,
+                    TypeFeaturingCheckKind::FeatureFeatureMembership,
+                )
+            ),
+            TypeFeaturingCheckOutcome::Unsupported {
+                prerequisite: TypeFeaturingCheckPrerequisite::FeatureMembershipFacts,
+            },
+        );
+    }
+
+    #[test]
+    fn type_featuring_derives_through_authored_feature_chaining() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { feature base featured by Vehicle; feature derived chains base; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let derived = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::derived",
+        );
+        assert_eq!(
+            settled(published.featuring_types(&derived))
+                .into_vec()
+                .into_iter()
+                .map(|value| (value.symbol, value.provenance))
+                .collect::<Vec<_>>(),
+            vec![(vehicle, RelationshipProvenance::Implied)]
+        );
+        assert!(settled(published.inspect(&derived))
+            .relationships
+            .iter()
+            .any(|relationship| relationship.kind == "featureChaining"));
+    }
+
+    #[test]
+    fn exact_feature_relationship_collections_project_canonical_authored_and_implied_facts() {
+        let published = detail_publication(
+            &[ (
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { feature base; feature derived : Vehicle redefines base chains base; } }",
+            ) ],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
+        let base = identity_of(&published, "memory://model.sysml", "Model::Vehicle::base");
+        let derived = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::derived",
+        );
+        let values = |collection| {
+            settled(published.feature_derived_relationships(&derived, collection)).into_vec()
+        };
+
+        assert!(matches!(
+            &values(FeatureDerivedRelationshipCollection::OwnedFeatureChaining)[0],
+            ElementRelationship {
+                kind: "featureChaining",
+                provenance: RelationshipProvenance::Authored,
+                target: RelationshipTarget::Resolved(target),
+                ..
+            } if target == &base
+        ));
+        assert!(matches!(
+            &values(FeatureDerivedRelationshipCollection::OwnedRedefinition)[0],
+            ElementRelationship {
+                kind: "redefinition",
+                provenance: RelationshipProvenance::Authored,
+                target: RelationshipTarget::Resolved(target),
+                ..
+            } if target == &base
+        ));
+        assert!(matches!(
+            &values(FeatureDerivedRelationshipCollection::OwnedSubsetting)[0],
+            ElementRelationship {
+                kind: "redefinition",
+                provenance: RelationshipProvenance::Authored,
+                target: RelationshipTarget::Resolved(target),
+                ..
+            } if target == &base
+        ));
+        assert!(matches!(
+            &values(FeatureDerivedRelationshipCollection::OwnedTyping)[0],
+            ElementRelationship {
+                kind: "featureTyping",
+                provenance: RelationshipProvenance::Authored,
+                target: RelationshipTarget::Resolved(target),
+                ..
+            } if target == &vehicle
+        ));
+        assert!(matches!(
+            &values(FeatureDerivedRelationshipCollection::OwnedTypeFeaturing)[0],
+            ElementRelationship {
+                kind: "typeFeaturing",
+                provenance: RelationshipProvenance::Implied,
+                authored: None,
+                target: RelationshipTarget::Resolved(target),
+                location: None,
+            } if target == &vehicle
+        ));
+        assert!(matches!(
+            published.feature_derived_relationships(
+                &vehicle,
+                FeatureDerivedRelationshipCollection::OwnedTyping,
+            ),
+            QueryOutcome::Unsupported
+        ));
+    }
+
+    #[test]
+    fn feature_relationship_collection_keeps_an_unresolved_canonical_edge_visible() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { feature derived chains Missing; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let derived = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::derived",
+        );
+        assert!(matches!(
+            settled(published.feature_derived_relationships(
+                &derived,
+                FeatureDerivedRelationshipCollection::OwnedFeatureChaining,
+            ))
+            .as_ref(),
+            [ElementRelationship {
+                kind: "featureChaining",
+                target: RelationshipTarget::Unresolved,
+                provenance: RelationshipProvenance::Authored,
+                ..
+            }]
+        ));
+    }
+
+    #[test]
+    fn feature_relationship_collections_have_sequential_parallel_and_warm_library_parity() {
+        let library = SourceInput::new(
+            "memory://library.sysml",
+            "standard library package Lib { classifier Type; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { import Lib::*; classifier Vehicle { feature base; feature derived : Type redefines base chains base; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let full = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let sequential = full(ConstructionSchedule::Sequential);
+        let parallel = full(ConstructionSchedule::Parallel);
+        let stratum = std::sync::Arc::new(build_library_stratum(vec![library]).unwrap());
+        let warm = build(
+            BuildRequest::with_library(
+                vec![workspace],
+                ConstructionSchedule::Parallel,
+                "contract-v1",
+                stratum,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let render = |published: &PublishedResolution| {
+            let derived = identity_of(published, "memory://model.sysml", "Model::Vehicle::derived");
+            [
+                FeatureDerivedRelationshipCollection::OwnedFeatureChaining,
+                FeatureDerivedRelationshipCollection::OwnedRedefinition,
+                FeatureDerivedRelationshipCollection::OwnedSubsetting,
+                FeatureDerivedRelationshipCollection::OwnedTyping,
+                FeatureDerivedRelationshipCollection::OwnedTypeFeaturing,
+            ]
+            .into_iter()
+            .map(|collection| {
+                settled(published.feature_derived_relationships(&derived, collection))
+            })
+            .collect::<Vec<_>>()
+        };
+        assert_eq!(render(&sequential), render(&parallel));
+        assert_eq!(render(&sequential), render(&warm));
+    }
+
+    #[test]
+    fn exact_type_relationship_collections_project_canonical_authored_and_unresolved_facts() {
+        let published = detail_publication(
+            &[ (
+                "memory://model.sysml",
+                "package Model { classifier Base; classifier Derived specializes Base unions Base intersects Base differences Base disjoint from Base; classifier Partial unions Missing; }",
+            ) ],
+            ConstructionSchedule::Sequential,
+        );
+        let base = identity_of(&published, "memory://model.sysml", "Model::Base");
+        let derived = identity_of(&published, "memory://model.sysml", "Model::Derived");
+        let partial = identity_of(&published, "memory://model.sysml", "Model::Partial");
+        let values = |collection| {
+            settled(published.type_derived_relationships(&derived, collection)).into_vec()
+        };
+        for (collection, kind) in [
+            (
+                TypeDerivedRelationshipCollection::OwnedSpecialization,
+                "specialization",
+            ),
+            (TypeDerivedRelationshipCollection::OwnedUnioning, "unioning"),
+            (
+                TypeDerivedRelationshipCollection::OwnedIntersecting,
+                "intersecting",
+            ),
+            (
+                TypeDerivedRelationshipCollection::OwnedDifferencing,
+                "differencing",
+            ),
+            (
+                TypeDerivedRelationshipCollection::OwnedDisjoining,
+                "disjoining",
+            ),
+            (TypeDerivedRelationshipCollection::UnioningType, "unioning"),
+            (
+                TypeDerivedRelationshipCollection::IntersectingType,
+                "intersecting",
+            ),
+            (
+                TypeDerivedRelationshipCollection::DifferencingType,
+                "differencing",
+            ),
+        ] {
+            assert!(matches!(
+                values(collection).as_slice(),
+                [ElementRelationship {
+                    kind: actual_kind,
+                    provenance: RelationshipProvenance::Authored,
+                    target: RelationshipTarget::Resolved(target),
+                    ..
+                }] if *actual_kind == kind && target == &base
+            ));
+        }
+        assert!(matches!(
+            settled(published.type_derived_relationships(
+                &partial,
+                TypeDerivedRelationshipCollection::UnioningType,
+            ))
+            .as_ref(),
+            [ElementRelationship {
+                kind: "unioning",
+                provenance: RelationshipProvenance::Authored,
+                target: RelationshipTarget::Unresolved,
+                ..
+            }]
+        ));
+    }
+
+    #[test]
+    fn type_relationship_collections_have_sequential_parallel_and_warm_library_parity() {
+        let library = SourceInput::new(
+            "memory://library.sysml",
+            "standard library package Lib { classifier Base; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { import Lib::*; classifier Derived specializes Base unions Base intersects Base differences Base disjoint from Base; }".to_string(),
+            SourceKind::Workspace,
+        );
+        let full = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let sequential = full(ConstructionSchedule::Sequential);
+        let parallel = full(ConstructionSchedule::Parallel);
+        let stratum = std::sync::Arc::new(build_library_stratum(vec![library]).unwrap());
+        let warm = build(
+            BuildRequest::with_library(
+                vec![workspace],
+                ConstructionSchedule::Parallel,
+                "contract-v1",
+                stratum,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let render = |published: &PublishedResolution| {
+            let derived = identity_of(published, "memory://model.sysml", "Model::Derived");
+            [
+                TypeDerivedRelationshipCollection::OwnedSpecialization,
+                TypeDerivedRelationshipCollection::OwnedUnioning,
+                TypeDerivedRelationshipCollection::OwnedIntersecting,
+                TypeDerivedRelationshipCollection::OwnedDifferencing,
+                TypeDerivedRelationshipCollection::OwnedDisjoining,
+                TypeDerivedRelationshipCollection::UnioningType,
+                TypeDerivedRelationshipCollection::IntersectingType,
+                TypeDerivedRelationshipCollection::DifferencingType,
+            ]
+            .into_iter()
+            .map(|collection| settled(published.type_derived_relationships(&derived, collection)))
+            .collect::<Vec<_>>()
+        };
+        assert_eq!(render(&sequential), render(&parallel));
+        assert_eq!(render(&sequential), render(&warm));
+    }
+
+    #[test]
+    fn type_owned_feature_projects_canonical_direct_feature_members() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { type Container { feature owned; } type Empty; }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let container = identity_of(&published, "memory://model.sysml", "Model::Container");
+        let owned = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Container::owned",
+        );
+        let empty = identity_of(&published, "memory://model.sysml", "Model::Empty");
+        assert_eq!(
+            settled(
+                published
+                    .type_derived_elements(&container, TypeDerivedElementCollection::OwnedFeature,)
+            )
+            .as_ref(),
+            std::slice::from_ref(&owned)
+        );
+        assert!(settled(
+            published.type_derived_elements(&empty, TypeDerivedElementCollection::OwnedFeature,)
+        )
+        .is_empty());
+        assert!(matches!(
+            published.type_derived_elements(&owned, TypeDerivedElementCollection::OwnedFeature),
+            QueryOutcome::Unsupported
+        ));
+    }
+
+    #[test]
+    fn type_owned_feature_has_sequential_parallel_and_warm_parity() {
+        let sources = [(
+            "memory://model.sysml",
+            "package Model { type Container { feature alpha; feature beta; } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query = |published: &PublishedResolution| {
+            let container = identity_of(published, "memory://model.sysml", "Model::Container");
+            settled(
+                published
+                    .type_derived_elements(&container, TypeDerivedElementCollection::OwnedFeature),
+            )
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn type_owned_end_feature_projects_only_canonical_end_feature_members() {
+        let published = detail_publication(
+            &[ (
+                "memory://model.sysml",
+                "package Model { type Container { feature ordinary; end feature endpoint; } type Empty; }",
+            ) ],
+            ConstructionSchedule::Sequential,
+        );
+        let container = identity_of(&published, "memory://model.sysml", "Model::Container");
+        let endpoint = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Container::endpoint",
+        );
+        let empty = identity_of(&published, "memory://model.sysml", "Model::Empty");
+        assert_eq!(
+            settled(
+                published.type_derived_elements(
+                    &container,
+                    TypeDerivedElementCollection::OwnedEndFeature,
+                )
+            )
+            .as_ref(),
+            [endpoint]
+        );
+        assert!(settled(
+            published.type_derived_elements(&empty, TypeDerivedElementCollection::OwnedEndFeature,)
+        )
+        .is_empty());
+    }
+
+    #[test]
+    fn type_owned_end_feature_has_sequential_parallel_and_warm_parity() {
+        let sources = [(
+            "memory://model.sysml",
+            "package Model { type Container { end feature alpha; feature beta; end feature gamma; } }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let query =
+            |published: &PublishedResolution| {
+                let container = identity_of(published, "memory://model.sysml", "Model::Container");
+                settled(published.type_derived_elements(
+                    &container,
+                    TypeDerivedElementCollection::OwnedEndFeature,
+                ))
+            };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missing_fact_boundaries(
+    ) {
+        let sources = [(
+            "memory://definition-usage.sysml",
+            "package Model { part def Vehicle { part wheel; action service; } part vehicle; }",
+        )];
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let vehicle = identity_of(
+            &sequential,
+            "memory://definition-usage.sysml",
+            "Model::Vehicle",
+        );
+        let wheel = identity_of(
+            &sequential,
+            "memory://definition-usage.sysml",
+            "Model::Vehicle::wheel",
+        );
+        let service = identity_of(
+            &sequential,
+            "memory://definition-usage.sysml",
+            "Model::Vehicle::service",
+        );
+        assert!(matches!(
+            sequential.definition_usage_derived(
+                &vehicle,
+                DefinitionUsageDerivedKind::DefinitionOwnedPart,
+            ),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.as_ref() == [wheel.clone()]
+        ));
+        assert!(matches!(
+            sequential.definition_usage_derived(
+                &vehicle,
+                DefinitionUsageDerivedKind::DefinitionOwnedAction,
+            ),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.as_ref() == [service]
+        ));
+        assert!(matches!(
+            sequential
+                .definition_usage_derived(&vehicle, DefinitionUsageDerivedKind::DefinitionUsage,),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
+                prerequisite: DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure,
+            })
+        ));
+        assert!(matches!(
+            sequential.definition_usage_derived(
+                &vehicle,
+                DefinitionUsageDerivedKind::DefinitionVariantMembership,
+            ),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
+                prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
+            })
+        ));
+        let query = |published: &PublishedResolution| {
+            let vehicle = identity_of(
+                published,
+                "memory://definition-usage.sysml",
+                "Model::Vehicle",
+            );
+            published
+                .definition_usage_derived(&vehicle, DefinitionUsageDerivedKind::DefinitionOwnedPart)
+        };
+        assert_eq!(query(&sequential), query(&parallel));
+        assert_eq!(query(&sequential), query(&warm));
+    }
+
+    #[test]
+    fn exact_type_derived_facts_publish_the_first_missing_canonical_prerequisite() {
+        let published = detail_publication(
+            &[ (
+                "memory://model.sysml",
+                "package Model { classifier Parent { feature inherited; } classifier Child specializes Parent { in feature input; out feature output; end feature endpoint; } classifier Sized[1]; }",
+            ) ],
+            ConstructionSchedule::Sequential,
+        );
+        let child = identity_of(&published, "memory://model.sysml", "Model::Child");
+        let sized = identity_of(&published, "memory://model.sysml", "Model::Sized");
+        let unsupported = |symbol: &SymbolIdentity, collection, prerequisite| {
+            assert!(matches!(
+                published.type_derived_fact(symbol, collection),
+                QueryOutcome::Resolved(TypeDerivedFactOutcome::Unsupported { prerequisite: actual })
+                    if actual == prerequisite
+            ));
+        };
+        unsupported(
+            &child,
+            TypeDerivedFactCollection::OwnedFeatureMembership,
+            TypeDerivedFactPrerequisite::FeatureMembershipIdentity,
+        );
+        unsupported(
+            &child,
+            TypeDerivedFactCollection::InheritedMembership,
+            TypeDerivedFactPrerequisite::InheritedMembershipClosure,
+        );
+        for collection in [
+            TypeDerivedFactCollection::FeatureMembership,
+            TypeDerivedFactCollection::Feature,
+            TypeDerivedFactCollection::EndFeature,
+            TypeDerivedFactCollection::DirectedFeature,
+            TypeDerivedFactCollection::InheritedFeature,
+            TypeDerivedFactCollection::Input,
+            TypeDerivedFactCollection::Output,
+        ] {
+            unsupported(
+                &child,
+                collection,
+                TypeDerivedFactPrerequisite::FeatureMembershipIdentityAndInheritedClosure,
+            );
+        }
+        unsupported(
+            &sized,
+            TypeDerivedFactCollection::Multiplicity,
+            TypeDerivedFactPrerequisite::MultiplicityIdentity,
+        );
+        unsupported(
+            &child,
+            TypeDerivedFactCollection::OwnedConjugator,
+            TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity,
+        );
+    }
+
+    #[test]
+    fn variable_feature_membership_is_explicitly_unsupported_without_snapshots() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package Model { classifier Vehicle { var feature mass; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
+        assert!(matches!(
+            published.featuring_types(&mass),
+            QueryOutcome::Unsupported
+        ));
+        assert!(matches!(
+            published.featuring_type(&mass),
+            QueryOutcome::Unsupported
+        ));
+        assert!(type_featuring_relationships(
+            &published,
+            "memory://model.sysml",
+            "Model::Vehicle::mass"
+        )
+        .is_empty());
+    }
+
+    /// `checkPartDefinitionSpecialization` is published as an implied relationship, then consumed
+    /// by the ordinary specialization query. The check never appears as an author warning.
+    #[test]
+    fn part_definition_specialization_is_implied_from_the_canonical_standard_library_anchor() {
+        let library = part_definition_library();
+        let workspace = part_definition_workspace();
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        let part = identity_of(&published, "memory://parts.sysml", "Parts::Part");
+        assert_eq!(
+            settled(published.part_definition_specialization_anchor()),
+            part
+        );
+        let component = identity_of(&published, "memory://model.sysml", "Model::Component");
+        let relationships =
+            specialization_relationships(&published, "memory://model.sysml", "Model::Component");
+        assert_eq!(relationships.len(), 1);
+        assert_eq!(relationships[0].provenance, RelationshipProvenance::Implied);
+        assert_eq!(relationships[0].authored, None);
+        assert_eq!(relationships[0].location, None);
+        assert_eq!(
+            relationships[0].target,
+            RelationshipTarget::Resolved(part.clone())
+        );
+        assert_eq!(
+            settled(
+                published.direct_supertypes(&component, SpecializationScope::Subclassification,)
+            )
+            .as_ref(),
+            &[part],
+        );
+        assert!(published.diagnostics().diagnostics.is_empty());
+    }
+
+    /// The generated rule table, rather than the compatibility `PartDefinition` query, owns
+    /// synthesis and publication. An unrelated generated rule therefore has the same semantic
+    /// contract: its rule-keyed anchor fact drives the implied edge and the public generic query.
+    #[test]
+    fn generated_library_specialization_rules_publish_generic_anchor_outcomes() {
+        const ITEM_RULE: &str = "sysml-2.0:8.3.10.2:checkItemDefinitionSpecialization";
+        let library = SourceInput::new(
+            "memory://items.sysml",
+            "standard library package Items { item def Item; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { item def Component; }".to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        let item = identity_of(&published, "memory://items.sysml", "Items::Item");
+        assert_eq!(
+            settled(published.library_specialization_anchor(ITEM_RULE)),
+            item.clone()
+        );
+        assert_eq!(
+            specialization_relationships(&published, "memory://model.sysml", "Model::Component"),
+            vec![ElementRelationship {
+                kind: "specialization",
+                provenance: RelationshipProvenance::Implied,
+                authored: None,
+                target: RelationshipTarget::Resolved(item),
+                location: None,
+            }]
+        );
+        assert!(published.diagnostics().diagnostics.is_empty());
+    }
+
+    /// The exact flow predicates are evaluated from the canonical endpoint facts: positional
+    /// `end` declarations for a flow definition, and the typed `from`/`to` endpoint pair for an
+    /// anonymous flow usage. No consumer reconstructs either collection from source text.
+    #[test]
+    fn flow_specializations_publish_implied_edges_from_canonical_end_facts() {
+        const BINARY_RULE: &str = "sysml-2.0:8.3.16.2:checkFlowDefinitionBinarySpecialization";
+        const FLOW_USAGE_RULE: &str = "sysml-2.0:8.3.16.3:checkFlowUsageFlowSpecialization";
+        const FLOW_WITH_ENDS_RULE: &str = "kerml-1.0:8.3.4.9.2:checkFlowWithEndsSpecialization";
+        let library = SourceInput::new(
+            "memory://flows.sysml",
+            "standard library package Flows { flow def Message; flow def flows; } standard library package Transfers { flow def flowTransfers; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { part def Component; flow def Binary { end source : Component; end target : Component; } action def Owner { action source; action target; flow from source to target; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let message = identity_of(&published, "memory://flows.sysml", "Flows::Message");
+        let flows = identity_of(&published, "memory://flows.sysml", "Flows::flows");
+        let transfers = identity_of(
+            &published,
+            "memory://flows.sysml",
+            "Transfers::flowTransfers",
+        );
+        assert_eq!(
+            settled(published.library_specialization_anchor(BINARY_RULE)),
+            message.clone()
+        );
+        assert_eq!(
+            settled(published.library_specialization_anchor(FLOW_USAGE_RULE)),
+            flows.clone()
+        );
+        assert_eq!(
+            settled(published.library_specialization_anchor(FLOW_WITH_ENDS_RULE)),
+            transfers.clone()
+        );
+        assert!(
+            specialization_relationships(&published, "memory://model.sysml", "Model::Binary")
+                .iter()
+                .any(|relationship| {
+                    relationship.provenance == RelationshipProvenance::Implied
+                        && relationship.target == RelationshipTarget::Resolved(message.clone())
+                })
+        );
+        let symbols = settled(published.document_symbols("memory://model.sysml"));
+        let flow = symbols
+            .iter()
+            .find(|entry| entry.kind == ElementKind::FlowConnectionUsage)
+            .expect("lowered anonymous flow usage");
+        let relationships = settled(published.inspect(&flow.identity)).relationships;
+        assert!(relationships.iter().any(|relationship| {
+            relationship.kind == "specialization"
+                && relationship.provenance == RelationshipProvenance::Implied
+                && relationship.target == RelationshipTarget::Resolved(flows.clone())
+        }));
+        assert!(relationships.iter().any(|relationship| {
+            relationship.kind == "specialization"
+                && relationship.provenance == RelationshipProvenance::Implied
+                && relationship.target == RelationshipTarget::Resolved(transfers.clone())
+        }));
+    }
+
+    /// Feature category specialization consumes direct authored FeatureTyping outcomes and the
+    /// owning end/association facts. A class-typed sibling and a feature outside an association
+    /// demonstrate that neither category rule is inferred from a feature's label or effective
+    /// display type.
+    #[test]
+    fn feature_data_value_and_end_specializations_use_canonical_typing_and_owner_facts() {
+        const DATA_VALUE_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureDataValueSpecialization";
+        const END_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureEndSpecialization";
+        let library = SourceInput::new(
+            "memory://feature-anchors.sysml",
+            "standard library package Base { feature dataValues; } standard library package Links { class Link { feature participant; } }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.kerml",
+            "package Model { datatype Value; class ClassValue; class Owner { feature data : Value; feature ordinary : ClassValue; } assoc Association { end feature endFeature : Value; } class NotAssociation { end feature nonEnd : Value; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let data_values = identity_of(
+            &published,
+            "memory://feature-anchors.sysml",
+            "Base::dataValues",
+        );
+        let participant = identity_of(
+            &published,
+            "memory://feature-anchors.sysml",
+            "Links::Link::participant",
+        );
+        let implied = |target| ElementRelationship {
+            kind: "specialization",
+            provenance: RelationshipProvenance::Implied,
+            authored: None,
+            target: RelationshipTarget::Resolved(target),
+            location: None,
+        };
+        assert_eq!(
+            settled(published.library_specialization_anchor(DATA_VALUE_RULE)),
+            data_values.clone()
+        );
+        assert_eq!(
+            settled(published.library_specialization_anchor(END_RULE)),
+            participant.clone()
+        );
+        assert!(specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::Owner::data"
+        )
+        .contains(&implied(data_values)));
+        assert!(specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::Association::endFeature",
+        )
+        .contains(&implied(participant.clone())));
+        assert!(specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::Owner::ordinary",
+        )
+        .is_empty());
+        assert!(!specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::NotAssociation::nonEnd",
+        )
+        .contains(&implied(participant)));
+    }
+
+    /// `Connector::association` is the direct, settled typing target restricted to Association.
+    /// This rule therefore has a complete fact path without relying on a connector-end body or
+    /// display-name inference. The binary companion deliberately has separate coverage because
+    /// its positional endpoint collection is not yet published for KerML connector bodies.
+    #[test]
+    fn connector_object_specialization_uses_direct_association_structure_typing() {
+        const RULE: &str = "kerml-1.0:8.3.4.5.3:checkConnectorObjectSpecialization";
+        let library = SourceInput::new(
+            "memory://objects.kerml",
+            "standard library package Objects { assoc struct linkObjects; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.kerml",
+            "package Model { assoc struct LinkObject; classifier Holder { connector pair : LinkObject; connector ordinary; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let publish = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let sequential = publish(ConstructionSchedule::Sequential);
+        let parallel = publish(ConstructionSchedule::Parallel);
+        let anchor = identity_of(
+            &sequential,
+            "memory://objects.kerml",
+            "Objects::linkObjects",
+        );
+        let implied = ElementRelationship {
+            kind: "specialization",
+            provenance: RelationshipProvenance::Implied,
+            authored: None,
+            target: RelationshipTarget::Resolved(anchor.clone()),
+            location: None,
+        };
+        assert_eq!(
+            settled(sequential.library_specialization_anchor(RULE)),
+            anchor.clone()
+        );
+        assert!(specialization_relationships(
+            &sequential,
+            "memory://model.kerml",
+            "Model::Holder::pair"
+        )
+        .contains(&implied));
+        assert!(specialization_relationships(
+            &parallel,
+            "memory://model.kerml",
+            "Model::Holder::pair"
+        )
+        .contains(&implied));
+        assert!(!specialization_relationships(
+            &sequential,
+            "memory://model.kerml",
+            "Model::Holder::ordinary",
+        )
+        .contains(&implied));
+    }
+
+    /// The pinned Step predicate places `self.isComposite` after its owner disjunction. The
+    /// manifest extractor preserves that complete spelling while the resolver consumes the same
+    /// canonical composite and owner facts as every other `CompositeOwnedBy` rule.
+    #[test]
+    fn step_subperformance_specialization_uses_composite_behavior_ownership() {
+        const RULE: &str = "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization";
+        let library = SourceInput::new(
+            "memory://performances.kerml",
+            "standard library package Performances { behavior Performance { step subperformance; } }"
+                .to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.kerml",
+            "package Model { behavior Parent { composite step child; step ordinary; } }"
+                .to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let anchor = identity_of(
+            &published,
+            "memory://performances.kerml",
+            "Performances::Performance::subperformance",
+        );
+        let implied = ElementRelationship {
+            kind: "specialization",
+            provenance: RelationshipProvenance::Implied,
+            authored: None,
+            target: RelationshipTarget::Resolved(anchor.clone()),
+            location: None,
+        };
+        assert_eq!(
+            settled(published.library_specialization_anchor(RULE)),
+            anchor.clone()
+        );
+        assert!(specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::Parent::child"
+        )
+        .contains(&implied));
+        assert!(!specialization_relationships(
+            &published,
+            "memory://model.kerml",
+            "Model::Parent::ordinary",
+        )
+        .contains(&implied));
+    }
+
+    /// Exact conditional contracts publish both branch anchors at the same barrier. The legacy
+    /// query remains the `else`/default projection, while the typed branch query exposes the
+    /// predicate-true anchor without recreating anchor names in a consumer.
+    #[test]
+    fn polarity_library_specialization_anchors_are_branch_keyed_and_schedule_stable() {
+        const RULE: &str = "sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization";
+        let sources = || {
+            vec![
+                SourceInput::new(
+                    "memory://requirements.sysml",
+                    "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; }".to_string(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    "package Model {}".to_string(),
+                    SourceKind::Workspace,
+                ),
+            ]
+        };
+        let publish = |schedule| {
+            build(BuildRequest::new(sources(), schedule, "contract-v1").expect("polarity request"))
+                .expect("polarity publication")
+        };
+        let sequential = publish(ConstructionSchedule::Sequential);
+        let parallel = publish(ConstructionSchedule::Parallel);
+        let default = identity_of(
+            &sequential,
+            "memory://requirements.sysml",
+            "Requirements::satisfiedRequirementChecks",
+        );
+        let negated = identity_of(
+            &sequential,
+            "memory://requirements.sysml",
+            "Requirements::notSatisfiedRequirementChecks",
+        );
+        assert_eq!(
+            settled(sequential.library_specialization_anchor(RULE)),
+            default
+        );
+        assert_eq!(
+            settled(sequential.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            )),
+            negated
+        );
+        assert_eq!(
+            sequential.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::Default,
+            ),
+            sequential.library_specialization_anchor(RULE),
+        );
+        assert_eq!(
+            parallel.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            sequential.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+        );
+    }
+
+    #[test]
+    fn membership_role_specializations_select_published_anchors_and_suppress_ordinary_members() {
+        let library = SourceInput::new(
+            "memory://roles.sysml",
+            "standard library package Requirements { package RequirementCheck { constraint def concerns; constraint def assumptions; constraint def constraints; part actors; part stakeholders; } } standard library package Cases { package Case { part actors; } } standard library package VerificationCases { package VerificationCase { package obj { requirement requirementVerifications; } } }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { part def Component; concern def Safety; requirement def R { subject item : Component; frame concern framed : Safety; actor requirementActor : Component; stakeholder stakeholder : Component; } case def C { actor caseActor : Component; } part ordinary : Component; }".to_string(),
+            SourceKind::Workspace,
+        );
+        let publish = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .expect("membership-role request"),
+            )
+            .expect("membership-role publication")
+        };
+        let sequential = publish(ConstructionSchedule::Sequential);
+        let parallel = publish(ConstructionSchedule::Parallel);
+        let target = |name| identity_of(&sequential, "memory://roles.sysml", name);
+        let relationships = |published: &PublishedResolution, source| {
+            specialization_relationships(published, "memory://model.sysml", source)
+        };
+        let implied = |target| ElementRelationship {
+            kind: "specialization",
+            provenance: RelationshipProvenance::Implied,
+            authored: None,
+            target: RelationshipTarget::Resolved(target),
+            location: None,
+        };
+
+        assert_eq!(
+            relationships(&sequential, "Model::R::framed"),
+            vec![implied(target("Requirements::RequirementCheck::concerns"))]
+        );
+        assert_eq!(
+            relationships(&sequential, "Model::R::requirementActor"),
+            vec![implied(target("Requirements::RequirementCheck::actors"))]
+        );
+        assert_eq!(
+            relationships(&sequential, "Model::R::stakeholder"),
+            vec![implied(target(
+                "Requirements::RequirementCheck::stakeholders"
+            ))]
+        );
+        assert_eq!(
+            relationships(&sequential, "Model::C::caseActor"),
+            vec![implied(target("Cases::Case::actors"))]
+        );
+        assert!(relationships(&sequential, "Model::ordinary").is_empty());
+        assert_eq!(
+            relationships(&parallel, "Model::R::requirementActor"),
+            relationships(&sequential, "Model::R::requirementActor"),
+        );
+    }
+
+    #[test]
+    fn requirement_derived_facts_use_canonical_membership_roles() {
+        let workspace = SourceInput::new(
+            "memory://requirements-derived.sysml",
+            "package Model { part def Component; concern def Safety; requirement def R { subject item : Component; actor operator : Component; frame concern framed : Safety; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let publish = |schedule| {
+            build(
+                BuildRequest::new(vec![workspace.clone()], schedule, "contract-v1")
+                    .expect("requirements derived request"),
+            )
+            .expect("requirements derived publication")
+        };
+        let sequential = publish(ConstructionSchedule::Sequential);
+        let parallel = publish(ConstructionSchedule::Parallel);
+        let source = identity_of(
+            &sequential,
+            "memory://requirements-derived.sysml",
+            "Model::R",
+        );
+        let actor = identity_of(
+            &sequential,
+            "memory://requirements-derived.sysml",
+            "Model::R::operator",
+        );
+        let framed = identity_of(
+            &sequential,
+            "memory://requirements-derived.sysml",
+            "Model::R::framed",
+        );
+        assert_eq!(
+            sequential.requirement_derived_fact(
+                &source,
+                RequirementDerivedFactCollection::DefinitionActorParameter,
+            ),
+            QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![actor].into_boxed_slice()
+            ))
+        );
+        assert_eq!(
+            sequential.requirement_derived_fact(
+                &source,
+                RequirementDerivedFactCollection::DefinitionFramedConcern,
+            ),
+            QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![framed].into_boxed_slice()
+            ))
+        );
+        assert_eq!(
+            parallel.requirement_derived_fact(
+                &identity_of(&parallel, "memory://requirements-derived.sysml", "Model::R"),
+                RequirementDerivedFactCollection::DefinitionActorParameter,
+            ),
+            QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![identity_of(
+                    &parallel,
+                    "memory://requirements-derived.sysml",
+                    "Model::R::operator",
+                )]
+                .into_boxed_slice()
+            ))
+        );
+    }
+
+    #[test]
+    fn accept_action_specializations_use_canonical_trigger_and_subaction_facts() {
+        let library = SourceInput::new(
+            "memory://actions.sysml",
+            "standard library package Actions { action acceptActions; action def Action { action acceptSubactions; } action def TransitionAction { action accepter; } }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { item def Message; action standalone accept payload : Message; action def Parent { action child accept payload : Message; } state def Machine { state source; state target; transition first source accept when true then target; } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .expect("accept-action request"),
+        )
+        .expect("accept-action publication");
+        let accept_actions = identity_of(
+            &published,
+            "memory://actions.sysml",
+            "Actions::acceptActions",
+        );
+        let accept_subactions = identity_of(
+            &published,
+            "memory://actions.sysml",
+            "Actions::Action::acceptSubactions",
+        );
+        let accepter = identity_of(
+            &published,
+            "memory://actions.sysml",
+            "Actions::TransitionAction::accepter",
+        );
+        let accepts = settled(published.search_elements(ElementSearch {
+            kind: ElementKind::AcceptActionUsage,
+            source: ElementSource::Workspace,
+        }));
+        assert_eq!(accepts.len(), 3);
+        let targets = accepts
+            .iter()
+            .map(|accept| {
+                settled(published.inspect(&accept.identity))
+                    .relationships
+                    .iter()
+                    .filter(|relationship| relationship.kind == "specialization")
+                    .map(|relationship| relationship.target.clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        let roles = accepts
+            .iter()
+            .map(|accept| settled(published.inspect(&accept.identity)).role)
+            .collect::<Vec<_>>();
+        assert_eq!(
+            targets,
+            vec![
+                vec![RelationshipTarget::Resolved(accept_actions.clone())],
+                vec![
+                    RelationshipTarget::Resolved(accept_actions),
+                    RelationshipTarget::Resolved(accept_subactions),
+                ],
+                vec![RelationshipTarget::Resolved(accepter)],
+            ]
+        );
+        assert_eq!(
+            roles,
+            vec![None, None, Some(MembershipRole::TransitionTriggerAction),]
+        );
+    }
+
+    #[test]
+    fn if_action_specialization_uses_the_typed_else_action_fact() {
+        let library = SourceInput::new(
+            "memory://actions.sysml",
+            "standard library package Actions { action ifThenActions; action ifThenElseActions; }"
+                .to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { action def Decision { action condition; if condition { action thenOnly; } if condition { action thenElse; } else { action otherwise; } } }".to_string(),
+            SourceKind::Workspace,
+        );
+        let published = build(
+            BuildRequest::new(
+                vec![library, workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .expect("if-action request"),
+        )
+        .expect("if-action publication");
+        let if_then = identity_of(
+            &published,
+            "memory://actions.sysml",
+            "Actions::ifThenActions",
+        );
+        let if_then_else = identity_of(
+            &published,
+            "memory://actions.sysml",
+            "Actions::ifThenElseActions",
+        );
+        let if_actions = settled(published.search_elements(ElementSearch {
+            kind: ElementKind::IfActionUsage,
+            source: ElementSource::Workspace,
+        }));
+        assert_eq!(if_actions.len(), 2);
+        let targets = if_actions
+            .iter()
+            .map(|if_action| {
+                settled(published.inspect(&if_action.identity))
+                    .relationships
+                    .iter()
+                    .filter(|relationship| relationship.kind == "specialization")
+                    .map(|relationship| relationship.target.clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            targets,
+            vec![
+                vec![RelationshipTarget::Resolved(if_then)],
+                vec![RelationshipTarget::Resolved(if_then_else)],
+            ]
+        );
+    }
+
+    #[test]
+    fn satisfy_specialization_selects_the_published_negation_branch() {
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://requirements.sysml",
+                        "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { requirement def Safety; part def Vehicle; satisfy Safety by Vehicle; not satisfy Safety by Vehicle; }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let satisfied = identity_of(
+            &published,
+            "memory://requirements.sysml",
+            "Requirements::satisfiedRequirementChecks",
+        );
+        let not_satisfied = identity_of(
+            &published,
+            "memory://requirements.sysml",
+            "Requirements::notSatisfiedRequirementChecks",
+        );
+        let uses = settled(published.search_elements(ElementSearch {
+            kind: ElementKind::SatisfyRequirementUsage,
+            source: ElementSource::Workspace,
+        }));
+        assert_eq!(uses.len(), 2);
+        let targets = uses
+            .iter()
+            .map(|use_| {
+                settled(published.inspect(&use_.identity))
+                    .relationships
+                    .iter()
+                    .filter(|relationship| relationship.kind == "specialization")
+                    .map(|relationship| relationship.target.clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            targets,
+            vec![
+                vec![RelationshipTarget::Resolved(satisfied)],
+                vec![RelationshipTarget::Resolved(not_satisfied)],
+            ]
+        );
+    }
+
+    #[test]
+    fn assert_specialization_selects_the_published_negation_branch() {
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://constraints.sysml",
+                        "standard library package Constraints { constraint def assertedConstraintChecks; constraint def negatedConstraintChecks; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { part def Container { assert constraint Positive { true; } assert not constraint Negative { true; } } }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let asserted = identity_of(
+            &published,
+            "memory://constraints.sysml",
+            "Constraints::assertedConstraintChecks",
+        );
+        let negated = identity_of(
+            &published,
+            "memory://constraints.sysml",
+            "Constraints::negatedConstraintChecks",
+        );
+        let assertions = settled(published.search_elements(ElementSearch {
+            kind: ElementKind::AssertConstraintUsage,
+            source: ElementSource::Workspace,
+        }));
+        assert_eq!(assertions.len(), 2);
+        let targets = assertions
+            .iter()
+            .map(|assertion| {
+                settled(published.inspect(&assertion.identity))
+                    .relationships
+                    .iter()
+                    .filter(|relationship| relationship.kind == "specialization")
+                    .map(|relationship| relationship.target.clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            targets,
+            vec![
+                vec![RelationshipTarget::Resolved(asserted)],
+                vec![RelationshipTarget::Resolved(negated)],
+            ]
+        );
+    }
+
+    #[test]
+    fn invariant_specialization_selects_the_published_negation_branch() {
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://performances.sysml",
+                        "standard library package Performances { constraint def trueEvaluations; constraint def falseEvaluations; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { inv Positive { true } inv not Negative { true } }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let true_evaluation = identity_of(
+            &published,
+            "memory://performances.sysml",
+            "Performances::trueEvaluations",
+        );
+        let false_evaluation = identity_of(
+            &published,
+            "memory://performances.sysml",
+            "Performances::falseEvaluations",
+        );
+        let invariants = settled(published.search_elements(ElementSearch {
+            kind: ElementKind::Invariant,
+            source: ElementSource::Workspace,
+        }));
+        assert_eq!(invariants.len(), 2);
+        let targets = invariants
+            .iter()
+            .map(|invariant| {
+                settled(published.inspect(&invariant.identity))
+                    .relationships
+                    .iter()
+                    .filter(|relationship| relationship.kind == "specialization")
+                    .map(|relationship| relationship.target.clone())
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            targets,
+            vec![
+                vec![RelationshipTarget::Resolved(true_evaluation)],
+                vec![RelationshipTarget::Resolved(false_evaluation)],
+            ]
+        );
+    }
+
+    #[test]
+    fn polarity_branch_anchor_failures_are_explicit_and_deduplicated() {
+        const RULE: &str = "sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization";
+        let workspace = || {
+            SourceInput::new(
+                "memory://model.sysml",
+                "package Model { requirement def Safety; part def Vehicle; not satisfy Safety by Vehicle; not satisfy Safety by Vehicle; }".to_string(),
+                SourceKind::Workspace,
+            )
+        };
+        let missing = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://requirements.sysml",
+                        "standard library package Requirements { constraint def satisfiedRequirementChecks; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    workspace(),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            missing.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            QueryOutcome::Unresolved
+        ));
+        let missing_published_diagnostics = missing.diagnostics();
+        let missing_diagnostics = missing_published_diagnostics
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code.as_str() == "missing_library_anchor"
+                    && diagnostic
+                        .message
+                        .contains("Requirements::notSatisfiedRequirementChecks")
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(missing_diagnostics.len(), 1);
+
+        let ambiguous = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://requirements-a.sysml",
+                        "standard library package Requirements { constraint def notSatisfiedRequirementChecks; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://requirements-b.sysml",
+                        "standard library package Requirements { constraint def notSatisfiedRequirementChecks; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    workspace(),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            ambiguous.library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            QueryOutcome::Ambiguous(candidates) if candidates.len() == 2
+        ));
+        let ambiguous_published_diagnostics = ambiguous.diagnostics();
+        let ambiguous_diagnostics = ambiguous_published_diagnostics
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code.as_str() == "ambiguous_library_anchor"
+                    && diagnostic
+                        .message
+                        .contains("Requirements::notSatisfiedRequirementChecks")
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(ambiguous_diagnostics.len(), 1);
+        assert_eq!(ambiguous_diagnostics[0].related.len(), 2);
+    }
+
+    /// An authored specialization that reaches the canonical anchor is already the effective
+    /// semantic fact. The resolver must not add a second, redundant direct edge.
+    #[test]
+    fn part_definition_authored_equivalent_and_more_specific_specializations_suppress_implication()
+    {
+        let published = build(
+            BuildRequest::new(
+                vec![part_definition_library(), part_definition_workspace()],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        for qualified_name in ["Model::Equivalent", "Model::Specific"] {
+            let relationships =
+                specialization_relationships(&published, "memory://model.sysml", qualified_name);
+            assert_eq!(
+                relationships.len(),
+                1,
+                "{qualified_name}: {relationships:?}"
+            );
+            assert_eq!(
+                relationships[0].provenance,
+                RelationshipProvenance::Authored
+            );
+        }
+    }
+
+    /// Anchor failures remain typed published states and report one actionable cause, rather than
+    /// one warning per `part def` or a guessed workspace substitute.
+    #[test]
+    fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
+        let missing_library = SourceInput::new(
+            "memory://incomplete-standard.sysml",
+            "standard library package NotParts {}".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package Model { part def Component; part def Other; }".to_string(),
+            SourceKind::Workspace,
+        );
+        let missing = build(
+            BuildRequest::new(
+                vec![missing_library, workspace.clone()],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            missing.part_definition_specialization_anchor(),
+            QueryOutcome::Unresolved
+        ));
+        assert_eq!(
+            missing
+                .diagnostics()
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str())
+                .collect::<Vec<_>>(),
+            vec!["missing_library_anchor"]
+        );
+        assert!(
+            specialization_relationships(&missing, "memory://model.sysml", "Model::Component")
+                .is_empty()
+        );
+        assert_eq!(
+            missing.diagnostics().diagnostics[0].category(),
+            DiagnosticCategory::MissingContext
+        );
+
+        let ambiguous = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://parts-a.sysml",
+                        "standard library package Parts { part def Part; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://parts-b.sysml",
+                        "standard library package Parts { part def Part; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    workspace,
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            ambiguous.part_definition_specialization_anchor(),
+            QueryOutcome::Ambiguous(candidates) if candidates.len() == 2
+        ));
+        let diagnostics = ambiguous.diagnostics().diagnostics;
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].code.as_str(), "ambiguous_library_anchor");
+        assert_eq!(diagnostics[0].category(), DiagnosticCategory::Ambiguous);
+        assert_eq!(diagnostics[0].related.len(), 2);
+    }
+
+    /// A missing generated anchor is reported once for every affected document and anchor, not
+    /// once per matching declaration. The stored rule outcome remains the query result.
+    #[test]
+    fn generated_library_anchor_diagnostics_deduplicate_by_anchor_and_document() {
+        const ITEM_RULE: &str = "sysml-2.0:8.3.10.2:checkItemDefinitionSpecialization";
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://incomplete.sysml",
+                        "standard library package Incomplete {}".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { item def First; item def Second; }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        assert!(matches!(
+            published.library_specialization_anchor(ITEM_RULE),
+            QueryOutcome::Unresolved
+        ));
+        let diagnostics = published.diagnostics().diagnostics;
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].code.as_str(), "missing_library_anchor");
+        assert!(diagnostics[0].message.contains("Items::Item"));
+    }
+
+    /// A user-facing validation rule observes the settled specialization closure, including the
+    /// implied PartDefinition edge. This deliberately forms a cycle only after implication: if
+    /// validation re-walked authored syntax instead of consuming the canonical type facts, the
+    /// `specialization_cycle` diagnostic would be absent.
+    #[test]
+    fn specialization_cycle_validation_consumes_the_implied_part_definition_fact() {
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://parts.sysml",
+                        "standard library package Parts { part def Part specializes Model::Component; }"
+                            .to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { part def Component; }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let part = identity_of(&published, "memory://parts.sysml", "Parts::Part");
+        assert_eq!(
+            specialization_relationships(&published, "memory://model.sysml", "Model::Component")
+                .as_slice(),
+            &[ElementRelationship {
+                kind: "specialization",
+                provenance: RelationshipProvenance::Implied,
+                authored: None,
+                target: RelationshipTarget::Resolved(part),
+                location: None,
+            }]
+        );
+        assert_eq!(
+            published
+                .diagnostics()
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str())
+                .collect::<Vec<_>>(),
+            vec!["specialization_cycle"]
+        );
+    }
+
+    /// The implied fact is independent of construction schedule and whether the standard library
+    /// was freshly solved or supplied as a reusable stratum.
+    #[test]
+    fn part_definition_specialization_has_sequential_parallel_and_warm_library_parity() {
+        let library = part_definition_library();
+        let workspace = part_definition_workspace();
+        let full = |schedule| {
+            build(
+                BuildRequest::new(
+                    vec![library.clone(), workspace.clone()],
+                    schedule,
+                    "contract-v1",
+                )
+                .unwrap(),
+            )
+            .unwrap()
+        };
+        let sequential = full(ConstructionSchedule::Sequential);
+        let parallel = full(ConstructionSchedule::Parallel);
+        let stratum = std::sync::Arc::new(build_library_stratum(vec![library]).unwrap());
+        let warm = build(
+            BuildRequest::with_library(
+                vec![workspace],
+                ConstructionSchedule::Parallel,
+                "contract-v1",
+                stratum,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let render = |published: &PublishedResolution| {
+            let component = identity_of(published, "memory://model.sysml", "Model::Component");
+            (
+                specialization_relationships(published, "memory://model.sysml", "Model::Component"),
+                settled(
+                    published.direct_supertypes(&component, SpecializationScope::Subclassification),
+                ),
+                published.diagnostics(),
+            )
+        };
+        assert_eq!(render(&sequential), render(&parallel));
+        assert_eq!(render(&sequential), render(&warm));
     }
 
     /// A cross-document reference is a resolved relationship with the target's own document, not a

@@ -4,8 +4,12 @@ description=KerML 8.3.4.6.2 validateBehaviorSpecialization forbids a Behavior fr
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.6.2 validateBehaviorSpecialization
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.6.2:validateBehaviorSpecialization
+blocked_by=semantic-specialization-kind-compatibility
 type=file
-skip_validation=incompatible_specializes_kind is not reported for a KerML behavior specializing a structure; the metaclass-family check does not run on kerml-behavior declarations
 ~~~
 # SOURCE
 ~~~kerml

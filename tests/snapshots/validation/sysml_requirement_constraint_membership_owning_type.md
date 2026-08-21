@@ -4,8 +4,12 @@ description=SysML 8.3.21.7 validateRequirementConstraintMembershipOwningType req
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.21.7 validateRequirementConstraintMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.21.7:validateRequirementConstraintMembershipOwningType
+blocked_by=parser-gap-74-require-constraint-membership
 type=file
-skip_validation=the pinned parser has no production for a `require constraint` member, so neither side reaches semantics and both are reported as parser recovery
 ~~~
 # SOURCE
 ~~~sysml
@@ -80,6 +84,7 @@ package Roles {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
   (evaluation
   )

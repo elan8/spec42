@@ -79,6 +79,17 @@ pub struct Documentation {
     pub text: Box<str>,
 }
 
+/// One exact derived `Element` documentation collection selected by a pinned manifest rule.
+///
+/// The values themselves remain [`Documentation`] facts from the canonical publication. The
+/// selector distinguishes the OMG's `Documentation` and `TextualRepresentation` metaclasses
+/// without reducing either to rendered source text.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ElementDerivedDocumentationCollection {
+    Documentation,
+    TextualRepresentation,
+}
+
 /// One authored multiplicity bound.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MultiplicityBound {
@@ -200,6 +211,17 @@ pub enum RelationshipProvenance {
     Authored,
     /// Synthesized by the resolver from a rule, such as an implied redefinition.
     Implied,
+}
+
+/// The exact derived `Element::owner` value.
+///
+/// `NoOwner` is a settled `null`, not an unresolved source identity. Query-level uncertainty is
+/// represented by [`crate::QueryOutcome`], so callers cannot mistake a root element for a failed
+/// ownership derivation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DerivedElementOwner {
+    NoOwner,
+    Owner(SymbolIdentity),
 }
 
 /// What resolution concluded about one authored reference.

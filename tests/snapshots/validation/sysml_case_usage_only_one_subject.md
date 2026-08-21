@@ -4,6 +4,10 @@ description=SysML 8.3.22.3 validateCaseUsageOnlyOneSubject allows a CaseUsage at
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.22.3 validateCaseUsageOnlyOneSubject
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.22.3:validateCaseUsageOnlyOneSubject
 type=file
 ~~~
 # SOURCE
@@ -93,6 +97,9 @@ package Roles {
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::first"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::first"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::second"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::second"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Good::first"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::first"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad::second"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Good::first"))) (target (node (document "memory://snapshot/sysml_case_usage_only_one_subject.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureEndNoDirection forbids a Feature with
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureEndNoDirection
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureEndNoDirection
+blocked_by=parser-gap-59-directed-end-feature
 type=file
-skip_validation=parser gap 59 cannot represent an authored directed end feature
 ~~~
 # SOURCE
 ~~~kerml
@@ -67,6 +71,7 @@ package Ends {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd::plain"))) (target (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd::plain"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd::plain"))) (target (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd"))) (provenance implied))
   )
   (evaluation
   )

@@ -20,6 +20,7 @@ members = [
   "crates/sysml_tokens",
   "crates/workspace_session",
   "tools/snapshot_tool",
+  "tools/constraint_manifest",
   "tools/resolution_benchmark",
   "tools/semantic_benchmark",
 ]

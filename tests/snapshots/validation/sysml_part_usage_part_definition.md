@@ -4,8 +4,12 @@ description=SysML 8.3.11.3 validatePartUsagePartDefinition requires at least one
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.11.3 validatePartUsagePartDefinition
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.11.3:validatePartUsagePartDefinition
+blocked_by=semantic-part-usage-without-part-definition
 type=file
-skip_validation=no semantic rule requires a part usage to have a part definition among its types; the canonical code part_usage_without_part_definition does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -68,6 +72,8 @@ package Parts {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::bad"))) (target (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Material"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::bad"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::good"))) (target (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::good"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::bad"))) (target (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder::good"))) (target (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Holder"))) (provenance implied))
   )
   (evaluation
   )

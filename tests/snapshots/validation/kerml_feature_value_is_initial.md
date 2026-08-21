@@ -4,8 +4,12 @@ description=KerML 8.3.4.10.2 validateFeatureValueIsInitial requires the featureW
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.10.2 validateFeatureValueIsInitial
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.10.2:validateFeatureValueIsInitial
+blocked_by=semantic-initial-value-feature-not-variable
 type=file
-skip_validation=no semantic rule pairs an initial feature value with the variability of the feature it initialises; the canonical code initial_value_feature_not_variable does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -81,6 +85,8 @@ package Values {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::fixed"))) (state non-constant))
@@ -104,7 +110,6 @@ package Values {
       (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening")))
       (type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (scopes any))

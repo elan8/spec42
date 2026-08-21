@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.10 validateSubsettingConstantConformance requires a va
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.10 validateSubsettingConstantConformance
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingConstantConformance
+blocked_by=semantic-subsetting-constant-mismatch
 type=file
-skip_validation=both sides now publish their variability -- (modifiers constant) and (modifiers var) -- but no semantic rule pairs a subsetting feature's constancy with the subsetted feature's; the canonical code subsetting_constant_mismatch does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -81,6 +85,8 @@ package Subsettings {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::fixed"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose"))) (target (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose"))) (target (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))) (target (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening"))) (provenance implied))
   )
   (evaluation
   )
@@ -106,7 +112,6 @@ package Subsettings {
       (supertype (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::loose")))
-      (featured-by (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening")))
       (type (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing")) (source direct))
       (effective-type (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening::base"))))

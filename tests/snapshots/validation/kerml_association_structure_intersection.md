@@ -4,6 +4,10 @@ description=KerML 8.3.4.4.2 validateAssociationStructureIntersection requires an
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.4.2 validateAssociationStructureIntersection
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.4.2:validateAssociationStructureIntersection
 type=file
 ~~~
 # SOURCE
@@ -62,6 +66,8 @@ package Associations {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::source"))) (target (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::target"))) (target (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::source"))) (target (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject::target"))) (target (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=SysML 8.3.21.2 validateActorMembershipOwningType requires the owning
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.21.2 validateActorMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=by_construction
+rule_id=sysml-2.0:8.3.21.2:validateActorMembershipOwningType
+blocked_by=abstract-syntax-invalid-membership-owner
 type=file
-skip_validation=the pinned parser has no production for this membership outside its permitted owning type, so the invalid model is reported as unexpected_keyword_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -17,39 +21,13 @@ package Roles {
         subject item : Component;
         actor operator : Component;
     }
-
-    // Invalid: the actor membership is owned by a part definition.
-    part def Bad {
-        actor operator : Component;
-    }
 }
-~~~
-# EXPECTED DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "memory://snapshot/sysml_actor_membership_owning_type.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "actor_membership_invalid_owner")
-        (source "semantic")
-        (range (start 10 4) (end 10 18))
-      )
-    )
-  )
-)
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/sysml_actor_membership_owning_type.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 11 8) (end 12 4))
-      )
     )
   )
 )
@@ -57,10 +35,9 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:54a2e812f69467b3fe7135cc76a570082b8153f814475dfe9cc7b18acf42538b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:617fde7413a062a14e8fe619dfe0f280b47f9b91887ffea2ed2dfaed258990ca") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
@@ -77,6 +54,8 @@ package Roles {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::operator"))) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::operator"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::operator"))) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
   (evaluation
   )

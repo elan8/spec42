@@ -4,8 +4,12 @@ description=SysML 8.3.21.10 validateSatisfyRequirementUsageReference requires th
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.21.10 validateSatisfyRequirementUsageReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.21.10:validateSatisfyRequirementUsageReference
+blocked_by=lowering-part-definition-members
 type=file
-skip_validation=a satisfy requirement member parses but sysml_resolution reports it as unsupported_part_definition_member, so no SatisfyRequirementUsage reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -89,6 +93,10 @@ package Requirements {
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::limit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::other"))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::other"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (path (named (kind package) (name "Requirements")) (named (kind part-def) (name "Holder")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::limit"))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library::other"))) (target (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Library"))) (provenance implied))
   )
   (evaluation
   )

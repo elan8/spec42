@@ -4,8 +4,12 @@ description=KerML 8.3.4.10.2 validateFeatureValueOverriding requires every Featu
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.10.2 validateFeatureValueOverriding
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.10.2:validateFeatureValueOverriding
+blocked_by=semantic-feature-value-overrides-non-default
 type=file
-skip_validation=no semantic rule checks whether a redefined feature value is a default before it is overridden; the canonical code feature_value_overrides_non_default does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -115,8 +119,12 @@ package Values {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Conforming::defaulted"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Conforming::defaulted"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid::fixed"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base::defaulted"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Conforming::defaulted"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base::defaulted"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Conforming::defaulted"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Conforming"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base::fixed"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Invalid"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base::defaulted"))) (state unsupported))

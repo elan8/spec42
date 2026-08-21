@@ -4,6 +4,10 @@ description=SysML 8.3.9.4 validateOccurrenceUsageIsPortion requires an Occurrenc
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.9.4 validateOccurrenceUsageIsPortion
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.9.4:validateOccurrenceUsageIsPortion
 type=file
 ~~~
 # SOURCE
@@ -61,6 +65,8 @@ package Occurrences {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Event"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::instant"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::interval"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Event"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::interval"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::instant"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder::interval"))) (target (node (document "memory://snapshot/sysml_occurrence_usage_is_portion.md") (qualified-name "Occurrences::Holder"))) (provenance implied))
   )
   (evaluation
   )

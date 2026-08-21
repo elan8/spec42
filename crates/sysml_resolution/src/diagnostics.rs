@@ -61,7 +61,9 @@ pub struct PublishedDiagnostics {
 ///
 /// `code` is both the stable public identifier consumers key on and the typed outcome: which
 /// failure this is -- unresolved, ambiguous, an unsupported reference, an unsupported construct,
-/// a non-converged solve -- is decided by matching it, never by reading text.
+/// a non-converged solve -- is decided by matching it, never by reading text. [`DiagnosticCode`]
+/// also owns its neutral [`DiagnosticCategory`], so every surface reads the same classification
+/// without grouping codes, messages, or rendered output itself.
 ///
 /// `message` is owner-produced. It exists so a host renders one sentence rather than inventing its
 /// own from the code, and it is never a semantic input: no consumer may recover a fact from it.
@@ -84,6 +86,16 @@ pub struct Diagnostic {
     /// Ambiguity reports every candidate here. An empty slice means the diagnostic has no related
     /// site, never that the related sites were unavailable.
     pub related: Box<[RelatedLocation]>,
+}
+
+impl Diagnostic {
+    /// The neutral category settled by the diagnostic's owning code declaration.
+    ///
+    /// Keeping this as an accessor prevents a second, mutable category store from drifting away
+    /// from the code declaration while presenting one typed diagnostic contract to consumers.
+    pub fn category(&self) -> DiagnosticCategory {
+        self.code.category()
+    }
 }
 
 /// A document identity and range inside it.
@@ -142,13 +154,52 @@ impl DiagnosticOrigin {
     }
 }
 
+/// The neutral class of a published diagnostic.
+///
+/// Categories express the settled kind of outcome, while [`DiagnosticCode`] identifies the
+/// specific rule or construct. A client may aggregate categories without guessing from code
+/// strings; it must still use the code where the exact cause matters.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum DiagnosticCategory {
+    MalformedSyntax,
+    UnsupportedSyntax,
+    UnsupportedSemantics,
+    Unresolved,
+    Ambiguous,
+    NonConverged,
+    Validation,
+    MissingContext,
+    Advisory,
+    /// The upstream parser supplied no category. This is explicit rather than inferred from
+    /// its code or prose.
+    UnclassifiedParser,
+}
+
+impl DiagnosticCategory {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::MalformedSyntax => "malformed_syntax",
+            Self::UnsupportedSyntax => "unsupported_syntax",
+            Self::UnsupportedSemantics => "unsupported_semantics",
+            Self::Unresolved => "unresolved",
+            Self::Ambiguous => "ambiguous",
+            Self::NonConverged => "non_converged",
+            Self::Validation => "validation",
+            Self::MissingContext => "missing_context",
+            Self::Advisory => "advisory",
+            Self::UnclassifiedParser => "unclassified_parser",
+        }
+    }
+}
+
 /// Declares every code this publication itself can report, once.
 ///
-/// The enum, the stable code string, the owner's sentence, and the exhaustive list a consumer
-/// enumerates all come from this one table, so a new code cannot be added to one and forgotten in
-/// another. `Parser` is deliberately outside it: the parser owns those codes and their text.
+/// The enum, the stable code string, neutral category, owner's sentence, and exhaustive list a
+/// consumer enumerates all come from this one table, so a new code cannot be added to one and
+/// forgotten in another. `Parser` is deliberately outside it: the parser owns its code and text,
+/// while the boundary maps its typed category.
 macro_rules! semantic_diagnostic_codes {
-    ($( $(#[$meta:meta])* $variant:ident => $code:literal, $describe:expr; )*) => {
+    ($( $category:ident { $( $(#[$meta:meta])* $variant:ident => $code:literal, $describe:expr; )* } )*) => {
         /// The stable public identifier of a diagnostic.
         ///
         /// Codes are public behavior: consumers key suppression, documentation, and tests on them.
@@ -158,8 +209,11 @@ macro_rules! semantic_diagnostic_codes {
             ///
             /// The parser may report an error without a code; the publication substitutes
             /// `parse_error` rather than omitting the field, so every diagnostic has one.
-            Parser(Box<str>),
-            $( $(#[$meta])* $variant, )*
+            Parser {
+                code: Box<str>,
+                category: DiagnosticCategory,
+            },
+            $( $( $(#[$meta])* $variant, )* )*
         }
 
         impl DiagnosticCode {
@@ -168,13 +222,21 @@ macro_rules! semantic_diagnostic_codes {
             /// A consumer that documents or classifies codes enumerates this rather than keeping
             /// its own list, which is what makes drift a compile or test failure instead of a
             /// silently undocumented diagnostic.
-            pub const SEMANTIC: &'static [DiagnosticCode] = &[ $( DiagnosticCode::$variant, )* ];
+            pub const SEMANTIC: &'static [DiagnosticCode] = &[ $( $( DiagnosticCode::$variant, )* )* ];
 
             /// The stable code string. The only place one is produced.
             pub fn as_str(&self) -> &str {
                 match self {
-                    Self::Parser(code) => code,
-                    $( Self::$variant => $code, )*
+                    Self::Parser { code, .. } => code,
+                    $( $( Self::$variant => $code, )* )*
+                }
+            }
+
+            /// The neutral outcome category published with this diagnostic.
+            pub fn category(&self) -> DiagnosticCategory {
+                match self {
+                    Self::Parser { category, .. } => *category,
+                    $( $( Self::$variant => DiagnosticCategory::$category, )* )*
                 }
             }
 
@@ -186,8 +248,8 @@ macro_rules! semantic_diagnostic_codes {
             /// build a message naming it instead of using this default.
             pub fn describe(&self) -> &str {
                 match self {
-                    Self::Parser(_) => "The parser reported an error here.",
-                    $( Self::$variant => $describe, )*
+                    Self::Parser { .. } => "The parser reported an error here.",
+                    $( $( Self::$variant => $describe, )* )*
                 }
             }
         }
@@ -196,6 +258,7 @@ macro_rules! semantic_diagnostic_codes {
 
 semantic_diagnostic_codes! {
 
+    UnsupportedSemantics {
     UnsupportedPackageMember => "unsupported_package_member",
         "This member is parsed but not modelled by the semantic publication.";
     UnsupportedPartDefinitionMember => "unsupported_part_definition_member",
@@ -244,7 +307,9 @@ semantic_diagnostic_codes! {
         "This member is parsed but not modelled by the semantic publication.";
     UnsupportedParserConstruct => "unsupported_parser_construct",
         "This construct is parsed but not modelled by the semantic publication.";
+    }
 
+    Unresolved {
     UnresolvedTypeReference => "unresolved_type_reference",
         "This type reference does not resolve.";
     UnresolvedSpecializesReference => "unresolved_specializes_reference",
@@ -253,17 +318,25 @@ semantic_diagnostic_codes! {
         "This import target does not resolve.";
     UnresolvedReference => "unresolved_reference",
         "This reference does not resolve.";
+    }
+    UnsupportedSemantics {
     UnsupportedFilteredImport => "unsupported_filtered_import",
         "Filtered namespace imports are parsed but not semantically supported.";
     UnsupportedReference => "unsupported_reference",
         "This reference form is parsed but not semantically supported.";
+    }
+    NonConverged {
     NonConvergedResolution => "non_converged_resolution",
         "Resolution did not converge, so this reference has no settled outcome.";
+    }
+    Ambiguous {
     AmbiguousImportTarget => "ambiguous_import_target",
         "This import target names several elements, so it identifies none of them.";
     AmbiguousReference => "ambiguous_reference",
         "This reference names several elements, so it identifies none of them.";
+    }
 
+    Validation {
     /// A usage is typed by a definition of an incompatible metaclass family.
     IncompatibleTypeKind => "incompatible_type_kind",
         "This usage is typed by a definition of an incompatible kind.";
@@ -364,9 +437,13 @@ semantic_diagnostic_codes! {
     /// Two connected ports mirror the same direction, so nothing can flow between them.
     FlowDirectionIncompatible => "flow_direction_incompatible",
         "These connected ports mirror the same direction, so nothing can flow between them.";
+    }
+    Advisory {
     /// A declared port takes part in no connection.
     UnconnectedPort => "unconnected_port",
         "This port takes part in no connection.";
+    }
+    Validation {
     /// Two connectors relate the same pair of ends.
     DuplicateConnection => "duplicate_connection",
         "This connector repeats an existing pair of ends.";
@@ -399,12 +476,16 @@ semantic_diagnostic_codes! {
     /// A transition guard settles to a non-Boolean constant.
     TransitionGuardNonBoolean => "transition_guard_non_boolean",
         "A transition guard must evaluate to a Boolean.";
+    }
+    Advisory {
     /// A state definition owns states but declares no initial transition.
     MissingInitialState => "missing_initial_state",
         "This state definition owns states but declares no initial transition.";
     /// A state definition owns states but declares no finality indicator.
     MissingFinalState => "missing_final_state",
         "This state definition owns states but declares no finality indicator.";
+    }
+    Validation {
     /// A state definition declares more than one explicit final state.
     MultipleFinalStates => "multiple_final_states",
         "A state definition declares more than one explicit final state.";
@@ -436,18 +517,26 @@ semantic_diagnostic_codes! {
     /// A view usage is typed by a definition outside the SysML standard view catalog.
     ViewTypeNonStandard => "view_type_non_standard",
         "This view is typed by a definition outside the SysML standard view catalog.";
+    }
+    Unresolved {
     /// A view exposes a target that resolves to nothing.
     ViewExposeUnresolved => "view_expose_unresolved",
         "This expose target does not resolve, so the view shows nothing for it.";
+    }
+    Validation {
     /// A view declares members but exposes nothing.
     ViewExposeEmpty => "view_expose_empty",
         "This view declares a body but exposes no members.";
     /// A rendering member is typed by something that is not a rendering definition.
     ViewRenderingInvalidTarget => "view_rendering_invalid_target",
         "A rendering member must be typed by a rendering definition or usage.";
+    }
+    Unresolved {
     /// A textual representation declares no language identifier.
     ViewpointRepLanguageUnresolved => "viewpoint_rep_language_unresolved",
         "A textual representation must declare a language identifier.";
+    }
+    Validation {
 
     // --- Allocation ----------------------------------------------------------------------------
     /// An `allocate` statement declares only one of its two endpoints.
@@ -471,19 +560,81 @@ semantic_diagnostic_codes! {
     /// An analysis constraint settled to false.
     AnalysisConstraintFailed => "analysis_constraint_failed",
         "This analysis constraint evaluated to false.";
+    }
+    Unresolved {
     /// An analysis constraint could not be evaluated.
     AnalysisEvaluationUnresolved => "analysis_evaluation_unresolved",
         "This analysis expression could not be evaluated.";
+    }
 
+    Advisory {
     // --- Authoring hints -------------------------------------------------------------------------
     /// A part usage declares no type.
     UntypedPartUsage => "untyped_part_usage",
         "This part usage declares no type.";
+    }
+    MissingContext {
     /// A workspace document imports names it cannot resolve and no library source was admitted.
     MissingLibraryContext => "missing_library_context",
         "This document imports names that do not resolve and no library source was \
                          admitted to the publication.";
+    /// A required canonical library element was not admitted to the publication.
+    MissingLibraryAnchor => "missing_library_anchor",
+        "The required standard-library anchor is not available in this publication.";
+    }
+    Ambiguous {
+    /// Several library elements match one required canonical anchor.
+    AmbiguousLibraryAnchor => "ambiguous_library_anchor",
+        "The required standard-library anchor is ambiguous in this publication.";
+    }
 }
 
 /// The code a parser error carries when the parser reports none.
 pub(crate) const UNCODED_PARSE_ERROR: &str = "parse_error";
+
+#[cfg(test)]
+mod tests {
+    use super::{DiagnosticCategory, DiagnosticCode};
+
+    #[test]
+    fn semantic_codes_publish_owner_declared_categories() {
+        assert_eq!(
+            DiagnosticCode::UnsupportedParserConstruct.category(),
+            DiagnosticCategory::UnsupportedSemantics
+        );
+        assert_eq!(
+            DiagnosticCode::UnresolvedReference.category(),
+            DiagnosticCategory::Unresolved
+        );
+        assert_eq!(
+            DiagnosticCode::AmbiguousReference.category(),
+            DiagnosticCategory::Ambiguous
+        );
+        assert_eq!(
+            DiagnosticCode::NonConvergedResolution.category(),
+            DiagnosticCategory::NonConverged
+        );
+        assert_eq!(
+            DiagnosticCode::MissingLibraryAnchor.category(),
+            DiagnosticCategory::MissingContext
+        );
+        assert_eq!(
+            DiagnosticCode::AmbiguousLibraryAnchor.category(),
+            DiagnosticCategory::Ambiguous
+        );
+        assert_eq!(
+            DiagnosticCode::UntypedPartUsage.category(),
+            DiagnosticCategory::Advisory
+        );
+    }
+
+    #[test]
+    fn parser_category_is_part_of_the_published_code_contract() {
+        let diagnostic = DiagnosticCode::Parser {
+            code: "parser_code".into(),
+            category: DiagnosticCategory::UnsupportedSyntax,
+        };
+        assert_eq!(diagnostic.as_str(), "parser_code");
+        assert_eq!(diagnostic.category(), DiagnosticCategory::UnsupportedSyntax);
+    }
+}

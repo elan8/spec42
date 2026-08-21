@@ -4,6 +4,10 @@ description=KerML 8.3.2.1.2 validateElementIsImpliedIncluded requires an Element
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.2.1.2 validateElementIsImpliedIncluded
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.2.1.2:validateElementIsImpliedIncluded
 type=file
 ~~~
 # SOURCE
@@ -71,7 +75,9 @@ package Implied {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General::part"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General::part"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special::part"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special::part"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General::part"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special::part"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General::part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special::part"))) (target (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::Special"))) (provenance implied))
   )
   (evaluation
   )

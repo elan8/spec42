@@ -4,8 +4,12 @@ description=SysML 8.3.7.3 validateAttributeUsageFeatures requires all features o
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.7.3 validateAttributeUsageFeatures
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.7.3:validateAttributeUsageFeatures
+blocked_by=semantic-attribute-feature-composite
 type=file
-skip_validation=no semantic rule rejects a composite feature of an attribute usage; the canonical code attribute_feature_composite does not exist yet
 ~~~
 # SOURCE
 ~~~sysml
@@ -78,6 +82,10 @@ package Attributes {
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad::owned"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad::owned"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::good"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::good"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad::owned"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::good"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::good::nested"))) (target (node (document "memory://snapshot/sysml_attribute_usage_features.md") (qualified-name "Attributes::Holder::good"))) (provenance implied))
   )
   (evaluation
   )

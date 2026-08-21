@@ -4,6 +4,10 @@ description=SysML 8.3.12.6 validatePortUsageIsReference requires a PortUsage who
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.12.6 validatePortUsageIsReference
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.12.6:validatePortUsageIsReference
 type=file
 ~~~
 # SOURCE
@@ -69,6 +73,7 @@ package Ports {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder"))) (provenance implied))
   )
   (evaluation
   )

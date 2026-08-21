@@ -4,6 +4,12 @@ description=KerML 8.3.2.3.3 requires an Annotation to have exactly one of ownedA
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.2.3.3 validateAnnotationAnnotatingElement, 8.3.2.3.3 validateAnnotationAnnotatedElementOwnership
+source_expectation=accepted
+rule_family=validate
+expectation=by_construction
+rule_id=kerml-1.0:8.3.2.3.3:validateAnnotationAnnotatingElement
+rule_id=kerml-1.0:8.3.2.3.3:validateAnnotationAnnotatedElementOwnership
+blocked_by=abstract-syntax-annotation-identity
 type=file
 ~~~
 # SOURCE

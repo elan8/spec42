@@ -4,6 +4,10 @@ description=KerML 8.3.3.3.4 validateFeatureConstantIsVariable requires a Feature
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureConstantIsVariable
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureConstantIsVariable
 type=file
 ~~~
 # SOURCE
@@ -54,6 +58,7 @@ package Constants {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening::fixed"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureIsVariable requires a Feature with is
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureIsVariable
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureIsVariable
+blocked_by=semantic-variable-feature-owner-not-occurrence
 type=file
-skip_validation=no semantic rule checks the owningType of a variable feature against Occurrences::Occurrence; the canonical code variable_feature_owner_not_occurrence does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -79,7 +83,6 @@ package Variables {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening")))
       (type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (scopes any))
@@ -89,7 +92,6 @@ package Variables {
       (subtype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value")))
       (type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (scopes any))

@@ -932,6 +932,7 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         | ElementKind::ConcernUsage
         | ElementKind::SatisfyRequirementUsage => Compartment::Requirements,
         ElementKind::ActionUsage
+        | ElementKind::AcceptActionUsage
         | ElementKind::PerformActionUsage
         | ElementKind::AssignmentActionUsage
         | ElementKind::IfActionUsage

@@ -87,6 +87,7 @@ pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::OccurrenceUsage => (F::Occurrence, Usage),
         K::ActionDefinition => (F::Action, Definition),
         K::ActionUsage => (F::Action, Usage),
+        K::AcceptActionUsage => (F::Action, Usage),
         K::StateDefinition => (F::State, Definition),
         K::StateUsage => (F::State, Usage),
         K::PortDefinition => (F::Port, Definition),
@@ -313,9 +314,146 @@ impl ResolvedSemanticModel {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_reference_kind_conformance(document, diagnostics)?;
+        self.collect_library_specialization_anchors(document, declared, diagnostics)?;
         self.collect_implied_conformance(document, diagnostics)?;
         self.collect_type_relationship_cardinality(declared, diagnostics)?;
         self.collect_specialization_cycles(declared, diagnostics)?;
+        Ok(())
+    }
+
+    /// Reports each unresolved canonical library anchor once for its affected document.
+    ///
+    /// Generated `specializesFromLibrary` checks may share the same anchor. This consumer groups
+    /// them by `(anchor, document)`, so a missing profile capability has one actionable root cause
+    /// rather than one diagnostic for every declaration or every rule that depends on it. The
+    /// implication itself was already synthesized at the resolution barrier; diagnostics only
+    /// consume the stored rule-keyed fact map and never re-identify a library element.
+    fn collect_library_specialization_anchors(
+        &self,
+        document: DocumentId,
+        declared: &[DeclarationId],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        // A source that admits no standard library has made no claim about which library profile
+        // it wants. Existing import diagnostics own that broader missing-context case. This rule
+        // becomes actionable once a standard-library stratum is present but fails to provide its
+        // required `Parts::Part` anchor.
+        if !self
+            .storage
+            .documents
+            .iter()
+            .any(|document| document.role == source_identity::SourceRole::StandardLibrary)
+        {
+            return Ok(());
+        }
+        let mut affected = std::collections::BTreeMap::new();
+        for declaration in declared.iter().copied() {
+            let Some(declaration_record) = self.storage.declaration(declaration) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            for rule in library_specialization_rules(library_specialization_metaclass(
+                declaration_record.kind,
+            )) {
+                let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
+                else {
+                    return Err(ResolutionError::InvalidStorage);
+                };
+                if matches!(outcome, LibrarySpecializationAnchor::Resolved(_)) {
+                    continue;
+                }
+                affected
+                    .entry(LibrarySpecializationDiagnosticKey {
+                        anchor: rule.anchor,
+                        document,
+                    })
+                    .or_insert((
+                        declaration,
+                        rule.rule_id,
+                        crate::LibrarySpecializationAnchorBranch::Default,
+                    ));
+            }
+            for rule in conditional_library_specialization_rules(library_specialization_metaclass(
+                declaration_record.kind,
+            )) {
+                if !conditional_library_specialization_predicate_holds(
+                    &self.storage,
+                    declaration,
+                    rule,
+                ) {
+                    continue;
+                }
+                let branch = conditional_library_specialization_anchor_branch(
+                    &self.storage,
+                    declaration,
+                    rule,
+                );
+                let Some(outcome) = self
+                    .resolution
+                    .library_specialization_anchors
+                    .outcome_for(rule.rule_id, branch)
+                else {
+                    return Err(ResolutionError::InvalidStorage);
+                };
+                if matches!(outcome, LibrarySpecializationAnchor::Resolved(_)) {
+                    continue;
+                }
+                let anchor = match branch {
+                    crate::LibrarySpecializationAnchorBranch::Default => rule.anchor,
+                    crate::LibrarySpecializationAnchorBranch::PredicateTrue => {
+                        rule.true_anchor.ok_or(ResolutionError::InvalidStorage)?
+                    }
+                };
+                affected
+                    .entry(LibrarySpecializationDiagnosticKey { anchor, document })
+                    .or_insert((declaration, rule.rule_id, branch));
+            }
+        }
+
+        for (key, (declaration, rule_id, branch)) in affected {
+            let Some(outcome) = self
+                .resolution
+                .library_specialization_anchors
+                .outcome_for(rule_id, branch)
+            else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            match outcome {
+                LibrarySpecializationAnchor::Resolved(_) => {}
+                LibrarySpecializationAnchor::Missing => {
+                    let mut diagnostic = self.declaration_diagnostic(
+                        declaration,
+                        DiagnosticCode::MissingLibraryAnchor,
+                        DiagnosticSeverity::Information,
+                    )?;
+                    diagnostic.message = format!(
+                        "The required standard-library anchor `{}` is not available in this publication.",
+                        key.anchor
+                    )
+                    .into();
+                    diagnostics.push(diagnostic);
+                }
+                LibrarySpecializationAnchor::Ambiguous(candidates) => {
+                    let mut diagnostic = self.declaration_diagnostic(
+                        declaration,
+                        DiagnosticCode::AmbiguousLibraryAnchor,
+                        DiagnosticSeverity::Warning,
+                    )?;
+                    diagnostic.related = candidates
+                        .iter()
+                        .map(|candidate| {
+                            self.related_declaration(*candidate, RELATED_AMBIGUOUS_CANDIDATE)
+                        })
+                        .collect::<Result<Vec<_>, _>>()?
+                        .into_boxed_slice();
+                    diagnostic.message = format!(
+                        "The required standard-library anchor `{}` is ambiguous in this publication.",
+                        key.anchor
+                    )
+                    .into();
+                    diagnostics.push(diagnostic);
+                }
+            }
+        }
         Ok(())
     }
 

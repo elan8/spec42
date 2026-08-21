@@ -4,8 +4,12 @@ description=KerML 8.3.4.4.2 validateAssociationRelatedTypes requires a concrete 
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.4.2 validateAssociationRelatedTypes
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.4.2:validateAssociationRelatedTypes
+blocked_by=semantic-association-related-types-insufficient
 type=file
-skip_validation=no semantic rule checks the relatedType count of a concrete KerML association; the canonical code association_related_types_insufficient does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -87,6 +91,10 @@ package Associations {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary::target"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Partial::only"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Partial::only"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Unary::only"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Unary::only"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary::source"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Partial::only"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Partial"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Unary::only"))) (target (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Unary"))) (provenance implied))
   )
   (evaluation
   )

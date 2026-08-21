@@ -4,8 +4,12 @@ description=KerML 8.3.3.1.8 validateSpecificationSpecificNotConjugated forbids t
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.1.8 validateSpecificationSpecificNotConjugated
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.1.8:validateSpecificationSpecificNotConjugated
+blocked_by=parser-gap-64-conjugation-declaration
 type=file
-skip_validation=the parser models conjugation only as the `~T` conjugated-typing flag (TypingRelationship.is_conjugated); there is no conjugation-declaration production, so a conjugated specific type is reported as unsupported_grammar_form
 ~~~
 # SOURCE
 ~~~kerml

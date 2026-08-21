@@ -4,8 +4,12 @@ description=SysML 8.3.21.8 validateRequirementDefinitionSubjectParameterPosition
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.21.8 validateRequirementDefinitionSubjectParameterPosition
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.21.8:validateRequirementDefinitionSubjectParameterPosition
+blocked_by=semantic-subject-member-order
 type=file
-skip_validation=subject_member_not_first is not reported when a directed reference usage precedes the subject membership, so this manifestation of the rule is unenforced
 ~~~
 # SOURCE
 ~~~sysml
@@ -82,6 +86,10 @@ package Roles {
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
   (evaluation
   )

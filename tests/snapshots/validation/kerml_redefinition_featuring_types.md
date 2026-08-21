@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.8 validateRedefinitionFeaturingTypes requires a redefi
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.8 validateRedefinitionFeaturingTypes
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.8:validateRedefinitionFeaturingTypes
+blocked_by=semantic-redefinition-featuring-type-compatibility
 type=file
-skip_validation=redefinition_featuring_type_incompatible is not reported when the redefining and redefined features share one owning type, so this manifestation of the rule is unenforced
 ~~~
 # SOURCE
 ~~~kerml
@@ -96,6 +100,10 @@ package Redefinitions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::first"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::first"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::second"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::second"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::second"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::first"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::second"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Base::original"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Conforming::original"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Conforming"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::first"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid::second"))) (target (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Invalid"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=KerML 8.3.3.3.4 validateFeatureEndNotDerivedAbstractCompositeOrPorti
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureEndNotDerivedAbstractCompositeOrPortion
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.4:validateFeatureEndNotDerivedAbstractCompositeOrPortion
+blocked_by=parser-gap-67-end-restriction-modifiers
 type=file
-skip_validation=the pinned parser accepts no restriction modifier alongside `end` in either order -- `derived`/`abstract`/`composite`/`portion`/`var`/`const` before or after `end` all fail with unexpected_keyword_in_scope or unrecognized_declaration_in_scope -- so no restricted end feature reaches semantics (see gap 67)
 ~~~
 # SOURCE
 ~~~kerml
@@ -114,6 +118,8 @@ package Ends {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (state unresolved-operand))

@@ -4,8 +4,12 @@ description=KerML 8.3.4.4.2 validateAssociationEndTypes requires each ownedEndFe
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.4.2 validateAssociationEndTypes
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.4.2:validateAssociationEndTypes
+blocked_by=semantic-association-end-type-not-one
 type=file
-skip_validation=no semantic rule checks the type count of an association end feature; the canonical code association_end_type_not_one does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -81,6 +85,10 @@ package Associations {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::source"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::target"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::target"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::source"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::source"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::target"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::source"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::target"))) (target (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped"))) (provenance implied))
   )
   (evaluation
   )

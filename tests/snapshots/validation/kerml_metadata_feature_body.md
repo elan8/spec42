@@ -4,8 +4,12 @@ description=KerML 8.3.4.12.3 validateMetadataFeatureBody requires every ownedFea
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.12.3 validateMetadataFeatureBody
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureBody
+blocked_by=parser-gap-70-metadata-feature-body-member
 type=file
-skip_validation=the pinned parser has no production for a named feature inside a metadata feature body, so the invalid body member is reported as unrecognized_declaration_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~kerml

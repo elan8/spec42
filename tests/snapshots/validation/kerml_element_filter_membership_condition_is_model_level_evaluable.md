@@ -4,8 +4,12 @@ description=KerML 8.3.4.13.2 validateElementFilterMembershipConditionIsModelLeve
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.13.2 validateElementFilterMembershipConditionIsModelLevelEvaluable
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.13.2:validateElementFilterMembershipConditionIsModelLevelEvaluable
+blocked_by=semantic-filter-condition-not-model-level-evaluable
 type=file
-skip_validation=no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet
 ~~~
 # SOURCE
 ~~~kerml

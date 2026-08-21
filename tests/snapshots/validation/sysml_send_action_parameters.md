@@ -4,6 +4,10 @@ description=SysML 8.3.17.15 validateSendActionParameters requires a SendActionUs
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.15 validateSendActionParameters
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.17.15:validateSendActionParameters
 type=file
 ~~~
 # SOURCE
@@ -45,8 +49,8 @@ package Actions {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (kind sendTarget) (ordinal 0))
@@ -55,6 +59,8 @@ package Actions {
   )
   (relationships
     (relationship (kind sendTarget) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (kind sendTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::send"))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
   )

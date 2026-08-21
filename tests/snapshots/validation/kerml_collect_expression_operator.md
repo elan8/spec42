@@ -4,6 +4,10 @@ description=KerML 8.3.4.8.2 validateCollectExpressionOperator requires the opera
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.2 validateCollectExpressionOperator
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.2:validateCollectExpressionOperator
 type=file
 ~~~
 # SOURCE
@@ -61,6 +65,8 @@ package Expressions {
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (state non-constant))

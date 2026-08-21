@@ -4,8 +4,12 @@ description=SysML 8.3.22.4 validateObjectiveMembershipOwningType requires the ow
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.22.4 validateObjectiveMembershipOwningType
+source_expectation=accepted
+rule_family=validate
+expectation=by_construction
+rule_id=sysml-2.0:8.3.22.4:validateObjectiveMembershipOwningType
+blocked_by=abstract-syntax-invalid-membership-owner
 type=file
-skip_validation=the pinned parser has no production for this membership outside its permitted owning type, so the invalid model is reported as unexpected_keyword_in_scope and never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
@@ -17,39 +21,13 @@ package Roles {
         subject item : Component;
         objective achieved;
     }
-
-    // Invalid: the objective membership is owned by a part definition.
-    part def Bad {
-        objective achieved;
-    }
 }
-~~~
-# EXPECTED DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "memory://snapshot/sysml_objective_membership_owning_type.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "objective_membership_invalid_owner")
-        (source "semantic")
-        (range (start 10 4) (end 10 18))
-      )
-    )
-  )
-)
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/sysml_objective_membership_owning_type.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 11 8) (end 12 4))
-      )
     )
   )
 )
@@ -57,10 +35,9 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:62547c46ed43a7679aa19b0a41d68186e5272407972d7205a985e45ecfa3a297") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1dbac69c66f5c301b2d031d6f843a3d07ef042c79e2af5eb5f01fa6279125bc7") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good"))) (kind case-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::achieved"))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -73,6 +50,8 @@ package Roles {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::achieved"))) (target (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=KerML 8.3.2.4.5 validateNamespaceDistinguishibility requires all mem
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.2.4.5 validateNamespaceDistinguishibility
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.2.4.5:validateNamespaceDistinguishibility
+blocked_by=semantic-duplicate-namespace-member
 type=file
-skip_validation=duplicate_namespace_member is not reported for KerML-flavored members; the collision is only visible as two kind-qualified declaration paths in SMG
 ~~~
 # SOURCE
 ~~~kerml

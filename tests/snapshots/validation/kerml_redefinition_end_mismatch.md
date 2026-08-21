@@ -4,6 +4,10 @@ description=KerML 8.3.3.3.8 validateRedefinitionEndConformance requires a Featur
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.8 validateRedefinitionEndConformance
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.8:validateRedefinitionEndConformance
 type=file
 ~~~
 # SOURCE
@@ -92,8 +96,11 @@ package Ends {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming::endpoint"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid::endpoint"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base::endpoint"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base::endpoint"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid::endpoint"))) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (provenance implied))
   )
   (evaluation
   )

@@ -4,8 +4,12 @@ description=KerML 8.3.4.7.4 validateFunctionResultParameterMembership requires a
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.7.4 validateFunctionResultParameterMembership
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.7.4:validateFunctionResultParameterMembership
+blocked_by=semantic-function-result-parameter-count
 type=file
-skip_validation=no semantic rule counts the result parameter memberships of a function; the canonical code function_result_parameter_count does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -93,6 +97,10 @@ package Functions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One::result"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One::result"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None::input"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One::result"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two"))) (provenance implied))
   )
   (evaluation
   )

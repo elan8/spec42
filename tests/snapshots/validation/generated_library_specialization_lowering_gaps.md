@@ -1,0 +1,330 @@
+# META
+~~~ini
+description=Generated library-specialization rules remain explicit until authored forms publish their exact semantic metaclass and query identity
+specification=OMG SysML 2.0 and KerML 1.0 (formal/26-03)
+specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
+source_expectation=accepted
+rule_family=check
+expectation=semantics
+blocked_by=lowering-gap-library-specialization-forms
+rule_id=kerml-1.0:8.3.4.12.3:checkMetadataFeatureSpecialization
+rule_id=sysml-2.0:8.3.13.4:checkConnectionUsageSpecialization
+rule_id=sysml-2.0:8.3.14.3:checkInterfaceUsageSpecialization
+rule_id=sysml-2.0:8.3.17.15:checkSendActionUsageSpecialization
+rule_id=sysml-2.0:8.3.17.16:checkTerminateActionUsageSpecialization
+rule_id=sysml-2.0:8.3.18.9:checkTransitionUsageSpecialization
+rule_id=sysml-2.0:8.3.19.3:checkCalculationUsageSpecialization
+type=file
+libraries=standard
+~~~
+# SOURCE
+~~~sysml
+package GeneratedSpecializationLoweringGaps {
+    item def Thing;
+    metaclass Marker;
+    metadata MetadataFeature : Marker about Thing;
+    connection ConnectionUsage;
+    interface InterfaceUsage;
+    calc CalculationUsage;
+    action def Act {
+        action target;
+        send 1 to target;
+        terminate target;
+    }
+    state def Machine {
+        state idle;
+        state running;
+        transition Transition first idle then running;
+    }
+}
+~~~
+# EXPECTED SEMANTICS
+~~~sexpr
+(fixture-semantics
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::MetadataFeature") (target "Metaobjects::metaobjects") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::ConnectionUsage") (target "Connections::connections") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::InterfaceUsage") (target "Interfaces::interfaces") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::CalculationUsage") (target "Calculations::calculations") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::Act::send") (target "Actions::sendActions") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::Act::terminate") (target "Actions::terminateActions") (provenance implied) (outcome resolved))
+  (relationship (kind specialization) (source "GeneratedSpecializationLoweringGaps::Machine::Transition") (target "Actions::transitionActions") (provenance implied) (outcome resolved)))
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/generated_library_specialization_lowering_gaps.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 18) (end 10 24))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 12 4) (end 16 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_initial_state")
+        (source "semantic")
+        (range (start 12 4) (end 16 5))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:78eeddebe56437a7e492b73d6bd7ecd7e94b1dbddb5de3d56084c4dae0ba66da") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (terminateTarget (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::CalculationUsage"))) (kind calc-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::ConnectionUsage"))) (kind connection-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::InterfaceUsage"))) (kind interface-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "running")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (kind item-def) (membership (kind owning) (visibility default)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (kind terminateTarget) (ordinal 0))
+      (authored-target "target")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (kind sendTarget) (ordinal 0))
+      (authored-target "target")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target")))))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionSource) (ordinal 0))
+      (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle")))))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionTarget) (ordinal 0))
+      (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running")))))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Marker")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))))
+  )
+  (relationships
+    (relationship (kind sendTarget) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (kind sendTarget) (ordinal 0)))
+    (relationship (kind transitionSource) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transitionTarget) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionTarget) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::CalculationUsage"))) (target (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::ConnectionUsage"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::InterfaceUsage"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker"))) (target (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::CalculationUsage")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::ConnectionUsage")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::InterfaceUsage")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature")))
+      (type (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")) (source direct))
+      (supertype (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 10 18) (end 10 24)) (probe (position 10 18))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (kind terminateTarget) (ordinal 0) (authored-target "target")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 9 18) (end 9 24)) (probe (position 9 18))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::send"))) (kind sendTarget) (ordinal 0) (authored-target "target")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target")))))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 15 36) (end 15 40)) (probe (position 15 36))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionSource) (ordinal 0) (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle")))))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 15 46) (end 15 53)) (probe (position 15 46))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::Transition"))) (kind transitionTarget) (ordinal 0) (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running")))))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 3 31) (end 3 37)) (probe (position 3 31))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0) (authored-target "Marker")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))))
+    )
+  )
+)
+~~~

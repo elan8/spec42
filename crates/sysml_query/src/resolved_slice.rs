@@ -3,30 +3,42 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AffectedDocument, AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue,
-    BuildMeasurements, Conformance, ConformanceObstacle, ConnectedElement, Diagnostic,
-    DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment,
-    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind,
-    DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
-    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
-    DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramStateTransition,
-    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
-    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
-    Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
-    ElementDetails, ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
-    EvaluatedScalar, EvaluationFailure, EvaluationState, ExpectedMeasurement, FeatureDirection,
-    InheritedFeature, MembershipFacts, MembershipKind, MembershipRole, MultiplicityBound,
-    MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind, PublicationCompleteness,
-    PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
-    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, ReferenceAt,
-    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
+    ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation, AnnotationForm,
+    AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
+    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, BuildMeasurements,
+    Conformance, ConformanceObstacle, ConnectedElement, DefinitionUsageDerivedKind,
+    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
+    Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
+    DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
+    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
+    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
+    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection, Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin,
+    EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt,
+    ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind, ElementModifier,
+    ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection,
+    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind,
+    MembershipRole, MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, RedefinitionCheckKind,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
+    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
+    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
     RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
-    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
-    UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement, Visibility,
-    VisibilityProvenance, VisibleMember,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
+    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
+    TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
+    TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
+    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -394,6 +406,48 @@ impl TypeQueries<'_> {
         self.model.effective_types(symbol)
     }
 
+    /// The canonical standard-library target used to satisfy
+    /// `checkPartDefinitionSpecialization`.
+    ///
+    /// Missing and ambiguous anchors stay explicit query outcomes; this facade never substitutes
+    /// a name from a rendered model or from fixture metadata.
+    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+        self.model.part_definition_specialization_anchor()
+    }
+
+    /// The typed canonical anchor outcome for one generated `specializesFromLibrary` rule.
+    ///
+    /// The rule ID identifies an authoritative manifest entry. An absent or unresolved anchor is
+    /// `Unresolved`; competing standard-library declarations remain `Ambiguous` candidates.
+    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+        self.model.library_specialization_anchor(rule_id)
+    }
+
+    /// The typed canonical branch outcome for an exact conditional specialization rule.
+    /// `Default` retains the compatible single-anchor projection.
+    pub fn library_specialization_anchor_branch(
+        &self,
+        rule_id: &str,
+        branch: LibrarySpecializationAnchorBranch,
+    ) -> QueryOutcome<SymbolIdentity> {
+        self.model
+            .library_specialization_anchor_branch(rule_id, branch)
+    }
+
+    /// The typed canonical anchor outcome for any generated exact library rule, including
+    /// `specializesFromLibrary` and `redefinesFromLibrary` contracts.
+    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+        self.model.library_rule_anchor(rule_id)
+    }
+
+    /// Whether a generated `redefinesFromLibrary` rule has an exact lowered source projection.
+    ///
+    /// This preserves the distinction between an unresolved library anchor and a rule source the
+    /// current semantic model does not yet represent.
+    pub fn library_redefinition_applicability(&self, rule_id: &str) -> QueryOutcome<()> {
+        self.model.library_redefinition_applicability(rule_id)
+    }
+
     /// The supertypes one specialization edge away.
     pub fn direct_supertypes(
         &self,
@@ -424,6 +478,11 @@ impl TypeQueries<'_> {
     /// The type that features `symbol`, if any.
     pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
         self.model.featuring_type(symbol)
+    }
+
+    /// Every effective TypeFeaturing target, retaining authored versus implied provenance.
+    pub fn featuring_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.featuring_types(symbol)
     }
 
     /// Whether `specific` conforms to `general` (KerML §8.4.3.2).
@@ -557,6 +616,26 @@ impl InspectionQueries<'_> {
         self.model.inspect(symbol)
     }
 
+    /// The exact derived `Element::owner` fact, from the publication's canonical ownership
+    /// structure. A root element resolves to [`DerivedElementOwner::NoOwner`]; it is not an
+    /// unresolved query.
+    pub fn derived_element_owner(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<DerivedElementOwner> {
+        self.model.derived_element_owner(symbol)
+    }
+
+    /// One exact derived `Element` documentation collection, selected by the pinned manifest
+    /// contract and projected from canonical documentation facts.
+    pub fn element_derived_documentation(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: ElementDerivedDocumentationCollection,
+    ) -> QueryOutcome<Box<[Documentation]>> {
+        self.model.element_derived_documentation(symbol, collection)
+    }
+
     /// The element whose declaration encloses `position`, and what a reference there points at.
     pub fn inspect_at(
         &self,
@@ -600,6 +679,128 @@ impl InspectionQueries<'_> {
     /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
     pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
         self.model.satisfy_relationships()
+    }
+
+    /// One exact Feature relationship collection from the canonical relationship store.
+    pub fn feature_derived_relationships(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: FeatureDerivedRelationshipCollection,
+    ) -> QueryOutcome<Box<[ElementRelationship]>> {
+        self.model.feature_derived_relationships(symbol, collection)
+    }
+
+    /// One exact Type relationship collection or operand projection from canonical facts.
+    pub fn type_derived_relationships(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedRelationshipCollection,
+    ) -> QueryOutcome<Box<[ElementRelationship]>> {
+        self.model.type_derived_relationships(symbol, collection)
+    }
+
+    /// One exact Type element-valued derivation from canonical ownership and membership facts.
+    pub fn type_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedElementCollection,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.type_derived_elements(symbol, collection)
+    }
+
+    /// One exact Type derivation that retains an explicit typed unavailable-fact outcome until
+    /// its canonical semantic owner can publish the normative values.
+    pub fn type_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: TypeDerivedFactCollection,
+    ) -> QueryOutcome<TypeDerivedFactOutcome> {
+        self.model.type_derived_fact(symbol, collection)
+    }
+
+    /// One exact manifest-selected Systems::DefinitionAndUsage derivation from the canonical
+    /// semantic publication. The façade does not reconstruct direct or inherited membership.
+    pub fn definition_usage_derived(
+        &self,
+        symbol: &SymbolIdentity,
+        kind: DefinitionUsageDerivedKind,
+    ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
+        self.model.definition_usage_derived(symbol, kind)
+    }
+
+    pub fn action_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: ActionDerivedFactCollection,
+    ) -> QueryOutcome<ActionDerivedFactOutcome> {
+        self.model.action_derived_fact(symbol, collection)
+    }
+
+    /// One exact manifest-selected Systems::Requirements property. Membership roles and
+    /// documentation records remain owned by the resolved semantic publication.
+    pub fn requirement_derived_fact(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: RequirementDerivedFactCollection,
+    ) -> QueryOutcome<RequirementDerivedFactOutcome> {
+        self.model.requirement_derived_fact(symbol, collection)
+    }
+
+    /// The manifest-scoped outcome for one exact TypeFeaturing check.
+    pub fn type_featuring_check(
+        &self,
+        symbol: &SymbolIdentity,
+        rule: TypeFeaturingCheckKind,
+    ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
+        self.model.type_featuring_check(symbol, rule)
+    }
+
+    /// The manifest-scoped result for an exact redefinition check.
+    pub fn redefinition_check(
+        &self,
+        rule: RedefinitionCheckKind,
+    ) -> QueryOutcome<RedefinitionCheckOutcome> {
+        self.model.redefinition_check(rule)
+    }
+
+    /// The manifest-scoped result for one exact specialization predicate.
+    pub fn specialization_check(
+        &self,
+        rule: SpecializationCheckKind,
+    ) -> QueryOutcome<SpecializationCheckOutcome> {
+        self.model.specialization_check(rule)
+    }
+
+    /// One exact Namespace element-valued derivation from canonical declaration and membership
+    /// facts. This facade does not recreate Namespace membership from syntax or scope labels.
+    pub fn namespace_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+        collection: NamespaceDerivedElementCollection,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.namespace_derived_elements(symbol, collection)
+    }
+
+    /// Exact `NamespaceImport::importedElement` facts for imports owned by one Namespace. The
+    /// opaque facade preserves each import's canonical identity and typed target outcome.
+    pub fn namespace_import_derived_elements(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
+        self.model.namespace_import_derived_elements(symbol)
+    }
+
+    /// Workspace-authored binding connectors, including both paired endpoint outcomes.
+    pub fn binding_connectors(&self) -> QueryOutcome<Box<[BindingConnector]>> {
+        self.model.binding_connectors()
+    }
+
+    /// The applicability outcome for one closed binding-connector validation rule.
+    pub fn binding_connector_validation(
+        &self,
+        rule: BindingConnectorCheckKind,
+    ) -> QueryOutcome<BindingConnectorValidationOutcome> {
+        self.model.binding_connector_validation(rule)
     }
 
     pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
@@ -1367,7 +1568,8 @@ pub struct RawStorageIsNotPublic;
 #[cfg(test)]
 mod tests {
     use super::{
-        build, build_measured, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument,
+        build, build_measured, BuildRequest, ConstructionStrategy,
+        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceDocument,
         SourceKind,
     };
 
@@ -1406,5 +1608,254 @@ mod tests {
             .write_semantic_sexpr(&mut measured_output)
             .unwrap();
         assert_eq!(ordinary_output, measured_output);
+    }
+
+    #[test]
+    fn type_facade_exposes_generated_library_anchor_outcomes() {
+        const ITEM_RULE: &str = "sysml-2.0:8.3.10.2:checkItemDefinitionSpecialization";
+        let publication = build(
+            BuildRequest::resolved(
+                vec![
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "items.sysml",
+                        "standard library package Items { item def Item; }".into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "workspace",
+                        "model.sysml",
+                        "package Model { item def Component; }".into(),
+                        SourceKind::Workspace,
+                    )
+                    .unwrap(),
+                ],
+                ConstructionStrategy::Sequential,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        assert!(matches!(
+            publication.types().library_specialization_anchor(ITEM_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("Items")
+        ));
+        assert!(matches!(
+            publication
+                .types()
+                .library_specialization_anchor("not-a-generated-rule"),
+            QueryOutcome::Unresolved
+        ));
+    }
+
+    #[test]
+    fn type_facade_exposes_typed_conditional_anchor_branches() {
+        const POLARITY_RULE: &str =
+            "sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization";
+        const MEMBERSHIP_RULE: &str =
+            "sysml-2.0:8.3.20.4:checkConstraintUsageRequirementConstraintSpecialization";
+        const IF_ACTION_RULE: &str = "sysml-2.0:8.3.17.10:checkIfActionUsageSpecialization";
+        const FLOW_BINARY_RULE: &str = "sysml-2.0:8.3.16.2:checkFlowDefinitionBinarySpecialization";
+        const FLOW_USAGE_RULE: &str = "sysml-2.0:8.3.16.3:checkFlowUsageFlowSpecialization";
+        const FLOW_WITH_ENDS_RULE: &str = "kerml-1.0:8.3.4.9.2:checkFlowWithEndsSpecialization";
+        const FEATURE_DATA_VALUE_RULE: &str =
+            "kerml-1.0:8.3.3.3.4:checkFeatureDataValueSpecialization";
+        const FEATURE_END_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureEndSpecialization";
+        let publication = build(
+            BuildRequest::resolved(
+                vec![
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "requirements.sysml",
+                        "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; package RequirementCheck { constraint def assumptions; constraint def constraints; } }".into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "actions.sysml",
+                        "standard library package Actions { action ifThenActions; action ifThenElseActions; }".into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "flows.sysml",
+                        "standard library package Flows { flow def Message; flow def flows; } standard library package Transfers { flow def flowTransfers; }".into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "feature-anchors.sysml",
+                        "standard library package Base { feature dataValues; } standard library package Links { class Link { feature participant; } }".into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "workspace",
+                        "model.sysml",
+                        "package Model {}".into(),
+                        SourceKind::Workspace,
+                    )
+                    .unwrap(),
+                ],
+                ConstructionStrategy::Sequential,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        assert!(matches!(
+            publication.types().library_specialization_anchor(POLARITY_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("satisfiedRequirementChecks")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor_branch(
+                POLARITY_RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("notSatisfiedRequirementChecks")
+        ));
+        assert!(matches!(
+            publication
+                .types()
+                .library_specialization_anchor(MEMBERSHIP_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("constraints")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor_branch(
+                MEMBERSHIP_RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("assumptions")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor(IF_ACTION_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenActions")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor_branch(
+                IF_ACTION_RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            ),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenElseActions")
+        ));
+        let flow_binary_anchor = publication
+            .types()
+            .library_specialization_anchor(FLOW_BINARY_RULE);
+        assert!(
+            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if anchor.as_str().contains("Message")),
+            "expected the flow-definition anchor, got {flow_binary_anchor:?}"
+        );
+        assert!(matches!(
+            publication.types().library_specialization_anchor(FLOW_USAGE_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flows")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor(FLOW_WITH_ENDS_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flowTransfers")
+        ));
+        assert!(matches!(
+            publication
+                .types()
+                .library_specialization_anchor(FEATURE_DATA_VALUE_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("dataValues")
+        ));
+        assert!(matches!(
+            publication.types().library_specialization_anchor(FEATURE_END_RULE),
+            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("participant")
+        ));
+    }
+
+    #[test]
+    fn type_facade_distinguishes_redefinition_anchor_from_unsupported_source_projection() {
+        const PAYLOAD_RULE: &str = "kerml-1.0:8.3.4.9.5:checkPayloadFeatureRedefinition";
+        let publication = build(
+            BuildRequest::resolved(
+                vec![
+                    SourceDocument::from_memory_path(
+                        "library",
+                        "transfers.sysml",
+                        "standard library package Transfers { part def Transfer { attribute payload; } }"
+                            .into(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .unwrap(),
+                    SourceDocument::from_memory_path(
+                        "workspace",
+                        "model.sysml",
+                        "package Model {}".into(),
+                        SourceKind::Workspace,
+                    )
+                    .unwrap(),
+                ],
+                ConstructionStrategy::Sequential,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        let anchor_outcome = publication.types().library_rule_anchor(PAYLOAD_RULE);
+        assert!(
+            matches!(
+                anchor_outcome,
+                QueryOutcome::Resolved(ref anchor)
+                    if anchor.as_str().contains("Transfers")
+                        && anchor.as_str().contains("Transfer")
+                        && anchor.as_str().contains("payload")
+            ),
+            "{anchor_outcome:?}"
+        );
+        assert!(matches!(
+            publication
+                .types()
+                .library_redefinition_applicability(PAYLOAD_RULE),
+            QueryOutcome::Unsupported
+        ));
+        assert!(matches!(
+            publication
+                .types()
+                .library_redefinition_applicability("not-a-generated-rule"),
+            QueryOutcome::Unresolved
+        ));
+    }
+
+    #[test]
+    fn type_facade_exposes_canonical_type_featuring_provenance() {
+        let publication = build(
+            BuildRequest::resolved(
+                vec![SourceDocument::from_memory_path(
+                    "workspace",
+                    "model.sysml",
+                    "package Model { part def Vehicle { attribute mass; } }".into(),
+                    SourceKind::Workspace,
+                )
+                .unwrap()],
+                ConstructionStrategy::Sequential,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let symbols = match publication
+            .inspection()
+            .document_symbols("memory://workspace/model.sysml")
+        {
+            QueryOutcome::Resolved(symbols) => symbols,
+            outcome => panic!("unexpected document-symbol outcome: {outcome:?}"),
+        };
+        let mass = symbols
+            .iter()
+            .find(|symbol| symbol.qualified_name.as_ref() == "Model::Vehicle::mass")
+            .expect("mass declaration")
+            .identity
+            .clone();
+        assert!(matches!(
+            publication.types().featuring_types(&mass),
+            QueryOutcome::Resolved(values)
+                if values.len() == 1
+                    && values[0].provenance == sysml_resolution::RelationshipProvenance::Implied
+        ));
     }
 }

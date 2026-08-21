@@ -4,6 +4,10 @@ description=KerML 8.3.4.8.4 validateFeatureChainExpressionOperator requires the 
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.4 validateFeatureChainExpressionOperator
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.8.4:validateFeatureChainExpressionOperator
 type=file
 ~~~
 # SOURCE
@@ -68,6 +72,9 @@ package Expressions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::outer"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::reached"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing::inner"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::reached"))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing::inner"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::reached"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_feature_chain_expression_operator.md") (qualified-name "Expressions::Holder::reached"))) (state unsupported))

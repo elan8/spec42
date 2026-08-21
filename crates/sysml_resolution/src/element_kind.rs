@@ -88,6 +88,8 @@ element_kinds! {
     FlowConnectionUsage,
     ActionDefinition,
     ActionUsage,
+    /// An `ActionUsage` carrying the `accept` action form.
+    AcceptActionUsage,
     StateDefinition,
     StateUsage,
     CalculationDefinition,
@@ -253,6 +255,9 @@ pub enum MembershipRole {
     FramedConcern,
     /// `RequirementVerificationMembership` -- a requirement verified by a case.
     RequirementVerification,
+    /// `TransitionFeatureMembership` with `kind = trigger` -- the accept action that triggers a
+    /// transition.
+    TransitionTriggerAction,
     /// `VariantMembership` -- an enumeration literal, or a variant of a variation.
     Variant,
     /// `ParameterMembership` -- a directed parameter, a return, or a bound argument.
@@ -275,6 +280,7 @@ impl MembershipRole {
             Self::Actor => "actor",
             Self::FramedConcern => "framed-concern",
             Self::RequirementVerification => "requirement-verification",
+            Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",
             Self::EndFeature => "end-feature",
@@ -340,6 +346,7 @@ mod tests {
             MembershipRole::Actor,
             MembershipRole::FramedConcern,
             MembershipRole::RequirementVerification,
+            MembershipRole::TransitionTriggerAction,
             MembershipRole::Variant,
             MembershipRole::Parameter,
             MembershipRole::EndFeature,

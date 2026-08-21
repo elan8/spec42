@@ -4,9 +4,13 @@ description=KerML 8.3.4.4.2 validateAssociationBinarySpecialization forbids an A
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.4.2 validateAssociationBinarySpecialization
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.4.2:validateAssociationBinarySpecialization
+blocked_by=semantic-binary-association-end-count
 type=file
 libraries=standard
-skip_validation=no semantic rule compares an association's end count against a Links::BinaryLink specialization; the canonical code binary_association_end_count does not exist yet
 ~~~
 # SOURCE
 ~~~kerml
@@ -94,10 +98,25 @@ package Associations {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::middle"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::middle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::source"))) (target (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::source"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::middle"))) (target (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::middle"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::middle"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (target (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (target (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
   )
   (evaluation
   )
@@ -119,9 +138,10 @@ package Associations {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any subclassification feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary::target")))
       (featured-by (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary")))
@@ -131,9 +151,10 @@ package Associations {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any subclassification feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -145,6 +166,8 @@ package Associations {
       (type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::source")))
       (featured-by (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary")))
@@ -154,9 +177,10 @@ package Associations {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any subclassification feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary::target")))
       (featured-by (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Ternary")))
@@ -166,9 +190,10 @@ package Associations {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any subclassification feature))
     )
 )
 ~~~

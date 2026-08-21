@@ -57,11 +57,23 @@ rerun against the exact replacement revision when fixed.
 | --- | --- | --- |
 | 61 | Calc-shaped bodies silently shred `flow`, `message` and anonymous `redefines` members into bare expressions | Give each a typed member variant in the calc-shaped body grammar; prove `flow a.y to b.x1;`, `message m of T;` and `redefines predecessors [0];` produce one node each, and that no keyword reaches the AST as a feature reference |
 | 62 | KerML `flow` declarations: no production at all, so `Flow`/`FlowEnd` are unreachable | Add a KerML flow member node and production; prove `flow of T from a to b;` produces one Flow with two FlowEnds and no unresolved-reference cascade |
+| 59 | Directed end Features cannot be represented, so `in end feature` is recovered before the end-direction validation can observe it | Accept direction modifiers in the end-feature production and preserve their spans; prove an `in end feature` reaches the AST as one directed end Feature |
 | 64 | Conjugation *declarations* (`conjugates`/`ConjugationPart`), as opposed to the `~T` typing flag | Add a `Conjugation` relationship node and a type-declaration `ConjugationPart`; prove `classifier C conjugates A;` produces one conjugation, and two produce two |
 | 65 | The `parallel` body modifier on a `state def` | Accept the modifier on the state-def body as `StateDefBody` specifies; prove `state def S parallel { ... }` parses and records isParallel |
 | 66 | A second `crosses`/`references` clause on one feature, currently discarded silently | Model each clause as a list, or diagnose the second occurrence; prove `feature f crosses a crosses b;` is either represented or reported, never dropped |
 | 67 | Restriction modifiers alongside `end` (`derived`/`abstract`/`composite`/`portion`/`var`) | Accept each prefix with `end` in the spelled order; prove all parse and lower, restoring the `end_feature_invalid_restrictions` coverage this revision made unreachable |
 | 68 | Debug-build stack exhaustion parsing a small nested action body | Split the `action_usage_body_element` alternative set so no single combinator frame is this large; prove the nested `for`/`perform action` probe parses on a 2 MiB thread stack in a debug build |
+| 69 | Connector and binding-connector declarations cannot carry their end-feature bodies | Add typed end-feature-body productions for connector and binding-connector declarations; prove three-ended declarations reach one connector plus all three ends |
+| 70 | Named members in a metadata-feature body are rejected before lowering | Add a typed metadata-feature body-member variant; prove a named feature member reaches the AST with its declaration and span |
+| 72 | `perform <action usage>` is recovered rather than represented as a perform action-usage reference | Preserve the action-usage reference as a typed perform member; prove conforming and non-action targets are distinguishable without recovery |
+| 73 | `include use case` membership has no production | Add a typed include-use-case membership node; prove its target and source span reach the AST |
+| 74 | `require constraint` membership has no production | Add a typed require-constraint membership node; prove it reaches the AST in a requirement definition with its target |
+| 75 | A part usage in a port definition or port usage body has no production | Add a typed part-usage body-member variant for port bodies; prove the member reaches the AST with its composite modifier |
+| 76 | Valid action-body forms used by accept, assignment, conditional, and trigger invocations are recovered instead of represented | Add typed action-body alternatives for those forms and their arguments; prove each accepted spelling reaches one member with its operands and spans |
+| 77 | Valid transition feature/effect and trigger-action members are recovered in state and transition bodies | Add typed transition-body member variants; prove the effect, trigger action, and transition trigger forms reach the AST without recovery |
+| 78 | Valid variation definition and usage forms are recovered at package and part-definition body boundaries | Add typed variation declaration and body-member alternatives; prove variation modifiers, specializations, and owned feature members are preserved |
+| 79 | Valid expose, requirement-verification, and view-rendering membership forms are rejected in otherwise valid owners | Admit these member forms independently of the owner validation rule; prove their typed owners and spans reach the AST so semantics can report an invalid owner |
+| 80 | State usage `parallel`/`initial` body modifier is accepted then discarded | Preserve the modifier as a typed `StateUsage` fact with its span; prove `state S parallel { ... }`, `state S initial { ... }`, and unmodified `state S { ... }` remain distinguishable to lowering |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 52 | `readonly` and `variable` modifiers | Preserve presence and token spans independently from effective/default values |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
@@ -143,6 +155,13 @@ workflow.
   reason while its usage sibling is skipped only for the missing semantic rule. Needs the same
   optional modifier on the state-def body production, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 80. The state-usage parser recognizes `parallel` and `initial` immediately before the body
+  (`src/parser/state.rs:484-491` at pinned `49bdf3f`), but binds the result to `_` and constructs
+  `ast::StateUsage` without either value or span. `StateUsage::isSubstateUsage(true/false)` is the
+  prerequisite of both library-specialization checks, so semantic lowering cannot distinguish
+  `state S parallel { state child; }` from the non-parallel form without forbidden source-text
+  recovery. Preserve a typed modifier/parallel fact and prove it reaches the owning lowering.
 
 - Gap 66. `KermlFeature.crosses` and `.references` (`src/ast/kerml_fallback.rs`) are each a single
   `Option<Node<SubsettingRelationship>>`, so a feature carrying two such clauses cannot be

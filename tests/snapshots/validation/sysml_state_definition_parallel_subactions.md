@@ -4,8 +4,12 @@ description=SysML 8.3.18.5 validateStateDefinitionParallelSubactions forbids the
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.5 validateStateDefinitionParallelSubactions
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=sysml-2.0:8.3.18.5:validateStateDefinitionParallelSubactions
+blocked_by=parser-gap-65-state-definition-parallel
 type=file
-skip_validation=the pinned parser accepts the `parallel` body modifier on a state usage (src/parser/state.rs) but not on a state def, so `state def Good parallel { ... }` -- valid per the StateDefBody production -- fails with missing_body_or_semicolon
 ~~~
 # SOURCE
 ~~~sysml

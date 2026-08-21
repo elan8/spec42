@@ -4,8 +4,12 @@ description=KerML 8.3.4.9.2 validateFlowPayloadFeature allows a Flow at most one
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.9.2 validateFlowPayloadFeature
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.4.9.2:validateFlowPayloadFeature
+blocked_by=parser-gap-62-kerml-flow
 type=file
-skip_validation=the pinned parser has no KerML flow production -- `flow of Thing from a to b;` resolves none of its tokens and is reported as a cascade of unresolved_reference -- so no Flow or FlowEnd reaches semantics
 ~~~
 # SOURCE
 ~~~kerml
@@ -81,6 +85,8 @@ package Flows {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
   )
   (evaluation
   )

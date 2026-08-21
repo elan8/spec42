@@ -55,6 +55,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Flow => ElementKind::FlowConnectionUsage,
         DeclarationKind::ActionDefinition => ElementKind::ActionDefinition,
         DeclarationKind::ActionUsage => ElementKind::ActionUsage,
+        DeclarationKind::AcceptActionUsage => ElementKind::AcceptActionUsage,
         // Identical element type; the entry/do/exit slot is a membership role.
         DeclarationKind::EntryActionBinding
         | DeclarationKind::DoActionBinding
@@ -227,6 +228,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Flow
         | DeclarationKind::ActionDefinition
         | DeclarationKind::ActionUsage
+        | DeclarationKind::AcceptActionUsage
         | DeclarationKind::StateDefinition
         | DeclarationKind::StateUsage
         | DeclarationKind::CalcDefinition
@@ -302,6 +304,20 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
     }
 }
 
+/// The fact-sensitive role projection for the few memberships whose OMG kind is not fixed by the
+/// element metaclass alone. The trigger bit is constructed at the transition lowering boundary;
+/// this query projection never re-inspects parser syntax or owner names.
+pub(crate) fn membership_role_with_trigger(
+    kind: DeclarationKind,
+    is_trigger_action: Option<bool>,
+) -> Option<MembershipRole> {
+    if kind == DeclarationKind::AcceptActionUsage && is_trigger_action == Some(true) {
+        Some(MembershipRole::TransitionTriggerAction)
+    } else {
+        membership_role(kind)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -333,6 +349,7 @@ mod tests {
         DeclarationKind::ItemUsage,
         DeclarationKind::ActionDefinition,
         DeclarationKind::ActionUsage,
+        DeclarationKind::AcceptActionUsage,
         DeclarationKind::Succession,
         DeclarationKind::StateDefinition,
         DeclarationKind::StateUsage,

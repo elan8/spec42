@@ -4,6 +4,10 @@ description=KerML 8.3.3.3.10 validateSubsettingUniquenessConformance requires th
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.10 validateSubsettingUniquenessConformance
+source_expectation=accepted
+rule_family=validate
+expectation=diagnostics
+rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingUniquenessConformance
 type=file
 ~~~
 # SOURCE
@@ -98,6 +102,9 @@ package Subsettings {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::distinct"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::distinct"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::base"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::distinct"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated"))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder"))) (provenance implied))
   )
   (evaluation
   )
