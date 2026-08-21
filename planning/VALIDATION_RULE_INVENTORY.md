@@ -8,7 +8,8 @@ fixture lands.
 Sources of the inventory below are the normative constraint listings of the abstract-syntax
 clauses:
 
-- OMG KerML 1.0 (formal/26-03-01), <https://www.omg.org/spec/KerML/1.0/PDF> -- 88 constraints.
+- OMG KerML 1.0 (formal/26-03-01), <https://www.omg.org/spec/KerML/1.0/PDF> -- 88 constraints,
+  all covered.
 - OMG SysML 2.0 Language (formal/26-03-02), <https://www.omg.org/spec/SysML/2.0/Language/PDF> --
   92 constraints.
 
@@ -24,9 +25,6 @@ stable inventory identity, qualified by its clause number.
   question is open for the annotation clauses generally.
 
 ## Remaining rules
-
-### KerML 1.0 (formal/26-03-01)
-
 
 
 
