@@ -64,22 +64,9 @@ stable inventory identity, qualified by its clause number.
 ### SysML 2.0 Language (formal/26-03-02)
 
 
-- 8.3.6.2 Definition
-  - `validateDefinitionVariationIsAbstract`
-  - `validateDefinitionVariationOwnedFeatureMembership`
-  - `validateDefinitionVariationSpecialization`
 
-- 8.3.6.3 ReferenceUsage
-  - `validateReferenceUsageIsReference`
 
-- 8.3.6.4 Usage
-  - `validateUsageIsReferential`
-  - `validateUsageVariationIsAbstract`
-  - `validateUsageVariationOwnedFeatureMembership`
-  - `validateUsageVariationSpecialization`
 
-- 8.3.6.5 VariantMembership
-  - `validateVariantMembershipOwningNamespace`
 
 - 8.3.7.2 AttributeDefinition
   - `validateAttributeDefinitionFeatures`
