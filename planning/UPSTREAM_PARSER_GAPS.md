@@ -226,10 +226,6 @@ disappearing with the gap entries they closed. Each was re-checked against the o
   `tests/snapshots/sysml.library/occurrences.md:736`'s `subclassifier SelfLink specializes
   SelfSameLifeLink;` is the fixture's one `unsupported_package_member`.
 
-- **`ViewpointUsage.subsets`/`redefines`** and **`SubjectDecl.redefines`**, both new specialization
-  clauses their lowerings do not read; `SubjectDecl.value` is now a `FeatureValue`, so a subject's
-  authored value spelling can be recorded through `record_feature_value` like every other one.
-
 - **`EntryAction`/`DoAction`/`ExitAction` declaration facts.** `declared_name`, `type_name`,
   `redefines`, and `effect` are typed; `lower_state_entry_action` and its siblings still read only
   `action_reference` and `body`, so `entry action entryAction :>> 'entry';` lowers as the reference
@@ -246,38 +242,6 @@ disappearing with the gap entries they closed. Each was re-checked against the o
   carries an arena-backed target; `lower_require_constraint_member` still defers the whole
   `has_constraint_keyword == false` form.
 
-- **`KermlFeature.crosses`.** The one usage family whose `crosses` clause is dropped:
-  `lower_attribute_usage`, `lower_port_usage` and `lower_occurrence_usage` all push it through
-  `lower_subsetting_relationship`, `lower_kerml_feature_member` does not. Its former companion
-  `is_const` is now the `const` alternative of `FeaturePrefix`'s variability slot and *is* lowered,
-  onto `DeclarationModifiers::constant`.
-
-- **The multiplicity and short-name fields the old Gap 53 asked for.** `AttributeDef`,
-  `ConstraintUsage`, `RequirementUsage`, `CalcUsage` and `RequirementActorDecl` all carry
-  `multiplicity` now, and `ActionUsage`, `OccurrenceUsage`, `ConstraintUsage`, `RefDecl`,
-  `EndDecl`, `ReturnDecl` and `ViewUsage` all carry `short_name`. None of the owning lowerings
-  reads either: `lower_attribute_def`, `lower_constraint_usage`, `lower_requirement_usage`,
-  `lower_calc_usage` and `lower_requirement_actor_decl` make no `multiplicity_facts` call, and
-  `lower_action_usage`, `lower_occurrence_usage`, `lower_constraint_usage`, `lower_ref_decl`,
-  `lower_return_decl` and `lower_view_usage` intern no short name. The uniqueness half *is* read:
-  every declaration that spells `MultiplicityPart` carries `multiplicity_modifiers`, and
-  `sysml_resolution` reads it everywhere it read `ordered`/`nonunique` before.
-
-- **`definition_prefix` on the connection-like definitions.** `ConnectionDef`, `FlowDef`,
-  `AllocationDef` and `InterfaceDef` gained the `Option<Node<DefinitionPrefix>>` slot the old Gap 58
-  asked for, so an authored `abstract connection def C { ... }` is now representable with its exact
-  token span. None of `lower_connection_def`, `lower_flow_def`, `lower_allocation_def` or
-  `lower_interface_def` mentions the field, so no modifier fact is published, which is why
-  `tests/snapshots/resolution/structural_feature_conformance.md` still reports an abstract
-  declaration for an incomplete end set.
-
-- **`EnumeratedValue.short_name`, `value` and `body`.** Closing the enumeration half of the old
-  Gap 56 gave each literal its short name, its `= expr` initializer as a `FeatureValue`, and a full
-  `PartUsageBody`. `lower_enumerated_value` reads none of them. The `enum def`'s own body
-  annotations *are* lowered: `EnumerationBodyElement::Annotating` dispatches to
-  `lower_annotating_member`, and `tests/snapshots/documentation_in_bodies.md`'s `enum def Color`
-  now publishes its doc comment.
-
 - **`CommentAnnotation.keyword_span`.** Whether a comment member was written with the `comment`
   keyword is now a grammatical fact with its own span (see Gap 55). `sysml_tokens` reads it for
   semantic ranges; `sysml_resolution` does not record it, so the two spellings publish identically.
@@ -285,8 +249,3 @@ disappearing with the gap entries they closed. Each was re-checked against the o
 - **`CollectionOperatorBody.doc`.** A collection operator body's `doc /* ... */` annotation is
   typed upstream, but the whole collection-operator expression family is still unlowered here
   (`lower_expression` has no arm for it), so there is no declaration to attach the fact to yet.
-
-- **`ItemUsage.subsets`.** `lower_item_usage` lowers `redefines` but not the `:>` clause, so an
-  authored `item items : Item[0..*] nonunique :> objects;` publishes its typing and drops its
-  subsetting. Still true at `ec47463`; the one-line fix is the same `lower_subsetting_relationship`
-  call every sibling usage already makes.
