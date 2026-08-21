@@ -5358,14 +5358,20 @@ impl SemanticModelBuilder {
             DeclarationKind::EnumerationLiteral,
             name,
             node.span.clone(),
-            // `ast::EnumeratedValue` also gained a `FeatureValue` initializer and a full
-            // `PartUsageBody` when the enumeration body was widened upstream; reading those is
-            // the separate lowering step planning/UPSTREAM_PARSER_GAPS.md tracks.
+            // `ast::EnumeratedValue` also gained a full `PartUsageBody` when the enumeration
+            // body was widened upstream; walking it is the separate lowering step
+            // planning/UPSTREAM_PARSER_GAPS.md tracks.
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
             },
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         self.push_membership(
             declaration,
             MembershipKind::Feature,
@@ -6448,6 +6454,12 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
         }
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
@@ -14600,6 +14612,42 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// The authored value spelling on a requirement subject and an enumeration literal.
+    ///
+    /// `SubjectDecl.value` became a `FeatureValue` and `EnumeratedValue` gained one, so both can
+    /// record `=`/`:=`/`default` through the same `record_feature_value` every sibling usage
+    /// already calls. Only the spelling is recorded here; the value expression is not lowered,
+    /// matching `lower_item_usage`'s scope boundary.
+    #[test]
+    fn subjects_and_enumeration_literals_record_their_authored_value() {
+        let subject = build_semantic_sexpr(
+            "package Demo {\n\tpart def Vehicle;\n\tpart v : Vehicle;\n\trequirement def R {\n\t\tsubject s = v;\n\t}\n}\n",
+        );
+        let line = subject
+            .lines()
+            .find(|line| {
+                line.contains("(qualified-name \"Demo::R::s\")") && line.contains("(declaration ")
+            })
+            .unwrap_or_else(|| panic!("no subject declaration, got:\n{subject}"));
+        assert!(
+            line.contains("(feature-value (kind bind)"),
+            "expected the subject to record its `=` spelling, got:\n{line}"
+        );
+
+        let literal =
+            build_semantic_sexpr("package Demo {\n\tenum def E {\n\t\tenum red = 1;\n\t}\n}\n");
+        let line = literal
+            .lines()
+            .find(|line| {
+                line.contains("(qualified-name \"Demo::E::red\")") && line.contains("(declaration ")
+            })
+            .unwrap_or_else(|| panic!("no enum literal declaration, got:\n{literal}"));
+        assert!(
+            line.contains("(feature-value (kind bind)"),
+            "expected the enumeration literal to record its `=` spelling, got:\n{line}"
+        );
     }
 
     fn build_diagnostics_sexpr(source: &str) -> String {
