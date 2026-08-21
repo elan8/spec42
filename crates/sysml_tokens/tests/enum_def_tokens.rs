@@ -1,5 +1,5 @@
+use sysml_resolution::syntax::parse_for_editor;
 use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_PROPERTY};
-use sysml_v2_parser::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -54,7 +54,7 @@ fn multiline_enum_def_narrows_class_token_to_name_only() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -86,7 +86,7 @@ fn multiline_enum_def_members_get_their_own_token() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -120,7 +120,7 @@ fn keyword_lookalike_identifiers_are_classified_as_properties() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -137,7 +137,7 @@ fn keyword_lookalike_identifiers_are_classified_as_properties() {
 fn single_line_enum_def_still_narrows_correctly() {
     let content = "package P {\n  enum def Status { pending; released; }\n}";
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 

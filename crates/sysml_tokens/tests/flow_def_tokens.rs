@@ -1,5 +1,5 @@
-﻿use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full};
-use sysml_v2_parser::parse_for_editor;
+use sysml_resolution::syntax::parse_for_editor;
+use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full};
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -42,7 +42,7 @@ fn flow_def_body_tokenizes_inner_attribute_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
@@ -60,7 +60,7 @@ fn flow_def_body_tokenizes_nested_part_usage_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let ranges = ast_semantic_ranges(&parsed.document, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "wheel"));

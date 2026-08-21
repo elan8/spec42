@@ -311,6 +311,12 @@ package AnalysisIndividualExample {
         (range (start 79 3) (end 84 4))
       )
       (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 79 3) (end 84 4))
+      )
+      (diagnostic
         (severity error)
         (code "redefinition_type_incompatible")
         (source "semantic")
@@ -327,12 +333,6 @@ package AnalysisIndividualExample {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 86 17) (end 86 21))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 87 5) (end 88 4))
       )
     )
   )

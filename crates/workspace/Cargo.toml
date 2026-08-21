@@ -38,7 +38,7 @@ dirs = "5"
 url = "2"
 walkdir = "2"
 ignore = "0.4"
-sysml-v2-parser = { workspace = true }
+sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tracing = "0.1"
 postcard = { workspace = true }

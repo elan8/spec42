@@ -21,12 +21,6 @@ package Conjugation {
   (document "memory://snapshot/conjugation.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 2 2) (end 3 1))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
@@ -61,6 +55,7 @@ package Conjugation {
   (declarations
     (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
   )
   (references
   )
@@ -73,6 +68,9 @@ package Conjugation {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A::f")))
+      (featured-by (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A")))
+    )
 )
 ~~~
 # NAVIGATION

@@ -21,13 +21,7 @@ package ion {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 2 4) (end 3 2))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "recovered_calc_body_element")
         (source "parser")
         (range (start 5 12) (end 6 2))
       )
@@ -43,6 +37,7 @@ package ion {
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A"))))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A") (occurrence 1))))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion::A::f"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
   )
   (references
   )
@@ -55,6 +50,9 @@ package ion {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion::A::f")))
+      (featured-by (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A")))))
+    )
 )
 ~~~
 # NAVIGATION

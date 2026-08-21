@@ -1,5 +1,5 @@
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
-use sysml_v2_parser::{parse, RootNamespace};
+use sysml_resolution::syntax::parse_strict as parse;
 
 fn multiline_outline_regions(symbols: &[OutlineSymbol]) -> Vec<(u32, u32)> {
     let mut out = Vec::new();
@@ -46,7 +46,7 @@ fn folding_ranges_match_multiline_outline_regions() {
 
 #[test]
 fn document_symbols_empty() {
-    let root = RootNamespace { elements: vec![] };
+    let root = parse("").expect("parse empty");
     let symbols = document_symbols(&root);
     assert!(symbols.is_empty());
 }
@@ -54,7 +54,7 @@ fn document_symbols_empty() {
 #[test]
 fn document_symbols_package() {
     let text = "package P { }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     assert_eq!(symbols.len(), 1);
     assert_eq!(symbols[0].name, "P");
@@ -64,7 +64,7 @@ fn document_symbols_package() {
 #[test]
 fn document_symbols_nested() {
     let text = "package P { part def Engine { } }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     assert_eq!(symbols.len(), 1);
     assert_eq!(symbols[0].name, "P");
@@ -77,7 +77,7 @@ fn document_symbols_nested() {
 #[test]
 fn document_symbols_feature_and_classifier_decls() {
     let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     let children = &symbols[0].children;
     assert!(children

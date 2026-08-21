@@ -140,9 +140,9 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
 
         DeclarationKind::KermlType => ElementKind::Type,
         DeclarationKind::KermlClassifier => ElementKind::Classifier,
-        // The dedicated `class def` production and the KerML fallback's `class` keyword denote the
-        // same metaclass.
-        DeclarationKind::ClassDefinition | DeclarationKind::KermlClass => ElementKind::Class,
+        // Upstream routed `class` through the shared KerML classifier declaration, so
+        // `ClassDefinition` is now the single kind every `class` spelling reaches.
+        DeclarationKind::ClassDefinition => ElementKind::Class,
         DeclarationKind::KermlStructure => ElementKind::Structure,
         DeclarationKind::KermlAssociation => ElementKind::Association,
         DeclarationKind::KermlAssociationStructure => ElementKind::AssociationStructure,
@@ -282,7 +282,6 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlClassifier
         | DeclarationKind::ClassDefinition
         | DeclarationKind::KermlType
-        | DeclarationKind::KermlClass
         | DeclarationKind::KermlStructure
         | DeclarationKind::KermlAssociation
         | DeclarationKind::KermlAssociationStructure
@@ -400,7 +399,6 @@ mod tests {
         DeclarationKind::VerifyRequirement,
         DeclarationKind::KermlType,
         DeclarationKind::KermlClassifier,
-        DeclarationKind::KermlClass,
         DeclarationKind::KermlStructure,
         DeclarationKind::KermlAssociation,
         DeclarationKind::KermlAssociationStructure,
@@ -447,13 +445,6 @@ mod tests {
                 DeclarationKind::EntryActionBinding,
                 DeclarationKind::DoActionBinding,
                 DeclarationKind::ExitActionBinding,
-            ],
-        ),
-        (
-            ElementKind::Class,
-            &[
-                DeclarationKind::ClassDefinition,
-                DeclarationKind::KermlClass,
             ],
         ),
         (

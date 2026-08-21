@@ -190,12 +190,11 @@ impl ResolvedSemanticModel {
             if !is_connection_like(declaration.kind) || facts.modifiers.is_abstract {
                 continue;
             }
-            // The abstract guard above cannot fire for any of these kinds yet: `ConnectionDef`,
-            // `FlowDef`, `AllocationDef` and `InterfaceDef` carry no abstractness field, so the
-            // `abstract` prefix is consumed and dropped (planning/UPSTREAM_PARSER_GAPS.md, Gap 58).
-            // The guard is kept because it becomes correct the moment the field exists, and until
-            // then an abstract connection-like declaration with one end is reported -- which the
-            // structural fixture shows rather than hides.
+            // The abstract guard above now fires for all four connection-like kinds:
+            // `ConnectionDef`, `FlowDef`, `AllocationDef` and `InterfaceDef` each carry a
+            // `definition_prefix`, and `lower_connection_def` and its siblings publish it as the
+            // `is_abstract` modifier. An `abstract connection def C { end a; }` is deliberately
+            // incomplete and is no longer reported.
             //
             // A recovered member inside the declaration means the parser could not read part of its
             // body, so the ends it authored are unknown rather than few. `connection def AB { end

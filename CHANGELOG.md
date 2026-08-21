@@ -84,6 +84,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unrelated to its feature's. Hover reads the published evaluation for both the evaluated value and
   the unit literal.
 
+- **Bumped the pinned `sysml-v2-parser` revision `b6291cc` → `ec47463`.** One upstream commit,
+  closing the two gaps the previous bump left open. A keyword-less block comment ahead of a typed
+  feature carrying a KerML type-relationship clause (`/* c */ feature f : T unions x;`) parses
+  again in every calc-shaped body, for all four of `unions`, `intersects`, `differences` and
+  `disjoint from`; that removes the recovery diagnostics and the keyword-named expression operands
+  the previous pin published across seven fixtures. And a `requirement def` body now admits the
+  usage families it inherits from the general member grammar -- `action`, `succession`, `perform`,
+  `state`, `item`, `part`, `connect` and connection usages -- each dispatched here to the lowering
+  its package- or part-level spelling already uses, except `SuccessionUsage`, which has no lowering
+  in any scope and reports unsupported exactly as it does in part-usage and state-def bodies.
+  `FirstMergeBody` became the shared `Body<E>` container, so its brace arm is destructured by field.
+
+  Corpus-wide against the pre-bump baseline, parser recovery diagnostics fall 106 → 82 and
+  `unsupported_*` diagnostics 489 → 462.
+
+  **One pre-existing upstream defect is newly visible**, filed as gap 61 in
+  `planning/UPSTREAM_PARSER_GAPS.md`: a calc-shaped body shreds `flow a.y to b.x1;`,
+  `message m of T;` and the anonymous `redefines predecessors [0];` into bare expression members,
+  with each keyword arriving as an ordinary feature reference and no diagnostic raised.
+  `classifier`, `struct` and `behavior` bodies did this at `204ca48` already; `class` bodies joined
+  them when `b6291cc` routed `class` through the shared KerML classifier declaration, moving it off
+  the attribute-shaped body that parsed these members correctly. Keyword-shaped expression operands
+  rise 23 → 38 across eight fixtures, concentrated in `tests/snapshots/kerml/moments.md`, whose
+  `class` bodies author eleven `redefines <target> [mult];` members. The snapshots pin it.
+
+- **Bumped the pinned `sysml-v2-parser` revision `204ca48` → `b6291cc`.** Upstream replaced the
+  loose modifier booleans with the prefix components the grammar actually spells, and
+  `sysml_resolution` reads them through three new splitters. `OccurrenceUsagePrefix` (SysML BNF 564)
+  now carries `abstract`/`variation`, `derived`, `constant`, `ref`, `individual`, the portion kind
+  and the direction for `part`/`item`/`port`/`occurrence` usages, each as the authored keyword's own
+  span; `FeaturePrefix` (KerML BNF 584) does the same for KerML features, where `end`-ness is the
+  alternative taken rather than a flag beside it; and `MultiplicityPart`'s ordering and uniqueness
+  slots are two `Option`s over their authored spellings, so an authored `unique` is finally
+  distinguishable from omission. Every definition kind gained the `definition_prefix` slot, so
+  `variation` is recorded alongside `abstract` on requirement, case, analysis-case,
+  verification-case, use-case, view, rendering and occurrence definitions.
+
+  Three parser nodes were folded into the productions that spell them, and the model follows.
+  `ClassDef` is gone: `class` routes through the shared KerML classifier declaration, so
+  `DeclarationKind::ClassDefinition` is now the single kind every `class` spelling reaches and
+  `KermlClass` is deleted. `TypedParameterMember` merged into `KermlFeature`, so `in expr p :
+  Boolean = a;` lowers under the kind its keyword names (`kerml-expression`) instead of the generic
+  `parameter`, keeping its direction on both the declaration and its typing reference.
+  `KermlEndMember` merged into `FeaturePrefix`'s owned cross feature, which **inverts an ownership**:
+  in `end happensDuring subsets ... feature thatOccurrence : ...;` the end-prefixed feature now owns
+  the cross feature rather than the reverse.
+
+  Newly typed members are lowered rather than reported unsupported: `calc` usages at package level,
+  `ref` declarations in port bodies, `part` usages in constraint-def bodies, and nested
+  `requirement def`s, `port` usages and `allocate` members in requirement bodies. Across the
+  snapshot corpus that removes 31 `unsupported_*` diagnostics and adds 4.
+
+  Two follow-on effects of that refactor were resolved by the `ec47463` bump below.
+
 - **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
   `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the
   `in`/`out`/`inout` direction) is now accepted on every usage rather than a hand-picked few, and

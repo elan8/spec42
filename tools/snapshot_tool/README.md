@@ -75,6 +75,61 @@ package Model {}
 The parser/updater unit tests cover only Markdown mechanics. Semantic behavior belongs in the
 checked-in source snapshots and their canonical S-expression sections.
 
+## Validation expectations
+
+A fixture may add an authored `EXPECTED DIAGNOSTICS` section. Its fenced S-expression must match
+the complete canonical `DIAGNOSTICS` projection exactly, including codes, severities, source
+ranges, ordering, and related information. `update` never rewrites this expectation, so adding or
+changing compiler diagnostics cannot bless a validation result accidentally:
+
+```markdown
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics ...)
+~~~
+```
+
+For a researched rule that the compiler does not enforce yet, add a non-empty reason to `META`:
+
+```ini
+skip_validation=KerML 8.3.3.3.8 is not implemented
+```
+
+Only a diagnostic-expectation mismatch is skipped. The runner prints `SKIPPED <path>: <reason>`;
+malformed fixtures, semantic build errors, parity failures, and stale generated sections still
+fail normally. A skip whose expectation starts passing is an error, requiring the obsolete
+`skip_validation` entry to be removed.
+
+Validation fixtures belong under `tests/snapshots/validation`, normally one normative rule per
+file. Include both sides of the rule in `SOURCE`: at least one conforming example that must not be
+diagnosed and one violating example that must be. Give every fixture traceable normative metadata:
+
+```ini
+specification=OMG KerML 1.0 (formal/26-03-01)
+specification_url=https://www.omg.org/spec/KerML/1.0/PDF
+validation_rule=8.3.3.3.8
+```
+
+For SysML rules, use the corresponding OMG SysML 2.0 Language specification identifier and URL.
+Keep `description` as a concise statement of the rule; it is not a substitute for the normative
+reference. When a rule is skipped, make `skip_validation` name the missing capability or tracked
+parser gap rather than merely saying that the test fails.
+
+The executable examples are:
+
+- `validation/kerml_redefinition_end_mismatch.md`, an enforced KerML rule whose expected and actual
+  diagnostics match;
+- `validation/kerml_end_feature_direction.md`, an unsupported part of a KerML rule whose desired
+  semantic diagnostic differs from the parser-recovery diagnostics and is therefore reported as
+  `SKIPPED`.
+
+Run either example with the normal fixture command. A successful enforced case prints nothing;
+the unsupported example prints its stable `SKIPPED` line:
+
+```sh
+cargo run -p spec42-snapshot -- check --fixture validation/kerml_end_feature_direction.md
+```
+
 Readable qualified-reference queries can be exercised directly without embedding opaque identity
 encodings. Use a named source document or `*` for publication-wide lookup, followed by the KerML
 qualified name and an expected `ElementKind` (or `*`):

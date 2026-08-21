@@ -1858,10 +1858,10 @@ impl ResolvedSemanticModel {
                         None => UNCODED_PARSE_ERROR.into(),
                     }),
                     severity: match error.severity {
-                        Some(sysml_v2_parser::next::DiagnosticSeverity::Warning) => {
+                        Some(sysml_v2_parser::DiagnosticSeverity::Warning) => {
                             DiagnosticSeverity::Warning
                         }
-                        Some(sysml_v2_parser::next::DiagnosticSeverity::Error) | None => {
+                        Some(sysml_v2_parser::DiagnosticSeverity::Error) | None => {
                             DiagnosticSeverity::Error
                         }
                     },
@@ -4536,7 +4536,6 @@ impl DeclarationDomain {
                     // deliberately absent: `Multiplicity <: Feature`, and this domain admits
                     // definition-like types only, exactly as it already excludes SysML usages.
                     | DeclarationKind::KermlClassifier
-                    | DeclarationKind::KermlClass
                     | DeclarationKind::KermlStructure
                     | DeclarationKind::KermlAssociation
                     | DeclarationKind::KermlAssociationStructure

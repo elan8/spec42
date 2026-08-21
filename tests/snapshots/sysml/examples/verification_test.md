@@ -98,7 +98,7 @@ package VerificationTest {
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::r"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "R")))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::verificationContext"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::verificationContext::verificationPlan"))) (kind verification) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VerificationPlan")))))
-    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::verificationContext::verificationPlan::v"))) (kind subject) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::verificationContext::verificationPlan::v"))) (kind subject) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V")))))
   )
   (references

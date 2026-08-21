@@ -2,8 +2,15 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-# Local dev: build against the sibling sysml-v2-parser checkout instead of the
-# published crates.io version pinned in Cargo.toml. See DEVELOPMENT.md
-# "Parser Dependency Policy". Comment out before running the CI/pinned build.
-# [patch.crates-io]
+# Local dev: build against a sibling sysml-v2-parser checkout instead of the revision pinned in
+# the root Cargo.toml. See DEVELOPMENT.md "Parser Dependency Policy".
+#
+# The patch key must be the git URL, not `crates-io`. The workspace no longer depends on the
+# published crate at all, so a `[patch.crates-io]` entry would resolve nothing and silently leave
+# you building the pinned revision.
+#
+# `cargo deny check bans` and the guard test in `crates/source_identity` both read the resolved
+# graph, so an active patch shows up as a parser resolved from a path rather than from git. That is
+# intended -- comment this out before producing evidence for a pin bump.
+# [patch."https://github.com/lukewilliamboswell/sysml-v2-parser.git"]
 # sysml-v2-parser = { path = "../sysml-v2-parser" }

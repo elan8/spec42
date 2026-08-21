@@ -29,7 +29,6 @@ pub use analysis::{
     ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range, SymbolEntry,
 };
 pub use common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value};
-pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use validation::{
     built_workspace_input_from_snapshot, semantic_report_from_built_workspace, validate_paths,
     validate_paths_with_semantics, BuiltWorkspaceInput, SemanticValidationReport,
@@ -47,9 +46,3 @@ pub use views::dto::{
     TextDocumentIdentifierDto,
 };
 pub use views::{empty_feature_inspector_response, parse_sysml_feature_inspector_params};
-
-/// SysML v2 textual parser (`sysml-v2-parser`). Version is pinned in the Spec42 workspace;
-/// hosts should use this module instead of depending on `sysml-v2-parser` directly.
-pub mod sysml_v2 {
-    pub use ::sysml_v2_parser::*;
-}

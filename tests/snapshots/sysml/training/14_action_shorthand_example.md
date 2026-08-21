@@ -43,12 +43,6 @@ package 'Action Shorthand Example' {
         (source "semantic")
         (range (start 17 27) (end 17 38))
       )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 20 3) (end 21 3))
-      )
     )
   )
 )
@@ -56,7 +50,7 @@ package 'Action Shorthand Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:6409babd991a20b892be47396abad82d5e8da9f8e41b377e6a10f72342e58bb0") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6409babd991a20b892be47396abad82d5e8da9f8e41b377e6a10f72342e58bb0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -76,6 +70,7 @@ package 'Action Shorthand Example' {
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture")))))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene")))))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot")))))
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (named (kind action) (name "shoot")) (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)) (feature-value (kind bind)))
   )
   (references
@@ -202,6 +197,9 @@ package 'Action Shorthand Example' {
       (type (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")) (provenance authored))
       (effective-type (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")) (source direct))
       (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (named (kind action) (name "shoot")) (anonymous (kind item) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot")))
     )
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture")))
       (featured-by (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot")))

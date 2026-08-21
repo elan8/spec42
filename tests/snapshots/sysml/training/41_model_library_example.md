@@ -78,7 +78,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -96,7 +96,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -114,7 +114,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -126,7 +126,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -142,7 +142,7 @@ library package 'Model Library Example' {
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "RiskMetadata::Level") (import (shape membership) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::HappensBefore")))))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::HappensBefore")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded)) (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::effect"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded)) (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Cause"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -154,7 +154,7 @@ library package 'Model Library Example' {
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (named (kind item-def) (name "Scenario")) (anonymous (kind occurrence) (ordinal 1))))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "situations")) (redefinition (reference "causes")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (named (kind item-def) (name "Scenario")) (anonymous (kind occurrence) (ordinal 2))))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "situations")) (redefinition (reference "failures")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Situation"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
-    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Causation")))))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Causation")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causes"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Cause")) (subsetting (reference "situations")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::failures"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Failure")) (subsetting (reference "situations")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::scenarios"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers nonunique) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scenario")))))

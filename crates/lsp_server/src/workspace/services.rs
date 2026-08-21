@@ -5,7 +5,7 @@ use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
-use sysml_v2_parser::RootNamespace;
+use sysml_resolution::syntax::SyntaxDocument;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 fn elapsed_ms(start: Instant) -> u32 {
@@ -16,7 +16,7 @@ fn elapsed_ms(start: Instant) -> u32 {
 pub(crate) struct ParsedScanEntry {
     pub(crate) uri: Url,
     pub(crate) content: String,
-    pub(crate) parsed: Option<RootNamespace>,
+    pub(crate) parsed: Option<SyntaxDocument>,
     pub(crate) parse_errors: Vec<String>,
     pub(crate) parse_metadata: ParseMetadata,
 }
@@ -90,18 +90,18 @@ fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
     let (parsed, mut parse_errors) = match parsed_result {
         Ok(result) => {
             let errs = result
-                .errors
+                .diagnostics
                 .iter()
                 .take(5)
                 .map(|e| {
                     let loc = e
-                        .to_lsp_range()
-                        .map(|(sl, sc, _, _)| format!("{}:{}", sl, sc))
+                        .range()
+                        .map(|range| format!("{}:{}", range.start_line, range.start_character))
                         .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
                     format!("{loc} {}", e.message)
                 })
                 .collect::<Vec<_>>();
-            (Some(result.root), errs)
+            (Some(result.document), errs)
         }
         Err(_) => (None, util::parse_failure_diagnostics(&content, 5)),
     };
@@ -168,7 +168,7 @@ pub(crate) fn store_parsed_document_text(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
-    parsed: Option<RootNamespace>,
+    parsed: Option<SyntaxDocument>,
     parse_metadata: ParseMetadata,
     parse_errors: &[String],
     diagnostic_count: usize,
@@ -195,7 +195,7 @@ pub(crate) fn store_document_text(
 ) -> Option<String> {
     let parsed_result = util::parse_for_editor(&text);
     let parse_errors = parsed_result
-        .errors
+        .diagnostics
         .iter()
         .take(5)
         .map(|e| e.message.clone())
@@ -204,12 +204,12 @@ pub(crate) fn store_document_text(
         state,
         uri_norm,
         text,
-        Some(parsed_result.root),
+        Some(parsed_result.document),
         ParseMetadata {
             parse_cached: false,
         },
         &parse_errors,
-        parsed_result.errors.len(),
+        parsed_result.diagnostics.len(),
         "store_document_text",
         true,
     )
@@ -225,7 +225,7 @@ pub(crate) fn store_document_text_fast(
 ) -> Option<String> {
     let parsed_result = util::parse_for_editor(&text);
     let parse_errors = parsed_result
-        .errors
+        .diagnostics
         .iter()
         .take(5)
         .map(|e| e.message.clone())
@@ -234,12 +234,12 @@ pub(crate) fn store_document_text_fast(
         state,
         uri_norm,
         text,
-        Some(parsed_result.root),
+        Some(parsed_result.document),
         ParseMetadata {
             parse_cached: false,
         },
         &parse_errors,
-        parsed_result.errors.len(),
+        parsed_result.diagnostics.len(),
         "store_document_text_fast",
         false,
     )

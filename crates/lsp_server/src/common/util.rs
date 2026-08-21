@@ -29,15 +29,15 @@ pub fn normalize_file_uri(uri: &Url) -> Url {
 
 /// When parse fails, get diagnostic messages from parse_with_diagnostics for logging.
 pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String> {
-    let result = sysml_v2_parser::parse_with_diagnostics(content);
+    let result = sysml_resolution::syntax::parse_for_editor(content);
     result
-        .errors
+        .diagnostics
         .iter()
         .take(max_errors)
         .map(|e| {
             let loc = e
-                .to_lsp_range()
-                .map(|(sl, sc, _, _)| format!("{}:{}", sl, sc))
+                .range()
+                .map(|range| format!("{}:{}", range.start_line, range.start_character))
                 .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
             format!("{} {}", loc, e.message)
         })
@@ -47,8 +47,8 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
 /// Editor-oriented parse: returns a (possibly partial) AST plus diagnostics.
 ///
 /// `sysml-v2-parser` currently exposes this behavior as `parse_with_diagnostics`.
-pub fn parse_for_editor(text: &str) -> sysml_v2_parser::ParseResult {
-    sysml_v2_parser::parse_with_diagnostics(text)
+pub fn parse_for_editor(text: &str) -> sysml_resolution::syntax::SyntaxParse {
+    sysml_resolution::syntax::parse_for_editor(text)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

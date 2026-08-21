@@ -1,16 +1,16 @@
 //! `ParseOutcome` cache artifact.
 //!
 //! Key inputs: the raw [`ContentDigest`] of the source text; the [`ParseMode`]; the parser
-//! package/AST version (`sysml_v2_parser::PARSE_AST_VERSION`); the parse diagnostic schema and
+//! package/AST version (`sysml_resolution::syntax::SYNTAX_AST_VERSION`); the parse diagnostic schema and
 //! parse algorithm versions owned by this module; and any relevant parser options (there are
-//! none exposed by `sysml_v2_parser` today, but [`PARSE_OPTIONS_VERSION`] is committed into the
+//! none exposed by the parser authority today, but [`PARSE_OPTIONS_VERSION`] is committed into the
 //! key so that adding one later is a natural invalidation rather than a silent key collision).
 //!
 //! Parse artifacts deliberately omit the source URI: parser ranges are content-relative, so an
 //! artifact is portable across files and relocated checkouts that happen to share content.
 //!
 //! This fixes a real pre-existing bug: `crates/workspace/src/parse_cache.rs` stores only the
-//! `RootNamespace`, so a warm editor-recovery hit today returns an empty parse-error list even
+//! `SyntaxDocument`, so a warm editor-recovery hit today returns an empty parse-error list even
 //! when the cold parse reported diagnostics. [`ParseOutcome`] always carries its complete,
 //! structured diagnostics alongside the AST.
 //!
@@ -22,9 +22,10 @@
 use serde::{Deserialize, Serialize};
 
 use source_identity::{ArtifactKey, CanonicalEncoder, ContentDigest};
-use sysml_v2_parser::{
-    DiagnosticCategory as ParserDiagnosticCategory, DiagnosticSeverity as ParserDiagnosticSeverity,
-    ParseError as ParserParseError, ParseResult as ParserParseResult, RootNamespace,
+use sysml_resolution::syntax::{
+    SyntaxDiagnostic as ParserParseError, SyntaxDiagnosticCategory as ParserDiagnosticCategory,
+    SyntaxDiagnosticSeverity as ParserDiagnosticSeverity, SyntaxDocument,
+    SyntaxParse as ParserParseResult,
 };
 
 use crate::cache::{ArtifactIdentity, ArtifactKind, CacheArtifact};
@@ -42,12 +43,12 @@ pub const PARSE_ALGORITHM_VERSION: u32 = 1;
 /// real parser option is introduced and threaded through [`ParseOutcomeIdentity`].
 pub const PARSE_OPTIONS_VERSION: u32 = 1;
 
-/// The two parse entry points `sysml_v2_parser` exposes (plan §6.2).
+/// The two parse entry points the parser authority exposes (plan §6.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ParseMode {
-    /// `sysml_v2_parser::parse`: all-or-nothing, no AST on failure.
+    /// `syntax::parse_strict`: all-or-nothing, no AST on failure.
     StrictSemantic,
-    /// `sysml_v2_parser::parse_for_editor`: always produces an AST, diagnostics are additive.
+    /// `sysml_resolution::syntax::parse_for_editor`: always produces an AST, diagnostics are additive.
     EditorRecovery,
 }
 
@@ -73,7 +74,7 @@ impl ArtifactIdentity for ParseOutcomeIdentity {
         enc.field(b"parse-outcome.v1");
         enc.field(self.content_digest.as_bytes());
         enc.field(&[self.mode.tag()]);
-        enc.field_u64(sysml_v2_parser::PARSE_AST_VERSION as u64);
+        enc.field_u64(sysml_resolution::syntax::SYNTAX_AST_VERSION as u64);
         enc.field_u64(PARSE_DIAGNOSTIC_SCHEMA_VERSION as u64);
         enc.field_u64(PARSE_ALGORITHM_VERSION as u64);
         enc.field_u64(PARSE_OPTIONS_VERSION as u64);
@@ -93,7 +94,7 @@ pub enum ParseStatus {
     ExpectedSyntaxFailure,
 }
 
-/// Serializable mirror of `sysml_v2_parser::DiagnosticSeverity`, which itself derives
+/// Serializable mirror of `syntax::SyntaxDiagnosticSeverity`, which itself derives
 /// `Serialize`/`Deserialize` under the `serde` feature but is re-declared here so this module's
 /// on-disk payload shape does not silently change if the upstream crate's derive is dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -111,7 +112,7 @@ impl From<ParserDiagnosticSeverity> for ParseDiagnosticSeverity {
     }
 }
 
-/// Serializable mirror of `sysml_v2_parser::DiagnosticCategory`.
+/// Serializable mirror of `syntax::SyntaxDiagnosticCategory`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ParseDiagnosticCategory {
     ParseError,
@@ -141,7 +142,7 @@ pub struct ParseDiagnosticRange {
     pub end_character: u32,
 }
 
-/// A complete, structured parser diagnostic (plan §6.2): every field `sysml_v2_parser::ParseError`
+/// A complete, structured parser diagnostic (plan §6.2): every field `syntax::SyntaxDiagnostic`
 /// carries, since `ParseError` itself is not `Serialize`. This is the fix for the pre-existing
 /// bug where a warm parse-cache hit silently dropped diagnostics.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -159,25 +160,31 @@ pub struct ParseDiagnostic {
 
 impl From<&ParserParseError> for ParseDiagnostic {
     fn from(err: &ParserParseError) -> Self {
-        let range =
-            err.to_lsp_range()
-                .map(|(start_line, start_character, end_line, end_character)| {
-                    ParseDiagnosticRange {
-                        start_line,
-                        start_character,
-                        end_line,
-                        end_character,
-                    }
-                });
+        // The published diagnostic carries its 1-based position; the artifact records the
+        // 0-based single-line range the parser's own helper used to produce.
+        let range = match (err.line, err.column) {
+            (Some(line), Some(column)) => {
+                let start_line = line.saturating_sub(1);
+                let start_character = column.saturating_sub(1);
+                let end_character = start_character + err.length.unwrap_or(0) as u32;
+                Some(ParseDiagnosticRange {
+                    start_line,
+                    start_character,
+                    end_line: start_line,
+                    end_character,
+                })
+            }
+            _ => None,
+        };
         ParseDiagnostic {
             message: err.message.clone(),
             range,
             code: err.code.clone(),
-            severity: err.severity.map(ParseDiagnosticSeverity::from),
+            severity: Some(ParseDiagnosticSeverity::from(err.severity)),
             expected: err.expected.clone(),
             found: err.found.clone(),
             suggestion: err.suggestion.clone(),
-            category: err.category.map(ParseDiagnosticCategory::from),
+            category: Some(ParseDiagnosticCategory::from(err.category)),
             is_cascade: err.is_cascade,
         }
     }
@@ -188,15 +195,15 @@ impl From<&ParserParseError> for ParseDiagnostic {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ParseOutcome {
     pub status: ParseStatus,
-    pub ast: Option<RootNamespace>,
+    pub ast: Option<SyntaxDocument>,
     pub diagnostics: Vec<ParseDiagnostic>,
 }
 
 impl ParseOutcome {
-    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::parse` result. Never call
+    /// Builds a [`ParseOutcome`] from a completed `syntax::parse_strict` result. Never call
     /// this with a result that represents a cancelled, panicked, or otherwise incomplete parse —
     /// there is no such state representable here by design.
-    pub fn from_strict(result: &Result<RootNamespace, ParserParseError>) -> Self {
+    pub fn from_strict(result: &Result<SyntaxDocument, ParserParseError>) -> Self {
         match result {
             Ok(ast) => ParseOutcome {
                 status: ParseStatus::Success,
@@ -211,7 +218,7 @@ impl ParseOutcome {
         }
     }
 
-    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::parse_for_editor` result.
+    /// Builds a [`ParseOutcome`] from a completed `sysml_resolution::syntax::parse_for_editor` result.
     /// `parse_for_editor` never fails outright; it always returns an AST, so `ast` is always
     /// `Some`.
     pub fn from_editor_recovery(result: &ParserParseResult) -> Self {
@@ -222,8 +229,12 @@ impl ParseOutcome {
         };
         ParseOutcome {
             status,
-            ast: Some(result.root.clone()),
-            diagnostics: result.errors.iter().map(ParseDiagnostic::from).collect(),
+            ast: Some(result.document.clone()),
+            diagnostics: result
+                .diagnostics
+                .iter()
+                .map(ParseDiagnostic::from)
+                .collect(),
         }
     }
 }
@@ -232,7 +243,7 @@ impl CacheArtifact for ParseOutcome {
     type Identity = ParseOutcomeIdentity;
 
     const KIND: ArtifactKind = ArtifactKind::ParseOutcome;
-    const SCHEMA_VERSION: u32 = 1;
+    const SCHEMA_VERSION: u32 = 2;
 
     fn validate_invariants(&self) -> Result<(), String> {
         match self.status {
@@ -280,13 +291,13 @@ mod tests {
     // `ParserParseError` is a wide external type; this crate does not own it and cannot change
     // its size, so its `Result` is allowed to be "large" in these test-only helpers.
     #[allow(clippy::result_large_err)]
-    fn strict_ok() -> Result<RootNamespace, ParserParseError> {
-        sysml_v2_parser::parse("package P;")
+    fn strict_ok() -> Result<SyntaxDocument, ParserParseError> {
+        sysml_resolution::syntax::parse_strict("package P;")
     }
 
     #[allow(clippy::result_large_err)]
-    fn strict_err() -> Result<RootNamespace, ParserParseError> {
-        sysml_v2_parser::parse("package P { this is not valid sysml @@@ ")
+    fn strict_err() -> Result<SyntaxDocument, ParserParseError> {
+        sysml_resolution::syntax::parse_strict("package P { this is not valid sysml @@@ ")
     }
 
     #[test]
@@ -314,14 +325,14 @@ mod tests {
     #[test]
     fn editor_recovery_retains_all_diagnostics() {
         let recovered =
-            sysml_v2_parser::parse_for_editor("package P { this is not valid sysml @@@ ");
+            sysml_resolution::syntax::parse_for_editor("package P { this is not valid sysml @@@ ");
         let outcome = ParseOutcome::from_editor_recovery(&recovered);
         assert!(
             outcome.ast.is_some(),
             "recovery mode always produces an AST"
         );
-        assert_eq!(outcome.diagnostics.len(), recovered.errors.len());
-        if recovered.errors.is_empty() {
+        assert_eq!(outcome.diagnostics.len(), recovered.diagnostics.len());
+        if recovered.diagnostics.is_empty() {
             assert_eq!(outcome.status, ParseStatus::Success);
         } else {
             assert_eq!(outcome.status, ParseStatus::RecoveredWithDiagnostics);

@@ -36,7 +36,7 @@ pub(crate) fn apply_parsed_document_update(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
-    parsed_result: sysml_v2_parser::ParseResult,
+    parsed_result: sysml_resolution::syntax::SyntaxParse,
     _parse_time_ms: u32,
     _evaluate: bool,
 ) -> Vec<(MessageType, String)> {
@@ -44,16 +44,16 @@ pub(crate) fn apply_parsed_document_update(
     let Some(entry) = state.index_mut().get_mut(uri_norm) else {
         return warnings;
     };
-    entry.parsed = Some(parsed_result.root);
+    entry.parsed = Some(parsed_result.document);
     entry.parse_metadata = ParseMetadata {
         parse_cached: false,
     };
-    if !parsed_result.errors.is_empty() {
+    if !parsed_result.diagnostics.is_empty() {
         warnings.push((
             MessageType::LOG,
             format!(
                 "sysml parse_for_editor produced {} diagnostic(s) after didChange for {} (version {}).",
-                parsed_result.errors.len(), uri_norm, version,
+                parsed_result.diagnostics.len(), uri_norm, version,
             ),
         ));
     }

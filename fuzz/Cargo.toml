@@ -14,7 +14,6 @@ language_service = { path = "../crates/language_service" }
 spec42-generator-protocol = { path = "../crates/generator_protocol" }
 postcard = { version = "1", features = ["alloc"] }
 sysml_query = { path = "../crates/sysml_query" }
-sysml-v2-parser = { package = "spec42-sysml-parser", path = "../crates/sysml_parser" }
 
 [[bin]]
 name = "artifact_path"
@@ -26,13 +25,6 @@ bench = false
 [[bin]]
 name = "abi_decode"
 path = "fuzz_targets/abi_decode.rs"
-test = false
-doc = false
-bench = false
-
-[[bin]]
-name = "sysml_parser"
-path = "fuzz_targets/sysml_parser.rs"
 test = false
 doc = false
 bench = false

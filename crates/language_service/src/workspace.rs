@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use sysml_query::resolved_slice::TextPosition;
 use sysml_source::SysmlDocument;
-use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::symbol::{symbol_entries_for_uri, SymbolEntry};
@@ -13,8 +12,6 @@ use crate::uri::normalize_uri;
 struct DocumentEntry {
     path: String,
     content: String,
-    #[allow(dead_code)]
-    parsed: RootNamespace,
 }
 
 /// In-memory indexed workspace for headless language-service queries.
@@ -58,7 +55,6 @@ impl InMemoryWorkspace {
         let mut path_to_uri = HashMap::new();
 
         for document in &documents {
-            let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
             let path = document
                 .uri
                 .path()
@@ -87,7 +83,6 @@ impl InMemoryWorkspace {
                 DocumentEntry {
                     path,
                     content: document.content.clone(),
-                    parsed,
                 },
             );
         }

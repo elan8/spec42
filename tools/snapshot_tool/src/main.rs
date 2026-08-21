@@ -96,6 +96,7 @@ struct FixtureMeta {
     libraries: LibrarySelection,
     repository_sources: Vec<String>,
     generation: Option<GenerationRequest>,
+    skip_validation: Option<String>,
 }
 
 /// Complete in-memory output of a generator invocation. A sorted map makes artifact order part of
@@ -252,13 +253,23 @@ fn main() -> Result<(), String> {
     let mut failures = Vec::new();
     let mut stale = Vec::new();
     let mut writes = Vec::new();
+    let mut skipped = Vec::new();
     for result in results {
         match result.result {
-            Ok(FixtureOutcome::Clean) => {}
-            Ok(FixtureOutcome::StaleText(updated)) => match cli.command {
-                Command::Check => stale.push(result.path),
-                Command::Update => writes.push((result.path, updated.into_bytes())),
-            },
+            Ok(FixtureOutcome {
+                updated,
+                validation_skip,
+            }) => {
+                if let Some(reason) = validation_skip {
+                    skipped.push((result.path.clone(), reason));
+                }
+                if let Some(updated) = updated {
+                    match cli.command {
+                        Command::Check => stale.push(result.path),
+                        Command::Update => writes.push((result.path, updated.into_bytes())),
+                    }
+                }
+            }
             Err(error) => failures.push((result.path, error)),
         }
     }
@@ -276,6 +287,10 @@ fn main() -> Result<(), String> {
             .map_err(|error| format!("{}: write failed: {error}", path.display()))?;
     }
 
+    for (path, reason) in skipped {
+        eprintln!("SKIPPED {}: {reason}", path.display());
+    }
+
     if stale.is_empty() {
         return Ok(());
     }
@@ -286,9 +301,9 @@ fn main() -> Result<(), String> {
     Err("snapshot check failed".to_string())
 }
 
-enum FixtureOutcome {
-    Clean,
-    StaleText(String),
+struct FixtureOutcome {
+    updated: Option<String>,
+    validation_skip: Option<String>,
 }
 
 struct FixtureWorkResult {
@@ -304,12 +319,16 @@ fn evaluate_fixture(path: &Path, libraries: &LibraryCorpus) -> Result<FixtureOut
     let bytes = fs::read(path).map_err(|error| format!("read failed: {error}"))?;
     let original =
         String::from_utf8(bytes).map_err(|error| format!("snapshot is not UTF-8: {error}"))?;
-    let updated = regenerate_snapshot(&original, path, libraries)?;
-    Ok(if updated == original {
-        FixtureOutcome::Clean
-    } else {
-        FixtureOutcome::StaleText(updated)
+    let regenerated = regenerate_snapshot(&original, path, libraries)?;
+    Ok(FixtureOutcome {
+        updated: (regenerated.text != original).then_some(regenerated.text),
+        validation_skip: regenerated.validation_skip,
     })
+}
+
+struct RegeneratedSnapshot {
+    text: String,
+    validation_skip: Option<String>,
 }
 
 fn snapshot_paths(root: &Path, fixture: Option<&Path>) -> Result<Vec<PathBuf>, String> {
@@ -361,7 +380,7 @@ fn regenerate_snapshot(
     fixture: &str,
     path: &Path,
     libraries: &LibraryCorpus,
-) -> Result<String, String> {
+) -> Result<RegeneratedSnapshot, String> {
     let fallback_name = path
         .file_name()
         .and_then(|name| name.to_str())
@@ -490,6 +509,13 @@ fn regenerate_snapshot(
     };
     ensure_sections_balanced(&canonical).map_err(|error| format!("{}: {error}", path.display()))?;
 
+    let validation_skip = check_expected_diagnostics(
+        fixture,
+        &canonical.diagnostics,
+        meta.skip_validation.as_deref(),
+        fallback_name,
+    )?;
+
     let fixture = replace_or_insert_section(fixture, "SMG", &canonical.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &canonical.diagnostics)
@@ -545,7 +571,49 @@ fn regenerate_snapshot(
     } else {
         fixture
     };
-    Ok(canonicalize_sections(&fixture))
+    Ok(RegeneratedSnapshot {
+        text: canonicalize_sections(&fixture),
+        validation_skip,
+    })
+}
+
+fn check_expected_diagnostics(
+    fixture: &str,
+    actual: &str,
+    skip_reason: Option<&str>,
+    fallback_name: &str,
+) -> Result<Option<String>, String> {
+    let Some(section) = raw_section(fixture, "EXPECTED DIAGNOSTICS") else {
+        return if skip_reason.is_some() {
+            Err(format!(
+                "{fallback_name}: META skip_validation requires an EXPECTED DIAGNOSTICS section"
+            ))
+        } else {
+            Ok(None)
+        };
+    };
+    let Some((expected, _)) = fenced_block(section) else {
+        return Err(format!(
+            "{fallback_name}: malformed EXPECTED DIAGNOSTICS fence"
+        ));
+    };
+    if expected.trim() == actual.trim() {
+        return if skip_reason.is_some() {
+            Err(format!(
+                "{fallback_name}: validation expectations now pass; remove META skip_validation"
+            ))
+        } else {
+            Ok(None)
+        };
+    }
+    if let Some(reason) = skip_reason {
+        return Ok(Some(reason.to_string()));
+    }
+    Err(format!(
+        "{fallback_name}: EXPECTED DIAGNOSTICS do not match the canonical diagnostics\nexpected:\n{}\nactual:\n{}",
+        expected.trim(),
+        actual.trim()
+    ))
 }
 
 fn load_repository_sources(
@@ -1020,6 +1088,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
             libraries: LibrarySelection::None,
             repository_sources: Vec::new(),
             generation: None,
+            skip_validation: None,
         });
     };
     let Some((text, _)) = fenced_block(section) else {
@@ -1032,6 +1101,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let mut view_kind = None;
     let mut view_document = None;
     let mut view_qualified_name = None;
+    let mut skip_validation = None;
     let mut seen = HashSet::new();
     for (line_index, line) in text.lines().enumerate() {
         if line.trim().is_empty() || line.trim_start().starts_with('#') {
@@ -1054,6 +1124,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 | "viewKind"
                 | "viewDocument"
                 | "viewQualifiedName"
+                | "skip_validation"
         ) && !seen.insert(key)
         {
             return Err(format!("{fallback_name}: duplicate META key {key:?}"));
@@ -1109,6 +1180,14 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 }
                 view_qualified_name = Some(value.to_string());
             }
+            "skip_validation" => {
+                if value.is_empty() {
+                    return Err(format!(
+                        "{fallback_name}: META skip_validation must state a non-empty reason"
+                    ));
+                }
+                skip_validation = Some(value.to_string());
+            }
             _ => {}
         }
     }
@@ -1159,6 +1238,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
         libraries: selection,
         repository_sources,
         generation,
+        skip_validation,
     })
 }
 
@@ -1434,6 +1514,7 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
 const SECTION_ORDER: &[&str] = &[
     "META",
     "SOURCE",
+    "EXPECTED DIAGNOSTICS",
     "EDITOR QUERIES",
     "QUALIFIED REFERENCE QUERIES",
     "DIAGNOSTICS",
@@ -1672,7 +1753,8 @@ mod tests {
                 generation: Some(GenerationRequest {
                     plugin: GeneratorPlugin::Conformance("requirements_csv".to_string()),
                     diagram_selection: None,
-                })
+                }),
+                skip_validation: None,
             }
         );
 
@@ -1687,6 +1769,59 @@ mod tests {
             let error = parse_fixture_meta(&fixture, "fixture.md").unwrap_err();
             assert!(error.contains(expected), "unexpected error: {error}");
         }
+    }
+
+    #[test]
+    fn expected_diagnostics_are_authored_exact_assertions_with_self_expiring_skips() {
+        let fixture = "# EXPECTED DIAGNOSTICS\n~~~sexpr\n(diagnostics expected)\n~~~\n";
+        assert_eq!(
+            check_expected_diagnostics(fixture, "(diagnostics expected)\n", None, "fixture.md")
+                .unwrap(),
+            None
+        );
+        assert!(
+            check_expected_diagnostics(fixture, "(diagnostics actual)", None, "fixture.md")
+                .unwrap_err()
+                .contains("do not match")
+        );
+        assert_eq!(
+            check_expected_diagnostics(
+                fixture,
+                "(diagnostics actual)",
+                Some("rule is not implemented"),
+                "fixture.md"
+            )
+            .unwrap(),
+            Some("rule is not implemented".to_string())
+        );
+        assert!(check_expected_diagnostics(
+            fixture,
+            "(diagnostics expected)",
+            Some("stale skip"),
+            "fixture.md"
+        )
+        .unwrap_err()
+        .contains("remove META skip_validation"));
+    }
+
+    #[test]
+    fn validation_skip_requires_an_expectation_and_a_reason() {
+        let fixture = "# META\n~~~ini\nskip_validation=not implemented\n~~~\n";
+        let meta = parse_fixture_meta(fixture, "fixture.md").unwrap();
+        assert_eq!(meta.skip_validation.as_deref(), Some("not implemented"));
+        assert!(check_expected_diagnostics(
+            fixture,
+            "(fixture-diagnostics)",
+            meta.skip_validation.as_deref(),
+            "fixture.md"
+        )
+        .unwrap_err()
+        .contains("requires an EXPECTED DIAGNOSTICS section"));
+
+        let empty = "# META\n~~~ini\nskip_validation=\n~~~\n";
+        assert!(parse_fixture_meta(empty, "fixture.md")
+            .unwrap_err()
+            .contains("non-empty reason"));
     }
 
     #[test]

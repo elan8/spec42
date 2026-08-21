@@ -112,7 +112,7 @@ package TimeVaryingFeatures {
       )
       (diagnostic
         (severity error)
-        (code "recovered_attribute_body_element")
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 27 8) (end 32 8))
       )

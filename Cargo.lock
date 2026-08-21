@@ -1161,7 +1161,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "spec42-sysml-parser",
+ "sysml_resolution",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1174,8 +1174,8 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "spec42-sysml-parser",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "tempfile",
  "url",
@@ -1272,9 +1272,9 @@ dependencies = [
  "server",
  "sha2",
  "spec42-generator-protocol",
- "spec42-sysml-parser",
  "sysml_diagnostics",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "sysml_tokens",
  "tempfile",
@@ -1850,7 +1850,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "spec42-sysml-parser",
  "sysml_query",
  "tempfile",
  "tokio",
@@ -1991,14 +1990,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spec42-sysml-parser"
-version = "0.50.0"
-dependencies = [
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767)",
-]
-
-[[package]]
 name = "spin"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2068,20 +2059,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.54.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5db89688b6bab9dacbf8150e3f32f636decd36e34fcb8aaacbdb52fe281a9134"
-dependencies = [
- "log",
- "nom",
- "nom_locate",
- "serde",
- "stacker",
-]
-
-[[package]]
-name = "sysml-v2-parser"
-version = "0.54.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767#204ca48000c452970beb7568d84e0ac80898a767"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=ec47463f86829bc7caebd44b8ad7db6eea677691#ec47463f86829bc7caebd44b8ad7db6eea677691"
 dependencies = [
  "log",
  "nom",
@@ -2116,7 +2094,7 @@ dependencies = [
  "rayon",
  "serde",
  "source_identity",
- "spec42-sysml-parser",
+ "sysml-v2-parser",
 ]
 
 [[package]]
@@ -2132,7 +2110,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "spec42-sysml-parser",
+ "sysml_resolution",
 ]
 
 [[package]]
@@ -2985,10 +2963,10 @@ dependencies = [
  "serde_json",
  "sha2",
  "source_identity",
- "spec42-sysml-parser",
  "syn 2.0.119",
  "sysml_diagnostics",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "tempfile",
  "thiserror 2.0.19",

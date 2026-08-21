@@ -429,7 +429,7 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
  "sysml_query",
  "sysml_source",
  "url",
@@ -715,7 +715,6 @@ dependencies = [
  "libfuzzer-sys",
  "postcard",
  "spec42-generator-protocol",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_query",
 ]
 
@@ -725,6 +724,13 @@ version = "0.50.0"
 dependencies = [
  "postcard-schema",
  "serde",
+]
+
+[[package]]
+name = "spec42-sysml-parser"
+version = "0.50.0"
+dependencies = [
+ "sysml-v2-parser",
 ]
 
 [[package]]
@@ -791,20 +797,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.54.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5db89688b6bab9dacbf8150e3f32f636decd36e34fcb8aaacbdb52fe281a9134"
-dependencies = [
- "log",
- "nom",
- "nom_locate",
- "serde",
- "stacker",
-]
-
-[[package]]
-name = "sysml-v2-parser"
-version = "0.54.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767#204ca48000c452970beb7568d84e0ac80898a767"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=ec47463f86829bc7caebd44b8ad7db6eea677691#ec47463f86829bc7caebd44b8ad7db6eea677691"
 dependencies = [
  "log",
  "nom",
@@ -824,11 +817,12 @@ dependencies = [
 name = "sysml_resolution"
 version = "0.50.0"
 dependencies = [
+ "blake3",
  "hashbrown",
  "rayon",
  "serde",
  "source_identity",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767)",
+ "spec42-sysml-parser",
 ]
 
 [[package]]

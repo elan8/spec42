@@ -24,7 +24,7 @@ sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_source = { path = "../sysml_source" }
 sysml_query = { path = "../sysml_query" }
 sysml_tokens = { path = "../sysml_tokens" }
-sysml-v2-parser = { workspace = true }
+sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }

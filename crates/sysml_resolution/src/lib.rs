@@ -17,6 +17,7 @@ mod evaluation;
 mod inspection;
 mod model;
 mod qualified_reference;
+pub mod syntax;
 mod traceability;
 mod type_query;
 mod verification;
