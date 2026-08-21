@@ -5663,6 +5663,12 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.crosses {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
@@ -6105,6 +6111,9 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
@@ -6441,6 +6450,9 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         Ok(())
     }
@@ -10365,10 +10377,9 @@ impl SemanticModelBuilder {
 
     /// Lowers a package/definition/usage-level `viewpoint` feature member (BNF ViewpointUsage),
     /// mirroring `lower_viewpoint_def`: ownership, membership, a `:` typing target, and owned
-    /// members via the same shared `lower_requirement_shaped_body` walker. Only `name`/`type_name`
-    /// are lowered as facts: `ast::ViewpointUsage::subsets`/`redefines` now carry the header-level
-    /// `:>`/`:>>` clause, but lowering them is pending (planning/UPSTREAM_PARSER_GAPS.md, "Typed
-    /// upstream, not yet lowered here").
+    /// members via the same shared `lower_requirement_shaped_body` walker, plus the header-level
+    /// `:>`/`:>>` clauses through the shared `lower_subsetting_relationship`, exactly as
+    /// `lower_concern_usage` handles its own pair.
     fn lower_viewpoint_usage(
         &mut self,
         document: DocumentId,
@@ -10383,8 +10394,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             // No modifier, multiplicity, or short-name field on `ast::ViewpointUsage`; its
-            // `subsets`/`redefines` clauses are relationships, not declaration facts, and are
-            // not lowered yet (see `lower_viewpoint_usage`'s doc comment).
+            // `subsets`/`redefines` clauses are relationships, pushed below rather than facts.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -10413,6 +10423,12 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_requirement_shaped_body(
             document,
@@ -14562,6 +14578,53 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// The header-level specialization clauses four lowerings used to drop.
+    ///
+    /// `ItemUsage.subsets`, `KermlFeature.references`/`crosses`, `ViewpointUsage.subsets`/
+    /// `redefines` and `SubjectDecl.redefines` are all ordinary `SubsettingRelationship`s that the
+    /// shared `lower_subsetting_relationship` already maps; only the call was missing. `references`
+    /// and `crosses` publish as `unsupported` outcomes, which is the pre-existing treatment of
+    /// those two reference kinds -- the point here is that the authored clause reaches the model
+    /// at all instead of being silently discarded.
+    #[test]
+    fn header_specialization_clauses_reach_the_model() {
+        let item = build_semantic_sexpr(
+            "package Demo {\n\titem def Item;\n\titem objects : Item;\n\titem things : Item :> objects;\n}\n",
+        );
+        assert!(
+            item.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::things\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::objects\")))"
+            ),
+            "expected item usage `:>` to resolve to objects, got:\n{item}"
+        );
+
+        let feature = build_semantic_sexpr(
+            "package Demo {\n\tclassifier C {\n\t\tfeature base;\n\t\tfeature alias references base;\n\t}\n}\n",
+        );
+        assert!(
+            feature.contains("(referenceSubsetting (reference \"base\"))"),
+            "expected the KerML feature `references` clause to publish a reference, got:\n{feature}"
+        );
+
+        let viewpoint = build_semantic_sexpr(
+            "package Demo {\n\tviewpoint base;\n\tviewpoint derived :> base;\n}\n",
+        );
+        assert!(
+            viewpoint.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::base\")))"
+            ),
+            "expected viewpoint usage `:>` to resolve to base, got:\n{viewpoint}"
+        );
+
+        let subject = build_semantic_sexpr(
+            "package Demo {\n\tpart def Vehicle;\n\trequirement def R {\n\t\tsubject vehicle : Vehicle;\n\t}\n\trequirement def S :> R {\n\t\tsubject subVehicle :>> vehicle;\n\t}\n}\n",
+        );
+        assert!(
+            subject.contains("(redefinition (reference \"vehicle\"))"),
+            "expected the subject `:>>` clause to publish a redefinition, got:\n{subject}"
+        );
     }
 
     /// Every declaration kind whose parser node carries a `short_name` publishes it.
