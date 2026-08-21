@@ -48,8 +48,3 @@ pub use views::dto::{
 };
 pub use views::{empty_feature_inspector_response, parse_sysml_feature_inspector_params};
 
-/// SysML v2 textual parser (`sysml-v2-parser`). Version is pinned in the Spec42 workspace;
-/// hosts should use this module instead of depending on `sysml-v2-parser` directly.
-pub mod sysml_v2 {
-    pub use ::sysml_v2_parser::*;
-}

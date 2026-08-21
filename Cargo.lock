@@ -1993,8 +1993,7 @@ dependencies = [
 name = "spec42-sysml-parser"
 version = "0.50.0"
 dependencies = [
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=ec47463f86829bc7caebd44b8ad7db6eea677691)",
+ "sysml-v2-parser",
 ]
 
 [[package]]
@@ -2062,19 +2061,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
-]
-
-[[package]]
-name = "sysml-v2-parser"
-version = "0.54.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5db89688b6bab9dacbf8150e3f32f636decd36e34fcb8aaacbdb52fe281a9134"
-dependencies = [
- "log",
- "nom",
- "nom_locate",
- "serde",
- "stacker",
 ]
 
 [[package]]

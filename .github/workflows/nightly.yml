@@ -208,8 +208,6 @@ jobs:
       - name: Fuzz ABI payload decoding
         run: cargo fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
 
-      - name: Fuzz pinned SysML parser
-        run: cargo fuzz run sysml_parser fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz immutable SysML publication
         run: cargo fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1

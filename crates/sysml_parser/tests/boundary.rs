@@ -44,24 +44,6 @@ fn production_manifests_cannot_select_an_upstream_parser() {
     );
 }
 
-#[test]
-fn compatibility_and_canonical_parsers_agree_on_acceptance_and_recovery() {
-    let valid = "package P { part def A; part a : A; }";
-    assert!(sysml_v2_parser::parse(valid).is_ok());
-    assert!(sysml_v2_parser::next::parse(valid).is_ok());
-
-    let malformed = "package P { part def A part a : A; }";
-    let compatibility = sysml_v2_parser::parse_for_editor(malformed);
-    let canonical = sysml_v2_parser::next::parse_for_editor(malformed);
-    assert!(
-        !compatibility.errors.is_empty(),
-        "the compatibility syntax surface must report recovery"
-    );
-    assert!(
-        !canonical.errors.is_empty(),
-        "semantic construction must report recovery for the same source"
-    );
-}
 
 fn manifests_below(directory: &Path) -> Vec<PathBuf> {
     let mut manifests = Vec::new();
