@@ -5,15 +5,11 @@
 //! AST-driven ranges override lexer heuristics when a parse succeeds.
 
 mod ast_ranges;
-mod ast_util;
 mod keywords;
 mod lexer;
 mod types;
 
-pub use ast_ranges::ast_semantic_ranges;
-pub use ast_util::{
-    identification_name, refine_declaration_ranges, span_to_source_range, SourceRange,
-};
+pub use ast_ranges::{ast_semantic_ranges, refine_declaration_ranges, SourceRange};
 pub use types::*;
 
 use lexer::tokenize_line;
@@ -247,7 +243,7 @@ pub fn semantic_tokens_full(
 /// classification when the AST contributes no ranges.
 #[must_use]
 pub fn semantic_tokens_for_text(text: &str) -> SemanticTokensDto {
-    let parsed = sysml_v2_parser::parse_for_editor(text);
+    let parsed = sysml_resolution::syntax::parse_for_editor(text);
     let ranges = ast_semantic_ranges(&parsed.document, text);
     let (dto, _) = if ranges.is_empty() {
         semantic_tokens_full(text, None)

@@ -131,17 +131,25 @@ npm run compile
 
 ## Parser Dependency Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.47.0**). CI and default local builds resolve from the registry. To test against a sibling checkout before publish, uncomment the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **git revision**, and exactly
+one crate may depend on it: `crates/sysml_resolution`, which lowers the AST to the semantic graph.
+Everything else reaches syntax through `sysml_resolution::syntax`, which returns plain data rather
+than parser types. `crates/source_identity/tests/parser_authority.rs` enforces both rules.
 
-When updating parser behavior:
+To update the parser:
 
-1. Bump the version in root `Cargo.toml` `[workspace.dependencies]` and run `cargo update -p sysml-v2-parser`.
-2. Run `cargo test --workspace` with the embedded stdlib bundle available.
-3. Run `cargo test --workspace --no-default-features`.
-4. Run targeted workspace/indexing checks in `crates/lsp_server/tests/integration/workspace.rs`.
-5. Update docs if parser compatibility or supported workflow expectations changed.
-
-Cross-repo notes for real-model diagnostic quality live in the parser repo: [`docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md`](../sysml-v2-parser/docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md).
+1. Change the `rev` in the root `Cargo.toml` `[workspace.dependencies]`, then run
+   `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
+   The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
+   momentarily resolvable, and it is silent about it -- use the fully qualified spec.
+2. `cargo check --workspace --all-targets`, then `cargo test --workspace`.
+3. `cargo run -p spec42-snapshot -- update`, review `git diff -- tests/snapshots`, then
+   `cargo run -p spec42-snapshot -- check`. The snapshot corpus is the primary end-to-end evidence
+   for a parser bump; it is not CI-gated, so the diff review is the gate.
+4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
+   the ones it closes.
+5. `cargo tree -i sysml-v2-parser` must print a single tree with `sysml_resolution` as its only
+   dependent.
 
 ## Diagnostic quality workflow
 

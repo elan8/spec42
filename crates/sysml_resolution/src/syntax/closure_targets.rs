@@ -1,4 +1,20 @@
-use super::*;
+//! The library-closure queries: what a source imports and what types it names.
+//!
+//! Moved here from `workspace::library::closure` because every one of these walks the AST. The
+//! closure *policy* -- which packages to pull in, in what order, from which roots -- stays in
+//! `workspace`, which is where it belongs; this answers only the syntactic questions that policy
+//! asks.
+
+use std::collections::HashSet;
+
+use sysml_v2_parser::ast::{
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ItemUsage,
+    LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody, PackageBodyElement, PartDef,
+    PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
+    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, QualifiedIdentification,
+    RefDecl, RootElement,
+};
+use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 
 /// An arena-backed type reference, as authored.
 fn reference_text(
@@ -413,18 +429,284 @@ fn push_optional_typing_reference(
     }
 }
 
-pub(crate) fn package_keys_for_import_target(target: &str) -> Vec<String> {
-    let target = target
-        .trim()
-        .trim_end_matches("::*")
-        .trim_end_matches("::**");
-    if target.is_empty() {
+/// The declared label of a namespace-owning declaration.
+///
+/// Only the simple alternative carries its own label; a qualified path (`package A::B { ... }`) is
+/// an arena identity, and a package key built from it belongs to the document that owns it. The
+/// callers here key packages by simple name, so a qualified declaration yields no key -- the same
+/// answer the old `Option<String>` field gave, now stated rather than incidental.
+pub(crate) fn package_declared_name(identification: &QualifiedIdentification) -> Option<String> {
+    identification
+        .simple_name()
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .map(str::to_string)
+}
+
+/// Qualified names of packages declared in a parsed SysML document (includes nested packages).
+pub fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
+    let mut defined = HashSet::new();
+    for_each_package_in_parsed(parsed, |qualified, _body| {
+        defined.insert(qualified);
+    });
+    defined
+}
+
+/// Qualified names of packages declared in SysML source (includes nested packages).
+pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+        return HashSet::new();
+    };
+    declared_packages_from_parsed(&parsed)
+}
+
+pub(crate) fn for_each_package_in_parsed(
+    parsed: &ParsedRoot,
+    mut visit: impl FnMut(String, &PackageBody),
+) {
+    for element in &parsed.elements {
+        match &element.value {
+            RootElement::Package(package) => visit_package_tree(package, None, &mut visit),
+            RootElement::LibraryPackage(package) => {
+                visit_library_package_tree(package, None, &mut visit)
+            }
+            _ => {}
+        }
+    }
+}
+
+pub(crate) fn visit_package_tree(
+    package: &Node<Package>,
+    parent: Option<&str>,
+    visit: &mut impl FnMut(String, &PackageBody),
+) {
+    let Some(name) = package_declared_name(&package.value.identification) else {
+        return;
+    };
+    let qualified = match parent {
+        Some(prefix) => format!("{prefix}::{name}"),
+        None => name,
+    };
+    visit(qualified.clone(), &package.value.body);
+    walk_nested_packages(&package.value.body, Some(qualified.as_str()), visit);
+}
+
+pub(crate) fn visit_library_package_tree(
+    package: &Node<LibraryPackage>,
+    parent: Option<&str>,
+    visit: &mut impl FnMut(String, &PackageBody),
+) {
+    let Some(name) = package_declared_name(&package.value.identification) else {
+        return;
+    };
+    let qualified = match parent {
+        Some(prefix) => format!("{prefix}::{name}"),
+        None => name,
+    };
+    visit(qualified.clone(), &package.value.body);
+    walk_nested_packages(&package.value.body, Some(qualified.as_str()), visit);
+}
+
+pub(crate) fn walk_nested_packages(
+    body: &PackageBody,
+    parent: Option<&str>,
+    visit: &mut impl FnMut(String, &PackageBody),
+) {
+    let PackageBody::Brace { elements, .. } = body else {
+        return;
+    };
+    for member in elements {
+        match &member.value {
+            PackageBodyElement::Package(nested) => visit_package_tree(nested, parent, visit),
+            PackageBodyElement::LibraryPackage(nested) => {
+                visit_library_package_tree(nested, parent, visit)
+            }
+            _ => {}
+        }
+    }
+}
+
+pub(crate) fn collect_import_targets_from_package_body(
+    document: &ParsedRoot,
+    body: &PackageBody,
+) -> Vec<String> {
+    let mut out = Vec::new();
+    walk_package_body(document, body, &mut out);
+    out
+}
+
+pub(crate) fn collect_import_targets_from_content(content: &str) -> Vec<String> {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return Vec::new();
+    };
+    let mut out = Vec::new();
+    collect_import_targets_from_root(&parsed, &mut out);
+    out
+}
+
+pub(crate) fn collect_import_targets_from_root(document: &ParsedRoot, out: &mut Vec<String>) {
+    for element in &document.elements {
+        match &element.value {
+            RootElement::Package(package) => walk_package_imports(document, package, out),
+            RootElement::LibraryPackage(package) => {
+                walk_library_package_imports(document, package, out)
+            }
+            _ => {}
+        }
     }
-    let mut keys = Vec::new();
-    let parts: Vec<&str> = target.split("::").collect();
-    for i in 0..parts.len() {
-        keys.push(parts[..=i].join("::"));
+}
+
+pub(crate) fn walk_package_body(document: &ParsedRoot, body: &PackageBody, out: &mut Vec<String>) {
+    let PackageBody::Brace { elements, .. } = body else {
+        return;
+    };
+    for member in elements {
+        match &member.value {
+            PackageBodyElement::Import(import) => push_import_target(document, import, out),
+            PackageBodyElement::Package(nested) => walk_package_imports(document, nested, out),
+            PackageBodyElement::LibraryPackage(nested) => {
+                walk_library_package_imports(document, nested, out)
+            }
+            _ => {}
+        }
     }
-    keys
+}
+
+pub(crate) fn walk_package_imports(
+    document: &ParsedRoot,
+    package: &Node<Package>,
+    out: &mut Vec<String>,
+) {
+    walk_package_body(document, &package.value.body, out);
+}
+
+pub(crate) fn walk_library_package_imports(
+    document: &ParsedRoot,
+    package: &Node<LibraryPackage>,
+    out: &mut Vec<String>,
+) {
+    walk_package_body(document, &package.value.body, out);
+}
+
+pub(crate) fn push_import_target(
+    document: &ParsedRoot,
+    import: &Node<Import>,
+    out: &mut Vec<String>,
+) {
+    let Some(view) = document.qualified_reference(import.value.target.reference) else {
+        return;
+    };
+    let target = view.authored_text().trim();
+    if target.is_empty() {
+        return;
+    }
+    // The arena owns the qualified name; the `::*` / `::**` suffix is the *shape* of the import,
+    // not part of the name. The seed key spells the authored form, so reattach it.
+    use sysml_v2_parser::ast::ImportShape;
+    let suffix = match &import.value.target.shape {
+        ImportShape::Membership {
+            recursive_suffix: Some(_),
+        } => "::**",
+        ImportShape::Membership {
+            recursive_suffix: None,
+        } => "",
+        ImportShape::Namespace {
+            recursive_suffix: Some(_),
+            ..
+        } => "::*::**",
+        ImportShape::Namespace {
+            recursive_suffix: None,
+            ..
+        } => "::*",
+        ImportShape::Filter { .. } => "",
+    };
+    out.push(format!("{target}{suffix}"));
+}
+
+/// The declared names of every package in `source`, nested ones included.
+pub fn declared_package_names(source: &str) -> HashSet<String> {
+    declared_packages_in_content(source)
+}
+
+/// Every import target authored in `source`, in source order.
+pub fn import_targets(source: &str) -> Vec<String> {
+    collect_import_targets_from_content(source)
+}
+
+/// Every type a declaration in `source` names, in source order.
+pub fn type_reference_targets(source: &str) -> Vec<String> {
+    collect_type_reference_targets_from_content(source)
+}
+
+/// What one package in a source imports and names, keyed by its qualified name.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PackageTargets {
+    pub qualified_name: String,
+    pub import_targets: Vec<String>,
+    pub type_reference_targets: Vec<String>,
+}
+
+/// The import and type-reference targets of every package in `source`.
+///
+/// One walk answering both questions per package. The caller used to receive a `PackageBody` and
+/// walk it twice; a body is a parser type, and handing one out is exactly what this boundary
+/// exists to prevent.
+pub fn package_targets(source: &str) -> Vec<PackageTargets> {
+    let Ok(document) = sysml_v2_parser::parse(source) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for_each_package_in_parsed(&document, |qualified_name, body| {
+        let mut type_reference_targets = Vec::new();
+        collect_type_reference_targets_from_package_body(
+            &document,
+            body,
+            &mut type_reference_targets,
+        );
+        out.push(PackageTargets {
+            qualified_name,
+            import_targets: collect_import_targets_from_package_body(&document, body),
+            type_reference_targets,
+        });
+    });
+    out
+}
+
+fn push_type_reference(target: &str, out: &mut Vec<String>) {
+    let target = target.trim();
+    if target.is_empty() || target.starts_with("checks meta ") {
+        return;
+    }
+    out.push(target.to_string());
+}
+
+fn push_optional_type_reference(target: Option<&str>, out: &mut Vec<String>) {
+    if let Some(target) = target {
+        push_type_reference(target, out);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The library-closure seed a bare type reference produces.
+    ///
+    /// `lsp_feature_inspector_resolves_a_target_in_an_admitted_library` admits its library purely
+    /// through this: the workspace source has no import, so `Domain` reaches the closure only if
+    /// the `part w : Domain::Wheel;` typing is reported as a type-reference target.
+    #[test]
+    fn a_part_usage_typing_seeds_its_package() {
+        assert_eq!(
+            type_reference_targets("package App { part w : Domain::Wheel; }"),
+            vec!["Domain::Wheel".to_string()]
+        );
+    }
+
+    #[test]
+    fn a_library_package_declares_its_name() {
+        assert!(
+            declared_package_names("library package Domain { part def Wheel; }").contains("Domain")
+        );
+    }
 }

@@ -430,7 +430,7 @@ impl WorkspaceHandle {
     pub(crate) async fn apply_parsed_document_update(
         &self,
         edit: PreparedDocumentEdit,
-        parsed: sysml_v2_parser::ParseResult,
+        parsed: sysml_resolution::syntax::SyntaxParse,
         parse_time_ms: u32,
     ) -> Result<
         (

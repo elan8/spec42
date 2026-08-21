@@ -6,15 +6,20 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
-use sysml_v2_parser::ast::{
-    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ItemUsage,
-    LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody, PackageBodyElement, PartDef,
-    PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
-    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, QualifiedIdentification,
-    RefDecl, RootElement,
-};
-use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 use walkdir::WalkDir;
+
+const QUANTITY_UNIT_CLOSURE_PACKAGES: &[&str] = &[
+    "Measurement",
+    "ISQ",
+    "ISQBase",
+    "ISQSpaceTime",
+    "ISQMechanics",
+    "ISQElectromagnetism",
+    "ISQThermodynamics",
+    "SI",
+    "SIPrefixes",
+    "USCustomaryUnits",
+];
 
 /// Workspace file path and text used to seed the library import closure.
 #[derive(Debug, Clone)]
@@ -92,19 +97,19 @@ pub fn library_closure_seed_signature(
             signature.push("workspace:sysml-namespace".to_string());
         }
         signature.extend(
-            collect_import_targets_from_content(source.content)
+            sysml_resolution::syntax::import_targets(source.content)
                 .into_iter()
                 .map(|target| format!("import:{target}")),
         );
         if options.bootstrap_typing_references {
             signature.extend(
-                collect_type_reference_targets_from_content(source.content)
+                sysml_resolution::syntax::type_reference_targets(source.content)
                     .into_iter()
                     .map(|target| format!("type:{target}")),
             );
         }
         signature.extend(
-            declared_packages_in_content(source.content)
+            sysml_resolution::syntax::declared_package_names(source.content)
                 .into_iter()
                 .map(|package| format!("workspace-package:{package}")),
         );
@@ -158,7 +163,7 @@ fn resolve_library_closure_inner(
         if options.bootstrap_sysml_namespace && source.content.contains("SysML::") {
             seeds.insert(PackageKey("SysML".to_string()));
         }
-        for target in collect_import_targets_from_content(source.content) {
+        for target in sysml_resolution::syntax::import_targets(source.content) {
             if options.bootstrap_sysml_namespace
                 && (target == "sysml" || target.starts_with("sysml::"))
             {
@@ -169,7 +174,7 @@ fn resolve_library_closure_inner(
             }
         }
         if options.bootstrap_typing_references {
-            for target in collect_type_reference_targets_from_content(source.content) {
+            for target in sysml_resolution::syntax::type_reference_targets(source.content) {
                 for key in package_keys_for_import_target(&target) {
                     seeds.insert(PackageKey(key));
                 }
@@ -256,10 +261,7 @@ fn resolve_library_closure_inner(
 
 #[path = "closure/package_scan.rs"]
 mod package_scan;
-#[path = "closure/type_refs.rs"]
-mod type_refs;
-pub use package_scan::*;
-pub(crate) use type_refs::*;
+pub(crate) use package_scan::*;
 
 #[cfg(test)]
 mod tests {

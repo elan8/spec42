@@ -1174,8 +1174,8 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "sysml-v2-parser",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "tempfile",
  "url",
@@ -1272,9 +1272,9 @@ dependencies = [
  "server",
  "sha2",
  "spec42-generator-protocol",
- "sysml-v2-parser",
  "sysml_diagnostics",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "sysml_tokens",
  "tempfile",
@@ -2110,7 +2110,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "sysml-v2-parser",
+ "sysml_resolution",
 ]
 
 [[package]]
@@ -2964,9 +2964,9 @@ dependencies = [
  "sha2",
  "source_identity",
  "syn 2.0.119",
- "sysml-v2-parser",
  "sysml_diagnostics",
  "sysml_query",
+ "sysml_resolution",
  "sysml_source",
  "tempfile",
  "thiserror 2.0.19",

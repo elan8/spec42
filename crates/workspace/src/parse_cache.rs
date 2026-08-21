@@ -1,4 +1,4 @@
-//! Disk cache for parsed [`ParsedDocument`] values.
+//! Disk cache for parsed [`SyntaxDocument`] values.
 //!
 //! Libraries are read-only between spec42 upgrades. Parsing them on every
 //! server start is wasteful. This module caches the parse result keyed by the
@@ -11,7 +11,7 @@
 //! ```text
 //! [magic:   4 bytes  "KPC\0"]
 //! [version: 20 bytes spec42 semver string, zero-padded]
-//! [payload: remainder — postcard-encoded ParsedDocument]
+//! [payload: remainder — postcard-encoded SyntaxDocument]
 //! ```
 //!
 //! The 24-byte header allows fast staleness detection without decoding the tree.
@@ -23,14 +23,14 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
-use sysml_v2_parser::ParsedDocument;
+use sysml_resolution::syntax::SyntaxDocument;
 
 const MAGIC: &[u8; 4] = b"KPC\0";
 const VERSION_FIELD_LEN: usize = 20;
 // v2: switched the payload encoding from bincode (RUSTSEC-2025-0141: unmaintained) to postcard.
 // Bumping this makes a v1 (bincode) cache entry unreachable rather than misdecoded.
-// Bumped 2 -> 3 when the payload type changed from a detached `ParsedDocument` to the whole
-// `ParsedDocument`. `PARSE_AST_VERSION` alone is not a sufficient guard: a future parser revision
+// Bumped 2 -> 3 when the payload type changed from a detached `SyntaxDocument` to the whole
+// `SyntaxDocument`. `PARSE_AST_VERSION` alone is not a sufficient guard: a future parser revision
 // could land on a previously used value, and a v2 entry must become unreachable rather than
 // decode as the wrong type. This is a pure derived cache, so stale entries are evicted, never
 // migrated.
@@ -45,7 +45,7 @@ fn version_field() -> [u8; VERSION_FIELD_LEN] {
     let mut field = [0u8; VERSION_FIELD_LEN];
     let spec42_len = spec42.len().min(12);
     field[..spec42_len].copy_from_slice(&spec42[..spec42_len]);
-    field[12..16].copy_from_slice(&sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
+    field[12..16].copy_from_slice(&sysml_resolution::syntax::SYNTAX_AST_VERSION.to_le_bytes());
     field[16..20].copy_from_slice(&PARSE_CACHE_ENCODING_VERSION.to_le_bytes());
     field
 }
@@ -67,11 +67,11 @@ pub fn content_hash(bytes: &[u8]) -> [u8; 32] {
     hasher.finalize().into()
 }
 
-/// Try to load a cached [`ParsedDocument`] for a file whose content hashes to `hash`.
+/// Try to load a cached [`SyntaxDocument`] for a file whose content hashes to `hash`.
 ///
 /// Returns `None` on any miss, version mismatch, or I/O / decoding error.
 /// All failures are silent — the caller falls back to a fresh parse.
-pub fn load(cache_dir: &Path, hash: &[u8; 32]) -> Option<ParsedDocument> {
+pub fn load(cache_dir: &Path, hash: &[u8; 32]) -> Option<SyntaxDocument> {
     let path = entry_path(cache_dir, hash);
     let mut file = std::fs::File::open(&path).ok()?;
 
@@ -89,21 +89,21 @@ pub fn load(cache_dir: &Path, hash: &[u8; 32]) -> Option<ParsedDocument> {
     let mut payload = Vec::new();
     file.read_to_end(&mut payload).ok()?;
 
-    postcard::from_bytes::<ParsedDocument>(&payload).ok()
+    postcard::from_bytes::<SyntaxDocument>(&payload).ok()
 }
 
-/// Write a freshly parsed [`ParsedDocument`] to the cache.
+/// Write a freshly parsed [`SyntaxDocument`] to the cache.
 ///
 /// Creates the cache directory if needed. Silently ignores all I/O errors —
 /// caching is always a best-effort optimisation.
-pub fn store(cache_dir: &Path, hash: &[u8; 32], root: &ParsedDocument) {
+pub fn store(cache_dir: &Path, hash: &[u8; 32], root: &SyntaxDocument) {
     if let Err(e) = store_inner(cache_dir, hash, root) {
         tracing::debug!("parse cache store failed (non-fatal): {e}");
     }
 }
 
 /// Delete cache entries whose `ast_version` header does not match the current
-/// binary's [`sysml_v2_parser::PARSE_AST_VERSION`]. Call once at startup on a background thread.
+/// binary's [`sysml_resolution::syntax::SYNTAX_AST_VERSION`]. Call once at startup on a background thread.
 /// Non-fatal — errors are silently ignored.
 pub fn evict_stale_entries(cache_dir: &Path) {
     let Ok(entries) = std::fs::read_dir(cache_dir) else {
@@ -136,7 +136,7 @@ fn hex_encode(bytes: &[u8; 32]) -> String {
 fn store_inner(
     cache_dir: &Path,
     hash: &[u8; 32],
-    root: &ParsedDocument,
+    root: &SyntaxDocument,
 ) -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir_all(cache_dir)?;
 
@@ -172,11 +172,11 @@ fn is_stale(path: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_v2_parser::ParsedDocument;
+    use sysml_resolution::syntax::SyntaxDocument;
     use tempfile::tempdir;
 
-    fn parse(src: &str) -> ParsedDocument {
-        sysml_v2_parser::parse(src).expect("parse")
+    fn parse(src: &str) -> SyntaxDocument {
+        sysml_resolution::syntax::parse_strict(src).expect("parse")
     }
 
     #[test]

@@ -1,11 +1,9 @@
 //! Neutral quick-fix text edit suggesters.
 
 use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
-use sysml_v2_parser::ast::{PackageBody, RootElement};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
-use crate::syntax::qualified_identification_name;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagnosticLine {
@@ -629,27 +627,7 @@ fn suggest_create_usage_from_definition_impl(
 }
 
 pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSuggestion> {
-    let root = sysml_v2_parser::parse(source).ok()?;
-    let packages: Vec<_> = root
-        .elements
-        .iter()
-        .filter_map(|n| match &n.value {
-            RootElement::Package(p) => Some(p),
-            _ => None,
-        })
-        .collect();
-    if packages.len() != 1 {
-        return None;
-    }
-    let pkg = packages[0];
-    if !qualified_identification_name(&root, &pkg.identification).is_empty() {
-        return None;
-    }
-    let has_members = match &pkg.body {
-        PackageBody::Brace { elements, .. } => !elements.is_empty(),
-        _ => false,
-    };
-    if !has_members {
+    if !sysml_resolution::syntax::declares_single_anonymous_package_with_members(source) {
         return None;
     }
     let lines: Vec<&str> = source.lines().collect();

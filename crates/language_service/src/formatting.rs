@@ -91,40 +91,10 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
 }
 
 fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
-    match sysml_v2_parser::parse(source) {
-        Ok(original) => sysml_v2_parser::parse(candidate).is_ok_and(|reparsed| {
-            original.normalize_for_test_comparison() == reparsed.normalize_for_test_comparison()
-        }),
-        Err(_) => recovery_equivalent(source, candidate),
-    }
-}
-
-fn recovery_equivalent(source: &str, candidate: &str) -> bool {
-    let source = sysml_v2_parser::parse_for_editor(source);
-    let candidate = sysml_v2_parser::parse_for_editor(candidate);
-    !candidate.is_ok()
-        && source.document.normalize_for_test_comparison()
-            == candidate.document.normalize_for_test_comparison()
-        && recovery_diagnostic_signature(&source.errors)
-            == recovery_diagnostic_signature(&candidate.errors)
-}
-
-fn recovery_diagnostic_signature(errors: &[sysml_v2_parser::ParseError]) -> Vec<String> {
-    errors
-        .iter()
-        .map(|error| {
-            format!(
-                "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
-                error.category,
-                error.severity,
-                error.code,
-                error.message,
-                error.expected,
-                error.found,
-                error.is_cascade,
-            )
-        })
-        .collect()
+    // The parser authority answers this: whether a reformat changes what the parser sees is a
+    // question about the grammar, and answering it here would mean parsing the same text twice
+    // against an AST this crate would have to keep in step with the pinned revision.
+    sysml_resolution::syntax::reformatting_preserves_meaning(source, candidate)
 }
 
 #[derive(Debug)]
@@ -342,7 +312,7 @@ part x;
     fn format_document_reformats_a_recovery_equivalent_source() {
         let source = "package ion {\n  class A {\n    in<f;\n  }\n\n  class A { in #su f;\n  }\n}";
         assert!(
-            sysml_v2_parser::parse(source).is_err(),
+            sysml_resolution::syntax::parse_strict(source).is_err(),
             "the parser accepted this again; restore the strict-parse arm of this test"
         );
         assert_eq!(

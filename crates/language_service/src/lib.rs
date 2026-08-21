@@ -15,7 +15,6 @@ mod outline;
 pub mod references;
 pub mod rename;
 pub mod symbol;
-mod syntax;
 pub mod text;
 pub mod uri;
 pub mod workspace;

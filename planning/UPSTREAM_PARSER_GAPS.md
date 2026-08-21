@@ -27,72 +27,24 @@ abbreviated revision or the old `sysml-v2-parser-next` dependency alias.
 - Closing a gap requires re-verifying it against the newly pinned full commit and removing the entry
   from this active plan. Git history, not a completed section here, records the old gap.
 
-## Parser-facade removal audit
+## Parser authority
 
-On 2026-08-19 a direct workspace pin to `204ca48` (the then-current revision), removal of
-`crates/sysml_parser`, and removal of
-the `sysml_v2_parser::next` namespace were compiled with:
+`crates/sysml_resolution` is the only crate that may name the parser, because it is the one that
+lowers the AST to the semantic graph. Every other crate reaches syntax through
+`sysml_resolution::syntax`, which returns plain data -- ranges, roles, outline nodes, closure
+targets, an opaque `SyntaxDocument` handle. A crate with no parser dependency therefore cannot
+hold, cache, serialize, or walk a `ParsedDocument`, and breaking that is a compile error rather
+than a review comment.
 
-```text
-cargo check --workspace --all-targets --offline
-```
+`crates/source_identity/tests/parser_authority.rs` enforces it in four rules: the root workspace
+owns the pin as a bare 40-character git revision; only `crates/sysml_resolution/Cargo.toml` may
+mention the parser, and only as `workspace = true`; no manifest may reintroduce a repository-local
+facade via a `path =` alias; and `Cargo.lock` must resolve exactly one `sysml-v2-parser`, from git,
+with no registry checksum. It lives in `source_identity` because that crate has no parser
+dependency and never will -- a guard the guarded thing could disable is not a guard.
 
-The experiment produced 130 errors in `sysml_tokens`; this is an error count, **not 130 adapters or
-130 upstream gaps**. The edits were reverted after inventorying the failures. **That count predates
-`b6291cc`/`ec47463`**, which reshaped the usage/feature prefixes, the multiplicity keyword slots and four
-body-element enums, so it is a lower bound on today's figure rather than a current measurement;
-re-run the experiment before planning against it. The buildable facade
-therefore remains only as a bounded migration boundary: its root re-exports parser 0.54 while
-`next` re-exports the pinned revision for semantic construction.
-
-### Capabilities already present upstream
-
-These must be consumed rather than reimplemented or requested again upstream:
-
-- `ParsedDocument` atomically owns `SourceStorage`, `QualifiedReferenceArena`, and `RootNamespace`.
-- `ParsedDocument::range` is the canonical byte-span to source-range conversion.
-- `ParsedDocument::qualified_reference` and `qualified_declaration_name` resolve document-local
-  arena identities to source-backed views with segment spans and separator provenance.
-- `ast::visit::Visitor` is an exhaustive, source-ordered, pre-order structural traversal generated
-  from the shared traversal inventory. It is appropriate for context-free range/reference
-  collection. Policy-complete semantic lowering retains exhaustive scope matches, as the parser's
-  visitor contract requires.
-- `parse`, `parse_owned`, `parse_for_editor`, and `parse_for_editor_owned` return an atomic document
-  (directly or through `ParseResult.document`) and preserve explicit recovery diagnostics.
-
-Consequently, detached-AST compatibility helpers are not an upstream requirement. In particular,
-the deprecated `Span::to_lsp_range`, textual access through old `TypingRelationship.target` nodes,
-and `ParseResult.root` are APIs spec42 must stop expecting.
-
-### Downstream work required before deletion
-
-1. Change syntax-fidelity APIs to accept `&ParsedDocument`, not a detached `&RootNamespace` plus
-   separately supplied source text. Start with `sysml_tokens::ast_semantic_ranges` and its helpers.
-   Resolve every `QualifiedReferenceId` through the same document and convert every span with
-   `ParsedDocument::range`.
-2. Replace `sysml_tokens/src/ast_ranges.rs`'s legacy recursive descent with the upstream visitor
-   where classification is genuinely per node kind. Keep LSP token categories, precedence, and
-   delta encoding in spec42. Do not move editor presentation policy into the parser.
-3. Migrate the remaining legacy syntax consumers: language-service outline, formatting and code
-   actions; LSP syntax/symbol adapters and workspace parse state; workspace library closure and
-   parse-cache artifacts; KPAR package discovery; server parsing; tests and fuzz targets.
-4. Preserve the canonical semantic path already using the pinned revision in `sysml_resolution`;
-   after the
-   workspace dependency points directly at that revision, remove only the `next` namespace from
-   imports.
-5. Replace the facade-owned manifest guard with a repository-wide guard that permits a parser
-   source/revision only in the root workspace dependency and requires all production manifests to
-   use `workspace = true`.
-6. Delete `crates/sysml_parser`, remove parser 0.54 from `Cargo.lock`, and prove that only one
-   `sysml-v2-parser` package identity remains with `cargo tree -d` and `cargo tree -i
-   sysml-v2-parser`.
-
-Facade deletion is complete only when clean and recovery corpus behavior remains equivalent across
-parser consumers, semantic-token golden tests retain classifications and exact ranges, outline and
-code-action tests retain exact symbols/edits, parse-cache round trips retain source and arena
-provenance, snapshot cold/warm parity passes, and the workspace/all-target check succeeds offline.
-No temporary source scanner, compatibility DTO, second parse, or silent fallback is an acceptable
-migration step.
+The former `crates/sysml_parser` facade, which held a crates.io 0.54 copy and the pinned revision
+apart, is deleted. Git history records that migration; it is not pending work.
 
 ## Open semantic grammar and provenance gaps
 
