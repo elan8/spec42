@@ -119,12 +119,6 @@ package Structural {
         (range (start 29 4) (end 33 5))
       )
       (diagnostic
-        (severity warning)
-        (code "incomplete_connection_like_end_pair")
-        (source "semantic")
-        (range (start 39 4) (end 41 5))
-      )
-      (diagnostic
         (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
@@ -176,7 +170,7 @@ package Structural {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3276ae7be36176947a46126dac42c643fec3c60f40fd7e1022bd7c223d1118db") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete::only"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Pump")))))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Base::reading"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))

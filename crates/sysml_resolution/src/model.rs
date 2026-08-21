@@ -11420,6 +11420,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -11429,6 +11431,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
@@ -11786,6 +11790,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -11794,6 +11800,11 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -13375,6 +13386,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -13383,6 +13396,11 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -13533,6 +13551,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -13541,6 +13561,11 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -14575,6 +14600,84 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    fn build_diagnostics_sexpr(source: &str) -> String {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                source.to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        output
+    }
+
+    /// `abstract` on a connection-like definition is published, and exempts its end count.
+    ///
+    /// The four connection-like definitions gained a `definition_prefix` upstream. Until they
+    /// did, `structural.rs`'s "an abstract declaration is deliberately incomplete" guard could
+    /// never fire for them, so an abstract declaration authoring one end was reported as an
+    /// incomplete end pair. Both halves are asserted here: the modifier reaches the model, and
+    /// the diagnostic it suppresses is gone.
+    #[test]
+    fn abstract_connection_like_definitions_publish_the_modifier_and_skip_the_end_guard() {
+        for (label, source, qualified_name) in [
+            (
+                "connection def",
+                "package Demo {\n\tabstract connection def C {\n\t\tend a;\n\t}\n}\n",
+                "Demo::C",
+            ),
+            (
+                "flow def",
+                "package Demo {\n\tabstract flow def F {\n\t\tend a;\n\t}\n}\n",
+                "Demo::F",
+            ),
+            (
+                "allocation def",
+                "package Demo {\n\tabstract allocation def A {\n\t\tend a;\n\t}\n}\n",
+                "Demo::A",
+            ),
+            (
+                "interface def",
+                "package Demo {\n\tabstract interface def I {\n\t\tend a;\n\t}\n}\n",
+                "Demo::I",
+            ),
+        ] {
+            let output = build_semantic_sexpr(source);
+            let expected = format!("(qualified-name \"{qualified_name}\")");
+            let line = output
+                .lines()
+                .find(|line| line.contains(&expected) && line.contains("(declaration "))
+                .unwrap_or_else(|| panic!("no declaration for {label}, got:\n{output}"));
+            assert!(
+                line.contains("(modifiers abstract)"),
+                "expected {label} to publish (modifiers abstract), got:\n{line}"
+            );
+
+            let diagnostics = build_diagnostics_sexpr(source);
+            assert!(
+                !diagnostics.contains("incomplete_connection_like_end_pair"),
+                "expected abstract {label} to be exempt from the end-pair guard, got:\n{diagnostics}"
+            );
+        }
+
+        // The guard still fires when the declaration is not abstract -- both sides of the rule.
+        let concrete =
+            build_diagnostics_sexpr("package Demo {\n\tconnection def C {\n\t\tend a;\n\t}\n}\n");
+        assert!(
+            concrete.contains("incomplete_connection_like_end_pair"),
+            "expected a concrete one-ended connection def to still be reported, got:\n{concrete}"
+        );
     }
 
     /// Every declaration kind whose parser node gained a `multiplicity` field publishes it.
