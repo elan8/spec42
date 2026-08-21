@@ -43,23 +43,10 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.4.6.4 ParameterMembership
-  - `validateParameterMembershipOwningType`
-  - `validateParameterMembershipParameterDirection`
 
-- 8.3.4.7.3 Expression
-  - `validateExpressionResultExpressionMembership`
-  - `validateExpressionResultParameterMembership`
 
-- 8.3.4.7.4 Function
-  - `validateFunctionResultExpressionMembership`
-  - `validateFunctionResultParameterMembership`
 
-- 8.3.4.7.7 ResultExpressionMembership
-  - `validateResultExpressionMembershipOwningType`
 
-- 8.3.4.7.8 ReturnParameterMembership
-  - `validateReturnParameterMembershipOwningType`
 
 - 8.3.4.8.2 CollectExpression
   - `validateCollectExpressionOperator`
