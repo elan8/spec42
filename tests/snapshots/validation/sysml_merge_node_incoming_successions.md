@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.17.13 validateMergeNodeIncomingSuccessions
 type=file
-skip_validation=the pinned parser has no control-node production -- `join j;` is parsed as a typed usage whose type reference `join` does not resolve -- so no ControlNode reaches semantics
+skip_validation=the parser models a control-node statement only as a reference: JoinStmt.join, ForkStmt.fork and DecisionStmt.decide are each a Node<Expression> path with no declared-name field, so `join good;` publishes an anonymous control node with an unresolved joinInput reference to `good` rather than declaring a named ControlNode
 ~~~
 # SOURCE
 ~~~sysml

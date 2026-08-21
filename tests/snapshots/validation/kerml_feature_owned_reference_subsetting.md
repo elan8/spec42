@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureOwnedReferenceSubsetting
 type=file
-skip_validation=the pinned parser drops the `references` clause, so no ReferenceSubsetting relationship is published and the rule has nothing to count
+skip_validation=sysml_resolution does not lower KermlFeatureMember.references -- the parser types the clause, lower_kerml_feature_member reads only typing/subsets/redefines -- so no ReferenceSubsetting relationship is published; the AST also holds a single Option, so a second references clause is silently discarded
 ~~~
 # SOURCE
 ~~~kerml

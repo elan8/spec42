@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureEndIsConstant
 type=file
-skip_validation=the pinned parser drops the const modifier on a feature -- `const end feature fixed` publishes only (modifiers end) -- so isConstant is never available to the rule
+skip_validation=sysml_resolution does not lower KermlFeatureMember.is_const -- the parser types the modifier, lower_kerml_feature_member copies every sibling flag but not is_const -- so isConstant is never published
 ~~~
 # SOURCE
 ~~~kerml

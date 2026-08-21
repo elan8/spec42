@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.9.2 validateEventOccurrenceUsageReference
 type=file
-skip_validation=the pinned parser reports the referenced feature of an event occurrence usage as unsupported_reference, so the reference target never reaches semantics
+skip_validation=the referenced feature of an event occurrence usage parses but sysml_resolution settles it as unsupported_reference, so the reference target never reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

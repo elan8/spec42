@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.6.5 validateVariantMembershipOwningNamespace
 type=file
-skip_validation=the pinned parser reports a variant member as unsupported_part_definition_member, so no VariantMembership reaches semantics
+skip_validation=a variant member parses but sysml_resolution reports it as unsupported_part_definition_member, so no VariantMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

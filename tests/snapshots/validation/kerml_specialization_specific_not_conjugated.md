@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.1.8 validateSpecificationSpecificNotConjugated
 type=file
-skip_validation=the pinned parser has no conjugation production, so a conjugated specific type never reaches semantics and is reported as unsupported_grammar_form
+skip_validation=the parser models conjugation only as the `~T` conjugated-typing flag (TypingRelationship.is_conjugated); there is no conjugation-declaration production, so a conjugated specific type is reported as unsupported_grammar_form
 ~~~
 # SOURCE
 ~~~kerml

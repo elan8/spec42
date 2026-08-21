@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.4 validateFeatureChainingFeatureConformance
 type=file
-skip_validation=the pinned parser drops the `chains` clause -- a chaining feature publishes no featureChaining relationship -- so the rule has no chainingFeature list to check
+skip_validation=sysml_resolution does not lower KermlFeatureMember.chains -- the parser types the clause, lower_kerml_feature_member reads only typing/subsets/redefines -- so no featureChaining relationship is published
 ~~~
 # SOURCE
 ~~~kerml

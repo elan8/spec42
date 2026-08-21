@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.3.3.10 validateSubsettingConstantConformance
 type=file
-skip_validation=the pinned parser drops the const modifier on a feature, so isConstant is never published for either the subsetted or the subsetting feature and the rule cannot run
+skip_validation=sysml_resolution does not lower KermlFeatureMember.is_const -- the parser types the modifier, lower_kerml_feature_member copies every sibling flag but not is_const -- so isConstant is never published
 ~~~
 # SOURCE
 ~~~kerml

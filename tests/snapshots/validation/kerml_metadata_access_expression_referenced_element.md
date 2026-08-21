@@ -5,7 +5,7 @@ specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.8.15 validateMetadataAccessExpressionReferencedElement
 type=file
-skip_validation=the pinned parser reports a metadata access expression as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics and the rule cannot run; only the accepted side is authored here
+skip_validation=a metadata access expression parses but sysml_resolution reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics; only the accepted side is authored here
 ~~~
 # SOURCE
 ~~~kerml

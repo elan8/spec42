@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.26.11 validateViewUsageOnlyOneViewRendering
 type=file
-skip_validation=the pinned parser reports a render member as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics
+skip_validation=a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

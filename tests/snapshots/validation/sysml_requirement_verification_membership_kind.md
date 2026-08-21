@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.24.2 validateRequirementVerificationMembershipKind
 type=file
-skip_validation=the pinned parser reports a verify requirement member as unsupported_requirement_definition_member, so no RequirementVerificationMembership reaches semantics
+skip_validation=a verify requirement member parses but sysml_resolution reports it as unsupported_requirement_definition_member, so no RequirementVerificationMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml

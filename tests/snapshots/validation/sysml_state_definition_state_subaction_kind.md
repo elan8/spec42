@@ -5,7 +5,7 @@ specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.18.5 validateStateDefinitionStateSubactionKind
 type=file
-skip_validation=the pinned parser does not resolve the subaction of an `entry`/`do`/`exit` member -- its name is reported as unresolved_reference -- so no StateSubactionMembership reaches semantics
+skip_validation=the subaction of an `entry`/`do`/`exit` member parses but its name settles as unresolved_reference, so no StateSubactionMembership reaches semantics
 ~~~
 # SOURCE
 ~~~sysml
