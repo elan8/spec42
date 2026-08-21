@@ -48,39 +48,14 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.4.8.2 CollectExpression
-  - `validateCollectExpressionOperator`
 
-- 8.3.4.8.3 ConstructorExpression
-  - `validateConstructorExpressionNoDuplicateFeatureRedefinition`
-  - `validateConstructorExpressionOwnedFeatures`
 
-- 8.3.4.8.4 FeatureChainExpression
-  - `validateFeatureChainExpressionConformance`
-  - `validateFeatureChainExpressionOperator`
 
-- 8.3.4.8.5 FeatureReferenceExpression
-  - `validateFeatureReferenceExpressionReferentIsFeature`
-  - `validateFeatureReferenceExpressionResult`
 
-- 8.3.4.8.6 IndexExpression
-  - `validateIndexExpressionOperator`
 
-- 8.3.4.8.7 InstantiationExpression
-  - `validateInstantiationExpressionInstantiatedType`
-  - `validateInstantiationExpressionResult`
 
-- 8.3.4.8.8 InvocationExpression
-  - `validateInvocationExpressionInstantiatedType`
-  - `validateInvocationExpressionNoDuplicateParameterRedefinition`
-  - `validateInvocationExpressionOwnedFeatures`
-  - `validateInvocationExpressionParameterRedefinition`
 
-- 8.3.4.8.15 MetadataAccessExpression
-  - `validateMetadataAccessExpressionReferencedElement`
 
-- 8.3.4.8.18 SelectExpression
-  - `validateSelectExpressionOperator`
 
 - 8.3.4.9.2 Flow
   - `validateFlowPayloadFeature`
