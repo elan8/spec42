@@ -1,165 +1,31 @@
 # Normative validation-rule inventory
 
-Active work list for encoding every normative KerML and SysML validation constraint as a snapshot
-fixture under `tests/snapshots/validation`. The snapshot corpus is the durable coverage record;
-this file holds only unprocessed rules, ambiguities, and blockers. Remove an entry when its
-fixture lands.
+Every normative validation constraint named by the two specifications now has a traceable snapshot
+fixture under `tests/snapshots/validation`, and that corpus is the durable coverage record. This
+file holds only what is still open.
 
-Sources of the inventory below are the normative constraint listings of the abstract-syntax
-clauses:
+Reconciliation of the checked-in corpus against the full normative inventory:
 
-- OMG KerML 1.0 (formal/26-03-01), <https://www.omg.org/spec/KerML/1.0/PDF> -- 88 constraints,
-  all covered.
-- OMG SysML 2.0 Language (formal/26-03-02), <https://www.omg.org/spec/SysML/2.0/Language/PDF> --
-  92 constraints.
+- OMG KerML 1.0 (formal/26-03-01), <https://www.omg.org/spec/KerML/1.0/PDF> -- 88 named
+  constraints across clauses 8.3.2 through 8.3.4, all covered.
+- OMG SysML 2.0 Language (formal/26-03-02),
+  <https://www.omg.org/spec/SysML/2.0/Language/PDF> -- 92 named constraints across clauses 8.3.6
+  through 8.3.26, all covered.
 
-Every constraint the specifications name is listed; the abstract-syntax constraint name is the
-stable inventory identity, qualified by its clause number.
+180 constraints are covered by 179 fixtures: the two Annotation constraints of KerML 8.3.2.3.3 are
+one structural condition and share `kerml_annotation_annotating_element.md`. Each fixture's `META`
+carries the specification, its OMG document identifier, the exact clause and the constraint name,
+so `grep '^validation_rule=' tests/snapshots/validation/*.md` reproduces the reconciliation above.
+
+Fixtures whose expectation the compiler does not yet meet carry a concrete `skip_validation`
+reason, which is where the remaining implementation and parser gaps are recorded. That list is
+deliberately not duplicated here; `cargo run -p spec42-snapshot -- check` reports it as `SKIPPED`
+lines.
 
 ## Active blockers
 
 - `8.3.2.3.3 validateAnnotationAnnotatedElementOwnership`: the publication records a
   `comment about Thing` annotation as documentation of the owning package rather than of `Thing`
   (see `tests/snapshots/validation/kerml_annotation_annotating_element.md`). The constraint itself
-  has no textual violating form, so this does not block its fixture, but the annotatedElement
-  question is open for the annotation clauses generally.
-
-## Remaining rules
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### SysML 2.0 Language (formal/26-03-02)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-- 8.3.20.2 AssertConstraintUsage
-  - `validateAssertConstraintUsageReference`
-
-- 8.3.21.2 ActorMembership
-  - `validateActorMembershipOwningType`
-
-- 8.3.21.5 FramedConcernMembership
-  - `validateFramedConcernMembershipConstraintKind`
-
-- 8.3.21.7 RequirementConstraintMembership
-  - `validateRequirementConstraintMembershipIsComposite`
-  - `validateRequirementConstraintMembershipOwningType`
-
-- 8.3.21.8 RequirementDefinition
-  - `validateRequirementDefinitionOnlyOneSubject`
-  - `validateRequirementDefinitionSubjectParameterPosition`
-
-- 8.3.21.9 RequirementUsage
-  - `validateRequirementUsageOnlyOneSubject`
-  - `validateRequirementUsageSubjectParameterPosition`
-
-- 8.3.21.10 SatisfyRequirementUsage
-  - `validateSatisfyRequirementUsageReference`
-
-- 8.3.21.11 SubjectMembership
-  - `validateSubjectMembershipOwningType`
-
-- 8.3.21.12 StakeholderMembership
-  - `validateStakeholderMembershipOwningType`
-
-- 8.3.22.2 CaseDefinition
-  - `validateCaseDefinitionOnlyOneObjective`
-  - `validateCaseDefinitionOnlyOneSubject`
-  - `validateCaseDefinitionSubjectParameterPosition`
-
-- 8.3.22.3 CaseUsage
-  - `validateCaseUsageOnlyOneObjective`
-  - `validateCaseUsageOnlyOneSubject`
-  - `validateCaseUsageSubjectParameterPosition`
-
-- 8.3.22.4 ObjectiveMembership
-  - `validateObjectiveMembershipIsComposite`
-  - `validateObjectiveMembershipOwningType`
-
-- 8.3.24.2 RequirementVerificationMembership
-  - `validateRequirementVerificationMembershipKind`
-  - `validateRequirementVerificationMembershipOwningType`
-
-- 8.3.25.2 IncludeUseCaseUsage
-  - `validateIncludeUseCaseUsageReference`
-
-- 8.3.26.2 Expose
-  - `validateExposeIsImportAll`
-  - `validateExposeOwningNamespace`
-  - `validateExposeVisibility`
-
-- 8.3.26.7 ViewDefinition
-  - `validateViewDefinitionOnlyOneViewRendering`
-
-- 8.3.26.10 ViewRenderingMembership
-  - `validateViewRenderingMembershipOwningType`
-
-- 8.3.26.11 ViewUsage
-  - `validateViewUsageOnlyOneViewRendering`
-
+  has no textual violating form, so this does not block its fixture, but which element an
+  `about` annotation annotates is still open for the annotation clauses generally.
