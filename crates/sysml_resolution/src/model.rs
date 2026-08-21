@@ -5153,9 +5153,7 @@ impl SemanticModelBuilder {
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
-                // `ast::AttributeDef` gained the `multiplicity` field its `AttributeUsage`
-                // sibling has (planning/UPSTREAM_PARSER_GAPS.md gap 53a, closed upstream); reading
-                // it here is the separate lowering step that entry now tracks.
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -6579,9 +6577,10 @@ impl SemanticModelBuilder {
             DeclarationKind::RequirementActor,
             name,
             node.span.clone(),
-            // `ast::RequirementActorDecl` has no `multiplicity` field, unlike its `ActorUsage`
-            // sibling; see planning/UPSTREAM_PARSER_GAPS.md.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10123,8 +10122,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
-                // `ast::RequirementUsage` has no `multiplicity` field; see
-                // planning/UPSTREAM_PARSER_GAPS.md.
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -12560,11 +12558,10 @@ impl SemanticModelBuilder {
             DeclarationKind::ConstraintUsage,
             name,
             node.span.clone(),
-            // `ast::ConstraintUsage` carries no modifier or direction field. It does carry a
-            // `multiplicity` now; reading it is the separate step
-            // planning/UPSTREAM_PARSER_GAPS.md tracks.
+            // `ast::ConstraintUsage` carries no modifier or direction field.
             DeclarationFacts {
                 short_name,
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -12945,7 +12942,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
-                // `ast::CalcUsage` has no `multiplicity` field; see planning/UPSTREAM_PARSER_GAPS.md.
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -14578,6 +14575,58 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// Every declaration kind whose parser node gained a `multiplicity` field publishes it.
+    ///
+    /// Five lowerings passed no `multiplicity` because their nodes genuinely had no such field.
+    /// Upstream brought all five to sibling parity, and each carried a comment asserting the
+    /// absence that had become false.
+    #[test]
+    fn every_multiplicity_carrying_declaration_publishes_it() {
+        for (label, source, qualified_name, bounds) in [
+            (
+                "attribute def",
+                "package Demo {\n\tattribute def A[2];\n}\n",
+                "Demo::A",
+                "(multiplicity (lower 2) (upper 2))",
+            ),
+            (
+                "constraint usage",
+                "package Demo {\n\tconstraint c[3];\n}\n",
+                "Demo::c",
+                "(multiplicity (lower 3) (upper 3))",
+            ),
+            (
+                "requirement usage",
+                "package Demo {\n\trequirement r[4];\n}\n",
+                "Demo::r",
+                "(multiplicity (lower 4) (upper 4))",
+            ),
+            (
+                "calc usage",
+                "package Demo {\n\tcalc c1[5];\n}\n",
+                "Demo::c1",
+                "(multiplicity (lower 5) (upper 5))",
+            ),
+            (
+                "requirement actor",
+                "package Demo {\n\trequirement def R {\n\t\tactor a : Person[6];\n\t}\n}\n",
+                "Demo::R::a",
+                "(multiplicity (lower 6) (upper 6))",
+            ),
+        ] {
+            let output = build_semantic_sexpr(source);
+            let expected = format!("(qualified-name \"{qualified_name}\")");
+            let line = output
+                .lines()
+                .find(|line| line.contains(&expected) && line.contains("(declaration "))
+                .unwrap_or_else(|| panic!("no declaration for {label}, got:\n{output}"));
+            assert!(
+                line.contains(bounds),
+                "expected {label} to publish {bounds}, got:\n{line}"
+            );
+        }
     }
 
     /// The header-level specialization clauses four lowerings used to drop.
