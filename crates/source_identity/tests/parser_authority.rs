@@ -13,6 +13,12 @@ use std::path::{Path, PathBuf};
 /// The single crate permitted to depend on the parser.
 const AUTHORITY_MANIFEST: &str = "crates/sysml_resolution/Cargo.toml";
 
+/// That crate's package name, as `Cargo.lock` spells it.
+const AUTHORITY_CRATE: &str = "sysml_resolution";
+
+/// The upstream package name, as `Cargo.lock` spells it -- renames do not survive into the lockfile.
+const PARSER_PACKAGE: &str = "sysml-v2-parser";
+
 /// The upstream the pin must come from.
 const PARSER_GIT_URL: &str = "https://github.com/lukewilliamboswell/sysml-v2-parser.git";
 
@@ -53,13 +59,62 @@ fn manifests(root: &Path) -> Vec<PathBuf> {
     out
 }
 
+/// The dependency key of a manifest line, e.g. `parser` in `parser.workspace = true`.
+fn dependency_key(line: &str) -> &str {
+    line.trim()
+        .trim_start_matches('[')
+        .split(['=', '.'])
+        .next()
+        .unwrap_or_default()
+        .trim()
+        .trim_matches('"')
+}
+
+/// Dependency keys that resolve to the parser, including a workspace-level rename.
+///
+/// `parser = { package = "sysml-v2-parser", git = ... }` in `[workspace.dependencies]` lets any
+/// member write `parser.workspace = true` -- a line containing no parser spelling at all, which a
+/// text scan for the package name cannot see. Deriving the key set from the root is what lets
+/// rule 2 see that line. Rule 5 backstops this by reading what Cargo actually resolved.
+fn parser_alias_keys(root: &Path) -> Vec<String> {
+    let manifest = fs::read_to_string(root.join("Cargo.toml")).unwrap_or_default();
+    let mut keys = vec![PARSER_PACKAGE.to_string()];
+    let mut in_workspace_dependencies = false;
+    for line in manifest.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') {
+            in_workspace_dependencies = trimmed == "[workspace.dependencies]";
+            continue;
+        }
+        if !in_workspace_dependencies
+            || trimmed.starts_with('#')
+            || !trimmed.contains(PARSER_PACKAGE)
+        {
+            continue;
+        }
+        let key = dependency_key(trimmed);
+        if !key.is_empty() && !keys.iter().any(|known| known == key) {
+            keys.push(key.to_string());
+        }
+    }
+    keys
+}
+
 fn parser_lines(manifest: &Path) -> Vec<String> {
+    parser_lines_with_aliases(manifest, &[PARSER_PACKAGE.to_string()])
+}
+
+fn parser_lines_with_aliases(manifest: &Path, aliases: &[String]) -> Vec<String> {
     fs::read_to_string(manifest)
         .unwrap_or_default()
         .lines()
         .filter(|line| {
             let line = line.trim();
-            !line.starts_with('#') && line.contains("sysml-v2-parser")
+            if line.starts_with('#') {
+                return false;
+            }
+            line.contains(PARSER_PACKAGE)
+                || aliases.iter().any(|alias| alias == dependency_key(line))
         })
         .map(str::to_string)
         .collect()
@@ -111,6 +166,7 @@ fn the_root_workspace_owns_the_parser_pin() {
 #[test]
 fn only_the_lowering_authority_may_name_the_parser() {
     let root = repo_root();
+    let aliases = parser_alias_keys(&root);
     let mut offenders = Vec::new();
     for manifest in manifests(&root) {
         let relative = manifest
@@ -121,7 +177,7 @@ fn only_the_lowering_authority_may_name_the_parser() {
         if relative == "Cargo.toml" {
             continue;
         }
-        let lines = parser_lines(&manifest);
+        let lines = parser_lines_with_aliases(&manifest, &aliases);
         if lines.is_empty() {
             continue;
         }
@@ -199,5 +255,72 @@ fn the_lockfile_resolves_one_parser_from_git() {
     assert!(
         !stanza.contains("checksum = "),
         "a registry checksum means a crates.io copy was resolved:\n{stanza}"
+    );
+}
+
+/// The value of a `key = "value"` field in a lockfile stanza.
+fn lock_field(stanza: &str, key: &str) -> Option<String> {
+    let prefix = format!("{key} = \"");
+    stanza
+        .lines()
+        .map(str::trim)
+        .find_map(|line| line.strip_prefix(&prefix))
+        .and_then(|rest| rest.split('"').next())
+        .map(str::to_string)
+}
+
+/// The package names in a lockfile stanza's `dependencies` array.
+///
+/// An entry is either `"name"` or `"name version (source)"` when Cargo needs to disambiguate, so
+/// the package name is the first whitespace-delimited token. Comparing that token *exactly* is
+/// what stops a hypothetical `sysml-v2-parser-testing` from matching a substring search.
+fn lock_dependencies(stanza: &str) -> Vec<String> {
+    let Some((_, rest)) = stanza.split_once("dependencies = [") else {
+        return Vec::new();
+    };
+    let Some((body, _)) = rest.split_once(']') else {
+        return Vec::new();
+    };
+    body.lines()
+        .map(|line| line.trim().trim_end_matches(',').trim_matches('"'))
+        .filter(|entry| !entry.is_empty())
+        .filter_map(|entry| entry.split_whitespace().next())
+        .map(str::to_string)
+        .collect()
+}
+
+/// Rule 5: in the graph Cargo actually resolved, only the authority depends on the parser.
+///
+/// Rules 1-4 read manifests, so they can only ever see what a manifest *spells*. Two things defeat
+/// that and this rule catches both:
+///
+/// * a workspace-level rename -- `parser = { package = "sysml-v2-parser", git = ... }` in the root
+///   lets a member write `parser.workspace = true`, which contains no parser spelling at all;
+/// * a transitive path -- some crate gaining the parser through a dependency that never names it.
+///
+/// `Cargo.lock` records resolved *package* names, so neither survives into it. This is the rule
+/// that makes the boundary a property of the dependency graph rather than of manifest prose, and
+/// it is why the previous guard's whole failure mode -- being a spelling check -- cannot recur.
+#[test]
+fn only_the_authority_depends_on_the_parser_in_the_resolved_graph() {
+    let lock = fs::read_to_string(repo_root().join("Cargo.lock")).expect("read Cargo.lock");
+    let mut dependents: Vec<String> = lock
+        .split("[[package]]")
+        .skip(1)
+        .filter(|stanza| {
+            lock_dependencies(stanza)
+                .iter()
+                .any(|dependency| dependency == PARSER_PACKAGE)
+        })
+        .filter_map(|stanza| lock_field(stanza, "name"))
+        .collect();
+    dependents.sort();
+    dependents.dedup();
+    assert_eq!(
+        dependents,
+        vec![AUTHORITY_CRATE.to_string()],
+        "only `{AUTHORITY_CRATE}` may depend on `{PARSER_PACKAGE}` in the resolved dependency \
+         graph; it is the crate that lowers the AST to the semantic graph. Reach syntax through \
+         `sysml_resolution::syntax`, which hands out plain data. Resolved dependents: {dependents:?}"
     );
 }
