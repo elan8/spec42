@@ -31,22 +31,10 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.3.3.2 CrossSubsetting
-  - `validateCrossSubsettingCrossedFeature`
-  - `validateCrossSubsettingCrossingFeature`
-
-- 8.3.3.3.3 EndFeatureMembership
-  - `validateEndFeatureMembershipIsEnd`
 
 
-- 8.3.3.3.8 Redefinition
-  - `validateRedefinitionDirectionConformance`
-  - `validateRedefinitionFeaturingTypes`
 
-- 8.3.3.3.10 Subsetting
-  - `validateSubsettingConstantConformance`
-  - `validateSubsettingFeaturingTypes`
-  - `validateSubsettingUniquenessConformance`
+
 
 - 8.3.4.1.2 DataType
   - `validateDataTypeSpecialization`
