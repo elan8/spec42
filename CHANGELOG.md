@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
+  effective feature membership.** The four SysML collections read the specialization closure that
+  `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*
+  inherits, rather than returning a typed unavailable-fact outcome. One snapshot fixture came off
+  `blocked_by` and the `lowering-gap-definition-usage-effective-feature-membership-closure` issue
+  is retired.
+
 - **KerML `Type` inherited-membership and feature collections derive from the canonical
   specialization closure.** `deriveTypeInheritedMembership`, `deriveTypeFeatureMembership`,
   `deriveTypeFeature`, `deriveTypeEndFeature`, `deriveTypeDirectedFeature`,

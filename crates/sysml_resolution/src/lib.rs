@@ -6819,14 +6819,23 @@ package P {
                 DefinitionUsageDerivedKind::DefinitionOwnedAction,
             ),
             QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
-                if values.as_ref() == [service]
+                if values.as_ref() == [service.clone()]
         ));
+        // `usage` selects every usage in the effective feature membership, so both direct members
+        // appear; `directedUsage` selects none of them, because neither is directed.
         assert!(matches!(
             sequential
                 .definition_usage_derived(&vehicle, DefinitionUsageDerivedKind::DefinitionUsage,),
-            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
-                prerequisite: DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure,
-            })
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.contains(&wheel) && values.contains(&service)
+        ));
+        assert!(matches!(
+            sequential.definition_usage_derived(
+                &vehicle,
+                DefinitionUsageDerivedKind::DefinitionDirectedUsage,
+            ),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.is_empty()
         ));
         assert!(matches!(
             sequential.definition_usage_derived(

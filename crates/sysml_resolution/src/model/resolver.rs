@@ -2987,14 +2987,35 @@ impl ResolvedSemanticModel {
         }
         let _rule_id = rule.rule_id;
         match kind {
+            // `usage` and `directedUsage` select over the *effective* feature membership of the
+            // definition or usage -- everything it owns plus everything it inherits -- so they
+            // read the same canonical specialization closure `Type::inheritedMembership` does,
+            // rather than the direct child scan the `owned`/`nested` collections below use.
             DefinitionUsageDerivedKind::DefinitionDirectedUsage
             | DefinitionUsageDerivedKind::UsageDirectedUsage
             | DefinitionUsageDerivedKind::DefinitionUsage
             | DefinitionUsageDerivedKind::UsageUsage => {
-                self.resolved_outcome(DefinitionUsageDerivedOutcome::Unsupported {
-                    prerequisite:
-                        DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure,
-                })
+                let directed = matches!(
+                    kind,
+                    DefinitionUsageDerivedKind::DefinitionDirectedUsage
+                        | DefinitionUsageDerivedKind::UsageDirectedUsage
+                );
+                let values = self.symbols(
+                    self.owned_feature_members(declaration)
+                        .into_iter()
+                        .chain(self.inherited_feature_members(declaration))
+                        .filter(|member| {
+                            self.storage
+                                .declaration(*member)
+                                .is_some_and(|member| is_usage_declaration(member.kind))
+                                && (!directed
+                                    || self
+                                        .storage
+                                        .declaration_facts(*member)
+                                        .is_some_and(|facts| facts.direction.is_some()))
+                        }),
+                );
+                self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
             DefinitionUsageDerivedKind::DefinitionVariant
             | DefinitionUsageDerivedKind::DefinitionVariantMembership

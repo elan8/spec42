@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-definition-usage-effective-feature-membership-closure"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Definition and Usage effective feature/directedFeature collections require a canonical inherited FeatureMembership closure beyond direct owned feature facts."
-
-[[issue]]
 id = "lowering-gap-definition-usage-variant-membership-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
