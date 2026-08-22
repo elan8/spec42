@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Tokio-actor concurrency wrapper for embedder-owned session state.
 //!
 //! Gives readers a lock-free, always-immediately-available (possibly stale) snapshot via
@@ -8,11 +10,9 @@
 //! (`crates/lsp_server/src/workspace/coordinator.rs`), generalized from "one hard-coded
 //! lifecycle enum" to "any embedder-owned state struct `M`".
 //!
-//! **Status: standalone scaffold, not yet used by any consumer.** `lsp_server`'s
-//! `ensure_render_snapshot`/`build_view_catalog` (`crates/lsp_server/src/views/workspace_artifacts.rs`)
-//! and `babel42-app`'s per-session `update_document`-under-mutex path
-//! (`babel42-v2/backend/crates/babel42-app/src/editor.rs`) are the two motivating call sites;
-//! wiring either up is deliberately out of scope here.
+//! [`SemanticPublicationAuthority`] is the production boundary which composes canonical build/cache
+//! ownership with the atomic publication barrier. Protocol hosts share it rather than owning
+//! private semantic construction or publication policy.
 //!
 //! This crate deliberately depends on `tokio` and on `workspace`, but not on any
 //! protocol/binary-layer crate (`tower-lsp`, `axum`, `rmcp`, `clap`, `lsp_server`) — see
@@ -20,11 +20,25 @@
 //! by both an LSP server and an HTTP server.
 
 mod actor;
+mod semantic_model;
 mod snapshot;
 
 pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
+pub use semantic_model::{
+    PublishedModelSnapshot, SemanticAuthorityBeginError, SemanticAuthorityBuild,
+    SemanticAuthorityCompletion, SemanticAuthorityResult, SemanticBuildFailureKind,
+    SemanticBuildToken, SemanticPublicationAuthority, SemanticPublicationOutcome,
+    SemanticPublicationSession,
+};
 pub use snapshot::SnapshotHandle;
 
 // Re-exported so callers building `report_job_result` call sites don't need a direct
 // `workspace` dependency just for the token type.
 pub use workspace::{PublicationToken, RelinkToken};
+
+/// The raw model and the former workspace construction wrapper are deliberately inaccessible.
+///
+/// ```compile_fail
+/// use workspace::{build_semantic_model_from_documents, SemanticModel};
+/// ```
+pub struct RawSemanticPublicationIsNotPublic;

@@ -1,0 +1,895 @@
+schema_version = 1
+
+[[issue]]
+id = "lowering-gap-definition-usage-variant-membership-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Definition and Usage variantMembership results require addressable canonical VariantMembership identities rather than declaration-role reconstruction."
+
+[[issue]]
+id = "lowering-gap-definition-usage-effective-occurrence-time-variation-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Usage mayTimeVary requires one canonical effective occurrence/library-specialization and portion fact family; direct modifiers and graph edges are insufficient."
+
+[[issue]]
+id = "lowering-gap-action-effective-usage-closure"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The canonical publication does not expose ActionDefinition effective usage closure required by deriveActionDefinitionAction."
+
+[[issue]]
+id = "lowering-gap-action-argument-identities"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Action argument expressions are not published as ordered canonical identities for exact Actions argument derivations."
+
+[[issue]]
+id = "lowering-gap-action-input-parameter-identities"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Action input parameters are not published as ordered canonical identities for exact control and accept action derivations."
+
+[[issue]]
+id = "lowering-gap-action-owned-membership-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "AssignmentActionUsage owned Membership facts are compact storage rather than addressable canonical identities."
+
+[[issue]]
+id = "lowering-gap-action-owned-feature-order"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ForLoopActionUsage does not publish its ordered owned Feature collection and ReferenceUsage role as a canonical fact."
+
+[[issue]]
+id = "lowering-gap-action-anonymous-metaclass-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Send and terminate action forms lack separately addressable canonical action identities and exact metaclass facts."
+
+[[issue]]
+id = "lowering-gap-specialization-cross-feature-projection"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The canonical model does not publish Feature.crossFeature and ownedCrossFeature as one comparable fact for checkFeatureCrossingSpecialization."
+
+[[issue]]
+id = "lowering-gap-specialization-feature-typing-metaclass-library-anchor"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Feature typing targets lack the required Class/Structure metaclass predicate and paired exact library anchor for the Feature object and occurrence specialization checks."
+
+[[issue]]
+id = "lowering-gap-specialization-owned-cross-feature-owner-types"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The owned-cross-feature role and its owner's effective type collection are not a canonical endpoint fact family."
+
+[[issue]]
+id = "lowering-gap-specialization-feature-value-evaluation-results"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FeatureValue value/result endpoints and their specialization consequence are not canonical facts."
+
+[[issue]]
+id = "lowering-gap-specialization-semantic-metadata-projection"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Semantic metadata annotation, resolved baseType evaluation, syntax element, and annotated-type projections are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-expression-argument-result"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Expression argument ordering and result-feature endpoint facts are not published for select and index specialization checks."
+
+[[issue]]
+id = "lowering-gap-specialization-expression-result-instantiated-type"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ConstructorExpression result and instantiatedType endpoint facts are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-library-anchor-implied-edge"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The resolver lacks a canonical exact library-anchor specialization fact for the constructor-expression predicate."
+
+[[issue]]
+id = "lowering-gap-specialization-feature-chain-source-target-subsetting"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FeatureChainExpression source-target, input parameter, result, and subsetting-chain facts are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-feature-reference-referent-result"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FeatureReferenceExpression referent and result role facts are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-invocation-instantiated-type-result"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "InvocationExpression instantiatedType classification and result endpoint facts are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-invocation-instantiated-type"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "InvocationExpression instantiatedType is not exposed as the canonical specialization endpoint."
+
+[[issue]]
+id = "lowering-gap-specialization-succession-endpoint-subsetting"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Decision/Merge succession endpoints and their required subsetsChain facts are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-transition-trigger-payload-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Transition trigger actions, payload parameters, and subsetsChain endpoints are not jointly published."
+
+[[issue]]
+id = "lowering-gap-specialization-transition-succession-source"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "TransitionUsage succession and source feature are not a canonical comparable endpoint pair."
+
+[[issue]]
+id = "lowering-gap-specialization-transition-feature-roles-library-anchors"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Transition trigger, guard, and effect role collections are not published with their exact library anchors."
+
+[[issue]]
+id = "lowering-gap-specialization-usage-variation-owner"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Usage owningVariationDefinition and owningVariationUsage are not canonical specialization endpoint facts."
+
+[[issue]]
+id = "lowering-gap-specialization-individual-multiplicity-library-anchor"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "OccurrenceDefinition individual modifier, multiplicity element, and zeroOrOne library anchor are not jointly published."
+
+[[issue]]
+id = "lowering-gap-type-feature-membership-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FeatureMembership is compact declaration-aligned storage, not an independently addressable canonical relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result."
+
+[[issue]]
+id = "lowering-gap-type-multiplicity-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Multiplicity remains a fact attached to its owning declaration rather than an independently addressable canonical Multiplicity element required by deriveTypeMultiplicity."
+
+[[issue]]
+id = "lowering-gap-type-conjugation-relationship-identity"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Conjugation is not yet published as an independently addressable canonical relationship with its original Type endpoint required by deriveTypeOwnedConjugator."
+
+[[issue]]
+id = "lowering-gap-redefinition-end-feature-position"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Canonical Redefinition edges are published, but the positional end-feature collection and direct-supertype end endpoints required by checkFeatureEndRedefinition are not."
+
+[[issue]]
+id = "lowering-gap-redefinition-flow-end-library-anchors"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FlowEnd ownership ordinal and its two exact library redefinition anchors are not published together for checkFeatureFlowFeatureRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-cross-feature-subsetting-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The owned-cross-feature role, its owning end feature, and cross-feature subsetting endpoints are not one canonical fact family for checkFeatureOwnedCrossFeatureRedefinitionSpecialization."
+
+[[issue]]
+id = "lowering-gap-redefinition-parameter-position"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Parameter direction, return-membership role, and inherited parameter position are not published together for checkFeatureParameterRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-function-expression-result"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Function and Expression result-feature roles are not canonical endpoint facts for checkFeatureResultRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-constructor-result-instantiated-features"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ConstructorExpression result-owned-feature and instantiatedType public-feature endpoints are not published for checkConstructorExpressionResultFeatureRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-feature-chain-source-target"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "FeatureChainExpression sourceTargetFeature and targetFeature are not canonical endpoint facts, preventing both feature-chain redefinition checks from consuming authored or implied Redefinition edges."
+
+[[issue]]
+id = "lowering-gap-redefinition-state-subaction-membership"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "StateSubactionMembership identity and entry/do/exit kind are not published with an ActionUsage source for checkActionUsageStateActionRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-assignment-input-parameters"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "AssignmentActionUsage inputParameter(1), its nested owned features, and referent endpoints are not canonical facts for the three assignment redefinition checks."
+
+[[issue]]
+id = "lowering-gap-redefinition-for-loop-variable"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ForLoopActionUsage loopVariable is not published as an addressable canonical feature for checkForLoopActionUsageVarRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-objective-case-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ObjectiveMembership and CaseDefinition/CaseUsage objectiveRequirement endpoints are not canonical facts for checkRequirementUsageObjectiveRedefinition."
+
+[[issue]]
+id = "lowering-gap-redefinition-view-rendering-membership"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ViewRenderingMembership ownership is not published with a RenderingUsage source for checkRenderingUsageRedefinition."
+
+[[issue]]
+id = "lowering-gap-type-featuring-multiplicity-owner"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Multiplicity is currently retained only as facts on its owning declaration; no independently addressable Multiplicity with canonical owningType and featuringTypes is published for checkMultiplicityTypeFeaturing."
+
+[[issue]]
+id = "lowering-gap-type-featuring-multiplicity-range-bounds"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "MultiplicityRange bound expressions and their canonical featuringTypes are not published as addressable semantic facts, so checkMultiplicityRangeExpressionTypeFeaturing cannot compare them to the range."
+
+[[issue]]
+id = "lowering-gap-type-featuring-connector-related-features"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Connector relatedFeature membership and the corresponding direct-or-indirect featured-within predicate are not published as a canonical queryable fact family for checkConnectorTypeFeaturing."
+
+[[issue]]
+id = "lowering-gap-type-featuring-expression-feature-value-owner"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Expression ownership through FeatureValue and the FeatureValue featureWithValue endpoint are not published together with the expression's canonical featuringTypes for checkExpressionTypeFeaturing."
+
+[[issue]]
+id = "lowering-gap-binding-connector-feature-value-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The semantic publication pairs authored BindingConnector endpoints but does not publish the FeatureValue featureWithValue, value/result chain, or initial-value endpoint facts required by checkFeatureValueBindingConnector."
+
+[[issue]]
+id = "lowering-gap-binding-connector-feature-reference-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Lowering does not publish FeatureReferenceExpression targetFeature and result facts, so the paired BindingConnector fact cannot evaluate checkFeatureReferenceExpressionBindingConnector."
+
+[[issue]]
+id = "lowering-gap-binding-connector-invocation-behavior-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "Lowering does not publish InvocationExpression instantiated behavior and result endpoint facts needed to evaluate checkInvocationExpressionBehaviorBindingConnector over canonical BindingConnector pairs."
+
+[[issue]]
+id = "lowering-gap-binding-connector-transition-source-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "TransitionUsage source and first input-parameter endpoint facts are not jointly published with canonical BindingConnector pairs, preventing checkTransitionUsageSourceBindingConnector."
+
+[[issue]]
+id = "lowering-gap-binding-connector-satisfy-requirement-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "SatisfyRequirementUsage subjectParameter and counterpart related-element facts are not published for evaluation with the canonical BindingConnector collection."
+
+[[issue]]
+id = "normative-specification-gap-constructor-expression-result-default-value-binding-connector"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned KerML XMI body for checkConstructorExpressionResultDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30); OMG must publish an evaluable normative predicate."
+
+[[issue]]
+id = "normative-specification-gap-invocation-expression-default-value-binding-connector"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30); OMG must publish an evaluable normative predicate."
+
+[[issue]]
+id = "library-gap-viewpoint-specialization-anchors"
+kind = "library_gap"
+owner = "spec42-libraries"
+summary = "The canonical standard library does not publish the Views::Viewpoint, Views::viewpoints, or Actions::Action::join anchors required by these generated specialization rules."
+
+[[issue]]
+id = "library-gap-conditional-binary-specialization-anchors"
+kind = "library_gap"
+owner = "spec42-libraries"
+summary = "The canonical standard library does not publish the exact uppercase binary definition anchors Connections::BinaryConnections and Interfaces::BinaryInterface required by the pinned conditional specialization rules."
+
+[[issue]]
+id = "library-gap-flow-end-specialization-anchors"
+kind = "library_gap"
+owner = "spec42-libraries"
+summary = "The canonical standard library does not publish the exact Flows::flows and Transfers::flowTransfers declarations required by the pinned FlowUsage and Flow owned-end specialization rules."
+
+[[issue]]
+id = "library-gap-step-subperformance-specialization-anchor"
+kind = "library_gap"
+owner = "spec42-libraries"
+summary = "The canonical standard library publishes Performances::Performance::subperformances, but not the exact singular Performances::Performance::subperformance anchor required by checkStepSubperformanceSpecialization."
+
+[[issue]]
+id = "lowering-gap-feature-category-metaclass-predicates"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The canonical owned-typing relation publishes direct targets but not the KerML Class/Structure metaclass-subtyping facts, nor the derived Feature.type target needed for the owner-feature disjuncts, required by FeatureOccurrence, FeaturePortion, FeatureSubobject, and FeatureSuboccurrence specialization predicates."
+
+[[issue]]
+id = "lowering-gap-occurrence-usage-suboccurrence-category-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "OccurrenceUsage lowering publishes composite ownership and direct typings, but not the KerML Class category fact or a derived owner-Feature typed-by-Class fact required by the complete checkOccurrenceUsageSuboccurrenceSpecialization predicate."
+
+[[issue]]
+id = "lowering-gap-transition-usage-specialization-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The parser lowers authored transition syntax only as DeclarationKind::Transition with endpoint references; it does not publish the SysML TransitionUsage identity, its composite fact, or the resolved source StateUsage category required by the TransitionUsage Action/State specialization predicates."
+
+[[issue]]
+id = "normative-specification-gap-include-use-case-specialization-body"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI body for checkIncludeUseCaseSpecialization is unbalanced (SHA-256 8b33230184c8a490deb83f00690fd7b9daae07e37f47bd714a7deb48d69fc01a); OMG must publish an evaluable predicate before a specialization contract can be derived."
+
+[[issue]]
+id = "normative-specification-gap-step-owned-performance-specialization-body"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned KerML XMI body for checkStepOwnedPerformanceSpecialization is unbalanced (SHA-256 899aa2a17a9527d1b448a84bc4a336a933bc6b067fb99ff9095bd5a866854bd8); OMG must publish an evaluable predicate before a specialization contract can be derived."
+
+[[issue]]
+id = "lowering-gap-library-specialization-forms"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "These authored specialization forms either lower to a broader declaration kind or do not publish a stable declaration identity, so their generated implied-library specialization fact cannot yet be observed through the semantic query facade."
+
+[[issue]]
+id = "lowering-gap-kerml-binary-end-collections"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "KerML association and association-structure end members lower as end-modified features but do not publish the positional end collection needed to evaluate the exact associationEnd/endFeature cardinality predicates."
+
+[[issue]]
+id = "lowering-gap-kerml-connector-positional-end-collection"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "KerML Connector body end features lower as end-modified child features but do not publish the positional connectorEnd collection required by checkConnectorBinaryObjectSpecialization."
+
+[[issue]]
+id = "abstract-syntax-library-specialization-metaclasses"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "The pinned concrete syntax cannot directly name these generated specialization metaclasses as queryable declarations; their individual abstract-syntax instances therefore cannot receive an authored relationship assertion."
+
+[[issue]]
+id = "semantic-query-gap-anonymous-library-specialization-forms"
+kind = "semantic_query_gap"
+owner = "spec42-query"
+summary = "The resolver publishes these anonymous action forms, but the query facade accepts only stable qualified declaration names and cannot address their semantic identities."
+
+[[issue]]
+id = "abstract-syntax-annotation-identity"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "Annotation ownership identities have no executable violating concrete-syntax form."
+
+[[issue]]
+id = "abstract-syntax-invalid-control-node-owner"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser rejects a control node outside an action body, reporting unexpected_keyword_in_scope, so the invalidly owned control node never reaches semantics"
+
+[[issue]]
+id = "abstract-syntax-invalid-control-node-shape"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser rejects a `ref` prefix on a control node, reporting recovered_action_body_element, so the referential control node never reaches semantics"
+
+[[issue]]
+id = "abstract-syntax-invalid-membership-owner"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser has no production for this membership outside its permitted owning type, so the invalid model is reported as unexpected_keyword_in_scope and never reaches semantics"
+
+[[issue]]
+id = "abstract-syntax-invalid-state-subaction-owner"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser has no production for an entry subaction outside a state, so the invalid owner is reported as unexpected_keyword_in_scope and never reaches semantics"
+
+[[issue]]
+id = "abstract-syntax-invalid-variant-owner"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser rejects a `variant` member inside a non-variation part def, reporting recovered_package_body_element, so no VariantMembership reaches semantics on the violating side"
+
+[[issue]]
+id = "abstract-syntax-nonrepresentable-multiplicity"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "the pinned parser has no production for a second multiplicity clause, so `classifier Two[1][2];` never reaches semantics and is reported as unsupported_grammar_form"
+
+[[issue]]
+id = "lowering-action-parameter-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the implied input parameters of this action form are not published, so the rule has no parameter list to count; only the accepted side is authored here"
+
+[[issue]]
+id = "lowering-conjugated-port-definition"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "ConjugatedPortDefinition is not published as a distinct declaration, so neither side of the rule can be observed in SMG"
+
+[[issue]]
+id = "lowering-event-occurrence-reference"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the referenced feature of an event occurrence usage parses but sysml_resolution settles it as unsupported_reference, so the reference target never reaches semantics"
+
+[[issue]]
+id = "lowering-kerml-feature-relationships"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the crosses clause now lowers to a crossSubsetting relationship, but its target settles as unsupported_reference, so no resolved crossFeature is published for the rule to inspect"
+
+[[issue]]
+id = "lowering-metadata-expressions"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "a metadata access expression parses but sysml_resolution reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics; only the accepted side is authored here"
+
+[[issue]]
+id = "lowering-metadata-feature-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the metaclass annotatedElement declaration that would restrict the admissible annotated elements is not published for a KerML metaclass, so metadata_annotated_element_incompatible never fires here"
+
+[[issue]]
+id = "lowering-part-definition-members"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "an assert constraint member parses but sysml_resolution reports it as unsupported_part_definition_member, so no AssertConstraintUsage reaches semantics"
+
+[[issue]]
+id = "lowering-result-expression-memberships"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the publication does not record a ResultExpressionMembership -- a function or expression body result expression produces no member in SMG -- so the rule has nothing to count"
+
+[[issue]]
+id = "lowering-state-subaction-memberships"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the subaction of an `entry`/`do`/`exit` member parses but its name settles as unresolved_reference, so no StateSubactionMembership reaches semantics"
+
+[[issue]]
+id = "lowering-transition-feature-memberships"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the transition feature memberships of a transition usage are not published, so the rule has no transitionFeature to inspect"
+
+[[issue]]
+id = "lowering-transition-usage-succession"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the succession owned by a transition usage is not published as a member, so the accepted side cannot be observed in SMG either"
+
+[[issue]]
+id = "lowering-view-rendering-membership"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics"
+
+[[issue]]
+id = "parser-gap-59-directed-end-feature"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "parser gap 59 cannot represent an authored directed end feature"
+
+[[issue]]
+id = "parser-gap-62-kerml-flow"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f a KerML flow declaration parses and lowers, but a Flow with two payload features has no production: `flow of Thing of Thing from source to target;` is reported as recovered_calc_body_element, so the at-most-one-payload violation cannot be authored"
+
+[[issue]]
+id = "parser-gap-64-conjugation-declaration"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the parser models conjugation only as the `~T` conjugated-typing flag (TypingRelationship.is_conjugated); there is no conjugation-declaration production, so a conjugated specific type is reported as unsupported_grammar_form"
+
+[[issue]]
+id = "parser-gap-65-state-definition-parallel"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser accepts the `parallel` body modifier on a state usage (src/parser/state.rs) but not on a state def, so `state def Good parallel { ... }` -- valid per the StateDefBody production -- fails with missing_body_or_semicolon"
+
+[[issue]]
+id = "parser-gap-67-end-restriction-modifiers"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser accepts `const end feature` -- which publishes (modifiers end constant) -- but rejects `var end feature`, reporting unrecognized_declaration_in_scope, so the violating variable end feature never reaches semantics"
+
+[[issue]]
+id = "parser-gap-69-connector-end-body"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no production for a binding connector with an end-feature body, so the three-ended binding never reaches semantics and is reported as unexpected_keyword_in_scope"
+
+[[issue]]
+id = "parser-gap-70-metadata-feature-body-member"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no production for a named feature inside a metadata feature body, so the invalid body member is reported as unrecognized_declaration_in_scope and never reaches semantics"
+
+[[issue]]
+id = "parser-gap-72-perform-action-usage"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f `perform <action usage>` parses in a part-definition body but is still recovered_action_body_element in an action-definition body, so neither the conforming nor the violating side of the reference form reaches semantics from an action def"
+
+[[issue]]
+id = "parser-gap-73-include-use-case-membership"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no production for an include use case member, so it is reported as unexpected_keyword_in_scope and never reaches semantics"
+
+[[issue]]
+id = "parser-gap-74-require-constraint-membership"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no production for a `require constraint` member, so the accepted side is reported as parser recovery rather than a RequirementConstraintMembership"
+
+[[issue]]
+id = "parser-gap-75-port-owned-usage"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no production for a part usage inside a port definition body, so the composite member is reported as unexpected_keyword_in_scope and never reaches semantics"
+
+[[issue]]
+id = "parser-gap-76-action-body-members"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f the time-trigger accept spellings (`accept when <expr>;`, `accept at <expr>;`) and the shorthand `if <cond> then <a> else <b>;` are still recovered_action_body_element as action-body statements, though `accept <name>;` and `if <cond> then <a>;` now parse"
+
+[[issue]]
+id = "parser-gap-77-transition-body-members"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f a transition effect action member is still recovered_state_body_element in a state body, and a `transition` member in an action body is unexpected_keyword_in_scope, so neither reaches semantic validation"
+
+[[issue]]
+id = "parser-gap-78-variation-forms"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries, so the abstractness rules cannot be exercised"
+
+[[issue]]
+id = "parser-gap-79-membership-owner-forms"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned f52100f an `expose` member in a package body is recovered_package_body_element, and `verify`/`render` members in a part-definition body are unexpected_keyword_in_scope, so the invalid-owner forms these rules validate cannot reach semantics"
+
+[[issue]]
+id = "parser-gap-52-var-modifier"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
+
+[[issue]]
+id = "parser-gap-80-state-usage-parallel-fact"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser accepts a StateUsage `parallel` or `initial` body modifier in src/parser/state.rs:484-491 but discards it before constructing ast::StateUsage, so consumers cannot publish the required isParallel fact without inspecting source text"
+
+[[issue]]
+id = "semantic-association-end-type-not-one"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the type count of an association end feature; the canonical code association_end_type_not_one does not exist yet"
+
+[[issue]]
+id = "semantic-association-related-types-insufficient"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the relatedType count of a concrete KerML association; the canonical code association_related_types_insufficient does not exist yet"
+
+[[issue]]
+id = "semantic-attribute-feature-composite"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule rejects a composite feature of an attribute definition; the canonical code attribute_feature_composite does not exist yet"
+
+[[issue]]
+id = "semantic-binary-association-end-count"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule compares an association's end count against a Links::BinaryLink specialization; the canonical code binary_association_end_count does not exist yet"
+
+[[issue]]
+id = "semantic-connector-related-features-insufficient"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the relatedFeature count of a concrete KerML connector; the canonical code connector_related_features_insufficient does not exist yet"
+
+[[issue]]
+id = "semantic-constructor-duplicate-feature-redefinition"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule detects two constructor initialisers redefining the same feature; the canonical code constructor_duplicate_feature_redefinition does not exist yet"
+
+[[issue]]
+id = "semantic-control-node-incoming-multiplicity"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code control_node_incoming_multiplicity does not exist yet"
+
+[[issue]]
+id = "semantic-control-node-outgoing-multiplicity"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code control_node_outgoing_multiplicity does not exist yet"
+
+[[issue]]
+id = "semantic-decision-node-multiple-incoming"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code decision_node_multiple_incoming does not exist yet"
+
+[[issue]]
+id = "semantic-decision-node-outgoing-multiplicity"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code decision_node_outgoing_multiplicity does not exist yet"
+
+[[issue]]
+id = "semantic-directed-usage-not-referential"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule pairs a usage direction with its referential status; the canonical code directed_usage_not_referential does not exist yet"
+
+[[issue]]
+id = "semantic-duplicate-namespace-member"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "duplicate_namespace_member is not reported for KerML-flavored members; the collision is only visible as two kind-qualified declaration paths in SMG"
+
+[[issue]]
+id = "semantic-duplicate-role-member"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "duplicate_role_member is reported for a repeated subject membership but not for a repeated objective membership, so this manifestation of the rule is unenforced"
+
+[[issue]]
+id = "semantic-end-feature-multiplicity-not-one"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the multiplicity of an end feature; the canonical code end_feature_multiplicity_not_one does not exist yet"
+
+[[issue]]
+id = "semantic-expression-result-parameter-count"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule counts the result parameter memberships of an expression; the canonical code expression_result_parameter_count does not exist yet"
+
+[[issue]]
+id = "semantic-feature-reference-referent-not-feature"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks that a feature reference expression referent is a Feature; the canonical code feature_reference_referent_not_feature does not exist yet"
+
+[[issue]]
+id = "semantic-feature-value-overrides-non-default"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks whether a redefined feature value is a default before it is overridden; the canonical code feature_value_overrides_non_default does not exist yet"
+
+[[issue]]
+id = "semantic-filter-condition-not-model-level-evaluable"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet"
+
+[[issue]]
+id = "semantic-fork-node-multiple-incoming"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code fork_node_multiple_incoming does not exist yet"
+
+[[issue]]
+id = "semantic-function-result-parameter-count"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule counts the result parameter memberships of a function; the canonical code function_result_parameter_count does not exist yet"
+
+[[issue]]
+id = "semantic-individual-usage-without-individual-definition"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule requires an individual occurrence usage to have an individual definition; the canonical code individual_usage_without_individual_definition does not exist yet"
+
+[[issue]]
+id = "semantic-initial-value-feature-not-variable"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule pairs an initial feature value with the variability of the feature it initialises; the canonical code initial_value_feature_not_variable does not exist yet"
+
+[[issue]]
+id = "semantic-instantiation-expression-validation"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "the unresolved instantiated type is reported by reference resolution rather than by an instantiation-expression rule, and its range covers the reference token rather than the owning expression"
+
+[[issue]]
+id = "semantic-invocation-argument-redefines-no-parameter"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule matches an invocation argument against the instantiated type input parameters; the canonical code invocation_argument_redefines_no_parameter does not exist yet"
+
+[[issue]]
+id = "semantic-invocation-duplicate-parameter-redefinition"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule detects two invocation arguments redefining the same input parameter; the canonical code invocation_duplicate_parameter_redefinition does not exist yet"
+
+[[issue]]
+id = "semantic-invocation-instantiated-type-not-behavior"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the metaclass family of an invocation expression instantiated type; the canonical code invocation_instantiated_type_not_behavior does not exist yet"
+
+[[issue]]
+id = "semantic-join-node-multiple-outgoing"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code join_node_multiple_outgoing does not exist yet"
+
+[[issue]]
+id = "semantic-merge-node-incoming-multiplicity"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code merge_node_incoming_multiplicity does not exist yet"
+
+[[issue]]
+id = "semantic-merge-node-multiple-outgoing"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code merge_node_multiple_outgoing does not exist yet"
+
+[[issue]]
+id = "semantic-metadata-metaclass-abstract"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the abstractness of a metadata feature metaclass; the canonical code metadata_metaclass_abstract does not exist yet"
+
+[[issue]]
+id = "semantic-metadata-type-not-metaclass"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks that a metadata feature type is a Metaclass; the canonical code metadata_type_not_metaclass does not exist yet"
+
+[[issue]]
+id = "semantic-multiplicity-bound-invalid"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the result type or sign of a multiplicity bound expression; the canonical code multiplicity_bound_invalid does not exist yet"
+
+[[issue]]
+id = "semantic-occurrence-multiple-individual-definitions"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule counts the individual occurrence definitions of an occurrence usage; the canonical code occurrence_multiple_individual_definitions does not exist yet"
+
+[[issue]]
+id = "semantic-parallel-state-substate-transition"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks whether the substates of a parallel state carry transitions; the canonical code parallel_state_substate_transition does not exist yet"
+
+[[issue]]
+id = "semantic-parameter-membership-invalid-owner"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the owningType of a parameter membership; the canonical code parameter_membership_invalid_owner does not exist yet"
+
+[[issue]]
+id = "semantic-part-usage-without-part-definition"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule requires a part usage to have a part definition among its types; the canonical code part_usage_without_part_definition does not exist yet"
+
+[[issue]]
+id = "semantic-portion-feature-is-variable"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule rejects a portion feature that is also variable; the canonical code portion_feature_is_variable does not exist yet"
+
+[[issue]]
+id = "semantic-portion-owner-not-occurrence"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the owningType of a portion occurrence usage; the canonical code portion_owner_not_occurrence does not exist yet"
+
+[[issue]]
+id = "semantic-redefinition-featuring-type-compatibility"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "redefinition_featuring_type_incompatible is not reported when the redefining and redefined features share one owning type, so this manifestation of the rule is unenforced"
+
+[[issue]]
+id = "semantic-return-parameter-membership-invalid-owner"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the owningType of a return parameter membership; the canonical code return_parameter_membership_invalid_owner does not exist yet"
+
+[[issue]]
+id = "semantic-specialization-kind-compatibility"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "incompatible_specializes_kind is not reported for a KerML behavior specializing a structure; the metaclass-family check does not run on kerml-behavior declarations"
+
+[[issue]]
+id = "semantic-subject-member-order"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "subject_member_not_first is not reported when a directed reference usage precedes the subject membership, so this manifestation of the rule is unenforced"
+
+[[issue]]
+id = "semantic-subsetting-constant-mismatch"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "both sides now publish their variability -- (modifiers constant) and (modifiers var) -- but no semantic rule pairs a subsetting feature's constancy with the subsetted feature's; the canonical code subsetting_constant_mismatch does not exist yet"
+
+[[issue]]
+id = "semantic-subsetting-target-not-accessible"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks that a subsetted feature is accessible from the subsetting feature; the canonical code subsetting_target_not_accessible does not exist yet"
+
+[[issue]]
+id = "semantic-top-level-import-not-private"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the visibility of a root-namespace import; the canonical code top_level_import_not_private does not exist yet"
+
+[[issue]]
+id = "semantic-type-relationship-operand-is-self"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule rejects a type-relationship operand that is the declaring type itself; the canonical code type_relationship_operand_is_self does not exist yet"
+
+[[issue]]
+id = "semantic-variable-feature-owner-not-occurrence"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule checks the owningType of a variable feature against Occurrences::Occurrence; the canonical code variable_feature_owner_not_occurrence does not exist yet"

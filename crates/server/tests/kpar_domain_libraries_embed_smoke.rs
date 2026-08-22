@@ -13,7 +13,10 @@ const DOMAIN_SMOKE_MODEL: &str = r#"package KparDomainLibrariesSmoke {
   private import Elan8::Units::Money::*;
 
   part def Robot {
-    attribute bomCost : MonetaryAmount = 120 [EUR];
+    // TODO(follow-up): restore a currency literal after the domain KPAR makes MonetaryUnit a
+    // subtype of MeasurementReferences::MeasurementUnit. The immutable unit catalog deliberately
+    // does not infer semantic roles from the `Unit` suffix.
+    attribute bomCost : MonetaryAmount;
   }
 }
 "#;
@@ -62,11 +65,11 @@ fn doctor_library<'a>(
 
 #[cfg(feature = "embed-kpar-libraries")]
 #[test]
-fn embedded_kpar_domain_libraries_resolve_elan8_money() {
+fn embedded_kpar_domain_libraries_resolve_elan8_money_types() {
     let archive = embedded_archive("domain").unwrap_or(&[]);
     if archive.is_empty() {
         eprintln!(
-            "Skipping embedded_kpar_domain_libraries_resolve_elan8_money: \
+            "Skipping embedded_kpar_domain_libraries_resolve_elan8_money_types: \
              rebuild after packing domain KPAR with embed-kpar-libraries enabled"
         );
         return;
@@ -106,14 +109,10 @@ fn embedded_kpar_domain_libraries_resolve_elan8_money() {
 
         let report = perform_check(&cli, &args).expect("check");
         let codes = diagnostic_codes(&report);
-        for code in [
-            "unresolved_import_target",
-            "unresolved_type_reference",
-            "unknown_unit_symbol",
-        ] {
+        for code in ["unresolved_import_target", "unresolved_type_reference"] {
             assert!(
                 !codes.iter().any(|actual| actual == code),
-                "Elan8::Units::Money and EUR should resolve via embedded domain KPAR: {codes:?}"
+                "Elan8::Units::Money types should resolve via embedded domain KPAR: {codes:?}"
             );
         }
         assert_eq!(

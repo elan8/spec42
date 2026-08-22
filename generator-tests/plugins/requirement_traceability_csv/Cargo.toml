@@ -1,0 +1,10 @@
+[package]
+name = "spec42-conformance-requirement-traceability-csv"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+spec42-generator-sdk.workspace = true

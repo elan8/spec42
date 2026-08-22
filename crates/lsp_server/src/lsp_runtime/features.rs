@@ -9,7 +9,6 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tracing::info;
 
-use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
@@ -192,20 +191,72 @@ pub(crate) fn linked_editing_range(
     }))
 }
 
-pub(crate) fn moniker(
+/// The published element whose declaration contains `position`, if the publication settled one.
+fn element_at(
     state: &ServerState,
-    uri: Url,
-    pos: Position,
-) -> Result<Option<Vec<Moniker>>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        Some(node) => node,
-        None => return Ok(None),
+    uri: &Url,
+    position: Position,
+) -> Option<sysml_query::resolved_slice::ElementInspection> {
+    use sysml_query::resolved_slice::{QueryOutcome, TextPosition};
+
+    let model = state.published_model.model();
+    let at = match model.inspection().inspect_at(
+        uri.as_str(),
+        TextPosition {
+            line: position.line,
+            character: position.character,
+        },
+    ) {
+        QueryOutcome::Resolved(at)
+        | QueryOutcome::Recovered(at)
+        | QueryOutcome::UnsupportedWith(at) => at,
+        _ => return None,
     };
-    Ok(Some(vec![hierarchy::moniker_for_node(node)]))
+    at.containing
+}
+
+/// One published specialization step, in either direction.
+///
+/// `AnySpecialization` is the scope the OMG Pilot's `Type::supertypes` uses, so a feature typing
+/// and a subsetting are steps in this hierarchy exactly as a subclassification is.
+fn hierarchy_step(
+    state: &ServerState,
+    uri: &Url,
+    position: Position,
+    ascending: bool,
+) -> Option<Vec<TypeHierarchyItem>> {
+    use sysml_query::resolved_slice::{QueryOutcome, SpecializationScope};
+
+    let model = state.published_model.model();
+    let element = element_at(state, uri, position)?;
+    let outcome = if ascending {
+        model
+            .types()
+            .direct_supertypes(&element.identity, SpecializationScope::AnySpecialization)
+    } else {
+        model
+            .types()
+            .direct_subtypes(&element.identity, SpecializationScope::AnySpecialization)
+    };
+    let symbols = match outcome {
+        QueryOutcome::Resolved(symbols)
+        | QueryOutcome::Recovered(symbols)
+        | QueryOutcome::UnsupportedWith(symbols) => symbols,
+        _ => return Some(Vec::new()),
+    };
+    Some(
+        symbols
+            .iter()
+            .filter_map(|symbol| match model.inspection().inspect(symbol) {
+                QueryOutcome::Resolved(inspection)
+                | QueryOutcome::Recovered(inspection)
+                | QueryOutcome::UnsupportedWith(inspection) => {
+                    hierarchy::type_hierarchy_item(&inspection)
+                }
+                _ => None,
+            })
+            .collect(),
+    )
 }
 
 pub(crate) fn prepare_type_hierarchy(
@@ -214,14 +265,10 @@ pub(crate) fn prepare_type_hierarchy(
     pos: Position,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        Some(node) => node,
-        None => return Ok(None),
+    let Some(element) = element_at(state, &uri_norm, pos) else {
+        return Ok(None);
     };
-    Ok(Some(vec![hierarchy::type_hierarchy_item_for_node(node)]))
+    Ok(hierarchy::type_hierarchy_item(&element).map(|item| vec![item]))
 }
 
 pub(crate) fn supertypes(
@@ -229,20 +276,7 @@ pub(crate) fn supertypes(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let items = state
-        .semantic_graph
-        .outgoing_typing_or_specializes_targets(node)
-        .into_iter()
-        .map(hierarchy::type_hierarchy_item_for_node)
-        .collect();
-    Ok(Some(items))
+    Ok(hierarchy_step(state, &uri, range.start, true))
 }
 
 pub(crate) fn subtypes(
@@ -250,84 +284,5 @@ pub(crate) fn subtypes(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let items = state
-        .semantic_graph
-        .incoming_typing_or_specializes_sources(node)
-        .into_iter()
-        .map(hierarchy::type_hierarchy_item_for_node)
-        .collect();
-    Ok(Some(items))
-}
-
-pub(crate) fn prepare_call_hierarchy(
-    state: &ServerState,
-    uri: Url,
-    pos: Position,
-) -> Result<Option<Vec<CallHierarchyItem>>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    Ok(Some(vec![hierarchy::call_hierarchy_item_for_node(node)]))
-}
-
-pub(crate) fn incoming_calls(
-    state: &ServerState,
-    uri: Url,
-    range: Range,
-) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let from_ranges = vec![range];
-    let calls = state
-        .semantic_graph
-        .incoming_perform_sources(node)
-        .into_iter()
-        .map(|src| CallHierarchyIncomingCall {
-            from: hierarchy::call_hierarchy_item_for_node(src),
-            from_ranges: from_ranges.clone(),
-        })
-        .collect();
-    Ok(Some(calls))
-}
-
-pub(crate) fn outgoing_calls(
-    state: &ServerState,
-    uri: Url,
-    range: Range,
-) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let from_ranges = vec![range];
-    let calls = state
-        .semantic_graph
-        .outgoing_perform_targets(node)
-        .into_iter()
-        .map(|target| CallHierarchyOutgoingCall {
-            to: hierarchy::call_hierarchy_item_for_node(target),
-            from_ranges: from_ranges.clone(),
-        })
-        .collect();
-    Ok(Some(calls))
+    Ok(hierarchy_step(state, &uri, range.start, false))
 }

@@ -14,10 +14,10 @@ use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
 use rayon::prelude::*;
+use semantic_publication::PublicationCoordinator;
 use serde::Serialize;
-use workspace::{
-    EngineBuilder, HostContext, HostFilesystemProvider, ValidationTiming, WorkspaceLoadRequest,
-};
+use sysml_query::resolved_slice::PublishedModel;
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
 use crate::case::{Case, Expectation};
 
@@ -127,6 +127,7 @@ impl Corpus {
                     }
                     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
                         fuel_metering: metered,
+                        compilation_cache: false,
                     })
                     .map_err(|error| error.to_string())?;
                     let module =
@@ -153,24 +154,24 @@ impl Corpus {
         Ok(runs)
     }
 
-    fn load_model(&self, name: &str) -> Result<Arc<workspace::HostWorkspaceSnapshot>, String> {
+    fn load_model(&self, name: &str) -> Result<Arc<PublishedModel>, String> {
         let path = self.model_path(name);
         if !path.is_file() {
             return Err(format!("model `{name}` not found at {}", path.display()));
         }
-        let root = path.parent().expect("model has a parent").to_path_buf();
-        let engine = EngineBuilder::default()
-            .cache_dir(root.join(".cache"))
-            .no_stdlib(true)
-            .build()
-            .map_err(|error| error.to_string())?;
-        let provider =
-            HostFilesystemProvider::from_paths(&path, Some(&root), engine.package_roots());
-        let request = WorkspaceLoadRequest::single_target(path)
-            .with_workspace_root(Some(root))
-            .with_validation_timing(ValidationTiming::Deferred);
-        engine
-            .load_workspace(provider, request, HostContext::default())
+        let content = std::fs::read_to_string(&path)
+            .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
+        let source = SysmlDocument::from_memory_path(
+            "generator-conformance",
+            "model.sysml",
+            content,
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .map_err(|error| error.to_string())?;
+        PublicationCoordinator::new()
+            .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))
     }
 }
@@ -178,7 +179,7 @@ impl Corpus {
 fn run_one(
     runtime: &GeneratorRuntime,
     prepared: &PreparedGenerator,
-    snapshot: &Arc<workspace::HostWorkspaceSnapshot>,
+    snapshot: &Arc<PublishedModel>,
     case: Case,
 ) -> CaseRun {
     // A fresh view per case: the handle index accumulates as elements are exposed, so a
@@ -186,6 +187,8 @@ fn run_one(
     // masking exactly the unknown-handle behaviour the suite exists to pin.
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(snapshot),
+        snapshot.publication().model_digest(),
+        env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
 

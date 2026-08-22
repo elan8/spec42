@@ -1,0 +1,250 @@
+# META
+~~~ini
+description=SysML Validation (14-Language Extensions): 14a-Language Extensions
+type=file
+~~~
+# SOURCE
+~~~sysml
+package '14a-Language Extensions' {
+	private import 'User Defined Extensions'::*;
+	
+	package 'User Defined Extensions' {
+		
+		enum def ClassificationLevel {
+			uncl;
+			conf;
+			secret;
+		}
+		
+		metadata def Classified {
+			ref :>> annotatedElement : SysML::PartUsage;
+			attribute classificationLevel : ClassificationLevel[1];
+		}
+	}
+	
+	part part_X {
+		metadata Classified {
+			classificationLevel = ClassificationLevel::conf;
+		}
+	}
+	
+	// Alternative shorthand notation
+	part part_Y {
+		@Classified {
+			classificationLevel = ClassificationLevel::conf;
+		}
+	}
+
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/14a_language_extensions.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 12 11) (end 12 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 30) (end 12 46))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 1) (end 21 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 19 3) (end 19 22))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 24 1) (end 28 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 26 3) (end 26 22))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3849b61fd9e194fe9eb259e6cecb19f822cbc69d881511f85b3422e1ae8753bf") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::secret"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::uncl"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::PartUsage")) (redefinition (reference "annotatedElement")))))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel")))))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "classificationLevel")) (expressionOperand (reference "ClassificationLevel::conf")))))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Classified")))))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "classificationLevel")) (expressionOperand (reference "ClassificationLevel::conf")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "User Defined Extensions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions")))))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "SysML::PartUsage")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "annotatedElement")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ClassificationLevel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "classificationLevel")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "ClassificationLevel::conf")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Classified")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "classificationLevel")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "ClassificationLevel::conf")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::secret"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::uncl"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state non-constant))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))
+      (subtype (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::secret")))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::uncl")))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel")))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))
+      (type (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")) (source direct))
+      (supertype (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified")))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y")))
+    )
+    (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 1 16) (end 1 44)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "User Defined Extensions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions")))))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 12 30) (end 12 46)) (probe (position 12 30))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "SysML::PartUsage")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 12 11) (end 12 27)) (probe (position 12 11))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind package) (name "User Defined Extensions")) (named (kind metadata-def) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 13 35) (end 13 54)) (probe (position 13 35))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0) (authored-target "ClassificationLevel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 19 3) (end 19 22)) (probe (position 19 3))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "classificationLevel")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 19 25) (end 19 50)) (probe (position 19 25))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "ClassificationLevel::conf")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 25 3) (end 25 13)) (probe (position 25 3))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Classified")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 26 3) (end 26 22)) (probe (position 26 3))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "classificationLevel")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/14a_language_extensions.md") (range (start 26 25) (end 26 50)) (probe (position 26 25))
+    (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "ClassificationLevel::conf")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+    )
+  )
+)
+~~~

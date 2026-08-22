@@ -1,25 +1,17 @@
-mod checks;
-mod document;
-pub mod engine;
-mod engine_impl;
-mod helpers;
-mod kind_rules;
-mod ordering;
-mod pending_relationship_diagnostics;
-mod relationship_endpoint_messages;
-mod sexpr;
-mod shared_rules;
+//! Transport-neutral diagnostic values and the host reporting policy over them.
+//!
+//! This crate decides nothing semantic. `sysml_resolution` settles every code, severity, range,
+//! message, and related location before a publication becomes visible; `sysml_query` exposes them;
+//! and this crate turns one publication's answer into the neutral shape a CLI report, an LSP
+//! adapter, and a workspace validation report all consume, applying only the explicit reporting
+//! policy a host asked for.
+//!
+//! The line matters: a host may decide *whether* to show a diagnostic, and how to render it, but
+//! never what a diagnostic means. Nothing here inspects a semantic model, resolves a name, or
+//! reads a diagnostic's message as an input.
+
+mod reporting;
 pub mod types;
 
-pub use document::collect_document_diagnostics;
-pub use engine::{
-    collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
-};
-pub use ordering::canonicalize_diagnostics;
-pub use sexpr::render_diagnostics_sexpr;
-pub use shared_rules::{
-    collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
-};
-pub use types::{
-    DiagnosticRelatedInfo, DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic,
-};
+pub use reporting::{document_diagnostics, ReportingPolicy};
+pub use types::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};

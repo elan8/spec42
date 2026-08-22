@@ -100,7 +100,7 @@ fn lsp_cross_file_goto_definition() {
     let uri_def = "file:///workspace/def.sysml";
     let uri_use = "file:///workspace/use.sysml";
     let content_def = "package P { part def Engine; }";
-    let content_use = "package Q { part e : Engine; }";
+    let content_use = "package Q { import P::*; part e : Engine; }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({
@@ -159,7 +159,7 @@ fn lsp_cross_file_goto_definition() {
             "method": "textDocument/definition",
             "params": {
                 "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 22 }
+                "position": { "line": 0, "character": 35 }
             }
         });
         send_message(&mut stdin, &def_req.to_string());

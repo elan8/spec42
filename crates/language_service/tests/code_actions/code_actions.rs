@@ -4,10 +4,10 @@ use language_service::{
     suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
     suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
     suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
-    InMemoryWorkspace, WorkspaceSnapshot,
+    WorkspaceSnapshot,
 };
 
-use crate::support::{document, multi_doc};
+use crate::support::{document, multi_doc, workspace_from_docs};
 
 const PATH: &str = "test.sysml";
 
@@ -237,7 +237,7 @@ fn suggest_create_usage_from_definition_noop_when_matching_usage_exists() {
 }
 
 #[test]
-fn suggest_qualify_ambiguous_name_offers_candidates() {
+fn suggest_qualify_ambiguous_name_is_disabled_without_typed_candidate_query() {
     let workspace = multi_doc(&[
         (
             "a.sysml",
@@ -262,29 +262,14 @@ fn suggest_qualify_ambiguous_name_offers_candidates() {
         &source,
         "c.sysml",
         diagnostic_line(line),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
-    let titles: Vec<_> = suggestions.iter().map(|s| s.title.as_str()).collect();
-    assert!(
-        titles.iter().any(|t| t.contains("Alpha::Vehicle")),
-        "titles={titles:?}"
-    );
-    assert!(
-        titles.iter().any(|t| t.contains("Beta::Vehicle")),
-        "titles={titles:?}"
-    );
-    let alpha = suggestions
-        .iter()
-        .find(|s| s.title.contains("Alpha::Vehicle"))
-        .expect("alpha");
-    assert!(alpha.edits[0]
-        .replacement
-        .contains("part car : Alpha::Vehicle;"));
+    assert!(suggestions.is_empty());
 }
 
 #[test]
-fn suggest_add_import_for_cross_package_type() {
+fn suggest_add_import_is_disabled_without_typed_import_query() {
     let workspace = multi_doc(&[
         ("defs.sysml", "package Defs {\n  part def Vehicle;\n}\n"),
         ("use.sysml", "package Use {\n  part car : Vehicle;\n}\n"),
@@ -299,32 +284,25 @@ fn suggest_add_import_for_cross_package_type() {
         &source,
         "use.sysml",
         diagnostic_line(line),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
-    assert_eq!(suggestions.len(), 1, "suggestions={suggestions:?}");
-    assert_eq!(suggestions[0].title, "Import `Defs::Vehicle`");
-    assert!(suggestions[0].is_preferred);
-    assert_eq!(
-        suggestions[0].edits[0].replacement.trim(),
-        "private import Defs::Vehicle;"
-    );
+    assert!(suggestions.is_empty());
 }
 
 #[test]
 fn suggest_add_import_empty_when_no_candidates() {
-    let workspace = InMemoryWorkspace::from_documents(vec![document(
+    let workspace = workspace_from_docs(vec![document(
         "lonely.sysml",
         "package Lonely {\n  part car : MissingType;\n}\n",
-    )])
-    .expect("workspace");
+    )]);
     let uri = workspace.resolve_uri_for_path("lonely.sysml").expect("uri");
     let source = workspace.document_text(&uri).expect("text").to_string();
     let suggestions = suggest_add_import_quick_fixes(
         &source,
         "lonely.sysml",
         diagnostic_line(1),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
     assert!(suggestions.is_empty(), "suggestions={suggestions:?}");

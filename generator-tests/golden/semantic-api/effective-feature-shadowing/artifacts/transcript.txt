@@ -1,4 +1,4 @@
-info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.2.0
 roots: 1 element(s)
   Inheritance [Package] name=Inheritance library=false
 find(None): 10 element(s)
@@ -22,77 +22,76 @@ children(Inheritance): 3 element(s)
   Inheritance::Root [PartDefinition] name=Root library=false
 element(Inheritance): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance): <untyped>
-relationships(Inheritance): 3 edge(s)
-  reference Inheritance -> Inheritance::Leaf implied=false
-  reference Inheritance -> Inheritance::Middle implied=false
-  reference Inheritance -> Inheritance::Root implied=false
+relationships(Inheritance): 0 edge(s)
 effective_features(Inheritance): 0 element(s)
 children(Inheritance::Leaf): 2 element(s)
   Inheritance::Leaf::onlyLeaf [AttributeUsage] name=onlyLeaf library=false
   Inheritance::Leaf::shared [AttributeUsage] name=shared library=false
 element(Inheritance::Leaf): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Leaf): <untyped>
-relationships(Inheritance::Leaf): 3 edge(s)
-  reference Inheritance::Leaf -> Inheritance::Leaf::onlyLeaf implied=false
-  reference Inheritance::Leaf -> Inheritance::Leaf::shared implied=false
+relationships(Inheritance::Leaf): 1 edge(s)
   specializes Inheritance::Leaf -> Inheritance::Middle implied=false
 effective_features(Inheritance::Leaf): 4 element(s)
-  Inheritance::Leaf::onlyLeaf [AttributeUsage] name=onlyLeaf library=false
   Inheritance::Leaf::shared [AttributeUsage] name=shared library=false
+  Inheritance::Leaf::onlyLeaf [AttributeUsage] name=onlyLeaf library=false
   Inheritance::Middle::onlyMiddle [AttributeUsage] name=onlyMiddle library=false
   Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
 children(Inheritance::Leaf::onlyLeaf): 0 element(s)
 element(Inheritance::Leaf::onlyLeaf): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Leaf::onlyLeaf): <untyped>
-relationships(Inheritance::Leaf::onlyLeaf): 0 edge(s)
+relationships(Inheritance::Leaf::onlyLeaf): 1 edge(s)
+  typeFeaturing Inheritance::Leaf::onlyLeaf -> Inheritance::Leaf implied=true
 effective_features(Inheritance::Leaf::onlyLeaf): 0 element(s)
 children(Inheritance::Leaf::shared): 0 element(s)
 element(Inheritance::Leaf::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Leaf::shared): <untyped>
-relationships(Inheritance::Leaf::shared): 0 edge(s)
+relationships(Inheritance::Leaf::shared): 2 edge(s)
+  redefinition Inheritance::Leaf::shared -> Inheritance::Middle::shared implied=true
+  typeFeaturing Inheritance::Leaf::shared -> Inheritance::Leaf implied=true
 effective_features(Inheritance::Leaf::shared): 0 element(s)
 children(Inheritance::Middle): 2 element(s)
   Inheritance::Middle::onlyMiddle [AttributeUsage] name=onlyMiddle library=false
   Inheritance::Middle::shared [AttributeUsage] name=shared library=false
 element(Inheritance::Middle): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Middle): <untyped>
-relationships(Inheritance::Middle): 3 edge(s)
-  reference Inheritance::Middle -> Inheritance::Middle::onlyMiddle implied=false
-  reference Inheritance::Middle -> Inheritance::Middle::shared implied=false
+relationships(Inheritance::Middle): 1 edge(s)
   specializes Inheritance::Middle -> Inheritance::Root implied=false
 effective_features(Inheritance::Middle): 3 element(s)
-  Inheritance::Middle::onlyMiddle [AttributeUsage] name=onlyMiddle library=false
   Inheritance::Middle::shared [AttributeUsage] name=shared library=false
+  Inheritance::Middle::onlyMiddle [AttributeUsage] name=onlyMiddle library=false
   Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
 children(Inheritance::Middle::onlyMiddle): 0 element(s)
 element(Inheritance::Middle::onlyMiddle): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Middle::onlyMiddle): <untyped>
-relationships(Inheritance::Middle::onlyMiddle): 0 edge(s)
+relationships(Inheritance::Middle::onlyMiddle): 1 edge(s)
+  typeFeaturing Inheritance::Middle::onlyMiddle -> Inheritance::Middle implied=true
 effective_features(Inheritance::Middle::onlyMiddle): 0 element(s)
 children(Inheritance::Middle::shared): 0 element(s)
 element(Inheritance::Middle::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Middle::shared): <untyped>
-relationships(Inheritance::Middle::shared): 0 edge(s)
+relationships(Inheritance::Middle::shared): 2 edge(s)
+  redefinition Inheritance::Middle::shared -> Inheritance::Root::shared implied=true
+  typeFeaturing Inheritance::Middle::shared -> Inheritance::Middle implied=true
 effective_features(Inheritance::Middle::shared): 0 element(s)
 children(Inheritance::Root): 2 element(s)
   Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
   Inheritance::Root::shared [AttributeUsage] name=shared library=false
 element(Inheritance::Root): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Root): <untyped>
-relationships(Inheritance::Root): 2 edge(s)
-  reference Inheritance::Root -> Inheritance::Root::onlyRoot implied=false
-  reference Inheritance::Root -> Inheritance::Root::shared implied=false
+relationships(Inheritance::Root): 0 edge(s)
 effective_features(Inheritance::Root): 2 element(s)
-  Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
   Inheritance::Root::shared [AttributeUsage] name=shared library=false
+  Inheritance::Root::onlyRoot [AttributeUsage] name=onlyRoot library=false
 children(Inheritance::Root::onlyRoot): 0 element(s)
 element(Inheritance::Root::onlyRoot): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Root::onlyRoot): <untyped>
-relationships(Inheritance::Root::onlyRoot): 0 edge(s)
+relationships(Inheritance::Root::onlyRoot): 1 edge(s)
+  typeFeaturing Inheritance::Root::onlyRoot -> Inheritance::Root implied=true
 effective_features(Inheritance::Root::onlyRoot): 0 element(s)
 children(Inheritance::Root::shared): 0 element(s)
 element(Inheritance::Root::shared): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Inheritance::Root::shared): <untyped>
-relationships(Inheritance::Root::shared): 0 edge(s)
+relationships(Inheritance::Root::shared): 1 edge(s)
+  typeFeaturing Inheritance::Root::shared -> Inheritance::Root implied=true
 effective_features(Inheritance::Root::shared): 0 element(s)
 element(<bogus>): error

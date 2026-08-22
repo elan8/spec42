@@ -36,6 +36,13 @@ jobs:
       - name: cargo fmt --check
         run: cargo fmt --all -- --check
 
+      # Only `bans` runs. deny.toml carries the parser-authority rule and nothing else; the
+      # licence and advisory gates stay off so enabling one is a decision, not a surprise.
+      - name: Dependency policy (only the lowering authority may depend on the parser)
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check bans
+
       - name: Standard library config is current
         run: node scripts/sync-standard-library-config.mjs --check
 
@@ -114,11 +121,12 @@ jobs:
 
       - name: Requirements slice integration checks
         run: |
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
+          cargo test -p lsp_server --test lsp_integration integration::feature_inspector::lsp_feature_inspector_resolves_cross_file_typing
           cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo test (core workspace)
+        env:
+          RUST_MIN_STACK: 16777216
         run: |
           cargo test --workspace --exclude server --exclude lsp_server
           cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
@@ -129,8 +137,6 @@ jobs:
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
 
-      - name: SysML fuzz seed regression corpus
-        run: cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
 
       - name: Generator conformance corpus
         run: |
@@ -145,9 +151,12 @@ jobs:
 
       - name: Sandboxed Rust generator smoke
         run: |
-          cargo build --release --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+          scripts/build-repository-generator-plugins.sh
+          git diff --exit-code vscode/generators/diagram.wasm
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate vscode/generators/diagram.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/diagram-generator-smoke -- general-view
+          rg -q '"status": "incomplete"' target/diagram-generator-smoke/diagram.json
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
@@ -270,26 +279,23 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: |
-            shared/diagram-renderer/package-lock.json
+            vscode/diagram-renderer/package-lock.json
             vscode/package-lock.json
 
-      - name: Check frontend ELK dependency parity
-        run: node scripts/check-frontend-elk-parity.mjs
-
       - name: npm ci (diagram renderer)
-        run: cd shared/diagram-renderer && npm ci
+        run: cd vscode/diagram-renderer && npm ci
 
       - name: npm audit (diagram renderer)
-        run: cd shared/diagram-renderer && npm audit --omit=dev
+        run: cd vscode/diagram-renderer && npm audit --omit=dev
 
       - name: npm typecheck (diagram renderer)
-        run: cd shared/diagram-renderer && npm run typecheck
+        run: cd vscode/diagram-renderer && npm run typecheck
 
       - name: npm test (diagram renderer)
-        run: cd shared/diagram-renderer && npm test
+        run: cd vscode/diagram-renderer && npm test
 
       - name: npm test:coverage (diagram renderer)
-        run: cd shared/diagram-renderer && npm run test:coverage
+        run: cd vscode/diagram-renderer && npm run test:coverage
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
@@ -299,6 +305,12 @@ jobs:
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
+
+      - name: Build diagram webview
+        run: cd vscode && npm run build:diagram-webview
+
+      - name: Diagram viewer unit tests
+        run: cd vscode && npm run test:diagram-unit
 
       - name: LM CLI argv unit tests
         run: cd vscode && npm run test:lm-cli-unit
@@ -424,23 +436,17 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
+
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: npm test (extension smoke)
         run: cd vscode && xvfb-run -a npm test
 
       - name: npm test (multi-file smoke)
         run: cd vscode && xvfb-run -a npm run test:multi-file
-
-      - name: npm test (workspace smoke)
-        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
-
-      - name: npm test (state view integration)
-        run: cd vscode && xvfb-run -a npm run test:state-view
-
-      - name: npm test (interconnection integration)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
 
       - name: npm test (server restart smoke)
         run: cd vscode && xvfb-run -a npm run test:server-restart
@@ -550,11 +556,11 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
 
-      - name: Verify package layout
-        run: cd vscode && npm run verify:package-layout
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: Package VSIX
         run: cd vscode && npm run package

@@ -382,20 +382,12 @@ fn package_name_from_strict_ast(path: &str, bytes: &[u8]) -> Result<Option<Strin
     let source = std::str::from_utf8(bytes).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' is not valid UTF-8: {error}"))
     })?;
-    let ast = sysml_v2_parser::parse(source).map_err(|error| {
+    // The parser authority answers this. `kpar` needs a package identity, not a syntax tree, and
+    // parsing here would be a second parse of the same text against an AST this crate would then
+    // have to keep in step with the pinned revision.
+    let names = sysml_resolution::syntax::package_declaration_names(source).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' failed strict parsing: {error}"))
     })?;
-    let names = ast
-        .elements
-        .iter()
-        .filter_map(|element| match &element.value {
-            sysml_v2_parser::RootElement::Package(package) => package.identification.name.clone(),
-            sysml_v2_parser::RootElement::LibraryPackage(package) => {
-                package.identification.name.clone()
-            }
-            _ => None,
-        })
-        .collect::<Vec<_>>();
     if names.len() == 1 {
         Ok(names.into_iter().next())
     } else {

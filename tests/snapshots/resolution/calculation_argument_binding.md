@@ -1,0 +1,221 @@
+# META
+~~~ini
+description=A calculation invocation that leaves parameters unbound is reported; a complete one is not
+type=file
+libraries=standard
+~~~
+# SOURCE
+~~~sysml
+package Calculations {
+	calc def Sum {
+		in left : ScalarValues::Integer;
+		in right : ScalarValues::Integer;
+		return : ScalarValues::Integer = left + right;
+	}
+	part def Vehicle {
+		attribute complete = Sum(1, 2);
+		attribute partial = Sum(1);
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/calculation_argument_binding.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "calculation_binding_mismatch")
+        (source "semantic")
+        (range (start 8 22) (end 8 28))
+        (related-information
+          (related
+            (uri "memory://snapshot/calculation_argument_binding.md")
+            (range (start 1 1) (end 5 2))
+          )
+        )
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ba9667db3d5bcdca9a75691357cb3ceee96949002b9812ce2901db8f8b749382") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (kind calc-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")) (expressionOperand (reference "left")) (expressionOperand (reference "right")))))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (invocationCallee (reference "Sum")))))
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (invocationCallee (reference "Sum")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "right")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "Sum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "Sum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind invocationCallee) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (kind invocationCallee) (ordinal 0)))
+    (relationship (kind invocationCallee) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (kind invocationCallee) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (target (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle"))) (provenance implied))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (callee (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (supplied 2) (required 2) (start 7 23) (end 7 32))
+    (invocation (declaration (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (callee (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (supplied 1) (required 2) (start 8 22) (end 8 28))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left")))
+      (featured-by (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right")))
+      (featured-by (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete")))
+      (featured-by (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial")))
+      (featured-by (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 4 11) (end 4 32)) (probe (position 4 11))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 4 35) (end 4 39)) (probe (position 4 35))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 4 42) (end 4 47)) (probe (position 4 42))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "right")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 2 12) (end 2 33)) (probe (position 2 12))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 3 13) (end 3 34)) (probe (position 3 13))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 7 23) (end 7 26)) (probe (position 7 23))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::complete"))) (kind invocationCallee) (ordinal 0) (authored-target "Sum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))))
+    )
+  )
+  (query (document "memory://snapshot/calculation_argument_binding.md") (range (start 8 22) (end 8 25)) (probe (position 8 22))
+    (reference (id (source (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Vehicle::partial"))) (kind invocationCallee) (ordinal 0) (authored-target "Sum")
+      (outcome (status resolved) (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum")))))
+    )
+  )
+)
+~~~

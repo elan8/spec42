@@ -8,6 +8,25 @@ pub use language_service::{
     line_prefix_at_position, position_to_byte_offset, sysml_keywords,
     unit_value_suffix_at_position, word_at_position, RESERVED_KEYWORDS,
 };
+
+pub(crate) fn symbol_entries_for_uri(
+    model: &sysml_query::resolved_slice::PublishedModel,
+    uri: &tower_lsp::lsp_types::Url,
+) -> Vec<SymbolEntry> {
+    language_service::symbol_entries_for_uri(model, uri)
+        .into_iter()
+        .map(|entry| SymbolEntry {
+            name: entry.name,
+            uri: entry.uri,
+            range: crate::common::text_span::to_lsp_range(entry.range),
+            kind: tower_lsp::lsp_types::SymbolKind::NULL,
+            container_name: entry.container_name,
+            detail: entry.detail,
+            description: entry.description,
+            signature: entry.signature,
+        })
+        .collect()
+}
 #[cfg(test)]
 mod position {
     use tower_lsp::lsp_types::{Position, Range};
@@ -220,27 +239,11 @@ pub fn suggest_create_usage_from_definition(
         .map(|suggestion| wrap_refactor_action(suggestion, uri))
 }
 
-pub fn suggest_add_missing_case_subject_quick_fix(
-    source: &str,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_add_missing_case_subject_quick_fix(
-        source,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-    )
-    .map(|suggestion| suggestion_to_code_action(suggestion, uri, Some(diagnostic)))
-}
-
 pub fn suggest_qualify_ambiguous_name_quick_fixes(
     source: &str,
     uri: &Url,
     diagnostic: &Diagnostic,
-    graph: &sysml_model::SemanticGraph,
+    model: &sysml_query::resolved_slice::PublishedModel,
 ) -> Vec<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
     language_service::suggest_qualify_ambiguous_name_quick_fixes(
@@ -249,7 +252,7 @@ pub fn suggest_qualify_ambiguous_name_quick_fixes(
         DiagnosticLine {
             line: diagnostic.range.start.line,
         },
-        graph,
+        model,
         uri,
     )
     .into_iter()
@@ -261,7 +264,7 @@ pub fn suggest_add_import_quick_fixes(
     source: &str,
     uri: &Url,
     diagnostic: &Diagnostic,
-    graph: &sysml_model::SemanticGraph,
+    model: &sysml_query::resolved_slice::PublishedModel,
 ) -> Vec<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
     language_service::suggest_add_import_quick_fixes(
@@ -270,7 +273,7 @@ pub fn suggest_add_import_quick_fixes(
         DiagnosticLine {
             line: diagnostic.range.start.line,
         },
-        graph,
+        model,
         uri,
     )
     .into_iter()
@@ -520,7 +523,7 @@ mod tests {
 
     #[test]
     fn test_collect_named_elements_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
+        let root = sysml_resolution::syntax::parse_strict("").expect("parse empty");
         let el = collect_named_elements(&root);
         assert!(el.is_empty());
     }
@@ -528,7 +531,7 @@ mod tests {
     #[test]
     fn test_collect_named_elements_from_package() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(text).expect("parse");
         let el = collect_named_elements(&root);
         assert_eq!(el.len(), 2); // package P + part Engine
         let names: Vec<_> = el.iter().map(|(n, _)| n.as_str()).collect();
@@ -539,7 +542,7 @@ mod tests {
     #[test]
     fn test_collect_named_elements_feature_and_classifier_decls() {
         let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(text).expect("parse");
         let el = collect_named_elements(&root);
         let pairs: Vec<_> = el.iter().map(|(n, d)| (n.as_str(), d.as_str())).collect();
         assert!(pairs.contains(&("myFeature", "feature decl 'myFeature'")));
@@ -592,7 +595,7 @@ mod tests {
 
     #[test]
     fn test_collect_document_symbols_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
+        let root = sysml_resolution::syntax::parse_strict("").expect("parse empty");
         let symbols = collect_document_symbols(&root);
         assert!(symbols.is_empty());
     }
@@ -600,7 +603,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_package() {
         let text = "package P { }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -611,7 +614,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_nested() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -625,7 +628,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_feature_and_classifier_decls() {
         let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         let children = symbols[0].children.as_ref().expect("children");
         assert!(children.iter().any(|child| {
@@ -1135,7 +1138,7 @@ mod tests {
             return; // skip when Vehicle Example not present (e.g. SYSML_V2_RELEASE_DIR unset)
         }
         let content = std::fs::read_to_string(&path).expect("read VehicleDefinitions.sysml");
-        let root = sysml_v2_parser::parse(&content).expect("parse");
+        let root = sysml_resolution::syntax::parse_strict(&content).expect("parse");
         // Semantic tokens (using server's ast_semantic_ranges)
         let ranges = crate::semantic_tokens::ast_semantic_ranges(&root, &content);
         let target_dir = std::env::var_os("CARGO_TARGET_DIR")

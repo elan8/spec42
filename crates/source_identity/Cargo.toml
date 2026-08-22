@@ -1,0 +1,12 @@
+[package]
+name = "source_identity"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Typed content identities and source manifests shared across Spec42 crates"
+
+[dependencies]
+serde.workspace = true
+blake3.workspace = true
+thiserror.workspace = true

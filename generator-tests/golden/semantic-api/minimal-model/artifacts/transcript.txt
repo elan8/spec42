@@ -1,4 +1,4 @@
-info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.2.0
 roots: 1 element(s)
   Minimal [Package] name=Minimal library=false
 find(None): 2 element(s)
@@ -10,8 +10,7 @@ children(Minimal): 1 element(s)
   Minimal::Widget [PartDefinition] name=Widget library=false
 element(Minimal): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Minimal): <untyped>
-relationships(Minimal): 1 edge(s)
-  reference Minimal -> Minimal::Widget implied=false
+relationships(Minimal): 0 edge(s)
 effective_features(Minimal): 0 element(s)
 children(Minimal::Widget): 0 element(s)
 element(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>

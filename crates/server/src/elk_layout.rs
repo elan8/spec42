@@ -161,7 +161,7 @@ mod tests {
 
     fn fixture_path(name: &str) -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../shared/diagram-renderer/test-fixtures/interconnection")
+            .join("../../vscode/diagram-renderer/test-fixtures/interconnection")
             .join(name)
     }
 

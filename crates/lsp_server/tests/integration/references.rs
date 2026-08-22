@@ -14,7 +14,7 @@ fn lsp_cross_file_references() {
     let uri_def = "file:///refs/def.sysml";
     let uri_use = "file:///refs/use.sysml";
     let content_def = "package P { part def Widget; }";
-    let content_use = "package Q { part w : Widget; }";
+    let content_use = "package Q { import P::*; part w : Widget; }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({
@@ -72,7 +72,7 @@ fn lsp_cross_file_references() {
             "method": "textDocument/references",
             "params": {
                 "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 21 },
+                "position": { "line": 0, "character": 34 },
                 "context": { "includeDeclaration": true }
             }
         });

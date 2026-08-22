@@ -7,8 +7,9 @@ license.workspace = true
 description = "Protocol-neutral SysML editor language services for Spec42 hosts"
 
 [dependencies]
-sysml_model = { path = "../sysml_model" }
-sysml-v2-parser = { workspace = true }
+sysml_query = { path = "../sysml_query" }
+sysml_source = { path = "../sysml_source" }
+sysml_resolution = { path = "../sysml_resolution" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 url = "2"

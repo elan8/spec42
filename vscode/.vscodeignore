@@ -5,6 +5,7 @@ node_modules/**
 src/**
 testFixture/**
 scripts/**
+diagram-renderer/**
 tests/**
 out/test/**
 out/**

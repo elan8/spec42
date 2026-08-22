@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+use source_identity::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{
@@ -68,7 +68,10 @@ pub struct KparLibraryComponent {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct LibraryCatalog {
-    pub content_hash: String,
+    /// Verified content identity of every admitted library source byte under every configured
+    /// package root, in configured precedence order (plan §5.2/§5.3). Computed by scanning and
+    /// hashing actual file content, not only paths and configured versions.
+    pub root_digest: RootDigest,
     pub package_roots: Vec<PathBuf>,
     pub stdlib: StdlibComponent,
     pub kpar_libraries: Vec<KparLibraryComponent>,
@@ -88,11 +91,10 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<
         &kpar_libraries,
     );
 
-    let content_hash =
-        hash_package_roots(&package_roots, &request.standard_library, &kpar_libraries);
+    let root_digest = hash_package_roots(&package_roots, &stdlib.roots);
 
     Ok(LibraryCatalog {
-        content_hash,
+        root_digest,
         package_roots,
         stdlib,
         kpar_libraries,
@@ -378,25 +380,67 @@ fn stdlib_resolution_roots(
     }
 }
 
-fn hash_package_roots(
-    package_roots: &[PathBuf],
-    standard_library: &StandardLibraryConfig,
-    kpar_libraries: &[KparLibraryComponent],
-) -> String {
-    let mut hasher = Sha256::new();
-    for root in package_roots {
-        hasher.update(root.display().to_string().as_bytes());
-        hasher.update([0]);
+/// Scans every configured package root (in configured precedence order) and hashes every
+/// admitted source file's actual bytes into a [`RootDigest`] (plan §5.2/§5.3). A version string
+/// or install directory alone is never sufficient identity for a mutable local library root;
+/// managed/embedded roots are content-addressed exactly the same way here so their digest also
+/// transitively commits every installed file.
+fn hash_package_roots(package_roots: &[PathBuf], stdlib_roots: &[PathBuf]) -> RootDigest {
+    let mut library_root_groups: Vec<Vec<SourceManifestEntry>> = Vec::new();
+    for (slot, root) in package_roots.iter().enumerate() {
+        let role = if stdlib_roots.contains(root) {
+            SourceRole::StandardLibrary
+        } else {
+            SourceRole::Library
+        };
+        library_root_groups.push(scan_library_root(root, slot as u32, role));
     }
-    hasher.update(standard_library.version.as_bytes());
-    hasher.update([0]);
-    for library in kpar_libraries {
-        hasher.update(library.id.as_bytes());
-        hasher.update([0]);
-        hasher.update(library.config.version.as_bytes());
-        hasher.update([0]);
+    SourceManifest::new(Vec::new(), library_root_groups).root_digest()
+}
+
+fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceManifestEntry> {
+    let mut entries = Vec::new();
+    if !root.exists() {
+        return entries;
     }
-    format!("{:x}", hasher.finalize())
+    for entry in walkdir::WalkDir::new(root)
+        .follow_links(false)
+        .into_iter()
+        .filter_map(Result::ok)
+    {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let path = entry.path();
+        let is_admitted = path
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .is_some_and(|ext| {
+                ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml")
+            });
+        if !is_admitted {
+            continue;
+        }
+        let Ok(bytes) = std::fs::read(path) else {
+            continue;
+        };
+        let relative_path = path
+            .strip_prefix(root)
+            .ok()
+            .map(|relative| relative.to_string_lossy().replace('\\', "/"))
+            .unwrap_or_else(|| path.display().to_string());
+        let uri = format!("file://{}", path.display());
+        entries.push(SourceManifestEntry {
+            uri,
+            path_hint: Some(relative_path.clone()),
+            role,
+            content_digest: source_identity::ContentDigest::of_bytes(&bytes),
+            byte_len: bytes.len() as u64,
+            library_root_slot: Some(slot),
+            relative_path: Some(relative_path),
+        });
+    }
+    entries
 }
 
 fn canonicalize_lossy(path: &Path) -> PathBuf {

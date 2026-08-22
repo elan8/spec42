@@ -21,7 +21,7 @@ fn workspace_does_not_depend_on_protocol_or_runtime_crates() {
         );
     }
 
-    for required in ["sysml_model", "language_service"] {
+    for required in ["sysml_query", "sysml_source", "language_service"] {
         assert!(
             cargo_toml.contains(&format!("{required} =")),
             "workspace must depend on {required}"

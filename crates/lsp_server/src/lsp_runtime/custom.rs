@@ -1,260 +1,44 @@
-use crate::host::config::Spec42Config;
 use crate::views::dto;
-use crate::workspace::handle::WorkspaceHandle;
+use crate::views::dto::range_to_dto;
 use crate::workspace::state::DocumentStore;
 use crate::workspace::ServerState;
 use std::time::Instant;
-use sysml_model::{
-    range_to_dto, visualization_model_not_ready, SysmlVisualizationResultDto, TextPosition,
-    TextRange,
-};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::{MessageType, Url};
-use tower_lsp::Client;
 
-async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
-    if !enabled {
-        return;
-    }
-    let details = fields
-        .into_iter()
-        .map(|(key, value)| format!("\"{}\":{}", key, value))
-        .collect::<Vec<_>>()
-        .join(",");
-    client
-        .log_message(
-            MessageType::INFO,
-            format!("[SysML][perf] {{\"event\":\"{}\",{}}}", event, details),
-        )
-        .await;
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(crate) async fn sysml_model_result(
-    client: &Client,
-    handle: &WorkspaceHandle,
-    state: &ServerState,
-    _config: &Spec42Config,
-    params: serde_json::Value,
-    perf_logging_enabled: bool,
-) -> Result<(dto::SysmlModelResultDto, Option<Url>)> {
-    let request_start = Instant::now();
-    let params_start = Instant::now();
-    let (uri, scope) = crate::views::parse_sysml_model_params(&params)?;
-    let workspace_visualization_requested =
-        scope.iter().any(|entry| entry == "workspaceVisualization");
-    let params_ms = params_start.elapsed().as_millis().max(1);
-    let build_start = Instant::now();
-    if workspace_visualization_requested
-        && !crate::workspace::state::supports_semantic_queries(state.session.lifecycle())
-    {
-        return Ok((crate::views::empty_model_response(build_start), None));
-    }
-    let workspace_visualization_root = if workspace_visualization_requested {
-        crate::views::workspace_artifacts::workspace_root_for_uri(&uri, &state.workspace_roots)
-            .or_else(|| crate::views::workspace_artifacts::primary_workspace_root(state))
-    } else {
-        None
-    };
-    let model_explorer_bundle = match workspace_visualization_root.as_ref() {
-        Some(root) => crate::views::workspace_artifacts::materialize_model_explorer_with_cache(
-            handle, state, root,
-        )
-        .await
-        .ok(),
-        None => None,
-    };
-    let index_lookup_start = Instant::now();
-    let (effective_uri, entry) = match state.index.get(&uri) {
-        Some(e) => (uri.clone(), e),
-        None if workspace_visualization_requested => {
-            let fallback_uri = state
-                .semantic_graph
-                .workspace_uris_excluding_libraries(&state.library_paths)
-                .into_iter()
-                .find(|candidate_uri| state.index.contains_key(candidate_uri));
-            match fallback_uri.and_then(|fallback_uri| {
-                state
-                    .index
-                    .get(&fallback_uri)
-                    .map(|entry| (fallback_uri, entry))
-            }) {
-                Some((fallback_uri, entry)) => {
-                    if perf_logging_enabled {
-                        client
-                            .log_message(
-                                MessageType::INFO,
-                                format!(
-                                    "sysml/model: request_uri={} not indexed; using workspaceVisualization fallback uri={}",
-                                    uri.as_str(),
-                                    fallback_uri.as_str()
-                                ),
-                            )
-                            .await;
-                    }
-                    (fallback_uri, entry)
-                }
-                None => {
-                    let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
-                    log_perf(
-                        client,
-                        perf_logging_enabled,
-                        "backend:sysmlModelLookupMiss",
-                        vec![
-                            ("uri", format!("{:?}", uri.as_str())),
-                            ("scope", format!("{:?}", scope)),
-                            ("paramsMs", params_ms.to_string()),
-                            ("indexLookupMs", index_lookup_ms.to_string()),
-                            ("indexSize", state.index.len().to_string()),
-                            (
-                                "totalMs",
-                                request_start.elapsed().as_millis().max(1).to_string(),
-                            ),
-                        ],
-                    )
-                    .await;
-                    return Ok((crate::views::empty_model_response(build_start), None));
-                }
-            }
-        }
-        None => {
-            let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
-            log_perf(
-                client,
-                perf_logging_enabled,
-                "backend:sysmlModelLookupMiss",
-                vec![
-                    ("uri", format!("{:?}", uri.as_str())),
-                    ("scope", format!("{:?}", scope)),
-                    ("paramsMs", params_ms.to_string()),
-                    ("indexLookupMs", index_lookup_ms.to_string()),
-                    ("indexSize", state.index.len().to_string()),
-                    (
-                        "totalMs",
-                        request_start.elapsed().as_millis().max(1).to_string(),
-                    ),
-                ],
-            )
-            .await;
-            let uri_display = uri.as_str();
-            let index_len = state.index.len();
-            let indexed_uris: Vec<String> =
-                state.index.keys().map(|u| u.as_str().to_string()).collect();
-            client
-                .log_message(
-                    MessageType::WARNING,
-                    format!(
-                        "sysml/model: document not in index. request_uri={} (len={}) index_size={} indexed_uris_count={}. First 5 indexed: {:?}. Check URI normalization (e.g. drive letter casing on Windows).",
-                        uri_display,
-                        uri_display.len(),
-                        index_len,
-                        indexed_uris.len(),
-                        indexed_uris.iter().take(5).collect::<Vec<_>>(),
-                    ),
-                )
-                .await;
-            return Ok((crate::views::empty_model_response(build_start), None));
-        }
-    };
-    let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
-    let parse_metadata = entry.parse_metadata;
-    let response_build_start = Instant::now();
-    let response = crate::build_sysml_model_response(
-        &entry.content,
-        entry.parsed.as_ref(),
-        parse_metadata.parse_time_ms,
-        parse_metadata.parse_cached,
-        &state.semantic_graph,
-        &effective_uri,
-        &state.library_paths,
-        &scope,
-        build_start,
-        perf_logging_enabled,
-        client,
-        model_explorer_bundle.as_ref(),
-    )
-    .await;
-    let response_build_ms = response_build_start.elapsed().as_millis().max(1);
-    let cache_mark_ms = 0;
-    let graph_nodes = response
-        .graph
-        .as_ref()
-        .map(|graph| graph.nodes.len())
-        .unwrap_or(0);
-    let graph_edges = response
-        .graph
-        .as_ref()
-        .map(|graph| graph.edges.len())
-        .unwrap_or(0);
-    let activity_diagram_count = response
-        .activity_diagrams
-        .as_ref()
-        .map(|diagrams| diagrams.len())
-        .unwrap_or(0);
-    let total_ms = request_start.elapsed().as_millis().max(1);
-    log_perf(
-        client,
-        perf_logging_enabled,
-        "backend:sysmlModelResult",
-        vec![
-            ("uri", format!("{:?}", uri.as_str())),
-            ("scope", format!("{:?}", scope)),
-            ("paramsMs", params_ms.to_string()),
-            ("indexLookupMs", index_lookup_ms.to_string()),
-            ("responseBuildMs", response_build_ms.to_string()),
-            ("cacheMarkMs", cache_mark_ms.to_string()),
-            ("parseCached", parse_metadata.parse_cached.to_string()),
-            ("graphNodes", graph_nodes.to_string()),
-            ("graphEdges", graph_edges.to_string()),
-            ("activityDiagrams", activity_diagram_count.to_string()),
-            ("totalMs", total_ms.to_string()),
-        ],
-    )
-    .await;
-    let should_mark_parse_cached = !parse_metadata.parse_cached;
-    Ok((
-        response,
-        if should_mark_parse_cached {
-            Some(effective_uri)
-        } else {
-            None
-        },
-    ))
-}
-
-pub(crate) fn mark_sysml_model_parse_cached(state: &mut impl DocumentStore, uri: &Url) {
-    if let Some(entry) = state.index_mut().get_mut(uri) {
-        entry.parse_metadata.parse_cached = true;
-    }
-}
-
+/// Builds the `sysml/featureInspector` answer for one position.
+///
+/// Every semantic field comes from `PublishedModel::element_details_at`. What stays here is
+/// lexical: which token the cursor is on, whether it is a reserved keyword, and whether it is the
+/// unit suffix of a value. Those are source-fidelity questions the publication does not answer and
+/// deliberately does not own.
 pub(crate) fn sysml_feature_inspector_result(
     state: &ServerState,
     params: serde_json::Value,
 ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-    use language_service::WorkspaceSnapshot;
-
     let (uri, position) = crate::views::parse_sysml_feature_inspector_params(&params)?;
     let Some(entry) = state.index.get(&uri) else {
         return Ok(crate::views::empty_feature_inspector_response(
             &uri, position,
         ));
     };
-    if entry.parsed.is_none() {
-        return Ok(crate::views::empty_feature_inspector_response(
-            &uri, position,
-        ));
-    }
-    let mut response =
-        crate::views::build_sysml_feature_inspector_response(&state.semantic_graph, &uri, position);
-    let snapshot = crate::workspace::snapshot::ServerStateSnapshot::new(state, false);
-    let core_position = crate::common::text_span::to_core_position(position);
-    let Some(text) = snapshot.document_text(&uri) else {
-        return Ok(response);
+    let model = state.published_model.model();
+    let text = entry.content.clone();
+    // Queried once: the response and the selection classification below are two readings of the
+    // same settled answer, and asking twice would suggest they could differ.
+    let at = crate::views::feature_inspector::details_at(model, &uri, position);
+    let mut response = match &at {
+        Some(at) => crate::views::feature_inspector::feature_inspector_response(
+            &uri,
+            position,
+            at,
+            Some(text.as_str()),
+        ),
+        None => crate::views::empty_feature_inspector_response(&uri, position),
     };
 
     if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
-        text,
+        &text,
         position.line,
         position.character,
     ) {
@@ -267,7 +51,7 @@ pub(crate) fn sysml_feature_inspector_result(
     }
 
     let Some((line, start, end, word)) =
-        language_service::word_at_position(text, position.line, position.character)
+        language_service::word_at_position(&text, position.line, position.character)
     else {
         return Ok(response);
     };
@@ -296,90 +80,31 @@ pub(crate) fn sysml_feature_inspector_result(
         return Ok(response);
     }
 
-    let containing_node = state
-        .semantic_graph
-        .find_deepest_node_at_position(&uri, core_position)
-        .filter(|node| node.id.uri == uri);
-    if let Some(target) = language_service::references::resolve_symbol_target_at_position(
-        &snapshot,
-        &uri,
-        core_position,
-    ) {
-        let is_containing_element_name = containing_node
-            .map(|node| node.id == target.target_id && node.name == word)
-            .unwrap_or(false);
-        if !is_containing_element_name {
-            if let Some(target_node) = state.semantic_graph.get_node(&target.target_id) {
-                response.selection.kind = "reference".to_string();
-                response.selection.range = Some(range_to_dto(target.identifier_range));
-                response.referenced_element =
-                    Some(crate::views::feature_inspector::feature_inspector_element(
-                        &state.semantic_graph,
-                        target_node,
-                    ));
-                return Ok(response);
-            }
-        }
-    }
+    // The publication decides both of these. A reference is a reference because the publication
+    // placed one at this position, not because a name lookup happened to succeed, and an
+    // unresolved or unsupported one is deliberately *not* a reference selection: the inspector has
+    // no target to show for it.
+    let on_reference = at.as_ref().is_some_and(|at| {
+        matches!(
+            at.referenced,
+            sysml_query::resolved_slice::ReferencedDetails::Resolved(_)
+                | sysml_query::resolved_slice::ReferencedDetails::Ambiguous(_)
+        )
+    });
+    let on_own_name = at.as_ref().is_some_and(|at| {
+        at.containing
+            .as_ref()
+            .is_some_and(|details| crate::views::feature_inspector::covers_name(details, position))
+    });
 
-    if containing_node
-        .map(|node| node.name == word || node.id.qualified_name == word)
-        .unwrap_or(false)
-    {
+    if on_reference {
+        response.selection.kind = "reference".to_string();
+    } else if on_own_name {
         response.selection.kind = "element".to_string();
     } else if word.parse::<f64>().is_ok() {
         response.selection.kind = "value".to_string();
     }
     Ok(response)
-}
-
-pub(crate) async fn sysml_visualization_result(
-    handle: &WorkspaceHandle,
-    state: &ServerState,
-    params: serde_json::Value,
-) -> Result<(
-    SysmlVisualizationResultDto,
-    sysml_model::VisualizationBuildMeta,
-)> {
-    let (workspace_root_uri, view, selected_view) =
-        crate::views::parse_sysml_visualization_params(&params)?;
-    if !crate::workspace::state::supports_semantic_queries(state.session.lifecycle()) {
-        let message = match state.session.lifecycle() {
-            workspace::SessionLifecycle::Indexing => {
-                "SysML workspace is still indexing. The diagram will appear when indexing completes."
-            }
-            workspace::SessionLifecycle::Reindexing => {
-                "SysML model is being refreshed. The diagram will update when processing completes."
-            }
-            workspace::SessionLifecycle::Cold => {
-                "SysML language server is starting. The diagram will appear when the server is ready."
-            }
-            workspace::SessionLifecycle::Closed => {
-                "SysML language server session is closed. The diagram is unavailable."
-            }
-            workspace::SessionLifecycle::Ready => "SysML model is not ready.",
-        };
-        return Ok((
-            visualization_model_not_ready(workspace_root_uri.as_str(), &view, message),
-            sysml_model::VisualizationBuildMeta::default(),
-        ));
-    }
-    let build_start = Instant::now();
-    let outcome = crate::views::workspace_artifacts::build_visualization_with_cache(
-        handle,
-        state,
-        &workspace_root_uri,
-        &view,
-        selected_view.as_deref(),
-        build_start,
-    )
-    .await
-    .map_err(|error| tower_lsp::jsonrpc::Error {
-        code: tower_lsp::jsonrpc::ErrorCode::InternalError,
-        message: error.into(),
-        data: None,
-    })?;
-    Ok((outcome.response, outcome.meta))
 }
 
 pub(crate) fn sysml_library_search_result(
@@ -391,21 +116,42 @@ pub(crate) fn sysml_library_search_result(
     let query = params.query.trim().to_lowercase();
     let limit = params.limit.unwrap_or(100).clamp(1, 500);
 
-    let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
-        .symbol_table
+    // Startup can admit a library document to the publication before the search-only index pass.
+    // Build any missing entries from that same publication, retaining the parser-backed search
+    // projection only for documents deliberately not admitted to semantic construction.
+    let mut search_symbols = state.symbol_table.clone();
+    for (uri, index_entry) in &state.index {
+        if !crate::common::util::uri_under_any_library(uri, &state.library_paths)
+            || search_symbols.iter().any(|entry| entry.uri == *uri)
+        {
+            continue;
+        }
+        // Only non-admitted corpus documents may use syntax recovery for search. Admitted
+        // documents are represented exclusively by the committed publication query.
+        if !index_entry.admitted_to_publication {
+            search_symbols.extend(
+                crate::workspace::library_search::recover_short_name_search_symbols(
+                    &index_entry.content,
+                    uri,
+                )
+                .into_iter()
+                .map(
+                    crate::workspace::library_search::RecoverySearchSymbol::into_search_only_symbol,
+                ),
+            );
+        }
+    }
+
+    let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = search_symbols
         .iter()
         .filter(|entry| {
             crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths)
         })
         .filter_map(|entry| {
-            let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
-                entry,
-                state.index.get(&entry.uri),
-            );
             let score = if query.is_empty() {
                 1_000
             } else {
-                crate::workspace::library_search::library_search_score(&normalized_name, &query)?
+                crate::workspace::library_search::library_search_score(&entry.name, &query)?
             };
             Some((score, entry))
         })
@@ -435,10 +181,7 @@ pub(crate) fn sysml_library_search_result(
         .take(effective_limit)
         .map(
             |(score, entry)| crate::workspace::library_search::LibrarySearchItem {
-                name: crate::workspace::library_search::normalized_library_symbol_name(
-                    entry,
-                    state.index.get(&entry.uri),
-                ),
+                name: entry.name.clone(),
                 kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
@@ -484,7 +227,7 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
-/// Clears the document-store side of the cache (index/symbol table/semantic graph/render cache),
+/// Clears the document-store side of the cache (index/symbol table/publication/render cache),
 /// returning the pre-clear document and symbol counts. Called via
 /// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure.
 pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usize, usize) {
@@ -492,12 +235,9 @@ pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usi
     let syms = state.symbol_table_mut().len();
     state.index_mut().clear();
     state.symbol_table_mut().clear();
-    *state.semantic_graph_mut() = crate::semantic::SemanticGraph::default();
     (docs, syms)
 }
 
 pub(crate) fn clear_document_store_state_full(state: &mut ServerState) -> (usize, usize) {
-    let counts = clear_document_store_state(state);
-    state.render_cache.clear();
-    counts
+    clear_document_store_state(state)
 }

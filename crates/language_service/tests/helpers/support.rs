@@ -3,7 +3,8 @@
 #![allow(dead_code)]
 
 use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
-use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
+use sysml_query::resolved_slice::TextPosition;
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
 pub fn document(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -18,7 +19,26 @@ pub fn document(path: &str, content: &str) -> SysmlDocument {
 }
 
 pub fn workspace_from_docs(docs: Vec<SysmlDocument>) -> InMemoryWorkspace {
-    InMemoryWorkspace::from_documents(docs).expect("workspace")
+    use std::sync::Arc;
+    use sysml_query::resolved_slice::{
+        build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+    };
+    let sources = docs
+        .iter()
+        .map(|doc| {
+            let kind = match doc.source_kind {
+                SysmlDocumentSourceKind::Workspace => SourceKind::Workspace,
+                SysmlDocumentSourceKind::StandardLibrary => SourceKind::StandardLibrary,
+                SysmlDocumentSourceKind::Library => SourceKind::Library,
+                SysmlDocumentSourceKind::External => SourceKind::External,
+            };
+            SourceDocument::from_uri(doc.uri.as_str(), doc.content.clone(), kind).expect("source")
+        })
+        .collect();
+    let request =
+        BuildRequest::resolved(sources, ConstructionStrategy::Sequential).expect("request");
+    let publication = Arc::new(build(request).expect("publication"));
+    InMemoryWorkspace::from_documents_and_publication(docs, publication).expect("workspace")
 }
 
 pub fn single_doc(path: &str, content: &str) -> InMemoryWorkspace {

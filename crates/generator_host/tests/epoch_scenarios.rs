@@ -11,12 +11,16 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use generator_api::{ArtifactLimits, GeneratorModelView, QueryLimits};
+use generator_api::{ArtifactLimits, GeneratorModelView};
 use generator_host::{
     CancellationHandle, EntryObserver, GeneratorFailureCategory, GeneratorHostError,
     GeneratorRuntime, ManualClock, RuntimeLimits, RuntimeOptions,
 };
 use spec42_generator_protocol::{Operation, COMPATIBILITY_TOKEN};
+
+mod common;
+
+use common::published_model_view;
 
 /// A tick interval longer than any test run, so the only ticks are the ones tests raise.
 const NEVER: Duration = Duration::from_secs(86_400);
@@ -88,30 +92,7 @@ fn spinning_guest() -> Vec<u8> {
 }
 
 fn model() -> Arc<GeneratorModelView> {
-    use std::fs;
-    use workspace::{
-        EngineBuilder, HostContext, HostFilesystemProvider, ValidationTiming, WorkspaceLoadRequest,
-    };
-
-    let temp = Box::leak(Box::new(tempfile::tempdir().unwrap()));
-    let path = temp.path().join("model.sysml");
-    fs::write(&path, "package P { part def Widget; }\n").unwrap();
-    let engine = EngineBuilder::default()
-        .cache_dir(temp.path().join("cache"))
-        .no_stdlib(true)
-        .build()
-        .unwrap();
-    let provider =
-        HostFilesystemProvider::from_paths(&path, Some(temp.path()), engine.package_roots());
-    let request = WorkspaceLoadRequest::single_target(path)
-        .with_workspace_root(Some(temp.path().to_path_buf()))
-        .with_validation_timing(ValidationTiming::Deferred);
-    Arc::new(GeneratorModelView::new(
-        engine
-            .load_workspace(provider, request, HostContext::default())
-            .unwrap(),
-        QueryLimits::default(),
-    ))
+    published_model_view("package P { part def Widget; }\n")
 }
 
 struct Harness {

@@ -6,10 +6,11 @@ Guidance for building, testing, and contributing to Spec42.
 
 Spec42 is a Rust workspace plus a VS Code extension.
 
-- `crates/sysml_model` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, and graph-first visualization helpers.
-- `crates/sysml_diagnostics` owns the semantic diagnostics engine: rule evaluation over the graph built by `sysml_model`.
+- `crates/sysml_resolution` owns semantic construction, resolution, and every diagnostic a host reports, settled at the publication barrier; `crates/sysml_query` is the typed read-only facade over it.
+- `crates/sysml_diagnostics` owns transport-neutral diagnostic values and the host reporting policy over them. It decides nothing semantic and depends only on `sysml_query`.
 - `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
-- `crates/diagram` owns shared diagram projection utilities used by Spec42 and other consumers.
+- `generator-plugins` contains the repository-owned Rust WebAssembly generators. Diagram
+  semantics enter plugins only through typed queries over the immutable publication.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
@@ -17,14 +18,19 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
+  Its `diagram-renderer` package owns D3/ELK layout and drawing for generator-produced render
+  products; it does not derive model semantics.
 
-Keep reusable semantic/model behavior in `sysml_model` (and diagnostics rules in `sysml_diagnostics`); keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate that owns it.
+Keep semantic construction and diagnostic rules in `sysml_resolution`; all consumers use the typed
+`sysml_query` facade. Keep editor intelligence that is shared across hosts in `language_service`;
+keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate
+that owns it.
 
 ## Language Service Structure
 
 Protocol-neutral editor APIs live in `crates/language_service`.
 
-- `dto.rs`: serde-friendly result types (`SourceLocation`, `HoverResult`, completion/rename/outline DTOs, `TextEditSuggestion`, …) using `semantic_core` spans
+- `dto.rs`: serde-friendly result types (`SourceLocation`, `HoverResult`, completion/rename/outline DTOs, `TextEditSuggestion`, …) using neutral source spans
 - `workspace.rs`: `InMemoryWorkspace` builder and `WorkspaceSnapshot` trait
 - `navigation.rs`, `references.rs`, `lookup.rs`, `symbol.rs`: hover, definition, references
 - `completion.rs`: context detection, candidate ranking, `complete()`
@@ -40,7 +46,7 @@ Protocol-neutral editor intelligence stays in the language-service crate; hosts 
 
 ## LSP Server Structure
 
-The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
+The LSP implementation lives under `crates/lsp_server/src/lsp_runtime`.
 
 - `capabilities.rs`: capability payload construction
 - `documents.rs`: initialize, document lifecycle, workspace/library indexing, and configuration changes
@@ -50,7 +56,7 @@ The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 - `hierarchy.rs`, `navigation.rs`, `references_resolver.rs`, `symbols.rs`: feature helpers
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
-Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
+Diagnostic rules are owned by `sysml_resolution` and read through `sysml_query`; kernel code maps neutral diagnostics at the LSP boundary.
 
 ## Building
 
@@ -125,22 +131,50 @@ npm run compile
 
 ## Parser Dependency Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.47.0**). CI and default local builds resolve from the registry. To test against a sibling checkout before publish, uncomment the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **git revision**, and exactly
+one crate may depend on it: `crates/sysml_resolution`, which lowers the AST to the semantic graph.
+Everything else reaches syntax through `sysml_resolution::syntax`, which returns plain data rather
+than parser types. Two independent things enforce this, and both are meant to stay:
 
-When updating parser behavior:
+- **`deny.toml`**, checked by `cargo deny check bans` in CI. The parser is banned outright except
+  as a direct dependency of `sysml_resolution` (`wrappers`). This reads the resolved dependency
+  graph, so a rename or a transitive path is caught by construction. Only the `bans` check runs;
+  the licence and advisory gates are deliberately off.
+- **`crates/source_identity/tests/parser_authority.rs`**, which covers what the graph cannot see:
+  manifest *shape* (the pin must be a bare 40-hex git rev with no `version`/`branch`/`tag`/`path`,
+  and the authority must inherit it with `workspace = true`), the `fuzz/` nested workspace, and
+  reintroducing a repository-local parser facade under a different package name.
 
-1. Bump the version in root `Cargo.toml` `[workspace.dependencies]` and run `cargo update -p sysml-v2-parser`.
-2. Run `cargo test --workspace` with the embedded stdlib bundle available.
-3. Run `cargo test --workspace --no-default-features`.
-4. Run targeted workspace/indexing checks in `crates/kernel/tests/integration/workspace.rs`.
-5. Update docs if parser compatibility or supported workflow expectations changed.
+Neither subsumes the other. Run `cargo deny check bans` locally before changing any manifest.
 
-Cross-repo notes for real-model diagnostic quality live in the parser repo: [`docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md`](../sysml-v2-parser/docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md).
+The boundary itself is a compile error, not a convention: `SyntaxDocument` wraps the parser
+document in a private field with a `pub(crate)` accessor, so a crate without the dependency cannot
+hold, walk, cache, or serialize a `ParsedDocument` even while holding a document.
+
+To update the parser:
+
+1. Change the `rev` in the root `Cargo.toml` `[workspace.dependencies]`, then run
+   `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
+   The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
+   momentarily resolvable, and it is silent about it -- use the fully qualified spec.
+2. `cargo check --workspace --all-targets`, then `cargo test --workspace`.
+3. `cargo run -p spec42-snapshot -- update`, review `git diff -- tests/snapshots`, then
+   `cargo run -p spec42-snapshot -- check`. The snapshot corpus is the primary end-to-end evidence
+   for a parser bump; it is not CI-gated, so the diff review is the gate.
+4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
+   the ones it closes.
+5. `cargo tree -i sysml-v2-parser` must print a single tree with `sysml_resolution` as its only
+   dependent, and `cargo deny check bans` must pass.
+
+To build against a local parser checkout, uncomment the `[patch."https://…"]` block in
+`.cargo/config.toml`. The patch key is the git URL -- a `[patch.crates-io]` entry resolves nothing,
+because the workspace no longer depends on the published crate. Comment it out again before
+producing evidence for a bump; an active patch changes what the graph resolves.
 
 ## Diagnostic quality workflow
 
 - `spec42 check` post-processes diagnostics: deduplication and one root parse error per file (cascades in `relatedInformation`). By default, semantic checks still run on files with parse errors; use `--strict-diagnostics` for the legacy mode that skips semantic checks after a parse error and suppresses shadowed `unresolved_*` warnings.
-- Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; post-processing lives in `crates/kernel/src/analysis/diagnostics_postprocess.rs`.
+- Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; reporting policy lives in `sysml_diagnostics`.
 - Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
 
 ## Workspace indexing limits
@@ -149,24 +183,7 @@ Large repositories may truncate file discovery per folder pattern. The VS Code s
 
 - **User docs:** [docs/user/TROUBLESHOOTING.md](docs/user/TROUBLESHOOTING.md) (increase the cap for large repos).
 - **Fixture:** [vscode/testFixture/workspaces/large-workspace](vscode/testFixture/workspaces/large-workspace) sets `maxFilesPerPattern: 2` for manual truncation testing.
-- **Integration:** `crates/kernel/tests/integration/workspace.rs` (large-workspace / perf paths pass a higher cap via LSP `initializationOptions`).
-
-## Visualization normalization parity
-
-Authoritative semantic shaping for diagram payloads lives in `semantic_core` (`crates/semantic_core/src/semantic/visualization/payload.rs`) before LSP/CLI serialization. The shared renderer's `normalizeVisualizationPayload` is a thin pass-through (aliases + candidate arrays only).
-
-| Field / behavior | Authoritative source |
-|------------------|---------------------|
-| `interconnectionScene` | `interconnection_scene.rs` |
-| `stateMachines` (labels, sort, filter) | `finalize_state_machines_for_response` |
-| `activityDiagrams` (renderability, rank, flow IDs) | `finalize_activity_diagrams_for_response` |
-| `sequenceDiagrams` (filter, rank, labels) | `finalize_sequence_diagrams_for_response` |
-| Scoped IBD URI set (interconnection LSP) | `IbdBuildScope::ViewExposedPackages` + `ibd_uri_closure_for_exposed_ids` |
-| Scoped vs full IBD scene parity | `crates/semantic_core/tests/scoped_ibd_parity.rs` (CI on `examples/drone`) |
-| Slim interconnection LSP payload (`ibd` omitted) | `VisualizationBuildOptions::slim_interconnection_payload`; tested in `interconnection_visualization.rs` |
-| `viewCandidates` | `explicit_views::build_view_candidates` |
-
-Authoritative shaping stays in the semantic visualization pipeline; the shared renderer does not re-implement it.
+- **Integration:** `crates/lsp_server/tests/integration/workspace.rs` (large-workspace / perf paths pass a higher cap via LSP `initializationOptions`).
 
 ## Running Tests
 
@@ -221,70 +238,11 @@ CI runs core and agent CLI layers as separate jobs (see `.github/workflows/ci.ym
 Focused LSP integration tests:
 
 ```bash
-cargo test -p kernel --test lsp_integration
+cargo test -p lsp_server --test lsp_integration
 ```
 
-The LSP integration test modules live under `crates/kernel/tests/integration/`. Use `harness::TestSession` for new tests to avoid duplicated initialize/open/request boilerplate.
-
-Requirements slice checks:
-
-```bash
-cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
-cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
-```
-
-### Robot vacuum showcase (local only)
-
-The [sysml-robot-vacuum-cleaner](https://github.com/elan8/sysml-robot-vacuum-cleaner) model is vendored under `third_party/` for local integration tests. The directory is gitignored; fetch it once with:
-
-```bash
-bash scripts/fetch-robot-vacuum-cleaner.sh
-```
-
-Pinned version: `config/robot-vacuum-cleaner.json` (commit SHA, tag, or branch). Override the checkout path with `SYSML_ROBOT_VACUUM_DIR` if needed. Re-fetch after a pin bump with `FORCE_ROBOT_VACUUM_FETCH=1 bash scripts/fetch-robot-vacuum-cleaner.sh`.
-
-These tests stay `#[ignore]` in CI (slow; ~1–2 minutes). Run locally with `--ignored`:
-
-```bash
-cargo test -p spec42_host --test robot_vacuum_snapshot -- --ignored --nocapture
-cargo test -p kernel --test lsp_integration robot_vacuum -- --ignored --nocapture
-```
-
-### Incremental update benchmark (local only)
-
-Compare full in-memory rebuild vs. single-document `update_snapshot` on a synthetic multi-file workspace:
-
-```bash
-cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
-```
-
-The benchmark stays `#[ignore]` in CI (`experimental_incremental_updates` now defaults to
-`true`, so no builder change is needed to measure it). As of 2026-07-13 this benchmark does
-not show a measurable win — the graph patch skips re-parsing but `update_snapshot`'s
-downstream snapshot assembly is not scoped. Follow-ups are tracked in GitHub Issues.
-
-### Robot vacuum performance analysis (local only)
-
-Profile the **embedding host** cold path (`load_workspace` + `prepare_view`) on the vendored robot-vacuum fixture. Requires the checkout from `scripts/fetch-robot-vacuum-cleaner.sh`.
-
-```bash
-# Single release report → target/spec42-perf/robot-vacuum-host-phases.json
-cargo test -p spec42_host --test robot_vacuum_performance \
-  robot_vacuum_host_phase_performance_report --release -- --ignored --nocapture
-
-# Median matrix (3 scenarios × 3 runs) → target/spec42-perf/robot-vacuum-host-matrix.json
-cargo test -p spec42_host --test robot_vacuum_performance \
-  robot_vacuum_host_performance_matrix_report --release -- --ignored --nocapture
-
-# Profiling example (profiling profile = release + debuginfo)
-cargo build -p spec42_host --profile profiling --example profile_robot_vacuum
-target/profiling/examples/profile_robot_vacuum --embedded-libs
-```
-
-CPU flamegraphs need `kernel.perf_event_paranoid <= 1`.
-
-The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Validation completion scenarios (`validation_eager_at_load`, `validation_deferred_ensure`, `view_then_validation`) are in `robot_vacuum_host_validation_performance_report`. Use a **release** or **profiling** binary for IDE integration — debug builds are much slower on the same path.
+The LSP integration test modules live under `crates/lsp_server/tests/integration/`. Use
+`harness::TestSession` for new tests to avoid duplicated initialize/open/request boilerplate.
 
 ### SysML v2 validation suite
 
@@ -292,7 +250,7 @@ The full validation suite over the official SysML v2 Release is ignored by defau
 
 ```bash
 git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
-SYSML_V2_RELEASE_DIR=$PWD/sysml-v2-release cargo test -p kernel --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
+SYSML_V2_RELEASE_DIR=$PWD/sysml-v2-release cargo test -p lsp_server --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
 ```
 
 If `SYSML_V2_RELEASE_DIR` is not set or does not contain the expected validation directory, the test returns early without failing.
@@ -311,33 +269,27 @@ Extension tests run inside a downloaded VS Code instance. Tests that require the
 Useful focused suites:
 
 ```bash
-npm run test:state-view          # state-transition-view integration + SVG export
-npm run test:interconnection     # interconnection-view integration
-npm run test:interconnection-drone
 npm run test:multi-file          # multi-file workspace smoke
-npm run test:workspace-smoke
-npm run test:ux-unit             # status bar, snippets, examples provider, panel controller, update flow
+npm run test:ux-unit             # status bar, snippets, and examples provider
 npm run test:library-unit        # library status view model
 ```
 
-Default `npm test` (`.vscode-test.mjs`) runs extension smoke, visualization export, placeholder/empty-state tests, and message handler tests. Controller, update-flow, gate, dtoAdapter, and render-tracker unit tests run via `npm run test:ux-unit`. Shared payload normalization tests live in `shared/diagram-renderer/src/prepare/normalize-payload.test.ts`. CI `vscode-smoke` also runs the view integration suites above.
+Default `npm test` (`.vscode-test.mjs`) runs the extension smoke and editor integration suites.
 
 ### VS Code smoke troubleshooting
 
 - **`Server process exited with code 0` in the SysML output channel** is normal during an intentional `sysml.restartServer` stop. It does not by itself indicate failure.
 - Look instead for **`restartServer failed`**, **`extension server crashed`**, or a **`waitFor` timeout** in the test host console (`[spec42-test][...]` lines when `SPEC42_TEST_DEBUG=1`).
 - CI sets `SPEC42_SERVER_PATH` for smoke runs; test fixtures should not hardcode machine-specific `spec42.serverPath` values.
-- If a visualization integration test times out, check whether the language server reached `ready` before the visualizer opened (`configureServerForTests` logs when debug is enabled).
 
 ### Packaging Checks
 
 ```bash
 cd vscode
-npm run verify:package-layout
 npm run package
 ```
 
-Package staging copies the example and domain-library content into the extension package layout before validation.
+The package prepublish hook stages the example and domain-library content before compiling the extension.
 
 ## Performance Checks
 
@@ -370,17 +322,10 @@ cd vscode && npm run compile && npm run test:lm-cli-unit
 Diagnostics are published in two stages:
 
 1. Parser diagnostics from `sysml_v2_parser::parse_with_diagnostics`
-2. Semantic diagnostics from `semantic_core` only when parse diagnostics are empty
+2. Semantic diagnostics published by `sysml_resolution`, adapted through `sysml_diagnostics`
 
-Semantic diagnostic codes and mapping behavior are covered by focused tests in `crates/kernel/tests/integration/diagnostics.rs`.
-
-## Visualization Checks
-
-Backend visualization payloads are covered by Rust integration tests in `crates/kernel/tests/integration/model.rs` and workspace tests in `workspace.rs`.
-
-Frontend rendering and SVG export checks live under `vscode/src/test/suite`. SVG artifacts are written under the relevant `vscode/testFixture/workspaces/*/test-output/diagrams/` directory and are validated by semantic/layout expectations rather than exact byte-for-byte snapshots.
-
-Action Flow and State Transition views are stable-facing and should remain release-gating. Sequence View remains experimental.
+Semantic diagnostic codes and mapping behavior are covered by focused tests in
+`crates/lsp_server/tests/integration/diagnostics.rs`.
 
 ## Examples and domain libraries
 
@@ -411,8 +356,24 @@ The VS Code **Examples** sidebar lists folders from the canonical root `examples
 
 ## Testing the Extension Manually
 
+On macOS, prepare a packaged, isolated QA installation with:
+
+```bash
+scripts/setup-macos-vscode-qa.sh
+```
+
+The script builds the repository generator plugins and embedded-stdlib server, installs locked npm
+dependencies, packages and installs the VSIX beneath the repository-local, gitignored
+`.cache/vscode-qa-<ABI token>` directory, creates a compact state-transition QA workspace, and opens
+it with isolated extension and user-data directories. The durable profile retains workspace trust
+and QA-specific settings across rebuilds. Pass `--no-open` to prepare the environment without
+launching VS Code. Set `SPEC42_VSCODE_QA_DIR` to use a different state directory, including a
+throwaway directory when testing profile initialization.
+
+For the lighter Extension Development Host workflow:
+
 1. Build the Rust server: `cargo build` or `cargo build --release`.
 2. Open the `vscode/` folder in VS Code.
 3. Press F5 to launch the Extension Development Host.
 4. Open a folder containing `.sysml` or `.kerml` files.
-5. Use the Model Explorer, Visualizer, hover, definition, references, and `spec42 check` to compare editor and CLI behavior.
+5. Use Feature Inspector, hover, definition, references, and `spec42 check` to compare editor and CLI behavior.

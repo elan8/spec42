@@ -20,7 +20,7 @@ embed-kpar-libraries = ["workspace/embed-kpar-libraries"]
 [dependencies]
 workspace = { path = "../workspace", default-features = false }
 lsp_server = { path = "../lsp_server" }
-sysml_model = { path = "../sysml_model" }
+sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
 walkdir = "2"
@@ -40,7 +40,6 @@ tempfile = "3"
 [dev-dependencies]
 wat = "1"
 lsp_server = { path = "../lsp_server" }
-sysml-v2-parser = { workspace = true }
 serde_json = { workspace = true }
 tempfile = "3"
 tower-lsp = "0.20"

@@ -2,7 +2,7 @@
     completion_edit_shape, detect_completion_context, CompletionContext,
     ATTRIBUTE_TYPE_LOOKUP_KINDS, PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,
 };
-use sysml_model::TextPosition;
+use sysml_query::resolved_slice::TextPosition;
 
 #[test]
 fn detects_part_type_reference_context() {

@@ -2,7 +2,7 @@ use language_service::{
     CompletionItemDto, CompletionItemKindDto, CompletionResult, FoldingRangeDto,
     FoldingRangeKindDto, OutlineSymbol, TextEditDto, TextEditSuggestion, WorkspaceSymbolMatch,
 };
-use sysml_model::{TextPosition, TextRange};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 #[test]
 fn dto_roundtrip_serde_phase1() {

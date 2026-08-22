@@ -1,3 +1,4 @@
-package Q {
-    part item : Widget;
+package Spec42MultiFileUsages {
+    import Spec42MultiFileDefinitions::*;
+    part item : Spec42SmokeWidget;
 }

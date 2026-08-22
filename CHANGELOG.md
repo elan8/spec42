@@ -7,6 +7,238 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
+  effective feature membership.** The four SysML collections read the specialization closure that
+  `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*
+  inherits, rather than returning a typed unavailable-fact outcome. One snapshot fixture came off
+  `blocked_by` and the `lowering-gap-definition-usage-effective-feature-membership-closure` issue
+  is retired.
+
+- **KerML `Type` inherited-membership and feature collections derive from the canonical
+  specialization closure.** `deriveTypeInheritedMembership`, `deriveTypeFeatureMembership`,
+  `deriveTypeFeature`, `deriveTypeEndFeature`, `deriveTypeDirectedFeature`,
+  `deriveTypeInheritedFeature`, `deriveTypeInput` and `deriveTypeOutput` now publish values instead
+  of a typed unavailable-fact outcome. The inherited closure reuses the specialization ancestor
+  index the resolver already owns, and a member a nearer feature redefines -- authored `:>>` or
+  implied alike -- is not inherited. `deriveTypeOwnedFeatureMembership`,
+  `deriveTypeMultiplicity` and `deriveTypeOwnedConjugator` stay explicitly unsupported: their
+  normative result is a relationship or multiplicity identity the publication still does not own.
+  Two snapshot fixtures came off `blocked_by` and the
+  `lowering-gap-type-inherited-membership-closure` issue is retired.
+
+- **Bumped the pinned `sysml-v2-parser` revision `49bdf3f` -> `f52100f`.** The 24-commit "corpus
+  coverage wave 1" bump closes gap 68 in `planning/UPSTREAM_PARSER_GAPS.md` outright and narrows
+  eleven more (61, 62, 66, 69, 72, 73, 74, 76, 77, 78, 79), each re-probed at the new revision
+  through the blocked fixture's own source. Visible behavior changes: a metadata body
+  is its own `MetadataBody` production whose members are reference redefinitions rather than nested
+  attribute declarations, so `@Risk { totalRisk = 0.3; }` now publishes an anonymous feature with a
+  real `redefinition` relationship and its evaluated value instead of a fabricated declaration
+  named after the overridden feature; `flow`'s endpoints, `perform`'s target and `interface`'s
+  connect ends are grammar-owned productions rather than expressions, so their endpoints, action
+  references and endpoint labels are source-backed; and the newly typed `GuardedSuccession`,
+  `then if`, and KerML type-body `package`/`library package` members lower rather than falling
+  through. Across the snapshot corpus 24 fixtures leave `parse-recovery` -- 16 of them reaching
+  `complete` -- and no fixture regresses from `complete`.
+
+  One upstream regression came with it, recorded as gap 81 and pinned by two `sysml_resolution`
+  tests: a directed KerML-kinded parameter (`in expr p : T;`, `in bool redefines a { ... }`) in a
+  `calc`- or `constraint`-shaped body is now dropped to parse recovery. KerML `function`/`behavior`
+  bodies, where the standard libraries author that spelling, are unaffected.
+
+- **Two members the parser bump unblocked now lower.** A KerML `flow of T from a to b;` in a
+  calc-shaped body carries its payload feature and both connector ends through
+  `lower_flow_usage` instead of `unsupported_calc_definition_member`, and the declared
+  `verify requirement <name> : <Type>;` form lowers as a named `VerifyRequirement` usage, so the
+  generated requirement-verification library specialization applies to it. Five snapshot fixtures
+  came off `blocked_by` and the `lowering-requirement-members` issue is retired.
+
+- **The normative KerML and SysML validation constraints are now a traceable snapshot corpus.**
+  `tests/snapshots/validation` covers all 180 constraints the two specifications name `validate*`
+  -- 88 in KerML 1.0 and 92 in SysML 2.0 -- across 179 fixtures, each carrying its specification,
+  OMG document identifier, exact clause, constraint name, a conforming and a violating example, and
+  an authored `EXPECTED DIAGNOSTICS`. Rules the compiler does not enforce yet stay visible as
+  `BLOCKED` by a typed issue that names the owning layer and concrete gap.
+  The snapshot report now reconciles fixture evidence against the generated constraint manifest;
+  `derive*` and `check*` are represented alongside `validate*` constraints rather than hidden by
+  a separate planning inventory.
+
+- **Bumped the pinned `sysml-v2-parser` revision `ec47463` -> `49bdf3f`.** Control nodes are the
+  visible behavior change: `ControlNodeDeclaration` makes `merge continue;` a *declaration* rather
+  than a reference to an existing element, so a named control node publishes as a named
+  declaration instead of an anonymous node with an unresolved `joinInput`-style input reference.
+  `Expression` folds `Parenthesized` and `Tuple` into one `Sequence` production and replaces
+  `LiteralWithUnit` with `Bracket`, whose unit operand is a source-backed qualified reference
+  rather than copied text, so unit identity is now read from the arena. `KermlFeature` moves its
+  `chains`/`inverse of`/`featured by` clauses into `relationship_parts`, and `VariantUsage` gains
+  an explicit `Reference`/`Typed` form discriminant. Sixteen new body-element variants across the
+  usage families are reported as unsupported members rather than dropped.
+
+
+- **Diagrams now cross the generator boundary.** The repository-owned Rust WASM diagram plugin
+  emits a versioned JSON render product from the immutable model query API, and the VS Code webview
+  renders it with the relocated D3/ELK package. All eight view kinds are selectable from the start:
+  state transitions use their typed projection, while views awaiting owner-defined queries report
+  explicit incomplete products instead of reconstructing semantic graphs. The obsolete Rust
+  `diagram` crate is removed and `generator-plugins` is the home for production WASM plugins.
+
+- **Every diagnostic Spec42 reports is settled by the immutable publication.** `sysml_resolution`
+  now owns the conformance families the graph engine ran -- namespace identity, connection,
+  behavior, requirement/case, view and inherited-value conformance -- and the two authoring hints,
+  deciding each from a fact an earlier phase settled rather than from text. The typed contract
+  gains an owner-produced message, the identity of the element a diagnostic is about, a note per
+  related site, and `information` severity; `diagnostics().for_document()` answers one document
+  from a prebuilt index. Workspace validation, the LSP, and `spec42 check` read that one result:
+  the graph-backed engine, its check modules, helpers and entry points are deleted, and
+  `sysml_diagnostics` is now the neutral diagnostic shape plus the one reporting policy a host has
+  -- report only what the parser rejected for a document that does not parse.
+
+  Diagnostic codes change with it. Every unresolved endpoint reports `unresolved_reference` or
+  `unresolved_type_reference` at the same range instead of a per-relationship spelling
+  (`unresolved_satisfy_source`, `unresolved_allocate_target`, `unresolved_ref_type_reference` and
+  their siblings), because the publication settles every authored reference the same way;
+  `ambiguous_name_reference` becomes `ambiguous_reference`; port compatibility reports
+  `port_type_mismatch` or `flow_direction_incompatible` from the settled conjugation and feature
+  directions rather than from the spelling of a type reference. `unresolved_pending_relationship`
+  and its expression sibling described the graph's own pending queues and have no counterpart.
+  **This is a knowingly partial cutover.** Deleting the graph engine dropped the families whose
+  owning fact the publication does not hold -- metadata `about` and body bindings, user-defined
+  keywords, case objective and verdict shape, initial-transition cardinality, allocation-usage
+  typing, import kind conformance, and view expose filtering. Models that used to receive those
+  checks no longer do. Each is listed with the fact it needs in
+  `crates/sysml_query/PRODUCTION_CUTOVER.md`. View `expose` members are now lowered, so
+  `view_expose_unresolved` and `view_expose_empty` are owned and reported, and a view's expose
+  members are no longer an unsupported construct.
+  Three answers improve: a `connect a.fill to b.fill` is checked rather than skipped, two ports are
+  compatible when they offer each other the features they expect rather than when one definition
+  specializes the other, and a fan-out to distinct usages is no longer one connection repeated.
+
+- **The feature inspector reads the immutable publication.** `sysml_resolution` publishes
+  `element_details`: one cohesive answer per element carrying its inspection, what each authored
+  relationship family settled to, the types it has once inheritance is taken into account, the
+  features it inherits and the type that declares each, its metadata bindings, both directions of
+  its relationships with authored/implied provenance, and both evaluation channels -- the value and
+  a new `AnalysisEvaluation` verdict channel for analysis cases, verification cases, requirements
+  and constraints. `sysml/featureInspector` is now a projection of that and nothing else: the
+  qualified-name and simple-name target searches, the subsetting-chain and specialization-chain
+  walks, and the "found a target, call it resolved" status inference are deleted, as is the
+  unreachable inherited-attribute code lens that read evaluation facts by graph node. LSP type
+  hierarchy moves to `PublishedModel::types()`, where a subsetting or redefinition is a hierarchy
+  step as the specification says it is.
+
+  The `sysml/featureInspector` response changes with it. The generic `attributes` map is gone --
+  every key it carried is a typed field, and reading `evaluatedValue` out of a map is how
+  presentation became a second truth store. `evaluation` has one variant per published state so a
+  missing value cannot read as success, `analysis` is its own channel, relationship families report
+  `partial`, `ambiguous` and `unsupported` beside `resolved` and keep ambiguous candidates out of
+  `targets`, `referencedElement` becomes the tagged `referenced` outcome, relationships carry their
+  provenance, and element kinds are the published OMG metaclass names. Three answers change because
+  the publication owns them now: a KerML `feature`'s typing is authored-but-unresolved rather than
+  not applicable, an unqualified name does not cross two documents that both declare `package P`,
+  and an anonymously redefined feature is attributed to the type that declares it under a name.
+
+- **Expression, value and unit conformance moved to the immutable publication.** `sysml_resolution`
+  now lowers authored unit tokens, `filter` conditions and invocation arities as typed facts, settles
+  them at the publication barrier, and answers them through `PublishedModel::evaluation()` alongside
+  the evaluated value and the measurement reference a feature's type requires. A unit token resolves
+  to the unit declaration it names -- `[kg]` is `SI::kilogram` -- and its dimension is that unit's
+  measurement-reference type, so dimension compatibility is the ordinary specialization question
+  rather than a string comparison against a hand-maintained alias table. "No catalog admitted",
+  "unknown symbol", "ambiguous symbol" and "not a single unit symbol" are each their own outcome.
+  `sysml_diagnostics::checks::expression_conformance` and the graph-derived unit catalog it read
+  (`UnitRegistry::from_graph`, `graph_ingest`, `type_resolver`) are deleted. `invalid_enumeration_value`
+  is retired: a string literal is not an enumeration literal whether or not the enum declares a member
+  of that name, so `attribute_value_type_mismatch` reports it, and reports any value whose type is
+  unrelated to its feature's. Hover reads the published evaluation for both the evaluated value and
+  the unit literal.
+
+- **Bumped the pinned `sysml-v2-parser` revision `b6291cc` → `ec47463`.** One upstream commit,
+  closing the two gaps the previous bump left open. A keyword-less block comment ahead of a typed
+  feature carrying a KerML type-relationship clause (`/* c */ feature f : T unions x;`) parses
+  again in every calc-shaped body, for all four of `unions`, `intersects`, `differences` and
+  `disjoint from`; that removes the recovery diagnostics and the keyword-named expression operands
+  the previous pin published across seven fixtures. And a `requirement def` body now admits the
+  usage families it inherits from the general member grammar -- `action`, `succession`, `perform`,
+  `state`, `item`, `part`, `connect` and connection usages -- each dispatched here to the lowering
+  its package- or part-level spelling already uses, except `SuccessionUsage`, which has no lowering
+  in any scope and reports unsupported exactly as it does in part-usage and state-def bodies.
+  `FirstMergeBody` became the shared `Body<E>` container, so its brace arm is destructured by field.
+
+  Corpus-wide against the pre-bump baseline, parser recovery diagnostics fall 106 → 82 and
+  `unsupported_*` diagnostics 489 → 462.
+
+  **One pre-existing upstream defect is newly visible**, filed as gap 61 in
+  `planning/UPSTREAM_PARSER_GAPS.md`: a calc-shaped body shreds `flow a.y to b.x1;`,
+  `message m of T;` and the anonymous `redefines predecessors [0];` into bare expression members,
+  with each keyword arriving as an ordinary feature reference and no diagnostic raised.
+  `classifier`, `struct` and `behavior` bodies did this at `204ca48` already; `class` bodies joined
+  them when `b6291cc` routed `class` through the shared KerML classifier declaration, moving it off
+  the attribute-shaped body that parsed these members correctly. Keyword-shaped expression operands
+  rise 23 → 38 across eight fixtures, concentrated in `tests/snapshots/kerml/moments.md`, whose
+  `class` bodies author eleven `redefines <target> [mult];` members. The snapshots pin it.
+
+- **Bumped the pinned `sysml-v2-parser` revision `204ca48` → `b6291cc`.** Upstream replaced the
+  loose modifier booleans with the prefix components the grammar actually spells, and
+  `sysml_resolution` reads them through three new splitters. `OccurrenceUsagePrefix` (SysML BNF 564)
+  now carries `abstract`/`variation`, `derived`, `constant`, `ref`, `individual`, the portion kind
+  and the direction for `part`/`item`/`port`/`occurrence` usages, each as the authored keyword's own
+  span; `FeaturePrefix` (KerML BNF 584) does the same for KerML features, where `end`-ness is the
+  alternative taken rather than a flag beside it; and `MultiplicityPart`'s ordering and uniqueness
+  slots are two `Option`s over their authored spellings, so an authored `unique` is finally
+  distinguishable from omission. Every definition kind gained the `definition_prefix` slot, so
+  `variation` is recorded alongside `abstract` on requirement, case, analysis-case,
+  verification-case, use-case, view, rendering and occurrence definitions.
+
+  Three parser nodes were folded into the productions that spell them, and the model follows.
+  `ClassDef` is gone: `class` routes through the shared KerML classifier declaration, so
+  `DeclarationKind::ClassDefinition` is now the single kind every `class` spelling reaches and
+  `KermlClass` is deleted. `TypedParameterMember` merged into `KermlFeature`, so `in expr p :
+  Boolean = a;` lowers under the kind its keyword names (`kerml-expression`) instead of the generic
+  `parameter`, keeping its direction on both the declaration and its typing reference.
+  `KermlEndMember` merged into `FeaturePrefix`'s owned cross feature, which **inverts an ownership**:
+  in `end happensDuring subsets ... feature thatOccurrence : ...;` the end-prefixed feature now owns
+  the cross feature rather than the reverse.
+
+  Newly typed members are lowered rather than reported unsupported: `calc` usages at package level,
+  `ref` declarations in port bodies, `part` usages in constraint-def bodies, and nested
+  `requirement def`s, `port` usages and `allocate` members in requirement bodies. Across the
+  snapshot corpus that removes 31 `unsupported_*` diagnostics and adds 4.
+
+  Two follow-on effects of that refactor were resolved by the `ec47463` bump below.
+
+- **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
+  `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the
+  `in`/`out`/`inout` direction) is now accepted on every usage rather than a hand-picked few, and
+  nine body-element sets gained the members the spec always allowed them: `ref` declarations in
+  requirement, port, view, view-def, rendering and occurrence bodies; `end` and in/out parameter
+  declarations in part-usage bodies; connection usages in occurrence bodies; concern and calc
+  usages in requirement bodies; use-case, case and verification-case usages in use-case bodies;
+  viewpoint usages and `satisfy` members in view-def bodies; and `require` constraints in
+  constraint-def bodies. `sysml_resolution` lowers all of them through the owners that already
+  existed for each node kind, and `item` usages now carry their `variation`, `derived` and
+  `constant` modifier facts (`ItemUsage`'s bare `is_abstract` flag became the two-valued
+  `usage_prefix`, so `variation item` is representable for the first time). Across the snapshot
+  corpus `unsupported_parser_construct` falls 230 → 6 and `unsupported_grammar_form` 270 → 46,
+  parser recovery diagnostics fall 114 → 104, and resolved references rise 16839 → 17497 with no
+  fixture losing a resolution.
+- **Bumped the pinned `sysml-v2-parser-next` revision `cb026cd` → `7eb7869`.** The parser's opaque
+  `Other(String)` body member is gone from eleven scopes: content a scope cannot parse is now a
+  recovery node with its authored span and a diagnostic, and a spec-valid member the scope does not
+  model is an explicit `Unsupported` node. Body delimiters are retained (`Body<E>` is one container
+  for all 27 declaration bodies), the four annotating members are one `AnnotatingMember` production,
+  a `ref` body is the general usage-member set, an `if` branch keeps its authored braced/brace-less
+  spelling, and an action usage's absent body is distinct from `;`. Across the snapshot corpus,
+  parser recovery errors fall 224 → 81 and 49 fixtures reach `complete`; members that used to be
+  swallowed opaquely now lower for real (KerML classifier/connector/feature/invariant members in
+  part, attribute, package and relationship bodies; `bind`, `calc`, `connection` and constraint
+  members in attribute bodies; `attribute`/`calc`/nested `action def` in action bodies; `ref` and
+  in/out parameters in use-case bodies; `then send ...;` continuations; typed `flow` ends). A `:>`
+  clause on a parameter is now lowered as the subsetting it is rather than as a typing, an untyped
+  `actor x;` no longer invents a type reference, and `type X ...` gains its own `Type` element kind.
+  `subclassifier X specializes Y;` is the one construct whose coverage narrows: it is a
+  relationship declaration upstream now, not a classifier declaration, and is reported as an
+  unsupported package member until it is lowered.
+- Moved active plans under `planning/` and adopted a remove-on-completion policy.
+
 ## [0.50.0] - 2026-08-07
 
 - **Bumped `sysml-v2-parser` 0.53.0 → 0.54.0** ([#18](https://github.com/elan8/spec42/issues/18)) —

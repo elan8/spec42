@@ -1,63 +1,70 @@
 use std::fs;
 use std::path::Path;
 
+/// This crate carries diagnostic values and reporting policy, and decides nothing semantic.
+///
+/// Its manifest is the guard: reaching the mutable semantic model, the parser, or a transport
+/// would each let a rule, a re-parse, or a protocol assumption back in. What it may depend on is
+/// the typed facade over the immutable publication, and nothing else with an opinion about
+/// meaning.
 #[test]
-fn sysml_diagnostics_depends_on_sysml_model_but_not_protocol_or_runtime_crates() {
+fn the_reporting_crate_reads_the_published_facade_and_nothing_semantic() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let cargo_toml = fs::read_to_string(manifest_dir.join("Cargo.toml")).expect("read Cargo.toml");
 
     let forbidden = [
+        "sysml_model",
+        "sysml-v2-parser",
+        "sysml_resolution",
         "tokio",
         "tower-lsp",
         "tower_lsp",
         "lsp_server",
+        "workspace",
         "clap",
         "rmcp",
         "axum",
     ];
     for dep in forbidden {
+        // Matched at the start of a line: `version.workspace = true` is an inherited field, not a
+        // dependency on the crate called `workspace`.
         assert!(
-            !cargo_toml.contains(&format!("{dep} =")),
-            "sysml_diagnostics must not depend on {dep}"
+            !cargo_toml
+                .lines()
+                .any(|line| line.starts_with(&format!("{dep} ="))),
+            "sysml_diagnostics must not depend on {dep}: it renders published diagnostics rather \
+             than deciding them"
         );
     }
 
-    let required = "sysml_model";
     assert!(
-        cargo_toml.contains(&format!("{required} =")),
-        "sysml_diagnostics must depend on {required}"
+        cargo_toml.contains("sysml_query ="),
+        "sysml_diagnostics reads the published diagnostics through the typed facade"
     );
 }
 
-/// Locks in the boundary the `kinds.rs` classifier consolidation established: diagnostics
-/// reads element-kind classification from `sysml_model::semantic::kinds`, never from the
-/// projection/view-rendering modules. A prior version of this code delegated
-/// `is_port_like`/`is_part_like` to `ibd::is_port_like`/`is_part_like` instead — see the
-/// commit that fixed it. Without this guardrail, that coupling could silently regress since
-/// nothing else in the crate graph would catch it until a future `sysml_projection` split
-/// made it a hard compile error.
+/// The reporting policy filters settled values; it never re-decides one.
+///
+/// A rule is a semantic decision wherever it lives, so the source may not name the model, resolve
+/// anything, or read a diagnostic's own message. The message is presentation the owner produced;
+/// recovering a fact from it is the inference this crate exists to make unnecessary.
 #[test]
-fn diagnostics_does_not_reference_projection_modules() {
+fn the_reporting_crate_decides_nothing_semantic() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let src_dir = manifest_dir.join("src");
     let forbidden_patterns = [
-        "ibd::",
-        "model_projection",
-        "sequence_views",
-        "state_views",
-        "activity_graph",
-        "interconnection_",
-        "visualization",
-        "prepared_view",
-        "extracted_model",
-        "explicit_views",
-        "component_view",
-        "view_projection",
-        "render_snapshot",
+        "SemanticGraph",
+        "SemanticNode",
+        "sysml_model",
+        "collect_diagnostics_from_graph",
+        "evaluation_facts_for",
+        "expression_evaluation_for",
+        "resolve_",
+        "diagnostic.message.contains",
+        "sysml_v2_parser",
     ];
 
     let mut offenders = Vec::new();
-    for file in list_rs_files(&src_dir) {
+    for file in list_rs_files(&manifest_dir.join("src")) {
         let content = fs::read_to_string(&file).expect("read source file");
         for pattern in forbidden_patterns {
             if content.contains(pattern) {
@@ -68,7 +75,7 @@ fn diagnostics_does_not_reference_projection_modules() {
 
     assert!(
         offenders.is_empty(),
-        "sysml_diagnostics must not reference projection/view-rendering modules:\n{}",
+        "sysml_diagnostics must not decide semantics:\n{}",
         offenders.join("\n")
     );
 }

@@ -1,10 +1,10 @@
 {
   "abiVersion": 4,
-  "semanticApiVersion": "0.1.0",
+  "semanticApiVersion": "0.2.0",
   "namespace": "spec42:generator-abi/4",
   "importModule": "spec42",
-  "schemaFingerprint": "0x3a46578ab105445f",
-  "compatibilityToken": "0xa18f24b386a7570d",
+  "schemaFingerprint": "0xc866694d05d94950",
+  "compatibilityToken": "0x24daed6534b4630d",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -13,7 +13,12 @@
     { "name": "Element", "code": 4, "request": "String", "response": "ElementDetail" },
     { "name": "TypedBy", "code": 5, "request": "String", "response": "Option<ElementSummary>" },
     { "name": "Relationships", "code": 6, "request": "String", "response": "Vec<Relationship>" },
-    { "name": "EffectiveFeatures", "code": 7, "request": "String", "response": "Vec<ElementSummary>" }
+    { "name": "EffectiveFeatures", "code": 7, "request": "String", "response": "Vec<ElementSummary>" },
+    { "name": "RequirementTyping", "code": 8, "request": "String", "response": "RequirementUsageTyping" },
+    { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" },
+    { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" },
+    { "name": "DiagramViews", "code": 11, "request": "()", "response": "Vec<DiagramViewSummary>" },
+    { "name": "DiagramView", "code": 12, "request": "String", "response": "DiagramViewProjection" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

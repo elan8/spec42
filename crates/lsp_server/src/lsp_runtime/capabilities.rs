@@ -48,8 +48,11 @@ pub(crate) fn server_capabilities(
         inlay_hint_provider: None,
         linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(true)),
         document_formatting_provider: Some(OneOf::Left(true)),
-        moniker_provider: Some(OneOf::Left(true)),
-        call_hierarchy_provider: Some(CallHierarchyServerCapability::Simple(true)),
+        // TODO(follow-up): Reintroduce monikers and call hierarchy only after their stable
+        // identities and perform relationships are owned by typed immutable-model queries.
+        // Do not advertise these until those typed relationships exist.
+        moniker_provider: None,
+        call_hierarchy_provider: None,
         experimental: Some(serde_json::json!({
             "typeHierarchyProvider": true
         })),

@@ -1,20 +1,20 @@
 use super::*;
 
-fn semantic_graph_uris(index: &std::collections::HashMap<Url, IndexEntry>) -> Vec<Url> {
-    let (workspace, library) = semantic_graph_uris_split(index, &[]);
+fn publication_uris(index: &std::collections::HashMap<Url, IndexEntry>) -> Vec<Url> {
+    let (workspace, library) = publication_uris_split(index, &[]);
     let mut uris = workspace;
     uris.extend(library);
     uris
 }
 
-fn semantic_graph_uris_split(
+fn publication_uris_split(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
 ) -> (Vec<Url>, Vec<Url>) {
     let mut workspace = Vec::new();
     let mut library = Vec::new();
     for (uri, entry) in index {
-        if !entry.include_in_semantic_graph {
+        if !entry.admitted_to_publication {
             continue;
         }
         if util::uri_under_any_library(uri, library_paths) {
@@ -28,7 +28,7 @@ fn semantic_graph_uris_split(
     (workspace, library)
 }
 
-/// Scan configured library roots for `sysml/librarySearch` without merging the full tree into the semantic graph.
+/// Scan configured library roots for `sysml/librarySearch` without admitting the full tree.
 pub(crate) fn index_library_paths_for_search(
     state: &mut impl DocumentStore,
     library_paths: &[Url],
@@ -53,94 +53,55 @@ pub(crate) fn index_library_paths_for_search(
                 content: entry.content.clone(),
                 parsed: entry.parsed,
                 parse_metadata: entry.parse_metadata,
-                include_in_semantic_graph: false,
+                admitted_to_publication: false,
             },
         );
-        let mut symbols = Vec::new();
-        library_search::add_short_name_symbol_entries(&mut symbols, &entry.content, &uri_norm);
+        let symbols = library_search::recover_short_name_search_symbols(&entry.content, &uri_norm)
+            .into_iter()
+            .map(library_search::RecoverySearchSymbol::into_search_only_symbol);
         state.symbol_table_mut().extend(symbols);
         indexed += 1;
     }
     indexed
 }
 
-/// Build `(source_kind, WorkspaceParsedDocument)` entries for `uris` from `index`, for
-/// feeding into `IncrementalWorkspace::load_parsed`/`load_parsed_from`. URIs with no parsed
-/// content (or missing from `index`) are silently skipped, matching this module's prior
-/// behavior of only merging documents that parsed successfully.
-fn parsed_entries_for_uris(
-    index: &std::collections::HashMap<Url, IndexEntry>,
-    uris: &[Url],
-    kind: SysmlDocumentSourceKind,
-) -> Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> {
-    uris.iter()
-        .filter_map(|uri| {
-            let entry = index.get(uri)?;
-            let parsed = entry.parsed.clone()?;
-            Some((
-                kind,
-                WorkspaceParsedDocument {
-                    uri: uri.clone(),
-                    content: entry.content.clone(),
-                    parsed,
-                    parse_time_ms: entry.parse_metadata.parse_time_ms,
-                    parse_cached: entry.parse_metadata.parse_cached,
-                },
-            ))
-        })
-        .collect()
-}
-
-/// Load import-closure library files for the current workspace index (semantic graph merge).
+/// Load import-closure library files for the current workspace publication.
 ///
-/// Delegates the merge/link computation to `workspace::IncrementalWorkspace` (Tier 2
-/// unified-incremental-engine Phase 4) instead of hand-rolling it — the same primitives
-/// `sysml_model::build_and_link_graph_parallel` and `workspace::Spec42Engine`'s full-load
-/// path already use, closing the last hand-copied sequence of this shape. `IndexEntry` has
-/// no workspace/library distinction (only `include_in_semantic_graph`), and this function
+/// Uses the canonical immutable publication builder.
+/// `IndexEntry` has
+/// no workspace/library distinction (only `admitted_to_publication`), and this function
 /// has never applied qualified-name shadowing between "workspace" and "library" files — every
 /// included URI is tagged `Workspace` here, so `load_parsed` merges all of them uniformly via
-/// plain `SemanticGraph::merge`, exactly matching this function's prior behavior.
+/// the same admitted source set, exactly matching this function's prior behavior.
 pub(crate) fn rebuild_all_document_links(
     state: &mut impl DocumentStore,
 ) -> RebuildAllDocumentLinksMetrics {
     let total_start = Instant::now();
-    let uris: Vec<Url> = semantic_graph_uris(state.index());
-    let entries = parsed_entries_for_uris(state.index(), &uris, SysmlDocumentSourceKind::Workspace);
-
-    let rebuild_start = Instant::now();
-    let mut engine = IncrementalWorkspace::new();
-    engine.load_parsed(entries);
-    let graph = engine.graph();
-    let rebuild_ms = elapsed_ms(rebuild_start);
+    let uris: Vec<Url> = publication_uris(state.index());
+    let rebuild_ms = 0;
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
     for (uri, index_entry) in state.index() {
-        if !index_entry.include_in_semantic_graph {
-            let mut search_symbols = Vec::new();
-            library_search::add_short_name_symbol_entries(
-                &mut search_symbols,
-                &index_entry.content,
-                uri,
+        if !index_entry.admitted_to_publication {
+            all_symbols.extend(
+                library_search::recover_short_name_search_symbols(&index_entry.content, uri)
+                    .into_iter()
+                    .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
-            all_symbols.extend(search_symbols);
             continue;
         }
-        let mut new_entries = semantic::symbol_entries_for_uri(&graph, uri);
-        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
-        all_symbols.extend(new_entries);
+        if let Some(model) = state.published_model() {
+            all_symbols.extend(crate::language::symbol_entries_for_uri(model, uri));
+        }
     }
     let uri_count = state.index().len();
     *state.symbol_table_mut() = all_symbols;
-    *state.semantic_graph_mut() = graph;
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
-    // The 7-phase breakdown this metrics struct used to carry (remove-nodes, rebuild-graphs,
-    // cross-edge-resolution, workspace-relationship-linking, pending-relationship-resolution,
-    // expression-evaluation) lived inside this function's own hand-written sequence. Now
-    // that the graph computation is one delegated call into `IncrementalWorkspace`, those
-    // phases aren't separately timed here anymore — deliberate, to avoid re-implementing
+    // The old internal phase breakdown lived inside this function's hand-written construction
+    // sequence. Now that semantic construction is one delegated call into the canonical builder,
+    // those phases aren't separately timed here — deliberate, to avoid re-implementing
     // `link_parsed_documents_parallel`'s internals a second time just to get timing points
     // (see the Tier 2 unified-incremental-engine design doc's Phase 4 write-up). The combined
     // time is reported as `cross_document_edges_ms`, matching its pre-existing role as this
@@ -165,78 +126,40 @@ pub(crate) fn rebuild_all_document_links(
 /// and returns the results to be committed. This allows the heavy lifting (parsing,
 /// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
 ///
-/// See `rebuild_all_document_links`'s doc comment for why this delegates to
-/// `IncrementalWorkspace` now. Unlike that function, this one does have a real
-/// workspace/library distinction (`workspace_uris`/`library_uris`) and a `base_graph` reuse
-/// path (library-graph-cache hit) — both preserved via `SysmlDocumentSourceKind` tagging and
-/// `IncrementalWorkspace::load_parsed_from`.
-pub(crate) fn rebuild_semantic_graph_staged(
+/// Unlike `rebuild_all_document_links`, this function preserves the workspace/library source-kind
+/// distinction. The legacy cached base-graph argument is ignored and retained only until callers
+/// finish moving to immutable publication replacement.
+pub(crate) fn rebuild_publication_inputs_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
     standard_library_paths: &[Url],
-    base_graph: Option<semantic::SemanticGraph>,
-    evaluate: bool,
+    _evaluate: bool,
 ) -> (
-    semantic::SemanticGraph,
     Vec<crate::language::SymbolEntry>,
     RebuildAllDocumentLinksMetrics,
 ) {
     let total_start = Instant::now();
-    let (workspace_uris, library_uris) = semantic_graph_uris_split(index, library_paths);
-    // On cache hit the index only has workspace entries, so library_uris will be empty.
-    // We still collect them to compute the total URI set for cross-doc resolution.
-    let cached_library_uris: Vec<Url> = if let Some(ref bg) = base_graph {
-        bg.all_uris()
-    } else {
-        Vec::new()
-    };
+    let (workspace_uris, library_uris) = publication_uris_split(index, library_paths);
     let uris: Vec<Url> = workspace_uris
         .iter()
         .chain(library_uris.iter())
-        .chain(cached_library_uris.iter())
         .cloned()
         .collect();
 
-    let rebuild_start = Instant::now();
-    let mut entries =
-        parsed_entries_for_uris(index, &workspace_uris, SysmlDocumentSourceKind::Workspace);
-    let (standard_library_uris, generic_library_uris): (Vec<_>, Vec<_>) = library_uris
-        .into_iter()
-        .partition(|uri| util::uri_under_any_library(uri, standard_library_paths));
-    entries.extend(parsed_entries_for_uris(
-        index,
-        &generic_library_uris,
-        SysmlDocumentSourceKind::Library,
-    ));
-    entries.extend(parsed_entries_for_uris(
-        index,
-        &standard_library_uris,
-        SysmlDocumentSourceKind::StandardLibrary,
-    ));
-    // If a base graph was provided (library graph cache hit), start from it so library nodes
-    // are already present for cross-document resolution — `load_parsed_from` resolves
-    // cross-document edges against the base graph's existing URIs too, not just `entries`'.
-    let mut engine = IncrementalWorkspace::new();
-    engine.load_parsed_from(base_graph.unwrap_or_default(), entries, evaluate);
-    let semantic_graph = engine.graph();
-    let rebuild_ms = elapsed_ms(rebuild_start);
+    let _ = (library_uris, standard_library_paths);
+    let rebuild_ms = 0;
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
     for (uri, index_entry) in index {
-        if !index_entry.include_in_semantic_graph {
-            let mut search_symbols = Vec::new();
-            library_search::add_short_name_symbol_entries(
-                &mut search_symbols,
-                &index_entry.content,
-                uri,
+        if !index_entry.admitted_to_publication {
+            all_symbols.extend(
+                library_search::recover_short_name_search_symbols(&index_entry.content, uri)
+                    .into_iter()
+                    .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
-            all_symbols.extend(search_symbols);
             continue;
         }
-        let mut new_entries = semantic::symbol_entries_for_uri(&semantic_graph, uri);
-        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
-        all_symbols.extend(new_entries);
     }
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
@@ -256,7 +179,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
         total_ms: elapsed_ms(total_start),
     };
 
-    (semantic_graph, all_symbols, metrics)
+    (all_symbols, metrics)
 }
 
 pub(crate) fn clear_documents_under_roots(

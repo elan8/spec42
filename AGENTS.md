@@ -123,8 +123,16 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 ## Evidence and verification
 
+- The standalone snapshot tool is the primary end-to-end integration test for the compiler
+  pipeline; regenerate and review its checked-in snapshots for pipeline behavior changes.
 - Specification and conformance claims require traceable normative evidence plus executable tests.
   Unsupported coverage stays visible; it does not disappear behind omission or optimistic labels.
+- Encode each researched KerML or SysML validation rule in the snapshot corpus with conforming and
+  violating source examples, explicit specification document and clause metadata, and an authored
+  `EXPECTED DIAGNOSTICS` assertion. If the canonical compiler does not yet satisfy that assertion,
+  use a typed `blocked_by` issue with a concrete owner and category so the case remains visible as
+  `BLOCKED`; remove the blocker when it becomes stale. The snapshot-tool README owns the fixture
+  syntax, blocker semantics, and evidence requirements.
 - For behavior changes and bug fixes, add the narrowest regression test at the owning layer, then
   verify affected consumers. Test both sides of the rule as appropriate: accepted/rejected,
   resolved/unresolved, same/cross source, full/incremental, cold/warm, or current/superseded. A pure
@@ -143,3 +151,18 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 - Review architectural changes adversarially. Look for a second source of truth, downstream
   re-derivation, hidden recovery, incomplete cache identity, stale publication, nondeterministic
   ordering, boundary leakage, generated-artifact drift, and missing negative or parity coverage.
+
+## Documentation lifecycle
+
+- Planning documents contain only active decisions, blockers, and remaining work. Remove an item
+  when it is completed; do not retain completion summaries, execution diaries, resolved-item
+  indexes, historical context sections, or superseded plans.
+- Git commit messages own implementation history and completed-work rationale. `CHANGELOG.md` may
+  carry one succinct user-visible summary when the change is notable; it is not a substitute for a
+  planning archive.
+- Move reusable lessons into this file as enduring repository policy, or into the authoritative
+  design document when they are lasting properties of the system. Do not preserve them in a
+  completed investigation or progress tracker.
+- Delete a planning or investigation document when it has no live decisions or work. Update or
+  remove inbound references in the same change so completed documents do not survive as accidental
+  authorities.

@@ -1,0 +1,304 @@
+# META
+~~~ini
+description=SysML Example (Association): ProductSelection_UnownedEnds
+type=file
+~~~
+# SOURCE
+~~~sysml
+package ProductSelection_UnownedEnds_SysML {
+	
+	item def SelectionInfo;
+	item def ShoppingCart {
+		item selectedProducts : Product[0..*];
+	}
+	item def Product {
+		item inCart: ShoppingCart[0..1];
+	}
+	
+	connection def ProductSelection {
+		item info: SelectionInfo[1];
+		
+		end item cart: ShoppingCart[1] crosses selectedProduct.inCart;
+		end item selectedProduct: Product[1] crosses cart.selectedProducts;
+	}
+	
+	connection def SingleProductSelection :> ProductSelection {
+		end item cart: ShoppingCart[1];
+		end [0..1] item selectedProduct: Product[1];
+	}
+	
+	item def OnlineCustomer {
+		item info1: SelectionInfo;	
+		item myCart: ShoppingCart[1];	
+		item products: Product[0..*];
+		
+		connection ps1 : ProductSelection connect myCart to products {
+			:>> info = info1;
+		}
+		
+		connection ps2 : ProductSelection connect [1] myCart to [1] products {
+			:>> info = info1;
+		}
+	}
+	
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/product_selection_unowned_ends.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "parser")
+        (range (start 13 2) (end 14 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 13 2) (end 14 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "duplicate_connection")
+        (source "semantic")
+        (range (start 31 2) (end 33 3))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f2a4ce723da5119c047b6cc9820b6a1164487b0922762c1cf12974c0063f3197") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SelectionInfo")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (kind item) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ShoppingCart")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (kind item) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Product")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProductSelection")) (connectorEnd (reference "myCart")) (connectorEnd (reference "products")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProductSelection")) (connectorEnd (reference "myCart")) (connectorEnd (reference "products")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (kind item) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ShoppingCart")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (kind connection-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (kind item) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SelectionInfo")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (kind item) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Product")))))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ProductSelection")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (kind featureTyping) (ordinal 0))
+      (authored-target "SelectionInfo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ShoppingCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Product")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 0))
+      (authored-target "myCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 1))
+      (authored-target "products")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 0))
+      (authored-target "myCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 1))
+      (authored-target "products")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ShoppingCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (kind featureTyping) (ordinal 0))
+      (authored-target "SelectionInfo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Product")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind specialization) (ordinal 0))
+      (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (provenance implied))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts")))
+      (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (scopes any subclassification))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 23 14) (end 23 27)) (probe (position 23 14))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1"))) (kind featureTyping) (ordinal 0) (authored-target "SelectionInfo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 24 15) (end 24 27)) (probe (position 24 15))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart"))) (kind featureTyping) (ordinal 0) (authored-target "ShoppingCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 25 17) (end 25 24)) (probe (position 25 17))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products"))) (kind featureTyping) (ordinal 0) (authored-target "Product")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 27 19) (end 27 35)) (probe (position 27 19))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind featureTyping) (ordinal 0) (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 27 44) (end 27 50)) (probe (position 27 44))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 0) (authored-target "myCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 27 54) (end 27 62)) (probe (position 27 54))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps1"))) (kind connectorEnd) (ordinal 1) (authored-target "products")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 31 19) (end 31 35)) (probe (position 31 19))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind featureTyping) (ordinal 0) (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 31 48) (end 31 54)) (probe (position 31 48))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 0) (authored-target "myCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 31 62) (end 31 70)) (probe (position 31 62))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::ps2"))) (kind connectorEnd) (ordinal 1) (authored-target "products")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 7 15) (end 7 27)) (probe (position 7 15))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart"))) (kind featureTyping) (ordinal 0) (authored-target "ShoppingCart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 11 13) (end 11 26)) (probe (position 11 13))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info"))) (kind featureTyping) (ordinal 0) (authored-target "SelectionInfo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 4 26) (end 4 33)) (probe (position 4 26))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts"))) (kind featureTyping) (ordinal 0) (authored-target "Product")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))))
+    )
+  )
+  (query (document "memory://snapshot/product_selection_unowned_ends.md") (range (start 17 42) (end 17 58)) (probe (position 17 42))
+    (reference (id (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (kind specialization) (ordinal 0) (authored-target "ProductSelection")
+      (outcome (status resolved) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+    )
+  )
+)
+~~~

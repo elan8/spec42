@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 
-use sysml_model::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_source::SysmlDocument;
 use url::Url;
 
 use crate::error::{WorkspaceError, WorkspaceResult};
@@ -89,12 +89,4 @@ pub fn apply_document_changes(
     let mut enriched = documents;
     enrich_document_hashes(&mut enriched);
     Ok(enriched)
-}
-
-/// Whether the changed document is eligible for single-document graph patching.
-pub(crate) fn is_workspace_document(document: &SysmlDocument) -> bool {
-    matches!(
-        document.source_kind,
-        SysmlDocumentSourceKind::Workspace | SysmlDocumentSourceKind::External
-    )
 }

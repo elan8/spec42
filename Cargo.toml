@@ -1,7 +1,6 @@
 ﻿[workspace]
 resolver = "2"
 members = [
-  "crates/diagram",
   "crates/generator_api",
   "crates/generator_conformance",
   "crates/generator_host",
@@ -11,11 +10,19 @@ members = [
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/semantic_publication",
+  "crates/source_identity",
+  "crates/sysml_source",
   "crates/sysml_diagnostics",
-  "crates/sysml_model",
+  "crates/sysml_query",
+  "crates/sysml_resolution",
   "crates/workspace",
   "crates/sysml_tokens",
   "crates/workspace_session",
+  "tools/snapshot_tool",
+  "tools/constraint_manifest",
+  "tools/resolution_benchmark",
+  "tools/semantic_benchmark",
 ]
 
 [workspace.package]
@@ -37,5 +44,8 @@ thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
-sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
+blake3 = "1"
+semantic_publication = { path = "crates/semantic_publication" }
+sysml-v2-parser = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "f52100fd71b5950fba6a8e9ba2760f1a1887ce34", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
+zstd = "0.13"

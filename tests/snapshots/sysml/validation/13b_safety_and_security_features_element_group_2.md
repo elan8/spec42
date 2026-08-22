@@ -1,0 +1,513 @@
+# META
+~~~ini
+description=SysML Validation (13-Model Containment): 13b-Safety and Security Features Element Group-2
+type=file
+~~~
+# SOURCE
+~~~sysml
+package '13b-Safety and Security Features Element Group-2' {
+	private import ScalarValues::*;
+	private import AnnotationDefinitions::*;
+	private import PartsTree::*;
+	
+	package AnnotationDefinitions {
+		metadata def Safety {
+			attribute isMandatory : Boolean;
+		}
+		metadata def Security;
+	}
+	
+	package PartsTree {
+		part vehicle {
+			part interior {
+				part alarm {@Security;}
+				part seatBelt[2] {@Safety{isMandatory = true;}}
+				part frontSeat[2];
+				part driverAirBag {@Safety{isMandatory = false;}}
+			}
+			part bodyAssy {
+				part body;
+				part bumper {@Safety{isMandatory = true;}}
+				part keylessEntry {@Security;}
+			}
+			part wheelAssy {
+				part wheel[2];
+				part antilockBrakes[2] {@Safety{isMandatory = false;}}
+			}
+		}
+	}
+	
+	package 'Safety Features' {
+		/* Parts that contribute to safety. */		
+		public import vehicle::**[@Safety];
+	}
+	
+	package 'Security Features' {
+		/* Parts that contribute to security. */		
+		public import vehicle::**[@Security];
+	}
+	
+	package 'Safety & Security Features' {
+		/* Parts that contribute to safety OR security. */		 
+		public import vehicle::**[@Safety or @Security];
+	}
+	
+	package 'Mandatory Saftey Features' {
+		/* Parts that contribute to safety AND are mandatory. */
+		public import vehicle::**[@Safety and Safety::isMandatory];
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 27) (end 7 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 13 2) (end 29 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 14 3) (end 19 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 15 4) (end 15 27))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 16 4) (end 16 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 16 30) (end 16 41))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 4) (end 17 22))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 18 4) (end 18 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 18 31) (end 18 42))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 20 3) (end 24 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 21 4) (end 21 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 22 4) (end 22 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 22 25) (end 22 36))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 23 4) (end 23 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 25 3) (end 28 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 4) (end 26 18))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 27 4) (end 27 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 27 36) (end 27 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 34 16) (end 34 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 39 16) (end 39 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 44 16) (end 44 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 49 16) (end 49 60))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ea6425ec031b7cf5c7d720529d5af09d121623172d1fba44a73c9baf884146d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AnnotationDefinitions") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PartsTree") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::Mandatory Saftey Features"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Parts that contribute to safety AND are mandatory. "))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Mandatory Saftey Features")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::body"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "isMandatory")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Security")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Security")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "isMandatory")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::frontSeat"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "isMandatory")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "isMandatory")))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::wheel"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::Safety & Security Features"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Parts that contribute to safety OR security. "))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety & Security Features")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::Safety Features"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Parts that contribute to safety. "))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety Features")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true))))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::Security Features"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Parts that contribute to security. "))))
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Security Features")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true))))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "AnnotationDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "PartsTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Boolean")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Mandatory Saftey Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Security")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Security")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety & Security Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Security Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status unsupported)))
+  )
+  (relationships
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::body"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::frontSeat"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::wheel"))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy"))) (provenance implied))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind boolean) (boolean false)))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::body")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::frontSeat")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::wheel")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy")))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 2 16) (end 2 40)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "AnnotationDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 3 16) (end 3 28)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "PartsTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 7 27) (end 7 34)) (probe (position 7 27))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory"))) (kind featureTyping) (ordinal 0) (authored-target "Boolean")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 49 16) (end 49 60)) (probe (position 49 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Mandatory Saftey Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0) (authored-target "vehicle")
+      (outcome (status unsupported)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 22 18) (end 22 24)) (probe (position 22 18))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 22 25) (end 22 36)) (probe (position 22 25))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 23 24) (end 23 32)) (probe (position 23 24))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Security")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 15 17) (end 15 25)) (probe (position 15 17))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Security")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 18 24) (end 18 30)) (probe (position 18 24))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 18 31) (end 18 42)) (probe (position 18 31))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 16 23) (end 16 29)) (probe (position 16 23))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 16 30) (end 16 41)) (probe (position 16 30))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 27 29) (end 27 35)) (probe (position 27 29))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Safety")
+      (outcome (status resolved) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 27 36) (end 27 47)) (probe (position 27 36))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "isMandatory")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 44 16) (end 44 49)) (probe (position 44 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety & Security Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0) (authored-target "vehicle")
+      (outcome (status unsupported)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 34 16) (end 34 36)) (probe (position 34 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Safety Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0) (authored-target "vehicle")
+      (outcome (status unsupported)))
+    )
+  )
+  (query (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (range (start 39 16) (end 39 38)) (probe (position 39 16))
+    (reference (id (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-2")) (named (kind package) (name "Security Features")) (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0) (authored-target "vehicle")
+      (outcome (status unsupported)))
+    )
+  )
+)
+~~~

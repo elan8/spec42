@@ -5,8 +5,7 @@ use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, format_document,
-    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
-    suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
     suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
     suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
     suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
@@ -145,7 +144,11 @@ pub(crate) fn rename(
         }
     }
 
-    let edits = language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
+    let Some(edits) =
+        language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name)
+    else {
+        return Ok(None);
+    };
     if edits.is_empty() {
         return Ok(Some(WorkspaceEdit::default()));
     }
@@ -293,39 +296,31 @@ pub(crate) fn code_action(
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }
-        let is_case_subject_missing = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "case_subject_missing"
-        );
-        if is_case_subject_missing {
-            if let Some(action) =
-                suggest_add_missing_case_subject_quick_fix(&text, &uri, diagnostic)
-            {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
         let is_ambiguous_name_reference = matches!(
             diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "ambiguous_name_reference"
+            Some(NumberOrString::String(code)) if code == "ambiguous_reference"
         );
         if is_ambiguous_name_reference {
-            for action in suggest_qualify_ambiguous_name_quick_fixes(
-                &text,
-                &uri,
-                diagnostic,
-                &state.semantic_graph,
-            ) {
-                actions.push(CodeActionOrCommand::CodeAction(action));
+            {
+                let model = state.published_model.model();
+                for action in
+                    suggest_qualify_ambiguous_name_quick_fixes(&text, &uri, diagnostic, model)
+                {
+                    actions.push(CodeActionOrCommand::CodeAction(action));
+                }
             }
         }
         let is_unresolved_type_reference = matches!(
             diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code))
-                if code == "unresolved_type_reference" || code == "unresolved_ref_type_reference"
+            Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions =
-                suggest_add_import_quick_fixes(&text, &uri, diagnostic, &state.semantic_graph);
+            let import_actions = suggest_add_import_quick_fixes(
+                &text,
+                &uri,
+                diagnostic,
+                state.published_model.model(),
+            );
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));

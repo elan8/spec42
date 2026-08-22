@@ -4,7 +4,7 @@
 
 #[path = "common/mod.rs"]
 mod common;
-#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
+#[path = "support/robot_vacuum_fixture.rs"]
 mod robot_vacuum_fixture;
 
 use common::with_isolated_data_dir;

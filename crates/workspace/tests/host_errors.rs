@@ -14,10 +14,6 @@ fn host_error_codes_are_stable() {
         WorkspaceError::unresolved_library_environment("missing").code(),
         "unresolved_library_environment"
     );
-    assert_eq!(
-        WorkspaceError::unsupported_view("general-view", "nope").code(),
-        "unsupported_view"
-    );
     assert_eq!(WorkspaceError::cancelled().code(), "cancelled");
     assert_eq!(
         WorkspaceError::resource_limit_exceeded("max_documents", "too many").code(),
@@ -31,8 +27,7 @@ fn host_error_codes_are_stable() {
 
 #[test]
 fn host_errors_display_includes_code_prefix() {
-    let err = WorkspaceError::unsupported_view("general-view", "missing graph");
+    let err = WorkspaceError::invalid_document_uri("missing URI");
     let rendered = err.to_string();
-    assert!(rendered.contains("unsupported_view"));
-    assert!(rendered.contains("general-view"));
+    assert!(rendered.contains("invalid_document_uri"));
 }

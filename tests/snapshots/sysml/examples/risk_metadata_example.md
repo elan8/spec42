@@ -1,0 +1,303 @@
+# META
+~~~ini
+description=SysML Example (Metadata): RiskMetadataExample
+type=file
+~~~
+# SOURCE
+~~~sysml
+package RiskMetadataExample {
+	private import RiskMetadata::*;
+	private import RiskLevelEnum::*;
+	
+    part engine4cyl{
+        @Risk {
+            totalRisk = high;
+            technicalRisk = medium;
+            scheduleRisk = medium;
+        }
+        @Risk {
+        	totalRisk { 
+        		probability = 0.3;
+        		impact = 0.7;
+        	}        	
+        }
+    }
+        
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/risk_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 4 4) (end 16 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 5 9) (end 5 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 6 12) (end 6 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 6 24) (end 6 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 12) (end 7 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 28) (end 7 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 12) (end 8 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 8 27) (end 8 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 9) (end 10 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 9) (end 11 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 12 10) (end 12 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 13 10) (end 13 16))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9a8e1678aadad0acf618dfc7835bf6163291ed9c0b8e2739ee83c2b4ac44f0dc") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RiskMetadata") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RiskLevelEnum") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Risk")) (metadataAnnotation (reference "Risk")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "totalRisk")) (expressionOperand (reference "high")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "technicalRisk")) (expressionOperand (reference "medium")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "scheduleRisk")) (expressionOperand (reference "medium")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "totalRisk")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "probability")))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "impact")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "RiskMetadata")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "RiskLevelEnum")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Risk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind metadataAnnotation) (ordinal 1))
+      (authored-target "Risk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "totalRisk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "technicalRisk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0))
+      (authored-target "scheduleRisk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "totalRisk")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "high")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "medium")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "medium")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "probability")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "impact")
+      (outcome (status unresolved)))
+  )
+  (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (provenance implied))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind real) (real 0.3)))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (state literal) (value (kind real) (real 0.7)))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)))))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "RiskMetadata")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 2 16) (end 2 32)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "RiskLevelEnum")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 5 9) (end 5 13)) (probe (position 5 9))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind metadataAnnotation) (ordinal 0) (authored-target "Risk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 10 9) (end 10 13)) (probe (position 10 9))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind metadataAnnotation) (ordinal 1) (authored-target "Risk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 6 12) (end 6 21)) (probe (position 6 12))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "totalRisk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 7 12) (end 7 25)) (probe (position 7 12))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "technicalRisk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 8 12) (end 8 24)) (probe (position 8 12))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "scheduleRisk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 11 9) (end 11 18)) (probe (position 11 9))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "totalRisk")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 6 24) (end 6 28)) (probe (position 6 24))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "high")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 7 28) (end 7 34)) (probe (position 7 28))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind expressionOperand) (ordinal 0) (authored-target "medium")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 8 27) (end 8 33)) (probe (position 8 27))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2))))) (kind expressionOperand) (ordinal 0) (authored-target "medium")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 12 10) (end 12 21)) (probe (position 12 10))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "probability")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 13 10) (end 13 16)) (probe (position 13 10))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "impact")
+      (outcome (status unresolved)))
+    )
+  )
+)
+~~~

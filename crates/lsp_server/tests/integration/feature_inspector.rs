@@ -130,19 +130,97 @@ fn lsp_feature_inspector_resolves_same_file_typing() {
     );
 }
 
+/// The inspector's typing intent/targets come from the typed declared typing fact, not the legacy
+/// `*Type` attribute projections. Exercise constructs whose projection keys were `useCaseType`,
+/// `concernType`, `stateType`, and `viewType` in both the resolved and unresolved case: the typed
+/// fact must drive exactly the same observable `typing.status`/`typing.targets` as before.
+#[test]
+fn lsp_feature_inspector_typing_comes_from_typed_facts_for_non_part_constructs() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_typed_facts.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  use case def Checkout;\n",
+        "  concern def Safety;\n",
+        "  state def Idle;\n",
+        "  view def Overview;\n",
+        "  use case buy : Checkout;\n",
+        "  concern hazards : Safety;\n",
+        "  state waiting : Idle;\n",
+        "  view summary : Overview;\n",
+        "  use case broken : MissingUseCaseDef;\n",
+        "  concern brokenConcern : MissingConcernDef;\n",
+        "  state brokenState : MissingStateDef;\n",
+        "  view brokenView : MissingViewDef;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_typed_facts");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    for (line, character, name, target) in [
+        (5u32, 12u32, "buy", "Checkout"),
+        (6, 12, "hazards", "Safety"),
+        (7, 10, "waiting", "Idle"),
+        (8, 9, "summary", "Overview"),
+    ] {
+        let response = inspect(&mut session, uri, line, character);
+        let element = &response["result"]["containingElement"];
+        assert_eq!(element["name"].as_str(), Some(name));
+        assert_eq!(
+            element["typing"]["status"].as_str(),
+            Some("resolved"),
+            "{name} should resolve from its typed typing fact, got {element:#?}"
+        );
+        let targets = element["typing"]["targets"]
+            .as_array()
+            .expect("typing targets");
+        assert!(
+            targets
+                .iter()
+                .any(|candidate| candidate["name"].as_str() == Some(target)),
+            "expected {target} typing target for {name}, got {targets:#?}"
+        );
+    }
+
+    for (line, character, name) in [
+        (9u32, 12u32, "broken"),
+        (10, 12, "brokenConcern"),
+        (11, 10, "brokenState"),
+        (12, 9, "brokenView"),
+    ] {
+        let response = inspect(&mut session, uri, line, character);
+        let element = &response["result"]["containingElement"];
+        assert_eq!(element["name"].as_str(), Some(name));
+        assert_eq!(
+            element["typing"]["status"].as_str(),
+            Some("unresolved"),
+            "{name} declared a typing that cannot resolve, got {element:#?}"
+        );
+        assert_eq!(
+            element["typing"]["targets"]
+                .as_array()
+                .map(|targets| targets.len()),
+            Some(0),
+            "{name} must not present a guessed typing target"
+        );
+    }
+}
+
 #[test]
 fn lsp_feature_inspector_resolves_cross_file_typing() {
     let mut session = TestSession::new();
     let defs_uri = "file:///feature_inspector_defs.sysml";
-    let defs = "package R {\n  requirement def EnduranceReq;\n}\n";
+    let defs = "package Defs {\n  requirement def EnduranceReq;\n}\n";
     let usage_uri = "file:///feature_inspector_usage.sysml";
-    let usage = "package R {\n  requirement enduranceCheck : EnduranceReq;\n}\n";
+    let usage =
+        "package Usage {\n  import Defs::*;\n  requirement enduranceCheck : EnduranceReq;\n}\n";
     session.initialize_default("feature_inspector_cross_file");
     session.did_open(defs_uri, defs, 1);
     session.did_open(usage_uri, usage, 2);
     session.barrier();
 
-    let response = inspect(&mut session, usage_uri, 1, 14);
+    let response = inspect(&mut session, usage_uri, 2, 14);
     let targets = response["result"]["containingElement"]["typing"]["targets"]
         .as_array()
         .expect("typing targets");
@@ -152,6 +230,37 @@ fn lsp_feature_inspector_resolves_cross_file_typing() {
                 && target["uri"].as_str() == Some(defs_uri)
         }),
         "expected cross-file EnduranceReq target in defs file, got {targets:#?}"
+    );
+}
+
+/// Two documents that both declare `package P` declare two packages, and the immutable
+/// publication keeps them apart -- which is what makes each separately addressable. An
+/// unqualified name therefore does not reach the other document's members, and the inspector
+/// reports that rather than binding to a sibling that happens to share a spelling. The same
+/// publication already answers go-to-definition this way; this pins the inspector agreeing.
+#[test]
+fn lsp_feature_inspector_reports_an_unqualified_name_across_same_named_packages_as_unresolved() {
+    let mut session = TestSession::new();
+    let defs_uri = "file:///feature_inspector_same_package_defs.sysml";
+    let usage_uri = "file:///feature_inspector_same_package_usage.sysml";
+    session.initialize_default("feature_inspector_same_package");
+    session.did_open(
+        defs_uri,
+        "package R {\n  requirement def EnduranceReq;\n}\n",
+        1,
+    );
+    session.did_open(
+        usage_uri,
+        "package R {\n  requirement enduranceCheck : EnduranceReq;\n}\n",
+        2,
+    );
+    session.barrier();
+
+    let typing = &inspect(&mut session, usage_uri, 1, 14)["result"]["containingElement"]["typing"];
+    assert_eq!(typing["status"].as_str(), Some("unresolved"));
+    assert_eq!(
+        typing["targets"].as_array().map(|targets| targets.len()),
+        Some(0)
     );
 }
 
@@ -286,10 +395,13 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
     let usage_inherited = rover_usage["result"]["containingElement"]["inheritedFeatures"]
         .as_array()
         .expect("rover usage effective features");
+    // `Rover` redefines `wheel` anonymously, so the named declaration is still Vehicle's. The
+    // publication reports the type that declares the feature rather than the nearest type that
+    // redefines it under no name of its own.
     assert!(
         usage_inherited.iter().any(|entry| {
             entry["feature"]["name"].as_str() == Some("wheel")
-                && entry["declaredIn"]["name"].as_str() == Some("Rover")
+                && entry["declaredIn"]["name"].as_str() == Some("Vehicle")
         }),
         "typed usages should expose effective features from their definition: {usage_inherited:#?}"
     );
@@ -336,7 +448,7 @@ fn lsp_feature_inspector_uses_deepest_node_at_position() {
     );
     assert_eq!(
         response["result"]["containingElement"]["type"].as_str(),
-        Some("port")
+        Some("PortUsage")
     );
 }
 
@@ -412,10 +524,18 @@ fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolutio
     let feature = inspect(&mut session, uri, 1, 12);
     let feature_element = &feature["result"]["containingElement"];
     assert_eq!(feature_element["name"].as_str(), Some("myFeature"));
-    assert_eq!(feature_element["type"].as_str(), Some("feature decl"));
+    assert_eq!(feature_element["type"].as_str(), Some("Feature"));
+    // A KerML `feature` declares a typing like any other feature. The publication reports what
+    // the author wrote, which did not resolve.
     assert_eq!(
         feature_element["typing"]["status"].as_str(),
-        Some("notApplicable")
+        Some("unresolved")
+    );
+    assert_eq!(
+        feature_element["typing"]["targets"]
+            .as_array()
+            .map(|targets| targets.len()),
+        Some(0)
     );
     assert_eq!(
         feature_element["specialization"]["status"].as_str(),
@@ -425,7 +545,7 @@ fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolutio
     let classifier = inspect(&mut session, uri, 2, 10);
     let classifier_element = &classifier["result"]["containingElement"];
     assert_eq!(classifier_element["name"].as_str(), Some("VehicleClass"));
-    assert_eq!(classifier_element["type"].as_str(), Some("classifier decl"));
+    assert_eq!(classifier_element["type"].as_str(), Some("Class"));
     assert_eq!(
         classifier_element["typing"]["status"].as_str(),
         Some("notApplicable")
@@ -466,7 +586,11 @@ fn lsp_feature_inspector_distinguishes_element_reference_value_and_unit_tokens()
         Some("reference")
     );
     assert_eq!(
-        reference["result"]["referencedElement"]["name"].as_str(),
+        reference["result"]["referenced"]["status"].as_str(),
+        Some("resolved")
+    );
+    assert_eq!(
+        reference["result"]["referenced"]["element"]["name"].as_str(),
         Some("RPLIDARC1")
     );
     assert_eq!(
@@ -532,7 +656,12 @@ fn lsp_feature_inspector_handles_other_and_unresolved_selections_without_false_h
         unresolved["result"]["selection"]["kind"].as_str(),
         Some("reference")
     );
-    assert!(unresolved["result"]["referencedElement"].is_null());
+    // A reference the publication could not settle keeps its own outcome; it is neither absent
+    // nor a resolved target the inspector could show.
+    assert_eq!(
+        unresolved["result"]["referenced"]["status"].as_str(),
+        Some("unresolved")
+    );
 
     let punctuation = inspect(&mut session, uri, 2, 27);
     assert_eq!(
@@ -575,5 +704,375 @@ fn lsp_feature_inspector_acceptance_covers_assert_and_software_queue() {
         assert_keyword["result"]["languageHelp"]["keyword"].as_str(),
         Some("assert")
     );
-    assert!(assert_keyword["result"]["referencedElement"].is_null());
+    assert_eq!(
+        assert_keyword["result"]["referenced"]["status"].as_str(),
+        Some("none")
+    );
+}
+
+/// Never select the first candidate of an ambiguous reference. The inspector reports the outcome
+/// and every candidate, and publishes no target the publication refused to choose.
+#[test]
+fn lsp_feature_inspector_reports_an_ambiguous_typing_without_choosing_a_candidate() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_ambiguous.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  package A { part def Shared; }\n",
+        "  package B { part def Shared; }\n",
+        "  package C {\n",
+        "    import A::*;\n",
+        "    import B::*;\n",
+        "    part unit : Shared;\n",
+        "  }\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_ambiguous");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let typing = &inspect(&mut session, uri, 6, 10)["result"]["containingElement"]["typing"];
+    assert_eq!(typing["status"].as_str(), Some("ambiguous"));
+    assert_eq!(
+        typing["targets"].as_array().map(|targets| targets.len()),
+        Some(0),
+        "an ambiguous family must publish no chosen target: {typing:#?}"
+    );
+    assert_eq!(
+        typing["candidates"]
+            .as_array()
+            .map(|candidates| candidates.len()),
+        Some(2),
+        "every candidate must remain visible: {typing:#?}"
+    );
+}
+
+/// Every published evaluation state reaches the wire as its own variant, so a missing value can
+/// never be read as a successful evaluation.
+#[test]
+fn lsp_feature_inspector_projects_each_published_evaluation_state() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_evaluation.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  part def Empty;\n",
+        "  attribute plain = 1;\n",
+        "  attribute computed = 2 + 3;\n",
+        "  attribute weighed = 1200 [kg];\n",
+        "  attribute opaque;\n",
+        "  attribute derived = opaque;\n",
+        "  attribute divided = 1 / 0;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_evaluation");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let evaluation = |session: &mut TestSession, line: u32, character: u32| {
+        inspect(session, uri, line, character)["result"]["containingElement"]["evaluation"].clone()
+    };
+
+    // An element with no expression is affirmatively not applicable, not a valueless success.
+    assert_eq!(
+        evaluation(&mut session, 1, 12)["state"].as_str(),
+        Some("notApplicable")
+    );
+
+    let plain = evaluation(&mut session, 2, 13);
+    assert_eq!(plain["state"].as_str(), Some("literal"));
+    assert_eq!(plain["value"].as_i64(), Some(1));
+    assert!(plain["unit"].is_null());
+
+    let computed = evaluation(&mut session, 3, 13);
+    assert_eq!(computed["state"].as_str(), Some("evaluated"));
+    assert_eq!(computed["value"].as_i64(), Some(5));
+
+    let weighed = evaluation(&mut session, 4, 13);
+    assert_eq!(weighed["state"].as_str(), Some("literal"));
+    assert_eq!(weighed["value"].as_i64(), Some(1200));
+    assert_eq!(weighed["unit"].as_str(), Some("kg"));
+
+    let derived = evaluation(&mut session, 6, 13);
+    assert_eq!(
+        derived["state"].as_str(),
+        Some("nonConstant"),
+        "an operand with no constant value is correctly not constant: {derived:#?}"
+    );
+    assert!(derived["value"].is_null());
+
+    let divided = evaluation(&mut session, 7, 13);
+    assert_eq!(divided["state"].as_str(), Some("failed"));
+    assert_eq!(divided["reason"].as_str(), Some("divisionByZero"));
+    assert!(divided["value"].is_null());
+}
+
+/// The verdict channel and the value channel are separate, and both sides of a verdict are
+/// reported. A constraint whose expression did not settle is unsettled, not failing.
+#[test]
+fn lsp_feature_inspector_reports_verdicts_apart_from_values() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_verdict.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  constraint holds { true }\n",
+        "  constraint fails { false }\n",
+        "  constraint unsettled { missing }\n",
+        "  attribute notAVerdict = true;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_verdict");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let analysis = |session: &mut TestSession, line: u32, character: u32| {
+        inspect(session, uri, line, character)["result"]["containingElement"]["analysis"].clone()
+    };
+
+    let holds = analysis(&mut session, 1, 15);
+    assert_eq!(holds["state"].as_str(), Some("verdict"));
+    assert_eq!(holds["passed"].as_bool(), Some(true));
+
+    let fails = analysis(&mut session, 2, 15);
+    assert_eq!(fails["state"].as_str(), Some("verdict"));
+    assert_eq!(fails["passed"].as_bool(), Some(false));
+
+    let unsettled = analysis(&mut session, 3, 15);
+    assert_eq!(
+        unsettled["state"].as_str(),
+        Some("unsettled"),
+        "an unsettled constraint must not read as a failing verdict: {unsettled:#?}"
+    );
+
+    assert_eq!(
+        analysis(&mut session, 4, 13)["state"].as_str(),
+        Some("notApplicable"),
+        "an attribute's boolean value is not a verdict"
+    );
+}
+
+/// A metadata annotation is a settled binding to the definition it names.
+#[test]
+fn lsp_feature_inspector_publishes_metadata_bindings() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_metadata.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  metadata def Safety;\n",
+        "  part def Vehicle {\n",
+        "    @Safety;\n",
+        "  }\n",
+        "  part def Plain;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_metadata");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let vehicle = inspect(&mut session, uri, 2, 13);
+    let metadata = vehicle["result"]["containingElement"]["metadata"]
+        .as_array()
+        .expect("metadata bindings");
+    assert_eq!(metadata.len(), 1, "{metadata:#?}");
+    assert_eq!(metadata[0]["name"].as_str(), Some("Safety"));
+
+    let plain = inspect(&mut session, uri, 5, 13);
+    assert_eq!(
+        plain["result"]["containingElement"]["metadata"]
+            .as_array()
+            .map(|entries| entries.len()),
+        Some(0)
+    );
+}
+
+/// Modifiers and multiplicity are the author's own, not an effective value overwritten onto them.
+#[test]
+fn lsp_feature_inspector_reports_authored_modifiers_and_multiplicity() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_modifiers.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  abstract part def Chassis {\n",
+        "    attribute mass [1..*] ordered nonunique;\n",
+        "    ref part spare [0..1];\n",
+        "  }\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_modifiers");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let chassis = inspect(&mut session, uri, 1, 22);
+    let modifiers = chassis["result"]["containingElement"]["modifiers"]
+        .as_array()
+        .expect("chassis modifiers")
+        .iter()
+        .filter_map(|value| value.as_str())
+        .collect::<Vec<_>>();
+    assert!(modifiers.contains(&"abstract"), "{modifiers:?}");
+
+    let mass = inspect(&mut session, uri, 2, 16);
+    let mass_element = &mass["result"]["containingElement"];
+    assert_eq!(mass_element["multiplicity"].as_str(), Some("1..*"));
+    let modifiers = mass_element["modifiers"]
+        .as_array()
+        .expect("mass modifiers")
+        .iter()
+        .filter_map(|value| value.as_str())
+        .collect::<Vec<_>>();
+    assert!(modifiers.contains(&"ordered"), "{modifiers:?}");
+    assert!(modifiers.contains(&"nonunique"), "{modifiers:?}");
+
+    let spare = inspect(&mut session, uri, 3, 14);
+    let spare_element = &spare["result"]["containingElement"];
+    assert_eq!(spare_element["multiplicity"].as_str(), Some("0..1"));
+    assert!(spare_element["modifiers"]
+        .as_array()
+        .expect("spare modifiers")
+        .iter()
+        .any(|value| value.as_str() == Some("ref")));
+}
+
+/// Relationships keep their provenance in both directions, so an implied redefinition is never
+/// shown as one the author wrote.
+#[test]
+fn lsp_feature_inspector_keeps_authored_and_implied_relationships_apart() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_provenance.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  part def Wheel;\n",
+        "  part def Base { part wheel : Wheel; }\n",
+        "  part def Derived :> Base { part wheel : Wheel; }\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_provenance");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let derived_wheel = inspect(&mut session, uri, 3, 34);
+    let outgoing = derived_wheel["result"]["containingElement"]["outgoingRelationships"]
+        .as_array()
+        .expect("outgoing relationships");
+    assert!(
+        outgoing
+            .iter()
+            .any(|entry| entry["type"].as_str() == Some("typing")
+                && entry["provenance"].as_str() == Some("authored")),
+        "{outgoing:#?}"
+    );
+    assert!(
+        outgoing
+            .iter()
+            .any(|entry| entry["type"].as_str() == Some("redefinition")
+                && entry["provenance"].as_str() == Some("implied")),
+        "the resolver-derived redefinition must not present as authored: {outgoing:#?}"
+    );
+    assert_eq!(
+        derived_wheel["result"]["containingElement"]["redefinition"]["status"].as_str(),
+        Some("notApplicable"),
+        "the author declared no redefinition, so the family is not applicable"
+    );
+}
+
+/// Repeating a request, and asking for other elements in between, cannot change an answer.
+#[test]
+fn lsp_feature_inspector_answers_are_stable_across_repetition_and_query_order() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_stability.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  part def Wheel;\n",
+        "  part def Vehicle { part wheel : Wheel; part spare : Wheel; }\n",
+        "  part car : Vehicle;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_stability");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let probes = [(1u32, 13u32), (2, 13), (2, 26), (3, 9)];
+    let forward = probes
+        .iter()
+        .map(|(line, character)| inspect(&mut session, uri, *line, *character)["result"].clone())
+        .collect::<Vec<_>>();
+    let mut reverse = probes
+        .iter()
+        .rev()
+        .map(|(line, character)| inspect(&mut session, uri, *line, *character)["result"].clone())
+        .collect::<Vec<_>>();
+    reverse.reverse();
+    assert_eq!(forward, reverse, "query order changed a published answer");
+
+    for (index, (line, character)) in probes.iter().enumerate() {
+        assert_eq!(
+            forward[index],
+            inspect(&mut session, uri, *line, *character)["result"],
+            "repeating a request changed its answer"
+        );
+    }
+}
+
+/// A workspace element typed by an admitted library declaration resolves to that library document.
+#[test]
+fn lsp_feature_inspector_resolves_a_target_in_an_admitted_library() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical temp root");
+    let workspace_root = root.join("workspace");
+    let library_root = root.join("libraries");
+    std::fs::create_dir_all(&workspace_root).expect("workspace dir");
+    std::fs::create_dir_all(&library_root).expect("library dir");
+    let workspace_uri =
+        url::Url::from_file_path(workspace_root.join("app.sysml")).expect("workspace uri");
+    let library_uri =
+        url::Url::from_file_path(library_root.join("domain.sysml")).expect("library uri");
+
+    let mut session = TestSession::new();
+    session.initialize_with_options(
+        "feature_inspector_library",
+        Some(serde_json::json!({
+            "libraryPaths": [library_root.to_string_lossy().to_string()]
+        })),
+    );
+    session.did_open(
+        library_uri.as_str(),
+        "library package Domain { part def Wheel; }",
+        1,
+    );
+    session.did_open(
+        workspace_uri.as_str(),
+        "package App { part w : Domain::Wheel; }",
+        1,
+    );
+    session.barrier();
+
+    let typing = &inspect(&mut session, workspace_uri.as_str(), 0, 19)["result"]
+        ["containingElement"]["typing"];
+    assert_eq!(typing["status"].as_str(), Some("resolved"), "{typing:#?}");
+    assert_eq!(
+        typing["targets"][0]["uri"].as_str(),
+        Some(library_uri.as_str()),
+        "{typing:#?}"
+    );
+}
+
+/// Recovery-produced input still answers for the declarations the parser did recover, and the
+/// broken one keeps an explicit outcome rather than a fabricated target.
+#[test]
+fn lsp_feature_inspector_answers_over_recovery_produced_input() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_recovery.sysml";
+    let content = "package P {\n  part def Wheel;\n  part broken : ;\n}\n";
+    session.initialize_default("feature_inspector_recovery");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let wheel = inspect(&mut session, uri, 1, 12);
+    assert_eq!(
+        wheel["result"]["containingElement"]["name"].as_str(),
+        Some("Wheel")
+    );
+    assert_eq!(
+        wheel["result"]["containingElement"]["typing"]["status"].as_str(),
+        Some("notApplicable")
+    );
 }

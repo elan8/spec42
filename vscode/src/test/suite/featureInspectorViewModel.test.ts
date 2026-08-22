@@ -25,7 +25,8 @@ function element(
       start: { line: 1, character: 2 },
       end: { line: 1, character: 20 },
     },
-    attributes: {},
+    evaluation: { state: "notApplicable" },
+    analysis: { state: "notApplicable" },
     typing: { status: "notApplicable", targets: [] },
     specialization: { status: "notApplicable", targets: [] },
     incomingRelationships: [],
@@ -44,6 +45,7 @@ function result(
     requestedPosition: { line: 1, character: 2 },
     selection,
     containingElement,
+    referenced: { status: "none" },
   };
 }
 
@@ -73,7 +75,6 @@ describe("FeatureInspectorViewModel", () => {
 
   it("uses the fixed element-section order and the server role", () => {
     const target = element("RobotLidar", "definition", {
-      attributes: { doc: "A selected LiDAR." },
       specialization: { status: "resolved", targets: [] },
       incomingRelationships: [
         {
@@ -89,6 +90,7 @@ describe("FeatureInspectorViewModel", () => {
               end: { line: 3, character: 10 },
             },
           },
+          provenance: "authored",
         },
       ],
     });
@@ -141,7 +143,7 @@ describe("FeatureInspectorViewModel", () => {
     });
     const target = element("RPLIDARC1", "definition");
     const input = result({ kind: "reference", text: "RPLIDARC1" }, source);
-    input.referencedElement = target;
+    input.referenced = { status: "resolved", element: target };
 
     const viewModel = buildFeatureInspectorViewModel(input);
 
@@ -152,12 +154,23 @@ describe("FeatureInspectorViewModel", () => {
 
   it("creates one focused value card without relationship sections or duplicate fields", () => {
     const usage = element("scanRate", "usage", {
-      declaration: "attribute scanRate : FrequencyValue = 10 [Hz];",
-      attributes: {
-        value: "10 [Hz]",
-        evaluatedValue: "10",
-        evaluatedUnit: "Hz",
-        attributeType: "FrequencyValue",
+      declaration: "attribute scanRate : FrequencyValue = 10 [Hz]",
+      evaluation: { state: "literal", value: 10, unit: "Hz" },
+      typing: {
+        status: "resolved",
+        targets: [
+          {
+            id: "ISQ::FrequencyValue",
+            name: "FrequencyValue",
+            qualifiedName: "FrequencyValue",
+            type: "AttributeDefinition",
+            uri: "file:///library.sysml",
+            range: {
+              start: { line: 1, character: 0 },
+              end: { line: 1, character: 14 },
+            },
+          },
+        ],
       },
       outgoingRelationships: [
         {
@@ -173,6 +186,7 @@ describe("FeatureInspectorViewModel", () => {
               end: { line: 1, character: 14 },
             },
           },
+          provenance: "authored",
         },
       ],
     });
@@ -187,7 +201,7 @@ describe("FeatureInspectorViewModel", () => {
       assertMode(viewModel, "value");
       assert.deepStrictEqual(viewModel.sections, ["Value"]);
       assert.strictEqual(viewModel.value?.declaredValue, "10 [Hz]");
-      assert.strictEqual(viewModel.value?.evaluatedValue, "10");
+      assert.strictEqual(viewModel.value?.evaluatedValue, "10 [Hz]");
       assert.strictEqual(viewModel.value?.unit, "Hz");
       assert.strictEqual(viewModel.value?.quantityType, "FrequencyValue");
     }

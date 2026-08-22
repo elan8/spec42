@@ -16,10 +16,15 @@ default = []
 workspace = { path = "../workspace", default-features = false }
 workspace_session = { path = "../workspace_session" }
 language_service = { path = "../language_service" }
+generator_api = { path = "../generator_api" }
+generator_host = { path = "../generator_host" }
+spec42-generator-protocol = { path = "../generator_protocol" }
+base64 = "0.22"
 sysml_diagnostics = { path = "../sysml_diagnostics" }
-sysml_model = { path = "../sysml_model" }
+sysml_source = { path = "../sysml_source" }
+sysml_query = { path = "../sysml_query" }
 sysml_tokens = { path = "../sysml_tokens" }
-sysml-v2-parser = { workspace = true }
+sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }
@@ -27,6 +32,7 @@ walkdir = "2"
 ignore = "0.4"
 serde = { workspace = true }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 thiserror = { workspace = true }
 clap = { workspace = true }
 tempfile = "3.27.0"
@@ -40,4 +46,4 @@ rayon = "1.12"
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
 server = { path = "../server", default-features = false }
-
+wat = "1"

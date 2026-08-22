@@ -329,6 +329,8 @@ package B {
     part def Sensor;
 }
 package Main {
+    import A::*;
+    import B::*;
     part device: S
 }"#;
 

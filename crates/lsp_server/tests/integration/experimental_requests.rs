@@ -33,15 +33,7 @@ fn lsp_remaining_feature_requests_round_trip() {
             serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
         ),
         (
-            "textDocument/moniker",
-            serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
-        ),
-        (
             "textDocument/prepareTypeHierarchy",
-            serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
-        ),
-        (
-            "textDocument/prepareCallHierarchy",
             serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
         ),
     ];
@@ -55,20 +47,6 @@ fn lsp_remaining_feature_requests_round_trip() {
             json
         );
     }
-
-    let custom_method = session.request(
-        "sysml/model",
-        serde_json::json!({
-            "uri": uri,
-            "includeGraph": true,
-            "includeIbd": false
-        }),
-    );
-    assert!(
-        custom_method.get("error").is_none(),
-        "core sysml/model custom method should remain available: {}",
-        custom_method
-    );
 
     let feature_inspector = session.request(
         "sysml/featureInspector",
