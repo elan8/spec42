@@ -6935,9 +6935,21 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<VerifyRequirementMember>,
     ) -> Result<(), ConstructionError> {
+        // `verify requirement <name> : <Type> { ... }` declares an inline requirement usage
+        // rather than referencing an existing one. It is the same `RequirementUsage` production
+        // an ordinary `requirement` member spells, so it lowers through the shared walker under
+        // the `VerifyRequirement` kind that carries the `RequirementVerificationMembership` role.
         if node.value.explicit_requirement_keyword {
-            self.push_unsupported(document, family, node.span.clone());
-            return Ok(());
+            let Some(requirement) = &node.value.requirement else {
+                self.push_unsupported(document, family, node.span.clone());
+                return Ok(());
+            };
+            return self.lower_requirement_usage_as(
+                document,
+                Some(owner),
+                DeclarationKind::VerifyRequirement,
+                requirement,
+            );
         }
         let declaration = self.push_typed_declaration(
             document,
@@ -10708,12 +10720,31 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserRequirementUsage>,
     ) -> Result<(), ConstructionError> {
+        self.lower_requirement_usage_as(document, owner, DeclarationKind::RequirementUsage, node)
+    }
+
+    /// The `RequirementUsage` lowering, parameterized by the declaration kind the owning
+    /// membership gives it. An ordinary `requirement r : R;` is a `RequirementUsage`; the same
+    /// production owned by a `RequirementVerificationMembership` (`verify requirement limit :
+    /// Limit;`, BNF `VerifyRequirementMember` with `explicit_requirement_keyword == true`) is a
+    /// `VerifyRequirement`, because the kind is what `membership_role` reads to derive
+    /// `MembershipRole::RequirementVerification` -- and that role is the prerequisite of the
+    /// generated `checkRequirementUsageRequirementVerificationSpecialization` library
+    /// specialization. Everything else about the declaration is identical, so the two forms share
+    /// one walker rather than a copy that could drift.
+    fn lower_requirement_usage_as(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        kind: DeclarationKind,
+        node: &Node<ParserRequirementUsage>,
+    ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::RequirementUsage,
+            kind,
             name,
             node.span.clone(),
             DeclarationFacts {
@@ -13559,13 +13590,18 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
+                    // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
+                    // types the whole declaration, so it lowers through the same
+                    // `lower_flow_usage` an action body uses rather than being reported as an
+                    // unsupported member.
                     CalcDefBodyElement::FlowUsage(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
+                        self.lower_flow_usage(
                             document,
+                            declaration,
                             UnsupportedFamily::CalcDefinitionMember,
-                            node.span.clone(),
-                        );
+                            node,
+                        )?;
                     }
                     CalcDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
@@ -19114,6 +19150,84 @@ mod tests {
             !output.contains("kerml-boolean-expression"),
             "expected no kerml-boolean-expression declaration for the recovered member, got:\n\
              {output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_flow_usage_lowers_its_ends_and_payload() {
+        // KerML 8.2's `Flow` in a calc-shaped body. The pinned parser types the whole declaration
+        // (payload feature plus two `KermlConnectorEnd`s), so it lowers through the same
+        // `lower_flow_usage` an action body uses instead of reporting an unsupported member.
+        // Unblocks `tests/snapshots/validation/kerml_flow_end_is_end.md` and its two siblings.
+        let output = build_semantic_sexpr(
+            "package Flows {\n\
+             \tclassifier Thing;\n\
+             \tbehavior Moving {\n\
+             \t\tfeature source : Thing;\n\
+             \t\tfeature target : Thing;\n\
+             \t\tflow of Thing from source to target;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected the KerML flow member to lower rather than be unsupported, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind flowSource) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Flows\")) (named (kind kerml-behavior) (name \"Moving\")) (anonymous (kind flow) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Flows::Moving::source\")))"
+            ),
+            "expected the flow's `from` end to resolve to source, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind flowTarget) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Flows\")) (named (kind kerml-behavior) (name \"Moving\")) (anonymous (kind flow) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Flows::Moving::target\")))"
+            ),
+            "expected the flow's `to` end to resolve to target, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind flowPayloadType) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Flows\")) (named (kind kerml-behavior) (name \"Moving\")) (anonymous (kind flow) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Flows::Thing\")))"
+            ),
+            "expected the `of Thing` payload type to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn declared_verify_requirement_member_lowers_as_a_verify_requirement_usage() {
+        // `verify requirement <name> : <Type>;` declares an inline requirement usage rather than
+        // referencing an existing one. It is the same `RequirementUsage` production an ordinary
+        // `requirement` member spells, so it lowers through the shared walker under
+        // `DeclarationKind::VerifyRequirement` -- the kind `membership_role` reads to derive
+        // `MembershipRole::RequirementVerification`, which is the prerequisite of the generated
+        // `checkRequirementUsageRequirementVerificationSpecialization` library specialization.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def Limit;\n\
+             \tverification def VerificationCase {\n\
+             \t\tobjective {\n\
+             \t\t\tverify requirement limit : Limit;\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("unsupported_requirement_definition_member"),
+            "expected the declared verify member to lower rather than be unsupported, got:\n\
+             {output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::VerificationCase::objective::limit\"))) (kind verify-requirement)"
+            ),
+            "expected a named verify-requirement declaration for limit, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(authored-target \"Limit\")\n      (outcome (status resolved) (target (node \
+                 (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Limit\")))))"
+            ),
+            "expected limit's typing to resolve to the Limit requirement def, got:\n{output}"
         );
     }
 

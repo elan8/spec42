@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.21.9:checkRequirementUsageRequirementVerificationSpecialization
-blocked_by=parser-gap-79-membership-owner-forms
 type=file
 libraries=standard
 ~~~
@@ -32,12 +31,6 @@ package RequirementVerificationSpecialization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 4 12) (end 4 45))
-      )
     )
   )
 )
@@ -51,14 +44,22 @@ package RequirementVerificationSpecialization {
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (kind verify-requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Limit")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Limit")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (target (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase"))) (target (node (document "memory://snapshot/sysml.library/verification_cases.md") (qualified-name "VerificationCases::VerificationCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective"))) (target (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (target (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (target (node (document "memory://snapshot/sysml.library/verification_cases.md") (qualified-name "VerificationCases::VerificationCase::obj::requirementVerifications"))) (provenance implied))
   )
   (evaluation
   )
@@ -76,6 +77,7 @@ package RequirementVerificationSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase")))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
@@ -105,10 +107,37 @@ package RequirementVerificationSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
+    (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit")))
+      (featured-by (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective")))
+      (type (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit")) (source direct))
+      (supertype (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/verification_cases.md") (qualified-name "VerificationCases::VerificationCase::obj::requirementVerifications")) (scopes any subclassification))
+    )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (range (start 4 39) (end 4 44)) (probe (position 4 39))
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::VerificationCase::objective::limit"))) (kind featureTyping) (ordinal 0) (authored-target "Limit")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit")))))
+    )
+  )
 )
 ~~~

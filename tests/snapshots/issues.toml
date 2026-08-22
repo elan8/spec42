@@ -493,12 +493,6 @@ owner = "spec42-semantic"
 summary = "an assert constraint member parses but sysml_resolution reports it as unsupported_part_definition_member, so no AssertConstraintUsage reaches semantics"
 
 [[issue]]
-id = "lowering-requirement-members"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "a verify requirement member parses but sysml_resolution reports it as unsupported_requirement_definition_member, so no RequirementVerificationMembership reaches semantics"
-
-[[issue]]
 id = "lowering-result-expression-memberships"
 kind = "lowering_gap"
 owner = "spec42-semantic"
@@ -538,7 +532,7 @@ summary = "parser gap 59 cannot represent an authored directed end feature"
 id = "parser-gap-62-kerml-flow"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "the pinned parser has no KerML flow production -- `flow of Thing from a to b;` resolves none of its tokens and is reported as a cascade of unresolved_reference -- so no Flow or FlowEnd reaches semantics"
+summary = "at pinned f52100f a KerML flow declaration parses and lowers, but a Flow with two payload features has no production: `flow of Thing of Thing from source to target;` is reported as recovered_calc_body_element, so the at-most-one-payload violation cannot be authored"
 
 [[issue]]
 id = "parser-gap-64-conjugation-declaration"
@@ -574,7 +568,7 @@ summary = "the pinned parser has no production for a named feature inside a meta
 id = "parser-gap-72-perform-action-usage"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "the pinned parser rejects `perform <action usage>` -- the conforming side is reported as recovered_action_body_element -- and perform_target_invalid_kind is not raised for the non-action target that does parse"
+summary = "at pinned f52100f `perform <action usage>` parses in a part-definition body but is still recovered_action_body_element in an action-definition body, so neither the conforming nor the violating side of the reference form reaches semantics from an action def"
 
 [[issue]]
 id = "parser-gap-73-include-use-case-membership"
@@ -598,25 +592,31 @@ summary = "the pinned parser has no production for a part usage inside a port de
 id = "parser-gap-76-action-body-members"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "The parser recovers valid accept, assignment, conditional, and trigger action-body forms before semantic validation can observe them."
+summary = "at pinned f52100f the time-trigger accept spellings (`accept when <expr>;`, `accept at <expr>;`) and the shorthand `if <cond> then <a> else <b>;` are still recovered_action_body_element as action-body statements, though `accept <name>;` and `if <cond> then <a>;` now parse"
 
 [[issue]]
 id = "parser-gap-77-transition-body-members"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "The parser recovers valid transition feature, effect, and trigger-action members before semantic validation can observe them."
+summary = "at pinned f52100f a transition effect action member is still recovered_state_body_element in a state body, and a `transition` member in an action body is unexpected_keyword_in_scope, so neither reaches semantic validation"
 
 [[issue]]
 id = "parser-gap-78-variation-forms"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "The parser recovers valid variation definition and usage forms at package and part-definition body boundaries."
+summary = "at pinned f52100f a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries, so the abstractness rules cannot be exercised"
 
 [[issue]]
 id = "parser-gap-79-membership-owner-forms"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "The parser rejects valid expose, requirement-verification, and view-rendering membership forms before their owner validation can run."
+summary = "at pinned f52100f an `expose` member in a package body is recovered_package_body_element, and `verify`/`render` members in a part-definition body are unexpected_keyword_in_scope, so the invalid-owner forms these rules validate cannot reach semantics"
+
+[[issue]]
+id = "parser-gap-52-var-modifier"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "the pinned parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
 
 [[issue]]
 id = "parser-gap-80-state-usage-parallel-fact"

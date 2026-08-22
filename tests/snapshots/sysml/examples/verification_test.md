@@ -58,12 +58,6 @@ package VerificationTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 17 3) (end 17 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 20 2) (end 20 27))
@@ -81,7 +75,7 @@ package VerificationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:71d66e748beeaff18ed1e468cffbe9f8a327239ede88af42ec57d23a8d8502cb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:71d66e748beeaff18ed1e468cffbe9f8a327239ede88af42ec57d23a8d8502cb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " ... "))))
@@ -89,6 +83,7 @@ package VerificationTest {
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind verification-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "v::m")) (invocationCallee (reference "VerificationCases::PassIf")))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind verify-requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "R")))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V")))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::objective"))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -111,6 +106,9 @@ package VerificationTest {
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind invocationCallee) (ordinal 0))
       (authored-target "VerificationCases::PassIf")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "R")
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")))))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind featureTyping) (ordinal 0))
       (authored-target "V")
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")))))
@@ -135,6 +133,7 @@ package VerificationTest {
   )
   (relationships
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind verifyRequirementTarget) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationPlan")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::r"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationPlan")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind verifyRequirementTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::v"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::v"))) (kind featureTyping) (ordinal 0)))
@@ -144,6 +143,7 @@ package VerificationTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::objective"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationPlan")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::objective"))) (provenance implied))
@@ -161,6 +161,7 @@ package VerificationTest {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")))
+      (subtype (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::r")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")))
@@ -176,6 +177,12 @@ package VerificationTest {
     )
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective")))
       (featured-by (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase")))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective")))
+      (type (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")) (source direct))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v")))
       (featured-by (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase")))
@@ -241,6 +248,11 @@ package VerificationTest {
   (query (document "memory://snapshot/verification_test.md") (range (start 20 2) (end 20 27)) (probe (position 20 2))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind invocationCallee) (ordinal 0) (authored-target "VerificationCases::PassIf")
       (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/verification_test.md") (range (start 17 24) (end 17 25)) (probe (position 17 24))
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationCase")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "R")
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")))))
     )
   )
   (query (document "memory://snapshot/verification_test.md") (range (start 15 14) (end 15 15)) (probe (position 15 14))

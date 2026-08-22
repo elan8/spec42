@@ -13,13 +13,24 @@ than annotated. New upstream work must be based on the full pinned identity, not
 revision or the old `sysml-v2-parser-next` dependency alias.
 
 The bump from `49bdf3f8b8a90b64048acfe1244c2c140c4e5b08` (24 upstream commits, the "corpus coverage
-wave 1" work) closed gaps 62, 68, 72, 76, 77, 78 and 79 outright and narrowed 61, 66, 69, 73 and
-74; those entries were rewritten or removed here. It also introduced one regression, recorded below
-as gap 81. Two consequences are deliberately left as follow-up rather than folded into the bump:
-`tests/snapshots/issues.toml` still classifies fixtures against the closed `parser-gap-*` ids, and
-each of those fixtures needs re-triage to say whether it is now blocked on a *lowering* gap
-instead; and the members the bump newly types are listed under "Typed upstream, not yet lowered
-here" where lowering has not caught up.
+wave 1" work) closed gap 68 outright and narrowed 61, 62, 66, 69, 72, 73, 74, 76, 77, 78 and 79.
+It also introduced one regression, recorded below as gap 81.
+
+**Every narrowed entry below states what still fails, probed directly at `f52100f` through
+`spec42 check` on the blocked fixture's own source.** An earlier revision of this document recorded
+62, 72, 76, 77, 78 and 79 as closed on the strength of an upstream summary; re-probing each
+fixture disproved that for all but gap 62's flow declarations, so the entries were restored with
+the exact failing spelling. The lesson is the one this document's own evidence rules already state:
+an entry is closed when the owning fixture stops being blocked, not when a summary says the
+production landed.
+
+Lowering that the bump unblocked has landed with it: KerML `flow` declarations in calc-shaped
+bodies (`lower_calc_def_body` delegates to `lower_flow_usage`) and the declared
+`verify requirement <name> : <Type>;` form (`lower_verify_requirement_member` delegates to the
+shared requirement-usage walker under `DeclarationKind::VerifyRequirement`). Five snapshot
+fixtures came off `blocked_by` as a result and the `lowering-requirement-members` issue is retired.
+The members the bump newly types but whose lowering has not caught up are listed under "Typed
+upstream, not yet lowered here".
 
 ## Ownership and evidence rules
 
@@ -64,6 +75,7 @@ rerun against the exact replacement revision when fixed.
 
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
+| 62 | A KerML `Flow` with two payload features cannot be authored, so the at-most-one rule has no violating side | Accept the repeated `of <payload>` clause, or diagnose the second occurrence; prove `flow of Thing of Thing from source to target;` is either represented or reported, never `recovered_calc_body_element` |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
 | 59 | Directed end Features cannot be represented, so `in end feature` is recovered before the end-direction validation can observe it | Accept direction modifiers in the end-feature production and preserve their spans; prove an `in end feature` reaches the AST as one directed end Feature |
 | 64 | Conjugation *declarations* (`conjugates`/`ConjugationPart`), as opposed to the `~T` typing flag | Add a `Conjugation` relationship node and a type-declaration `ConjugationPart`; prove `classifier C conjugates A;` produces one conjugation, and two produce two |
@@ -77,6 +89,11 @@ rerun against the exact replacement revision when fixed.
 | 75 | A part usage in a port definition or port usage body has no production | Add a typed part-usage body-member variant for port bodies; prove the member reaches the AST with its composite modifier |
 | 80 | State usage `parallel`/`initial` body modifier is accepted then discarded | Preserve the modifier as a typed `StateUsage` fact with its span; prove `state S parallel { ... }`, `state S initial { ... }`, and unmodified `state S { ... }` remain distinguishable to lowering |
 | 81 | **Regression at the pinned revision.** A directed KerML-kinded parameter (`in expr p : T;`, `in bool redefines a { ... }`) in a `calc`/`constraint`-shaped body is dropped to parse recovery | Restore the KerML feature fallback behind the directed-parameter branch; prove `calc def C { in expr p : Boolean; }` reaches one typed member again, as it did at `49bdf3f` and as `behavior B { in expr p : Boolean; }` still does |
+| 72 | `perform <action usage>` in an *action definition* body, though a part-definition body now accepts it | Route the reference form through the action-body perform production too; prove `action def G { perform L::doIt; }` reaches one typed perform member rather than `recovered_action_body_element` |
+| 76 | The time-trigger accept spellings and the shorthand `else` branch as action-body statements | Add action-body alternatives for `accept when <expr>;` / `accept at <expr>;` and for `if <cond> then <a> else <b>;`; prove each reaches one member with its operands and spans, as `accept <name>;` and `if <cond> then <a>;` already do |
+| 77 | Transition effect-action members in a state body, and a `transition` member in an action body | Add the typed transition-body member variants; prove a transition effect action parses in a state body and a `transition` member is admitted in an action body instead of `unexpected_keyword_in_scope` |
+| 78 | `abstract` paired with `variation`, in either order | Accept the modifier pair on definition and usage declarations; prove `abstract variation part def Good;` and `abstract variation part good : Base;` parse, as the bare `variation` spellings already do |
+| 79 | `expose` in a package body, and `verify`/`render` in a part-definition body | Admit these member forms independently of the owner validation rule; prove their typed owners and spans reach the AST so semantics can report the invalid owner rather than the parser rejecting the spelling |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 52 | `readonly` and `variable` modifiers | Preserve presence and token spans independently from effective/default values |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
@@ -105,6 +122,19 @@ workflow.
   What remains is a genuine grammar gap: `message m of T;` has no member variant in the calc-shaped
   body grammar at all, so the KerML message declaration cannot be authored in a `classifier`,
   `struct`, `class` or `behavior` body.
+
+- Gap 62. KerML flow declarations now parse and lower. `behavior Moving { feature source : Thing;
+  feature target : Thing; flow of Thing from source to target; }` produces one `FlowUsage` with its
+  `PayloadFeature` and two `KermlConnectorEnd`s, and `lower_calc_def_body` delegates it to the same
+  `lower_flow_usage` an action body uses, so
+  `tests/snapshots/validation/kerml_flow_end_is_end.md`, `kerml_flow_end_nested_feature.md` and
+  `kerml_flow_end_owning_type.md` are no longer blocked.
+
+  What remains is the *at-most-one-payload* rule's violating side:
+  `flow of Thing of Thing from source to target;` is `recovered_calc_body_element` at `f52100f`, so
+  KerML 8.3.4.9.2 `validateFlowPayloadFeature` has no authorable violation and
+  `kerml_flow_payload_feature.md` stays blocked. Either accept the repeated `of` clause -- letting
+  semantics raise `flow_multiple_payload_features` -- or diagnose the second occurrence.
 
 - Gap 64. There is no conjugation-*declaration* production. The parser models conjugation only as
   the `~T` conjugated-typing flag -- `ast::TypingRelationship.is_conjugated` (`src/ast/core.rs`)
@@ -203,6 +233,33 @@ workflow.
   `parse-recovery` completeness so the loss stays visible rather than looking like a complete
   publication.
 
+- Gaps 72, 76, 77, 78 and 79 were each narrowed rather than closed by this bump. One probe per
+  blocked fixture, run through `spec42 check` on the fixture's own source at `f52100f`, isolates
+  what still fails; the accepted sibling spelling is shown beside it, because the gap is now a
+  *hole in an otherwise supported production* rather than a missing production:
+
+  ```sysml
+  action def G { perform L::doIt; }              // 72: recovered_action_body_element
+  part def H { perform L::doIt; }                //     parses -- part bodies accept the reference form
+
+  action def P { accept when true; }             // 76: recovered_action_body_element
+  action def P { accept at now; }                // 76: recovered_action_body_element
+  action def P { accept sig; }                   //     parses
+  action def P { if true then a1 else a2; }      // 76: recovered_action_body_element
+  action def P { if true then a1; }              //     parses
+
+  variation part def Bad;                        //     parses
+  abstract variation part def Good;              // 78: recovered_package_body_element
+  variation abstract part def G;                 // 78: recovered_package_body_element
+  ```
+
+  Gap 77's two fixtures fail as `recovered_state_body_element` (a transition effect action in a
+  state body) and `unexpected_keyword_in_scope` (a `transition` member in an action body). Gap 79's
+  remaining three fail as `recovered_package_body_element` (`expose` in a package body) and
+  `unexpected_keyword_in_scope` (`verify` and `render` in a part-definition body) -- its fourth
+  fixture, `generated_conditional_requirement_verification_specialization.md`, needed only the
+  declared-verify lowering and is now unblocked.
+
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g.
   `tests/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
   1.0 }` inside `datatype UnitBoundedReal :> Real { ... }`; 116 snapshot fixtures author a bare
@@ -239,7 +296,12 @@ workflow.
   distinguishable from omission and from `nonunique`, each with its own span, and
   `sysml_resolution` reads both through `MultiplicityModifiers::is_ordered`/`is_unique`. The bare
   SysML `portion` prefix is likewise unrepresentable; the KerML `portion` prefix *is* reachable via
-  `FeaturePrefix::is_portion` and is lowered. Needs `readonly`/`variable` added as
+  `FeaturePrefix::is_portion` and is lowered. The `var` spelling of the same variability modifier
+  is what blocks `tests/snapshots/validation/sysml_assignment_action_usage.md`: `occurrence def
+  Happening { var attribute tracked : Reading; }` is `unrecognized_declaration_in_scope`, so the
+  time-varying fact `validateAssignmentActionUsage` needs never reaches semantics. That fixture is
+  registered against `parser-gap-52-var-modifier`; it was previously mis-registered against gap 76,
+  whose action-body forms are not what fails in it. Needs `readonly`/`variable`/`var` added as
   `RefPrefix`/`BasicFeaturePrefix` slots alongside the existing ones, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 

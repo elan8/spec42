@@ -158,12 +158,6 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 30 4) (end 30 57))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 54 38) (end 54 53))
@@ -271,7 +265,7 @@ package '9-Verification-simplified' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false))))))
@@ -283,6 +277,7 @@ package '9-Verification-simplified' {
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass")))))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (kind verify-requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassRequirement")))))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Scale"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestOperator"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -348,6 +343,9 @@ package '9-Verification-simplified' {
     (reference (id (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::mass")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MassRequirement")
+      (outcome (status resolved) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")))))
     (reference (id (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestSystem"))) (kind specialization) (ordinal 0))
       (authored-target "MassVerificationSystem")
       (outcome (status resolved) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))))
@@ -493,6 +491,7 @@ package '9-Verification-simplified' {
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Definitions")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massActual"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Definitions")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Definitions")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Definitions")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestSystem"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestSystem"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestVehicle1"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestVehicle1"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestVehicle2"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestVehicle2"))) (kind specialization) (ordinal 0)))
@@ -526,6 +525,7 @@ package '9-Verification-simplified' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massActual"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Vehicle::mass"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Usages")) (named (kind part) (name "massVerificationSystem")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Usages")) (named (kind part) (name "massVerificationSystem")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Usages")) (named (kind part) (name "massVerificationSystem")) (anonymous (kind perform-action) (ordinal 0))))) (provenance implied))
@@ -582,6 +582,7 @@ package '9-Verification-simplified' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")))
+      (subtype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement")) (scopes any))
       (subtype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::vehicleMassRequirement")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Definitions")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0)))))
@@ -600,6 +601,12 @@ package '9-Verification-simplified' {
     )
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective")))
       (featured-by (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest")))
+    )
+    (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement")))
+      (featured-by (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective")))
+      (type (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")) (source direct))
+      (supertype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))
       (subtype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestSystem")) (scopes any subclassification))
@@ -828,6 +835,11 @@ package '9-Verification-simplified' {
   (query (document "memory://snapshot/9_verification_simplified.md") (range (start 8 25) (end 8 34)) (probe (position 8 25))
     (reference (id (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
       (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/9_verification_simplified.md") (range (start 30 41) (end 30 56)) (probe (position 30 41))
+    (reference (id (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest::massVerificationObjective::massRequirement"))) (kind featureTyping) (ordinal 0) (authored-target "MassRequirement")
+      (outcome (status resolved) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement")))))
     )
   )
   (query (document "memory://snapshot/9_verification_simplified.md") (range (start 26 31) (end 26 53)) (probe (position 26 31))
