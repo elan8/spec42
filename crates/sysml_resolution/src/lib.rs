@@ -148,10 +148,28 @@ pub struct ElementSearch {
     pub source: ElementSource,
 }
 
+/// What a source was admitted as: text the build parses itself, or a tree already parsed by the
+/// syntax authority. Hosts admit handles so the editor's parse and the build's parse are one;
+/// stateless callers (benchmarks, fuzzing, tests) may still admit text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum SourcePayload {
+    Text(String),
+    Parsed(syntax::ParsedSource),
+}
+
+impl SourcePayload {
+    fn byte_len(&self) -> u64 {
+        match self {
+            SourcePayload::Text(text) => text.len() as u64,
+            SourcePayload::Parsed(parsed) => parsed.source().len() as u64,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceInput {
     identity: Box<str>,
-    content: String,
+    payload: SourcePayload,
     kind: SourceKind,
     content_digest: ContentDigest,
 }
@@ -169,9 +187,24 @@ impl SourceInput {
         let content_digest = ContentDigest::of_bytes(content.as_bytes());
         Self {
             identity: identity.into(),
-            content,
+            payload: SourcePayload::Text(content),
             kind,
             content_digest,
+        }
+    }
+
+    /// Admit a tree the syntax authority already parsed. The publication identity is the same as
+    /// admitting the text: the digest and byte length come from the handle.
+    pub fn from_parsed(
+        identity: impl Into<Box<str>>,
+        parsed: syntax::ParsedSource,
+        kind: SourceKind,
+    ) -> Self {
+        Self {
+            identity: identity.into(),
+            content_digest: parsed.digest(),
+            payload: SourcePayload::Parsed(parsed),
+            kind,
         }
     }
 }
@@ -365,7 +398,7 @@ fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
         path_hint: None,
         role: source_role(source.kind),
         content_digest: source.content_digest,
-        byte_len: source.content.len() as u64,
+        byte_len: source.payload.byte_len(),
         library_root_slot: None,
         relative_path: None,
     }
@@ -598,7 +631,7 @@ pub fn build_measured(
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
             role: source_role(source.kind),
-            content: source.content,
+            payload: source.payload,
         })
         .collect();
     let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(
@@ -8335,5 +8368,59 @@ package P {
             published.affected_documents("memory://a.sysml"),
             QueryOutcome::Recovered(_)
         ));
+    }
+}
+
+#[cfg(test)]
+mod parsed_admission_tests {
+    use super::*;
+    use sysml_source::{SourceAuthority, SourceKind};
+
+    /// Admitting a parsed handle and admitting its text are the same publication: same identity,
+    /// same manifest, same model digest. The examples corpus is the evidence.
+    #[test]
+    fn parsed_and_text_admission_publish_the_same_identity_over_the_examples() {
+        let examples = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples");
+        let documents = SourceAuthority::new()
+            .list(&[examples], SourceKind::Workspace)
+            .expect("examples corpus")
+            .documents;
+        assert!(documents.len() > 5, "examples corpus present");
+        let authority = syntax::SyntaxAuthority::new();
+
+        let text = documents
+            .iter()
+            .map(|document| {
+                SourceInput::new(
+                    document.uri().as_str(),
+                    document.content().to_owned(),
+                    document.kind(),
+                )
+            })
+            .collect();
+        let parsed = documents
+            .iter()
+            .map(|document| {
+                SourceInput::from_parsed(
+                    document.uri().as_str(),
+                    authority.parse(document),
+                    document.kind(),
+                )
+            })
+            .collect();
+
+        let from_text = BuildRequest::new(text, ConstructionSchedule::Parallel, "test").unwrap();
+        let from_parsed =
+            BuildRequest::new(parsed, ConstructionSchedule::Parallel, "test").unwrap();
+        assert_eq!(from_text.identity(), from_parsed.identity());
+
+        let (text_model, _) = build_measured(from_text).unwrap();
+        let (parsed_model, parsed_timing) = build_measured(from_parsed).unwrap();
+        assert_eq!(text_model.identity(), parsed_model.identity());
+        assert!(
+            parsed_timing.parse < std::time::Duration::from_millis(5),
+            "handles are admitted without a parse: {:?}",
+            parsed_timing.parse
+        );
     }
 }

@@ -659,6 +659,34 @@ pub fn type_reference_targets(source: &str) -> Vec<String> {
     collect_type_reference_targets_from_content(source)
 }
 
+/// Everything closure resolution asks, from one already-parsed tree.
+pub(super) fn closure_facts(document: &ParsedRoot) -> super::SyntaxClosureFacts {
+    let mut type_reference_targets = Vec::new();
+    let mut packages = Vec::new();
+    for_each_package_in_parsed(document, |qualified_name, body| {
+        let mut package_type_references = Vec::new();
+        collect_type_reference_targets_from_package_body(
+            document,
+            body,
+            &mut package_type_references,
+        );
+        packages.push(PackageTargets {
+            qualified_name,
+            import_targets: collect_import_targets_from_package_body(document, body),
+            type_reference_targets: package_type_references,
+        });
+    });
+    collect_type_reference_targets_from_root(document, &mut type_reference_targets);
+    let mut import_targets = Vec::new();
+    collect_import_targets_from_root(document, &mut import_targets);
+    super::SyntaxClosureFacts {
+        declared_packages: declared_packages_from_parsed(document),
+        import_targets,
+        type_reference_targets,
+        packages,
+    }
+}
+
 /// What one package in a source imports and names, keyed by its qualified name.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PackageTargets {

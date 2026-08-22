@@ -82,6 +82,21 @@ impl AdmittedSource {
         })
     }
 
+    /// Admit a tree the syntax service already parsed; the editor's parse and the build's parse
+    /// are then the same tree.
+    pub fn from_parsed(
+        uri: &str,
+        parsed: crate::syntax::ParsedSource,
+        source_kind: SourceKind,
+    ) -> Result<Self, SourceError> {
+        if uri.is_empty() {
+            return Err(SourceError("source identity must not be empty"));
+        }
+        Ok(Self {
+            inner: sysml_resolution::SourceInput::from_parsed(uri, parsed, source_kind),
+        })
+    }
+
     /// The identity queries and published facts address this document by.
     pub fn identity(&self) -> &str {
         self.inner.identity()

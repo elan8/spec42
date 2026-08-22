@@ -14,6 +14,11 @@ const DESIGNATED_CONSUMERS: &[&str] = &[
 ];
 
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
+    "ParsedDocument",
+    "ParseResult",
+    "ParseError",
+    "RootElement",
+    "sysml_v2_parser",
     "SemanticGraph",
     "SemanticNode",
     "SemanticModel",

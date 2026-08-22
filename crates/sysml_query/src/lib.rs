@@ -8,3 +8,4 @@
 
 pub mod resolved_slice;
 pub mod source;
+pub mod syntax;
