@@ -1,10 +1,14 @@
 #![recursion_limit = "256"]
 
-//! The only supported consumer facade over Spec42's semantic model implementation.
+//! The facade: the only crate a consumer names for anything SysML.
 //!
-//! [`resolved_slice::PublishedModel`] is opaque. Consumers select a cohesive service and receive
-//! typed answers or stream an owner-defined debug projection; they cannot obtain the structural
-//! graph, resolver state, fact collections, or query-index storage.
+//! A host obtains one [`Services`] value and works with its handles — [`source::SourceService`],
+//! [`syntax::SyntaxService`], [`library::LibraryClosureService`],
+//! [`publication::PublicationService`] and [`publication::PublicationSession`] — and with the
+//! typed queries of an opaque [`resolved_slice::PublishedModel`]. Parsing, memoisation, file I/O,
+//! library closure and publication lifecycle are the authorities' and are invisible behind these
+//! handles; consumers cannot obtain a parser tree, the structural graph, resolver state, fact
+//! collections, or query-index storage. See `design.md` at the repository root.
 
 pub mod library;
 pub mod publication;

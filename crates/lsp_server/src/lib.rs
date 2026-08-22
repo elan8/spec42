@@ -1,7 +1,9 @@
 #![recursion_limit = "256"]
 
-//! Core library for Spec42 LSP server: semantic model, DTOs, language utilities.
-//! Used by the spec42 and spec42-pro binaries.
+//! The editor host: document lifecycle, workspace orchestration, LSP handlers, validation wiring,
+//! DTO assembly and host adapters over the `sysml_query` services. It parses nothing and owns no
+//! semantic state of its own; its `ServerState` holds the facade's `PublicationSession` inside a
+//! `session_actor` mailbox. Used by the spec42 and spec42-pro binaries.
 
 pub mod analysis;
 pub mod common;

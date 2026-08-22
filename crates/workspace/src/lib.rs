@@ -1,6 +1,8 @@
 #![recursion_limit = "256"]
 
-//! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
+//! The batch host: engine, directory snapshots, validation, comparison and schema versions over
+//! the `sysml_query` services. Library provisioning is `library_catalog`'s; closure, parsing and
+//! publication are the authorities'.
 
 pub mod comparison;
 pub mod engine;

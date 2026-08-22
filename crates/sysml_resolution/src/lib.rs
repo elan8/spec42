@@ -1,9 +1,12 @@
 #![recursion_limit = "256"]
 
-//! Opaque parser-owned semantic construction and batch resolution.
+//! The semantic authority.
 //!
-//! Syntax documents, dense IDs, semantic storage, solver state, and indexes remain private. The
-//! public contract accepts immutable source inputs and streams owner-defined canonical output.
+//! The only crate that calls the parser, holds parsed trees ([`syntax`]), lowers and resolves,
+//! decides diagnostics, computes library closure ([`library`]), and constructs and publishes a
+//! model with its lifecycle ([`publication`]). Parser documents, dense IDs, semantic storage,
+//! solver state and indexes stay private; its single dependant is the `sysml_query` facade, and it
+//! never reads a file — documents come from the source authority it re-exports as [`source`].
 
 use std::fmt;
 

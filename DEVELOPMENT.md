@@ -4,27 +4,44 @@ Guidance for building, testing, and contributing to Spec42.
 
 ## Architecture
 
-Spec42 is a Rust workspace plus a VS Code extension.
+The enduring architecture — which crate is the authority for what, the services consumers work
+with, the crate map and the invariants the repository enforces — is [`design.md`](design.md). The
+short version:
 
-- `crates/sysml_resolution` owns semantic construction, resolution, and every diagnostic a host reports, settled at the publication barrier; `crates/sysml_query` is the typed read-only facade over it.
-- `crates/sysml_diagnostics` owns transport-neutral diagnostic values and the host reporting policy over them. It decides nothing semantic and depends only on `sysml_query`.
-- `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
-- `generator-plugins` contains the repository-owned Rust WebAssembly generators. Diagram
-  semantics enter plugins only through typed queries over the immutable publication.
+- `crates/sysml_source` is the source authority: the only crate that reads SysML text from disk,
+  admits text as an identified document, or normalises a URI or a line ending.
+- `crates/sysml_resolution` is the semantic authority: the only crate that calls the parser, holds
+  parsed trees, lowers and resolves, decides diagnostics, computes library closure, and constructs
+  and publishes a model. It is the only dependant of the parser and of `sysml_source`.
+- `crates/sysml_query` is the facade and the only crate a consumer may name for anything SysML:
+  `source`, `syntax`, `library` and `publication` services plus the typed `PublishedModel` queries,
+  all obtained from one `Services` value per host process.
+- `crates/sysml_diagnostics` owns transport-neutral diagnostic values and the host reporting policy
+  over them. It decides nothing semantic.
+- `crates/sysml_tokens` projects the facade's syntax token roles onto editor token indices, neutral
+  over WASM and LSP hosts.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
-- `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
-- `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
-- `crates/session_actor` owns a generic tokio actor (lock-free snapshot reads, single-writer mutations, superseded background results dropped) over embedder-owned session state; it knows nothing about SysML and is used by `lsp_server`.
-- `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
-- `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
-- `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
-  Its `diagram-renderer` package owns D3/ELK layout and drawing for generator-produced render
-  products; it does not derive model semantics.
+- `crates/language_service` owns protocol-neutral editor intelligence over typed queries. Hosts map
+  its DTOs to LSP, HTTP, or Monaco contracts.
+- `crates/library_catalog` owns library provisioning: bundled and managed standard/domain
+  libraries, their configuration and data directories, resolved to library roots.
+- `crates/workspace` is the batch host: engine, directory snapshots, validation, comparison, schema
+  versions.
+- `crates/session_actor` is a generic tokio actor over embedder-owned state; it knows nothing about
+  SysML and is used by `lsp_server`.
+- `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP
+  handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace`,
+  `library_catalog` and `lsp_server`.
+- `generator-plugins` contains the repository-owned Rust WebAssembly generators. Diagram semantics
+  enter plugins only through typed queries over the immutable publication.
+- `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging. Its
+  `diagram-renderer` package owns D3/ELK layout and drawing for generator-produced render products;
+  it does not derive model semantics.
 
-Keep semantic construction and diagnostic rules in `sysml_resolution`; all consumers use the typed
-`sysml_query` facade. Keep editor intelligence that is shared across hosts in `language_service`;
-keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate
-that owns it.
+New capability lands in this order: implementation in the owning authority, a typed contract in
+`sysml_query`, then use from a host. A consumer never computes a SysML answer from source text,
+facade data, or names; if the answer is missing, extend the service.
 
 ## Language Service Structure
 
@@ -129,29 +146,46 @@ npm install
 npm run compile
 ```
 
-## Parser Dependency Policy
+## Authority Pipeline Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **git revision**, and exactly
-one crate may depend on it: `crates/sysml_resolution`, which lowers the AST to the semantic graph.
-Everything else reaches syntax through `sysml_resolution::syntax`, which returns plain data rather
-than parser types. Two independent things enforce this, and both are meant to stay:
+The workspace has a chain with exactly one dependant per link, and a facade in front of it:
 
-- **`deny.toml`**, checked by `cargo deny check bans` in CI. The parser is banned outright except
-  as a direct dependency of `sysml_resolution` (`wrappers`). This reads the resolved dependency
-  graph, so a rename or a transitive path is caught by construction. Only the `bans` check runs;
-  the licence and advisory gates are deliberately off.
-- **`crates/source_identity/tests/parser_authority.rs`**, which covers what the graph cannot see:
-  manifest *shape* (the pin must be a bare 40-hex git rev with no `version`/`branch`/`tag`/`path`,
-  and the authority must inherit it with `workspace = true`), the `fuzz/` nested workspace, and
-  reintroducing a repository-local parser facade under a different package name.
+```text
+sysml-v2-parser ──► sysml_resolution ──► sysml_query ──► every consumer
+source_identity ──► sysml_source ──────┘
+```
 
-Neither subsumes the other. Run `cargo deny check bans` locally before changing any manifest.
+The parser is pinned in the root `Cargo.toml` as a **git revision**. Four things enforce the
+chain, and all of them are meant to stay:
 
-The boundary itself is a compile error, not a convention: `SyntaxDocument` wraps the parser
-document in a private field with a `pub(crate)` accessor, so a crate without the dependency cannot
-hold, walk, cache, or serialize a `ParsedDocument` even while holding a document.
+- **`deny.toml`**, checked by `cargo deny check bans` in CI: three `[[bans.deny]]` stanzas ban the
+  parser outside `sysml_resolution`, `sysml_resolution` outside `sysml_query`, and `sysml_source`
+  outside `sysml_resolution`. This reads the resolved dependency graph (dev-dependencies included),
+  so a rename or a transitive path is caught by construction. Only the `bans` check runs; the
+  licence and advisory gates are deliberately off.
+- **`crates/source_identity/tests/{parser_authority,authority_chain}.rs`**, std-only and below the
+  whole chain, cover what the graph cannot see: manifest *shape* (the pin is a bare 40-hex git rev
+  with no `version`/`branch`/`tag`/`path`, inherited with `workspace = true`), the `fuzz/` nested
+  workspace, both lockfiles, and a repository-local facade under a different package name.
+- **`crates/sysml_query/tests/architecture.rs`** pins the exact normal dependency sets of the chain
+  crates, the facade, `session_actor`, `library_catalog` and `workspace`, lists every consumer as
+  designated, and rejects any parser or graph type in the facade's public API.
+- **`crates/sysml_query/tests/syntax_authority.rs`** is the guard for what a dependency graph
+  cannot express: a consumer re-answering a syntax question from text. It keeps retired helpers
+  deleted, rejects downstream functions that shadow a syntax/library/source query, bans parsed
+  trees, strata and AST versions outside the authorities and SysML file reads outside
+  `sysml_source`, and flags string probes, comparisons and `matches!` arms against reserved
+  keywords, qualified-name fragments, operators and braces. Its exemptions are per file with a
+  reason and, where one exists, a predicate; every deferred retirement is recorded in
+  `planning/SYNTAX_FOLLOW_UPS.md`.
 
-To update the parser:
+None of these subsumes another. Run `cargo deny check bans` locally before changing any manifest.
+
+The boundary itself is a compile error, not a convention: a consumer holds a `ParsedSource`
+handle whose tree is reachable only inside `sysml_resolution`, so a crate without that dependency
+cannot walk, cache, or serialise a parser document even while holding one.
+
+### Updating the parser
 
 1. Change the `rev` in the root `Cargo.toml` `[workspace.dependencies]`, then run
    `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
@@ -162,14 +196,24 @@ To update the parser:
    `cargo run -p spec42-snapshot -- check`. The snapshot corpus is the primary end-to-end evidence
    for a parser bump; it is not CI-gated, so the diff review is the gate.
 4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
-   the ones it closes.
-5. `cargo tree -i sysml-v2-parser` must print a single tree with `sysml_resolution` as its only
-   dependent, and `cargo deny check bans` must pass.
+   the ones it closes. If the bump changes the keyword vocabulary, update
+   `crates/sysml_resolution/src/syntax/keywords.rs` and its pinned count.
+5. `cargo tree -i sysml-v2-parser`, `cargo tree -i sysml_resolution` and
+   `cargo tree -i sysml_source` must each print a single dependant, and `cargo deny check bans`
+   must pass.
 
 To build against a local parser checkout, uncomment the `[patch."https://…"]` block in
 `.cargo/config.toml`. The patch key is the git URL -- a `[patch.crates-io]` entry resolves nothing,
 because the workspace no longer depends on the published crate. Comment it out again before
 producing evidence for a bump; an active patch changes what the graph resolves.
+
+### Retiring a string heuristic
+
+A consumer that answers a SysML question from text is exempt in `syntax_authority.rs` only while
+`planning/SYNTAX_FOLLOW_UPS.md` records the typed query that retires it. To retire one: add the
+query to the syntax service (implementation in `sysml_resolution::syntax`, contract in
+`sysml_query::syntax`), migrate the callers, delete the heuristic, remove its exemption, and
+remove its planning entry. Never add an exemption without a planning entry.
 
 ## Diagnostic quality workflow
 
@@ -321,7 +365,7 @@ cd vscode && npm run compile && npm run test:lm-cli-unit
 
 Diagnostics are published in two stages:
 
-1. Parser diagnostics from `sysml_v2_parser::parse_with_diagnostics`
+1. Parser diagnostics, carried by the `ParsedSource` the syntax service returns for a document
 2. Semantic diagnostics published by `sysml_resolution`, adapted through `sysml_diagnostics`
 
 Semantic diagnostic codes and mapping behavior are covered by focused tests in
