@@ -169,12 +169,6 @@ owner = "spec42-semantic"
 summary = "FeatureMembership is compact declaration-aligned storage, not an independently addressable canonical relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result."
 
 [[issue]]
-id = "lowering-gap-type-inherited-membership-closure"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The canonical model does not yet publish the inheritedMemberships closure together with addressable FeatureMembership facts, so Type feature, end, direction, input, output, and inherited feature collections cannot be derived."
-
-[[issue]]
 id = "lowering-gap-type-multiplicity-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
