@@ -34,9 +34,9 @@ use crate::{
     SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
     SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeDerivedElementCollection,
     TypeDerivedFactCollection, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite,
-    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
-    TypeFeaturingCheckPrerequisite, TypeReference, VerificationOutcome, VerificationRequirement,
-    VisibleMember,
+    TypeDerivedFactValue, TypeDerivedRelationshipCollection, TypeFeaturingCheckKind,
+    TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite, TypeReference, VerificationOutcome,
+    VerificationRequirement, VisibleMember,
 };
 use spec42_constraint_manifest::{
     ElementDerivedOwnerKind, LibrarySpecializationPredicate, NamespaceImportDerivedElementKind,
@@ -2770,8 +2770,119 @@ impl ResolvedSemanticModel {
         self.resolved_outcome(values)
     }
 
-    /// Returns the explicit first missing prerequisite for an exact Type derivation whose result
-    /// is normative but cannot be fabricated from compact declaration-aligned storage.
+    /// Every feature membership one Type owns directly, in canonical declaration order.
+    fn owned_feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
+        self.storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, candidate_declaration)| {
+                let candidate = DeclarationId::from_index(index).ok()?;
+                (candidate != owner
+                    && candidate_declaration.owner == Some(owner)
+                    && self
+                        .memberships
+                        .get(candidate)
+                        .is_some_and(|membership| membership.kind == MembershipKind::Feature))
+                .then_some(candidate)
+            })
+            .collect()
+    }
+
+    /// Records every member `member` redefines, from settled `Redefinition` facts.
+    ///
+    /// Authored and implied redefinitions are read alike: an implied redefinition is a canonical
+    /// relationship of the publication, and a member it replaces is inherited no more than one a
+    /// written `:>>` replaces.
+    fn collect_redefined_members(
+        &self,
+        member: DeclarationId,
+        into: &mut std::collections::BTreeSet<DeclarationId>,
+    ) {
+        for reference_id in self.outgoing_reference_ids(member) {
+            if self.storage.references[reference_id.index()].kind != ReferenceKind::Redefinition {
+                continue;
+            }
+            if let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(*reference_id)
+            {
+                into.insert(target);
+            }
+        }
+        for index in self.outgoing_implied_indices(member) {
+            let implied = &self.resolution.implied_relationships[*index as usize];
+            if implied.kind == ReferenceKind::Redefinition {
+                into.insert(implied.target);
+            }
+        }
+    }
+
+    /// The canonical inherited FeatureMembership closure of one Type.
+    ///
+    /// KerML derives `inheritedMembership` from the memberships of the general types reached
+    /// through specialization, minus the ones a nearer member redefines. The closure itself is the
+    /// specialization index this resolver already owns, so a member reached through two paths is
+    /// inherited once and a cyclic hierarchy -- which has no closure -- inherits nothing.
+    fn inherited_feature_members(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        let ancestors = self
+            .types
+            .specialization()
+            .scoped_ancestors(declaration)
+            .map(|(ancestor, _)| ancestor)
+            .collect::<Vec<_>>();
+        if ancestors.is_empty() {
+            return Vec::new();
+        }
+        let mut candidates = Vec::new();
+        for ancestor in ancestors {
+            candidates.extend(self.owned_feature_members(ancestor));
+        }
+        let owned = self.owned_feature_members(declaration);
+        let mut redefined = std::collections::BTreeSet::new();
+        for member in owned.iter().chain(candidates.iter()) {
+            self.collect_redefined_members(*member, &mut redefined);
+        }
+        candidates.retain(|candidate| !redefined.contains(candidate));
+        candidates
+    }
+
+    /// Whether one member of a Type belongs to the selected derived collection.
+    fn type_derived_fact_selects(
+        &self,
+        collection: TypeDerivedFactCollection,
+        member: DeclarationId,
+    ) -> bool {
+        let facts = self.storage.declaration_facts(member);
+        match collection {
+            TypeDerivedFactCollection::OwnedFeatureMembership
+            | TypeDerivedFactCollection::Multiplicity
+            | TypeDerivedFactCollection::OwnedConjugator => false,
+            TypeDerivedFactCollection::FeatureMembership
+            | TypeDerivedFactCollection::Feature
+            | TypeDerivedFactCollection::InheritedMembership
+            | TypeDerivedFactCollection::InheritedFeature => true,
+            TypeDerivedFactCollection::EndFeature => facts.is_some_and(|facts| facts.modifiers.end),
+            TypeDerivedFactCollection::DirectedFeature => {
+                facts.is_some_and(|facts| facts.direction.is_some())
+            }
+            TypeDerivedFactCollection::Input => facts.is_some_and(|facts| {
+                matches!(
+                    facts.direction,
+                    Some(ParameterDirection::In | ParameterDirection::InOut)
+                )
+            }),
+            TypeDerivedFactCollection::Output => facts.is_some_and(|facts| {
+                matches!(
+                    facts.direction,
+                    Some(ParameterDirection::Out | ParameterDirection::InOut)
+                )
+            }),
+        }
+    }
+
+    /// Returns one exact Type derivation over canonical membership and specialization-closure
+    /// facts, or the explicit first missing prerequisite for the derivations whose normative
+    /// result is a relationship or multiplicity identity that compact declaration-aligned storage
+    /// does not own.
     pub(crate) fn type_derived_fact(
         &self,
         symbol: &SymbolIdentity,
@@ -2795,30 +2906,56 @@ impl ResolvedSemanticModel {
             return QueryOutcome::Unsupported;
         }
         let _rule_id = rule.rule_id;
-        let prerequisite = match collection {
+        let unavailable = match collection {
             TypeDerivedFactCollection::OwnedFeatureMembership => {
-                TypeDerivedFactPrerequisite::FeatureMembershipIdentity
-            }
-            TypeDerivedFactCollection::InheritedMembership => {
-                TypeDerivedFactPrerequisite::InheritedMembershipClosure
-            }
-            TypeDerivedFactCollection::FeatureMembership
-            | TypeDerivedFactCollection::Feature
-            | TypeDerivedFactCollection::EndFeature
-            | TypeDerivedFactCollection::DirectedFeature
-            | TypeDerivedFactCollection::InheritedFeature
-            | TypeDerivedFactCollection::Input
-            | TypeDerivedFactCollection::Output => {
-                TypeDerivedFactPrerequisite::FeatureMembershipIdentityAndInheritedClosure
+                Some(TypeDerivedFactPrerequisite::FeatureMembershipIdentity)
             }
             TypeDerivedFactCollection::Multiplicity => {
-                TypeDerivedFactPrerequisite::MultiplicityIdentity
+                Some(TypeDerivedFactPrerequisite::MultiplicityIdentity)
             }
             TypeDerivedFactCollection::OwnedConjugator => {
-                TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity
+                Some(TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity)
             }
+            _ => None,
         };
-        self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite })
+        if let Some(prerequisite) = unavailable {
+            return self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite });
+        }
+        let inherited = self.inherited_feature_members(declaration);
+        let members = match collection {
+            TypeDerivedFactCollection::InheritedMembership
+            | TypeDerivedFactCollection::InheritedFeature => inherited,
+            _ => self
+                .owned_feature_members(declaration)
+                .into_iter()
+                .chain(inherited)
+                .collect(),
+        };
+        // `FeatureMembership`-valued collections still name their member element, never a
+        // fabricated Membership relationship identity: that identity remains unpublished, and its
+        // own derivation stays explicitly unsupported above.
+        let membership_valued = matches!(
+            collection,
+            TypeDerivedFactCollection::InheritedMembership
+                | TypeDerivedFactCollection::FeatureMembership
+        );
+        let values = self
+            .symbols(
+                members
+                    .into_iter()
+                    .filter(|member| self.type_derived_fact_selects(collection, *member)),
+            )
+            .into_vec()
+            .into_iter()
+            .map(|member| {
+                if membership_valued {
+                    TypeDerivedFactValue::FeatureMembership { member }
+                } else {
+                    TypeDerivedFactValue::Feature(member)
+                }
+            })
+            .collect::<Vec<_>>();
+        self.resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()))
     }
 
     /// Returns one exact Systems::DefinitionAndUsage derived property from the canonical direct
@@ -2850,14 +2987,35 @@ impl ResolvedSemanticModel {
         }
         let _rule_id = rule.rule_id;
         match kind {
+            // `usage` and `directedUsage` select over the *effective* feature membership of the
+            // definition or usage -- everything it owns plus everything it inherits -- so they
+            // read the same canonical specialization closure `Type::inheritedMembership` does,
+            // rather than the direct child scan the `owned`/`nested` collections below use.
             DefinitionUsageDerivedKind::DefinitionDirectedUsage
             | DefinitionUsageDerivedKind::UsageDirectedUsage
             | DefinitionUsageDerivedKind::DefinitionUsage
             | DefinitionUsageDerivedKind::UsageUsage => {
-                self.resolved_outcome(DefinitionUsageDerivedOutcome::Unsupported {
-                    prerequisite:
-                        DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure,
-                })
+                let directed = matches!(
+                    kind,
+                    DefinitionUsageDerivedKind::DefinitionDirectedUsage
+                        | DefinitionUsageDerivedKind::UsageDirectedUsage
+                );
+                let values = self.symbols(
+                    self.owned_feature_members(declaration)
+                        .into_iter()
+                        .chain(self.inherited_feature_members(declaration))
+                        .filter(|member| {
+                            self.storage
+                                .declaration(*member)
+                                .is_some_and(|member| is_usage_declaration(member.kind))
+                                && (!directed
+                                    || self
+                                        .storage
+                                        .declaration_facts(*member)
+                                        .is_some_and(|facts| facts.direction.is_some()))
+                        }),
+                );
+                self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
             DefinitionUsageDerivedKind::DefinitionVariant
             | DefinitionUsageDerivedKind::DefinitionVariantMembership

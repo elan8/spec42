@@ -11,7 +11,6 @@ rule_id=kerml-1.0:8.3.3.1.10:deriveTypeDirectedFeature
 rule_id=kerml-1.0:8.3.3.1.10:deriveTypeInheritedFeature
 rule_id=kerml-1.0:8.3.3.1.10:deriveTypeInput
 rule_id=kerml-1.0:8.3.3.1.10:deriveTypeOutput
-blocked_by=lowering-gap-type-inherited-membership-closure
 libraries=none
 ~~~
 # SOURCE

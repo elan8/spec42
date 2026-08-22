@@ -5,7 +5,6 @@ source_expectation=accepted
 rule_family=derive
 expectation=semantics
 rule_id=kerml-1.0:8.3.3.1.10:deriveTypeInheritedMembership
-blocked_by=lowering-gap-type-inherited-membership-closure
 libraries=none
 ~~~
 # SOURCE

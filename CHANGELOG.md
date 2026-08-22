@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
+  effective feature membership.** The four SysML collections read the specialization closure that
+  `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*
+  inherits, rather than returning a typed unavailable-fact outcome. One snapshot fixture came off
+  `blocked_by` and the `lowering-gap-definition-usage-effective-feature-membership-closure` issue
+  is retired.
+
+- **KerML `Type` inherited-membership and feature collections derive from the canonical
+  specialization closure.** `deriveTypeInheritedMembership`, `deriveTypeFeatureMembership`,
+  `deriveTypeFeature`, `deriveTypeEndFeature`, `deriveTypeDirectedFeature`,
+  `deriveTypeInheritedFeature`, `deriveTypeInput` and `deriveTypeOutput` now publish values instead
+  of a typed unavailable-fact outcome. The inherited closure reuses the specialization ancestor
+  index the resolver already owns, and a member a nearer feature redefines -- authored `:>>` or
+  implied alike -- is not inherited. `deriveTypeOwnedFeatureMembership`,
+  `deriveTypeMultiplicity` and `deriveTypeOwnedConjugator` stay explicitly unsupported: their
+  normative result is a relationship or multiplicity identity the publication still does not own.
+  Two snapshot fixtures came off `blocked_by` and the
+  `lowering-gap-type-inherited-membership-closure` issue is retired.
+
 - **Bumped the pinned `sysml-v2-parser` revision `49bdf3f` -> `f52100f`.** The 24-commit "corpus
   coverage wave 1" bump closes gap 68 in `planning/UPSTREAM_PARSER_GAPS.md` outright and narrows
   eleven more (61, 62, 66, 69, 72, 73, 74, 76, 77, 78, 79), each re-probed at the new revision

@@ -8,7 +8,6 @@ rule_id=sysml-2.0:8.3.6.2:deriveDefinitionDirectedUsage
 rule_id=sysml-2.0:8.3.6.2:deriveDefinitionUsage
 rule_id=sysml-2.0:8.3.6.4:deriveUsageDirectedUsage
 rule_id=sysml-2.0:8.3.6.4:deriveUsageUsage
-blocked_by=lowering-gap-definition-usage-effective-feature-membership-closure
 libraries=none
 ~~~
 # SOURCE

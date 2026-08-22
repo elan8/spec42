@@ -6819,14 +6819,23 @@ package P {
                 DefinitionUsageDerivedKind::DefinitionOwnedAction,
             ),
             QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
-                if values.as_ref() == [service]
+                if values.as_ref() == [service.clone()]
         ));
+        // `usage` selects every usage in the effective feature membership, so both direct members
+        // appear; `directedUsage` selects none of them, because neither is directed.
         assert!(matches!(
             sequential
                 .definition_usage_derived(&vehicle, DefinitionUsageDerivedKind::DefinitionUsage,),
-            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
-                prerequisite: DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure,
-            })
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.contains(&wheel) && values.contains(&service)
+        ));
+        assert!(matches!(
+            sequential.definition_usage_derived(
+                &vehicle,
+                DefinitionUsageDerivedKind::DefinitionDirectedUsage,
+            ),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+                if values.is_empty()
         ));
         assert!(matches!(
             sequential.definition_usage_derived(
@@ -6851,7 +6860,7 @@ package P {
     }
 
     #[test]
-    fn exact_type_derived_facts_publish_the_first_missing_canonical_prerequisite() {
+    fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
         let published = detail_publication(
             &[ (
                 "memory://model.sysml",
@@ -6868,31 +6877,32 @@ package P {
                     if actual == prerequisite
             ));
         };
+        let values = |symbol: &SymbolIdentity, collection| match published
+            .type_derived_fact(symbol, collection)
+        {
+            QueryOutcome::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
+            other => panic!("expected published values, got {other:?}"),
+        };
+        let member = |symbol: &SymbolIdentity| TypeDerivedFactValue::FeatureMembership {
+            member: symbol.clone(),
+        };
+        let inherited = identity_of(
+            &published,
+            "memory://model.sysml",
+            "Model::Parent::inherited",
+        );
+        let input = identity_of(&published, "memory://model.sysml", "Model::Child::input");
+        let output = identity_of(&published, "memory://model.sysml", "Model::Child::output");
+        let endpoint = identity_of(&published, "memory://model.sysml", "Model::Child::endpoint");
+
+        // The Membership relationship identity itself is still unpublished, so only the
+        // owned-membership derivation -- whose normative result *is* that relationship -- stays
+        // explicitly unsupported.
         unsupported(
             &child,
             TypeDerivedFactCollection::OwnedFeatureMembership,
             TypeDerivedFactPrerequisite::FeatureMembershipIdentity,
         );
-        unsupported(
-            &child,
-            TypeDerivedFactCollection::InheritedMembership,
-            TypeDerivedFactPrerequisite::InheritedMembershipClosure,
-        );
-        for collection in [
-            TypeDerivedFactCollection::FeatureMembership,
-            TypeDerivedFactCollection::Feature,
-            TypeDerivedFactCollection::EndFeature,
-            TypeDerivedFactCollection::DirectedFeature,
-            TypeDerivedFactCollection::InheritedFeature,
-            TypeDerivedFactCollection::Input,
-            TypeDerivedFactCollection::Output,
-        ] {
-            unsupported(
-                &child,
-                collection,
-                TypeDerivedFactPrerequisite::FeatureMembershipIdentityAndInheritedClosure,
-            );
-        }
         unsupported(
             &sized,
             TypeDerivedFactCollection::Multiplicity,
@@ -6903,6 +6913,46 @@ package P {
             TypeDerivedFactCollection::OwnedConjugator,
             TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity,
         );
+
+        assert_eq!(
+            values(&child, TypeDerivedFactCollection::InheritedMembership).into_vec(),
+            vec![member(&inherited)]
+        );
+        assert_eq!(
+            values(&child, TypeDerivedFactCollection::InheritedFeature).into_vec(),
+            vec![TypeDerivedFactValue::Feature(inherited.clone())]
+        );
+        for collection in [
+            TypeDerivedFactCollection::FeatureMembership,
+            TypeDerivedFactCollection::Feature,
+        ] {
+            let published_values = values(&child, collection);
+            assert!(published_values.iter().any(|value| match value {
+                TypeDerivedFactValue::FeatureMembership { member } => member == &inherited,
+                TypeDerivedFactValue::Feature(feature) => feature == &inherited,
+                _ => false,
+            }));
+            assert!(published_values.iter().any(|value| match value {
+                TypeDerivedFactValue::FeatureMembership { member } => member == &input,
+                TypeDerivedFactValue::Feature(feature) => feature == &input,
+                _ => false,
+            }));
+        }
+        assert_eq!(
+            values(&child, TypeDerivedFactCollection::EndFeature).into_vec(),
+            vec![TypeDerivedFactValue::Feature(endpoint)]
+        );
+        assert_eq!(
+            values(&child, TypeDerivedFactCollection::Input).into_vec(),
+            vec![TypeDerivedFactValue::Feature(input.clone())]
+        );
+        assert_eq!(
+            values(&child, TypeDerivedFactCollection::Output).into_vec(),
+            vec![TypeDerivedFactValue::Feature(output.clone())]
+        );
+        let directed = values(&child, TypeDerivedFactCollection::DirectedFeature).into_vec();
+        assert!(directed.contains(&TypeDerivedFactValue::Feature(input)));
+        assert!(directed.contains(&TypeDerivedFactValue::Feature(output)));
     }
 
     #[test]
