@@ -112,6 +112,8 @@ package 'Interaction Example-1' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction"))) (provenance implied))
   )
   (evaluation
   )

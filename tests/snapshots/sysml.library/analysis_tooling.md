@@ -107,6 +107,9 @@ standard library package AnalysisTooling {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (target (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (target (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolVariable::name"))) (target (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolVariable"))) (provenance implied))
   )
   (evaluation
   )

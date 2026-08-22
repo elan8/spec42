@@ -106,6 +106,7 @@ package CarWithEnvelopingShape {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (target (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car"))) (provenance implied))
   )
   (evaluation
   )

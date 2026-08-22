@@ -127,6 +127,9 @@ package 'Packet Usage' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field"))) (target (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0)) (named (kind attribute) (name "special data"))))) (target (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )

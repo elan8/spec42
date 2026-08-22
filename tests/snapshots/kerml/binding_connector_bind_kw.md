@@ -55,6 +55,11 @@ package P {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C::baseEdges"))) (target (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C::endShot"))) (target (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C::startShot"))) (target (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C::x"))) (target (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C::y"))) (target (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (provenance implied))
   )
   (evaluation
   )

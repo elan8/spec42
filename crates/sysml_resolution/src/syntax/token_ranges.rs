@@ -8,12 +8,13 @@ use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
     ConstraintDefBody, ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement,
-    EndIdentity, EnumerationBody, FinalState, InterfaceDefBody, InterfaceDefBodyElement,
-    MetadataAnnotation, MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody,
-    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
-    PortDefBodyElement, RequirementDefBody, RequirementDefBodyElement, RootElement, StateDefBody,
-    StateDefBodyElement, StateUsage, ThenStmt, Transition, TransitionAccept,
+    EndIdentity, EnumerationBody, FinalState, FlowDeclaration, InterfaceDefBody,
+    InterfaceDefBodyElement, MetadataAnnotation, MetadataBody, MetadataBodyElement,
+    MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody, PackageBody,
+    PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement,
+    PayloadClause, PortBody, PortBodyElement, PortDefBody, PortDefBodyElement, RequirementDefBody,
+    RequirementDefBodyElement, RootElement, StateDefBody, StateDefBodyElement, StateUsage,
+    ThenStmt, Transition, TransitionAccept,
 };
 use sysml_v2_parser::{ParsedDocument, QualifiedReferenceId};
 
@@ -402,16 +403,21 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
         PBE::FlowUsage(flow_node) => {
-            if let Some(ref name) = flow_node.value.name {
-                push_usage_name_type_spans(
-                    ctx.source,
-                    &flow_node.span,
-                    name,
-                    ctx.type_text(flow_node.value.type_name),
-                    None,
-                    None,
-                    out,
-                );
+            // Upstream's `FlowDeclaration` keeps the declaration-led alternative distinct from
+            // the endpoint-only shorthand, so a name/type is highlighted only when one is
+            // actually declared.
+            if let FlowDeclaration::Declared { declaration, .. } = &flow_node.value.declaration {
+                if let Some(name) = declaration.value.identification.name.as_deref() {
+                    push_usage_name_type_spans(
+                        ctx.source,
+                        &flow_node.span,
+                        name,
+                        ctx.typing_text(declaration.value.typing.as_deref()),
+                        None,
+                        None,
+                        out,
+                    );
+                }
             }
             collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
@@ -560,7 +566,7 @@ fn collect_semantic_ranges_package_body_element(
                 None,
                 out,
             );
-            collect_semantic_ranges_attribute_body(ctx, &mu_node.value.body, out);
+            collect_semantic_ranges_metadata_body(ctx, &mu_node.value.body, out);
         }
         PBE::OccurrenceUsage(ou_node) => {
             push_usage_name_type_spans(
@@ -947,6 +953,35 @@ fn collect_semantic_ranges_metadata_annotation(
         span_to_source_range(&node.value.type_span),
         SyntaxRole::Type,
     ));
+}
+
+/// A `MetadataBody`'s members are reference redefinitions, not attribute declarations, so each
+/// one contributes its target reference range rather than a declaration name/type pair.
+fn collect_semantic_ranges_metadata_body(
+    ctx: &RangeCtx<'_>,
+    body: &MetadataBody,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    let MetadataBody::Brace { elements, .. } = body else {
+        return;
+    };
+    for node in elements {
+        match &node.value {
+            MetadataBodyElement::Usage(usage) => {
+                if let Some(view) = ctx.document.qualified_reference(usage.value.target) {
+                    out.push((
+                        span_to_source_range(&view.metadata.span),
+                        SyntaxRole::Property,
+                    ));
+                }
+                collect_semantic_ranges_metadata_body(ctx, &usage.value.body, out);
+            }
+            MetadataBodyElement::Annotating(member) => {
+                collect_semantic_ranges_annotating(member, out);
+            }
+            MetadataBodyElement::Error(_) => {}
+        }
+    }
 }
 
 fn collect_semantic_ranges_payload_clause(
@@ -1483,7 +1518,7 @@ fn collect_semantic_ranges_action_usage(
         out.push((span_to_source_range(span), SyntaxRole::Type));
     }
     if let Some(ref accept) = usage.accept {
-        collect_semantic_ranges_payload_clause(accept, out);
+        collect_semantic_ranges_transition_accept(accept, out);
     }
     if let Some(ref send) = usage.send {
         collect_semantic_ranges_send_payload(ctx, send, out);
@@ -1718,6 +1753,7 @@ fn collect_semantic_ranges_action_def_body_element(
             );
         }
         ADBE::Bind(_)
+        | ADBE::GuardedSuccession(_)
         | ADBE::Import(_)
         | ADBE::VariantUsage(_)
         | ADBE::FlowUsage(_)
@@ -1817,7 +1853,8 @@ fn collect_semantic_ranges_action_usage_body_element(
                 out,
             );
         }
-        AUBE::Bind(_)
+        AUBE::GuardedSuccession(_)
+        | AUBE::Bind(_)
         | AUBE::Import(_)
         | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)

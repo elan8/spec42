@@ -124,6 +124,8 @@ standard library package Allocations {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::allocations"))) (target (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::allocations"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source"))) (target (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::target"))) (target (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation"))) (provenance implied))
   )
   (evaluation
   )

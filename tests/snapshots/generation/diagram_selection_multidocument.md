@@ -52,7 +52,7 @@ package BehaviorModel {
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::other"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ActionFlowView")))))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (named (kind view) (name "other")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "UnrelatedAction")))))
     (declaration (id (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel"))) (kind package) (membership (kind owning) (visibility default)))
@@ -87,6 +87,17 @@ package BehaviorModel {
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (named (kind view) (name "other")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (named (kind view) (name "other")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/structure.sysml") (path (named (kind package) (name "StructureModel")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structure.sysml") (path (named (kind package) (name "StructureModel")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden"))) (target (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::other"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (named (kind view) (name "other")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::other"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot::included"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot::included"))) (target (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structure.sysml") (path (named (kind package) (name "StructureModel")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected"))) (provenance implied))
   )
   (evaluation
   )
@@ -95,25 +106,85 @@ package BehaviorModel {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction::hidden")))
       (featured-by (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::UnrelatedAction")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::other")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (named (kind view) (name "other")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel::other")))
     )
+    (declaration (id (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot::included")))
       (featured-by (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::SelectedRoot")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/structure.sysml") (path (named (kind package) (name "StructureModel")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/structure.sysml") (qualified-name "StructureModel::selected")))
@@ -165,6 +236,10 @@ package BehaviorModel {
     {
       "uri": "memory://snapshot/structure.sysml",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -213,10 +288,38 @@ package BehaviorModel {
       "qualifiedName": "StructureModel::selected"
     },
     {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::Part"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::parts"
+    },
+    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "specializes",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
     }
   ],
   "selectedView": {
@@ -235,7 +338,7 @@ package BehaviorModel {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 3,
+        "reference": 5,
         "source": 0,
         "target": 1
       }
@@ -283,7 +386,41 @@ package BehaviorModel {
         }
       }
     ],
-    "relationships": [],
+    "relationships": [
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 6,
+        "source": 0,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 7,
+        "source": 1,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 8,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "general"
     }

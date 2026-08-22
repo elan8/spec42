@@ -168,6 +168,7 @@ doc
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem::self"))) (target (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem::self"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::metadataItems"))) (target (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::metadataItems"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem::self"))) (target (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem"))) (provenance implied))
   )
   (evaluation
   )

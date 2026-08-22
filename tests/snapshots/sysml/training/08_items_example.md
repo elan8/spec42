@@ -88,6 +88,10 @@ package 'Items Example' {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::driver"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Person"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::driver"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::driver"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::mass"))) (target (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle"))) (provenance implied))
   )
   (evaluation
   )

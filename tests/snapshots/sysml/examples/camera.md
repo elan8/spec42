@@ -81,6 +81,11 @@ part def Camera {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::focusingSubsystem"))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "focusingSubsystem")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera::focusingSubsystem"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "imagingSubsystem")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
   )
   (evaluation
   )
@@ -89,9 +94,6 @@ part def Camera {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (anonymous (kind import) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/camera.md") (qualified-name "Camera")))
-    )
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::focusingSubsystem")))
       (featured-by (node (document "memory://snapshot/camera.md") (qualified-name "Camera")))
     )

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `49bdf3f` -> `f52100f`.** The 24-commit "corpus
+  coverage wave 1" bump closes gap 68 in `planning/UPSTREAM_PARSER_GAPS.md` outright and narrows
+  eleven more (61, 62, 66, 69, 72, 73, 74, 76, 77, 78, 79), each re-probed at the new revision
+  through the blocked fixture's own source. Visible behavior changes: a metadata body
+  is its own `MetadataBody` production whose members are reference redefinitions rather than nested
+  attribute declarations, so `@Risk { totalRisk = 0.3; }` now publishes an anonymous feature with a
+  real `redefinition` relationship and its evaluated value instead of a fabricated declaration
+  named after the overridden feature; `flow`'s endpoints, `perform`'s target and `interface`'s
+  connect ends are grammar-owned productions rather than expressions, so their endpoints, action
+  references and endpoint labels are source-backed; and the newly typed `GuardedSuccession`,
+  `then if`, and KerML type-body `package`/`library package` members lower rather than falling
+  through. Across the snapshot corpus 24 fixtures leave `parse-recovery` -- 16 of them reaching
+  `complete` -- and no fixture regresses from `complete`.
+
+  One upstream regression came with it, recorded as gap 81 and pinned by two `sysml_resolution`
+  tests: a directed KerML-kinded parameter (`in expr p : T;`, `in bool redefines a { ... }`) in a
+  `calc`- or `constraint`-shaped body is now dropped to parse recovery. KerML `function`/`behavior`
+  bodies, where the standard libraries author that spelling, are unaffected.
+
+- **Two members the parser bump unblocked now lower.** A KerML `flow of T from a to b;` in a
+  calc-shaped body carries its payload feature and both connector ends through
+  `lower_flow_usage` instead of `unsupported_calc_definition_member`, and the declared
+  `verify requirement <name> : <Type>;` form lowers as a named `VerifyRequirement` usage, so the
+  generated requirement-verification library specialization applies to it. Five snapshot fixtures
+  came off `blocked_by` and the `lowering-requirement-members` issue is retired.
+
 - **The normative KerML and SysML validation constraints are now a traceable snapshot corpus.**
   `tests/snapshots/validation` covers all 180 constraints the two specifications name `validate*`
   -- 88 in KerML 1.0 and 92 in SysML 2.0 -- across 179 fixtures, each carrying its specification,

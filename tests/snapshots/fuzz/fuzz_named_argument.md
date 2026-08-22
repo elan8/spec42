@@ -74,6 +74,7 @@ package P {
   )
   (relationships
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (kind invocationCallee) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F::p"))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b"))) (state non-constant))

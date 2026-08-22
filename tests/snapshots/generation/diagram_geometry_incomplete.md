@@ -50,6 +50,9 @@ package GeometryExample {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeometryView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (path (named (kind package) (name "GeometryExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::Shape"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (path (named (kind package) (name "GeometryExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::Shape"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_geometry_incomplete.md") (path (named (kind package) (name "GeometryExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected"))) (provenance implied))
   )
   (evaluation
   )
@@ -58,10 +61,29 @@ package GeometryExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::Shape")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeometryView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeometryView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeometryView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_geometry_incomplete.md") (path (named (kind package) (name "GeometryExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample::selected")))
@@ -98,6 +120,10 @@ package GeometryExample {
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -130,6 +156,17 @@ package GeometryExample {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "GeometryExample::selected"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::Part"
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
     }
   ],
   "selectedView": {
@@ -172,7 +209,19 @@ package GeometryExample {
         }
       }
     ],
-    "relationships": [],
+    "relationships": [
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 3,
+        "source": 0,
+        "target": {
+          "reference": 2,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "geometry"
     }

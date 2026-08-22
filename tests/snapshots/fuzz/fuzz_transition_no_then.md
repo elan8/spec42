@@ -51,6 +51,8 @@ package P {
   )
   (relationships
     (relationship (kind initialState) (source (node (document "memory://snapshot/fuzz_transition_no_then.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_transition_no_then.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_transition_no_then.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S::off"))) (target (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S"))) (provenance implied))
   )
   (evaluation
   )

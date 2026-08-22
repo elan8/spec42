@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.5:validateAssignmentActionUsage
-blocked_by=parser-gap-76-action-body-members
+blocked_by=parser-gap-52-var-modifier
 type=file
 ~~~
 # SOURCE

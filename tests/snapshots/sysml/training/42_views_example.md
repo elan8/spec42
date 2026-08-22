@@ -170,6 +170,9 @@ package 'Views Example' {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view-def) (name "Part Structure View")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0))))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::asTextualNotationTable"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle structure view")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (provenance implied))
   )
   (evaluation
     (filter (owner (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (form view) (state unsupported) (start 7 9) (end 7 26))

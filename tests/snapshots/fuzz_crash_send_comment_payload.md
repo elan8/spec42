@@ -40,7 +40,7 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A::send"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "pq")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A::send"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "pq")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A::send"))) (kind expressionOperand) (ordinal 0))
@@ -48,6 +48,7 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A::send"))) (target (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A"))) (provenance implied))
   )
   (evaluation
   )

@@ -163,6 +163,15 @@ package HSUVRequirements {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::Cargo"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::Passengers"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Braking"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Power"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Range"))) (target (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance"))) (provenance implied))
   )
   (evaluation
   )

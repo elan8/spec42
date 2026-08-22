@@ -95,6 +95,8 @@ package Inheritance {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (kind aliasBinding) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (provenance implied))
   )
   (evaluation
   )

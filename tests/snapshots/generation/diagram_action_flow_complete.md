@@ -34,8 +34,8 @@ package ActionFlowExample {
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "prepare")) (succession (reference "execute")))))
-    (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (kind action) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ActionFlowView")))))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Process")))))
   )
@@ -61,6 +61,16 @@ package ActionFlowExample {
     (relationship (kind succession) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare"))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected"))) (provenance implied))
   )
   (evaluation
   )
@@ -69,20 +79,64 @@ package ActionFlowExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute")))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::prepare")))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::selected")))
@@ -129,6 +183,10 @@ package ActionFlowExample {
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/actions.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -223,6 +281,21 @@ package ActionFlowExample {
       "qualifiedName": "ActionFlowExample::selected"
     },
     {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::Action"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::Action::subactions"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::actions"
+    },
+    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "ActionFlowExample::Process",
@@ -250,8 +323,8 @@ package ActionFlowExample {
     {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "succession",
-      "source": 1
+      "relationshipKind": "specializes",
+      "source": 0
     },
     {
       "kind": "relationship",
@@ -261,8 +334,56 @@ package ActionFlowExample {
     },
     {
       "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "succession",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "specializes",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "specializes",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "specializes",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "specializes",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "typeFeaturing",
       "source": 3
     }
   ],
@@ -282,15 +403,15 @@ package ActionFlowExample {
         "kind": "containment",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 6,
+        "reference": 9,
         "source": 0,
         "target": 1
       },
       {
         "kind": "succession",
         "navigation": 4,
-        "provenance": "authored",
-        "reference": 11,
+        "provenance": "implied",
+        "reference": 21,
         "source": 3,
         "target": 2
       },
@@ -298,7 +419,7 @@ package ActionFlowExample {
         "kind": "containment",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 10,
         "source": 0,
         "target": 2
       },
@@ -306,7 +427,7 @@ package ActionFlowExample {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 11,
         "source": 0,
         "target": 3
       }
@@ -351,7 +472,7 @@ package ActionFlowExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 5,
+        "reference": 8,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -384,10 +505,21 @@ package ActionFlowExample {
     ],
     "relationships": [
       {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 12,
+        "source": 0,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 13,
         "source": 1,
         "target": {
           "node": 3,
@@ -398,10 +530,87 @@ package ActionFlowExample {
         "kind": "succession",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 14,
         "source": 1,
         "target": {
           "node": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 15,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 16,
+        "source": 2,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 17,
+        "source": 2,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 18,
+        "source": 2,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 19,
+        "source": 3,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 20,
+        "source": 3,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 22,
+        "source": 3,
+        "target": {
+          "node": 0,
           "status": "resolved"
         }
       }

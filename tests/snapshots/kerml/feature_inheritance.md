@@ -48,6 +48,7 @@ package FeatureInheritance {
   )
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u"))) (target (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s::t"))) (target (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s"))) (provenance implied))
   )
   (evaluation
   )

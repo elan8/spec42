@@ -37,11 +37,12 @@ package ion {
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A"))))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A") (occurrence 1))))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion::A::f"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion::A::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (qualified-name "ion::A::f"))) (target (node (document "memory://snapshot/fuzz_unclosed_short_name_metadata.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A"))))) (provenance implied))
   )
   (evaluation
   )

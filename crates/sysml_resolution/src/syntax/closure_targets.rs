@@ -9,10 +9,10 @@ use std::collections::HashSet;
 
 use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ItemUsage,
-    LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody, PackageBodyElement, PartDef,
-    PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
-    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, QualifiedIdentification,
-    RefDecl, RootElement,
+    LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef, MetadataUsage, Package,
+    PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+    PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
+    PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl, RootElement,
 };
 use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 
@@ -416,7 +416,28 @@ pub(crate) fn walk_metadata_usage_type_refs(
     for target in &metadata_usage.about_targets {
         push_optional_type_reference(reference_text(document, Some(*target)).as_deref(), out);
     }
-    walk_attribute_body_type_refs(document, &metadata_usage.body, out);
+    walk_metadata_body_type_refs(document, &metadata_usage.body, out);
+}
+
+/// Walks a `MetadataBody`'s reference redefinitions (`MetadataBodyUsage`), whose targets are
+/// source-backed references rather than the attribute declarations this body used to carry.
+pub(crate) fn walk_metadata_body_type_refs(
+    document: &ParsedRoot,
+    body: &MetadataBody,
+    out: &mut Vec<String>,
+) {
+    let MetadataBody::Brace { elements, .. } = body else {
+        return;
+    };
+    for member in elements {
+        if let MetadataBodyElement::Usage(usage) = &member.value {
+            push_optional_type_reference(
+                reference_text(document, Some(usage.value.target)).as_deref(),
+                out,
+            );
+            walk_metadata_body_type_refs(document, &usage.value.body, out);
+        }
+    }
 }
 
 fn push_optional_typing_reference(
