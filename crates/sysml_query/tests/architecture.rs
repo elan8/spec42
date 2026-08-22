@@ -7,11 +7,26 @@ use serde_json::Value;
 use syn::visit::{self, Visit};
 use syn::{Fields, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
+/// Every crate that consumes SysML through the facade. None may name an authority crate.
 const DESIGNATED_CONSUMERS: &[&str] = &[
+    "generator_api",
+    "generator_conformance",
+    "kpar",
+    "language_service",
+    "lsp_server",
+    "semantic_publication",
+    "server",
     "spec42-resolution-benchmark",
+    "spec42-semantic-benchmark",
     "spec42-snapshot",
+    "sysml_diagnostics",
+    "sysml_tokens",
+    "workspace",
     "workspace_session",
 ];
+
+/// The authority chain: a crate that no consumer may depend on.
+const AUTHORITY_CRATES: &[&str] = &["sysml-v2-parser", "sysml_resolution", "sysml_source"];
 
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "ParsedDocument",
@@ -75,6 +90,12 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
                 !dependency_names.contains("sysml_model"),
                 "designated semantic consumer {name} must not depend directly on sysml_model"
             );
+            for authority in AUTHORITY_CRATES {
+                assert!(
+                    !dependency_names.contains(authority),
+                    "designated consumer {name} must reach {authority} through sysml_query"
+                );
+            }
             assert!(
                 !dependency_names.contains("sysml_diagnostics"),
                 "designated semantic consumer {name} must use the facade diagnostic service"

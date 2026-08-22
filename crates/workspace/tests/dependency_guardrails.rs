@@ -7,6 +7,7 @@ fn workspace_does_not_depend_on_protocol_or_runtime_crates() {
     let cargo_toml = fs::read_to_string(manifest_dir.join("Cargo.toml")).expect("read Cargo.toml");
     let forbidden = [
         "sysml_source",
+        "sysml_resolution",
         "lsp_server",
         "tower-lsp",
         "tower_lsp",

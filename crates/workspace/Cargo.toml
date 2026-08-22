@@ -28,17 +28,14 @@ semantic_publication.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-sha2 = "0.10"
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 directories = "5"
 dirs = "5"
 url = "2"
 walkdir = "2"
-sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tracing = "0.1"
-postcard = { workspace = true }
 rayon = "1.12"
 tempfile = "3"
 

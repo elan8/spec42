@@ -8,7 +8,7 @@ description = "SysML v2 semantic tokenization for editor highlighting (WASM and 
 
 [dependencies]
 serde = { workspace = true, optional = true }
-sysml_resolution = { path = "../sysml_resolution" }
+sysml_query = { path = "../sysml_query" }
 
 [features]
 default = []

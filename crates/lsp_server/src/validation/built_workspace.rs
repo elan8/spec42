@@ -19,7 +19,7 @@ use workspace::{
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+use crate::workspace::state::{IndexEntry, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use super::report::{build_advice, summarize};
@@ -152,8 +152,7 @@ fn server_state_from_built(
             document.uri().clone(),
             IndexEntry {
                 content: document.content().to_owned(),
-                parsed: Some(crate::common::util::parse_for_editor(document.content()).document),
-                parse_metadata: ParseMetadata::default(),
+                parsed: Some(crate::common::util::parse_for_editor(document.content())),
                 admitted_to_publication: true,
             },
         );

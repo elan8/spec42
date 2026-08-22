@@ -20,23 +20,6 @@ mod parsed;
 pub use keywords::{is_reserved_keyword, reserved_keywords, RESERVED_KEYWORDS};
 pub use parsed::{ParsedSource, SyntaxAuthority};
 
-/// The declared names of every top-level package in `source`.
-///
-/// Strict parse: a source that does not parse yields the parser's own message rather than a
-/// partial answer, because the caller (archive packing) is deciding an identity, not rendering an
-/// editor view.
-///
-/// A package name may be a qualified path (`package A::B { ... }`). The simple alternative carries
-/// its own label; the qualified one is an arena identity that only the owning document can render
-/// back to authored text, which is precisely why this cannot be answered outside this crate.
-pub fn package_declaration_names(source: &str) -> Result<Vec<String>, String> {
-    let parsed = parse_for_editor(source);
-    if let Some(error) = parsed.document.0.first_error() {
-        return Err(error.message.clone());
-    }
-    Ok(top_level_package_names(parsed.document.inner()))
-}
-
 fn top_level_package_names(document: &ParsedDocument) -> Vec<String> {
     document
         .elements
@@ -67,107 +50,54 @@ fn declaration_name(
 mod tests {
     use super::*;
 
+    fn parse(text: &str) -> ParsedSource {
+        SyntaxAuthority::new().parse_text(text)
+    }
+
     #[test]
     fn reports_simple_and_qualified_package_names() {
         assert_eq!(
-            package_declaration_names("package P { }").unwrap(),
+            parse("package P { }").top_level_package_names(),
             vec!["P".to_string()]
         );
         assert_eq!(
-            package_declaration_names("package A::B { }").unwrap(),
+            parse("package A::B { }").top_level_package_names(),
             vec!["A::B".to_string()],
             "a qualified declaration name is arena-backed and must still render"
         );
         assert_eq!(
-            package_declaration_names("library package L { }").unwrap(),
+            parse("library package L { }").top_level_package_names(),
             vec!["L".to_string()]
         );
     }
 
     #[test]
-    fn a_source_that_does_not_parse_is_an_error_not_an_empty_list() {
-        assert!(package_declaration_names("package P { @@@ ").is_err());
+    fn a_source_that_does_not_parse_is_not_clean() {
+        let parsed = parse("package P { @@@ ");
+        assert!(!parsed.is_clean());
+        assert!(parsed.first_error().is_some());
     }
 }
 
 mod token_ranges;
 mod token_util;
 
-pub use token_ranges::semantic_token_roles;
-
 use serde::{Deserialize, Serialize};
-
-/// A parsed document, published as an opaque handle.
-///
-/// Consumers hold and cache this without naming a parser type. That is the whole point: a crate
-/// with no parser dependency cannot reach inside, so it cannot walk an AST whose shape is the
-/// pinned revision's business, and it cannot let an arena identity outlive the document that
-/// gives it meaning.
-///
-/// A thin wrapper over [`ParsedSource`] for callers that predate the handle; new code holds the
-/// handle directly.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SyntaxDocument(ParsedSource);
-
-impl SyntaxDocument {
-    /// The source this document was parsed from, after BOM stripping.
-    pub fn source(&self) -> &str {
-        self.0.source()
-    }
-
-    /// Whether the document has any root element at all.
-    ///
-    /// Enough for a caller asking "did anything parse", without handing out the elements
-    /// themselves -- a root element is a parser type and stays behind this boundary.
-    pub fn has_root_elements(&self) -> bool {
-        self.0.has_root_elements()
-    }
-
-    /// The memoised handle this wrapper carries.
-    pub fn parsed(&self) -> &ParsedSource {
-        &self.0
-    }
-
-    pub(crate) fn inner(&self) -> &sysml_v2_parser::ParsedDocument {
-        self.0.inner()
-    }
-}
-
-impl From<ParsedSource> for SyntaxDocument {
-    fn from(parsed: ParsedSource) -> Self {
-        Self(parsed)
-    }
-}
-
-// Serialised as the bare tree, which is all the on-disk parse cache ever stored. Diagnostics do
-// not survive a round trip; the digest is recomputed from the tree's own source.
-impl Serialize for SyntaxDocument {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.0.inner().serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for SyntaxDocument {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        ParsedDocument::deserialize(deserializer)
-            .map(|document| Self(ParsedSource::from_document(document)))
-    }
-}
 
 impl ParsedSource {
     /// The document outline, as the grammar sees it.
     pub fn outline(&self) -> Vec<SyntaxOutlineNode> {
-        document_outline(&SyntaxDocument(self.clone()))
+        outline::document_outline(self.inner())
     }
 
     /// Multi-line regions an editor may fold.
     pub fn folding_regions(&self) -> Vec<SyntaxFoldingRegion> {
-        folding_regions(&SyntaxDocument(self.clone()))
+        outline::folding_regions(self.inner())
     }
 
     /// Every span the grammar gives a role, in source order.
     pub fn token_roles(&self) -> Vec<(SyntaxRange, SyntaxRole)> {
-        semantic_token_roles(&SyntaxDocument(self.clone()), self.source())
+        token_ranges::semantic_token_roles(self.inner(), self.source())
     }
 
     /// The declared names of every top-level package.
@@ -292,47 +222,6 @@ pub enum SyntaxDiagnosticCategory {
     ParserFailure,
 }
 
-/// The result of an editor parse: always a document, diagnostics additive.
-#[derive(Debug, Clone)]
-pub struct SyntaxParse {
-    pub document: SyntaxDocument,
-    pub diagnostics: Vec<SyntaxDiagnostic>,
-}
-
-impl SyntaxParse {
-    pub fn is_ok(&self) -> bool {
-        self.diagnostics.is_empty()
-    }
-}
-
-/// Editor-oriented parse, outside any memo: always produces a document, diagnostics are additive.
-///
-/// Hosts parse through a [`SyntaxAuthority`]; this is the stateless entry for callers with text
-/// and no document.
-pub fn parse_for_editor(text: &str) -> SyntaxParse {
-    let parsed = ParsedSource::parse_text(
-        text.to_owned(),
-        source_identity::ContentDigest::of_bytes(text.as_bytes()),
-    );
-    SyntaxParse {
-        diagnostics: parsed.diagnostics().to_vec(),
-        document: SyntaxDocument(parsed),
-    }
-}
-
-/// Strict parse: a document only when the parse is clean.
-// The diagnostic is ~176 bytes and the success value is a whole document, so the `Err` variant is
-// not the expensive half of this type. Boxing it would push a deref onto every caller to satisfy a
-// lint about a value returned once per parsed file.
-#[allow(clippy::result_large_err)]
-pub fn parse_strict(text: &str) -> Result<SyntaxDocument, SyntaxDiagnostic> {
-    let parsed = parse_for_editor(text);
-    match parsed.document.0.first_error() {
-        Some(error) => Err(error.clone()),
-        None => Ok(parsed.document),
-    }
-}
-
 /// A zero-based source range, in the LSP convention.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SyntaxRange {
@@ -366,10 +255,7 @@ pub enum SyntaxRole {
 mod closure_targets;
 mod outline;
 
-pub use closure_targets::{
-    declared_package_names, import_targets, package_targets, type_reference_targets, PackageTargets,
-};
-pub use outline::{document_outline, folding_regions};
+pub use closure_targets::PackageTargets;
 
 /// One node of a document outline, as the grammar sees it.
 ///
@@ -400,19 +286,10 @@ pub enum SyntaxFoldingKind {
     Imports,
 }
 
-/// Whether `source` declares exactly one anonymous, non-empty package.
+/// Whether the document declares exactly one anonymous, non-empty package.
 ///
 /// The shape a "wrap in package" code action needs, asked as a question about the grammar rather
-/// than answered by a second AST walk in the host. `false` for a source that does not parse: an
-/// unparseable document is not a document with one anonymous package.
-pub fn declares_single_anonymous_package_with_members(source: &str) -> bool {
-    let parsed = parse_for_editor(source);
-    if !parsed.document.0.is_clean() {
-        return false;
-    }
-    declares_single_anonymous_package_in(parsed.document.inner())
-}
-
+/// than answered by a second AST walk in the host.
 fn declares_single_anonymous_package_in(document: &ParsedDocument) -> bool {
     let mut packages = document
         .elements
@@ -438,16 +315,9 @@ fn declares_single_anonymous_package_in(document: &ParsedDocument) -> bool {
 
 /// Whether reformatting `source` into `candidate` provably preserves what the parser sees.
 ///
-/// Two ways to be safe: both parse and yield the same tree modulo span movement, or neither parses
-/// and both recover identically with the same diagnostics. Anything else is unproven and the
-/// caller must leave the source alone.
-pub fn reformatting_preserves_meaning(source: &str, candidate: &str) -> bool {
-    let source = parse_for_editor(source);
-    reformatting_preserves_meaning_of(&source.document.0, &parse_for_editor(candidate).document.0)
-}
-
-/// [`reformatting_preserves_meaning`] over parsed handles, so a host's already-parsed document
-/// is not parsed again to check a candidate against it.
+/// Two ways to be safe: both parse cleanly and yield the same tree modulo span movement, or
+/// neither parses cleanly and both recover identically with the same diagnostics. Anything else
+/// is unproven and the caller must leave the source alone.
 pub fn reformatting_preserves_meaning_of(source: &ParsedSource, candidate: &ParsedSource) -> bool {
     if source.is_clean() {
         candidate.is_clean() && source.same_tree_as(candidate)

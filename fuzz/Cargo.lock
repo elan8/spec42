@@ -596,7 +596,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml_query",
- "sysml_resolution",
  "url",
 ]
 

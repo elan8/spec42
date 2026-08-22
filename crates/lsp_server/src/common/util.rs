@@ -27,11 +27,13 @@ pub fn normalize_file_uri(uri: &Url) -> Url {
     sysml_query::source::normalize_uri(uri)
 }
 
-/// When parse fails, get diagnostic messages from parse_with_diagnostics for logging.
-pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String> {
-    let result = sysml_resolution::syntax::parse_for_editor(content);
-    result
-        .diagnostics
+/// The first `max_errors` parser diagnostics of a parsed document, formatted for a log line.
+pub fn parse_failure_diagnostics(
+    parsed: &sysml_query::syntax::ParsedSource,
+    max_errors: usize,
+) -> Vec<String> {
+    parsed
+        .diagnostics()
         .iter()
         .take(max_errors)
         .map(|e| {
@@ -44,11 +46,9 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
         .collect()
 }
 
-/// Editor-oriented parse: returns a (possibly partial) AST plus diagnostics.
-///
-/// `sysml-v2-parser` currently exposes this behavior as `parse_with_diagnostics`.
-pub fn parse_for_editor(text: &str) -> sysml_resolution::syntax::SyntaxParse {
-    sysml_resolution::syntax::parse_for_editor(text)
+/// Editor-oriented parse through the syntax service: always a document, diagnostics additive.
+pub fn parse_for_editor(text: &str) -> sysml_query::syntax::ParsedSource {
+    sysml_query::syntax::SyntaxService::new().parse_text(text)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

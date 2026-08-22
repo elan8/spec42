@@ -11,7 +11,7 @@ chrono = { version = "0.4", default-features = false, features = ["std"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10"
-sysml_resolution = { path = "../sysml_resolution" }
+sysml_query = { path = "../sysml_query" }
 thiserror = { workspace = true }
 walkdir = "2"
 zip = { version = "2", default-features = false, features = ["deflate"] }

@@ -127,20 +127,9 @@ pub(crate) async fn initialized(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let library_paths_for_closure = library_paths.clone();
-        // Resolve the parse cache directory once for the whole startup scan.
-        let cache_dir = crate::workspace::parse_cache::default_cache_dir();
-        if let Some(dir) = &cache_dir {
-            let dir = dir.clone();
-            tokio::task::spawn_blocking(move || {
-                crate::workspace::parse_cache::evict_stale_entries(&dir);
-            })
-            .await
-            .ok();
-        }
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            // Workspace files are not cached — they change on every edit.
-            parse_scanned_entries(entries, should_parallel_parse, None)
+            parse_scanned_entries(entries, should_parallel_parse)
         })
         .await
         .unwrap_or_default();
@@ -184,25 +173,16 @@ pub(crate) async fn initialized(
             } else {
                 let parallel =
                     library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
-                // Library files are stable between upgrades — use the parse cache.
                 tokio::task::spawn_blocking(move || {
-                    parse_scanned_entries(library_entries, parallel, cache_dir)
+                    parse_scanned_entries(library_entries, parallel)
                 })
                 .await
                 .unwrap_or_default()
             };
-            let lpc = library_parsed
-                .iter()
-                .filter(|e| e.parse_metadata.parse_cached)
-                .count();
             let ltc = library_parsed.len();
-            info!(
-                library_cache_hits = lpc,
-                library_total = ltc,
-                "startup: library parse cache stats"
-            );
+            info!(library_total = ltc, "startup: library closure parsed");
             let combined: Vec<_> = parsed_entries.into_iter().chain(library_parsed).collect();
-            (lpc, ltc, combined)
+            (0usize, ltc, combined)
         };
         let merge_index_start = Instant::now();
         for parsed_entry in &parsed_entries {

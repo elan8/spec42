@@ -1,13 +1,12 @@
 //! Editor outline DTOs for the syntax outline the parser authority publishes.
 //!
-//! The traversal lives in `sysml_resolution::syntax`; this maps its nodes onto the DTO shape hosts
+//! The traversal lives behind the syntax service; this maps its nodes onto the DTO shape hosts
 //! consume. The two are deliberately separate types: the authority names the authored declaration
 //! keyword, and nothing in it should have to know that an editor wants a `TextRange`.
 
 use sysml_query::resolved_slice::{TextPosition, TextRange};
-use sysml_resolution::syntax::{
-    document_outline, folding_regions, SyntaxDocument, SyntaxFoldingKind, SyntaxFoldingRegion,
-    SyntaxOutlineNode, SyntaxRange,
+use sysml_query::syntax::{
+    ParsedSource, SyntaxFoldingKind, SyntaxFoldingRegion, SyntaxOutlineNode, SyntaxRange,
 };
 
 use crate::dto::{FoldingRangeDto, FoldingRangeKindDto, OutlineSymbol};
@@ -30,16 +29,14 @@ fn outline_symbol(node: SyntaxOutlineNode) -> OutlineSymbol {
 }
 
 /// Document outline symbols for an already-parsed document.
-pub fn document_symbols(document: &SyntaxDocument) -> Vec<OutlineSymbol> {
-    document_outline(document)
-        .into_iter()
-        .map(outline_symbol)
-        .collect()
+pub fn document_symbols(document: &ParsedSource) -> Vec<OutlineSymbol> {
+    document.outline().into_iter().map(outline_symbol).collect()
 }
 
 /// Folding ranges for an already-parsed document.
-pub fn folding_ranges(document: &SyntaxDocument) -> Vec<FoldingRangeDto> {
-    folding_regions(document)
+pub fn folding_ranges(document: &ParsedSource) -> Vec<FoldingRangeDto> {
+    document
+        .folding_regions()
         .into_iter()
         .map(|region: SyntaxFoldingRegion| FoldingRangeDto {
             start_line: region.start_line,

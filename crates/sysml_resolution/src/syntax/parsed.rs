@@ -103,18 +103,6 @@ impl ParsedSource {
         }))
     }
 
-    /// Wrap an already-parsed document whose errors were not retained (a deserialised document).
-    pub(crate) fn from_document(document: ParsedDocument) -> Self {
-        let digest = ContentDigest::of_bytes(document.source.as_str().as_bytes());
-        Self(Arc::new(Inner {
-            document: Arc::new(document),
-            errors: Vec::new(),
-            diagnostics: Box::new([]),
-            digest,
-            parser_failed: false,
-        }))
-    }
-
     /// The source this document was parsed from, after BOM stripping.
     pub fn source(&self) -> &str {
         self.0.document.source.as_str()

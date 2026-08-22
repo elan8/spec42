@@ -172,7 +172,6 @@ mod tests {
             crate::workspace::state::IndexEntry {
                 content: "package Demo { part def Thing; }".to_string(),
                 parsed: None,
-                parse_metadata: Default::default(),
                 admitted_to_publication: true,
             },
         );
@@ -196,7 +195,6 @@ mod tests {
             crate::workspace::state::IndexEntry {
                 content: "package Demo { part def Thing; }".to_string(),
                 parsed: None,
-                parse_metadata: Default::default(),
                 admitted_to_publication: true,
             },
         );

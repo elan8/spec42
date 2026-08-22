@@ -1,11 +1,9 @@
 use crate::common::util;
 use crate::workspace::library_search;
-use crate::workspace::parse_cache;
-use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata, ScanSummary};
+use crate::workspace::state::{DocumentStore, IndexEntry, ScanSummary};
 use rayon::prelude::*;
-use std::path::Path;
 use std::time::Instant;
-use sysml_resolution::syntax::SyntaxDocument;
+use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 fn elapsed_ms(start: Instant) -> u32 {
@@ -59,9 +57,8 @@ pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSumm
 pub(crate) struct ParsedScanEntry {
     pub(crate) uri: Url,
     pub(crate) content: String,
-    pub(crate) parsed: Option<SyntaxDocument>,
+    pub(crate) parsed: Option<ParsedSource>,
     pub(crate) parse_errors: Vec<String>,
-    pub(crate) parse_metadata: ParseMetadata,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -98,74 +95,22 @@ fn warning_from_parse_errors(
     }
 }
 
-fn parse_scanned_entry(uri: Url, content: String, cache_dir: Option<&Path>) -> ParsedScanEntry {
-    // Try cache before parsing.
-    if let Some(dir) = cache_dir {
-        let hash = parse_cache::content_hash(content.as_bytes());
-        if let Some(root) = parse_cache::load(dir, &hash) {
-            tracing::debug!(uri = %uri, "parse cache hit");
-            return ParsedScanEntry {
-                uri,
-                content,
-                parsed: Some(root),
-                parse_errors: vec![],
-                parse_metadata: ParseMetadata { parse_cached: true },
-            };
-        }
-        tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
-        // Cache miss: parse normally then store.
-        let entry = parse_scanned_entry_cold(uri, content);
-        if let Some(root) = &entry.parsed {
-            parse_cache::store(dir, &hash, root);
-        }
-        return entry;
-    }
-    parse_scanned_entry_cold(uri, content)
-}
-
-fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
-    let parse_start = Instant::now();
-    let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        util::parse_for_editor(&content)
-    }));
-    let _parse_time_ms = elapsed_ms(parse_start);
-    let parser_panicked = parsed_result.is_err();
-    let (parsed, mut parse_errors) = match parsed_result {
-        Ok(result) => {
-            let errs = result
-                .diagnostics
-                .iter()
-                .take(5)
-                .map(|e| {
-                    let loc = e
-                        .range()
-                        .map(|range| format!("{}:{}", range.start_line, range.start_character))
-                        .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
-                    format!("{loc} {}", e.message)
-                })
-                .collect::<Vec<_>>();
-            (Some(result.document), errs)
-        }
-        Err(_) => (None, util::parse_failure_diagnostics(&content, 5)),
-    };
-    if parser_panicked {
-        parse_errors.push("parser panicked while parsing scanned workspace file".to_string());
-    }
+fn parse_scanned_entry(uri: Url, content: String) -> ParsedScanEntry {
+    // The syntax service captures a parser panic itself and reports it as a diagnostic over an
+    // empty tree, so a scanned file always yields a document.
+    let parsed = util::parse_for_editor(&content);
+    let parse_errors = util::parse_failure_diagnostics(&parsed, 5);
     ParsedScanEntry {
         uri,
         content,
-        parsed,
+        parsed: Some(parsed),
         parse_errors,
-        parse_metadata: ParseMetadata {
-            parse_cached: false,
-        },
     }
 }
 
 pub(crate) fn parse_scanned_entries(
     entries: Vec<(Url, String)>,
     parallel_enabled: bool,
-    cache_dir: Option<std::path::PathBuf>,
 ) -> Vec<ParsedScanEntry> {
     if entries.is_empty() {
         return Vec::new();
@@ -174,7 +119,7 @@ pub(crate) fn parse_scanned_entries(
     if !parallel_enabled || entries.len() < 2 {
         return entries
             .into_iter()
-            .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
+            .map(|(uri, content)| parse_scanned_entry(uri, content))
             .collect();
     }
 
@@ -182,7 +127,7 @@ pub(crate) fn parse_scanned_entries(
     // the original order regardless of which worker finishes first.
     entries
         .into_par_iter()
-        .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
+        .map(|(uri, content)| parse_scanned_entry(uri, content))
         .collect()
 }
 
@@ -211,8 +156,7 @@ pub(crate) fn store_parsed_document_text(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
-    parsed: Option<SyntaxDocument>,
-    parse_metadata: ParseMetadata,
+    parsed: Option<ParsedSource>,
     parse_errors: &[String],
     diagnostic_count: usize,
     context: &str,
@@ -223,7 +167,6 @@ pub(crate) fn store_parsed_document_text(
         IndexEntry {
             content: text,
             parsed,
-            parse_metadata,
             admitted_to_publication: true,
         },
     );
@@ -236,23 +179,21 @@ pub(crate) fn store_document_text(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parsed_result = util::parse_for_editor(&text);
-    let parse_errors = parsed_result
-        .diagnostics
+    let parsed = util::parse_for_editor(&text);
+    let parse_errors = parsed
+        .diagnostics()
         .iter()
         .take(5)
         .map(|e| e.message.clone())
         .collect::<Vec<_>>();
+    let diagnostic_count = parsed.diagnostics().len();
     store_parsed_document_text(
         state,
         uri_norm,
         text,
-        Some(parsed_result.document),
-        ParseMetadata {
-            parse_cached: false,
-        },
+        Some(parsed),
         &parse_errors,
-        parsed_result.diagnostics.len(),
+        diagnostic_count,
         "store_document_text",
         true,
     )
@@ -266,23 +207,21 @@ pub(crate) fn store_document_text_fast(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parsed_result = util::parse_for_editor(&text);
-    let parse_errors = parsed_result
-        .diagnostics
+    let parsed = util::parse_for_editor(&text);
+    let parse_errors = parsed
+        .diagnostics()
         .iter()
         .take(5)
         .map(|e| e.message.clone())
         .collect::<Vec<_>>();
+    let diagnostic_count = parsed.diagnostics().len();
     store_parsed_document_text(
         state,
         uri_norm,
         text,
-        Some(parsed_result.document),
-        ParseMetadata {
-            parse_cached: false,
-        },
+        Some(parsed),
         &parse_errors,
-        parsed_result.diagnostics.len(),
+        diagnostic_count,
         "store_document_text_fast",
         false,
     )
@@ -308,7 +247,6 @@ pub(crate) fn ingest_parsed_scan_entries(
             &uri_norm,
             entry.content,
             entry.parsed,
-            entry.parse_metadata,
             &entry.parse_errors,
             entry.parse_errors.len(),
             "workspace_scan",
@@ -333,7 +271,6 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
             IndexEntry {
                 content: entry.content,
                 parsed: entry.parsed,
-                parse_metadata: entry.parse_metadata,
                 admitted_to_publication: true,
             },
         );

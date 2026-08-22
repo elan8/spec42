@@ -16,6 +16,7 @@ fn workspace_session_depends_on_query_facade_but_not_implementation_or_protocol_
         "sysml_model",
         "sysml_diagnostics",
         "sysml_source",
+        "sysml_resolution",
     ];
     for dep in forbidden {
         assert!(

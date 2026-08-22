@@ -1,5 +1,13 @@
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
-use sysml_resolution::syntax::parse_strict as parse;
+use sysml_query::syntax::ParsedSource;
+
+fn parse(text: &str) -> Result<ParsedSource, String> {
+    let parsed = sysml_query::syntax::SyntaxService::new().parse_text(text);
+    match parsed.first_error() {
+        Some(error) => Err(error.message.clone()),
+        None => Ok(parsed),
+    }
+}
 
 fn multiline_outline_regions(symbols: &[OutlineSymbol]) -> Vec<(u32, u32)> {
     let mut out = Vec::new();

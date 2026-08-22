@@ -7,7 +7,6 @@ pub mod comparison;
 pub mod engine;
 pub mod error;
 pub mod library;
-pub mod parse_cache;
 pub mod provider;
 pub mod session;
 pub mod snapshot;

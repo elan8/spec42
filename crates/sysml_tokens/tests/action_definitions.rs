@@ -1,4 +1,8 @@
-use sysml_resolution::syntax::parse_for_editor;
+use sysml_query::syntax::ParsedSource;
+
+fn parse_for_editor(text: &str) -> ParsedSource {
+    sysml_query::syntax::SyntaxService::new().parse_text(text)
+}
 use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full};
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
@@ -43,7 +47,7 @@ fn action_def_body_tokenizes_nested_action_usage_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
@@ -61,7 +65,7 @@ fn action_def_body_tokenizes_then_action_step_and_type() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "step"));
@@ -78,7 +82,7 @@ fn requirement_def_body_tokenizes_subject_and_stakeholder() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "vehicle"));

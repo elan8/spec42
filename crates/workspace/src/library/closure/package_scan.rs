@@ -88,7 +88,7 @@ pub(crate) fn expand_library_namespaces_shared_with_workspace(
                     full_path.display()
                 )
             })?;
-            for package in sysml_resolution::syntax::declared_package_names(&content) {
+            for package in super::syntax_facts(&content).declared_packages {
                 let key = PackageKey(package);
                 if key == root {
                     continue;
@@ -140,7 +140,8 @@ pub(crate) fn workspace_declared_packages(
     let mut defined = HashSet::new();
     for source in workspace {
         defined.extend(
-            sysml_resolution::syntax::declared_package_names(source.content)
+            super::syntax_facts(source.content)
+                .declared_packages
                 .into_iter()
                 .map(PackageKey),
         );
@@ -200,13 +201,13 @@ pub(crate) fn enqueue_closure_targets_from_content(
     options: &LibraryClosureOptions,
     queue: &mut VecDeque<PackageKey>,
 ) {
-    for target in sysml_resolution::syntax::import_targets(content) {
+    for target in super::syntax_facts(content).import_targets {
         for next in package_keys_for_import_target(&target) {
             queue.push_back(PackageKey(next));
         }
     }
     if options.bootstrap_typing_references {
-        for target in sysml_resolution::syntax::type_reference_targets(content) {
+        for target in super::syntax_facts(content).type_reference_targets {
             for next in package_keys_for_import_target(&target) {
                 queue.push_back(PackageKey(next));
             }
@@ -232,7 +233,7 @@ pub(crate) fn enqueue_imports_from_workspace_package(
     queue: &mut VecDeque<PackageKey>,
 ) {
     for source in workspace {
-        for package in sysml_resolution::syntax::package_targets(source.content) {
+        for package in super::syntax_facts(source.content).packages {
             if package.qualified_name != pkg.0 {
                 continue;
             }

@@ -30,13 +30,12 @@ pub(crate) enum StartupRelinkOutcome {
 #[cfg(test)]
 mod publication_tests {
     use super::*;
-    use crate::workspace::state::{IndexEntry, ParseMetadata};
+    use crate::workspace::state::IndexEntry;
 
     fn entry(content: &str) -> IndexEntry {
         IndexEntry {
             content: content.to_owned(),
             parsed: None,
-            parse_metadata: ParseMetadata::default(),
             admitted_to_publication: true,
         }
     }
@@ -428,7 +427,7 @@ impl WorkspaceHandle {
     pub(crate) async fn apply_parsed_document_update(
         &self,
         edit: PreparedDocumentEdit,
-        parsed: sysml_resolution::syntax::SyntaxParse,
+        parsed: sysml_query::syntax::ParsedSource,
         parse_time_ms: u32,
     ) -> Result<
         (

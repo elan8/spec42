@@ -50,15 +50,6 @@ fn typing_target_display(
         .map(|view| view.authored_text().to_string())
 }
 
-pub(crate) fn collect_type_reference_targets_from_content(content: &str) -> Vec<String> {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
-        return Vec::new();
-    };
-    let mut out = Vec::new();
-    collect_type_reference_targets_from_root(&parsed, &mut out);
-    out
-}
-
 pub(crate) fn collect_type_reference_targets_from_root(
     document: &ParsedRoot,
     out: &mut Vec<String>,
@@ -465,20 +456,12 @@ pub(crate) fn package_declared_name(identification: &QualifiedIdentification) ->
 }
 
 /// Qualified names of packages declared in a parsed SysML document (includes nested packages).
-pub fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
+pub(super) fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
     let mut defined = HashSet::new();
     for_each_package_in_parsed(parsed, |qualified, _body| {
         defined.insert(qualified);
     });
     defined
-}
-
-/// Qualified names of packages declared in SysML source (includes nested packages).
-pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
-        return HashSet::new();
-    };
-    declared_packages_from_parsed(&parsed)
 }
 
 pub(crate) fn for_each_package_in_parsed(
@@ -553,15 +536,6 @@ pub(crate) fn collect_import_targets_from_package_body(
 ) -> Vec<String> {
     let mut out = Vec::new();
     walk_package_body(document, body, &mut out);
-    out
-}
-
-pub(crate) fn collect_import_targets_from_content(content: &str) -> Vec<String> {
-    let Ok(parsed) = sysml_v2_parser::parse(content) else {
-        return Vec::new();
-    };
-    let mut out = Vec::new();
-    collect_import_targets_from_root(&parsed, &mut out);
     out
 }
 
@@ -644,21 +618,6 @@ pub(crate) fn push_import_target(
     out.push(format!("{target}{suffix}"));
 }
 
-/// The declared names of every package in `source`, nested ones included.
-pub fn declared_package_names(source: &str) -> HashSet<String> {
-    declared_packages_in_content(source)
-}
-
-/// Every import target authored in `source`, in source order.
-pub fn import_targets(source: &str) -> Vec<String> {
-    collect_import_targets_from_content(source)
-}
-
-/// Every type a declaration in `source` names, in source order.
-pub fn type_reference_targets(source: &str) -> Vec<String> {
-    collect_type_reference_targets_from_content(source)
-}
-
 /// Everything closure resolution asks, from one already-parsed tree.
 pub(super) fn closure_facts(document: &ParsedRoot) -> super::SyntaxClosureFacts {
     let mut type_reference_targets = Vec::new();
@@ -695,32 +654,6 @@ pub struct PackageTargets {
     pub type_reference_targets: Vec<String>,
 }
 
-/// The import and type-reference targets of every package in `source`.
-///
-/// One walk answering both questions per package. The caller used to receive a `PackageBody` and
-/// walk it twice; a body is a parser type, and handing one out is exactly what this boundary
-/// exists to prevent.
-pub fn package_targets(source: &str) -> Vec<PackageTargets> {
-    let Ok(document) = sysml_v2_parser::parse(source) else {
-        return Vec::new();
-    };
-    let mut out = Vec::new();
-    for_each_package_in_parsed(&document, |qualified_name, body| {
-        let mut type_reference_targets = Vec::new();
-        collect_type_reference_targets_from_package_body(
-            &document,
-            body,
-            &mut type_reference_targets,
-        );
-        out.push(PackageTargets {
-            qualified_name,
-            import_targets: collect_import_targets_from_package_body(&document, body),
-            type_reference_targets,
-        });
-    });
-    out
-}
-
 fn push_type_reference(target: &str, out: &mut Vec<String>) {
     let target = target.trim();
     if target.is_empty() || target.starts_with("checks meta ") {
@@ -737,7 +670,7 @@ fn push_optional_type_reference(target: Option<&str>, out: &mut Vec<String>) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::super::SyntaxAuthority;
 
     /// The library-closure seed a bare type reference produces.
     ///
@@ -747,15 +680,20 @@ mod tests {
     #[test]
     fn a_part_usage_typing_seeds_its_package() {
         assert_eq!(
-            type_reference_targets("package App { part w : Domain::Wheel; }"),
+            SyntaxAuthority::new()
+                .parse_text("package App { part w : Domain::Wheel; }")
+                .closure_facts()
+                .type_reference_targets,
             vec!["Domain::Wheel".to_string()]
         );
     }
 
     #[test]
     fn a_library_package_declares_its_name() {
-        assert!(
-            declared_package_names("library package Domain { part def Wheel; }").contains("Domain")
-        );
+        assert!(SyntaxAuthority::new()
+            .parse_text("library package Domain { part def Wheel; }")
+            .closure_facts()
+            .declared_packages
+            .contains("Domain"));
     }
 }

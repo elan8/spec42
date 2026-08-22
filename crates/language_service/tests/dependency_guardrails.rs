@@ -11,6 +11,7 @@ fn language_service_does_not_depend_on_kernel_tower_lsp_or_tokio() {
         "tower_lsp",
         "tokio",
         "sysml_source",
+        "sysml_resolution",
     ];
     for dep in forbidden {
         assert!(

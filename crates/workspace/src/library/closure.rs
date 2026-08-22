@@ -21,6 +21,16 @@ const QUANTITY_UNIT_CLOSURE_PACKAGES: &[&str] = &[
     "USCustomaryUnits",
 ];
 
+/// Everything closure resolution asks of one source, from the syntax service.
+///
+/// A recovering parse: a malformed file still contributes the packages and imports it did
+/// declare, which is what the closure needs from it.
+pub(crate) fn syntax_facts(content: &str) -> sysml_query::syntax::SyntaxClosureFacts {
+    sysml_query::syntax::SyntaxService::new()
+        .parse_text(content)
+        .closure_facts()
+}
+
 /// Workspace file path and text used to seed the library import closure.
 #[derive(Debug, Clone)]
 pub struct WorkspaceSource<'a> {
@@ -97,19 +107,22 @@ pub fn library_closure_seed_signature(
             signature.push("workspace:sysml-namespace".to_string());
         }
         signature.extend(
-            sysml_resolution::syntax::import_targets(source.content)
+            syntax_facts(source.content)
+                .import_targets
                 .into_iter()
                 .map(|target| format!("import:{target}")),
         );
         if options.bootstrap_typing_references {
             signature.extend(
-                sysml_resolution::syntax::type_reference_targets(source.content)
+                syntax_facts(source.content)
+                    .type_reference_targets
                     .into_iter()
                     .map(|target| format!("type:{target}")),
             );
         }
         signature.extend(
-            sysml_resolution::syntax::declared_package_names(source.content)
+            syntax_facts(source.content)
+                .declared_packages
                 .into_iter()
                 .map(|package| format!("workspace-package:{package}")),
         );
@@ -163,7 +176,7 @@ fn resolve_library_closure_inner(
         if options.bootstrap_sysml_namespace && source.content.contains("SysML::") {
             seeds.insert(PackageKey("SysML".to_string()));
         }
-        for target in sysml_resolution::syntax::import_targets(source.content) {
+        for target in syntax_facts(source.content).import_targets {
             if options.bootstrap_sysml_namespace
                 && (target == "sysml" || target.starts_with("sysml::"))
             {
@@ -174,7 +187,7 @@ fn resolve_library_closure_inner(
             }
         }
         if options.bootstrap_typing_references {
-            for target in sysml_resolution::syntax::type_reference_targets(source.content) {
+            for target in syntax_facts(source.content).type_reference_targets {
                 for key in package_keys_for_import_target(&target) {
                     seeds.insert(PackageKey(key));
                 }

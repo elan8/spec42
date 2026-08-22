@@ -364,7 +364,7 @@ pub(crate) async fn did_change_configuration(
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse, None)
+            parse_scanned_entries(entries, should_parallel_parse)
         })
         .await
         .unwrap_or_default();

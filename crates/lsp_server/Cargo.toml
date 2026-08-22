@@ -23,7 +23,6 @@ base64 = "0.22"
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 sysml_tokens = { path = "../sysml_tokens" }
-sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }

@@ -1,6 +1,10 @@
 //! Golden-style checks for Satisfy / Dependency / KerML package-member semantic tokens.
 
-use sysml_resolution::syntax::parse_for_editor;
+use sysml_query::syntax::ParsedSource;
+
+fn parse_for_editor(text: &str) -> ParsedSource {
+    sysml_query::syntax::SyntaxService::new().parse_text(text)
+}
 use sysml_tokens::{
     ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_INTERFACE, TYPE_KEYWORD,
     TYPE_PROPERTY, TYPE_TYPE,
@@ -61,7 +65,7 @@ fn satisfy_member_tokenizes_source_and_target() {
   satisfy endurance by droneInstance;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -91,7 +95,7 @@ fn dependency_member_tokenizes_clients_and_suppliers() {
   dependency from client to supplier;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -118,7 +122,7 @@ fn kerml_classifier_and_feature_decls_tokenized() {
   feature baseType;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -161,7 +165,7 @@ fn vehicle_definitions_fixture_tokenizes_part_port_and_interface_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.document, content);
+    let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 

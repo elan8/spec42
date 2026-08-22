@@ -40,7 +40,7 @@ pub(crate) fn index_library_paths_for_search(
     if entries.is_empty() {
         return 0;
     }
-    let parsed_entries = parse_scanned_entries(entries, false, None);
+    let parsed_entries = parse_scanned_entries(entries, false);
     let mut indexed = 0usize;
     for entry in parsed_entries {
         let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);
@@ -52,7 +52,6 @@ pub(crate) fn index_library_paths_for_search(
             IndexEntry {
                 content: entry.content.clone(),
                 parsed: entry.parsed,
-                parse_metadata: entry.parse_metadata,
                 admitted_to_publication: false,
             },
         );

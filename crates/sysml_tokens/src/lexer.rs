@@ -1,7 +1,7 @@
 //! Lexer-based tokenization for semantic highlighting fallback (when parse fails).
 
-use crate::keywords::is_reserved_keyword;
 use crate::types::*;
+use sysml_query::syntax::is_reserved_keyword;
 
 /// Token: (line, start_char, length, type_index).
 /// Returns (tokens, still_inside_block_comment).

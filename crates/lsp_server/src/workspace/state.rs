@@ -1,21 +1,15 @@
 use crate::language::SymbolEntry;
 use std::sync::Arc;
-use sysml_resolution::syntax::SyntaxDocument;
+use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::Url;
 use workspace_session::{
     PublishedModelSnapshot, RelinkToken, SemanticPublicationAuthority, TracksRelink,
 };
 
-#[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct ParseMetadata {
-    pub(crate) parse_cached: bool,
-}
-
 #[derive(Debug, Clone)]
 pub(crate) struct IndexEntry {
     pub(crate) content: String,
-    pub(crate) parsed: Option<SyntaxDocument>,
-    pub(crate) parse_metadata: ParseMetadata,
+    pub(crate) parsed: Option<ParsedSource>,
     /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
     pub(crate) admitted_to_publication: bool,
 }
@@ -242,7 +236,6 @@ mod tests {
                 IndexEntry {
                     content: content.to_string(),
                     parsed: None,
-                    parse_metadata: ParseMetadata::default(),
                     admitted_to_publication: true,
                 },
             );

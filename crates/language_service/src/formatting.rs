@@ -91,10 +91,11 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
 }
 
 fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
-    // The parser authority answers this: whether a reformat changes what the parser sees is a
+    // The syntax service answers this: whether a reformat changes what the parser sees is a
     // question about the grammar, and answering it here would mean parsing the same text twice
     // against an AST this crate would have to keep in step with the pinned revision.
-    sysml_resolution::syntax::reformatting_preserves_meaning(source, candidate)
+    let syntax = sysml_query::syntax::SyntaxService::new();
+    syntax.reformatting_preserves_meaning(&syntax.parse_text(source), candidate)
 }
 
 #[derive(Debug)]
@@ -312,7 +313,9 @@ part x;
     fn format_document_reformats_a_recovery_equivalent_source() {
         let source = "package ion {\n  class A {\n    in<f;\n  }\n\n  class A { in #su f;\n  }\n}";
         assert!(
-            sysml_resolution::syntax::parse_strict(source).is_err(),
+            !sysml_query::syntax::SyntaxService::new()
+                .parse_text(source)
+                .is_clean(),
             "the parser accepted this again; restore the strict-parse arm of this test"
         );
         assert_eq!(

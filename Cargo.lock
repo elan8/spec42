@@ -1160,7 +1160,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml_resolution",
+ "sysml_query",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1174,7 +1174,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml_query",
- "sysml_resolution",
  "tempfile",
  "url",
 ]
@@ -1271,7 +1270,6 @@ dependencies = [
  "spec42-generator-protocol",
  "sysml_diagnostics",
  "sysml_query",
- "sysml_resolution",
  "sysml_tokens",
  "tempfile",
  "thiserror 2.0.19",
@@ -2132,7 +2130,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "sysml_resolution",
+ "sysml_query",
 ]
 
 [[package]]
@@ -2975,7 +2973,6 @@ dependencies = [
  "kpar",
  "language_service",
  "petgraph",
- "postcard",
  "proc-macro2",
  "rayon",
  "semantic_publication",
@@ -2985,7 +2982,6 @@ dependencies = [
  "syn 2.0.119",
  "sysml_diagnostics",
  "sysml_query",
- "sysml_resolution",
  "tempfile",
  "thiserror 2.0.19",
  "toml 0.8.23",
