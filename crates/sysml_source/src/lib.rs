@@ -459,6 +459,19 @@ impl SourceAuthority {
         Ok(document.with_path_hint(path))
     }
 
+    /// Read one file's text, for a host that admits it under an identity of its own (a memory
+    /// scope for a fixture corpus). The read and the UTF-8 decision stay with the authority.
+    pub fn read_text(&self, path: &Path) -> Result<String, SourceError> {
+        let bytes = fs::read(path).map_err(|error| SourceError::Read {
+            path: path.to_path_buf(),
+            reason: error.to_string(),
+        })?;
+        String::from_utf8(bytes).map_err(|error| SourceError::NotUtf8 {
+            path: path.to_path_buf(),
+            reason: error.to_string(),
+        })
+    }
+
     /// Admit one file from disk.
     pub fn admit_path(&self, path: &Path, kind: SourceKind) -> Result<SourceDocument, SourceError> {
         let bytes = fs::read(path).map_err(|error| SourceError::Read {

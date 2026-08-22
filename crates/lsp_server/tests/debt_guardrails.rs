@@ -177,3 +177,45 @@ fn visit_rs_files(root: &Path, on_file: &mut dyn FnMut(&Path)) {
         }
     }
 }
+
+/// Production occurrences only: text before each file's `#[cfg(test)] mod` block.
+fn count_production_occurrences(root: &Path, pattern: &str) -> usize {
+    let mut total = 0;
+    visit_rs_files(root, &mut |path| {
+        let source = std::fs::read_to_string(path).expect("read source");
+        let production = source.split("#[cfg(test)]\nmod ").next().unwrap_or(&source);
+        total += production.matches(pattern).count();
+    });
+    total
+}
+
+/// One `Services` per host process: the editor host constructs its services exactly once (the
+/// `ServerState` default used when no embedding engine supplies them) and threads clones.
+#[test]
+fn the_editor_host_constructs_one_services_value() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+    assert_eq!(
+        count_production_occurrences(&root, "Services::new("),
+        1,
+        "construct Services once and hand clones of its handles around"
+    );
+}
+
+/// Library-closure resolution is a startup and reconfiguration cost, never a per-edit one.
+#[test]
+fn library_closure_never_runs_on_the_edit_path() {
+    let src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
+    for file in [
+        "lsp_runtime/documents/sync.rs",
+        "lsp_runtime/documents/mod.rs",
+        "workspace/handle.rs",
+    ] {
+        let source = std::fs::read_to_string(src.join(file)).expect("read source");
+        for forbidden in [".library.resolve(", "load_library_closure_documents("] {
+            assert!(
+                !source.contains(forbidden),
+                "{file} resolves the library closure on the edit path: {forbidden}"
+            );
+        }
+    }
+}

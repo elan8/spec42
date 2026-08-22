@@ -111,7 +111,7 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
                     Command::JobResult { token, merge } => {
                         if !state.is_token_current(&token) {
                             // Superseded by a newer mutation/job — drop silently, same
-                            // semantics as `WorkspaceSession::commit_relink` returning `false`.
+                            // semantics as a superseded relink: nothing is applied.
                             continue;
                         }
                         let outcome = std::panic::catch_unwind(AssertUnwindSafe(|| {

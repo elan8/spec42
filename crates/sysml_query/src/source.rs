@@ -56,6 +56,10 @@ impl SourceService {
         self.inner.admit_path(path, kind)
     }
 
+    pub fn read_text(&self, path: &Path) -> Result<String, SourceError> {
+        self.inner.read_text(path)
+    }
+
     pub fn load(&self, provider: &dyn SourceProvider) -> Result<SourceLoadReport, SourceError> {
         self.inner.load(provider)
     }

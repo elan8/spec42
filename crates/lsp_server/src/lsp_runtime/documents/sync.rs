@@ -246,38 +246,55 @@ pub(crate) async fn did_change_watched_files(
     for event in params.changes {
         let uri_norm = util::normalize_file_uri(&event.uri);
         if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
-            match event.uri.to_file_path() {
-                Ok(path) => match tokio::fs::read_to_string(&path).await {
-                    Ok(content) => {
-                        // The editor already sent `textDocument/didChange` for its own edits
-                        // (handled cheaply/incrementally); saving that same content to disk
-                        // then fires this notification too, with disk content that's already
-                        // byte-identical to what the server has tracked. Doing the full,
-                        // synchronous `refresh_document` (whole-graph relink + eager evaluate)
-                        // again in that case is pure waste — skip it. A genuinely external
-                        // edit (another editor, git checkout, a formatter) still has different
-                        // content and gets the full treatment below, unchanged.
-                        if watched_file_content_already_current(handle, &uri_norm, &content) {
-                            continue;
-                        }
-
-                        let refresh_start = Instant::now();
-                        let warning = handle
-                            .refresh_document(uri_norm.clone(), content)
-                            .await
-                            .unwrap_or_default();
-                        refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
-                        if let Some(message) = warning {
-                            runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
-                        }
-                        changed_or_created_uris.push(uri_norm.clone());
+            // The source authority reads the file: admission, line-ending policy and digest are
+            // its decisions, and the document is a memo candidate for the publication.
+            let admitted = match event.uri.to_file_path() {
+                Ok(path) => {
+                    let services = handle.snapshot().services.clone();
+                    Some(
+                        tokio::task::spawn_blocking(move || {
+                            services
+                                .source
+                                .admit_path(&path, sysml_query::source::SourceKind::Workspace)
+                                .map_err(|error| error.to_string())
+                        })
+                        .await
+                        .unwrap_or_else(|error| Err(error.to_string())),
+                    )
+                }
+                Err(_) => None,
+            };
+            match admitted {
+                Some(Ok(document)) => {
+                    let content = document.content().to_owned();
+                    // The editor already sent `textDocument/didChange` for its own edits
+                    // (handled cheaply/incrementally); saving that same content to disk
+                    // then fires this notification too, with disk content that's already
+                    // byte-identical to what the server has tracked. Doing the full,
+                    // synchronous `refresh_document` (whole-graph relink + eager evaluate)
+                    // again in that case is pure waste — skip it. A genuinely external
+                    // edit (another editor, git checkout, a formatter) still has different
+                    // content and gets the full treatment below, unchanged.
+                    if watched_file_content_already_current(handle, &uri_norm, &content) {
+                        continue;
                     }
-                    Err(error) => runtime_warnings.push(format!(
-                        "didChangeWatchedFiles: failed to read changed file {}: {}",
-                        uri_norm, error
-                    )),
-                },
-                Err(_) => runtime_warnings.push(format!(
+
+                    let refresh_start = Instant::now();
+                    let warning = handle
+                        .refresh_document(uri_norm.clone(), content)
+                        .await
+                        .unwrap_or_default();
+                    refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
+                    if let Some(message) = warning {
+                        runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
+                    }
+                    changed_or_created_uris.push(uri_norm.clone());
+                }
+                Some(Err(error)) => runtime_warnings.push(format!(
+                    "didChangeWatchedFiles: failed to read changed file {}: {}",
+                    uri_norm, error
+                )),
+                None => runtime_warnings.push(format!(
                     "didChangeWatchedFiles: ignored non-file URI {}",
                     uri_norm
                 )),

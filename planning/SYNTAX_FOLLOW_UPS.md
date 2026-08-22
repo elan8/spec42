@@ -16,7 +16,8 @@ Retires: the declaration-header parsers, brace counting, and same-file definitio
 `import_statement_ranges` in `crates/lsp_server/src/common/util.rs`; the brace-folding fallback and
 keyword-based signature help in `crates/lsp_server/src/lsp_runtime/features/editing_features.rs`;
 the declaration-name narrowing in `crates/sysml_tokens/src/ast_ranges.rs`; the outline-kind string
-matches in `crates/lsp_server/src/language/symbols.rs`.
+matches in `crates/lsp_server/src/language/symbols.rs`; the declaration-head text split in
+`crates/lsp_server/src/views/feature_inspector.rs` (a head range on the outline node).
 
 Behaviour change to note: "definition already exists" checks become publication-wide rather than
 same-file.
@@ -28,7 +29,8 @@ range, owner_package }`, `imports()`, `type_references()`, `referenced_namespace
 
 Retires: the `import ` line scan in `crates/lsp_server/src/lsp_runtime/navigation.rs` (the
 `file://` literal-link branch stays, anchored to the import range); the bounded substring scan in
-`crates/server/src/environment.rs` (keep its file budget as a parameter of the query).
+`crates/server/src/environment.rs` (keep its file budget as a parameter of the query); the `::`
+split of qualified names in `crates/language_service/src/navigation.rs`.
 
 ## Cluster C — references, cursor text, completion context, recovery
 
@@ -40,10 +42,10 @@ Retires: `find_reference_ranges` in `crates/language_service/src/symbol.rs` (com
 stop matching); `word_at_position` and the unit-suffix detector in
 `crates/language_service/src/text.rs`; the `"recovered_"` code-prefix test in
 `crates/lsp_server/src/analysis/diagnostics_postprocess.rs`; `recover_short_name_search_symbols`
-in `crates/lsp_server/src/workspace/library_search.rs` once outline `short_name` exists. Completion
-keeps its line-prefix shape detection as presentation over text the grammar has not accepted, with
-keyword tables sourced from the service; a grammar-driven `completion_context_at(position)` is a
-later query.
+in `crates/lsp_server/src/workspace/library_search.rs` once outline `short_name` exists.
+`crates/language_service/src/completion.rs` keeps its line-prefix shape detection as presentation
+over text the grammar has not accepted, with keyword tables sourced from the service; a
+grammar-driven `completion_context_at(position)` is a later query.
 
 ## Other
 

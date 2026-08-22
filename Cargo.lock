@@ -2103,6 +2103,7 @@ dependencies = [
 name = "sysml_query"
 version = "0.50.0"
 dependencies = [
+ "proc-macro2",
  "serde_json",
  "syn 2.0.119",
  "sysml_resolution",

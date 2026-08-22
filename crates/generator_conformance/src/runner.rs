@@ -16,7 +16,7 @@ use generator_host::{
 use rayon::prelude::*;
 use serde::Serialize;
 use sysml_query::resolved_slice::PublishedModel;
-use sysml_query::source::{SourceKind, SourceService};
+use sysml_query::source::SourceKind;
 
 use crate::case::{Case, Expectation};
 
@@ -158,9 +158,13 @@ impl Corpus {
         if !path.is_file() {
             return Err(format!("model `{name}` not found at {}", path.display()));
         }
-        let content = std::fs::read_to_string(&path)
+        let services = sysml_query::Services::new();
+        let content = services
+            .source
+            .read_text(&path)
             .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
-        let source = SourceService::new()
+        let source = services
+            .source
             .admit_memory(
                 "generator-conformance",
                 "model.sysml",
@@ -168,7 +172,7 @@ impl Corpus {
                 SourceKind::Workspace,
             )
             .map_err(|error| error.to_string())?;
-        sysml_query::Services::new()
+        services
             .publication
             .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))

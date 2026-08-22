@@ -28,7 +28,7 @@ impl IndexEntry {
 
     #[cfg(test)]
     pub(crate) fn for_test(uri: &Url, content: &str) -> Self {
-        let services = Services::new();
+        let services = Services::default();
         let document = services.source.admit_url(
             uri.clone(),
             content,
