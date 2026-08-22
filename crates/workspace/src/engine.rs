@@ -1,11 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{WorkspaceError, WorkspaceResult};
-use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
+use library_catalog::{
+    resolve_library_catalog, HostLibraryRequest, LibraryCatalog, StandardLibraryConfig,
+};
 use std::sync::Arc;
 use sysml_query::source::{SourceProvider, SourceService};
 use sysml_query::Services;
@@ -187,7 +188,8 @@ impl EngineBuilder {
             extra_library_paths: self.extra_library_paths,
         };
 
-        let catalog = resolve_library_catalog(&request)?;
+        let catalog = resolve_library_catalog(&request)
+            .map_err(|error| WorkspaceError::unresolved_library_environment(error.to_string()))?;
         Ok(Spec42Engine {
             cache_dir,
             catalog,

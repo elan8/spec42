@@ -4,41 +4,22 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Protocol-neutral workspace build, snapshot, comparison and library management"
-build = "build.rs"
-
-[features]
-default = ["embed-stdlib", "embed-kpar-libraries"]
-embed-stdlib = []
-embed-kpar-libraries = []
-
-[build-dependencies]
-serde = { workspace = true }
-serde_json = { workspace = true }
-sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-kpar = { path = "../kpar" }
+description = "Batch host: engine, directory snapshots, validation, comparison and schema versions over the typed facade"
 
 [dependencies]
-kpar = { path = "../kpar" }
+library_catalog = { path = "../library_catalog" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 language_service = { path = "../language_service" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-toml = "0.8"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-directories = "5"
-dirs = "5"
 url = "2"
-walkdir = "2"
-petgraph = { workspace = true }
-tracing = "0.1"
-rayon = "1.12"
 tempfile = "3"
 
 [dev-dependencies]
+kpar = { path = "../kpar" }
+library_catalog = { path = "../library_catalog" }
 syn = { version = "2", features = ["full", "visit"] }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 

@@ -14,11 +14,12 @@ path = "src/lib.rs"
 
 [features]
 default = ["embed-stdlib", "embed-kpar-libraries"]
-embed-stdlib = ["workspace/embed-stdlib"]
-embed-kpar-libraries = ["workspace/embed-kpar-libraries"]
+embed-stdlib = ["library_catalog/embed-stdlib"]
+embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
 
 [dependencies]
-workspace = { path = "../workspace", default-features = false }
+workspace = { path = "../workspace" }
+library_catalog = { path = "../library_catalog", default-features = false }
 lsp_server = { path = "../lsp_server" }
 sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }

@@ -785,3 +785,78 @@ fn repository_root() -> PathBuf {
         .expect("crate is under repository/crates")
         .to_path_buf()
 }
+
+/// The host crates stay split by responsibility: the generic actor knows no SysML crate, the
+/// provisioning crate reads no SysML through anything but the facade (via kpar), and the batch
+/// host carries neither storage nor async runtime nor protocol.
+#[test]
+fn host_crates_keep_their_declared_dependency_sets() {
+    let root = repository_root();
+    let output = Command::new(env!("CARGO"))
+        .args(["metadata", "--format-version", "1", "--no-deps"])
+        .current_dir(&root)
+        .output()
+        .expect("run cargo metadata");
+    assert!(output.status.success());
+    let metadata: Value = serde_json::from_slice(&output.stdout).expect("parse cargo metadata");
+    let packages = metadata["packages"].as_array().expect("packages array");
+    let normal_dependencies = |name: &str| -> BTreeSet<String> {
+        packages
+            .iter()
+            .find(|package| package["name"] == name)
+            .unwrap_or_else(|| panic!("{name} package"))["dependencies"]
+            .as_array()
+            .expect("dependencies")
+            .iter()
+            .filter(|dependency| dependency["kind"].is_null())
+            .map(|dependency| {
+                dependency["rename"]
+                    .as_str()
+                    .or_else(|| dependency["name"].as_str())
+                    .expect("dependency name")
+                    .to_owned()
+            })
+            .collect()
+    };
+    let set = |names: &[&str]| {
+        names
+            .iter()
+            .map(|name| (*name).to_owned())
+            .collect::<BTreeSet<_>>()
+    };
+
+    assert_eq!(
+        normal_dependencies("session_actor"),
+        set(&["thiserror", "tokio", "tracing"]),
+        "session_actor is a generic actor and names no SysML crate"
+    );
+    assert_eq!(
+        normal_dependencies("library_catalog"),
+        set(&[
+            "directories",
+            "kpar",
+            "serde",
+            "sysml_query",
+            "tempfile",
+            "toml",
+            "walkdir",
+            "zip"
+        ]),
+        "library_catalog provisions library roots and nothing else"
+    );
+    assert_eq!(
+        normal_dependencies("workspace"),
+        set(&[
+            "language_service",
+            "library_catalog",
+            "serde",
+            "serde_json",
+            "sysml_diagnostics",
+            "sysml_query",
+            "tempfile",
+            "thiserror",
+            "url",
+        ]),
+        "workspace is a batch host over the facade"
+    );
+}

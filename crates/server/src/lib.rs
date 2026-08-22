@@ -376,7 +376,7 @@ fn run_sysand(command: &SysandCommand) -> Result<ExitCode, String> {
 fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let selected =
-        |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
+        |id: &Option<String>| -> Result<Vec<&library_catalog::KparLibraryComponent>, String> {
             match id {
                 None => Ok(environment.kpar_libraries.iter().collect()),
                 Some(wanted) => {

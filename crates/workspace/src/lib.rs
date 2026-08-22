@@ -2,16 +2,13 @@
 
 //! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
-pub mod catalog;
 pub mod comparison;
 pub mod engine;
 pub mod error;
-pub mod library;
 pub mod provider;
 pub mod snapshot;
 pub mod version;
 
-pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use comparison::{
     compare_snapshots, HostDiagnosticComparison, HostDiagnosticIdentity,
     HostDiagnosticRelatedInformation, HostDocumentDiagnosticComparison, IdentityPreservationStatus,
@@ -19,19 +16,8 @@ pub use comparison::{
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceError, WorkspaceResult};
-pub use library::{
-    bundle::LibraryBundleConfig,
-    managed::{
-        kpar_library_paths_from_data_dir, registry_configs, KparLibraryConfig, KparLibraryPaths,
-        KparLibraryStatus,
-    },
-    resolve_explicit_library_path,
-    stdlib::{
-        project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
-        StandardLibraryPaths, StandardLibraryStatus,
-    },
-    LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
-    ResolvedExplicitLibrary,
+pub use library_catalog::{
+    HostConfigFile, HostLibraryRequest, LibraryCatalog, StandardLibraryConfig,
 };
 pub use provider::{ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};

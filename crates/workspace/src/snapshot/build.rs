@@ -6,11 +6,11 @@ use std::sync::{Arc, OnceLock};
 
 use sysml_query::source::{SourceDocument, SourceProvider, Url};
 
-use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
 use crate::error::{map_provider_error, WorkspaceError, WorkspaceResult};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
+use library_catalog::LibraryCatalog;
 use sysml_query::resolved_slice::PublishedModel;
 
 use crate::snapshot::metadata::HostArtifactMetadata;

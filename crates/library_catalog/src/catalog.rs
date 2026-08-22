@@ -6,7 +6,6 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use sysml_query::source::identity::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
-use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{
     managed::{
         install_embedded_kpar_library, kpar_library_paths_from_data_dir,
@@ -21,6 +20,7 @@ use crate::library::{
         StandardLibraryPaths, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
     },
 };
+use crate::{CatalogError, CatalogResult};
 
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct HostConfigFile {
@@ -79,7 +79,7 @@ pub struct LibraryCatalog {
     pub standard_library_paths: StandardLibraryPaths,
 }
 
-pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<LibraryCatalog> {
+pub fn resolve_library_catalog(request: &HostLibraryRequest) -> CatalogResult<LibraryCatalog> {
     let standard_library_paths = standard_library_paths_from_data_dir(request.cache_dir.clone());
     let stdlib = resolve_stdlib_component(request, &standard_library_paths)?;
     let kpar_libraries = resolve_kpar_libraries(request)?;
@@ -106,7 +106,7 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<
 fn resolve_stdlib_component(
     request: &HostLibraryRequest,
     standard_library_paths: &StandardLibraryPaths,
-) -> WorkspaceResult<StdlibComponent> {
+) -> CatalogResult<StdlibComponent> {
     if request.no_stdlib
         || request.config_no_stdlib
         || std::env::var("SPEC42_NO_STDLIB")
@@ -123,7 +123,7 @@ fn resolve_stdlib_component(
 
     if let Some(path) = request.stdlib_path_override.as_ref() {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -134,7 +134,7 @@ fn resolve_stdlib_component(
     if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
         let path = PathBuf::from(value);
         let resolved = resolve_explicit_library_path(&path, &request.cache_dir, "standard-library")
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -144,7 +144,7 @@ fn resolve_stdlib_component(
     }
     if let Some(path) = request.config_stdlib_path.as_ref() {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -153,8 +153,8 @@ fn resolve_stdlib_component(
         });
     }
 
-    if let Some(metadata) = load_managed_metadata(standard_library_paths)
-        .map_err(WorkspaceError::unresolved_library_environment)?
+    if let Some(metadata) =
+        load_managed_metadata(standard_library_paths).map_err(CatalogError::from)?
     {
         let managed_path = PathBuf::from(&metadata.install_path);
         let expected_path = crate::library::stdlib::managed_install_path(
@@ -182,7 +182,7 @@ fn resolve_stdlib_component(
     if request.use_embedded_stdlib && !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
         let metadata =
             install_embedded_standard_library(standard_library_paths, &request.standard_library)
-                .map_err(WorkspaceError::unresolved_library_environment)?;
+                .map_err(CatalogError::from)?;
         let path = PathBuf::from(&metadata.install_path);
         return Ok(StdlibComponent {
             roots: stdlib_resolution_roots(&path, Some(&metadata)),
@@ -211,7 +211,7 @@ fn resolve_stdlib_component(
 
 fn resolve_kpar_libraries(
     request: &HostLibraryRequest,
-) -> WorkspaceResult<Vec<KparLibraryComponent>> {
+) -> CatalogResult<Vec<KparLibraryComponent>> {
     let mut components = Vec::new();
     let mut registered_ids = BTreeSet::new();
     for config in registry_configs() {
@@ -228,7 +228,7 @@ fn resolve_kpar_libraries(
             continue;
         }
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, id)
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         let paths = kpar_library_paths_from_data_dir(&request.cache_dir, id);
         let config = KparLibraryConfig {
             id: id.clone(),
@@ -256,7 +256,7 @@ fn resolve_one_kpar_library(
     request: &HostLibraryRequest,
     config: KparLibraryConfig,
     paths: KparLibraryPaths,
-) -> WorkspaceResult<KparLibraryComponent> {
+) -> CatalogResult<KparLibraryComponent> {
     if request.disabled_kpar_libraries.contains(&config.id) {
         return Ok(KparLibraryComponent {
             id: config.id.clone(),
@@ -270,7 +270,7 @@ fn resolve_one_kpar_library(
 
     if let Some(path) = request.kpar_library_path_overrides.get(&config.id) {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, &config.id)
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         return Ok(KparLibraryComponent {
             id: config.id.clone(),
             display_name: config.display_name.clone(),
@@ -288,7 +288,7 @@ fn resolve_one_kpar_library(
     if let Some(value) = std::env::var_os(&env_key) {
         let path = PathBuf::from(value);
         let resolved = resolve_explicit_library_path(&path, &request.cache_dir, &config.id)
-            .map_err(WorkspaceError::unresolved_library_environment)?;
+            .map_err(CatalogError::from)?;
         return Ok(KparLibraryComponent {
             id: config.id.clone(),
             display_name: config.display_name.clone(),
@@ -299,9 +299,7 @@ fn resolve_one_kpar_library(
         });
     }
 
-    if let Some(metadata) = load_kpar_library_metadata(&paths)
-        .map_err(WorkspaceError::unresolved_library_environment)?
-    {
+    if let Some(metadata) = load_kpar_library_metadata(&paths).map_err(CatalogError::from)? {
         let managed_path = PathBuf::from(&metadata.install_path);
         let expected_path = kpar_managed_install_path(&paths, &config);
         let metadata_is_current = metadata.installed_version == config.version
@@ -450,12 +448,12 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 pub fn resolve_stdlib_component_for_test(
     request: &HostLibraryRequest,
     standard_library_paths: &StandardLibraryPaths,
-) -> WorkspaceResult<StdlibComponent> {
+) -> CatalogResult<StdlibComponent> {
     resolve_stdlib_component(request, standard_library_paths)
 }
 
 pub fn resolve_kpar_libraries_for_test(
     request: &HostLibraryRequest,
-) -> WorkspaceResult<Vec<KparLibraryComponent>> {
+) -> CatalogResult<Vec<KparLibraryComponent>> {
     resolve_kpar_libraries(request)
 }

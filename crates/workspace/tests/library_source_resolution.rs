@@ -2,10 +2,9 @@ use std::fs;
 
 use kpar::pack::{build_kpar, ArchiveTimestamp, PackOptions};
 use kpar::schema::Project;
-use workspace::{
-    library::bundle::discover_library_roots, resolve_explicit_library_path, EngineBuilder,
-    LibraryInstallRoot, LibraryPackageRoots,
-};
+use library_catalog::library::bundle::discover_library_roots;
+use library_catalog::{resolve_explicit_library_path, LibraryInstallRoot, LibraryPackageRoots};
+use workspace::EngineBuilder;
 
 fn minimal_domain_kpar(work: &std::path::Path) -> std::path::PathBuf {
     let lib = work.join("lib");

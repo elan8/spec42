@@ -128,6 +128,12 @@ pub(crate) fn walk_package_body_element_type_refs(
         PackageBodyElement::ItemDef(item_def) => {
             push_optional_typing_reference(document, item_def.value.specializes.as_deref(), out);
         }
+        PackageBodyElement::AttributeDef(attribute_def) => {
+            walk_attribute_def_type_refs(document, &attribute_def.value, out);
+        }
+        PackageBodyElement::AttributeUsage(attribute_usage) => {
+            walk_attribute_usage_type_refs(document, &attribute_usage.value, out);
+        }
         PackageBodyElement::MetadataDef(metadata_def) => {
             walk_metadata_def_type_refs(document, &metadata_def.value, out);
         }

@@ -732,8 +732,8 @@ mod tests {
         assert_ne!(first, third, "a changed listing rebuilds the index");
         assert_eq!(
             authority.syntax.memo_len(),
-            3,
-            "library trees are memo hits after the rebuild"
+            2,
+            "both library trees sit in the authority's memo after the rebuild"
         );
     }
 
