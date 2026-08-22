@@ -137,7 +137,7 @@ impl BuildRequest {
         sysml_resolution::BuildRequest::new(
             sources.into_iter().map(|source| source.inner).collect(),
             schedule,
-            "parser-owned-resolution-v1",
+            sysml_resolution::RESOLVED_CONTRACT,
         )
         .map(|inner| Self { inner })
         .map_err(BuildError)
@@ -158,7 +158,7 @@ impl BuildRequest {
         sysml_resolution::BuildRequest::with_library(
             sources.into_iter().map(|source| source.inner).collect(),
             schedule,
-            "parser-owned-resolution-v1",
+            sysml_resolution::RESOLVED_CONTRACT,
             library.handle(),
         )
         .map(|inner| Self { inner })
@@ -228,6 +228,12 @@ impl LibraryStratum {
 #[derive(Debug)]
 pub struct PublishedModel {
     inner: sysml_resolution::PublishedResolution,
+}
+
+impl PublishedModel {
+    pub(crate) fn from_resolution(inner: sysml_resolution::PublishedResolution) -> Self {
+        Self { inner }
+    }
 }
 
 pub fn build(request: BuildRequest) -> Result<PublishedModel, BuildError> {

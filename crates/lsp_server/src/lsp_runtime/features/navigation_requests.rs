@@ -57,11 +57,7 @@ pub(crate) fn references(
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
+    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -110,11 +106,7 @@ pub(crate) fn selection_range(
     positions: Vec<Position>,
 ) -> Result<Option<Vec<SelectionRange>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
+    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
         Some(text) => text,
         None => return Ok(None),
     };

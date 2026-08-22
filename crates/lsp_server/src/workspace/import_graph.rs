@@ -79,7 +79,8 @@ mod tests {
             .iter()
             .map(|(uri, content)| source.admit(uri, content, SourceKind::Workspace).unwrap())
             .collect::<Vec<_>>();
-        workspace::PublicationCoordinator::default()
+        sysml_query::Services::new()
+            .publication
             .publish(&documents, [])
             .unwrap()
     }

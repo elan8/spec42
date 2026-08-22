@@ -20,11 +20,15 @@ mod feature_query;
 mod inspection;
 mod model;
 mod namespace_query;
+pub mod publication;
 mod qualified_reference;
 mod redefinition_query;
 mod requirement_query;
 mod specialization_query;
 pub mod syntax;
+
+/// The semantic contract version every resolved publication is recorded under.
+pub const RESOLVED_CONTRACT: &str = "parser-owned-resolution-v1";
 
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
@@ -152,9 +156,11 @@ pub struct ElementSearch {
 /// syntax authority. Hosts admit handles so the editor's parse and the build's parse are one;
 /// stateless callers (benchmarks, fuzzing, tests) may still admit text.
 #[derive(Debug, Clone, PartialEq, Eq)]
-enum SourcePayload {
+pub(crate) enum SourcePayload {
     Text(String),
     Parsed(syntax::ParsedSource),
+    /// An admitted document the build parses through the syntax authority's memo.
+    Pending(sysml_source::SourceDocument),
 }
 
 impl SourcePayload {
@@ -162,6 +168,7 @@ impl SourcePayload {
         match self {
             SourcePayload::Text(text) => text.len() as u64,
             SourcePayload::Parsed(parsed) => parsed.source().len() as u64,
+            SourcePayload::Pending(document) => document.byte_len() as u64,
         }
     }
 }
@@ -190,6 +197,17 @@ impl SourceInput {
             payload: SourcePayload::Text(content),
             kind,
             content_digest,
+        }
+    }
+
+    /// Admit a document the build will parse through the syntax authority's memo. The identity
+    /// is known now; the tree is fetched (a memo hit, or one parse) when the request is built.
+    pub fn pending(identity: impl Into<Box<str>>, document: sysml_source::SourceDocument) -> Self {
+        Self {
+            identity: identity.into(),
+            content_digest: document.digest(),
+            kind: document.kind(),
+            payload: SourcePayload::Pending(document),
         }
     }
 
@@ -390,6 +408,8 @@ pub struct BuildRequest {
     library: Option<std::sync::Arc<LibraryStratum>>,
     reported: Vec<Box<str>>,
     identity: PublicationIdentity,
+    /// The memo pending sources are parsed through; absent, they are parsed cold.
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
 }
 
 fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
@@ -445,11 +465,20 @@ impl LibraryStratum {
 /// The sources are the library's own; a workspace document admitted here would become part of the
 /// stratum and be reused by every publication built against it.
 pub fn build_library_stratum(sources: Vec<SourceInput>) -> Result<LibraryStratum, BuildFailure> {
-    let request = BuildRequest::new(
+    build_library_stratum_with(sources, None)
+}
+
+/// [`build_library_stratum`] parsing pending sources through `syntax`'s memo.
+pub fn build_library_stratum_with(
+    sources: Vec<SourceInput>,
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
+) -> Result<LibraryStratum, BuildFailure> {
+    let mut request = BuildRequest::new(
         sources,
         ConstructionSchedule::Parallel,
         LIBRARY_STRATUM_CONTRACT,
     )?;
+    request.syntax = syntax;
     let manifest_entries = request.sources.iter().map(manifest_entry).collect();
     let identities = request
         .sources
@@ -502,7 +531,14 @@ impl BuildRequest {
                 evaluation_policy: EvaluationPolicy::default(),
                 reported_documents: Box::default(),
             },
+            syntax: None,
         })
+    }
+
+    /// Parse pending sources through `syntax`'s memo rather than cold.
+    pub fn with_syntax(mut self, syntax: std::sync::Arc<syntax::SyntaxAuthority>) -> Self {
+        self.syntax = Some(syntax);
+        self
     }
 
     /// Builds against a library that has already been parsed and solved.
@@ -625,6 +661,7 @@ pub fn build_measured(
         ConstructionSchedule::Sequential => BuildSchedule::Sequential,
         ConstructionSchedule::Parallel => BuildSchedule::Parallel,
     };
+    let syntax = request.syntax;
     let sources = request
         .sources
         .into_iter()
@@ -632,6 +669,7 @@ pub fn build_measured(
             identity: source.identity,
             role: source_role(source.kind),
             payload: source.payload,
+            syntax: syntax.clone(),
         })
         .collect();
     let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(

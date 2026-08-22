@@ -8,7 +8,6 @@ pub mod engine;
 pub mod error;
 pub mod library;
 pub mod provider;
-pub mod session;
 pub mod snapshot;
 pub mod version;
 
@@ -35,16 +34,13 @@ pub use library::{
     LibrarySource, LoadedLibraryFile, ResolvedExplicitLibrary, WorkspaceSource,
 };
 pub use provider::{ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider};
-pub use semantic_publication::{
-    PreparedPublication, PublicationBuildFailure, PublicationCoordinator, PublicationFailureStage,
-};
-pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
     apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
     HostResourceLimits, HostValidatedDocument, HostValidationReport, HostValidationSummary,
     HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
+pub use sysml_query::publication::{PublicationBuildFailure, PublicationFailureStage};
 pub use sysml_query::source::{
     ContentDigest, InMemoryProvider, RootDigest, SourceDocument, SourceKind, SourceProvider,
 };

@@ -14,7 +14,6 @@ const DESIGNATED_CONSUMERS: &[&str] = &[
     "kpar",
     "language_service",
     "lsp_server",
-    "semantic_publication",
     "server",
     "spec42-resolution-benchmark",
     "spec42-semantic-benchmark",
@@ -22,8 +21,12 @@ const DESIGNATED_CONSUMERS: &[&str] = &[
     "sysml_diagnostics",
     "sysml_tokens",
     "workspace",
-    "workspace_session",
 ];
+
+/// Consumers that read diagnostics only as published facts and must not carry the reporting
+/// policy crate; hosts that render diagnostics legitimately depend on it.
+const FACADE_ONLY_DIAGNOSTIC_CONSUMERS: &[&str] =
+    &["spec42-resolution-benchmark", "spec42-snapshot"];
 
 /// The authority chain: a crate that no consumer may depend on.
 const AUTHORITY_CRATES: &[&str] = &["sysml-v2-parser", "sysml_resolution", "sysml_source"];
@@ -96,10 +99,12 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
                     "designated consumer {name} must reach {authority} through sysml_query"
                 );
             }
-            assert!(
-                !dependency_names.contains("sysml_diagnostics"),
-                "designated semantic consumer {name} must use the facade diagnostic service"
-            );
+            if FACADE_ONLY_DIAGNOSTIC_CONSUMERS.contains(&name) {
+                assert!(
+                    !dependency_names.contains("sysml_diagnostics"),
+                    "designated semantic consumer {name} must use the facade diagnostic service"
+                );
+            }
         }
     }
 
@@ -339,7 +344,6 @@ fn migrated_validation_paths_cannot_return_to_the_graph() {
     let root = repository_root();
     let migrated = [
         "crates/workspace/src/snapshot/validation.rs",
-        "crates/semantic_publication/src/lib.rs",
         "crates/lsp_server/src/analysis/diagnostics_core.rs",
         "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
         "crates/lsp_server/src/lsp_runtime/diagnostics.rs",

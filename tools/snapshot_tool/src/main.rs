@@ -21,7 +21,6 @@ use clap::{Parser, Subcommand};
 use generator_api::{ArtifactLimits, DiagramSemanticReference, GeneratorModelView, QueryLimits};
 use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
 use rayon::prelude::*;
-use semantic_publication::PublicationCoordinator;
 use serde::{Deserialize, Serialize};
 #[cfg(test)]
 use spec42_constraint_manifest::ConstraintManifestEntry;
@@ -2649,7 +2648,8 @@ fn regenerate_snapshot(
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
         parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
-    let canonical_model = PublicationCoordinator::new()
+    let canonical_model = sysml_query::Services::new()
+        .publication
         .publish(&admitted_documents, std::iter::empty::<Box<str>>())
         .map_err(|error| {
             format!(

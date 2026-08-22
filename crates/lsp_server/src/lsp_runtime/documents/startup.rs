@@ -127,9 +127,11 @@ pub(crate) async fn initialized(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let library_paths_for_closure = library_paths.clone();
+        let services = handle.snapshot().services.clone();
         let parse_worker_start = Instant::now();
+        let scan_services = services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse)
+            parse_scanned_entries(entries, should_parallel_parse, &scan_services)
         })
         .await
         .unwrap_or_default();
@@ -137,7 +139,7 @@ pub(crate) async fn initialized(
 
         let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
             .iter()
-            .map(|entry| (entry.uri.to_string(), entry.content.clone()))
+            .map(|entry| (entry.uri.to_string(), entry.document.content().to_owned()))
             .collect();
         // Library graph caching belonged to the mutable graph lifecycle. Load the dependency
         // closure explicitly; future reuse must cache immutable, dependency-complete publications.
@@ -173,8 +175,9 @@ pub(crate) async fn initialized(
             } else {
                 let parallel =
                     library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
+                let library_services = services.clone();
                 tokio::task::spawn_blocking(move || {
-                    parse_scanned_entries(library_entries, parallel)
+                    parse_scanned_entries(library_entries, parallel, &library_services)
                 })
                 .await
                 .unwrap_or_default()
@@ -187,7 +190,7 @@ pub(crate) async fn initialized(
         let merge_index_start = Instant::now();
         for parsed_entry in &parsed_entries {
             let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
-            if parsed_entry.parsed.is_none() {
+            if parsed_entry.parsed.parser_failed() {
                 warn!(
                     uri = %uri_norm,
                     diagnostics = parsed_entry.parse_errors.len(),
@@ -285,7 +288,7 @@ pub(crate) async fn initialized(
                     if snap
                         .index
                         .get(uri_norm)
-                        .and_then(|entry| entry.parsed.as_ref())
+                        .map(|entry| &entry.parsed)
                         .is_some()
                         && symbol_entries_count <= 2
                     {

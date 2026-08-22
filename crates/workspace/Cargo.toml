@@ -24,7 +24,6 @@ kpar = { path = "../kpar" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 language_service = { path = "../language_service" }
-semantic_publication.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

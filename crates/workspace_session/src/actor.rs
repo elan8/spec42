@@ -2,14 +2,15 @@ use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
 
 use tokio::sync::{mpsc, oneshot, watch};
-use workspace::RelinkToken;
 
 /// Implemented by embedder session state to let [`SessionActor::report_job_result`] check
 /// whether a background job's token is still current without this crate knowing anything
-/// about `M`'s internal layout. Typically delegates to a `workspace::WorkspaceSession` field:
-/// `self.session.is_token_current(token)`.
+/// about `M`'s internal layout or what its token is.
 pub trait TracksRelink {
-    fn is_token_current(&self, token: &RelinkToken) -> bool;
+    /// The embedder's supersession token.
+    type Token: Send + 'static;
+
+    fn is_token_current(&self, token: &Self::Token) -> bool;
 
     /// Establishes a fresh owner boundary when this state seeds a new actor.
     fn rekey_for_actor(&mut self);
@@ -42,13 +43,13 @@ pub struct MutationOutcome<R> {
     pub published: bool,
 }
 
-enum Command<M> {
+enum Command<M: TracksRelink> {
     Mutate {
         apply: BoxedApply<M>,
         reply: oneshot::Sender<Result<(BoxedAny, bool), MutatePanicked>>,
     },
     JobResult {
-        token: RelinkToken,
+        token: <M as TracksRelink>::Token,
         merge: Box<dyn FnOnce(&mut M) + Send>,
     },
 }
@@ -62,7 +63,7 @@ enum Command<M> {
 /// (e.g. via `tokio::task::spawn_blocking`) via [`report_job_result`](Self::report_job_result),
 /// which is dropped silently if the token proves it was superseded.
 #[derive(Clone)]
-pub struct SessionActor<M> {
+pub struct SessionActor<M: TracksRelink> {
     tx: mpsc::UnboundedSender<Command<M>>,
 }
 
@@ -189,11 +190,7 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
     /// Fire-and-forget: hands back the result of a rebuild computed off the actor (typically
     /// via `tokio::task::spawn_blocking`). Merged in only if `token` is still current;
     /// otherwise dropped silently.
-    pub fn report_job_result(
-        &self,
-        token: RelinkToken,
-        merge: impl FnOnce(&mut M) + Send + 'static,
-    ) {
+    pub fn report_job_result(&self, token: M::Token, merge: impl FnOnce(&mut M) + Send + 'static) {
         let _ = self.tx.send(Command::JobResult {
             token,
             merge: Box::new(merge),
@@ -220,8 +217,10 @@ mod tests {
     }
 
     impl TracksRelink for TestState {
-        fn is_token_current(&self, token: &RelinkToken) -> bool {
-            token.generation() == self.generation
+        type Token = u64;
+
+        fn is_token_current(&self, token: &u64) -> bool {
+            *token == self.generation
         }
 
         fn rekey_for_actor(&mut self) {}
@@ -242,13 +241,8 @@ mod tests {
         });
         actor.mutate(|s| s.value = 1).await.unwrap();
 
-        // Mint a real RelinkToken at generation 1 via a fresh WorkspaceSession — the test
-        // state expects generation 2, so this token is stale.
-        let mut session = workspace::WorkspaceSession::new();
-        session.complete_startup();
-        let stale_token = session.schedule_relink();
-
-        actor.report_job_result(stale_token, |s| s.value = 999);
+        // The state expects generation 2, so a generation-1 token is stale.
+        actor.report_job_result(1, |s| s.value = 999);
         // Fence: an empty mutate only resolves after the mailbox (FIFO) has drained the
         // preceding report_job_result command, so this deterministically waits for it.
         actor.mutate(|_| {}).await.unwrap();
@@ -266,11 +260,7 @@ mod tests {
             generation: 1,
             value: 0,
         });
-        let mut session = workspace::WorkspaceSession::new();
-        session.complete_startup();
-        let current_token = session.schedule_relink(); // generation 1, matches state
-
-        actor.report_job_result(current_token, |s| s.value = 42);
+        actor.report_job_result(1, |s| s.value = 42); // generation 1, matches state
         actor.mutate(|_| {}).await.unwrap(); // fence
 
         assert_eq!(snapshot.current().value, 42);

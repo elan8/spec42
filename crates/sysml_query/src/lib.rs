@@ -6,6 +6,37 @@
 //! typed answers or stream an owner-defined debug projection; they cannot obtain the structural
 //! graph, resolver state, fact collections, or query-index storage.
 
+pub mod publication;
 pub mod resolved_slice;
 pub mod source;
 pub mod syntax;
+
+/// Every service a host works with, sharing one set of authorities.
+///
+/// A host process constructs exactly one of these and hands clones of the handles to whatever
+/// needs them; the memo, the library-stratum reuse, and admission policy are then one per process.
+#[derive(Debug, Clone)]
+pub struct Services {
+    pub source: source::SourceService,
+    pub syntax: syntax::SyntaxService,
+    pub publication: publication::PublicationService,
+}
+
+impl Services {
+    pub fn new() -> Self {
+        let source = source::SourceService::new();
+        let syntax = syntax::SyntaxService::new();
+        let publication = publication::PublicationService::new(&syntax);
+        Self {
+            source,
+            syntax,
+            publication,
+        }
+    }
+}
+
+impl Default for Services {
+    fn default() -> Self {
+        Self::new()
+    }
+}

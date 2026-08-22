@@ -88,7 +88,7 @@ fn lsp_workspace_does_not_own_semantic_build_or_library_cache() {
         assert_eq!(
             count_occurrences(&root, forbidden),
             0,
-            "the LSP workspace must publish through workspace::PublicationCoordinator; found {forbidden}"
+            "the LSP workspace must publish through sysml_query::publication; found {forbidden}"
         );
     }
 }

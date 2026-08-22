@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use workspace_session::{RelinkToken, SessionActor, TracksRelink};
+use workspace_session::{SessionActor, TracksRelink};
 
 #[derive(Clone, Default)]
 struct CounterState {
@@ -9,7 +9,9 @@ struct CounterState {
 }
 
 impl TracksRelink for CounterState {
-    fn is_token_current(&self, _token: &RelinkToken) -> bool {
+    type Token = u64;
+
+    fn is_token_current(&self, _token: &u64) -> bool {
         true
     }
 

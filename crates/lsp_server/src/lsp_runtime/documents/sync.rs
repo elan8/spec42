@@ -26,7 +26,7 @@ pub(crate) async fn did_open(
         let snap = handle.snapshot();
         match snap.index.get(&uri_norm) {
             None => "newFile",
-            Some(entry) if entry.content != text => "contentChanged",
+            Some(entry) if entry.content() != text => "contentChanged",
             _ => "alreadyIndexed",
         }
     };
@@ -132,15 +132,20 @@ pub(crate) async fn did_change(
     // keeps this off the async executor thread.
     let mut token = None;
     if let Some(edit) = edit {
-        let content = edit.content.clone();
+        let services = handle.snapshot().services.clone();
+        let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
         let parse_start = Instant::now();
-        let parse_outcome =
-            tokio::task::spawn_blocking(move || util::parse_for_editor(&content)).await;
+        let parse_outcome = tokio::task::spawn_blocking(move || {
+            crate::workspace::handle::PreparedDocumentEdit::admit_text(
+                admit_uri, &content, &services,
+            )
+        })
+        .await;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
-            Ok(parsed_result) => {
+            Ok((document, parsed)) => {
                 let (relink, parse_warnings) = handle
-                    .apply_parsed_document_update(edit, parsed_result, parse_time_ms)
+                    .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
                 token = relink;
@@ -216,7 +221,7 @@ pub(crate) fn watched_file_content_already_current(
         .snapshot()
         .index
         .get(uri)
-        .map(|entry| entry.content == content)
+        .map(|entry| entry.content() == content)
         .unwrap_or(false)
 }
 
@@ -363,8 +368,9 @@ pub(crate) async fn did_change_configuration(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
+        let services = handle.snapshot().services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse)
+            parse_scanned_entries(entries, should_parallel_parse, &services)
         })
         .await
         .unwrap_or_default();

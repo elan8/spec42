@@ -14,7 +14,6 @@ use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
 use rayon::prelude::*;
-use semantic_publication::PublicationCoordinator;
 use serde::Serialize;
 use sysml_query::resolved_slice::PublishedModel;
 use sysml_query::source::{SourceKind, SourceService};
@@ -169,7 +168,8 @@ impl Corpus {
                 SourceKind::Workspace,
             )
             .map_err(|error| error.to_string())?;
-        PublicationCoordinator::new()
+        sysml_query::Services::new()
+            .publication
             .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))
     }

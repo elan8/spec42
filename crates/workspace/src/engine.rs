@@ -8,6 +8,7 @@ use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
 use std::sync::Arc;
 use sysml_query::source::{SourceProvider, SourceService};
+use sysml_query::Services;
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -21,8 +22,7 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
-    publication: Arc<crate::PublicationCoordinator>,
-    source: SourceService,
+    services: Services,
 }
 
 #[derive(Debug, Default)]
@@ -63,13 +63,15 @@ impl Spec42Engine {
         &self.metadata
     }
 
-    pub fn publication_coordinator(&self) -> Arc<crate::PublicationCoordinator> {
-        Arc::clone(&self.publication)
+    /// The one set of services this engine publishes through. A host embedding the engine in a
+    /// server shares these with the editor host rather than constructing its own.
+    pub fn services(&self) -> &Services {
+        &self.services
     }
 
     /// The source service every document of this engine is admitted through.
     pub fn source(&self) -> &SourceService {
-        &self.source
+        &self.services.source
     }
 
     pub fn schema_versions(&self) -> HostSchemaVersions {
@@ -193,8 +195,7 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
-            publication: Arc::new(crate::PublicationCoordinator::new()),
-            source: SourceService::new(),
+            services: Services::new(),
         })
     }
 

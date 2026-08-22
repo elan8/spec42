@@ -154,7 +154,8 @@ pub(crate) fn build_workspace_snapshot(
     // Publish once per coherent snapshot. Every immutable semantic consumer below shares this
     // exact identity rather than independently rebuilding equivalent-looking model state.
     let published_model = engine
-        .publication_coordinator()
+        .services()
+        .publication
         .publish(&documents, [])
         .map_err(|error| WorkspaceError::internal_invariant_failure(error.to_string()))?;
 

@@ -1,4 +1,4 @@
-﻿mod completion;
+mod completion;
 mod editing_features;
 mod navigation_requests;
 
@@ -75,11 +75,8 @@ pub(crate) fn semantic_tokens_full_request(
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
-            let text = entry.content.clone();
-            let ast_ranges = entry
-                .parsed
-                .as_ref()
-                .map(|root| ast_semantic_ranges(root, &text));
+            let text = entry.content().to_owned();
+            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -112,11 +109,8 @@ pub(crate) fn semantic_tokens_range_request(
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
-            let text = entry.content.clone();
-            let ast_ranges = entry
-                .parsed
-                .as_ref()
-                .map(|root| ast_semantic_ranges(root, &text));
+            let text = entry.content().to_owned();
+            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -154,11 +148,7 @@ pub(crate) fn linked_editing_range(
     pos: Position,
 ) -> Result<Option<LinkedEditingRanges>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
+    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -199,7 +189,7 @@ fn element_at(
 ) -> Option<sysml_query::resolved_slice::ElementInspection> {
     use sysml_query::resolved_slice::{QueryOutcome, TextPosition};
 
-    let model = state.published_model.model();
+    let model = state.published_model();
     let at = match model.inspection().inspect_at(
         uri.as_str(),
         TextPosition {
@@ -227,7 +217,7 @@ fn hierarchy_step(
 ) -> Option<Vec<TypeHierarchyItem>> {
     use sysml_query::resolved_slice::{QueryOutcome, SpecializationScope};
 
-    let model = state.published_model.model();
+    let model = state.published_model();
     let element = element_at(state, uri, position)?;
     let outcome = if ascending {
         model

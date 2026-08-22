@@ -15089,11 +15089,12 @@ impl SymbolTableBuilder {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub(crate) struct OwnedSourceRecord {
     pub(crate) identity: Box<str>,
     pub(crate) role: SourceRole,
     pub(crate) payload: crate::SourcePayload,
+    pub(crate) syntax: Option<Arc<crate::syntax::SyntaxAuthority>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -15235,6 +15236,14 @@ impl SemanticModelBuildCoordinator {
     fn parse_source(source: OwnedSourceRecord) -> Result<AdmittedSource, CoordinatorError> {
         let (tree, errors) = match source.payload {
             crate::SourcePayload::Parsed(parsed) => parsed.admission_parts(),
+            crate::SourcePayload::Pending(document) => match source.syntax {
+                Some(syntax) => syntax.parse(&document).admission_parts(),
+                None => crate::syntax::ParsedSource::parse_text(
+                    document.content().to_owned(),
+                    document.digest(),
+                )
+                .admission_parts(),
+            },
             crate::SourcePayload::Text(content) => {
                 let result = sysml_v2_parser::parse_for_editor_owned(content);
                 (Arc::new(result.document), result.errors)

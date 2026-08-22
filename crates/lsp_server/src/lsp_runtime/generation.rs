@@ -426,7 +426,8 @@ mod tests {
     use sysml_query::source::{SourceKind, SourceService};
 
     fn publication() -> Arc<PublishedModel> {
-        workspace::PublicationCoordinator::default()
+        sysml_query::Services::new()
+            .publication
             .publish(
                 &[SourceService::new()
                     .admit(
@@ -460,7 +461,8 @@ mod tests {
                 SourceKind::Workspace,
             )
             .expect("workspace uri");
-        workspace::PublicationCoordinator::default()
+        sysml_query::Services::new()
+            .publication
             .publish(&[standard, workspace], [])
             .expect("published state-transition model")
     }

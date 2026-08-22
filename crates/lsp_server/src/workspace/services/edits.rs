@@ -36,6 +36,7 @@ pub(crate) fn apply_parsed_document_update(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
+    document: sysml_query::source::SourceDocument,
     parsed: sysml_query::syntax::ParsedSource,
     _parse_time_ms: u32,
     _evaluate: bool,
@@ -45,7 +46,8 @@ pub(crate) fn apply_parsed_document_update(
         return warnings;
     };
     let diagnostic_count = parsed.diagnostics().len();
-    entry.parsed = Some(parsed);
+    entry.document = document;
+    entry.parsed = parsed;
     if diagnostic_count > 0 {
         warnings.push((
             MessageType::LOG,

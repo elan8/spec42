@@ -51,11 +51,7 @@ pub(crate) fn signature_help(
     pos: Position,
 ) -> Result<Option<SignatureHelp>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
+    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -183,12 +179,8 @@ pub(crate) fn document_symbol(
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let doc = match &entry.parsed {
-        Some(doc) => doc,
-        None => return Ok(None),
-    };
     Ok(Some(DocumentSymbolResponse::Nested(
-        collect_document_symbols(doc),
+        collect_document_symbols(&entry.parsed),
     )))
 }
 
@@ -198,13 +190,11 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    if let Some(doc) = &entry.parsed {
-        let parsed_ranges = collect_folding_ranges(doc);
-        if !parsed_ranges.is_empty() {
-            return Ok(Some(parsed_ranges));
-        }
+    let parsed_ranges = collect_folding_ranges(&entry.parsed);
+    if !parsed_ranges.is_empty() {
+        return Ok(Some(parsed_ranges));
     }
-    Ok(Some(collect_brace_folding_ranges(&entry.content)))
+    Ok(Some(collect_brace_folding_ranges(entry.content())))
 }
 
 #[allow(deprecated)]
@@ -260,7 +250,7 @@ pub(crate) fn code_action(
     let text = match state
         .index
         .get(&uri_norm)
-        .map(|entry| entry.content.clone())
+        .map(|entry| entry.content().to_owned())
     {
         Some(text) => text,
         None => return Ok(None),
@@ -302,7 +292,7 @@ pub(crate) fn code_action(
         );
         if is_ambiguous_name_reference {
             {
-                let model = state.published_model.model();
+                let model = state.published_model();
                 for action in
                     suggest_qualify_ambiguous_name_quick_fixes(&text, &uri, diagnostic, model)
                 {
@@ -315,12 +305,8 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions = suggest_add_import_quick_fixes(
-                &text,
-                &uri,
-                diagnostic,
-                state.published_model.model(),
-            );
+            let import_actions =
+                suggest_add_import_quick_fixes(&text, &uri, diagnostic, state.published_model());
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));
@@ -367,7 +353,7 @@ pub(crate) fn formatting(
     let text = match state
         .index
         .get(&uri_norm)
-        .map(|entry| entry.content.clone())
+        .map(|entry| entry.content().to_owned())
     {
         Some(text) => text,
         None => return Ok(None),

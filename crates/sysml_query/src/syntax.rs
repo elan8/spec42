@@ -55,4 +55,8 @@ impl SyntaxService {
     pub fn reserved_keywords(&self) -> &'static [&'static str] {
         reserved_keywords()
     }
+
+    pub(crate) fn authority(&self) -> &Arc<SyntaxAuthority> {
+        &self.inner
+    }
 }

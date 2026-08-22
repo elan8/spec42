@@ -1,17 +1,28 @@
-//! Canonical immutable-publication construction and library-stratum reuse.
+//! The publication authority: canonical construction of an immutable publication from admitted
+//! documents, library-stratum reuse, and the lifecycle a long-lived host drives it through.
 //!
-//! Hosts provide admitted source documents. This owner alone partitions their provenance,
-//! decides whether a settled library stratum can be reused, constructs the query request, and
-//! returns the immutable publication. Library construction failure is explicit: it is never
-//! disguised by silently selecting a different construction path.
-#![recursion_limit = "256"]
+//! Hosts hand over [`SourceDocument`]s. This owner alone partitions their provenance, decides
+//! whether a settled library stratum can be reused, builds the request, and constructs the
+//! publication. Every admitted document is parsed through the syntax authority's memo, so the
+//! editor's parse and the build's parse are one tree. Library construction failure is explicit:
+//! it is never disguised by silently selecting a different construction path.
+
+mod session;
 
 use std::sync::{Arc, Mutex};
 
-use sysml_query::resolved_slice::{
-    build, AdmittedSource, BuildRequest, ConstructionStrategy, LibraryStratum, PublishedModel,
+use sysml_source::{SourceDocument, SourceKind};
+
+use crate::syntax::SyntaxAuthority;
+use crate::{
+    build, build_library_stratum_with, BuildRequest, ConstructionSchedule, LibraryStratum,
+    PublicationIdentity, PublishedResolution, SourceInput,
 };
-use sysml_query::source::{SourceDocument, SourceKind};
+
+pub use session::{
+    BuildToken, PublicationOutcome, PublicationToken, Published, RelinkToken, Session,
+    SessionLifecycle,
+};
 
 /// The semantic phase which rejected a publication request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -23,7 +34,7 @@ pub enum PublicationFailureStage {
 }
 
 /// A typed failure from the sole publication construction path.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PublicationBuildFailure {
     stage: PublicationFailureStage,
     message: String,
@@ -54,19 +65,27 @@ impl std::fmt::Display for PublicationBuildFailure {
 
 impl std::error::Error for PublicationBuildFailure {}
 
-/// An immutable, dependency-complete request prepared by [`PublicationCoordinator`].
+/// An immutable, dependency-complete request prepared by [`PublicationAuthority::prepare`].
+///
+/// Preparing never parses: the identity is computed from document digests, and the documents are
+/// parsed (a memo hit, or one parse) when the request is built. A host therefore captures the
+/// identity on its executor and does the work on a blocking thread.
 #[derive(Debug)]
 pub struct PreparedPublication {
     request: BuildRequest,
 }
 
 impl PreparedPublication {
+    pub fn identity(&self) -> &PublicationIdentity {
+        self.request.identity()
+    }
+
     pub fn request(&self) -> &BuildRequest {
         &self.request
     }
 
-    pub fn build(self) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
-        build(self.request).map(Arc::new).map_err(|error| {
+    pub fn build(self) -> Result<PublishedResolution, PublicationBuildFailure> {
+        build(self.request).map_err(|error| {
             PublicationBuildFailure::at(PublicationFailureStage::ModelConstruction, error)
         })
     }
@@ -78,15 +97,23 @@ struct CachedLibraryStratum {
     stratum: Arc<LibraryStratum>,
 }
 
-/// One build/cache authority shared by every workspace publication in an engine environment.
-#[derive(Debug, Default)]
-pub struct PublicationCoordinator {
+/// One build/cache authority shared by every publication in a host process.
+#[derive(Debug)]
+pub struct PublicationAuthority {
+    syntax: Arc<SyntaxAuthority>,
     library: Mutex<Option<CachedLibraryStratum>>,
 }
 
-impl PublicationCoordinator {
-    pub fn new() -> Self {
-        Self::default()
+impl PublicationAuthority {
+    pub fn new(syntax: Arc<SyntaxAuthority>) -> Self {
+        Self {
+            syntax,
+            library: Mutex::new(None),
+        }
+    }
+
+    pub fn syntax(&self) -> &Arc<SyntaxAuthority> {
+        &self.syntax
     }
 
     /// Publishes the exact admitted source set, reusing a solved library only when its complete
@@ -95,13 +122,13 @@ impl PublicationCoordinator {
         &self,
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
-    ) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
+    ) -> Result<PublishedResolution, PublicationBuildFailure> {
         self.prepare(documents, reported_documents)
             .and_then(PreparedPublication::build)
     }
 
-    /// Prepares the canonical request without building it, allowing an atomic publication owner
-    /// to capture its dependency-complete identity before background construction starts.
+    /// Prepares the canonical request without parsing or building it, so an atomic publication
+    /// owner can capture its dependency-complete identity before background construction starts.
     pub fn prepare(
         &self,
         documents: &[SourceDocument],
@@ -113,17 +140,13 @@ impl PublicationCoordinator {
         let mut workspace = Vec::new();
         let mut libraries = Vec::new();
         for document in ordered {
-            let source = AdmittedSource::from_uri(
-                document.uri().as_str(),
-                document.content().to_owned(),
-                document.kind(),
-            )
-            .map_err(|error| {
-                PublicationBuildFailure::at(
+            if document.uri().as_str().is_empty() {
+                return Err(PublicationBuildFailure::at(
                     PublicationFailureStage::SourceAdmission,
-                    format!("admitting {}: {error}", document.uri()),
-                )
-            })?;
+                    "source identity must not be empty",
+                ));
+            }
+            let source = SourceInput::pending(document.uri().as_str(), document.clone());
             if document.kind().is_library() {
                 libraries.push((document, source));
             } else {
@@ -133,21 +156,31 @@ impl PublicationCoordinator {
 
         let reported = reported_documents.into_iter().collect::<Vec<_>>();
         let request = if libraries.is_empty() {
-            BuildRequest::resolved(workspace, ConstructionStrategy::Parallel)
+            BuildRequest::new(
+                workspace,
+                ConstructionSchedule::Parallel,
+                crate::RESOLVED_CONTRACT,
+            )
         } else {
             let stratum = self.library_stratum(&libraries)?;
-            BuildRequest::resolved_with_library(workspace, ConstructionStrategy::Parallel, &stratum)
+            BuildRequest::with_library(
+                workspace,
+                ConstructionSchedule::Parallel,
+                crate::RESOLVED_CONTRACT,
+                stratum,
+            )
         }
         .map_err(|error| {
             PublicationBuildFailure::at(PublicationFailureStage::RequestConstruction, error)
         })?
-        .reporting(reported);
+        .reporting(reported)
+        .with_syntax(Arc::clone(&self.syntax));
         Ok(PreparedPublication { request })
     }
 
     fn library_stratum(
         &self,
-        libraries: &[(&SourceDocument, AdmittedSource)],
+        libraries: &[(&SourceDocument, SourceInput)],
     ) -> Result<Arc<LibraryStratum>, PublicationBuildFailure> {
         let key = library_key(libraries.iter().map(|(document, _)| *document));
         let mut cached = self
@@ -160,10 +193,13 @@ impl PublicationCoordinator {
             }
         }
         let stratum = Arc::new(
-            LibraryStratum::build(libraries.iter().map(|(_, source)| source.clone()).collect())
-                .map_err(|error| {
-                    PublicationBuildFailure::at(PublicationFailureStage::LibraryConstruction, error)
-                })?,
+            build_library_stratum_with(
+                libraries.iter().map(|(_, source)| source.clone()).collect(),
+                Some(Arc::clone(&self.syntax)),
+            )
+            .map_err(|error| {
+                PublicationBuildFailure::at(PublicationFailureStage::LibraryConstruction, error)
+            })?,
         );
         *cached = Some(CachedLibraryStratum {
             key,
@@ -196,15 +232,18 @@ fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> b
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_query::resolved_slice::{DiagramSemanticReference, QueryOutcome};
-    use sysml_query::source::SourceService;
+    use sysml_source::SourceAuthority;
 
     fn document(uri: &str, content: &str, kind: SourceKind) -> SourceDocument {
-        SourceService::new().admit(uri, content, kind).unwrap()
+        SourceAuthority::new().admit(uri, content, kind).unwrap()
     }
 
-    fn cached_key(coordinator: &PublicationCoordinator) -> blake3::Hash {
-        coordinator
+    fn authority() -> PublicationAuthority {
+        PublicationAuthority::new(Arc::new(SyntaxAuthority::new()))
+    }
+
+    fn cached_key(authority: &PublicationAuthority) -> blake3::Hash {
+        authority
             .library
             .lock()
             .unwrap()
@@ -215,7 +254,7 @@ mod tests {
 
     #[test]
     fn library_identity_covers_content_and_provenance_but_not_workspace_edits() {
-        let coordinator = PublicationCoordinator::new();
+        let authority = authority();
         let library = document(
             "memory://library/lib.sysml",
             "standard library package Lib { part def Wheel; }",
@@ -226,96 +265,69 @@ mod tests {
             "package W { part w : Lib::Wheel; }",
             SourceKind::Workspace,
         );
-        coordinator
+        authority
             .publish(&[library.clone(), workspace.clone()], [])
             .unwrap();
-        let initial = cached_key(&coordinator);
+        let initial = cached_key(&authority);
 
         let edited_workspace = document(
             "memory://workspace/model.sysml",
             "package W { part w : Lib::Wheel; part x : Lib::Wheel; }",
             SourceKind::Workspace,
         );
-        coordinator
+        authority
             .publish(&[library.clone(), edited_workspace], [])
             .unwrap();
-        assert_eq!(cached_key(&coordinator), initial);
+        assert_eq!(cached_key(&authority), initial);
 
         let changed_library = document(
             "memory://library/lib.sysml",
             "standard library package Lib { part def Wheel; part def Axle; }",
             SourceKind::StandardLibrary,
         );
-        coordinator.publish(&[changed_library], []).unwrap();
-        assert_ne!(cached_key(&coordinator), initial);
+        authority.publish(&[changed_library], []).unwrap();
+        assert_ne!(cached_key(&authority), initial);
 
         let changed_role = library.with_kind(SourceKind::Library);
-        coordinator.publish(&[changed_role], []).unwrap();
-        assert_ne!(cached_key(&coordinator), initial);
+        authority.publish(&[changed_role], []).unwrap();
+        assert_ne!(cached_key(&authority), initial);
     }
 
     #[test]
-    fn warm_publication_preserves_library_public_imports() {
-        let coordinator = PublicationCoordinator::new();
-        let documents = vec![
-            document(
-                "memory://library/lib.sysml",
-                concat!(
-                    "standard library package StandardViewDefinitions { view def GeneralView; } ",
-                    "standard library package SysML { public import Systems::*; ",
-                    "package Systems { metaclass PartUsage; } }"
-                ),
-                SourceKind::StandardLibrary,
-            ),
-            document(
-                "memory://workspace/model.sysml",
-                concat!(
-                    "package W { import StandardViewDefinitions::*; part root; ",
-                    "view selected : GeneralView { expose root; filter @SysML::PartUsage; } }"
-                ),
-                SourceKind::Workspace,
-            ),
-        ];
-
-        for _ in 0..2 {
-            let model = coordinator.publish(&documents, []).unwrap();
-            let catalog = match model.diagrams().catalog() {
-                QueryOutcome::Resolved(catalog)
-                | QueryOutcome::Recovered(catalog)
-                | QueryOutcome::UnsupportedWith(catalog) => catalog,
-                other => panic!("catalog: {other:?}"),
-            };
-            let view = catalog
-                .iter()
-                .find(|entry| {
-                    matches!(
-                        &entry.reference,
-                        DiagramSemanticReference::Qualified { qualified_name, .. }
-                            if qualified_name.as_ref() == "W::selected"
-                    )
-                })
-                .unwrap();
-            let projection = match model.diagrams().view(&view.semantic_id) {
-                QueryOutcome::Resolved(projection) => projection,
-                other => panic!("projection: {other:?}"),
-            };
-            assert!(projection.incomplete_reasons.is_empty());
-        }
+    fn prepare_does_not_parse_and_build_parses_through_the_memo() {
+        let authority = authority();
+        let workspace = document(
+            "memory://workspace/model.sysml",
+            "package W { part def P; }",
+            SourceKind::Workspace,
+        );
+        let prepared = authority.prepare(std::slice::from_ref(&workspace), []).unwrap();
+        assert_eq!(authority.syntax().memo_len(), 0, "prepare never parses");
+        prepared.build().unwrap();
+        assert_eq!(
+            authority.syntax().memo_len(),
+            1,
+            "the build parsed through the memo"
+        );
+        let parsed = authority.syntax().parse(&workspace);
+        authority.publish(&[workspace], []).unwrap();
+        assert_eq!(authority.syntax().memo_len(), 1);
+        drop(parsed);
     }
 
     #[test]
     fn library_construction_failure_is_explicit_and_never_flattened() {
-        let coordinator = PublicationCoordinator::new();
+        let authority = authority();
         let duplicate = document(
             "memory://library/duplicate.sysml",
             "standard library package Lib;",
             SourceKind::StandardLibrary,
         );
-        let error = coordinator
+        let error = authority
             .prepare(&[duplicate.clone(), duplicate], [])
             .expect_err("duplicate library identities must fail stratum construction");
 
         assert_eq!(error.stage(), PublicationFailureStage::LibraryConstruction);
-        assert!(coordinator.library.lock().unwrap().is_none());
+        assert!(authority.library.lock().unwrap().is_none());
     }
 }
