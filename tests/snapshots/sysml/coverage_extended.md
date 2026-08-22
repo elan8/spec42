@@ -91,6 +91,7 @@ package ExtendedExamples {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p"))) (target (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2))))) (provenance implied))
   )
   (evaluation
   )

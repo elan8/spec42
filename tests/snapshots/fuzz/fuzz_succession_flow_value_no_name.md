@@ -70,6 +70,8 @@ package P {
   )
   (relationships
     (relationship (kind succession) (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind class-def) (name "Container")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (target (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (provenance implied))
   )
   (evaluation
   )

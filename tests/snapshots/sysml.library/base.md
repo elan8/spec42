@@ -108,12 +108,6 @@ standard library package Base {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 13 43) (end 13 61))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 56 28) (end 56 49))
@@ -125,11 +119,11 @@ standard library package Base {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the classifiers and features that provide the bases for the typing\n\t * of all elements in the language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t     * Anything is the top level generalized type in the language. \n\t     "))))
-    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (documentation (doc (text "\n\t\t\t * The source of a SelfLink of this thing to itself. self is thus a feature that\n\t\t\t * relates everything to itself. It is also the value of the nested \"that\" feature\n\t\t\t * of all other things featured by this thing.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")) (subsetting (reference "things")))))
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (documentation (doc (text "\n\t\t\t * The source of a SelfLink of this thing to itself. self is thus a feature that\n\t\t\t * relates everything to itself. It is also the value of the nested \"that\" feature\n\t\t\t * of all other things featured by this thing.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")) (featureChaining (reference "things::that")) (subsetting (reference "things")))))
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (kind kerml-datatype) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * Value is the most general classifier of entities that are values that do not change\n\t\t * over time.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Anything")))))
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue")) (redefinition (reference "Anything::self")))))
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::dataValues"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers abstract nonunique) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t * dataValues is a specialization of things restricted to type DataValue.\n\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue")) (subsetting (reference "things")))))
@@ -145,6 +139,9 @@ standard library package Base {
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureTyping) (ordinal 0))
       (authored-target "Anything")
       (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")))))
+    (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0))
+      (authored-target "things::that")
+      (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")))))
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind subsetting) (ordinal 0))
       (authored-target "things")
       (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things")))))
@@ -178,6 +175,7 @@ standard library package Base {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind featureChaining) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind subsetting) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (kind featureTyping) (ordinal 0)))
@@ -187,6 +185,9 @@ standard library package Base {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::naturals"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::dataValues"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::naturals"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))) (provenance implied))
   )
   (evaluation
   )
@@ -202,7 +203,6 @@ standard library package Base {
       (subtype (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self")))
-      (featured-by (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")))
       (type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (provenance authored))
       (effective-type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (source direct))
       (effective-type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))))
@@ -264,6 +264,11 @@ standard library package Base {
   (query (document "memory://snapshot/base.md") (range (start 13 16) (end 13 24)) (probe (position 13 16))
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureTyping) (ordinal 0) (authored-target "Anything")
       (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")))))
+    )
+  )
+  (query (document "memory://snapshot/base.md") (range (start 13 50) (end 13 61)) (probe (position 13 50))
+    (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0) (authored-target "things::that")
+      (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")))))
     )
   )
   (query (document "memory://snapshot/base.md") (range (start 13 36) (end 13 42)) (probe (position 13 36))

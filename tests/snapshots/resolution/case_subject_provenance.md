@@ -38,6 +38,7 @@ package M {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (target (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (target (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A"))) (provenance implied))
   )
   (evaluation
   )

@@ -57,6 +57,11 @@ package GeneralExample {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System::child"))) (target (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System::child"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected"))) (provenance implied))
   )
   (evaluation
   )
@@ -65,13 +70,42 @@ package GeneralExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System::child")))
       (featured-by (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::System")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample::selected")))
@@ -108,6 +142,10 @@ package GeneralExample {
     {
       "uri": "memory://snapshot/diagram_general_complete.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -156,10 +194,38 @@ package GeneralExample {
       "qualifiedName": "GeneralExample::selected"
     },
     {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::Part"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::parts"
+    },
+    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "specializes",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
     }
   ],
   "selectedView": {
@@ -178,7 +244,7 @@ package GeneralExample {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 3,
+        "reference": 5,
         "source": 0,
         "target": 1
       }
@@ -226,7 +292,41 @@ package GeneralExample {
         }
       }
     ],
-    "relationships": [],
+    "relationships": [
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 6,
+        "source": 0,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 7,
+        "source": 1,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 8,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "general"
     }

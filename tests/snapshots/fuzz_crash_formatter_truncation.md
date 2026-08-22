@@ -118,6 +118,8 @@ package MassRollup2 {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (state unresolved-operand))

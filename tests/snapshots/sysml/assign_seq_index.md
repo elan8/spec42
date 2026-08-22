@@ -108,6 +108,9 @@ package AssignTest {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 2))))) (target (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 0))))) (state unsupported))

@@ -80,6 +80,7 @@ package Atoms {
   )
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (state non-constant))

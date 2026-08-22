@@ -66,6 +66,9 @@ package ProductSelection_N_ary_SysML {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::inCart"))) (target (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::selectedProducts"))) (target (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::withAccount"))) (target (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (provenance implied))
   )
   (evaluation
   )

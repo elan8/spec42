@@ -127,6 +127,9 @@ package 'Packet Usage' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field"))) (target (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind kerml-feature) (name "packet3")) (named (kind kerml-feature) (name "special data field")) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind kerml-feature) (name "packet3")) (named (kind kerml-feature) (name "special data field")) (anonymous (kind kerml-feature) (ordinal 0)) (named (kind kerml-feature) (name "special data"))))) (target (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind kerml-feature) (name "packet3")) (named (kind kerml-feature) (name "special data field")) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )

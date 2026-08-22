@@ -28,9 +28,9 @@ package FeatureSubDeclCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 7 14) (end 7 27))
+        (range (start 7 26) (end 7 27))
       )
       (diagnostic
         (severity warning)
@@ -78,10 +78,13 @@ package FeatureSubDeclCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::d"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind assign)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::e"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind assign) (default true)))
-    (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (typeFeaturing (reference "T")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::h"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::g"))) (kind typeFeaturing) (ordinal 0))
+      (authored-target "T")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -101,5 +104,10 @@ package FeatureSubDeclCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_feature_subdecls.md") (range (start 7 26) (end 7 27)) (probe (position 7 26))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::g"))) (kind typeFeaturing) (ordinal 0) (authored-target "T")
+      (outcome (status unresolved)))
+    )
+  )
 )
 ~~~

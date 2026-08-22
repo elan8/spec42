@@ -38,10 +38,10 @@ package Ends {
         (range (start 6 8) (end 7 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 7 8) (end 7 16))
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 7 8) (end 8 8))
       )
       (diagnostic
         (severity error)
@@ -62,12 +62,11 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:2ac66c3d094088d695b65a3898361493342d9c54b20d40fcdddd7a368074812c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2ac66c3d094088d695b65a3898361493342d9c54b20d40fcdddd7a368074812c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "abstract")))))
+    (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Association")))))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Association")))))
@@ -75,13 +74,7 @@ package Ends {
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "abstract")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (kind featureTyping) (ordinal 0))
-      (authored-target "Thing")
-      (outcome (status resolved) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")))))
-    (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")))))
     (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps"))) (kind specialization) (ordinal 0))
@@ -99,16 +92,17 @@ package Ends {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain"))) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -126,12 +120,6 @@ package Ends {
       (supertype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")) (scopes any))
       (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain")) (scopes any feature))
       (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain")) (scopes any feature))
-    )
-    (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague")))
-      (featured-by (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association")))
-      (type (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")) (source direct))
-      (supertype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps")))
       (supertype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association")) (scopes any subclassification))
@@ -157,7 +145,6 @@ package Ends {
     )
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")))
       (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain")) (scopes any))
-      (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague")) (scopes any))
       (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Keeps::plain")) (scopes any))
       (subtype (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Loses::plain")) (scopes any))
     )
@@ -166,18 +153,8 @@ package Ends {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/structural_end_features.md") (range (start 7 8) (end 7 16)) (probe (position 7 8))
-    (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind expressionOperand) (ordinal 0) (authored-target "abstract")
-      (outcome (status unresolved)))
-    )
-  )
   (query (document "memory://snapshot/structural_end_features.md") (range (start 5 28) (end 5 33)) (probe (position 5 28))
     (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::plain"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
-      (outcome (status resolved) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")))))
-    )
-  )
-  (query (document "memory://snapshot/structural_end_features.md") (range (start 7 37) (end 7 42)) (probe (position 7 37))
-    (reference (id (source (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association::vague"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Thing")))))
     )
   )

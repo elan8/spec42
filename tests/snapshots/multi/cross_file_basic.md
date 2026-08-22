@@ -63,6 +63,7 @@ package Usage {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle::mass"))) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (provenance implied))
   )
   (evaluation
   )

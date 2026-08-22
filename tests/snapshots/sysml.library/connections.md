@@ -357,6 +357,8 @@ standard library package Connections {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (target (node (document "memory://snapshot/connections.md") (qualified-name "Connections::Connection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (kind specialization) (ordinal 1)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::binaryConnections"))) (target (node (document "memory://snapshot/connections.md") (qualified-name "Connections::connections"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::binaryConnections"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection::source"))) (target (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection::target"))) (target (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (provenance implied))
   )
   (evaluation
   )

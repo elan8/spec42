@@ -72,10 +72,10 @@ package Ends {
         (range (start 7 8) (end 8 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 8) (end 8 16))
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 8 8) (end 9 8))
       )
       (diagnostic
         (severity error)
@@ -96,45 +96,29 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:388c34b8c2533c1897a3bb14d435522341fa783d7150e41218719c7b745c0fd1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:388c34b8c2533c1897a3bb14d435522341fa783d7150e41218719c7b745c0fd1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "abstract")))))
-    (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind kerml-association) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "abstract")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (kind featureTyping) (ordinal 0))
-      (authored-target "Thing")
-      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")))))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (state unresolved-operand))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions")))
-      (type (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")) (source direct))
-      (supertype (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")) (scopes any))
-    )
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain")))
       (featured-by (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions")))
       (type (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")) (provenance authored))
@@ -142,7 +126,6 @@ package Ends {
       (supertype (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")))
-      (subtype (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain")) (scopes any))
     )
 )
@@ -150,16 +133,6 @@ package Ends {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_end_restrictions.md") (range (start 8 8) (end 8 16)) (probe (position 8 8))
-    (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind expressionOperand) (ordinal 0) (authored-target "abstract")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/kerml_feature_end_restrictions.md") (range (start 8 43) (end 8 48)) (probe (position 8 43))
-    (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
-      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")))))
-    )
-  )
   (query (document "memory://snapshot/kerml_feature_end_restrictions.md") (range (start 4 28) (end 4 33)) (probe (position 4 28))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Thing")))))

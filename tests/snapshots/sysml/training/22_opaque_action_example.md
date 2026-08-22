@@ -61,6 +61,8 @@ package 'Opaque Action Example' {
   )
   (relationships
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors"))) (provenance implied))
   )
   (evaluation
   )

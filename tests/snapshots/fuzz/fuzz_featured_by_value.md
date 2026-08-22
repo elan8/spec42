@@ -16,9 +16,9 @@ package P {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 1 14) (end 1 27))
+        (range (start 1 26) (end 1 27))
       )
     )
   )
@@ -27,12 +27,15 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:f019ca6c280207026f9327f0a96067d31cd9eeb75e2927843f541336a537d4b9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f019ca6c280207026f9327f0a96067d31cd9eeb75e2927843f541336a537d4b9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_featured_by_value.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/fuzz_featured_by_value.md") (qualified-name "P::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/fuzz_featured_by_value.md") (qualified-name "P::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (typeFeaturing (reference "c")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/fuzz_featured_by_value.md") (qualified-name "P::g"))) (kind typeFeaturing) (ordinal 0))
+      (authored-target "c")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -49,5 +52,10 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/fuzz_featured_by_value.md") (range (start 1 26) (end 1 27)) (probe (position 1 26))
+    (reference (id (source (node (document "memory://snapshot/fuzz_featured_by_value.md") (qualified-name "P::g"))) (kind typeFeaturing) (ordinal 0) (authored-target "c")
+      (outcome (status unresolved)))
+    )
+  )
 )
 ~~~

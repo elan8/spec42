@@ -81,6 +81,9 @@ package AddressBookModel {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries"))) (target (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries"))) (target (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry::address"))) (target (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry::name"))) (target (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry"))) (provenance implied))
   )
   (evaluation
   )

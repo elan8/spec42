@@ -154,9 +154,9 @@ package Moments {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 37 49) (end 37 71))
+        (range (start 37 61) (end 37 71))
       )
     )
   )
@@ -165,7 +165,7 @@ package Moments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:28f9af547ca59cf4b9478dbcc6ea545738b660f90c54caeaf91f4b01860c5101") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:28f9af547ca59cf4b9478dbcc6ea545738b660f90c54caeaf91f4b01860c5101") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Life") (import (shape membership) (recursive false))))))
@@ -184,7 +184,7 @@ package Moments {
     (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (kind class-def) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Eternity")))))
     (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Period")) (redefinition (reference "timeSlices")))))
     (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Moment")) (redefinition (reference "snapshots")))))
-    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (subsetting (reference "spaceTimeCoincidentOccurrences")) (subsetting (reference "universalEternity::portions")))))
+    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (typeFeaturing (reference "Occurrence")) (subsetting (reference "spaceTimeCoincidentOccurrences")) (subsetting (reference "universalEternity::portions")))))
     (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "UniversalEternity")))))
   )
   (references
@@ -251,6 +251,9 @@ package Moments {
     (reference (id (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind featureTyping) (ordinal 0))
       (authored-target "Occurrence")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind typeFeaturing) (ordinal 0))
+      (authored-target "Occurrence")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind subsetting) (ordinal 0))
       (authored-target "spaceTimeCoincidentOccurrences")
       (outcome (status unresolved)))
@@ -270,6 +273,14 @@ package Moments {
     (relationship (kind typing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Period"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Moment"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 1))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity"))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 2))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "InstantOccurrence")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Moment")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Moment"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Period")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Period"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (provenance implied))
   )
   (evaluation
   )
@@ -452,6 +463,11 @@ package Moments {
   )
   (query (document "memory://snapshot/moments.md") (range (start 35 34) (end 35 44)) (probe (position 35 34))
     (reference (id (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind featureTyping) (ordinal 0) (authored-target "Occurrence")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/moments.md") (range (start 37 61) (end 37 71)) (probe (position 37 61))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::coincidentUEPortion"))) (kind typeFeaturing) (ordinal 0) (authored-target "Occurrence")
       (outcome (status unresolved)))
     )
   )

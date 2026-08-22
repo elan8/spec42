@@ -61,7 +61,10 @@ package Redefines {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Derived"))) (target (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Derived"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Base::status"))) (target (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Base"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Derived::status"))) (target (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Base::status"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Derived::status"))) (target (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Derived"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Orphan::missing"))) (target (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Orphan"))) (provenance implied))
   )
   (evaluation
   )

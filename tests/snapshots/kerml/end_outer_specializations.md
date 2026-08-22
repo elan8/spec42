@@ -243,6 +243,15 @@ assoc JustOutsideOf specializes OutsideOf {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::shorterOccurrence"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::thatOccurrence"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::thatOccurrence::happensDuring"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::thatOccurrence"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "JustOutsideOf")) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "JustOutsideOf"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "JustOutsideOf")) (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "JustOutsideOf"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionedOccurrence"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionedOccurrence::portionWithin"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionedOccurrence"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::thatOccurrence"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::thatOccurrence::withinBoth"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::thatOccurrence"))) (provenance implied))
   )
   (evaluation
   )

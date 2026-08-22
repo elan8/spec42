@@ -81,10 +81,10 @@ package 'Flow Definition Example' {
         (range (start 13 13) (end 13 19))
       )
       (diagnostic
-        (severity error)
-        (code "missing_semicolon")
-        (source "parser")
-        (range (start 15 2) (end 19 1))
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 15 2) (end 17 36))
       )
     )
   )
@@ -126,6 +126,9 @@ package 'Flow Definition Example' {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle"))) (target (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13_flow_definition_example.md") (path (named (kind package) (name "Flow Definition Example")) (named (kind flow-def) (name "FuelFlow")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle::eng"))) (target (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle::tankAssy"))) (target (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle"))) (provenance implied))
   )
   (evaluation
   )

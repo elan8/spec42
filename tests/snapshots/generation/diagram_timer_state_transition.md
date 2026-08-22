@@ -73,17 +73,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (kind state-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Top-level: Idle, Running, Paused, Expired. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "DecrementPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Expired")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "IncrementPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Paused")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Running")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "running")) (transitionTarget (reference "expired")) (transitionTrigger (reference "CountdownComplete")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "expired")) (transitionTarget (reference "idle")) (transitionTrigger (reference "ResetPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paused")) (transitionTarget (reference "idle")) (transitionTrigger (reference "ResetPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "running")) (transitionTarget (reference "paused")) (transitionTrigger (reference "StopPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "running")) (transitionTrigger (reference "StartPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paused")) (transitionTarget (reference "running")) (transitionTrigger (reference "StartPressed")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::volt") (import (shape membership) (recursive false))))))
@@ -884,6 +892,282 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "structure")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "structure")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "timerStateMachine")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "timerStateMachine")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::CountdownComplete"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::DecrementPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::IncrementPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::ResetPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StartPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StopPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::incrementPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::resetPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::startPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::stopPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort::buzzerOn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort::displayValue"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort::comSegDrive"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "AccuracyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "AccuracyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "AccuracyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate"))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::capacity"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::loadCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::runtime"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BatteryRuntimeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BatteryRuntimeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BatteryRuntimeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq::battery"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "ButtonResponsivenessReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "ButtonResponsivenessReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "ButtonResponsivenessReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BuzzerAudibilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BuzzerAudibilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BuzzerAudibilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq::buzzer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq::display"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "StateConsistencyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "StateConsistencyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "StateConsistencyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint"))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint::elapsedTime"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint::errorBound"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint::tickRate"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "TimerRangeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "TimerRangeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "TimerRangeReq")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::capacity"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::capacity"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::nominalVoltage"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::nominalVoltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::runtimeEstimate"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::runtimeEstimate"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::duration"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::duration"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::format"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::format"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::clockFrequency"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::clockFrequency"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::flashSize"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::flashSize"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "connections")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::structure"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "structure")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::structure"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "timerStateMachine")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.5))) (unit "A")))
@@ -920,24 +1204,245 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::trueEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::CountdownComplete")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::DecrementPressed")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::IncrementPressed")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::ResetPressed")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StartPressed")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StopPressed")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0)))))
@@ -945,53 +1450,361 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")) (scopes any))
@@ -1002,6 +1815,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
@@ -1014,6 +1831,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1022,6 +1841,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::ScalarQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::TensorQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::VectorQuantityValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::scalarQuantities")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::tensorQuantities")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::vectorQuantities")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any))
@@ -1029,8 +1851,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn")) (scopes any))
     )
@@ -1080,6 +1910,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")) (scopes any))
     )
@@ -1093,6 +1927,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")) (scopes any))
     )
@@ -1106,6 +1944,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")) (scopes any))
     )
@@ -1118,14 +1960,51 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "AccuracyReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::capacity")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate")))
@@ -1181,125 +2060,483 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BatteryRuntimeReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq::battery")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "ButtonResponsivenessReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BuzzerAudibilityReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq::buzzer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq::display")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "StateConsistencyReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint::elapsedTime")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint")))
@@ -1349,16 +2586,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "TimerRangeReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::User")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user")) (scopes any))
@@ -1366,6 +2636,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq::battery")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery")) (scopes any))
     )
@@ -1375,6 +2650,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::ElectricChargeValue")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1393,6 +2670,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1410,6 +2689,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::runtimeEstimate")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))
@@ -1417,6 +2706,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::DurationValue")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1430,6 +2721,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")))
@@ -1437,18 +2733,47 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq::buzzer")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer")) (scopes any))
     )
@@ -1458,6 +2783,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::DurationValue")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1475,12 +2802,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))
@@ -1488,24 +2834,63 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq::display")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display")) (scopes any))
     )
@@ -1514,6 +2899,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::format")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))
@@ -1521,6 +2916,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
@@ -1529,18 +2926,47 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer")) (scopes any))
@@ -1553,35 +2979,150 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq::mcu")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq::mcu")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq::mcu")) (scopes any))
@@ -1593,12 +3134,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::clockFrequency")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
@@ -1606,6 +3167,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/isq_space_time.md") (qualified-name "ISQSpaceTime::FrequencyValue")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
@@ -1623,6 +3186,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::DisplayCommandPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::flashSize")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
@@ -1630,6 +3203,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
@@ -1641,16 +3216,40 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))
@@ -1658,6 +3257,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
@@ -1669,50 +3270,183 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (source direct))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "connections")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections")))
@@ -1720,7 +3454,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::structure")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "structure")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::structure")))
@@ -1728,8 +3474,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::StateTransitionView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::StateTransitionView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::StateTransitionView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "timerStateMachine")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::timerStateMachine")))
@@ -2595,6 +4353,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "uri": "memory://snapshot/examples/timer/Views.sysml",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/actions.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/states.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -2701,6 +4467,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "range": [
         34,
+        2,
+        34,
+        68
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        34,
         13,
         34,
         23
@@ -2737,6 +4512,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "range": [
         35,
+        2,
+        35,
+        73
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        35,
         13,
         35,
         27
@@ -2773,6 +4557,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "range": [
         36,
+        2,
+        36,
+        73
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        36,
         13,
         36,
         27
@@ -2803,6 +4596,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         68,
         36,
         72
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        37,
+        2,
+        37,
+        68
       ]
     },
     {
@@ -2845,6 +4647,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "range": [
         38,
+        2,
+        38,
+        76
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        38,
         13,
         38,
         23
@@ -2875,6 +4686,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         68,
         38,
         75
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        39,
+        2,
+        39,
+        77
       ]
     },
     {
@@ -2917,6 +4737,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "range": [
         40,
+        2,
+        40,
+        76
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        40,
         13,
         40,
         32
@@ -2947,6 +4776,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         71,
         40,
         75
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        41,
+        2,
+        41,
+        78
       ]
     },
     {
@@ -3064,6 +4902,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::expired"
     },
     {
@@ -3075,6 +4918,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::"
     },
     {
       "document": 0,
@@ -3094,7 +4942,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::"
     },
     {
       "document": 0,
@@ -3104,7 +4962,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::"
     },
     {
       "document": 0,
@@ -3114,7 +4982,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::"
     },
     {
       "document": 1,
@@ -3122,10 +5000,86 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "qualifiedName": "Views::timerStateMachine"
     },
     {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::TransitionAction::accepter"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::transitionActions"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "States::StateAction"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "States::stateActions"
+    },
+    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine",
       "source": 1,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle",
+      "source": 21,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle",
+      "source": 16,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired",
+      "source": 31,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired",
+      "source": 46,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused",
+      "source": 41,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused",
+      "source": 26,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume",
+      "source": 36,
       "sourceDomain": "workspace"
     },
     {
@@ -3166,13 +5120,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 9,
       "relationshipKind": "containment",
       "source": 10
     },
@@ -3184,13 +5132,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 15,
       "relationshipKind": "containment",
       "source": 10
     },
@@ -3202,15 +5144,27 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 21,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "initialState",
-      "source": 11
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "containment",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 10
     },
     {
       "kind": "relationship",
@@ -3220,147 +5174,243 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 7,
+      "relationshipKind": "initialState",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typeFeaturing",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "containment",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "specializes",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
       "relationshipKind": "transitionSource",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 38,
       "relationshipKind": "transitionTarget",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 39,
       "relationshipKind": "transitionTrigger",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "transition",
+      "ordinal": 40,
+      "relationshipKind": "typeFeaturing",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "specializes",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typing",
+      "ordinal": 42,
+      "relationshipKind": "typeFeaturing",
       "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "specializes",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "transition",
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 11,
-      "relationshipKind": "transition",
+      "relationshipKind": "typeFeaturing",
       "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "typing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "specializes",
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "typing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "transitionSource",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "transitionTarget",
+      "ordinal": 16,
+      "relationshipKind": "transition",
       "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 19,
-      "relationshipKind": "transitionTrigger",
+      "relationshipKind": "transition",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "transition",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "transition",
-      "source": 16
+      "ordinal": 3,
+      "relationshipKind": "typeFeaturing",
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "transition",
+      "ordinal": 43,
+      "relationshipKind": "specializes",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "transitionSource",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "transitionTarget",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "transitionTrigger",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "typeFeaturing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "specializes",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "transition",
+      "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
       "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "specializes",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "transition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "transition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "typeFeaturing",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "typing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "transitionSource",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "transitionTarget",
-      "source": 18
+      "ordinal": 13,
+      "relationshipKind": "specializes",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "transition",
+      "source": 19
     },
     {
       "kind": "relationship",
       "ordinal": 10,
-      "relationshipKind": "transitionTrigger",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "transitionSource",
+      "relationshipKind": "transition",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "transitionTarget",
+      "ordinal": 14,
+      "relationshipKind": "typeFeaturing",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "transitionTrigger",
+      "ordinal": 12,
+      "relationshipKind": "typing",
       "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "specializes",
+      "source": 20
     },
     {
       "kind": "relationship",
@@ -3382,64 +5432,268 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 26,
+      "relationshipKind": "typeFeaturing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "specializes",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "typeFeaturing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "containment",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
+      "relationshipKind": "specializes",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
       "relationshipKind": "transitionSource",
-      "source": 21
+      "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 66,
       "relationshipKind": "transitionTarget",
-      "source": 21
+      "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 67,
       "relationshipKind": "transitionTrigger",
-      "source": 21
+      "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 68,
+      "relationshipKind": "typeFeaturing",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "specializes",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "containment",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "specializes",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
       "relationshipKind": "transitionSource",
-      "source": 22
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "ordinal": 59,
       "relationshipKind": "transitionTarget",
-      "source": 22
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 60,
       "relationshipKind": "transitionTrigger",
-      "source": 22
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "typeFeaturing",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "specializes",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "typeFeaturing",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "specializes",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "transitionSource",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "transitionTarget",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "transitionTrigger",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 20,
-      "relationshipKind": "transitionSource",
-      "source": 23
+      "relationshipKind": "specializes",
+      "source": 27
     },
     {
       "kind": "relationship",
       "ordinal": 21,
-      "relationshipKind": "transitionTarget",
-      "source": 23
+      "relationshipKind": "typeFeaturing",
+      "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 14,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "specializes",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "transitionSource",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "transitionTarget",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
       "relationshipKind": "transitionTrigger",
-      "source": 23
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "typeFeaturing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "specializes",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "specializes",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "transitionSource",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "transitionTarget",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "transitionTrigger",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "typeFeaturing",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "specializes",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "typeFeaturing",
+      "source": 31
     }
   ],
   "selectedView": {
-    "reference": 24,
+    "reference": 32,
     "kind": "state-transition-view",
     "name": "timerStateMachine",
-    "source": 43
+    "source": 51
   },
   "completeness": {
     "status": "complete",
@@ -3451,177 +5705,241 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 46,
         "source": 0,
-        "target": 10
+        "target": 18
       },
       {
         "kind": "containment",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 47,
         "source": 0,
-        "target": 11
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 48,
         "source": 0,
-        "target": 9
+        "target": 17
       },
       {
         "kind": "initial-state",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 40,
-        "source": 9,
-        "target": 10
+        "reference": 60,
+        "source": 17,
+        "target": 18
       },
       {
         "kind": "containment",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 49,
         "source": 0,
-        "target": 12
+        "target": 20
       },
       {
         "kind": "containment",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 50,
         "source": 0,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 31,
-        "source": 0,
-        "target": 8
-      },
-      {
-        "kind": "transition",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 56,
-        "source": 13,
-        "target": 11
+        "target": 21
       },
       {
         "kind": "containment",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 51,
+        "source": 0,
+        "target": 15
+      },
+      {
+        "kind": "transition",
+        "navigation": 28,
+        "provenance": "implied",
+        "reference": 95,
+        "source": 21,
+        "target": 19
+      },
+      {
+        "kind": "containment",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 123,
+        "source": 15,
+        "target": 16
+      },
+      {
+        "kind": "containment",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 52,
         "source": 0,
         "target": 1
       },
       {
         "kind": "transition",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 57,
-        "source": 13,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 33,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "transition",
-        "navigation": 12,
-        "provenance": "authored",
-        "reference": 46,
-        "source": 10,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "provenance": "authored",
-        "reference": 34,
-        "source": 0,
-        "target": 3
-      },
-      {
-        "kind": "transition",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 47,
-        "source": 10,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 15,
-        "provenance": "authored",
-        "reference": 35,
-        "source": 0,
-        "target": 4
-      },
-      {
-        "kind": "transition",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 48,
-        "source": 10,
-        "target": 10
+        "navigation": 33,
+        "provenance": "implied",
+        "reference": 96,
+        "source": 21,
+        "target": 20
       },
       {
         "kind": "containment",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 99,
+        "source": 1,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 53,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "transition",
+        "navigation": 13,
+        "provenance": "implied",
+        "reference": 76,
+        "source": 18,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "provenance": "authored",
+        "reference": 131,
+        "source": 3,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 22,
+        "provenance": "authored",
+        "reference": 54,
         "source": 0,
         "target": 5
       },
       {
         "kind": "transition",
-        "navigation": 32,
-        "provenance": "authored",
-        "reference": 53,
-        "source": 11,
-        "target": 13
+        "navigation": 23,
+        "provenance": "implied",
+        "reference": 77,
+        "source": 18,
+        "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 35,
+        "navigation": 21,
         "provenance": "authored",
-        "reference": 37,
-        "source": 0,
+        "reference": 63,
+        "source": 5,
         "target": 6
       },
       {
-        "kind": "transition",
-        "navigation": 36,
-        "provenance": "authored",
-        "reference": 54,
-        "source": 11,
-        "target": 10
-      },
-      {
         "kind": "containment",
-        "navigation": 39,
+        "navigation": 17,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 55,
         "source": 0,
         "target": 7
       },
       {
         "kind": "transition",
-        "navigation": 40,
+        "navigation": 18,
+        "provenance": "implied",
+        "reference": 78,
+        "source": 18,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
         "provenance": "authored",
-        "reference": 44,
-        "source": 12,
+        "reference": 81,
+        "source": 7,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 37,
+        "provenance": "authored",
+        "reference": 56,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "transition",
+        "navigation": 38,
+        "provenance": "implied",
+        "reference": 90,
+        "source": 19,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 139,
+        "source": 9,
         "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 42,
+        "provenance": "authored",
+        "reference": 57,
+        "source": 0,
+        "target": 11
+      },
+      {
+        "kind": "transition",
+        "navigation": 43,
+        "provenance": "implied",
+        "reference": 91,
+        "source": 19,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "provenance": "authored",
+        "reference": 115,
+        "source": 11,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "authored",
+        "reference": 58,
+        "source": 0,
+        "target": 13
+      },
+      {
+        "kind": "transition",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 72,
+        "source": 20,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 107,
+        "source": 13,
+        "target": 14
       }
     ],
     "exposedRoots": [
@@ -3631,14 +5949,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "metadata": {
       "finalNodes": [],
       "initialNodes": [
-        9
+        17
       ],
       "states": [
         0,
-        10,
-        11,
-        12,
-        13
+        18,
+        19,
+        20,
+        21
       ]
     },
     "nodes": [
@@ -3647,10 +5965,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "states",
             "members": [
-              10,
-              11,
-              12,
-              13
+              18,
+              19,
+              20,
+              21
             ],
             "provenance": "direct"
           }
@@ -3666,12 +5984,244 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "compartments": [],
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 18,
+        "reference": 20,
+        "source": 32,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 40,
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              4
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "to_running",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 28,
+        "source": 12,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 3,
+        "reference": 44,
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              6
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "decrement_idle",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 12,
+        "source": 22,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 5,
+        "reference": 38,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              8
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "increment_idle",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 16,
+        "source": 17,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 7,
+        "reference": 39,
+        "source": 16,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              10
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "to_running_resume",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 30,
+        "source": 37,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 9,
+        "reference": 45,
+        "source": 36,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              12
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "to_idle_from_paused",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 24,
+        "source": 42,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 11,
+        "reference": 42,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              14
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "to_idle_from_expired",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 22,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 13,
+        "reference": 41,
+        "source": 46,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              16
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "metaclass": "TransitionUsage",
+        "name": "to_paused",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 26,
         "source": 27,
         "typing": {
           "status": "absent"
@@ -3679,84 +6229,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_running",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 22,
-        "source": 11,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "decrement_idle",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 12,
-        "source": 19,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "increment_idle",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 15,
-        "source": 15,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_running_resume",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 23,
-        "source": 31,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_idle_from_paused",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 20,
-        "source": 35,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_idle_from_expired",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 19,
-        "source": 39,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_paused",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 21,
-        "source": 23,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 15,
+        "reference": 43,
+        "source": 26,
         "typing": {
           "status": "absent"
         }
@@ -3767,7 +6245,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 25,
+        "reference": 37,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -3779,7 +6257,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "idle",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 14,
+        "reference": 15,
         "source": 3,
         "typing": {
           "status": "resolved",
@@ -3797,7 +6275,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "paused",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 16,
+        "reference": 18,
         "source": 7,
         "typing": {
           "status": "resolved",
@@ -3815,7 +6293,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "expired",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 13,
+        "reference": 14,
         "source": 9,
         "typing": {
           "status": "resolved",
@@ -3833,7 +6311,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "running",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 17,
+        "reference": 19,
         "source": 5,
         "typing": {
           "status": "resolved",
@@ -3848,13 +6326,46 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     ],
     "relationships": [
       {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 59,
+        "source": 0,
+        "target": {
+          "reference": 35,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 49,
-        "source": 10,
+        "reference": 80,
+        "source": 18,
         "target": {
           "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 75,
+        "source": 18,
+        "target": {
+          "reference": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 79,
+        "source": 18,
+        "target": {
+          "node": 0,
           "status": "resolved"
         }
       },
@@ -3862,10 +6373,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 55,
-        "source": 11,
+        "reference": 93,
+        "source": 19,
         "target": {
           "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 89,
+        "source": 19,
+        "target": {
+          "reference": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 92,
+        "source": 19,
+        "target": {
+          "node": 0,
           "status": "resolved"
         }
       },
@@ -3873,10 +6406,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 39,
-        "source": 9,
+        "reference": 61,
+        "source": 17,
         "target": {
-          "node": 10,
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 62,
+        "source": 17,
+        "target": {
+          "node": 0,
           "status": "resolved"
         }
       },
@@ -3884,10 +6428,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 45,
-        "source": 12,
+        "reference": 74,
+        "source": 20,
         "target": {
           "reference": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 71,
+        "source": 20,
+        "target": {
+          "reference": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 73,
+        "source": 20,
+        "target": {
+          "node": 0,
           "status": "resolved"
         }
       },
@@ -3895,43 +6461,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 58,
-        "source": 13,
+        "reference": 98,
+        "source": 21,
         "target": {
           "reference": 7,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 68,
-        "source": 8,
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 94,
+        "source": 21,
         "target": {
-          "node": 13,
+          "reference": 36,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 69,
-        "source": 8,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 97,
+        "source": 21,
         "target": {
-          "node": 11,
+          "node": 0,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTrigger",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 70,
-        "source": 8,
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 124,
+        "source": 15,
         "target": {
-          "reference": 9,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -3939,10 +6505,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 59,
-        "source": 1,
+        "reference": 125,
+        "source": 15,
         "target": {
-          "node": 13,
+          "node": 21,
           "status": "resolved"
         }
       },
@@ -3950,10 +6516,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 60,
-        "source": 1,
+        "reference": 126,
+        "source": 15,
         "target": {
-          "node": 12,
+          "node": 19,
           "status": "resolved"
         }
       },
@@ -3961,7 +6527,84 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 127,
+        "source": 15,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 128,
+        "source": 15,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 129,
+        "source": 16,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 130,
+        "source": 16,
+        "target": {
+          "node": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 100,
+        "source": 1,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 33,
+        "provenance": "authored",
+        "reference": 101,
+        "source": 1,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 35,
+        "provenance": "authored",
+        "reference": 102,
+        "source": 1,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 103,
         "source": 1,
         "target": {
           "reference": 0,
@@ -3969,200 +6612,497 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 12,
-        "provenance": "authored",
-        "reference": 71,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 104,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 105,
         "source": 2,
         "target": {
-          "node": 10,
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 106,
+        "source": 2,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 132,
+        "source": 3,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 13,
+        "provenance": "authored",
+        "reference": 133,
+        "source": 3,
+        "target": {
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 14,
+        "navigation": 15,
         "provenance": "authored",
-        "reference": 72,
-        "source": 2,
+        "reference": 134,
+        "source": 3,
         "target": {
-          "node": 13,
+          "node": 21,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 13,
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 73,
-        "source": 2,
+        "reference": 135,
+        "source": 3,
         "target": {
           "reference": 8,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 41,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 136,
         "source": 3,
         "target": {
-          "node": 10,
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 137,
+        "source": 4,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 138,
+        "source": 4,
+        "target": {
+          "node": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 64,
+        "source": 5,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 65,
+        "source": 5,
+        "target": {
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 22,
+        "navigation": 25,
         "provenance": "authored",
-        "reference": 42,
-        "source": 3,
+        "reference": 66,
+        "source": 5,
         "target": {
-          "node": 10,
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 21,
+        "navigation": 24,
         "provenance": "authored",
-        "reference": 43,
-        "source": 3,
+        "reference": 67,
+        "source": 5,
         "target": {
           "reference": 1,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 50,
-        "source": 4,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 68,
+        "source": 5,
         "target": {
-          "node": 10,
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 69,
+        "source": 6,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 70,
+        "source": 6,
+        "target": {
+          "node": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 82,
+        "source": 7,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 83,
+        "source": 7,
+        "target": {
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 18,
+        "navigation": 20,
         "provenance": "authored",
-        "reference": 51,
-        "source": 4,
+        "reference": 84,
+        "source": 7,
         "target": {
-          "node": 10,
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 17,
+        "navigation": 19,
         "provenance": "authored",
-        "reference": 52,
-        "source": 4,
+        "reference": 85,
+        "source": 7,
         "target": {
           "reference": 4,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 32,
-        "provenance": "authored",
-        "reference": 74,
-        "source": 5,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 86,
+        "source": 7,
         "target": {
-          "node": 11,
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 87,
+        "source": 8,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 88,
+        "source": 8,
+        "target": {
+          "node": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 140,
+        "source": 9,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 141,
+        "source": 9,
+        "target": {
+          "node": 19,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 34,
+        "navigation": 40,
         "provenance": "authored",
-        "reference": 75,
-        "source": 5,
+        "reference": 142,
+        "source": 9,
         "target": {
-          "node": 13,
+          "node": 21,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 33,
+        "navigation": 39,
         "provenance": "authored",
-        "reference": 76,
-        "source": 5,
+        "reference": 143,
+        "source": 9,
         "target": {
           "reference": 8,
           "status": "resolved"
         }
       },
       {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 144,
+        "source": 9,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 145,
+        "source": 10,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 146,
+        "source": 10,
+        "target": {
+          "node": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 116,
+        "source": 11,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
-        "navigation": 36,
+        "navigation": 43,
         "provenance": "authored",
-        "reference": 65,
-        "source": 6,
+        "reference": 117,
+        "source": 11,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 118,
+        "source": 11,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 44,
+        "provenance": "authored",
+        "reference": 119,
+        "source": 11,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 120,
+        "source": 11,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 121,
+        "source": 12,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 122,
+        "source": 12,
         "target": {
           "node": 11,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 66,
-        "source": 6,
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 108,
+        "source": 13,
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 37,
-        "provenance": "authored",
-        "reference": 67,
-        "source": 6,
-        "target": {
-          "reference": 6,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionSource",
-        "navigation": 40,
+        "navigation": 48,
         "provenance": "authored",
-        "reference": 62,
-        "source": 7,
+        "reference": 109,
+        "source": 13,
         "target": {
-          "node": 12,
+          "node": 20,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 42,
+        "navigation": 50,
         "provenance": "authored",
-        "reference": 63,
-        "source": 7,
+        "reference": 110,
+        "source": 13,
         "target": {
-          "node": 10,
+          "node": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 41,
+        "navigation": 49,
         "provenance": "authored",
-        "reference": 64,
-        "source": 7,
+        "reference": 111,
+        "source": 13,
         "target": {
           "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 112,
+        "source": 13,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 113,
+        "source": 14,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 114,
+        "source": 14,
+        "target": {
+          "node": 13,
           "status": "resolved"
         }
       }
@@ -4201,13 +7141,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-1",
           "label": "to_paused",
-          "navigation": 24,
-          "provenance": "authored",
+          "navigation": 28,
+          "provenance": "implied",
           "source": 4,
           "target": 2,
           "trigger": {
             "label": "StopPressed",
-            "navigation": 25,
+            "navigation": 29,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn11:StopPressed1:0",
@@ -4224,13 +7164,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-2",
           "label": "to_expired",
-          "navigation": 28,
-          "provenance": "authored",
+          "navigation": 33,
+          "provenance": "implied",
           "source": 4,
           "target": 3,
           "trigger": {
             "label": "CountdownComplete",
-            "navigation": 29,
+            "navigation": 34,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn17:CountdownComplete1:0",
@@ -4247,13 +7187,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-3",
           "label": "to_running",
-          "navigation": 12,
-          "provenance": "authored",
+          "navigation": 13,
+          "provenance": "implied",
           "source": 1,
           "target": 4,
           "trigger": {
             "label": "StartPressed",
-            "navigation": 13,
+            "navigation": 14,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
@@ -4270,13 +7210,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-4",
           "label": "decrement_idle",
-          "navigation": 20,
-          "provenance": "authored",
+          "navigation": 23,
+          "provenance": "implied",
           "source": 1,
           "target": 1,
           "trigger": {
             "label": "DecrementPressed",
-            "navigation": 21,
+            "navigation": 24,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:DecrementPressed1:0",
@@ -4293,13 +7233,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-5",
           "label": "increment_idle",
-          "navigation": 16,
-          "provenance": "authored",
+          "navigation": 18,
+          "provenance": "implied",
           "source": 1,
           "target": 1,
           "trigger": {
             "label": "IncrementPressed",
-            "navigation": 17,
+            "navigation": 19,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:IncrementPressed1:0",
@@ -4316,13 +7256,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-6",
           "label": "to_running_resume",
-          "navigation": 32,
-          "provenance": "authored",
+          "navigation": 38,
+          "provenance": "implied",
           "source": 2,
           "target": 4,
           "trigger": {
             "label": "StartPressed",
-            "navigation": 33,
+            "navigation": 39,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
@@ -4339,13 +7279,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-7",
           "label": "to_idle_from_paused",
-          "navigation": 36,
-          "provenance": "authored",
+          "navigation": 43,
+          "provenance": "implied",
           "source": 2,
           "target": 1,
           "trigger": {
             "label": "ResetPressed",
-            "navigation": 37,
+            "navigation": 44,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
@@ -4362,13 +7302,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "id": "transition-8",
           "label": "to_idle_from_expired",
-          "navigation": 40,
-          "provenance": "authored",
+          "navigation": 48,
+          "provenance": "implied",
           "source": 3,
           "target": 1,
           "trigger": {
             "label": "ResetPressed",
-            "navigation": 41,
+            "navigation": 49,
             "status": "accept",
             "target": {
               "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",

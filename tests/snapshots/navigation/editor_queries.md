@@ -61,6 +61,9 @@ probe editor_queries.md 10 17 rename=Base
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x"))) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base::inheritedMember"))) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::ownMember"))) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x"))) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (provenance implied))
   )
   (evaluation
   )
@@ -130,8 +133,10 @@ probe editor_queries.md 10 17 rename=Base
           (declaration (range (start 10 8) (end 10 23)))
           (membership (kind feature) (visibility private) (provenance default))
           (relationship (kind "featureTyping") (provenance authored) (authored "Other") (target resolved))
+          (relationship (kind "typeFeaturing") (provenance implied) (target resolved))
           (typing (outcome resolved) (target "Types::Other"))
           (effective-typing (outcome resolved) (type (qualified-name "Types::Other") (origin direct)))
+          (outgoing (kind "typeFeaturing") (peer "Use::Child") (provenance implied))
           (outgoing (kind "typing") (peer "Types::Other") (provenance authored))
         )
       )

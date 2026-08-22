@@ -115,6 +115,10 @@ package 'Variation Configuration' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle4Cyl")) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle4Cyl"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle4Cyl")) (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle4Cyl"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle6Cyl")) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle6Cyl"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle6Cyl")) (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle6Cyl"))) (provenance implied))
   )
   (evaluation
   )

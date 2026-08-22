@@ -61,6 +61,7 @@ package Diamond {
     (relationship (kind typing) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p"))) (target (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond"))) (provenance implied))
   )
   (evaluation
   )
@@ -74,7 +75,6 @@ package Diamond {
       (subtype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member")))
-      (featured-by (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base")))
       (subtype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond")))

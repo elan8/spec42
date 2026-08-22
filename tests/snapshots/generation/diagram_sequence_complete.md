@@ -64,6 +64,13 @@ package SequenceExample {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::SequenceView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_sequence_complete.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::receiver"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::receiver"))) (target (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::sender"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::sender"))) (target (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_complete.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected"))) (provenance implied))
   )
   (evaluation
   )
@@ -72,16 +79,55 @@ package SequenceExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::receiver")))
       (featured-by (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction::sender")))
       (featured-by (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::Interaction")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::SequenceView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::SequenceView")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::SequenceView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample::selected")))
@@ -118,6 +164,10 @@ package SequenceExample {
     {
       "uri": "memory://snapshot/diagram_sequence_complete.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -180,6 +230,16 @@ package SequenceExample {
       "qualifiedName": "SequenceExample::selected"
     },
     {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::Part"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Parts::parts"
+    },
+    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -190,6 +250,36 @@ package SequenceExample {
       "ordinal": 1,
       "relationshipKind": "containment",
       "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "specializes",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "specializes",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
     }
   ],
   "selectedView": {
@@ -208,7 +298,7 @@ package SequenceExample {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 4,
+        "reference": 6,
         "source": 0,
         "target": 1
       },
@@ -216,7 +306,7 @@ package SequenceExample {
         "kind": "containment",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 5,
+        "reference": 7,
         "source": 0,
         "target": 2
       }
@@ -279,7 +369,63 @@ package SequenceExample {
         }
       }
     ],
-    "relationships": [],
+    "relationships": [
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 8,
+        "source": 0,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 11,
+        "source": 1,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 12,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 9,
+        "source": 2,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 10,
+        "source": 2,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "sequence"
     }

@@ -88,6 +88,8 @@ abstract part def Container {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (provenance implied))
   )
   (evaluation
   )
@@ -96,18 +98,6 @@ abstract part def Container {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPart")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
-    )
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl")))
       (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices")))
     )

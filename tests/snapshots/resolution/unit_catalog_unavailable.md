@@ -32,6 +32,7 @@ package NoCatalog {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle::mass"))) (target (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))

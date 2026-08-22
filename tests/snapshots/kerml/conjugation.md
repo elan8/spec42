@@ -60,6 +60,7 @@ package Conjugation {
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A::f"))) (target (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A"))) (provenance implied))
   )
   (evaluation
   )

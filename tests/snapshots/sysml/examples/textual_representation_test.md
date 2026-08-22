@@ -91,6 +91,10 @@ package TextualRepresentationTest {
   )
   (relationships
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::newX"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX"))) (provenance implied))
   )
   (evaluation
   )

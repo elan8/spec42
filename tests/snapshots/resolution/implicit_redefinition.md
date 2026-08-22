@@ -62,7 +62,9 @@ package P {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (state literal) (value (kind integer) (integer 1200)))
