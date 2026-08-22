@@ -300,6 +300,17 @@ fn resolve_closure(
     if wants_sysml_bootstrap {
         seeds.extend(index.standard_packages.iter().cloned());
     }
+    // The packages the resolver's generated library rules anchor into (`Parts::parts`,
+    // `Items::Item`, `Views::views`, ...). No workspace imports them, yet every implied
+    // specialization resolves against them, so they are admitted whenever a standard-library
+    // root provides them — including when a workspace package shares the name, because the
+    // resolver looks anchors up by standard-library role, never by bare name.
+    let anchor_packages: HashSet<PackageKey> = crate::model::resolver::library_anchor_packages()
+        .into_iter()
+        .map(|package| PackageKey(package.to_string()))
+        .filter(|package| index.standard_packages.contains(package))
+        .collect();
+    seeds.extend(anchor_packages.iter().cloned());
 
     let mut queue: VecDeque<PackageKey> = seeds.into_iter().collect();
     // Every workspace package's own imports and references are followed as well: an import
@@ -315,15 +326,22 @@ fn resolve_closure(
         if !visited.insert(package.clone()) {
             continue;
         }
-        if workspace_packages.contains(&package) {
-            // Satisfied by a workspace package: follow its imports only, never the library's.
+        let shadowed = workspace_packages.contains(&package);
+        if shadowed {
+            // Satisfied by a workspace package: follow its imports; the library's same-named
+            // package is admitted only when it is a standard-library anchor package.
             enqueue_workspace_package(facts, &package, options, &mut queue);
-            continue;
+            if !anchor_packages.contains(&package) {
+                continue;
+            }
         }
         let Some(entries) = index.packages.get(&package) else {
             continue;
         };
         for entry in entries {
+            if shadowed && entry.document.kind() != SourceKind::StandardLibrary {
+                continue;
+            }
             if !admitted.insert(entry.document.uri().to_string()) {
                 continue;
             }
@@ -631,6 +649,54 @@ mod tests {
             paths.iter().any(|p| p.ends_with("ScalarValues.sysml")),
             "{paths:?}"
         );
+    }
+
+    #[test]
+    fn closure_admits_standard_library_anchor_packages_even_when_shadowed() {
+        let temp = tempfile::tempdir().unwrap();
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).unwrap();
+        fs::write(
+            lib.join("Parts.sysml"),
+            "standard library package Parts { part parts; }",
+        )
+        .unwrap();
+        fs::write(
+            lib.join("Views.sysml"),
+            "standard library package Views { view views; }",
+        )
+        .unwrap();
+        fs::write(
+            lib.join("Unrelated.sysml"),
+            "standard library package Unrelated { part def Nothing; }",
+        )
+        .unwrap();
+        let ws = workspace(&[(
+            "Views.sysml",
+            "package Views { part timer; view structure { expose timer; } }",
+        )]);
+        let closure = authority()
+            .resolve(&ws, &standard(&lib), &LibraryClosureOptions::default())
+            .unwrap();
+        let admitted = paths(&closure);
+        assert!(
+            admitted.iter().any(|p| p.ends_with("Parts.sysml")),
+            "{admitted:?}"
+        );
+        assert!(
+            admitted.iter().any(|p| p.ends_with("Views.sysml")),
+            "{admitted:?}"
+        );
+        assert!(
+            !admitted.iter().any(|p| p.ends_with("Unrelated.sysml")),
+            "{admitted:?}"
+        );
+
+        // A dependency root that merely reuses an anchor name is not a standard library.
+        let closure = authority()
+            .resolve(&ws, &library(&lib), &LibraryClosureOptions::default())
+            .unwrap();
+        assert!(paths(&closure).is_empty(), "{:?}", paths(&closure));
     }
 
     #[test]

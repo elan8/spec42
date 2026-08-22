@@ -1379,6 +1379,30 @@ fn library_redefinition_rules(
         .filter(move |rule| rule.metaclass == metaclass)
 }
 
+/// The root standard-library packages every generated library rule anchors into, deduplicated
+/// and sorted. The library-closure authority seeds these so that a publication always admits
+/// the documents its implied specializations and redefinitions resolve against.
+pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
+    let mut packages = GENERATED_LIBRARY_SPECIALIZATION_RULES
+        .iter()
+        .map(|rule| rule.anchor)
+        .chain(
+            GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
+                .iter()
+                .flat_map(|rule| [Some(rule.anchor), rule.true_anchor].into_iter().flatten()),
+        )
+        .chain(
+            GENERATED_LIBRARY_REDEFINITION_RULES
+                .iter()
+                .map(|rule| rule.anchor),
+        )
+        .filter_map(|anchor| anchor.split("::").next())
+        .collect::<Vec<_>>();
+    packages.sort_unstable();
+    packages.dedup();
+    packages
+}
+
 /// Maps an exact XMI source metaclass to the parser's owned declaration projection.
 ///
 /// `PayloadFeature` is currently not a lowered declaration kind. Keeping that absence explicit

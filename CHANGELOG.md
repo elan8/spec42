@@ -36,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Semantic-token highlighting no longer paints `provides`, `requires` or `value` as keywords.**
   The lexer's keyword table was a second copy that included three words OMG 8.2.2.1.2 does not
   reserve; both tables are now the facade's single 128-word vocabulary.
+- **Every publication now admits the standard-library packages its implied specializations
+  anchor into.** The library closure seeds the root packages of the resolver's generated library
+  rules (`Parts`, `Items`, `States`, `Views`, `Requirements`, …) from standard-library roots, so
+  `missing_library_anchor` no longer appears for models that never import them — including a
+  workspace that declares its own `package Views`, since anchors resolve by standard-library
+  role, not by bare name. `crates/server/tests/examples_are_clean.rs` now asserts every
+  `examples/` workspace validates with no errors, warnings or infos.
 - **Line endings are normalised to LF before a document is digested, on every path.** The
   editor already sent LF text; batch snapshots of CRLF files now carry the same digests the
   editor would, so `document_digests` in persisted artifact metadata change for CRLF files.
