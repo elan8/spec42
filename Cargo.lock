@@ -830,7 +830,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml_query",
- "sysml_source",
  "tempfile",
  "toml 0.8.23",
 ]
@@ -1176,7 +1175,6 @@ dependencies = [
  "serde_json",
  "sysml_query",
  "sysml_resolution",
- "sysml_source",
  "tempfile",
  "url",
 ]
@@ -1263,7 +1261,6 @@ dependencies = [
  "generator_api",
  "generator_host",
  "glob",
- "ignore",
  "language_service",
  "petgraph",
  "rayon",
@@ -1275,7 +1272,6 @@ dependencies = [
  "sysml_diagnostics",
  "sysml_query",
  "sysml_resolution",
- "sysml_source",
  "sysml_tokens",
  "tempfile",
  "thiserror 2.0.19",
@@ -1285,7 +1281,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
- "walkdir",
  "wat",
  "workspace",
  "workspace_session",
@@ -1758,8 +1753,6 @@ version = "0.50.0"
 dependencies = [
  "blake3",
  "sysml_query",
- "sysml_source",
- "url",
 ]
 
 [[package]]
@@ -2010,7 +2003,6 @@ dependencies = [
  "serde_json",
  "spec42-constraint-manifest",
  "sysml_query",
- "sysml_source",
  "tempfile",
  "toml 0.8.23",
 ]
@@ -2122,13 +2114,16 @@ dependencies = [
  "source_identity",
  "spec42-constraint-manifest",
  "sysml-v2-parser",
+ "sysml_source",
 ]
 
 [[package]]
 name = "sysml_source"
 version = "0.50.0"
 dependencies = [
+ "ignore",
  "source_identity",
+ "tempfile",
  "url",
 ]
 
@@ -2975,10 +2970,8 @@ dependencies = [
 name = "workspace"
 version = "0.50.0"
 dependencies = [
- "blake3",
  "directories",
  "dirs",
- "ignore",
  "kpar",
  "language_service",
  "petgraph",
@@ -2989,12 +2982,10 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "source_identity",
  "syn 2.0.119",
  "sysml_diagnostics",
  "sysml_query",
  "sysml_resolution",
- "sysml_source",
  "tempfile",
  "thiserror 2.0.19",
  "toml 0.8.23",
@@ -3002,7 +2993,6 @@ dependencies = [
  "url",
  "walkdir",
  "zip",
- "zstd",
 ]
 
 [[package]]
@@ -3011,7 +3001,6 @@ version = "0.50.0"
 dependencies = [
  "semantic_publication",
  "sysml_query",
- "sysml_source",
  "thiserror 2.0.19",
  "tokio",
  "tracing",

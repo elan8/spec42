@@ -1,7 +1,7 @@
 use crate::common::util;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
-use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
+use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata, ScanSummary};
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
@@ -10,6 +10,49 @@ use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
+}
+
+/// Walks the given roots for SysML sources through the source service.
+///
+/// Ignore rules (`.gitignore` and friends) are honoured by the provider, so a project's own
+/// `target/` or `node_modules/` is not indexed. Disk content arrives already normalised to LF,
+/// which is what the editor sends on `didOpen`, so a CRLF file does not look "changed" when
+/// opened. Counts are kept for the startup log.
+pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSummary) {
+    use sysml_query::source::{FilesystemProvider, SourceError, SourceKind, SourceService};
+
+    let mut summary = ScanSummary::default();
+    let mut paths = Vec::new();
+    for root in roots {
+        match root.to_file_path() {
+            Ok(path) => paths.push(path),
+            Err(_) => summary.roots_skipped_non_file += 1,
+        }
+    }
+    let provider = FilesystemProvider::new(paths, SourceKind::Workspace);
+    let report = match SourceService::new().load(&provider) {
+        Ok(report) => report,
+        Err(error) => {
+            tracing::warn!(%error, "workspace scan failed");
+            return (Vec::new(), summary);
+        }
+    };
+    summary.roots_scanned = report.roots_scanned;
+    summary.roots_skipped_non_file += report.roots_skipped;
+    summary.candidate_files = report.candidate_files;
+    summary.files_loaded = report.documents.len();
+    for skipped in &report.skipped {
+        match skipped.error {
+            SourceError::InvalidUri { .. } => summary.uri_failures += 1,
+            _ => summary.read_failures += 1,
+        }
+    }
+    let out = report
+        .documents
+        .into_iter()
+        .map(|document| (document.uri().clone(), document.content().to_owned()))
+        .collect();
+    (out, summary)
 }
 
 #[derive(Debug)]

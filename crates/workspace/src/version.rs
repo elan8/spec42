@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
-use source_identity::ContentDigest;
+use sysml_query::source::ContentDigest;
 
 /// Schema v2 breaks compatibility with v1: `SysmlDocument.sha256: Option<String>` became
 /// `content_digest: Option<ContentDigest>`, `HostArtifactMetadata.document_hashes` became

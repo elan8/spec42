@@ -121,7 +121,7 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<TextRange> {
 mod tests {
     use super::*;
     use sysml_query::resolved_slice::{
-        BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+        AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
     };
     use url::Url;
 
@@ -136,7 +136,7 @@ mod tests {
         let input = "package P { part def Engine { } }";
         let uri = Url::parse("file:///test.sysml").expect("uri");
         let source =
-            SourceDocument::from_uri(uri.as_str(), input.to_string(), SourceKind::Workspace)
+            AdmittedSource::from_uri(uri.as_str(), input.to_string(), SourceKind::Workspace)
                 .unwrap();
         let request =
             BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential).unwrap();

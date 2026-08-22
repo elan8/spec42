@@ -1,22 +1,17 @@
 use url::Url;
-use workspace::{apply_document_changes, DocumentChanges, SysmlDocumentSourceKind};
+use workspace::{apply_document_changes, DocumentChanges, SourceDocument, SourceKind};
 
-fn memory_doc(path: &str, content: &str) -> workspace::SysmlDocument {
-    let uri = Url::parse(&format!("file://{path}")).expect("uri");
-    workspace::SysmlDocument {
-        uri,
-        content: content.to_string(),
-        path_hint: Some(
+fn memory_doc(path: &str, content: &str) -> SourceDocument {
+    sysml_query::source::SourceService::new()
+        .admit(&format!("file://{path}"), content, SourceKind::Workspace)
+        .expect("document")
+        .with_path_hint(
             std::path::Path::new(path)
                 .file_name()
                 .unwrap()
                 .to_string_lossy()
                 .into_owned(),
-        ),
-        source_kind: SysmlDocumentSourceKind::Workspace,
-        content_digest: None,
-        byte_size: None,
-    }
+        )
 }
 
 #[test]
@@ -32,9 +27,8 @@ fn apply_document_changes_replaces_changed_uri() {
 
     let merged = apply_document_changes(&previous, &changes).expect("merge");
     assert_eq!(merged.len(), 2);
-    assert!(merged.iter().any(|doc| doc.content.contains("Three")));
-    assert!(!merged.iter().any(|doc| doc.content.contains("One")));
-    assert!(merged.iter().all(|doc| doc.content_digest.is_some()));
+    assert!(merged.iter().any(|doc| doc.content().contains("Three")));
+    assert!(!merged.iter().any(|doc| doc.content().contains("One")));
 }
 
 #[test]
@@ -47,7 +41,7 @@ fn apply_document_changes_adds_and_removes_documents() {
 
     let merged = apply_document_changes(&previous, &changes).expect("merge");
     assert_eq!(merged.len(), 1);
-    assert!(merged[0].uri.path().ends_with("C.sysml"));
+    assert!(merged[0].uri().path().ends_with("C.sysml"));
 }
 
 #[test]

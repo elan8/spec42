@@ -6,6 +6,7 @@ fn workspace_does_not_depend_on_protocol_or_runtime_crates() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let cargo_toml = fs::read_to_string(manifest_dir.join("Cargo.toml")).expect("read Cargo.toml");
     let forbidden = [
+        "sysml_source",
         "lsp_server",
         "tower-lsp",
         "tower_lsp",
@@ -21,7 +22,7 @@ fn workspace_does_not_depend_on_protocol_or_runtime_crates() {
         );
     }
 
-    for required in ["sysml_query", "sysml_source", "language_service"] {
+    for required in ["sysml_query", "language_service"] {
         assert!(
             cargo_toml.contains(&format!("{required} =")),
             "workspace must depend on {required}"

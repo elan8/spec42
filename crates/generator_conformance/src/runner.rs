@@ -17,7 +17,7 @@ use rayon::prelude::*;
 use semantic_publication::PublicationCoordinator;
 use serde::Serialize;
 use sysml_query::resolved_slice::PublishedModel;
-use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_query::source::{SourceKind, SourceService};
 
 use crate::case::{Case, Expectation};
 
@@ -161,15 +161,14 @@ impl Corpus {
         }
         let content = std::fs::read_to_string(&path)
             .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
-        let source = SysmlDocument::from_memory_path(
-            "generator-conformance",
-            "model.sysml",
-            content,
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .map_err(|error| error.to_string())?;
+        let source = SourceService::new()
+            .admit_memory(
+                "generator-conformance",
+                "model.sysml",
+                content,
+                SourceKind::Workspace,
+            )
+            .map_err(|error| error.to_string())?;
         PublicationCoordinator::new()
             .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))

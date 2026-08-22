@@ -9,6 +9,7 @@
 //! The library sources are then admitted as `StandardLibrary`-role documents, so the fixture's
 //! references resolve against them while the owned projections keep reporting only the fixture's
 //! own authored documents.
+#![recursion_limit = "256"]
 
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fmt::Write as _;
@@ -34,20 +35,20 @@ use spec42_constraint_manifest::{
 };
 use sysml_query::resolved_slice::{
     build as build_published_model, ActionDerivedFactCollection, ActionDerivedFactOutcome,
-    AnnotationForm, BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite,
-    BuildRequest, ConstructionStrategy, DefinitionUsageDerivedOutcome,
-    DefinitionUsageDerivedPrerequisite, DerivedElementOwner, Documentation, EditorProbe,
-    ElementDerivedDocumentationCollection, ElementKind, FeatureDerivedRelationshipCollection,
-    LibraryStratum, NamespaceDerivedElementCollection, PublishedModel, QualifiedElementReference,
-    QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryOutcome, RedefinitionCheckOutcome,
-    RedefinitionCheckPrerequisite, RelationshipProvenance, RelationshipTarget,
-    RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite, SourceDocument as QuerySourceDocument, SourceKind,
-    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SymbolIdentity, TextPosition,
-    TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactOutcome,
-    TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    AdmittedSource as QuerySourceDocument, AnnotationForm, BindingConnectorValidationOutcome,
+    BindingConnectorValidationPrerequisite, BuildRequest, ConstructionStrategy,
+    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
+    Documentation, EditorProbe, ElementDerivedDocumentationCollection, ElementKind,
+    FeatureDerivedRelationshipCollection, LibraryStratum, NamespaceDerivedElementCollection,
+    PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe,
+    QueryOutcome, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
+    RelationshipTarget, RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite, SourceKind, SpecializationCheckOutcome,
+    SpecializationCheckPrerequisite, SymbolIdentity, TextPosition, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactOutcome, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection,
 };
-use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_query::source::{SourceDocument as AdmittedDocument, SourceService};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -2062,7 +2063,7 @@ struct LibraryCorpus {
     root: PathBuf,
     standard: OnceLock<Result<Vec<QuerySourceDocument>, String>>,
     standard_stratum: OnceLock<Result<LibraryStratum, String>>,
-    standard_documents: OnceLock<Result<Vec<SysmlDocument>, String>>,
+    standard_documents: OnceLock<Result<Vec<AdmittedDocument>, String>>,
 }
 
 impl LibraryCorpus {
@@ -2075,7 +2076,7 @@ impl LibraryCorpus {
         }
     }
 
-    fn documents(&self, selection: LibrarySelection) -> Result<&[SysmlDocument], String> {
+    fn documents(&self, selection: LibrarySelection) -> Result<&[AdmittedDocument], String> {
         match selection {
             LibrarySelection::None => Ok(&[]),
             LibrarySelection::Standard => self
@@ -2096,8 +2097,8 @@ impl LibraryCorpus {
                         .iter()
                         .map(|document| {
                             QuerySourceDocument::from_uri(
-                                document.uri.as_str(),
-                                document.content.clone(),
+                                document.uri().as_str(),
+                                document.content().to_owned(),
                                 SourceKind::StandardLibrary,
                             )
                             .map_err(|error| format!("invalid library source: {error}"))
@@ -2125,7 +2126,7 @@ impl LibraryCorpus {
     }
 }
 
-fn load_standard_library_documents(root: &Path) -> Result<Vec<SysmlDocument>, String> {
+fn load_standard_library_documents(root: &Path) -> Result<Vec<AdmittedDocument>, String> {
     let directory = root.join(STANDARD_LIBRARY_DIRECTORY);
     let mut paths = Vec::new();
     visit_markdown(&directory, &mut paths)?;
@@ -2146,14 +2147,16 @@ fn load_standard_library_documents(root: &Path) -> Result<Vec<SysmlDocument>, St
             .map_err(|error| format!("{}: read failed: {error}", path.display()))?;
         for document in parse_source_documents(&text, fallback_name)? {
             let name = format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.name);
-            documents.push(SysmlDocument::from_memory_path(
-                "snapshot",
-                &name,
-                document.text,
-                SysmlDocumentSourceKind::StandardLibrary,
-                None,
-                None,
-            )?);
+            documents.push(
+                SourceService::new()
+                    .admit_memory(
+                        "snapshot",
+                        &name,
+                        document.text,
+                        SourceKind::StandardLibrary,
+                    )
+                    .map_err(|error| error.to_string())?,
+            );
         }
     }
     Ok(documents)
@@ -2628,18 +2631,18 @@ fn regenerate_snapshot(
     let mut admitted_documents = documents
         .iter()
         .map(|document| {
-            SysmlDocument::from_memory_path(
-                "snapshot",
-                &document.name,
-                document.text.clone(),
-                if meta.standard_library_documents.contains(&document.name) {
-                    SysmlDocumentSourceKind::StandardLibrary
-                } else {
-                    SysmlDocumentSourceKind::Workspace
-                },
-                None,
-                None,
-            )
+            SourceService::new()
+                .admit_memory(
+                    "snapshot",
+                    &document.name,
+                    &document.text,
+                    if meta.standard_library_documents.contains(&document.name) {
+                        SourceKind::StandardLibrary
+                    } else {
+                        SourceKind::Workspace
+                    },
+                )
+                .map_err(|error| error.to_string())
         })
         .collect::<Result<Vec<_>, _>>()?;
     admitted_documents.extend_from_slice(libraries.documents(meta.libraries)?);

@@ -7,3 +7,4 @@
 //! graph, resolver state, fact collections, or query-index storage.
 
 pub mod resolved_slice;
+pub mod source;

@@ -41,20 +41,15 @@ pub use sysml_resolution::{
     VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SourceKind {
-    Workspace,
-    StandardLibrary,
-    Library,
-    External,
-}
+/// Provenance of an admitted source; the one enum the source authority defines.
+pub use sysml_resolution::source::SourceKind;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SourceDocument {
+pub struct AdmittedSource {
     inner: sysml_resolution::SourceInput,
 }
 
-impl SourceDocument {
+impl AdmittedSource {
     pub fn from_uri(
         uri: &str,
         content: String,
@@ -64,7 +59,7 @@ impl SourceDocument {
             return Err(SourceError("source identity must not be empty"));
         }
         Ok(Self {
-            inner: sysml_resolution::SourceInput::new(uri, content, source_kind.into()),
+            inner: sysml_resolution::SourceInput::new(uri, content, source_kind),
         })
     }
 
@@ -82,7 +77,7 @@ impl SourceDocument {
             inner: sysml_resolution::SourceInput::new(
                 format!("memory://{namespace}/{normalized}"),
                 content,
-                source_kind.into(),
+                source_kind,
             ),
         })
     }
@@ -90,17 +85,6 @@ impl SourceDocument {
     /// The identity queries and published facts address this document by.
     pub fn identity(&self) -> &str {
         self.inner.identity()
-    }
-}
-
-impl From<SourceKind> for sysml_resolution::SourceKind {
-    fn from(kind: SourceKind) -> Self {
-        match kind {
-            SourceKind::Workspace => Self::Workspace,
-            SourceKind::StandardLibrary => Self::StandardLibrary,
-            SourceKind::Library => Self::Library,
-            SourceKind::External => Self::External,
-        }
     }
 }
 
@@ -128,7 +112,7 @@ pub struct BuildRequest {
 
 impl BuildRequest {
     pub fn resolved(
-        sources: Vec<SourceDocument>,
+        sources: Vec<AdmittedSource>,
         construction: ConstructionStrategy,
     ) -> Result<Self, BuildError> {
         let schedule = match construction {
@@ -148,7 +132,7 @@ impl BuildRequest {
     ///
     /// `sources` carries only the workspace documents; the library's come from the stratum.
     pub fn resolved_with_library(
-        sources: Vec<SourceDocument>,
+        sources: Vec<AdmittedSource>,
         construction: ConstructionStrategy,
         library: &LibraryStratum,
     ) -> Result<Self, BuildError> {
@@ -200,7 +184,7 @@ pub struct LibraryStratum {
 }
 
 impl LibraryStratum {
-    pub fn build(sources: Vec<SourceDocument>) -> Result<Self, BuildError> {
+    pub fn build(sources: Vec<AdmittedSource>) -> Result<Self, BuildError> {
         sysml_resolution::build_library_stratum(
             sources.into_iter().map(|source| source.inner).collect(),
         )
@@ -1568,9 +1552,8 @@ pub struct RawStorageIsNotPublic;
 #[cfg(test)]
 mod tests {
     use super::{
-        build, build_measured, BuildRequest, ConstructionStrategy,
-        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceDocument,
-        SourceKind,
+        build, build_measured, AdmittedSource, BuildRequest, ConstructionStrategy,
+        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind,
     };
 
     #[test]
@@ -1583,7 +1566,7 @@ mod tests {
     fn measured_and_unmeasured_builds_publish_the_same_semantics() {
         fn request() -> BuildRequest {
             BuildRequest::resolved(
-                vec![SourceDocument::from_memory_path(
+                vec![AdmittedSource::from_memory_path(
                     "measurement-parity",
                     "model.sysml",
                     "package P { part def Vehicle; part vehicle : Vehicle; }".into(),
@@ -1616,14 +1599,14 @@ mod tests {
         let publication = build(
             BuildRequest::resolved(
                 vec![
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "items.sysml",
                         "standard library package Items { item def Item; }".into(),
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "workspace",
                         "model.sysml",
                         "package Model { item def Component; }".into(),
@@ -1665,35 +1648,35 @@ mod tests {
         let publication = build(
             BuildRequest::resolved(
                 vec![
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "requirements.sysml",
                         "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; package RequirementCheck { constraint def assumptions; constraint def constraints; } }".into(),
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "actions.sysml",
                         "standard library package Actions { action ifThenActions; action ifThenElseActions; }".into(),
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "flows.sysml",
                         "standard library package Flows { flow def Message; flow def flows; } standard library package Transfers { flow def flowTransfers; }".into(),
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "feature-anchors.sysml",
                         "standard library package Base { feature dataValues; } standard library package Links { class Link { feature participant; } }".into(),
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "workspace",
                         "model.sysml",
                         "package Model {}".into(),
@@ -1775,7 +1758,7 @@ mod tests {
         let publication = build(
             BuildRequest::resolved(
                 vec![
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "library",
                         "transfers.sysml",
                         "standard library package Transfers { part def Transfer { attribute payload; } }"
@@ -1783,7 +1766,7 @@ mod tests {
                         SourceKind::StandardLibrary,
                     )
                     .unwrap(),
-                    SourceDocument::from_memory_path(
+                    AdmittedSource::from_memory_path(
                         "workspace",
                         "model.sysml",
                         "package Model {}".into(),
@@ -1826,7 +1809,7 @@ mod tests {
     fn type_facade_exposes_canonical_type_featuring_provenance() {
         let publication = build(
             BuildRequest::resolved(
-                vec![SourceDocument::from_memory_path(
+                vec![AdmittedSource::from_memory_path(
                     "workspace",
                     "model.sysml",
                     "package Model { part def Vehicle { attribute mass; } }".into(),

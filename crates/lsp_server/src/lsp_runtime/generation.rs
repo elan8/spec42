@@ -423,48 +423,43 @@ impl GeneratorService {
 mod tests {
     use super::*;
     use spec42_generator_protocol::COMPATIBILITY_TOKEN;
-    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
-    use tower_lsp::lsp_types::Url;
+    use sysml_query::source::{SourceKind, SourceService};
 
     fn publication() -> Arc<PublishedModel> {
         workspace::PublicationCoordinator::default()
             .publish(
-                &[SysmlDocument {
-                    uri: Url::parse("file:///lsp-generator-tests/model.sysml").expect("uri"),
-                    content: "package P { part def Widget; }\n".to_owned(),
-                    path_hint: None,
-                    source_kind: SysmlDocumentSourceKind::Workspace,
-                    content_digest: None,
-                    byte_size: None,
-                }],
+                &[SourceService::new()
+                    .admit(
+                        "file:///lsp-generator-tests/model.sysml",
+                        "package P { part def Widget; }\n",
+                        SourceKind::Workspace,
+                    )
+                    .expect("uri")],
                 [],
             )
             .expect("published model")
     }
 
     fn state_transition_publication() -> Arc<PublishedModel> {
-        let standard = SysmlDocument {
-            uri: Url::parse("file:///lsp-generator-tests/standard.sysml").expect("standard uri"),
-            content: "standard library package StandardViewDefinitions { view def StateTransitionView; }\n"
-                .to_owned(),
-            path_hint: None,
-            source_kind: SysmlDocumentSourceKind::StandardLibrary,
-            content_digest: None,
-            byte_size: None,
-        };
-        let workspace = SysmlDocument {
-            uri: Url::parse("file:///lsp-generator-tests/views.sysml").expect("workspace uri"),
-            content: "package P {\n\
+        let source = SourceService::new();
+        let standard = source
+            .admit(
+                "file:///lsp-generator-tests/standard.sysml",
+                "standard library package StandardViewDefinitions { view def StateTransitionView; }\n",
+                SourceKind::StandardLibrary,
+            )
+            .expect("standard uri");
+        let workspace = source
+            .admit(
+                "file:///lsp-generator-tests/views.sysml",
+                "package P {\n\
              \tprivate import StandardViewDefinitions::*;\n\
              \tstate def Machine { then ready; state ready; final done; transition finish first ready then done; }\n\
              \tview lifecycle : StateTransitionView { expose Machine; }\n\
-             }\n"
-                .to_owned(),
-            path_hint: None,
-            source_kind: SysmlDocumentSourceKind::Workspace,
-            content_digest: None,
-            byte_size: None,
-        };
+             }\n",
+                SourceKind::Workspace,
+            )
+            .expect("workspace uri");
         workspace::PublicationCoordinator::default()
             .publish(&[standard, workspace], [])
             .expect("published state-transition model")

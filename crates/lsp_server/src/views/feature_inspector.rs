@@ -574,18 +574,11 @@ pub fn build_sysml_feature_inspector_response(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+    use sysml_query::source::{SourceKind, SourceService};
 
     fn inspect(source: &str, line: u32, character: u32) -> SysmlFeatureInspectorResultDto {
         let uri = Url::parse("file:///inspector.sysml").expect("uri");
-        let document = SysmlDocument {
-            uri: uri.clone(),
-            content: source.to_string(),
-            path_hint: None,
-            source_kind: SysmlDocumentSourceKind::Workspace,
-            content_digest: None,
-            byte_size: None,
-        };
+        let document = SourceService::new().admit_url(uri.clone(), source, SourceKind::Workspace);
         let model = workspace::PublicationCoordinator::default()
             .publish(&[document], [])
             .expect("publication");

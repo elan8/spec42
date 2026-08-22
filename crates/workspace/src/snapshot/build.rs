@@ -4,9 +4,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
-use source_identity::ContentDigest;
-use sysml_source::{SysmlDocument, SysmlDocumentProvider};
-use url::Url;
+use sysml_query::source::{SourceDocument, SourceProvider, Url};
 
 use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
@@ -25,7 +23,7 @@ use crate::Spec42Engine;
 #[derive(Debug)]
 pub struct HostWorkspaceSnapshot {
     metadata: HostArtifactMetadata,
-    documents: Vec<SysmlDocument>,
+    documents: Vec<SourceDocument>,
     published_model: Arc<PublishedModel>,
     validation_report: OnceLock<HostValidationReport>,
     validation_target_files: Vec<PathBuf>,
@@ -45,7 +43,7 @@ impl HostWorkspaceSnapshot {
         &self.metadata
     }
 
-    pub fn documents(&self) -> &[SysmlDocument] {
+    pub fn documents(&self) -> &[SourceDocument] {
         &self.documents
     }
 
@@ -121,20 +119,25 @@ pub(crate) fn build_workspace_snapshot(
     engine: &Spec42Engine,
     catalog: &LibraryCatalog,
     metadata: &HostEngineMetadata,
-    provider: impl SysmlDocumentProvider,
+    provider: impl SourceProvider,
     request: WorkspaceLoadRequest,
     context: &HostContext,
 ) -> WorkspaceResult<HostWorkspaceSnapshot> {
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
-    let mut documents = match provider.load_documents() {
-        Err(_message) if context.cancellation.is_cancelled() => {
+    // A batch snapshot is all-or-nothing: a file the provider could not admit is an error here,
+    // not a warning.
+    let loaded = engine
+        .source()
+        .load(&provider)
+        .and_then(|report| report.require_complete());
+    let documents = match loaded {
+        Err(_error) if context.cancellation.is_cancelled() => {
             return Err(WorkspaceError::cancelled());
         }
-        Err(message) => return Err(map_provider_error(message)),
+        Err(error) => return Err(map_provider_error(error)),
         Ok(documents) => documents,
     };
-    enrich_document_hashes(&mut documents);
-    let total_bytes = documents.iter().map(|doc| doc.content.len() as u64).sum();
+    let total_bytes = documents.iter().map(|doc| doc.byte_len() as u64).sum();
     context.enforce_document_limits(documents.len(), total_bytes)?;
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
@@ -174,10 +177,7 @@ pub(crate) fn build_workspace_snapshot(
 
     let document_digests = documents
         .iter()
-        .filter_map(|doc| {
-            doc.content_digest
-                .map(|digest| (doc.uri.to_string(), digest))
-        })
+        .map(|doc| (doc.uri().to_string(), doc.digest()))
         .collect::<BTreeMap<_, _>>();
 
     let snapshot_metadata = HostArtifactMetadata::new(
@@ -200,22 +200,6 @@ pub(crate) fn build_workspace_snapshot(
     })
 }
 
-/// Normalizes each document's URI (Windows drive-letter case) and populates `content_digest`/
-/// `byte_size`. Public so embedders computing [`HostArtifactMetadata`] directly off an
-/// other publication paths reuse the same normalization instead of hashing un-normalized URIs —
-/// see `path_to_file_url`'s doc comment for what silently diverging normalization once broke.
-pub fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
-    for document in documents {
-        // Normalize here so the graph and the canonicalized `target_urls` computed via
-        // `path_to_file_url` (which also lowercases the Windows drive letter) key on the
-        // same URI string; providers aren't required to normalize themselves.
-        document.uri = language_service::uri::normalize_uri(&document.uri);
-        let bytes = document.content.as_bytes();
-        document.byte_size = Some(bytes.len() as i64);
-        document.content_digest = Some(ContentDigest::of_bytes(bytes));
-    }
-}
-
 fn empty_validation_report() -> &'static HostValidationReport {
     static EMPTY: OnceLock<HostValidationReport> = OnceLock::new();
     EMPTY.get_or_init(HostValidationReport::default)
@@ -236,7 +220,7 @@ pub(crate) fn init_validation_report(
 
 pub fn load_workspace_snapshot(
     engine: &Spec42Engine,
-    provider: impl SysmlDocumentProvider,
+    provider: impl SourceProvider,
     request: WorkspaceLoadRequest,
     context: HostContext,
 ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {

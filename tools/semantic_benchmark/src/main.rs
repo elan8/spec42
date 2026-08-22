@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sysml_query::resolved_slice::{
-    build_measured, BuildRequest, ConstructionStrategy, LibraryStratum, SourceDocument, SourceKind,
+    build_measured, AdmittedSource, BuildRequest, ConstructionStrategy, LibraryStratum, SourceKind,
 };
 
 #[derive(Debug, Parser)]
@@ -145,7 +145,7 @@ fn main() -> Result<(), String> {
         let sources = library_documents
             .iter()
             .map(|document| {
-                SourceDocument::from_memory_path(
+                AdmittedSource::from_memory_path(
                     "semantic-benchmark",
                     &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
                     document.text.clone(),
@@ -164,7 +164,7 @@ fn main() -> Result<(), String> {
         let mut sources = documents
             .iter()
             .map(|document| {
-                SourceDocument::from_memory_path(
+                AdmittedSource::from_memory_path(
                     "semantic-benchmark",
                     &document.identity,
                     document.text.clone(),
@@ -175,7 +175,7 @@ fn main() -> Result<(), String> {
             .collect::<Result<Vec<_>, _>>()?;
         for document in &library_documents_for_request {
             sources.push(
-                SourceDocument::from_memory_path(
+                AdmittedSource::from_memory_path(
                     "semantic-benchmark",
                     &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
                     document.text.clone(),

@@ -25,6 +25,10 @@ mod redefinition_query;
 mod requirement_query;
 mod specialization_query;
 pub mod syntax;
+
+/// The source authority, re-exported so the facade reaches it through this crate and the
+/// authority chain stays linear: `sysml_source` has exactly one dependant.
+pub use sysml_source as source;
 mod traceability;
 mod type_query;
 mod verification;
@@ -112,13 +116,8 @@ pub struct BuildMeasurements {
     pub resolution: std::time::Duration,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum SourceKind {
-    Workspace,
-    StandardLibrary,
-    Library,
-    External,
-}
+/// Provenance of an admitted source. Defined by the source authority; one enum everywhere.
+pub use sysml_source::SourceKind;
 
 /// One admitted document whose settled semantic dependencies reach a changed document.
 ///

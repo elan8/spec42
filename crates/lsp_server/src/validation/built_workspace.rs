@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use sysml_query::resolved_slice::PublishedModel;
-use sysml_source::SysmlDocument;
+use sysml_query::source::SourceDocument;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
@@ -35,7 +35,7 @@ pub struct BuiltWorkspaceInput {
     /// re-parse them with a tolerant parser and still report syntax errors; without this,
     /// documents dropped from `parsed_documents` silently vanish from the index and produce
     /// zero diagnostics instead of a parse error.
-    pub all_documents: Vec<SysmlDocument>,
+    pub all_documents: Vec<SourceDocument>,
     pub library_urls: Vec<Url>,
     pub workspace_root: Option<PathBuf>,
 }
@@ -149,10 +149,10 @@ fn server_state_from_built(
     let mut index = HashMap::new();
     for document in &built.all_documents {
         index.insert(
-            document.uri.clone(),
+            document.uri().clone(),
             IndexEntry {
-                content: document.content.clone(),
-                parsed: Some(crate::common::util::parse_for_editor(&document.content).document),
+                content: document.content().to_owned(),
+                parsed: Some(crate::common::util::parse_for_editor(document.content()).document),
                 parse_metadata: ParseMetadata::default(),
                 admitted_to_publication: true,
             },

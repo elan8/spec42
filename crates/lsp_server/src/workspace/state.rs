@@ -153,8 +153,10 @@ impl DocumentStore for ServerState {
 /// library stratum can be reused.
 pub(crate) fn publication_inputs(
     state: &impl DocumentStore,
-) -> (Vec<sysml_source::SysmlDocument>, Vec<Box<str>>) {
-    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+) -> (Vec<sysml_query::source::SourceDocument>, Vec<Box<str>>) {
+    use sysml_query::source::{SourceKind, SourceService};
+
+    let source = SourceService::new();
 
     let (library_paths, standard_library_paths) = state.library_roots();
     let mut documents = Vec::new();
@@ -175,21 +177,14 @@ pub(crate) fn publication_inputs(
         if library && state.open_in_editor().contains(uri) {
             reported.push(uri.as_str().into());
         }
-        let source_kind = if standard {
-            SysmlDocumentSourceKind::StandardLibrary
+        let kind = if standard {
+            SourceKind::StandardLibrary
         } else if library {
-            SysmlDocumentSourceKind::Library
+            SourceKind::Library
         } else {
-            SysmlDocumentSourceKind::Workspace
+            SourceKind::Workspace
         };
-        documents.push(SysmlDocument {
-            uri: uri.clone(),
-            content: entry.content.clone(),
-            path_hint: None,
-            source_kind,
-            content_digest: None,
-            byte_size: None,
-        });
+        documents.push(source.admit_url(uri.clone(), &entry.content, kind));
     }
 
     // A failed rebuild must not replace the last coherent publication. Readers may continue using

@@ -23,8 +23,6 @@ kpar = { path = "../kpar" }
 kpar = { path = "../kpar" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
-sysml_source = { path = "../sysml_source" }
-source_identity = { path = "../source_identity" }
 language_service = { path = "../language_service" }
 semantic_publication.workspace = true
 serde = { workspace = true }
@@ -37,18 +35,14 @@ directories = "5"
 dirs = "5"
 url = "2"
 walkdir = "2"
-ignore = "0.4"
 sysml_resolution = { path = "../sysml_resolution" }
 petgraph = { workspace = true }
 tracing = "0.1"
 postcard = { workspace = true }
 rayon = "1.12"
 tempfile = "3"
-blake3 = { workspace = true }
-zstd = { workspace = true }
 
 [dev-dependencies]
-source_identity = { path = "../source_identity" }
 syn = { version = "2", features = ["full", "visit"] }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 
@@ -63,14 +57,6 @@ path = "tests/library_source_resolution.rs"
 [[test]]
 name = "artifact_metadata_serde"
 path = "tests/artifact_metadata_serde.rs"
-
-[[test]]
-name = "cache_store"
-path = "tests/cache_store.rs"
-
-[[test]]
-name = "cache_artifacts"
-path = "tests/cache_artifacts.rs"
 
 [[test]]
 name = "host_errors"

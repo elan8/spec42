@@ -3,11 +3,12 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
+use sysml_query::source::{SourceAuthority, SourceError, SourceLoadReport};
 use tempfile::tempdir;
 use workspace::{
     CancellationToken, EngineBuilder, HostContext, Spec42Engine, WorkspaceLoadRequest,
 };
-use workspace::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use workspace::{SourceKind, SourceProvider};
 
 struct SlowDocumentProvider {
     cancellation: CancellationToken,
@@ -29,25 +30,29 @@ impl SlowDocumentProvider {
     }
 }
 
-impl SysmlDocumentProvider for SlowDocumentProvider {
-    fn load_documents(&self) -> Result<Vec<SysmlDocument>, String> {
+impl SourceProvider for SlowDocumentProvider {
+    fn load(&self, authority: &SourceAuthority) -> Result<SourceLoadReport, SourceError> {
         self.observed_loads.fetch_add(1, Ordering::SeqCst);
         for step in 0..self.steps {
             if self.cancellation.is_cancelled() {
-                return Err(format!("cancelled while loading documents at step {step}"));
+                return Err(SourceError::Provider(format!(
+                    "cancelled while loading documents at step {step}"
+                )));
             }
             thread::sleep(Duration::from_millis(20));
         }
-        let doc = SysmlDocument::from_memory_path(
-            "workspace",
-            "Slow.sysml",
-            "package Slow { part def Thing; }".to_string(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .expect("document");
-        Ok(vec![doc])
+        let doc = authority
+            .admit_memory(
+                "workspace",
+                "Slow.sysml",
+                "package Slow { part def Thing; }",
+                SourceKind::Workspace,
+            )
+            .expect("document");
+        Ok(SourceLoadReport {
+            documents: vec![doc],
+            ..SourceLoadReport::default()
+        })
     }
 }
 

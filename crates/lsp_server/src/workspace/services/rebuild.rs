@@ -36,7 +36,7 @@ pub(crate) fn index_library_paths_for_search(
     if library_paths.is_empty() {
         return 0;
     }
-    let (entries, _) = crate::workspace::scan::scan_sysml_files(library_paths.to_vec());
+    let (entries, _) = scan_sysml_files(library_paths.to_vec());
     if entries.is_empty() {
         return 0;
     }

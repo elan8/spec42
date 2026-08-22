@@ -2,7 +2,7 @@
 
 use sysml_diagnostics::{document_diagnostics, DiagnosticSeverity, ReportingPolicy};
 use sysml_query::resolved_slice::{
-    build, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument, SourceKind,
+    build, AdmittedSource, BuildRequest, ConstructionStrategy, PublishedModel, SourceKind,
 };
 use url::Url;
 
@@ -11,7 +11,7 @@ const DOCUMENT: &str = "memory://policy.sysml";
 fn publish(source: &str) -> PublishedModel {
     let request = BuildRequest::resolved(
         vec![
-            SourceDocument::from_uri(DOCUMENT, source.to_string(), SourceKind::Workspace)
+            AdmittedSource::from_uri(DOCUMENT, source.to_string(), SourceKind::Workspace)
                 .expect("source"),
         ],
         ConstructionStrategy::Sequential,

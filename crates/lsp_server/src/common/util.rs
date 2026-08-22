@@ -24,7 +24,7 @@ pub fn apply_incremental_change(text: &str, range: &Range, new_text: &str) -> Op
 
 /// Reuse the repository-owned URI identity policy at the LSP admission boundary.
 pub fn normalize_file_uri(uri: &Url) -> Url {
-    language_service::uri::normalize_uri(uri)
+    sysml_query::source::normalize_uri(uri)
 }
 
 /// When parse fails, get diagnostic messages from parse_with_diagnostics for logging.
@@ -118,7 +118,7 @@ pub fn import_statement_ranges(content: &str) -> Vec<Range> {
 
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
-    language_service::uri::uri_under_any_library(uri, library_paths)
+    sysml_query::source::uri_under_any(uri, library_paths)
 }
 
 /// Parse library paths from LSP config (initialization_options or didChangeConfiguration settings).

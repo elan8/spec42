@@ -7,7 +7,7 @@ use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
 use std::sync::Arc;
-use sysml_source::SysmlDocumentProvider;
+use sysml_query::source::{SourceProvider, SourceService};
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -22,6 +22,7 @@ pub struct Spec42Engine {
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
     publication: Arc<crate::PublicationCoordinator>,
+    source: SourceService,
 }
 
 #[derive(Debug, Default)]
@@ -66,13 +67,18 @@ impl Spec42Engine {
         Arc::clone(&self.publication)
     }
 
+    /// The source service every document of this engine is admitted through.
+    pub fn source(&self) -> &SourceService {
+        &self.source
+    }
+
     pub fn schema_versions(&self) -> HostSchemaVersions {
         self.metadata.schema_versions
     }
 
     pub fn load_workspace(
         &self,
-        provider: impl SysmlDocumentProvider,
+        provider: impl SourceProvider,
         request: WorkspaceLoadRequest,
         context: HostContext,
     ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
@@ -188,6 +194,7 @@ impl EngineBuilder {
                 schema_versions: HostSchemaVersions::current(),
             },
             publication: Arc::new(crate::PublicationCoordinator::new()),
+            source: SourceService::new(),
         })
     }
 

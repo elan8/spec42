@@ -71,19 +71,13 @@ pub(crate) fn affected_diagnostic_documents(
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+    use sysml_query::source::{SourceKind, SourceService};
 
     fn model(sources: &[(&str, &str)]) -> Arc<PublishedModel> {
+        let source = SourceService::new();
         let documents = sources
             .iter()
-            .map(|(uri, content)| SysmlDocument {
-                uri: Url::parse(uri).unwrap(),
-                content: (*content).to_owned(),
-                path_hint: None,
-                source_kind: SysmlDocumentSourceKind::Workspace,
-                content_digest: None,
-                byte_size: None,
-            })
+            .map(|(uri, content)| source.admit(uri, content, SourceKind::Workspace).unwrap())
             .collect::<Vec<_>>();
         workspace::PublicationCoordinator::default()
             .publish(&documents, [])

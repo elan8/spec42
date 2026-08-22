@@ -10,7 +10,8 @@ use std::sync::Arc;
 
 use semantic_publication::{PreparedPublication, PublicationBuildFailure, PublicationCoordinator};
 use sysml_query::resolved_slice::{BuildRequest, PublicationIdentity, PublishedModel};
-use workspace::{SessionLifecycle, SysmlDocument, WorkspaceSession};
+use sysml_query::source::SourceDocument;
+use workspace::{SessionLifecycle, WorkspaceSession};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
 
@@ -325,7 +326,7 @@ impl SemanticPublicationAuthority {
     /// captures the resulting request identity in an owner-scoped supersession token.
     pub async fn begin_build(
         &self,
-        documents: &[SysmlDocument],
+        documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<SemanticAuthorityBuild, SemanticAuthorityBeginError> {
         let prepared = self
@@ -385,8 +386,7 @@ mod tests {
     use std::time::Duration;
 
     use super::*;
-    use sysml_source::SysmlDocumentSourceKind;
-    use url::Url;
+    use sysml_query::source::{SourceKind, SourceService};
 
     #[derive(Debug)]
     struct FakePublication {
@@ -551,15 +551,10 @@ mod tests {
             .unwrap();
     }
 
-    fn document(uri: &str, content: &str) -> SysmlDocument {
-        SysmlDocument {
-            uri: Url::parse(uri).unwrap(),
-            content: content.to_owned(),
-            path_hint: None,
-            source_kind: SysmlDocumentSourceKind::Workspace,
-            content_digest: None,
-            byte_size: None,
-        }
+    fn document(uri: &str, content: &str) -> SourceDocument {
+        SourceService::new()
+            .admit(uri, content, SourceKind::Workspace)
+            .unwrap()
     }
 
     #[tokio::test]

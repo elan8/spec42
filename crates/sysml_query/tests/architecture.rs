@@ -98,7 +98,7 @@ fn facade_tests_do_not_duplicate_semantic_pipeline_snapshots() {
         }
         let source = fs::read_to_string(&path).expect("read facade test");
         if source.contains("BuildRequest")
-            || source.contains("SourceDocument")
+            || source.contains("AdmittedSource")
             || source.contains("target_at(")
             || source.contains("visible_members(")
             || source.contains("prepare_rename(")
@@ -165,6 +165,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
             "source_identity".to_owned(),
             "spec42_constraint_manifest".to_owned(),
             "sysml-v2-parser".to_owned(),
+            "sysml_source".to_owned(),
         ]),
         "the immutable resolution owner dependency boundary changed"
     );

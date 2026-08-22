@@ -1,33 +1,35 @@
+use sysml_query::source::{SourceAuthority, SourceError, SourceLoadReport, SourceService};
 use tempfile::tempdir;
 use url::Url;
 use workspace::{
-    EngineBuilder, HostContext, HostResourceLimits, InMemoryDocumentProvider, WorkspaceLoadRequest,
+    EngineBuilder, HostContext, HostResourceLimits, InMemoryProvider, SourceKind, SourceProvider,
+    WorkspaceLoadRequest,
 };
-use workspace::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 
 struct TwoDocumentProvider;
 
-impl SysmlDocumentProvider for TwoDocumentProvider {
-    fn load_documents(&self) -> Result<Vec<SysmlDocument>, String> {
-        let first = SysmlDocument::from_memory_path(
-            "workspace",
-            "A.sysml",
-            "package A { part def One; }".to_string(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .expect("first");
-        let second = SysmlDocument::from_memory_path(
-            "workspace",
-            "B.sysml",
-            "package B { part def Two; }".to_string(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .expect("second");
-        Ok(vec![first, second])
+impl SourceProvider for TwoDocumentProvider {
+    fn load(&self, authority: &SourceAuthority) -> Result<SourceLoadReport, SourceError> {
+        let first = authority
+            .admit_memory(
+                "workspace",
+                "A.sysml",
+                "package A { part def One; }",
+                SourceKind::Workspace,
+            )
+            .expect("first");
+        let second = authority
+            .admit_memory(
+                "workspace",
+                "B.sysml",
+                "package B { part def Two; }",
+                SourceKind::Workspace,
+            )
+            .expect("second");
+        Ok(SourceLoadReport {
+            documents: vec![first, second],
+            ..SourceLoadReport::default()
+        })
     }
 }
 
@@ -67,16 +69,13 @@ fn max_total_bytes_limit_rejects_large_content() {
     std::fs::write(&target, "package L { part def Big; }").expect("write");
 
     let large = "x".repeat(2048);
-    let document = SysmlDocument {
-        uri: Url::from_file_path(&target).expect("uri"),
-        content: format!(
-            "package L {{ part def Big {{ attribute value : String = \"{large}\"; }} }}"
-        ),
-        path_hint: Some("Large.sysml".to_string()),
-        source_kind: SysmlDocumentSourceKind::Workspace,
-        content_digest: None,
-        byte_size: None,
-    };
+    let document = SourceService::new()
+        .admit_url(
+            Url::from_file_path(&target).expect("uri"),
+            &format!("package L {{ part def Big {{ attribute value : String = \"{large}\"; }} }}"),
+            SourceKind::Workspace,
+        )
+        .with_path_hint("Large.sysml");
 
     let engine = EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
@@ -91,7 +90,7 @@ fn max_total_bytes_limit_rejects_large_content() {
 
     let err = engine
         .load_workspace(
-            InMemoryDocumentProvider::new(vec![document]),
+            InMemoryProvider::new(vec![document]),
             WorkspaceLoadRequest::single_target(target),
             context,
         )

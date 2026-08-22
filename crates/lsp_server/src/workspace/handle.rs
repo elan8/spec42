@@ -76,14 +76,13 @@ mod publication_tests {
         let older = state
             .publication_authority
             .begin_build(
-                &[sysml_source::SysmlDocument {
-                    uri: Url::parse("memory://workspace/old.sysml").unwrap(),
-                    content: "package Old;".to_owned(),
-                    path_hint: None,
-                    source_kind: sysml_source::SysmlDocumentSourceKind::Workspace,
-                    content_digest: None,
-                    byte_size: None,
-                }],
+                &[sysml_query::source::SourceService::new()
+                    .admit(
+                        "memory://workspace/old.sysml",
+                        "package Old;",
+                        sysml_query::source::SourceKind::Workspace,
+                    )
+                    .unwrap()],
                 [],
             )
             .await
@@ -91,14 +90,13 @@ mod publication_tests {
         let newer = state
             .publication_authority
             .begin_build(
-                &[sysml_source::SysmlDocument {
-                    uri: Url::parse("memory://workspace/new.sysml").unwrap(),
-                    content: "package New;".to_owned(),
-                    path_hint: None,
-                    source_kind: sysml_source::SysmlDocumentSourceKind::Workspace,
-                    content_digest: None,
-                    byte_size: None,
-                }],
+                &[sysml_query::source::SourceService::new()
+                    .admit(
+                        "memory://workspace/new.sysml",
+                        "package New;",
+                        sysml_query::source::SourceKind::Workspace,
+                    )
+                    .unwrap()],
                 [],
             )
             .await

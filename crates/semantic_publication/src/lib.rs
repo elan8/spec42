@@ -4,14 +4,14 @@
 //! decides whether a settled library stratum can be reused, constructs the query request, and
 //! returns the immutable publication. Library construction failure is explicit: it is never
 //! disguised by silently selecting a different construction path.
+#![recursion_limit = "256"]
 
 use std::sync::{Arc, Mutex};
 
 use sysml_query::resolved_slice::{
-    build, BuildRequest, ConstructionStrategy, LibraryStratum, PublishedModel, SourceDocument,
-    SourceKind,
+    build, AdmittedSource, BuildRequest, ConstructionStrategy, LibraryStratum, PublishedModel,
 };
-use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_query::source::{SourceDocument, SourceKind};
 
 /// The semantic phase which rejected a publication request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -93,7 +93,7 @@ impl PublicationCoordinator {
     /// canonical identity is unchanged.
     pub fn publish(
         &self,
-        documents: &[SysmlDocument],
+        documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
         self.prepare(documents, reported_documents)
@@ -104,30 +104,27 @@ impl PublicationCoordinator {
     /// to capture its dependency-complete identity before background construction starts.
     pub fn prepare(
         &self,
-        documents: &[SysmlDocument],
+        documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<PreparedPublication, PublicationBuildFailure> {
         let mut ordered = documents.iter().collect::<Vec<_>>();
-        ordered.sort_unstable_by(|left, right| left.uri.as_str().cmp(right.uri.as_str()));
+        ordered.sort_unstable_by(|left, right| left.uri().as_str().cmp(right.uri().as_str()));
 
         let mut workspace = Vec::new();
         let mut libraries = Vec::new();
         for document in ordered {
-            let source = SourceDocument::from_uri(
-                document.uri.as_str(),
-                document.content.clone(),
-                source_kind(document.source_kind),
+            let source = AdmittedSource::from_uri(
+                document.uri().as_str(),
+                document.content().to_owned(),
+                document.kind(),
             )
             .map_err(|error| {
                 PublicationBuildFailure::at(
                     PublicationFailureStage::SourceAdmission,
-                    format!("admitting {}: {error}", document.uri),
+                    format!("admitting {}: {error}", document.uri()),
                 )
             })?;
-            if matches!(
-                document.source_kind,
-                SysmlDocumentSourceKind::StandardLibrary | SysmlDocumentSourceKind::Library
-            ) {
+            if document.kind().is_library() {
                 libraries.push((document, source));
             } else {
                 workspace.push(source);
@@ -150,7 +147,7 @@ impl PublicationCoordinator {
 
     fn library_stratum(
         &self,
-        libraries: &[(&SysmlDocument, SourceDocument)],
+        libraries: &[(&SourceDocument, AdmittedSource)],
     ) -> Result<Arc<LibraryStratum>, PublicationBuildFailure> {
         let key = library_key(libraries.iter().map(|(document, _)| *document));
         let mut cached = self
@@ -176,49 +173,34 @@ impl PublicationCoordinator {
     }
 }
 
-fn library_key<'a>(documents: impl IntoIterator<Item = &'a SysmlDocument>) -> blake3::Hash {
+/// The stratum identity: every library document's URI, provenance, and content digest, in URI
+/// order. Digests rather than bytes, so a warm publication hashes a few kilobytes, not the corpus.
+fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> blake3::Hash {
     let mut digest = blake3::Hasher::new();
-    digest.update(b"spec42-library-stratum-v1\0");
+    digest.update(b"spec42-library-stratum-v2\0");
     for document in documents {
-        let identity = document.uri.as_str().as_bytes();
+        let identity = document.uri().as_str().as_bytes();
         digest.update(&(identity.len() as u64).to_le_bytes());
         digest.update(identity);
-        digest.update(&[match document.source_kind {
-            SysmlDocumentSourceKind::Workspace => 0,
-            SysmlDocumentSourceKind::StandardLibrary => 1,
-            SysmlDocumentSourceKind::Library => 2,
-            SysmlDocumentSourceKind::External => 3,
+        digest.update(&[match document.kind() {
+            SourceKind::Workspace => 0,
+            SourceKind::StandardLibrary => 1,
+            SourceKind::Library => 2,
+            SourceKind::External => 3,
         }]);
-        digest.update(&(document.content.len() as u64).to_le_bytes());
-        digest.update(document.content.as_bytes());
+        digest.update(document.digest().as_bytes());
     }
     digest.finalize()
-}
-
-fn source_kind(kind: SysmlDocumentSourceKind) -> SourceKind {
-    match kind {
-        SysmlDocumentSourceKind::Workspace => SourceKind::Workspace,
-        SysmlDocumentSourceKind::StandardLibrary => SourceKind::StandardLibrary,
-        SysmlDocumentSourceKind::Library => SourceKind::Library,
-        SysmlDocumentSourceKind::External => SourceKind::External,
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use sysml_query::resolved_slice::{DiagramSemanticReference, QueryOutcome};
-    use url::Url;
+    use sysml_query::source::SourceService;
 
-    fn document(uri: &str, content: &str, source_kind: SysmlDocumentSourceKind) -> SysmlDocument {
-        SysmlDocument {
-            uri: Url::parse(uri).unwrap(),
-            content: content.to_owned(),
-            path_hint: None,
-            source_kind,
-            content_digest: None,
-            byte_size: None,
-        }
+    fn document(uri: &str, content: &str, kind: SourceKind) -> SourceDocument {
+        SourceService::new().admit(uri, content, kind).unwrap()
     }
 
     fn cached_key(coordinator: &PublicationCoordinator) -> blake3::Hash {
@@ -237,34 +219,37 @@ mod tests {
         let library = document(
             "memory://library/lib.sysml",
             "standard library package Lib { part def Wheel; }",
-            SysmlDocumentSourceKind::StandardLibrary,
+            SourceKind::StandardLibrary,
         );
         let workspace = document(
             "memory://workspace/model.sysml",
             "package W { part w : Lib::Wheel; }",
-            SysmlDocumentSourceKind::Workspace,
+            SourceKind::Workspace,
         );
         coordinator
             .publish(&[library.clone(), workspace.clone()], [])
             .unwrap();
         let initial = cached_key(&coordinator);
 
-        let mut edited_workspace = workspace;
-        edited_workspace.content =
-            "package W { part w : Lib::Wheel; part x : Lib::Wheel; }".to_owned();
+        let edited_workspace = document(
+            "memory://workspace/model.sysml",
+            "package W { part w : Lib::Wheel; part x : Lib::Wheel; }",
+            SourceKind::Workspace,
+        );
         coordinator
             .publish(&[library.clone(), edited_workspace], [])
             .unwrap();
         assert_eq!(cached_key(&coordinator), initial);
 
-        let mut changed_library = library.clone();
-        changed_library.content =
-            "standard library package Lib { part def Wheel; part def Axle; }".to_owned();
+        let changed_library = document(
+            "memory://library/lib.sysml",
+            "standard library package Lib { part def Wheel; part def Axle; }",
+            SourceKind::StandardLibrary,
+        );
         coordinator.publish(&[changed_library], []).unwrap();
         assert_ne!(cached_key(&coordinator), initial);
 
-        let mut changed_role = library;
-        changed_role.source_kind = SysmlDocumentSourceKind::Library;
+        let changed_role = library.with_kind(SourceKind::Library);
         coordinator.publish(&[changed_role], []).unwrap();
         assert_ne!(cached_key(&coordinator), initial);
     }
@@ -280,7 +265,7 @@ mod tests {
                     "standard library package SysML { public import Systems::*; ",
                     "package Systems { metaclass PartUsage; } }"
                 ),
-                SysmlDocumentSourceKind::StandardLibrary,
+                SourceKind::StandardLibrary,
             ),
             document(
                 "memory://workspace/model.sysml",
@@ -288,7 +273,7 @@ mod tests {
                     "package W { import StandardViewDefinitions::*; part root; ",
                     "view selected : GeneralView { expose root; filter @SysML::PartUsage; } }"
                 ),
-                SysmlDocumentSourceKind::Workspace,
+                SourceKind::Workspace,
             ),
         ];
 
@@ -324,7 +309,7 @@ mod tests {
         let duplicate = document(
             "memory://library/duplicate.sysml",
             "standard library package Lib;",
-            SysmlDocumentSourceKind::StandardLibrary,
+            SourceKind::StandardLibrary,
         );
         let error = coordinator
             .prepare(&[duplicate.clone(), duplicate], [])

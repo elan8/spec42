@@ -2,7 +2,6 @@
 
 //! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
-pub mod cache;
 pub mod catalog;
 pub mod comparison;
 pub mod engine;
@@ -36,21 +35,18 @@ pub use library::{
     LibraryArchive, LibraryBundle, LibraryClosureOptions, LibraryInstallRoot, LibraryPackageRoots,
     LibrarySource, LoadedLibraryFile, ResolvedExplicitLibrary, WorkspaceSource,
 };
-pub use provider::{
-    ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
-    InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
-};
+pub use provider::{ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider};
 pub use semantic_publication::{
     PreparedPublication, PublicationBuildFailure, PublicationCoordinator, PublicationFailureStage,
 };
-pub use source_identity::{ContentDigest, RootDigest};
-
 pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
-    apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
-    HostContext, HostPipelinePhase, HostResourceLimits, HostValidatedDocument,
-    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
-    ValidationTiming, WorkspaceLoadRequest,
+    apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
+    HostResourceLimits, HostValidatedDocument, HostValidationReport, HostValidationSummary,
+    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
+};
+pub use sysml_query::source::{
+    ContentDigest, InMemoryProvider, RootDigest, SourceDocument, SourceKind, SourceProvider,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
