@@ -6,12 +6,11 @@
 
 use std::path::{Path, PathBuf};
 
+use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
 use sysml_query::source::{
-    path_to_file_url, FilesystemProvider, SourceAuthority, SourceDocument, SourceError, SourceKind,
-    SourceLoadReport, SourceProvider,
+    FilesystemProvider, SourceAuthority, SourceError, SourceKind, SourceLoadReport, SourceProvider,
 };
-
-use crate::library::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
+use sysml_query::Services;
 
 #[derive(Debug, Clone)]
 pub struct FileSystemDocumentProvider {
@@ -21,15 +20,19 @@ pub struct FileSystemDocumentProvider {
     standard_library_paths: Vec<PathBuf>,
     full_library_scan: bool,
     library_seed_packages: Vec<String>,
+    services: Services,
 }
 
 pub type HostFilesystemProvider = FileSystemDocumentProvider;
 
 impl FileSystemDocumentProvider {
+    /// `services` are the host's: the closure is resolved through them so the library documents
+    /// this provider yields are memo hits for the publication that admits them.
     pub fn new(
         target: PathBuf,
         workspace_root: Option<PathBuf>,
         library_paths: Vec<PathBuf>,
+        services: Services,
     ) -> Self {
         Self {
             target,
@@ -38,6 +41,7 @@ impl FileSystemDocumentProvider {
             standard_library_paths: Vec::new(),
             full_library_scan: false,
             library_seed_packages: Vec::new(),
+            services,
         }
     }
 
@@ -45,11 +49,13 @@ impl FileSystemDocumentProvider {
         target: &Path,
         workspace_root: Option<&Path>,
         library_paths: &[PathBuf],
+        services: Services,
     ) -> Self {
         Self::new(
             target.to_path_buf(),
             workspace_root.map(Path::to_path_buf),
             library_paths.to_vec(),
+            services,
         )
     }
 
@@ -58,8 +64,9 @@ impl FileSystemDocumentProvider {
         workspace_root: Option<&Path>,
         library_paths: &[PathBuf],
         standard_library_paths: &[PathBuf],
+        services: Services,
     ) -> Self {
-        Self::from_paths(target, workspace_root, library_paths)
+        Self::from_paths(target, workspace_root, library_paths, services)
             .with_standard_library_paths(standard_library_paths.to_vec())
     }
 
@@ -114,54 +121,33 @@ impl SourceProvider for FileSystemDocumentProvider {
             return Ok(report);
         }
 
-        let library_roots: Vec<String> = self
+        let roots: Vec<LibraryRoot> = self
             .library_paths
             .iter()
             .map(|path| {
-                canonicalize_or_self(path)
-                    .to_string_lossy()
-                    .replace('\\', "/")
+                let path = canonicalize_or_self(path);
+                let kind = library_source_kind(&path, &standard_library_paths);
+                LibraryRoot { path, kind }
             })
             .collect();
-        let workspace_documents = report
+        let workspace: Vec<_> = report
             .documents
             .iter()
             .filter(|document| document.kind() == SourceKind::Workspace)
-            .map(|document| {
-                (
-                    document.path_hint().unwrap_or("").to_owned(),
-                    document.content().to_owned(),
-                )
-            })
-            .collect::<Vec<_>>();
-        if library_roots.is_empty() || workspace_documents.is_empty() {
+            .map(|document| self.services.syntax.parse(document))
+            .collect();
+        if roots.is_empty() || workspace.is_empty() {
             return Ok(report);
         }
-        let workspace_sources: Vec<WorkspaceSource<'_>> = workspace_documents
-            .iter()
-            .map(|(path, content)| WorkspaceSource {
-                path: path.as_str(),
-                content: content.as_str(),
-            })
-            .collect();
         let options = LibraryClosureOptions {
             seed_packages: self.library_seed_packages.clone(),
             ..LibraryClosureOptions::default()
         };
-        let loaded = resolve_library_closure(&workspace_sources, &library_roots, &options)
-            .map_err(SourceError::Provider)?;
-        for file in loaded {
-            let path = PathBuf::from(&file.root).join(&file.path);
-            let kind = library_source_kind(
-                &canonicalize_or_self(&PathBuf::from(&file.root)),
-                &standard_library_paths,
-            );
-            let uri = path_to_file_url(&path)?;
-            let document: SourceDocument = authority
-                .admit_url(uri, &file.content, kind)
-                .with_path_hint(file.path.replace('\\', "/"));
-            report.documents.push(document);
-        }
+        let closure = self
+            .services
+            .library
+            .resolve(&workspace, &roots, &options)?;
+        report.documents.extend(closure.documents);
         Ok(report)
     }
 }

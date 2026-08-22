@@ -25,13 +25,13 @@ pub use library::{
         kpar_library_paths_from_data_dir, registry_configs, KparLibraryConfig, KparLibraryPaths,
         KparLibraryStatus,
     },
-    resolve_explicit_library_path, resolve_library_closure,
+    resolve_explicit_library_path,
     stdlib::{
         project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
         StandardLibraryPaths, StandardLibraryStatus,
     },
-    LibraryArchive, LibraryBundle, LibraryClosureOptions, LibraryInstallRoot, LibraryPackageRoots,
-    LibrarySource, LoadedLibraryFile, ResolvedExplicitLibrary, WorkspaceSource,
+    LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
+    ResolvedExplicitLibrary,
 };
 pub use provider::{ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -40,6 +40,7 @@ pub use snapshot::{
     HostResourceLimits, HostValidatedDocument, HostValidationReport, HostValidationSummary,
     HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
+pub use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
 pub use sysml_query::publication::{PublicationBuildFailure, PublicationFailureStage};
 pub use sysml_query::source::{
     ContentDigest, InMemoryProvider, RootDigest, SourceDocument, SourceKind, SourceProvider,

@@ -2112,6 +2112,7 @@ dependencies = [
  "spec42-constraint-manifest",
  "sysml-v2-parser",
  "sysml_source",
+ "tempfile",
 ]
 
 [[package]]

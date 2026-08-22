@@ -132,6 +132,11 @@ pub struct SyntaxClosureFacts {
     pub type_reference_targets: Vec<String>,
     /// The same two lists, per declared package.
     pub packages: Vec<PackageTargets>,
+    /// Whether the source declares a measurement unit: an attribute with a `<short>` name typed
+    /// by a `…Unit`. Unit catalogues are admitted to a closure whether or not they are imported.
+    pub declares_unit_definitions: bool,
+    /// Whether the source contains a value-with-unit literal such as `10 [kg]`.
+    pub uses_unit_literals: bool,
 }
 
 /// The parser's AST schema version, committed into every cache key that stores a document.

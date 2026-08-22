@@ -8,6 +8,7 @@ pub(crate) mod state;
 
 pub(crate) use handle::WorkspaceHandle;
 pub(crate) use services::{
-    parse_scanned_entries, rebuild_publication_inputs_staged, scan_sysml_files,
+    parse_scanned_documents, parse_scanned_entries, rebuild_publication_inputs_staged,
+    scan_sysml_files,
 };
 pub(crate) use state::{RuntimeConfig, ServerState};

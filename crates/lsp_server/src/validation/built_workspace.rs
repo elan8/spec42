@@ -83,6 +83,7 @@ pub(super) fn validate_paths_with_semantics(
         workspace_root.as_deref(),
         engine.package_roots(),
         &engine.library_catalog().stdlib.roots,
+        engine.services().clone(),
     );
     let load_request = WorkspaceLoadRequest::single_target(target)
         .with_workspace_root(workspace_root.clone())

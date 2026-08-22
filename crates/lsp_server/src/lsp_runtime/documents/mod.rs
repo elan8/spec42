@@ -10,7 +10,10 @@ use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::views::dto::SemanticIndexReadyNotificationDto;
 use crate::workspace::state::ServerState;
-use crate::workspace::{parse_scanned_entries, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
+use crate::workspace::{
+    parse_scanned_documents, parse_scanned_entries, scan_sysml_files, RuntimeConfig,
+    WorkspaceHandle,
+};
 use sysml_query::publication::RelinkToken;
 
 use super::capabilities::server_capabilities;

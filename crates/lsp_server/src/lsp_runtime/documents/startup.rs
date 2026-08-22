@@ -137,25 +137,21 @@ pub(crate) async fn initialized(
         .unwrap_or_default();
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
 
-        let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
+        let workspace_parsed: Vec<sysml_query::syntax::ParsedSource> = parsed_entries
             .iter()
-            .map(|entry| (entry.uri.to_string(), entry.document.content().to_owned()))
+            .map(|entry| entry.parsed.clone())
             .collect();
-        // Library graph caching belonged to the mutable graph lifecycle. Load the dependency
-        // closure explicitly; future reuse must cache immutable, dependency-complete publications.
+        let standard_library_paths = handle.snapshot().standard_library_paths.clone();
+        // Library files enter through the closure service: the documents it returns are memo
+        // hits for the publication that admits them, so the library corpus is parsed once.
         let (_library_parsed_count, _library_total_count, parsed_entries) = {
+            let closure_services = services.clone();
             let library_entries = match tokio::task::spawn_blocking(move || {
-                let workspace_sources: Vec<workspace::WorkspaceSource<'_>> =
-                    workspace_closure_inputs
-                        .iter()
-                        .map(|(path, content)| workspace::WorkspaceSource {
-                            path: path.as_str(),
-                            content: content.as_str(),
-                        })
-                        .collect();
-                crate::workspace::library_closure::load_library_closure_scan_entries(
-                    &workspace_sources,
+                crate::workspace::library_closure::load_library_closure_documents(
+                    &workspace_parsed,
                     &library_paths_for_closure,
+                    &standard_library_paths,
+                    &closure_services,
                 )
             })
             .await
@@ -177,7 +173,7 @@ pub(crate) async fn initialized(
                     library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
                 let library_services = services.clone();
                 tokio::task::spawn_blocking(move || {
-                    parse_scanned_entries(library_entries, parallel, &library_services)
+                    parse_scanned_documents(library_entries, parallel, &library_services)
                 })
                 .await
                 .unwrap_or_default()

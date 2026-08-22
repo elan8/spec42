@@ -19,3 +19,6 @@ spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = ".
 
 [build-dependencies]
 spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../../tools/constraint_manifest" }
+
+[dev-dependencies]
+tempfile = "3"

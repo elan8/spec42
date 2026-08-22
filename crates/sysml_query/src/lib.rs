@@ -6,6 +6,7 @@
 //! typed answers or stream an owner-defined debug projection; they cannot obtain the structural
 //! graph, resolver state, fact collections, or query-index storage.
 
+pub mod library;
 pub mod publication;
 pub mod resolved_slice;
 pub mod source;
@@ -19,6 +20,7 @@ pub mod syntax;
 pub struct Services {
     pub source: source::SourceService,
     pub syntax: syntax::SyntaxService,
+    pub library: library::LibraryClosureService,
     pub publication: publication::PublicationService,
 }
 
@@ -26,10 +28,12 @@ impl Services {
     pub fn new() -> Self {
         let source = source::SourceService::new();
         let syntax = syntax::SyntaxService::new();
+        let library = library::LibraryClosureService::new(&source, &syntax);
         let publication = publication::PublicationService::new(&syntax);
         Self {
             source,
             syntax,
+            library,
             publication,
         }
     }

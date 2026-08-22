@@ -1,36 +1,44 @@
-﻿use std::path::PathBuf;
+use std::path::PathBuf;
 
+use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
+use sysml_query::source::{SourceDocument, SourceKind};
+use sysml_query::syntax::ParsedSource;
+use sysml_query::Services;
 use tower_lsp::lsp_types::Url;
-use workspace::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 
 use crate::common::util;
 
-/// Load library files in the import closure of workspace sources (not full library trees).
-pub(crate) fn load_library_closure_scan_entries(
-    workspace_sources: &[WorkspaceSource<'_>],
+/// The library documents in the import closure of the workspace sources (not full library trees).
+///
+/// Roots under `standard_library_paths` carry standard-library provenance; the rest are generic
+/// libraries. Resolution runs through the host's services so every document returned is already
+/// a memo hit for the publication that admits it.
+pub(crate) fn load_library_closure_documents(
+    workspace: &[ParsedSource],
     library_paths: &[Url],
-) -> Result<Vec<(Url, String)>, String> {
+    standard_library_paths: &[Url],
+    services: &Services,
+) -> Result<Vec<SourceDocument>, String> {
     let roots = library_paths
         .iter()
         .filter_map(|uri| {
-            uri.to_file_path()
-                .ok()
-                .map(|path| path.to_string_lossy().replace('\\', "/"))
+            let path: PathBuf = uri.to_file_path().ok()?;
+            let kind = if standard_library_paths.contains(uri) {
+                SourceKind::StandardLibrary
+            } else {
+                SourceKind::Library
+            };
+            Some(LibraryRoot { path, kind })
         })
         .collect::<Vec<_>>();
     if roots.is_empty() {
         return Ok(Vec::new());
     }
-    let loaded =
-        resolve_library_closure(workspace_sources, &roots, &LibraryClosureOptions::default())?;
-    let mut entries = Vec::with_capacity(loaded.len());
-    for file in loaded {
-        let path = PathBuf::from(&file.root).join(&file.path);
-        let uri = Url::from_file_path(&path)
-            .map_err(|_| format!("library file path is not a file URL: {}", path.display()))?;
-        entries.push((util::normalize_file_uri(&uri), file.content));
-    }
-    Ok(entries)
+    services
+        .library
+        .resolve(workspace, &roots, &LibraryClosureOptions::default())
+        .map(|closure| closure.documents)
+        .map_err(|error| error.to_string())
 }
 
 pub(crate) fn library_full_scan_enabled() -> bool {

@@ -16,6 +16,21 @@ use sysml_v2_parser::ast::{
 };
 use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 
+/// Everything the type-reference walk collects: the authored targets in source order, plus the
+/// one fact library-closure resolution needs that is not a target — whether the source declares
+/// a measurement unit (an attribute with a `<short>` name typed by a `…Unit`).
+#[derive(Debug, Default)]
+pub(super) struct RefSink {
+    pub(super) targets: Vec<String>,
+    pub(super) declares_unit_definitions: bool,
+}
+
+impl RefSink {
+    fn push(&mut self, target: String) {
+        self.targets.push(target);
+    }
+}
+
 /// An arena-backed type reference, as authored.
 fn reference_text(
     document: &ParsedRoot,
@@ -50,10 +65,7 @@ fn typing_target_display(
         .map(|view| view.authored_text().to_string())
 }
 
-pub(crate) fn collect_type_reference_targets_from_root(
-    document: &ParsedRoot,
-    out: &mut Vec<String>,
-) {
+pub(crate) fn collect_type_reference_targets_from_root(document: &ParsedRoot, out: &mut RefSink) {
     for element in &document.elements {
         match &element.value {
             RootElement::Package(package) => walk_package_type_refs(document, package, out),
@@ -68,7 +80,7 @@ pub(crate) fn collect_type_reference_targets_from_root(
 pub(crate) fn collect_type_reference_targets_from_package_body(
     document: &ParsedRoot,
     body: &PackageBody,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     let PackageBody::Brace { elements, .. } = body else {
         return;
@@ -81,7 +93,7 @@ pub(crate) fn collect_type_reference_targets_from_package_body(
 pub(crate) fn walk_package_type_refs(
     document: &ParsedRoot,
     package: &Node<Package>,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     collect_type_reference_targets_from_package_body(document, &package.value.body, out);
 }
@@ -89,7 +101,7 @@ pub(crate) fn walk_package_type_refs(
 pub(crate) fn walk_library_package_type_refs(
     document: &ParsedRoot,
     package: &Node<LibraryPackage>,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     collect_type_reference_targets_from_package_body(document, &package.value.body, out);
 }
@@ -97,7 +109,7 @@ pub(crate) fn walk_library_package_type_refs(
 pub(crate) fn walk_package_body_element_type_refs(
     document: &ParsedRoot,
     element: &PackageBodyElement,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     match element {
         PackageBodyElement::Package(nested) => walk_package_type_refs(document, nested, out),
@@ -135,7 +147,7 @@ pub(crate) fn walk_package_body_element_type_refs(
 pub(crate) fn walk_part_def_type_refs(
     document: &ParsedRoot,
     part_def: &PartDef,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_typing_reference(document, part_def.specializes.as_deref(), out);
     let PartDefBody::Brace { elements, .. } = &part_def.body else {
@@ -149,7 +161,7 @@ pub(crate) fn walk_part_def_type_refs(
 pub(crate) fn walk_part_def_body_element_type_refs(
     document: &ParsedRoot,
     element: &PartDefBodyElement,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     match element {
         PartDefBodyElement::PartDef(part_def) => {
@@ -203,7 +215,7 @@ pub(crate) fn walk_part_def_body_element_type_refs(
 pub(crate) fn walk_part_usage_type_refs(
     document: &ParsedRoot,
     part_usage: &PartUsage,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_type_reference(
         typing_target_display(document, part_usage.typing.as_deref()).as_deref(),
@@ -229,7 +241,7 @@ pub(crate) fn walk_part_usage_type_refs(
 pub(crate) fn walk_part_usage_body_element_type_refs(
     document: &ParsedRoot,
     element: &PartUsageBodyElement,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     match element {
         PartUsageBodyElement::PartUsage(part_usage) => {
@@ -251,7 +263,7 @@ pub(crate) fn walk_part_usage_body_element_type_refs(
 pub(crate) fn walk_port_def_type_refs(
     document: &ParsedRoot,
     port_def: &PortDef,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_typing_reference(document, port_def.specializes.as_deref(), out);
     let PortDefBody::Brace { elements, .. } = &port_def.body else {
@@ -279,7 +291,7 @@ pub(crate) fn walk_port_def_type_refs(
 pub(crate) fn walk_port_usage_type_refs(
     document: &ParsedRoot,
     port_usage: &PortUsage,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_type_reference(
         typing_target_display(document, port_usage.typing.as_deref()).as_deref(),
@@ -315,7 +327,7 @@ pub(crate) fn walk_port_usage_type_refs(
 pub(crate) fn walk_attribute_def_type_refs(
     document: &ParsedRoot,
     attribute_def: &AttributeDef,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_typing_reference(document, attribute_def.typing.as_deref(), out);
     walk_attribute_body_type_refs(document, &attribute_def.body, out);
@@ -324,8 +336,14 @@ pub(crate) fn walk_attribute_def_type_refs(
 pub(crate) fn walk_attribute_usage_type_refs(
     document: &ParsedRoot,
     attribute_usage: &AttributeUsage,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
+    if attribute_usage.short_name.is_some()
+        && typing_target_display(document, attribute_usage.typing.as_deref())
+            .is_some_and(|target| target.contains("Unit"))
+    {
+        out.declares_unit_definitions = true;
+    }
     push_optional_typing_reference(document, attribute_usage.typing.as_deref(), out);
     push_optional_type_reference(
         subsetting_target(document, attribute_usage.redefines.as_deref()),
@@ -345,7 +363,7 @@ pub(crate) fn walk_attribute_usage_type_refs(
 pub(crate) fn walk_attribute_body_type_refs(
     document: &ParsedRoot,
     body: &AttributeBody,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     let AttributeBody::Brace { elements, .. } = body else {
         return;
@@ -366,7 +384,7 @@ pub(crate) fn walk_attribute_body_type_refs(
 pub(crate) fn walk_item_usage_type_refs(
     document: &ParsedRoot,
     item_usage: &ItemUsage,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_type_reference(
         reference_text(document, item_usage.type_name).as_deref(),
@@ -378,7 +396,7 @@ pub(crate) fn walk_item_usage_type_refs(
 pub(crate) fn walk_ref_decl_type_refs(
     document: &ParsedRoot,
     ref_decl: &RefDecl,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_type_reference(
         typing_target_display(document, ref_decl.typing.as_deref()).as_deref(),
@@ -389,7 +407,7 @@ pub(crate) fn walk_ref_decl_type_refs(
 pub(crate) fn walk_metadata_def_type_refs(
     document: &ParsedRoot,
     metadata_def: &MetadataDef,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_typing_reference(document, metadata_def.specializes.as_deref(), out);
     walk_attribute_body_type_refs(document, &metadata_def.body, out);
@@ -398,7 +416,7 @@ pub(crate) fn walk_metadata_def_type_refs(
 pub(crate) fn walk_metadata_usage_type_refs(
     document: &ParsedRoot,
     metadata_usage: &MetadataUsage,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     push_optional_type_reference(
         reference_text(document, metadata_usage.type_reference).as_deref(),
@@ -415,7 +433,7 @@ pub(crate) fn walk_metadata_usage_type_refs(
 pub(crate) fn walk_metadata_body_type_refs(
     document: &ParsedRoot,
     body: &MetadataBody,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     let MetadataBody::Brace { elements, .. } = body else {
         return;
@@ -434,7 +452,7 @@ pub(crate) fn walk_metadata_body_type_refs(
 fn push_optional_typing_reference(
     document: &ParsedRoot,
     relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
-    out: &mut Vec<String>,
+    out: &mut RefSink,
 ) {
     if let Some(target) = typing_target_display(document, relationship) {
         push_type_reference(&target, out);
@@ -620,10 +638,9 @@ pub(crate) fn push_import_target(
 
 /// Everything closure resolution asks, from one already-parsed tree.
 pub(super) fn closure_facts(document: &ParsedRoot) -> super::SyntaxClosureFacts {
-    let mut type_reference_targets = Vec::new();
     let mut packages = Vec::new();
     for_each_package_in_parsed(document, |qualified_name, body| {
-        let mut package_type_references = Vec::new();
+        let mut package_type_references = RefSink::default();
         collect_type_reference_targets_from_package_body(
             document,
             body,
@@ -632,18 +649,46 @@ pub(super) fn closure_facts(document: &ParsedRoot) -> super::SyntaxClosureFacts 
         packages.push(PackageTargets {
             qualified_name,
             import_targets: collect_import_targets_from_package_body(document, body),
-            type_reference_targets: package_type_references,
+            type_reference_targets: package_type_references.targets,
         });
     });
-    collect_type_reference_targets_from_root(document, &mut type_reference_targets);
+    let mut sink = RefSink::default();
+    collect_type_reference_targets_from_root(document, &mut sink);
     let mut import_targets = Vec::new();
     collect_import_targets_from_root(document, &mut import_targets);
     super::SyntaxClosureFacts {
         declared_packages: declared_packages_from_parsed(document),
         import_targets,
-        type_reference_targets,
+        type_reference_targets: sink.targets,
         packages,
+        declares_unit_definitions: sink.declares_unit_definitions,
+        uses_unit_literals: uses_unit_literals(document.source.as_str()),
     }
+}
+
+/// Whether the source contains a value-with-unit literal (`10 [kg]`).
+///
+/// The pinned grammar does not represent the unit suffix as a node, so this is a lexical fact
+/// answered here, behind the authority, rather than by a consumer scanning text.
+fn uses_unit_literals(source: &str) -> bool {
+    let bytes = source.as_bytes();
+    let mut i = 0usize;
+    while i + 2 < bytes.len() {
+        if bytes[i].is_ascii_digit() {
+            let mut j = i + 1;
+            while j < bytes.len() && (bytes[j].is_ascii_digit() || bytes[j] == b'.') {
+                j += 1;
+            }
+            while j < bytes.len() && bytes[j].is_ascii_whitespace() {
+                j += 1;
+            }
+            if j < bytes.len() && bytes[j] == b'[' {
+                return true;
+            }
+        }
+        i += 1;
+    }
+    false
 }
 
 /// What one package in a source imports and names, keyed by its qualified name.
@@ -654,7 +699,7 @@ pub struct PackageTargets {
     pub type_reference_targets: Vec<String>,
 }
 
-fn push_type_reference(target: &str, out: &mut Vec<String>) {
+fn push_type_reference(target: &str, out: &mut RefSink) {
     let target = target.trim();
     if target.is_empty() || target.starts_with("checks meta ") {
         return;
@@ -662,7 +707,7 @@ fn push_type_reference(target: &str, out: &mut Vec<String>) {
     out.push(target.to_string());
 }
 
-fn push_optional_type_reference(target: Option<&str>, out: &mut Vec<String>) {
+fn push_optional_type_reference(target: Option<&str>, out: &mut RefSink) {
     if let Some(target) = target {
         push_type_reference(target, out);
     }

@@ -114,6 +114,28 @@ fn parse_scanned_entry(uri: Url, content: String, services: &Services) -> Parsed
     }
 }
 
+/// Scan entries for documents the source authority already admitted (the library closure).
+pub(crate) fn parse_scanned_documents(
+    documents: Vec<SourceDocument>,
+    parallel_enabled: bool,
+    services: &Services,
+) -> Vec<ParsedScanEntry> {
+    let entry = |document: SourceDocument| {
+        let parsed = services.syntax.parse(&document);
+        let parse_errors = util::parse_failure_diagnostics(&parsed, 5);
+        ParsedScanEntry {
+            uri: document.uri().clone(),
+            document,
+            parsed,
+            parse_errors,
+        }
+    };
+    if !parallel_enabled || documents.len() < 2 {
+        return documents.into_iter().map(entry).collect();
+    }
+    documents.into_par_iter().map(entry).collect()
+}
+
 pub(crate) fn parse_scanned_entries(
     entries: Vec<(Url, String)>,
     parallel_enabled: bool,

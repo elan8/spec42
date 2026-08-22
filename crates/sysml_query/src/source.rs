@@ -71,4 +71,8 @@ impl SourceService {
     pub fn discover(&self, targets: &[PathBuf]) -> Result<Vec<PathBuf>, SourceError> {
         self.inner.discover(targets)
     }
+
+    pub(crate) fn authority(&self) -> &Arc<SourceAuthority> {
+        &self.inner
+    }
 }

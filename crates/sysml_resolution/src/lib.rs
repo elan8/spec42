@@ -18,6 +18,7 @@ mod element_kind;
 mod evaluation;
 mod feature_query;
 mod inspection;
+pub mod library;
 mod model;
 mod namespace_query;
 pub mod publication;

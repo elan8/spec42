@@ -174,10 +174,12 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         .iter()
         .find(|package| package["name"] == "sysml_resolution")
         .expect("resolution package");
+    // Normal dependencies only: a dev-dependency never reaches the graph a consumer resolves.
     let actual_dependencies = resolution["dependencies"]
         .as_array()
         .expect("resolution dependencies")
         .iter()
+        .filter(|dependency| dependency["kind"].is_null())
         .map(|dependency| {
             dependency["rename"]
                 .as_str()
