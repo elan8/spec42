@@ -14,7 +14,7 @@ default = []
 
 [dependencies]
 workspace = { path = "../workspace", default-features = false }
-workspace_session = { path = "../workspace_session" }
+session_actor = { path = "../session_actor" }
 language_service = { path = "../language_service" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }

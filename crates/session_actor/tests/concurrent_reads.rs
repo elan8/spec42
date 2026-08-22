@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use workspace_session::{SessionActor, TracksRelink};
+use session_actor::{SessionActor, TracksRelink};
 
 #[derive(Clone, Default)]
 struct CounterState {

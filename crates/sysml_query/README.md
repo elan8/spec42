@@ -48,8 +48,8 @@ The facade has one dependency. Its transitive closure is
 `sysml_query -> sysml_resolution -> parser-next` and cannot reach `sysml_model` or
 `sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete publications rather
 than falling back. There is no feature to select, so no consumer can opt back in.
-`workspace_session` stores only `Arc<PublishedModel>` and validates replacement identity and
-completeness through the typed publication service.
+`sysml_query::publication::PublicationSession` stores only `Arc<PublishedModel>` and admits a
+replacement only when its identity is exactly the one the build was started for.
 
 The normal `sysml_query` test gate enforces the boundary in three ways:
 

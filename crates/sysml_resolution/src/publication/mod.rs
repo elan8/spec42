@@ -301,7 +301,9 @@ mod tests {
             "package W { part def P; }",
             SourceKind::Workspace,
         );
-        let prepared = authority.prepare(std::slice::from_ref(&workspace), []).unwrap();
+        let prepared = authority
+            .prepare(std::slice::from_ref(&workspace), [])
+            .unwrap();
         assert_eq!(authority.syntax().memo_len(), 0, "prepare never parses");
         prepared.build().unwrap();
         assert_eq!(

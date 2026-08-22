@@ -1,4 +1,5 @@
 use crate::language::SymbolEntry;
+use session_actor::TracksRelink;
 use std::sync::Arc;
 use sysml_query::publication::{
     PublicationBuildFailure, PublicationSession, RelinkToken, SessionLifecycle,
@@ -7,7 +8,6 @@ use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use sysml_query::Services;
 use tower_lsp::lsp_types::Url;
-use workspace_session::TracksRelink;
 
 /// One indexed document: its admitted source and the tree the syntax service parsed for it.
 ///
@@ -55,7 +55,7 @@ pub(crate) struct RuntimeConfig {
 }
 
 /// The server's live workspace state — managed exclusively by a single
-/// `workspace_session::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
+/// `session_actor::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
 /// `Clone` is required by the actor's `Arc::make_mut` clone-on-write mutation strategy; readers
 /// only ever see an `Arc<ServerState>` snapshot, never a lock guard.
 #[derive(Clone)]

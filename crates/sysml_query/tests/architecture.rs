@@ -510,9 +510,9 @@ fn query_facade_public_api_contains_no_raw_semantic_storage() {
 }
 
 #[test]
-fn workspace_publication_owner_contains_no_raw_semantic_storage() {
+fn the_session_actor_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(
-        &repository_root().join("crates/workspace_session/src"),
+        &repository_root().join("crates/session_actor/src"),
     );
 }
 

@@ -14,7 +14,7 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
-- `crates/workspace_session` owns a protocol-neutral, tokio-actor concurrency wrapper (lock-free reads, superseded-rebuild handling) over embedder-owned session state, used by `lsp_server`.
+- `crates/session_actor` owns a generic tokio actor (lock-free snapshot reads, single-writer mutations, superseded background results dropped) over embedder-owned session state; it knows nothing about SysML and is used by `lsp_server`.
 - `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.

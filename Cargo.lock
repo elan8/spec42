@@ -1265,6 +1265,7 @@ dependencies = [
  "serde",
  "serde_json",
  "server",
+ "session_actor",
  "sha2",
  "spec42-generator-protocol",
  "sysml_diagnostics",
@@ -1280,7 +1281,6 @@ dependencies = [
  "url",
  "wat",
  "workspace",
- "workspace_session",
 ]
 
 [[package]]
@@ -1851,6 +1851,15 @@ dependencies = [
  "wat",
  "workspace",
  "zip",
+]
+
+[[package]]
+name = "session_actor"
+version = "0.50.0"
+dependencies = [
+ "thiserror 2.0.19",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2978,15 +2987,6 @@ dependencies = [
  "url",
  "walkdir",
  "zip",
-]
-
-[[package]]
-name = "workspace_session"
-version = "0.50.0"
-dependencies = [
- "thiserror 2.0.19",
- "tokio",
- "tracing",
 ]
 
 [[package]]

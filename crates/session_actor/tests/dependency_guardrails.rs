@@ -2,7 +2,7 @@ use std::fs;
 use std::path::Path;
 
 #[test]
-fn workspace_session_depends_on_tokio_and_no_sysml_or_protocol_crate() {
+fn session_actor_depends_on_tokio_and_no_sysml_or_protocol_crate() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let cargo_toml = fs::read_to_string(manifest_dir.join("Cargo.toml")).expect("read Cargo.toml");
 
@@ -28,12 +28,12 @@ fn workspace_session_depends_on_tokio_and_no_sysml_or_protocol_crate() {
             !cargo_toml
                 .lines()
                 .any(|line| line.starts_with(&format!("{dep} ="))),
-            "workspace_session is a generic actor and must not depend on {dep}"
+            "session_actor is a generic actor and must not depend on {dep}"
         );
     }
 
     assert!(
         cargo_toml.contains("tokio ="),
-        "workspace_session must depend on tokio"
+        "session_actor must depend on tokio"
     );
 }

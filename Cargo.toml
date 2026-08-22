@@ -17,7 +17,7 @@ members = [
   "crates/sysml_resolution",
   "crates/workspace",
   "crates/sysml_tokens",
-  "crates/workspace_session",
+  "crates/session_actor",
   "tools/snapshot_tool",
   "tools/constraint_manifest",
   "tools/resolution_benchmark",

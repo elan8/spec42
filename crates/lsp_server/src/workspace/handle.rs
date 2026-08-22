@@ -2,7 +2,7 @@
 //! `SnapshotHandle<ServerState>`, giving `lsp_server`'s call sites one named method per
 //! mutation-pipeline step instead of scattering raw `.mutate(|s| ...)` closures across
 //! `documents.rs`/`mod.rs`. This is deliberately *not* a trait/interface for swappability —
-//! `workspace_session` is already the right-sized abstraction, and with only one real consumer
+//! `session_actor` is already the right-sized abstraction, and with only one real consumer
 //! (this crate) a second layer on top of it would be premature. See
 //! `docs/engineering` design discussion for the reasoning.
 //!
@@ -12,13 +12,13 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
 use sysml_query::publication::{
     PublicationOutcome, PublicationToken, RelinkToken, SemanticBuild, SessionLifecycle,
 };
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
-use workspace_session::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
 
 use crate::language::SymbolEntry;
 use crate::workspace::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};

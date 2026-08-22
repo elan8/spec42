@@ -1,10 +1,10 @@
 [package]
-name = "workspace_session"
+name = "session_actor"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Tokio-actor concurrency wrapper giving lock-free reads and superseding background rebuilds for any embedder-owned session state; protocol-neutral, usable by LSP and HTTP hosts alike"
+description = "Generic tokio actor for embedder-owned session state: lock-free snapshot reads, single-writer mutations, superseded background results dropped; knows nothing about SysML"
 
 [features]
 default = []
