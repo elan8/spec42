@@ -24,7 +24,8 @@ The published user guide lives in [`docs-site/`](../docs-site/) and is deployed 
 
 | Topic | Document |
 | --- | --- |
-| Semantic core architecture | [architecture/SEMANTIC_CORE_ARCHITECTURE.md](architecture/SEMANTIC_CORE_ARCHITECTURE.md) |
+| System architecture (authorities, services, crate map) | [../design.md](../design.md) |
+| Semantic core contracts | [architecture/SEMANTIC_CORE_ARCHITECTURE.md](architecture/SEMANTIC_CORE_ARCHITECTURE.md) |
 | Read-only HTTP API | [api/README.md](api/README.md) |
 
 ## Generated reference

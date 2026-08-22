@@ -1,4 +1,4 @@
-//! Typed content identities and source manifests shared across Spec42 crates (plan §5.1, §5.2).
+//! Typed content identities and source manifests shared across Spec42 crates.
 //!
 //! `Blake3Digest` is the raw 32-byte digest. `ContentDigest`, `RootDigest`, and `ArtifactKey`
 //! are distinct newtypes over it so that digests computed in one identity domain can never be

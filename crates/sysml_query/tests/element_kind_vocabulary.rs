@@ -1,7 +1,7 @@
 //! Source-level guards on the element-kind projection.
 //!
 //! These live here rather than in `sysml_resolution` because they parse Rust source with `syn`,
-//! and that crate's dependency set is pinned to exactly four entries by
+//! and that crate's dependency set is pinned to an exact set by
 //! `architecture.rs::immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary`.
 //! Adding a dev-dependency there would break that gate.
 //!

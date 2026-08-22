@@ -10,6 +10,7 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 - Understand the relevant design, implementation, and tests before changing code. Executable
   contracts, manifests, and tests establish current behavior; design documents establish intent.
+  The root `design.md` is the authoritative design document for the system's architecture.
   If they disagree, do not guess. Resolve the conflict when it is in scope and otherwise report it.
 - Fix the owning abstraction, not only the visible symptom. Do not expand a change to clean up
   unrelated legacy debt or pre-existing failures.

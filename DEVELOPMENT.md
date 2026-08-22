@@ -14,7 +14,7 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
-- `crates/workspace_session` owns a protocol-neutral, tokio-actor concurrency wrapper (lock-free reads, superseded-rebuild handling) over embedder-owned session state; currently a standalone scaffold not yet wired into a host.
+- `crates/workspace_session` owns a protocol-neutral, tokio-actor concurrency wrapper (lock-free reads, superseded-rebuild handling) over embedder-owned session state, used by `lsp_server`.
 - `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
@@ -38,7 +38,7 @@ Protocol-neutral editor APIs live in `crates/language_service`.
 - `rename.rs`, `formatting.rs`, `code_actions.rs`: rename edits, document formatting, neutral quick fixes
 - `text.rs`, `keywords.rs`: position/word helpers and keyword hover fallback
 
-`kernel::workspace::snapshot` implements `WorkspaceSnapshot` for LSP `ServerState`. Kernel feature modules under `lsp_runtime/features/` delegate to `language_service` and map DTOs to `tower_lsp` types (library-path policy and VS Code commands stay in kernel).
+`lsp_server::workspace::snapshot` implements `WorkspaceSnapshot` for LSP `ServerState`. Feature modules under `lsp_runtime/features/` delegate to `language_service` and map DTOs to `tower_lsp` types (library-path policy and VS Code commands stay in `lsp_server`).
 
 Headless tests: `crates/language_service/tests/` (`navigation/`, `completion/`, `outline/`, `inmemory_workspace`, `dto_roundtrip`, `dependency_guardrails`).
 
@@ -56,7 +56,7 @@ The LSP implementation lives under `crates/lsp_server/src/lsp_runtime`.
 - `hierarchy.rs`, `navigation.rs`, `references_resolver.rs`, `symbols.rs`: feature helpers
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
-Diagnostic rules are owned by `sysml_resolution` and read through `sysml_query`; kernel code maps neutral diagnostics at the LSP boundary.
+Diagnostic rules are owned by `sysml_resolution` and read through `sysml_query`; `lsp_server` maps neutral diagnostics at the LSP boundary.
 
 ## Building
 
@@ -175,7 +175,7 @@ producing evidence for a bump; an active patch changes what the graph resolves.
 
 - `spec42 check` post-processes diagnostics: deduplication and one root parse error per file (cascades in `relatedInformation`). By default, semantic checks still run on files with parse errors; use `--strict-diagnostics` for the legacy mode that skips semantic checks after a parse error and suppresses shadowed `unresolved_*` warnings.
 - Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; reporting policy lives in `sysml_diagnostics`.
-- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
+- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p lsp_server --test lsp_integration mbse_vacuum -- --ignored`.
 
 ## Workspace indexing limits
 
