@@ -7,7 +7,6 @@ use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::stdlib::EMBEDDED_STDLIB_ARCHIVE;
 use spec42::{perform_check, perform_doctor};
 use tempfile::TempDir;
-use tower_lsp::lsp_types::NumberOrString;
 
 const SMOKE_MODEL: &str = r#"package KparStdlibSmoke {
   private import ScalarValues::Real;
@@ -17,15 +16,12 @@ const SMOKE_MODEL: &str = r#"package KparStdlibSmoke {
 }
 "#;
 
-fn diagnostic_codes(report: &lsp_server::ValidationReport) -> Vec<String> {
+fn diagnostic_codes(report: &workspace::HostValidationReport) -> Vec<String> {
     report
         .documents
         .iter()
         .flat_map(|document| document.diagnostics.iter())
-        .filter_map(|diagnostic| match diagnostic.code.as_ref()? {
-            NumberOrString::String(code) => Some(code.clone()),
-            NumberOrString::Number(code) => Some(code.to_string()),
-        })
+        .map(|diagnostic| diagnostic.code.clone())
         .collect()
 }
 

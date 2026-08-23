@@ -30,22 +30,21 @@ use cli::{
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
-use lsp_server::{
-    validate_paths_with_semantics, ValidationReport, ValidationRequest, ValidationSummary,
+use workspace::{
+    validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest,
 };
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
-pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
+pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
     let engine = build_engine(cli)?;
-    let config = Arc::new(lsp_server::default_server_config());
-    let mut report = validate_paths_with_semantics(
+    let mut report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -53,8 +52,7 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             parallel_enabled: true,
             strict_diagnostics: args.strict_diagnostics,
         },
-    )?
-    .validation;
+    )?;
     if references_stdlib
         && environment.stdlib_path.is_none()
         && !cli.no_stdlib
@@ -88,12 +86,12 @@ pub struct ModelSummaryTruncation {
 #[derive(Debug, Clone, Serialize)]
 pub struct ModelSummaryResponse {
     pub workspace_root: Option<String>,
-    pub summary: ValidationSummary,
+    pub summary: HostValidationSummary,
     pub truncation: ModelSummaryTruncation,
 }
 
 /// Narrow summary while a typed model-summary projection is defined.
-pub fn build_model_summary(report: ValidationReport, _max_nodes: usize) -> ModelSummaryResponse {
+pub fn build_model_summary(report: HostValidationReport, _max_nodes: usize) -> ModelSummaryResponse {
     // TODO(follow-up): expose a bounded typed summary from PublishedModel. Do not recreate the
     // retired graph DTO here; until that owner exists, diagnostics are the complete supported
     // result and semantic nodes/relationships are explicitly absent.

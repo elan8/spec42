@@ -5,11 +5,7 @@ use std::sync::Arc;
 use std::time::Instant;
 use tower_lsp::lsp_types::ServerCapabilities;
 
-use crate::validation::{ValidationReport, ValidationRequest};
-
 pub const KERNEL_INTERFACE_VERSION: u32 = 1;
-
-pub type PipelineHook = Arc<dyn ValidationPipelineHook>;
 
 /// Optional host hook for capability augmentation.
 ///
@@ -89,18 +85,6 @@ impl CapabilityMetadata {
 
 pub trait CapabilityProvider: Send + Sync {
     fn metadata(&self) -> CapabilityMetadata;
-    fn pipeline_hooks(&self) -> Vec<PipelineHook> {
-        Vec::new()
-    }
-}
-
-pub trait ValidationPipelineHook: Send + Sync {
-    fn before_validate(&self, _request: &ValidationRequest) -> Result<(), String> {
-        Ok(())
-    }
-    fn after_validate(&self, _report: &mut ValidationReport) -> Result<(), String> {
-        Ok(())
-    }
 }
 
 /// Server configuration built by the binary and passed to the core server.
@@ -120,8 +104,6 @@ pub struct Spec42Config {
     pub custom_method_providers: Vec<Arc<dyn CustomMethodProvider>>,
     /// Optional custom JSON-RPC method handlers for plugin composition.
     pub custom_rpc_providers: Vec<Arc<dyn CustomRpcProvider>>,
-    /// Optional validation pipeline hooks for host-side behavior.
-    pub pipeline_hooks: Vec<PipelineHook>,
 }
 
 impl std::fmt::Debug for Spec42Config {
@@ -136,7 +118,6 @@ impl std::fmt::Debug for Spec42Config {
                 &self.custom_method_providers.len(),
             )
             .field("custom_rpc_providers", &self.custom_rpc_providers.len())
-            .field("pipeline_hooks", &self.pipeline_hooks.len())
             .finish()
     }
 }
@@ -166,12 +147,6 @@ impl Spec42Config {
     /// Add a custom RPC provider.
     pub fn with_custom_rpc_provider(mut self, p: Arc<dyn CustomRpcProvider>) -> Self {
         self.custom_rpc_providers.push(p);
-        self
-    }
-
-    /// Add a validation pipeline hook.
-    pub fn with_pipeline_hook(mut self, hook: PipelineHook) -> Self {
-        self.pipeline_hooks.push(hook);
         self
     }
 

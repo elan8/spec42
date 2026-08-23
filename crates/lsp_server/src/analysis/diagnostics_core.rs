@@ -28,10 +28,7 @@ pub(crate) fn collect_document_diagnostics(
 }
 
 /// The same report, before the protocol's types: the neutral values the reporting policy settled.
-///
-/// Batch validation needs these to ask `sysml_diagnostics` its advice question about the report it
-/// is about to render, rather than re-deriving one from the protocol projection.
-pub(crate) fn collect_reported_diagnostics(
+fn collect_reported_diagnostics(
     model: Option<&PublishedModel>,
     uri: &Url,
     reporting: ReportingPolicy,
@@ -42,17 +39,6 @@ pub(crate) fn collect_reported_diagnostics(
     };
     let diagnostics = sysml_diagnostics::document_diagnostics(model, uri, reporting);
     postprocess_document_diagnostics(diagnostics, postprocess)
-}
-
-/// Batch validation reports only what the parser rejected for a document that does not parse.
-pub(crate) fn validation_reporting(strict: bool) -> ReportingPolicy {
-    ReportingPolicy::strict(strict)
-}
-
-pub(crate) fn validation_postprocess_options(strict: bool) -> PostprocessPolicy {
-    PostprocessPolicy {
-        suppress_semantic_after_parse_error: strict,
-    }
 }
 
 /// Interactive editing reports everything: the author is mid-keystroke, and the semantic answers

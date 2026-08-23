@@ -1,17 +1,20 @@
-﻿//! End-to-end validation that import-scoped library closure does not duplicate workspace packages.
+//! End-to-end validation that import-scoped library closure does not duplicate workspace packages.
 
 use std::path::PathBuf;
-use std::sync::Arc;
 
-use lsp_server::{default_server_config, validate_paths, ValidationRequest};
-use tower_lsp::lsp_types::{Diagnostic, NumberOrString};
+use workspace::{validate_paths, ValidationRequest};
+use sysml_diagnostics::SemanticDiagnostic;
 
-fn diagnostic_is_ambiguous_expose(diagnostic: &Diagnostic) -> bool {
-    let code_matches = diagnostic.code.as_ref().is_some_and(|code| match code {
-        NumberOrString::String(value) => value == "view_expose_unresolved",
-        NumberOrString::Number(value) => *value == 0,
-    });
-    code_matches && diagnostic.message.contains("ambiguous")
+fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+    workspace::EngineBuilder::default()
+        .cache_dir(cache.path().to_path_buf())
+        .no_stdlib(true)
+        .library_paths(library_paths)
+        .build()
+        .expect("engine")
+}
+fn diagnostic_is_ambiguous_expose(diagnostic: &SemanticDiagnostic) -> bool {
+    diagnostic.code == "view_expose_unresolved" && diagnostic.message.contains("ambiguous")
 }
 
 fn write_webshop_like_workspace(root: &std::path::Path) {
@@ -84,11 +87,10 @@ fn validate_paths_resolves_view_expose_without_library_duplicates() {
     write_duplicate_library_root(&library);
 
     let cache = tempfile::tempdir().expect("cache dir");
-    let engine = super::harness::test_engine(&cache, vec![library.clone()]);
-    let config = Arc::new(default_server_config());
+    let engine = test_engine(&cache, vec![library.clone()]);
     let report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![workspace.clone()],
             workspace_root: Some(workspace),
@@ -126,11 +128,10 @@ fn validate_paths_real_webshop_has_no_ambiguous_view_expose() {
     }
 
     let cache = tempfile::tempdir().expect("cache dir");
-    let engine = super::harness::test_engine(&cache, vec![library.clone()]);
-    let config = Arc::new(default_server_config());
+    let engine = test_engine(&cache, vec![library.clone()]);
     let report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![workspace.clone()],
             workspace_root: Some(workspace),

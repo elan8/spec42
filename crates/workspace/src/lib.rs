@@ -9,6 +9,7 @@ pub mod engine;
 pub mod error;
 pub mod provider;
 pub mod snapshot;
+pub mod validation;
 pub mod version;
 
 pub use comparison::{
@@ -32,5 +33,9 @@ pub use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
 pub use sysml_query::publication::{PublicationBuildFailure, PublicationFailureStage};
 pub use sysml_query::source::{
     ContentDigest, InMemoryProvider, RootDigest, SourceDocument, SourceKind, SourceProvider,
+};
+pub use validation::{
+    built_workspace_input_from_snapshot, report_from_built_workspace, validate_paths,
+    BuiltWorkspaceInput, PipelineHook, ValidationPipelineHook, ValidationRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};

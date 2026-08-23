@@ -228,6 +228,7 @@ mod tests {
                 diagnostics: vec![diagnostic],
             }],
             summary: HostValidationSummary::default(),
+            advice: Vec::new(),
         }
     }
 
@@ -303,6 +304,7 @@ mod tests {
                     diagnostics: vec![duplicate.clone(), duplicate],
                 }],
                 summary: HostValidationSummary::default(),
+            advice: Vec::new(),
             },
         )
         .expect_err("duplicate diagnostics must not be collapsed");

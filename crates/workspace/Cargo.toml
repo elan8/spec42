@@ -66,3 +66,19 @@ path = "tests/deferred_validation.rs"
 [[test]]
 name = "skip_guardrails"
 path = "tests/skip_guardrails.rs"
+
+[[test]]
+name = "validation_diagnostics"
+path = "tests/validation_diagnostics.rs"
+
+[[test]]
+name = "validation_postprocess"
+path = "tests/validation_postprocess.rs"
+
+[[test]]
+name = "validation_mbse_vacuum_baseline"
+path = "tests/validation_mbse_vacuum_baseline.rs"
+
+[[test]]
+name = "validation_webshop_library_closure"
+path = "tests/validation_webshop_library_closure.rs"

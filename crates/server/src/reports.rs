@@ -1,14 +1,20 @@
-﻿use std::collections::BTreeSet;
+//! CLI rendering of one [`HostValidationReport`].
+//!
+//! The report itself is `workspace`'s: this module owns only the projections the CLI publishes —
+//! text, the historical LSP-shaped JSON, SARIF and JUnit — plus baseline filtering over the JSON
+//! signature. Nothing here decides what a diagnostic means.
+
+use std::collections::BTreeSet;
 use std::path::Path;
 
-use lsp_server::{ValidatedDocument, ValidationReport, ValidationSummary};
-use sysml_diagnostics::DiagnosticSeverity as NeutralSeverity;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
+use serde::Serialize;
+use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
+use workspace::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
 use crate::{cli::OutputFormat, diagnostic_catalog};
 
 pub fn emit_validation_report(
-    report: &ValidationReport,
+    report: &HostValidationReport,
     format: OutputFormat,
 ) -> Result<(), String> {
     match format {
@@ -19,7 +25,7 @@ pub fn emit_validation_report(
         OutputFormat::Json => {
             println!(
                 "{}",
-                serde_json::to_string_pretty(report)
+                serde_json::to_string_pretty(&json_report(report))
                     .map_err(|err| format!("Failed to serialize report as JSON: {err}"))?
             );
             Ok(())
@@ -39,10 +45,123 @@ pub fn emit_validation_report(
     }
 }
 
+// -- JSON projection ---------------------------------------------------------------------
+//
+// `spec42 check --format json` has always published the LSP diagnostic shape, and baselines on
+// disk are keyed by it. The report crossed the graph as `tower-lsp` values before; now it
+// crosses as neutral ones and the transport spelling is applied here, where the other three
+// output formats are also produced.
+
+#[derive(Serialize)]
+struct JsonReport<'a> {
+    workspace_root: &'a Option<String>,
+    resolved_library_paths: &'a [String],
+    documents: Vec<JsonDocument<'a>>,
+    summary: &'a HostValidationSummary,
+    advice: &'a [String],
+}
+
+#[derive(Serialize)]
+struct JsonDocument<'a> {
+    uri: &'a str,
+    diagnostics: Vec<JsonDiagnostic<'a>>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct JsonDiagnostic<'a> {
+    range: JsonRange,
+    severity: i32,
+    code: &'a str,
+    source: &'a str,
+    message: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    related_information: Option<Vec<JsonRelatedInformation<'a>>>,
+}
+
+#[derive(Serialize)]
+struct JsonRelatedInformation<'a> {
+    location: JsonLocation,
+    message: &'a str,
+}
+
+#[derive(Serialize)]
+struct JsonLocation {
+    uri: String,
+    range: JsonRange,
+}
+
+#[derive(Serialize)]
+struct JsonRange {
+    start: JsonPosition,
+    end: JsonPosition,
+}
+
+#[derive(Serialize)]
+struct JsonPosition {
+    line: u32,
+    character: u32,
+}
+
+fn json_report(report: &HostValidationReport) -> JsonReport<'_> {
+    JsonReport {
+        workspace_root: &report.workspace_root,
+        resolved_library_paths: &report.resolved_library_paths,
+        documents: report
+            .documents
+            .iter()
+            .map(|document| JsonDocument {
+                uri: &document.uri,
+                diagnostics: document.diagnostics.iter().map(json_diagnostic).collect(),
+            })
+            .collect(),
+        summary: &report.summary,
+        advice: &report.advice,
+    }
+}
+
+fn json_diagnostic(diagnostic: &SemanticDiagnostic) -> JsonDiagnostic<'_> {
+    JsonDiagnostic {
+        range: json_range(&diagnostic.range),
+        severity: severity_number(diagnostic.severity),
+        code: &diagnostic.code,
+        source: &diagnostic.source,
+        message: &diagnostic.message,
+        related_information: (!diagnostic.related_information.is_empty()).then(|| {
+            diagnostic
+                .related_information
+                .iter()
+                .map(|info| JsonRelatedInformation {
+                    location: JsonLocation {
+                        uri: info.uri.to_string(),
+                        range: json_range(&info.range),
+                    },
+                    message: &info.message,
+                })
+                .collect()
+        }),
+    }
+}
+
+fn json_range(range: &sysml_query::resolved_slice::TextRange) -> JsonRange {
+    JsonRange {
+        start: JsonPosition {
+            line: range.start.line,
+            character: range.start.character,
+        },
+        end: JsonPosition {
+            line: range.end.line,
+            character: range.end.character,
+        },
+    }
+}
+
+// -- baseline ----------------------------------------------------------------------------
+
 pub fn apply_baseline(
-    report: &ValidationReport,
+    report: &HostValidationReport,
     baseline_path: &Path,
-) -> Result<ValidationReport, String> {
+) -> Result<HostValidationReport, String> {
     let raw = std::fs::read_to_string(baseline_path)
         .map_err(|err| format!("Failed to read baseline {}: {err}", baseline_path.display()))?;
     let value: serde_json::Value = serde_json::from_str(&raw).map_err(|err| {
@@ -56,7 +175,7 @@ pub fn apply_baseline(
     let documents = report
         .documents
         .iter()
-        .map(|document| ValidatedDocument {
+        .map(|document| HostValidatedDocument {
             uri: document.uri.clone(),
             diagnostics: document
                 .diagnostics
@@ -69,7 +188,7 @@ pub fn apply_baseline(
         })
         .collect::<Vec<_>>();
 
-    Ok(ValidationReport {
+    Ok(HostValidationReport {
         workspace_root: report.workspace_root.clone(),
         resolved_library_paths: report.resolved_library_paths.clone(),
         summary: summarize(&documents),
@@ -141,7 +260,7 @@ fn code_value_label(value: &serde_json::Value) -> String {
         .unwrap_or_default()
 }
 
-fn diagnostic_signature(uri: &str, diagnostic: &Diagnostic) -> String {
+fn diagnostic_signature(uri: &str, diagnostic: &SemanticDiagnostic) -> String {
     format!(
         "{}|{}:{}-{}:{}|{}|{}|{}",
         uri,
@@ -149,61 +268,46 @@ fn diagnostic_signature(uri: &str, diagnostic: &Diagnostic) -> String {
         diagnostic.range.start.character,
         diagnostic.range.end.line,
         diagnostic.range.end.character,
-        diagnostic.severity.map(severity_number).unwrap_or(1),
-        diagnostic
-            .code
-            .as_ref()
-            .map(number_or_string_label)
-            .unwrap_or_default(),
+        severity_number(diagnostic.severity),
+        diagnostic.code,
         diagnostic.message
     )
 }
 
-fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
-    let mut summary = ValidationSummary {
+fn summarize(documents: &[HostValidatedDocument]) -> HostValidationSummary {
+    let mut summary = HostValidationSummary {
         document_count: documents.len(),
-        ..ValidationSummary::default()
+        ..HostValidationSummary::default()
     };
-    for document in documents {
-        for diagnostic in &document.diagnostics {
-            match diagnostic.severity.unwrap_or(DiagnosticSeverity::ERROR) {
-                DiagnosticSeverity::ERROR => summary.error_count += 1,
-                DiagnosticSeverity::WARNING => summary.warning_count += 1,
-                DiagnosticSeverity::INFORMATION | DiagnosticSeverity::HINT => {
-                    summary.information_count += 1
-                }
-                _ => summary.error_count += 1,
-            }
+    for diagnostic in documents.iter().flat_map(|document| &document.diagnostics) {
+        match diagnostic.severity {
+            DiagnosticSeverity::Error => summary.error_count += 1,
+            DiagnosticSeverity::Warning => summary.warning_count += 1,
+            DiagnosticSeverity::Information => summary.information_count += 1,
         }
     }
     summary
 }
 
-fn print_text_report(report: &ValidationReport) {
+// -- text / SARIF / JUnit ------------------------------------------------------------------
+
+fn print_text_report(report: &HostValidationReport) {
     for document in &report.documents {
         for diagnostic in &document.diagnostics {
-            let severity = diagnostic
-                .severity
-                .map(reported_severity)
-                .map(sysml_diagnostics::severity_label)
-                .unwrap_or("error");
-            let code = diagnostic
-                .code
-                .as_ref()
-                .map(number_or_string_label)
-                .unwrap_or_default();
+            let severity = sysml_diagnostics::severity_label(diagnostic.severity);
+            let code = if diagnostic.code.is_empty() {
+                String::new()
+            } else {
+                format!("[{}] ", diagnostic.code)
+            };
             println!(
                 "{}:{}:{}: {}{}{}",
                 document.uri,
                 diagnostic.range.start.line + 1,
                 diagnostic.range.start.character + 1,
                 severity,
-                if code.is_empty() { "" } else { " [" },
-                if code.is_empty() {
-                    diagnostic.message.clone()
-                } else {
-                    format!("{code}] {}", diagnostic.message)
-                }
+                " ",
+                format_args!("{code}{}", diagnostic.message)
             );
         }
     }
@@ -219,12 +323,12 @@ fn print_text_report(report: &ValidationReport) {
     }
 }
 
-fn sarif_report(report: &ValidationReport) -> serde_json::Value {
+fn sarif_report(report: &HostValidationReport) -> serde_json::Value {
     let rule_ids = report
         .documents
         .iter()
         .flat_map(|document| document.diagnostics.iter())
-        .filter_map(|diagnostic| diagnostic.code.as_ref().map(number_or_string_label))
+        .map(|diagnostic| diagnostic.code.clone())
         .collect::<BTreeSet<_>>();
     let rules = rule_ids
         .iter()
@@ -236,11 +340,11 @@ fn sarif_report(report: &ValidationReport) -> serde_json::Value {
         .iter()
         .flat_map(|document| {
             document.diagnostics.iter().map(move |diagnostic| {
-                let rule_id = diagnostic
-                    .code
-                    .as_ref()
-                    .map(number_or_string_label)
-                    .unwrap_or_else(|| "spec42".to_string());
+                let rule_id = if diagnostic.code.is_empty() {
+                    "spec42"
+                } else {
+                    diagnostic.code.as_str()
+                };
                 serde_json::json!({
                     "ruleId": rule_id,
                     "level": sarif_level(diagnostic.severity),
@@ -296,7 +400,7 @@ fn sarif_catalog_level(severity: &str) -> &'static str {
     }
 }
 
-fn junit_report(report: &ValidationReport) -> String {
+fn junit_report(report: &HostValidationReport) -> String {
     let tests = report
         .documents
         .iter()
@@ -322,11 +426,7 @@ fn junit_report(report: &ValidationReport) -> String {
                 diagnostic.range.start.line + 1,
                 diagnostic.range.start.character + 1
             );
-            let severity = diagnostic
-                .severity
-                .map(reported_severity)
-                .map(sysml_diagnostics::severity_label)
-                .unwrap_or("error");
+            let severity = sysml_diagnostics::severity_label(diagnostic.severity);
             out.push_str(&format!(
                 r#"<testcase classname="spec42" name="{}"><failure type="{}" message="{}">{}</failure></testcase>"#,
                 xml_escape(&name),
@@ -346,42 +446,20 @@ fn junit_report(report: &ValidationReport) -> String {
     out
 }
 
-fn sarif_level(severity: Option<DiagnosticSeverity>) -> &'static str {
-    match severity.unwrap_or(DiagnosticSeverity::ERROR) {
-        DiagnosticSeverity::ERROR => "error",
-        DiagnosticSeverity::WARNING => "warning",
-        DiagnosticSeverity::INFORMATION | DiagnosticSeverity::HINT => "note",
-        _ => "error",
-    }
-}
-
-/// The neutral severity a transport severity reports as.
-///
-/// `sysml_diagnostics` settles three severities, and nothing in the pipeline produces `HINT`; the
-/// report reaches this crate through the LSP diagnostic type, so the transport spelling is mapped
-/// back to the owned one here rather than given a second label table.
-fn reported_severity(severity: DiagnosticSeverity) -> NeutralSeverity {
+fn sarif_level(severity: DiagnosticSeverity) -> &'static str {
     match severity {
-        DiagnosticSeverity::WARNING => NeutralSeverity::Warning,
-        DiagnosticSeverity::INFORMATION | DiagnosticSeverity::HINT => NeutralSeverity::Information,
-        _ => NeutralSeverity::Error,
+        DiagnosticSeverity::Error => "error",
+        DiagnosticSeverity::Warning => "warning",
+        DiagnosticSeverity::Information => "note",
     }
 }
 
+/// The LSP severity number the JSON projection and baseline signatures are keyed by.
 fn severity_number(severity: DiagnosticSeverity) -> i32 {
     match severity {
-        DiagnosticSeverity::ERROR => 1,
-        DiagnosticSeverity::WARNING => 2,
-        DiagnosticSeverity::INFORMATION => 3,
-        DiagnosticSeverity::HINT => 4,
-        _ => 1,
-    }
-}
-
-fn number_or_string_label(value: &NumberOrString) -> String {
-    match value {
-        NumberOrString::String(value) => value.clone(),
-        NumberOrString::Number(value) => value.to_string(),
+        DiagnosticSeverity::Error => 1,
+        DiagnosticSeverity::Warning => 2,
+        DiagnosticSeverity::Information => 3,
     }
 }
 
@@ -397,33 +475,25 @@ fn xml_escape(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Position, Range};
+    use sysml_query::resolved_slice::{TextPosition, TextRange};
 
-    fn sample_report() -> ValidationReport {
-        ValidationReport {
+    fn sample_report() -> HostValidationReport {
+        HostValidationReport {
             workspace_root: None,
             resolved_library_paths: Vec::new(),
-            documents: vec![ValidatedDocument {
+            documents: vec![HostValidatedDocument {
                 uri: "file:///model.sysml".to_string(),
-                diagnostics: vec![Diagnostic {
-                    range: Range {
-                        start: Position {
-                            line: 1,
-                            character: 2,
-                        },
-                        end: Position {
-                            line: 1,
-                            character: 8,
-                        },
-                    },
-                    severity: Some(DiagnosticSeverity::WARNING),
-                    code: Some(NumberOrString::String("demo_rule".to_string())),
-                    source: Some("spec42".to_string()),
+                diagnostics: vec![SemanticDiagnostic {
+                    uri: url::Url::parse("file:///model.sysml").expect("uri"),
+                    range: TextRange::new(TextPosition::new(1, 2), TextPosition::new(1, 8)),
+                    severity: DiagnosticSeverity::Warning,
+                    source: "spec42".to_string(),
+                    code: "demo_rule".to_string(),
                     message: "Demo warning".to_string(),
-                    ..Diagnostic::default()
+                    related_information: Vec::new(),
                 }],
             }],
-            summary: ValidationSummary {
+            summary: HostValidationSummary {
                 document_count: 1,
                 error_count: 0,
                 warning_count: 1,
@@ -431,6 +501,19 @@ mod tests {
             },
             advice: Vec::new(),
         }
+    }
+
+    #[test]
+    fn json_keeps_the_published_lsp_diagnostic_shape() {
+        let value = serde_json::to_value(json_report(&sample_report())).expect("json");
+        let diagnostic = &value["documents"][0]["diagnostics"][0];
+        assert_eq!(diagnostic["range"]["start"]["line"], 1);
+        assert_eq!(diagnostic["range"]["start"]["character"], 2);
+        assert_eq!(diagnostic["severity"], 2);
+        assert_eq!(diagnostic["code"], "demo_rule");
+        assert_eq!(diagnostic["source"], "spec42");
+        assert_eq!(diagnostic["message"], "Demo warning");
+        assert!(diagnostic.get("relatedInformation").is_none());
     }
 
     #[test]
@@ -448,9 +531,7 @@ mod tests {
     #[test]
     fn sarif_includes_metadata_for_cataloged_rules() {
         let mut report = sample_report();
-        report.documents[0].diagnostics[0].code = Some(NumberOrString::String(
-            "unresolved_type_reference".to_string(),
-        ));
+        report.documents[0].diagnostics[0].code = "unresolved_type_reference".to_string();
 
         let sarif = sarif_report(&report);
         let rule = &sarif["runs"][0]["tool"]["driver"]["rules"][0];
@@ -475,7 +556,7 @@ mod tests {
         let baseline = temp.path().join("baseline.json");
         std::fs::write(
             &baseline,
-            serde_json::to_string(&sample_report()).expect("serialize report"),
+            serde_json::to_string(&json_report(&sample_report())).expect("serialize report"),
         )
         .expect("write baseline");
         let filtered = apply_baseline(&sample_report(), baseline.as_path()).expect("baseline");

@@ -1,8 +1,15 @@
-﻿use lsp_server::{default_server_config, validate_paths, ValidationRequest};
+use workspace::{validate_paths, ValidationRequest};
 use std::fs;
-use std::sync::Arc;
-use tower_lsp::lsp_types::{DiagnosticSeverity, NumberOrString};
+use sysml_diagnostics::DiagnosticSeverity;
 
+fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+    workspace::EngineBuilder::default()
+        .cache_dir(cache.path().to_path_buf())
+        .no_stdlib(true)
+        .library_paths(library_paths)
+        .build()
+        .expect("engine")
+}
 #[test]
 fn check_collapses_cascade_parse_errors_per_file() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -19,11 +26,10 @@ part def Carrier {
     .expect("write");
 
     let cache = tempfile::tempdir().expect("cache dir");
-    let engine = super::harness::test_engine(&cache, Vec::new());
-    let config = Arc::new(default_server_config());
+    let engine = test_engine(&cache, Vec::new());
     let report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![path],
             workspace_root: Some(temp.path().to_path_buf()),
@@ -38,8 +44,8 @@ part def Carrier {
         .diagnostics
         .iter()
         .filter(|d| {
-            d.source.as_deref() == Some("sysml")
-                && matches!(d.severity, Some(DiagnosticSeverity::ERROR) | None)
+            d.source == "sysml"
+                && d.severity == DiagnosticSeverity::Error
         })
         .count();
     assert!(
@@ -49,11 +55,7 @@ part def Carrier {
     );
     assert!(
         report.documents[0].diagnostics.iter().any(|d| {
-            matches!(
-                &d.code,
-                Some(NumberOrString::String(code))
-                    if code == "missing_semicolon" || code == "recovery_cascade_suppressed"
-            )
+            d.code == "missing_semicolon" || d.code == "recovery_cascade_suppressed"
         }),
         "expected a root parse diagnostic: {:?}",
         report.documents[0].diagnostics
@@ -76,11 +78,10 @@ fn check_keeps_semantic_warnings_after_parse_error_by_default() {
     .expect("write");
 
     let cache = tempfile::tempdir().expect("cache dir");
-    let engine = super::harness::test_engine(&cache, Vec::new());
-    let config = Arc::new(default_server_config());
+    let engine = test_engine(&cache, Vec::new());
     let report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![path],
             workspace_root: Some(temp.path().to_path_buf()),
@@ -92,10 +93,7 @@ fn check_keeps_semantic_warnings_after_parse_error_by_default() {
     .expect("validation report");
 
     assert!(
-        report.documents[0].diagnostics.iter().any(|d| matches!(
-            &d.code,
-            Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
-        )),
+        report.documents[0].diagnostics.iter().any(|d| d.code == "unresolved_type_reference"),
         "expected semantic unresolved_type_reference after parse error by default: {:?}",
         report.documents[0].diagnostics
     );

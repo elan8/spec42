@@ -18,3 +18,4 @@ pub use output::Spec42ProjectionOutput;
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;
 pub use validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
+pub(crate) use validation::summarize as summarize_validated_documents;

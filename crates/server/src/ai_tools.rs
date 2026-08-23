@@ -3,7 +3,6 @@
 use std::path::PathBuf;
 
 use serde::Serialize;
-use tower_lsp::lsp_types::NumberOrString;
 
 use crate::cli::{CheckArgs, Cli, OutputFormat};
 use crate::diagnostic_catalog;
@@ -80,10 +79,7 @@ pub fn perform_explain_diagnostic(
         let report = perform_check(cli, &check_args)?;
         for doc in &report.documents {
             for diagnostic in &doc.diagnostics {
-                let Some(NumberOrString::String(found)) = &diagnostic.code else {
-                    continue;
-                };
-                if found != &args.code {
+                if diagnostic.code != args.code {
                     continue;
                 }
                 let line = diagnostic.range.start.line;

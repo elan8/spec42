@@ -1,19 +1,23 @@
-﻿//! Optional regression against the public MBSE vacuum-cleaner example.
+//! Optional regression against the public MBSE vacuum-cleaner example.
 //! Set `MBSE_VACUUM_EXAMPLE_DIR` to the repository root to enable.
 
-use lsp_server::{default_server_config, validate_paths, ValidationRequest};
+use workspace::{validate_paths, ValidationRequest};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
-use tower_lsp::lsp_types::NumberOrString;
 
-fn diagnostic_code_counts(report: &lsp_server::ValidationReport) -> HashMap<String, usize> {
+fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+    workspace::EngineBuilder::default()
+        .cache_dir(cache.path().to_path_buf())
+        .no_stdlib(true)
+        .library_paths(library_paths)
+        .build()
+        .expect("engine")
+}
+fn diagnostic_code_counts(report: &workspace::HostValidationReport) -> HashMap<String, usize> {
     let mut counts = HashMap::new();
     for document in &report.documents {
         for diagnostic in &document.diagnostics {
-            if let Some(NumberOrString::String(code)) = &diagnostic.code {
-                *counts.entry(code.clone()).or_default() += 1;
-            }
+            *counts.entry(diagnostic.code.clone()).or_default() += 1;
         }
     }
     counts
@@ -34,11 +38,10 @@ fn mbse_vacuum_example_diagnostic_baseline() {
     }
 
     let cache = tempfile::tempdir().expect("cache dir");
-    let engine = super::harness::test_engine(&cache, Vec::new());
-    let config = Arc::new(default_server_config());
+    let engine = test_engine(&cache, Vec::new());
     let report = validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![root.clone()],
             workspace_root: Some(root),
@@ -64,10 +67,7 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         .iter()
         .flat_map(|document| document.diagnostics.iter())
         .filter(|diagnostic| {
-            matches!(
-                &diagnostic.code,
-                Some(NumberOrString::String(code)) if code == "duplicate_namespace_member"
-            ) && diagnostic.message.contains("'def'")
+            (diagnostic.code == "duplicate_namespace_member") && diagnostic.message.contains("'def'")
         })
         .count();
     assert_eq!(
@@ -95,10 +95,7 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         .iter()
         .flat_map(|document| document.diagnostics.iter())
         .filter(|diagnostic| {
-            matches!(
-                &diagnostic.code,
-                Some(NumberOrString::String(code)) if code == "duplicate_namespace_member"
-            ) && diagnostic.message.contains("roboticVacuumCleaner")
+            (diagnostic.code == "duplicate_namespace_member") && diagnostic.message.contains("roboticVacuumCleaner")
                 && !diagnostic.message.contains("(action)")
         })
         .count();

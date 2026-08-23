@@ -96,14 +96,6 @@ impl ServerState {
         Self::with_session(services, session)
     }
 
-    pub(crate) fn with_initial_publication(
-        services: Services,
-        initial: Arc<sysml_query::resolved_slice::PublishedModel>,
-    ) -> Self {
-        let session = services.publication.session_seeded(initial);
-        Self::with_session(services, session)
-    }
-
     fn with_session(services: Services, session: PublicationSession) -> Self {
         Self {
             workspace_roots: Vec::new(),
