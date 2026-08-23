@@ -22,6 +22,7 @@ mod evaluation;
 mod feature_query;
 mod inspection;
 pub mod library;
+mod lower;
 mod model;
 mod namespace_query;
 mod pipeline;

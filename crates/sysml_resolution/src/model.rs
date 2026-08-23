@@ -13,6 +13,10 @@ use std::{
 
 use hashbrown::HashTable;
 
+use crate::lower::intern::{
+    SymbolPathArena, SymbolPathArenaBuilder, SymbolTable, SymbolTableBuilder,
+};
+
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
@@ -73,7 +77,7 @@ macro_rules! semantic_id {
     ($name:ident) => {
         #[repr(transparent)]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-        pub(crate) struct $name(u32);
+        pub(crate) struct $name(pub(crate) u32);
 
         impl $name {
             pub(crate) fn from_index(index: usize) -> Result<Self, ConstructionError> {
@@ -14910,186 +14914,6 @@ impl SemanticModelBuilder {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct SymbolPath {
-    start: u32,
-    len: u32,
-    rooted: bool,
-}
-
-#[derive(Debug)]
-struct SymbolPathArena {
-    paths: Box<[SymbolPath]>,
-    segments: Box<[SymbolId]>,
-}
-
-impl SymbolPathArena {
-    fn get(&self, id: SymbolPathId) -> Option<(&[SymbolId], bool)> {
-        let path = self.paths.get(id.index())?;
-        if path.len == 0 {
-            return None;
-        }
-        let end = path.start.checked_add(path.len)?;
-        let segments = self.segments.get(path.start as usize..end as usize)?;
-        Some((segments, path.rooted))
-    }
-}
-
-#[derive(Debug, Default)]
-struct SymbolPathArenaBuilder {
-    paths: Vec<SymbolPath>,
-    segments: Vec<SymbolId>,
-    index: HashTable<SymbolPathId>,
-    hash_builder: RandomState,
-}
-
-impl SymbolPathArenaBuilder {
-    fn push(
-        &mut self,
-        segments: &[SymbolId],
-        rooted: bool,
-    ) -> Result<SymbolPathId, ConstructionError> {
-        if segments.is_empty() {
-            return Err(ConstructionError::InvalidParserReference);
-        }
-        let hash = self.hash_builder.hash_one((rooted, segments));
-        if let Some(existing) = self.index.find(hash, |candidate| {
-            let path = self.paths[candidate.index()];
-            let end = (path.start + path.len) as usize;
-            path.rooted == rooted && self.segments[path.start as usize..end] == *segments
-        }) {
-            return Ok(*existing);
-        }
-        let id = SymbolPathId::from_index(self.paths.len())?;
-        let start = u32::try_from(self.segments.len()).map_err(|_| ConstructionError::Capacity)?;
-        let len = u32::try_from(segments.len()).map_err(|_| ConstructionError::Capacity)?;
-        start.checked_add(len).ok_or(ConstructionError::Capacity)?;
-        self.paths
-            .try_reserve(1)
-            .map_err(|_| ConstructionError::Capacity)?;
-        self.segments
-            .try_reserve(segments.len())
-            .map_err(|_| ConstructionError::Capacity)?;
-        let paths = &self.paths;
-        let stored_segments = &self.segments;
-        let hash_builder = &self.hash_builder;
-        self.index
-            .try_reserve(1, |candidate| {
-                let path = paths[candidate.index()];
-                let end = (path.start + path.len) as usize;
-                hash_builder.hash_one((path.rooted, &stored_segments[path.start as usize..end]))
-            })
-            .map_err(|_| ConstructionError::Capacity)?;
-        self.segments.extend_from_slice(segments);
-        self.paths.push(SymbolPath { start, len, rooted });
-        let paths = &self.paths;
-        let stored_segments = &self.segments;
-        let hash_builder = &self.hash_builder;
-        self.index.insert_unique(hash, id, |candidate| {
-            let path = paths[candidate.index()];
-            let end = (path.start + path.len) as usize;
-            hash_builder.hash_one((path.rooted, &stored_segments[path.start as usize..end]))
-        });
-        Ok(id)
-    }
-
-    fn freeze(self) -> SymbolPathArena {
-        SymbolPathArena {
-            paths: self.paths.into_boxed_slice(),
-            segments: self.segments.into_boxed_slice(),
-        }
-    }
-}
-
-#[derive(Debug)]
-struct SymbolTable {
-    bytes: Box<str>,
-    spans: Box<[(u32, u32)]>,
-}
-
-impl SymbolTable {
-    fn get(&self, id: SymbolId) -> Option<&str> {
-        let (start, len) = *self.spans.get(id.index())?;
-        let end = start.checked_add(len)?;
-        self.bytes.get(start as usize..end as usize)
-    }
-
-    fn find(&self, value: &str) -> Option<SymbolId> {
-        self.spans.iter().enumerate().find_map(|(index, _)| {
-            let id = SymbolId::from_index(index).ok()?;
-            (self.get(id) == Some(value)).then_some(id)
-        })
-    }
-}
-
-#[derive(Debug, Default)]
-struct SymbolTableBuilder {
-    bytes: String,
-    spans: Vec<(u32, u32)>,
-    index: HashTable<SymbolId>,
-    hash_builder: RandomState,
-}
-
-impl SymbolTableBuilder {
-    fn len(&self) -> usize {
-        self.spans.len()
-    }
-
-    fn get(&self, id: SymbolId) -> &str {
-        let (start, len) = self.spans[id.index()];
-        &self.bytes[start as usize..(start + len) as usize]
-    }
-
-    fn intern(&mut self, value: &str) -> Result<SymbolId, ConstructionError> {
-        let hash = self.hash_builder.hash_one(value);
-        if let Some(existing) = self.index.find(hash, |id| self.get(*id) == value) {
-            return Ok(*existing);
-        }
-
-        let id = SymbolId::from_index(self.spans.len())?;
-        let start = u32::try_from(self.bytes.len()).map_err(|_| ConstructionError::Capacity)?;
-        let len = u32::try_from(value.len()).map_err(|_| ConstructionError::Capacity)?;
-        start.checked_add(len).ok_or(ConstructionError::Capacity)?;
-        self.bytes
-            .try_reserve(value.len())
-            .map_err(|_| ConstructionError::Capacity)?;
-        self.spans
-            .try_reserve(1)
-            .map_err(|_| ConstructionError::Capacity)?;
-        let bytes = &self.bytes;
-        let spans = &self.spans;
-        let hash_builder = &self.hash_builder;
-        self.index
-            .try_reserve(1, |candidate| {
-                let (candidate_start, candidate_len) = spans[candidate.index()];
-                hash_builder.hash_one(
-                    &bytes[candidate_start as usize..(candidate_start + candidate_len) as usize],
-                )
-            })
-            .map_err(|_| ConstructionError::Capacity)?;
-
-        self.bytes.push_str(value);
-        self.spans.push((start, len));
-        let bytes = &self.bytes;
-        let spans = &self.spans;
-        let hash_builder = &self.hash_builder;
-        self.index.insert_unique(hash, id, |candidate| {
-            let (candidate_start, candidate_len) = spans[candidate.index()];
-            hash_builder.hash_one(
-                &bytes[candidate_start as usize..(candidate_start + candidate_len) as usize],
-            )
-        });
-        Ok(id)
-    }
-
-    fn freeze(self) -> SymbolTable {
-        SymbolTable {
-            bytes: self.bytes.into_boxed_str(),
-            spans: self.spans.into_boxed_slice(),
-        }
-    }
-}
-
 mod element_kind;
 mod evaluation;
 pub(crate) mod resolver;
@@ -15136,38 +14960,6 @@ mod tests {
         assert_eq!(model.declaration(child).unwrap().owner, Some(root));
         assert_eq!(model.symbol(first_name), Some("Vehicle"));
         assert_eq!(model.symbols.spans.len(), 1);
-    }
-
-    #[test]
-    fn symbol_interning_survives_hash_table_growth() {
-        let mut symbols = SymbolTableBuilder::default();
-        let vehicle = symbols.intern("Vehicle").unwrap();
-        for index in 0..256 {
-            symbols.intern(&format!("Name{index}")).unwrap();
-        }
-
-        assert_eq!(symbols.intern("Vehicle").unwrap(), vehicle);
-        assert_eq!(symbols.len(), 257);
-    }
-
-    #[test]
-    fn semantic_paths_are_interned_across_arena_growth() {
-        let mut paths = SymbolPathArenaBuilder::default();
-        let vehicle = paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap();
-        for index in 0..256 {
-            paths
-                .push(&[SymbolId(index), SymbolId(index + 1)], true)
-                .unwrap();
-        }
-
-        assert_eq!(
-            paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap(),
-            vehicle
-        );
-        assert_ne!(
-            paths.push(&[SymbolId(1), SymbolId(2)], true).unwrap(),
-            vehicle
-        );
     }
 
     #[test]
