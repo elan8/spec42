@@ -1,11 +1,9 @@
 //! Phase 2: lowering. Authored facts derived from parsed trees, and nothing else.
 
-use crate::evaluate::classify::classify_calc_expression;
-use crate::evaluate::classify::classify_constraint_expression;
 use crate::evaluate::classify::flatten_member_access_chain;
-use crate::evaluate::classify::ExpressionEvalShape;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::AnnotationForm;
+use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredImportFacts;
 use crate::lower::facts::AuthoredImportShape;
@@ -17,6 +15,7 @@ use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionGrammar;
 use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
@@ -757,27 +756,35 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// The evaluation shape of a constraint-body expression, classified against the owning
-    /// document's parser arena. The arena is required because a quantity literal's unit is a
-    /// source-backed qualified reference rather than copied text.
-    pub(crate) fn constraint_evaluation_shape(
+    /// The site of a constraint-body expression: what the author wrote, and where.
+    ///
+    /// Records the expression; it does not classify it. What the expression evaluates to is phase
+    /// 5's answer to give, over this record.
+    pub(crate) fn constraint_expression_site(
         &self,
         document: DocumentId,
         node: &Expression,
-    ) -> ExpressionEvalShape {
-        let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        classify_constraint_expression(&parsed, node)
+    ) -> AuthoredExpression {
+        AuthoredExpression {
+            document,
+            grammar: ExpressionGrammar::Constraint,
+            operand_start: 0,
+            node: node.clone(),
+        }
     }
 
-    /// The evaluation shape of a calculation-body expression. See
-    /// [`Self::constraint_evaluation_shape`] for why the arena is threaded through.
-    pub(crate) fn calc_evaluation_shape(
+    /// The site of a calculation-body expression. See [`Self::constraint_expression_site`].
+    pub(crate) fn calc_expression_site(
         &self,
         document: DocumentId,
         node: &Expression,
-    ) -> ExpressionEvalShape {
-        let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        classify_calc_expression(&parsed, node)
+    ) -> AuthoredExpression {
+        AuthoredExpression {
+            document,
+            grammar: ExpressionGrammar::Calc,
+            operand_start: 0,
+            node: node.clone(),
+        }
     }
 
     pub(crate) fn push_unsupported(
@@ -797,21 +804,22 @@ impl SemanticModelBuilder {
         self.recovery.push(RecoveryRecord { document, span });
     }
 
-    /// Records one evaluation candidate for a constraint/calc expression, classified by
-    /// `classify_constraint_expression`/`classify_calc_expression` at the point the expression is
-    /// lowered.
+    /// Records one evaluation candidate: the declaration, and the expression site it authored.
     ///
-    /// An `Unsupported` shape is recorded like any other. The publication has to be able to say
-    /// "an expression is here and this engine does not evaluate its shape"; dropping the record
-    /// would leave the declaration indistinguishable from one that authored no expression, which
-    /// is a different fact about the model.
+    /// Every authored expression is recorded, whatever its shape. The publication has to be able
+    /// to say "an expression is here and this engine does not evaluate its shape"; dropping the
+    /// record would leave the declaration indistinguishable from one that authored no expression,
+    /// which is a different fact about the model. Deciding which is which is phase 5's, so the
+    /// record is unconditional here.
     pub(crate) fn push_evaluation_fact(
         &mut self,
         declaration: DeclarationId,
-        shape: ExpressionEvalShape,
+        expression: AuthoredExpression,
     ) {
-        self.evaluation_facts
-            .push(PendingEvaluationFact { declaration, shape });
+        self.evaluation_facts.push(PendingEvaluationFact {
+            declaration,
+            expression,
+        });
     }
 
     /// Records one authored unit token, in lockstep with the classifier that counts them.
@@ -846,7 +854,7 @@ impl SemanticModelBuilder {
         document: DocumentId,
         form: FilterForm,
         span: Span,
-        shape: ExpressionEvalShape,
+        expression: AuthoredExpression,
         predicate: FilterPredicate,
     ) -> Result<(), ConstructionError> {
         self.filter_conditions.push(AuthoredFilterCondition {
@@ -854,7 +862,7 @@ impl SemanticModelBuilder {
             document,
             form,
             span,
-            shape,
+            expression,
             predicate,
         });
         Ok(())

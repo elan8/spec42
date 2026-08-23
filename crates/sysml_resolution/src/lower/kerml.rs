@@ -206,7 +206,7 @@ impl SemanticModelBuilder {
     /// opaque `FeatureDecl { keyword, text }` raw-text fallback, now a fully typed shape),
     /// mirroring `lower_ref_decl`: ownership, membership, an optional `:` typing target, and
     /// `subsets`/`redefines` relationships. Its `= expr` value, when present, is classified and
-    /// lowered through the same `classify_calc_expression`/`lower_calc_expression` pipeline
+    /// lowered through the same `classify_expression`/`lower_calc_expression` pipeline
     /// `lower_parameter_declaration`/`lower_return_decl` use. Its body shares the `CalcDefBody`
     /// grammar, so owned members are walked through the existing `lower_calc_def_body`. See
     /// `DeclarationKind::KermlFeature` for the facts intentionally left unmodeled.
@@ -292,7 +292,7 @@ impl SemanticModelBuilder {
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
                 declaration,
-                self.calc_evaluation_shape(document, &expression.value),
+                self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
@@ -517,7 +517,7 @@ impl SemanticModelBuilder {
     /// previously entirely unlowered -- see `DeclarationKind::KermlInvariant`). Its body shares
     /// the `CalcDefBody` grammar (not `ConstraintDefBody`, unlike `AssertConstraintMember`), so it
     /// is walked through the existing `lower_calc_def_body` -- the same
-    /// `classify_calc_expression`/`lower_calc_expression` pipeline already used for
+    /// `classify_expression`/`lower_calc_expression` pipeline already used for
     /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). Its typed
     /// `is_negated` parser field is published as the canonical declaration polarity fact; the
     /// evaluator may still report an unrelated unsupported expression shape explicitly.

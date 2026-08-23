@@ -8,10 +8,11 @@ use sysml_v2_parser::{
 use crate::evaluate::fold::{
     eval_node_is_pure_literal, fold_eval_node, literal_expression_value, EvalNode,
 };
-use crate::lower::facts::FilterPredicate;
+use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, FilterPredicate};
+use crate::lower::storage::SemanticModelStorage;
 use crate::model::EvaluatedValue;
 
-/// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
+/// The classification `classify_expression` assign to one
 /// expression node before resolution's fixed point runs. `Literal` expressions need no resolved
 /// state at all (their value is already known); `HasOperand` expressions carry an `EvalNode` tree
 /// that `compute_evaluation` re-folds once operand references are resolved (and, per slice 3,
@@ -266,54 +267,52 @@ pub(crate) fn classify_calc_node(
     }
 }
 
-/// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
-/// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
-/// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
-pub(crate) fn classify_constraint_expression(
-    parsed: &ParsedDocument,
-    node: &Expression,
+/// Classifies one authored expression against the document it was written in.
+///
+/// The single entry point phase 5 uses. Lowering records the *site* -- document, grammar, operand
+/// start, expression -- and nothing more; deciding what that expression means is evaluation's
+/// alone, and this is where it happens.
+///
+/// A site whose document is not in the publication classifies as `Unsupported` rather than
+/// panicking. Lowering only ever records a document it just admitted, so this is unreachable by
+/// construction; an absent arena still cannot be read, and `Unsupported` is the honest answer for
+/// an expression whose value this engine cannot determine.
+pub(crate) fn classify_authored(
+    storage: &SemanticModelStorage,
+    expression: &AuthoredExpression,
 ) -> ExpressionEvalShape {
-    classify_constraint_expression_from(parsed, node, 0)
+    let Some(document) = storage.documents.get(expression.document.index()) else {
+        return ExpressionEvalShape::Unsupported;
+    };
+    classify_expression(
+        &document.parsed,
+        &expression.node,
+        expression.grammar,
+        expression.operand_start,
+    )
 }
 
-/// Classifies a constraint-body expression whose operand ordinals continue an earlier expression's.
+/// Classifies an expression exactly along `lower_constraint_expression`/`lower_calc_expression`'s
+/// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
+/// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
 ///
-/// A declaration usually owns one expression, and its operand ordinals start at zero. A view owning
-/// two `filter` statements is the exception: both conditions are lowered against the view, so the
-/// second one's operand references are numbered after the first one's, and classifying it from zero
-/// would pair every leaf with the wrong reference.
-pub(crate) fn classify_constraint_expression_from(
+/// `start` is the ordinal the expression's first operand reference was lowered under. A declaration
+/// usually owns one expression, whose operand ordinals start at zero. A view owning two `filter`
+/// statements is the exception: both conditions are lowered against the view, so the second one's
+/// operand references are numbered after the first one's, and classifying it from zero would pair
+/// every leaf with the wrong reference.
+pub(crate) fn classify_expression(
     parsed: &ParsedDocument,
     node: &Expression,
+    grammar: ExpressionGrammar,
     start: u32,
 ) -> ExpressionEvalShape {
     let mut ordinal = start;
-    match classify_constraint_node(parsed, node, &mut ordinal) {
-        None => ExpressionEvalShape::Unsupported,
-        Some(tree) if eval_node_is_pure_literal(&tree) => {
-            let value = fold_eval_node(&tree, &mut |_| {
-                unreachable!("eval_node_is_pure_literal guarantees no Operand leaf is folded")
-            });
-            if matches!(tree, EvalNode::Literal(_)) {
-                ExpressionEvalShape::Literal(value)
-            } else {
-                ExpressionEvalShape::ConstantFolded(value)
-            }
-        }
-        Some(tree) => ExpressionEvalShape::HasOperand(tree),
-    }
-}
-
-/// Classifies a calc-body expression exactly along `lower_calc_expression`'s supported-shape
-/// boundary (the same leaf/reference/parenthesized shapes as `classify_constraint_expression`,
-/// minus comparison-operator support, plus slice 4's arithmetic `BinaryOp` support -- see
-/// `classify_calc_node`).
-pub(crate) fn classify_calc_expression(
-    parsed: &ParsedDocument,
-    node: &Expression,
-) -> ExpressionEvalShape {
-    let mut ordinal = 0u32;
-    match classify_calc_node(parsed, node, &mut ordinal) {
+    let classified = match grammar {
+        ExpressionGrammar::Constraint => classify_constraint_node(parsed, node, &mut ordinal),
+        ExpressionGrammar::Calc => classify_calc_node(parsed, node, &mut ordinal),
+    };
+    match classified {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {
             let value = fold_eval_node(&tree, &mut |_| {

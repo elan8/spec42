@@ -9,7 +9,6 @@
 #[cfg(test)]
 use crate::diagnose::parser_diagnostic_category;
 #[cfg(test)]
-use crate::evaluate::classify::ExpressionEvalShape;
 #[cfg(test)]
 use crate::evaluate::compute_evaluation;
 use crate::evaluate::EvaluationFact;
@@ -57,7 +56,6 @@ use crate::model::DeclarationKind;
 #[cfg(test)]
 use crate::model::DocumentId;
 #[cfg(test)]
-use crate::model::EvaluatedValue;
 #[cfg(test)]
 use crate::model::MembershipKind;
 #[cfg(test)]
@@ -283,6 +281,12 @@ impl<D> SemanticModel<D> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::lower::facts::AuthoredExpression;
+    use crate::lower::facts::CanonicalDocument;
+    use crate::lower::facts::ExpressionGrammar;
+    use source_identity::SourceRole;
+    use sysml_v2_parser::ast::{Expression, QualifiedReferenceArena, RootNamespace, SourceStorage};
+    use sysml_v2_parser::ParsedDocument;
 
     #[test]
     fn generated_feature_relationship_collection_contracts_are_complete_and_closed() {
@@ -870,9 +874,29 @@ mod tests {
     ///
     /// Enough for the evaluation pass, which reads the condition table, the evaluation candidates
     /// and the references, and nothing else.
+    /// A document with an empty parser arena, enough for a fixture whose expressions are
+    /// self-contained literals.
+    fn empty_canonical_document() -> CanonicalDocument {
+        CanonicalDocument {
+            identity: "test".into(),
+            role: SourceRole::Workspace,
+            parsed: std::sync::Arc::new(ParsedDocument {
+                source: SourceStorage::default(),
+                qualified_references: QualifiedReferenceArena::default(),
+                root: RootNamespace {
+                    elements: Vec::new(),
+                },
+            }),
+            parse_errors: Box::new([]),
+        }
+    }
+
     fn storage_with_one_filter() -> SemanticModelStorage {
         SemanticModelStorage {
-            documents: Box::new([]),
+            // One empty document, because classifying the condition below reads its owning
+            // document's parser arena -- classification is evaluation's, and it happens over the
+            // authored site rather than over anything lowering pre-computed.
+            documents: Box::new([empty_canonical_document()]),
             declarations: Box::new([]),
             declaration_facts: Box::new([]),
             memberships: Box::new([]),
@@ -890,7 +914,12 @@ mod tests {
                 document: DocumentId(0),
                 form: FilterForm::View,
                 span: Span::dummy(),
-                shape: ExpressionEvalShape::Literal(EvaluatedValue::Integer(5)),
+                expression: AuthoredExpression {
+                    document: DocumentId(0),
+                    grammar: ExpressionGrammar::Constraint,
+                    operand_start: 0,
+                    node: Expression::LiteralInteger(5),
+                },
                 predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),

@@ -1,6 +1,5 @@
 //! Phase 2 lowering — constraints, calculations, expressions, filters, and unit tokens.
 
-use crate::evaluate::classify::classify_constraint_expression_from;
 use crate::evaluate::classify::classify_filter_predicate;
 use crate::evaluate::classify::flatten_member_access_chain;
 use crate::evaluate::classify::is_arithmetic_operator;
@@ -11,8 +10,10 @@ use crate::evaluate::classify::is_unary_operator;
 use crate::evaluate::fold::quantity_unit_text;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::ExpressionGrammar;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
@@ -406,12 +407,12 @@ impl SemanticModelBuilder {
         form: FilterForm,
         condition: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
-        let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        let shape = classify_constraint_expression_from(
-            &parsed,
-            &condition.value,
-            self.expression_operand_offset(owner),
-        );
+        let expression = AuthoredExpression {
+            document,
+            grammar: ExpressionGrammar::Constraint,
+            operand_start: self.expression_operand_offset(owner),
+            node: condition.value.clone(),
+        };
         let mut metadata_ordinal = self
             .next_reference_ordinals
             .get(&(owner, ReferenceKind::FilterMetadataTest))
@@ -423,7 +424,7 @@ impl SemanticModelBuilder {
             document,
             form,
             condition.span.clone(),
-            shape,
+            expression,
             predicate,
         )?;
         self.lower_filter_expression(document, owner, condition)
@@ -677,7 +678,7 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
-                            self.constraint_evaluation_shape(document, &expression.value),
+                            self.constraint_expression_site(document, &expression.value),
                         );
                         self.lower_constraint_expression(
                             document,
@@ -778,7 +779,7 @@ impl SemanticModelBuilder {
     /// (`Succession`) and reuses `lower_constraint_usage`'s typing + `lower_constraint_def_body`
     /// wiring verbatim -- `AssertConstraintMember.body` is the exact same `ConstraintDefBody`
     /// shape as `ConstraintDef`/`ConstraintUsage`, so the existing
-    /// `lower_constraint_expression`/`classify_constraint_expression` evaluation machinery (Slice
+    /// `lower_constraint_expression`/`classify_expression` evaluation machinery (Slice
     /// 1, `4ca42166`) applies unchanged.
     ///
     /// Deferred (falls through to `family`'s unsupported diagnostic):
@@ -1030,7 +1031,7 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
-                            self.calc_evaluation_shape(document, &expression.value),
+                            self.calc_expression_site(document, &expression.value),
                         );
                         self.lower_calc_expression(
                             document,

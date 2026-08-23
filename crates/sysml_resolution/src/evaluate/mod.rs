@@ -3,6 +3,7 @@
 pub(crate) mod classify;
 pub(crate) mod fold;
 
+use crate::evaluate::classify::classify_authored;
 use crate::evaluate::classify::ExpressionEvalShape;
 use crate::evaluate::fold::fold_eval_node;
 use crate::evaluate::fold::fold_eval_node_pending;
@@ -78,10 +79,12 @@ pub(crate) fn compute_evaluation(
                 .iter()
                 .map(|pending| EvaluationFact {
                     declaration: pending.declaration,
-                    state: skipped(&pending.shape),
+                    state: skipped(&classify_authored(storage, &pending.expression)),
                 })
                 .collect(),
-            filters: settled_filters(storage, |condition| skipped(&condition.shape)),
+            filters: settled_filters(storage, |condition| {
+                skipped(&classify_authored(storage, &condition.expression))
+            }),
         };
     }
     if resolution.solver_status != SolverStatus::Converged {
@@ -111,6 +114,16 @@ pub(crate) fn compute_evaluation(
         slot[ordinal] = target;
     }
 
+    // Every authored expression, classified exactly once. Classification walks the expression
+    // tree, so the five passes below read this vector rather than re-deriving the shape each time
+    // they need it -- and, more importantly, there is now exactly one place in the engine where an
+    // authored expression becomes an evaluation shape.
+    let shapes: Vec<ExpressionEvalShape> = storage
+        .evaluation_facts
+        .iter()
+        .map(|pending| classify_authored(storage, &pending.expression))
+        .collect();
+
     // Every declaration whose expression can ever settle to a constant -- the only declarations
     // constant propagation can look up a value for. A resolved operand reference whose target is
     // *not* in this set has no known constant, settling immediately as `NonConstant`.
@@ -121,14 +134,15 @@ pub(crate) fn compute_evaluation(
     let has_fact: std::collections::BTreeSet<DeclarationId> = storage
         .evaluation_facts
         .iter()
-        .filter(|pending| !matches!(pending.shape, ExpressionEvalShape::Unsupported))
-        .map(|pending| pending.declaration)
+        .zip(shapes.iter())
+        .filter(|(_, shape)| !matches!(shape, ExpressionEvalShape::Unsupported))
+        .map(|(pending, _)| pending.declaration)
         .collect();
 
     let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
         Default::default();
-    for pending in storage.evaluation_facts.iter() {
-        match &pending.shape {
+    for (pending, shape) in storage.evaluation_facts.iter().zip(shapes.iter()) {
+        match shape {
             ExpressionEvalShape::Literal(value) | ExpressionEvalShape::ConstantFolded(value) => {
                 outcomes.insert(pending.declaration, value.clone());
             }
@@ -139,8 +153,8 @@ pub(crate) fn compute_evaluation(
     let pass_limit = storage.evaluation_facts.len().saturating_add(1);
     for _ in 0..pass_limit {
         let mut changed = false;
-        for pending in storage.evaluation_facts.iter() {
-            let ExpressionEvalShape::HasOperand(tree) = &pending.shape else {
+        for (pending, shape) in storage.evaluation_facts.iter().zip(shapes.iter()) {
+            let ExpressionEvalShape::HasOperand(tree) = shape else {
                 continue;
             };
             if outcomes.contains_key(&pending.declaration) {
@@ -170,8 +184,8 @@ pub(crate) fn compute_evaluation(
     // Anything still unsettled after the bound is a genuine cross-declaration dependency cycle
     // (directly or transitively self-referential), not a longer-than-expected acyclic chain --
     // the bound already covers every acyclic chain up to the total fact count.
-    for pending in storage.evaluation_facts.iter() {
-        if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
+    for (pending, shape) in storage.evaluation_facts.iter().zip(shapes.iter()) {
+        if matches!(shape, ExpressionEvalShape::Unsupported) {
             continue;
         }
         outcomes
@@ -180,8 +194,8 @@ pub(crate) fn compute_evaluation(
     }
 
     let mut facts = Vec::with_capacity(storage.evaluation_facts.len());
-    for pending in storage.evaluation_facts.iter() {
-        if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
+    for (pending, shape) in storage.evaluation_facts.iter().zip(shapes.iter()) {
+        if matches!(shape, ExpressionEvalShape::Unsupported) {
             facts.push(EvaluationFact {
                 declaration: pending.declaration,
                 state: EvaluationState::Unsupported,
@@ -193,7 +207,7 @@ pub(crate) fn compute_evaluation(
         };
         facts.push(EvaluationFact {
             declaration: pending.declaration,
-            state: evaluation::evaluation_state(outcome, &pending.shape),
+            state: evaluation::evaluation_state(outcome, shape),
         });
     }
 
@@ -202,7 +216,7 @@ pub(crate) fn compute_evaluation(
     // on one, and folding them here cannot change what any declaration evaluated to.
     let filters = settled_filters(storage, |condition| {
         fold_settled_expression(
-            &condition.shape,
+            &classify_authored(storage, &condition.expression),
             condition.owner,
             &operand_targets,
             &outcomes,

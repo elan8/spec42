@@ -13,7 +13,6 @@ use sysml_v2_parser::{
     ParseError, ParsedDocument,
 };
 
-use crate::evaluate::classify::ExpressionEvalShape;
 use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, ReferenceKind,
     SymbolId, SymbolPathId, Visibility,
@@ -599,16 +598,59 @@ pub(crate) struct PendingReference {
     pub(crate) import: Option<AuthoredImportFacts>,
 }
 
-/// A construction-time-classified evaluation candidate: the declaration a supported constraint/
-/// calc expression belongs to, plus its `ExpressionEvalShape`.
+/// Which expression grammar an authored expression was written in.
 ///
-/// `Unsupported` is stored like every other shape. "This declaration authored an expression whose
-/// shape is outside the evaluated slice" and "this declaration authored no expression at all" are
-/// different facts, and dropping the first would publish the second in its place.
+/// The two share almost all of their productions, but not all of them: a constraint body admits
+/// the comparison and logical operators a calc body does not, and only the constraint traversal
+/// builds `EvalNode::Comparison`/`EvalNode::Logical`. Recording which grammar the author wrote in
+/// is what lets phase 5 pick the matching traversal without asking the owning declaration's kind
+/// to stand in for the syntax.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ExpressionGrammar {
+    /// A constraint body, an action guard, an assignment right-hand side, a `filter` condition --
+    /// anything lowered through `lower_constraint_expression`.
+    Constraint,
+    /// A calculation body or a `return` value, lowered through `lower_calc_expression`.
+    Calc,
+}
+
+/// One authored expression, recorded at its site: which document it was written in, which grammar
+/// it was written in, where its operand ordinals start, and the expression itself.
+///
+/// This is an *authored* fact -- what the source says -- and deliberately not a classified one.
+/// Lowering used to call `classify_expression` here and
+/// store the resulting `ExpressionEvalShape`, which made phase 2 a writer of evaluation's own
+/// vocabulary: two phases decided what an expression means, and only one of them was named
+/// evaluation. The classification now happens exactly once, in `evaluate/`, over this record.
+///
+/// `operand_start` is genuinely a lowering-time fact and cannot be recovered later: a view owning
+/// two `filter` statements lowers both against the view, so the second condition's operand
+/// references are numbered after the first's. Classifying from zero would pair every leaf with the
+/// wrong reference.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct AuthoredExpression {
+    /// The document whose parser arena the expression's source-backed nodes belong to. A quantity
+    /// literal's unit is a qualified reference into that arena rather than copied text, so the
+    /// arena is required to read the expression's value at all.
+    pub(crate) document: DocumentId,
+    pub(crate) grammar: ExpressionGrammar,
+    /// The ordinal the expression's first operand reference was lowered under.
+    pub(crate) operand_start: u32,
+    pub(crate) node: Expression,
+}
+
+/// An evaluation candidate: the declaration a constraint/calc expression belongs to, and the
+/// expression as authored.
+///
+/// Every authored expression is recorded, including shapes evaluation does not support. "This
+/// declaration authored an expression whose shape is outside the evaluated slice" and "this
+/// declaration authored no expression at all" are different facts, and dropping the first would
+/// publish the second in its place -- so the decision is evaluation's to make and to publish, not
+/// lowering's to make and to discard.
 #[derive(Debug, Clone)]
 pub(crate) struct PendingEvaluationFact {
     pub(crate) declaration: DeclarationId,
-    pub(crate) shape: ExpressionEvalShape,
+    pub(crate) expression: AuthoredExpression,
 }
 
 /// One authored unit token: the `kg` in `10 [kg]`.
@@ -650,7 +692,7 @@ pub(crate) enum FilterForm {
 ///
 /// A filter's condition is lowered against its owning declaration rather than a declaration of its
 /// own -- the parser gives it no identity, and minting one would invent an element the author did
-/// not write -- so it needs its own fact to carry the range and the classified expression a rule
+/// not write -- so it needs its own fact to carry the range and the authored expression a rule
 /// about *this* condition must read.
 #[derive(Debug, Clone)]
 pub(crate) struct AuthoredFilterCondition {
@@ -660,7 +702,7 @@ pub(crate) struct AuthoredFilterCondition {
     pub(crate) form: FilterForm,
     /// The condition expression's own range.
     pub(crate) span: Span,
-    pub(crate) shape: ExpressionEvalShape,
+    pub(crate) expression: AuthoredExpression,
     pub(crate) predicate: FilterPredicate,
 }
 

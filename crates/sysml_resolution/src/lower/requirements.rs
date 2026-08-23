@@ -1766,12 +1766,12 @@ impl SemanticModelBuilder {
                 // mass`) -- mirrors `CalcDefBodyElement::Expression`'s identical shape: the
                 // expression is the enclosing case-family declaration's own evaluated result, not
                 // a new nested declaration, so it is classified/lowered directly at `owner` through
-                // the same `classify_calc_expression`/`lower_calc_expression` pipeline a calc def's
+                // the same `classify_expression`/`lower_calc_expression` pipeline a calc def's
                 // bare body expression uses.
                 UseCaseDefBodyElement::Expression(expression) => {
                     self.push_evaluation_fact(
                         owner,
-                        self.calc_evaluation_shape(document, &expression.value),
+                        self.calc_expression_site(document, &expression.value),
                     );
                     self.lower_calc_expression(document, owner, unsupported, expression)?;
                 }

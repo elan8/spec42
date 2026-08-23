@@ -462,7 +462,7 @@ impl SemanticModelBuilder {
         if let Some(guard) = &node.value.guard {
             self.push_evaluation_fact(
                 declaration,
-                self.constraint_evaluation_shape(document, &guard.value),
+                self.constraint_expression_site(document, &guard.value),
             );
             self.lower_constraint_expression(
                 document,

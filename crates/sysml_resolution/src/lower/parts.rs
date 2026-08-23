@@ -780,7 +780,7 @@ impl SemanticModelBuilder {
     /// `AttributeUsage`), and a parameter default value (`out v_out : SpeedValue = vel.v;`, also
     /// `FeatureValue`). All four contexts share the exact same typed-AST shape (a name, an `=`,
     /// and an `Expression`), so this one helper handles all of them: reuses the full
-    /// `classify_constraint_expression`/`lower_constraint_expression` machinery (literal,
+    /// `classify_expression`/`lower_constraint_expression` machinery (literal,
     /// feature-ref, member-access, arithmetic/comparison/logical `BinaryOp`, invocation) rather
     /// than a bespoke literal-only walk, so `attribute mass = length * width;`, `attribute :>>
     /// status = RequirementStatusKind::approved;`, and `attribute f = other.value;` all resolve
@@ -802,7 +802,7 @@ impl SemanticModelBuilder {
         let expression = &feature_value.value.expression;
         self.push_evaluation_fact(
             declaration,
-            self.constraint_evaluation_shape(document, &expression.value),
+            self.constraint_expression_site(document, &expression.value),
         );
         self.lower_constraint_expression(document, declaration, family, expression)
     }
@@ -1209,7 +1209,7 @@ impl SemanticModelBuilder {
     /// Atom meta KerML::Classifier;` (KerML `metaclass` body member), mirroring
     /// `lower_kerml_feature_member`/`lower_ref_decl`: ownership, membership, an optional `:`
     /// typing target, `subsets`/`redefines` relationships, and an optional `=` value expression
-    /// resolved through the shared `classify_calc_expression`/`lower_calc_expression` pipeline
+    /// resolved through the shared `classify_expression`/`lower_calc_expression` pipeline
     /// (the same machinery `lower_kerml_feature_member`'s `value` clause uses, which already
     /// covers the `MetaCast` reflective-operator shape from `ea6eb632`). `family` selects which
     /// diagnostic an unsupported value-expression shape falls through to; multiplicity and the
@@ -1257,7 +1257,7 @@ impl SemanticModelBuilder {
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
                 declaration,
-                self.calc_evaluation_shape(document, &expression.value),
+                self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
@@ -1439,7 +1439,7 @@ impl SemanticModelBuilder {
         // Widened value-assignment handling (see `lower_value_assignment`/`lower_return_decl`'s
         // own `= expr` handling, which this mirrors exactly): a parameter default value
         // (`out v_out : SpeedValue = vel.v;`) is a bare `Node<Expression>` on `InOutDecl::value`
-        // -- the same shape `ReturnDecl::value` already has classify_calc_expression/
+        // -- the same shape `ReturnDecl::value` already has classify_expression/
         // lower_calc_expression wiring for, so this reuses that identical pipeline rather than
         // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
         // machinery existing at all.
@@ -1448,7 +1448,7 @@ impl SemanticModelBuilder {
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
                 declaration,
-                self.calc_evaluation_shape(document, &expression.value),
+                self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
@@ -1466,7 +1466,7 @@ impl SemanticModelBuilder {
     /// reference is unconditional here.
     ///
     /// When a `= expr` value is present, its expression is classified/lowered through the exact
-    /// same `classify_calc_expression`/`lower_calc_expression` machinery slices 1-4 already built
+    /// same `classify_expression`/`lower_calc_expression` machinery slices 1-4 already built
     /// for a bare `CalcDefBodyElement::Expression` body -- this is the "distinct ReturnDecl shape"
     /// `bd50fccd` deferred: most real-corpus calc arithmetic (e.g. `return : Type = a + b * c;`)
     /// lives here, not in a bare `Expression` body-element, and it is the exact same `Expression`
@@ -1531,7 +1531,7 @@ impl SemanticModelBuilder {
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
                 declaration,
-                self.calc_evaluation_shape(document, &expression.value),
+                self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(
                 document,
@@ -1553,7 +1553,7 @@ impl SemanticModelBuilder {
     /// or `Subsetting` (`:>`, `is_subsetting`) reference to the declared type, an authored
     /// `Redefinition` reference for the `:>>`-shorthand `target` (mirrors `VerifyRequirementMember::
     /// redefines`'s identical bare-`QualifiedReferenceId` handling), and a bound `=`/`:=` value
-    /// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
+    /// through the same `classify_expression`/`lower_calc_expression` pipeline `lower_return_
     /// decl` uses. `declaration_name` is empty for the common anonymous `return : Type = expr;`
     /// form; `intern_declared_name` folds that to `None`. The `part`/`attribute` `feature_kind`
     /// prefix and `multiplicity` are not modeled as distinct facts, mirroring `lower_parameter_
@@ -1635,7 +1635,7 @@ impl SemanticModelBuilder {
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
                 declaration,
-                self.calc_evaluation_shape(document, &expression.value),
+                self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }

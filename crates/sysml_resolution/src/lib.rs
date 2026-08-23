@@ -1929,7 +1929,7 @@ mod tests {
     }
 
     /// A transition `if <guard>;` boolean expression with literal comparison operands must
-    /// evaluate to a constant `Boolean` through the exact same `classify_constraint_expression`/
+    /// evaluate to a constant `Boolean` through the exact same `classify_expression`/
     /// `EvalNode` machinery a `constraint`/`calc` body uses (see `9f63c5a4` and earlier
     /// expression/evaluation slices), not a separate transition-specific evaluator.
     #[test]
@@ -2614,7 +2614,7 @@ mod tests {
 
     /// A bare `return <name> = <expr>;` (no type, no `part`/`attribute` keyword, no `:>>`) is the
     /// anonymous-declared-name shape of `CaseReturnDecl`; its value expression should be lowered
-    /// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
+    /// through the same `classify_expression`/`lower_calc_expression` pipeline `lower_return_
     /// decl` (a calc's own `return`) uses.
     #[test]
     fn case_return_decl_value_expression_resolves() {

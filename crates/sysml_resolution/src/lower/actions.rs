@@ -1190,7 +1190,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_evaluation_fact(
             declaration,
-            self.constraint_evaluation_shape(document, &node.rhs.value),
+            self.constraint_expression_site(document, &node.rhs.value),
         );
         self.lower_constraint_expression(document, declaration, family, &node.rhs)
     }
@@ -1198,7 +1198,7 @@ impl SemanticModelBuilder {
     /// Lowers a `while <condition> { ... }` (BNF `WhileStmt`) or bare `loop { ... }` (BNF
     /// `LoopStmt`, no condition) control node as its own anonymous nested-declaration feature
     /// owned by `owner`, mirroring `lower_first_merge_stmt`'s shape: an optional boolean
-    /// `condition` is lowered through the same `classify_constraint_expression`/
+    /// `condition` is lowered through the same `classify_expression`/
     /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
     /// transition guards/filter conditions (a loop condition is a genuine boolean expression, not
     /// a control-node reference, unlike `decide`/`merge`/`fork`/`join`'s own operand), and the
@@ -1234,7 +1234,7 @@ impl SemanticModelBuilder {
         if let Some(condition) = condition {
             self.push_evaluation_fact(
                 declaration,
-                self.constraint_evaluation_shape(document, &condition.value),
+                self.constraint_expression_site(document, &condition.value),
             );
             self.lower_constraint_expression(document, declaration, family, condition)?;
         }
@@ -1276,7 +1276,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_evaluation_fact(
             declaration,
-            self.constraint_evaluation_shape(document, &node.condition.value),
+            self.constraint_expression_site(document, &node.condition.value),
         );
         self.lower_constraint_expression(document, declaration, family, &node.condition)?;
         self.lower_action_branch_body(document, declaration, &node.then_body)?;
@@ -1308,7 +1308,7 @@ impl SemanticModelBuilder {
     /// Lowers a `for <var> in <range> { ... }` loop control node (BNF `ForLoop`) as its own
     /// anonymous `DeclarationKind::ForLoop` nested-declaration feature owned by `owner`, mirroring
     /// `lower_while_or_loop_stmt`'s shape: the `range` collection expression is lowered through
-    /// the same `classify_constraint_expression`/`lower_constraint_expression` machinery as
+    /// the same `classify_expression`/`lower_constraint_expression` machinery as
     /// `while`'s condition, sourced at this `ForLoop` declaration (the range is evaluated once per
     /// loop, not once per iteration binding). `var` (a bare, untyped `String` -- the parser
     /// records no type/multiplicity for it) is lowered as a named `DeclarationKind::
@@ -1343,7 +1343,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_evaluation_fact(
             declaration,
-            self.constraint_evaluation_shape(document, &node.in_parameter.expression.value),
+            self.constraint_expression_site(document, &node.in_parameter.expression.value),
         );
         self.lower_constraint_expression(
             document,
@@ -1745,7 +1745,7 @@ impl SemanticModelBuilder {
         })?;
         self.push_evaluation_fact(
             declaration,
-            self.constraint_evaluation_shape(document, &node.value.value.value),
+            self.constraint_expression_site(document, &node.value.value.value),
         );
         self.lower_constraint_expression(
             document,

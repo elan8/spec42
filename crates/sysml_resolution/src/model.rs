@@ -471,7 +471,7 @@ pub(crate) enum DeclarationKind {
     /// full construct explicitly deferred by `4762b875`). `source`/`target` are lowered as
     /// `ReferenceKind::TransitionSource`/`TransitionTarget` references (mirroring
     /// `lower_succession_end`), a supported `guard` boolean expression is lowered/evaluated
-    /// through the exact same `ExpressionOperand`/`classify_constraint_expression` machinery a
+    /// through the exact same `ExpressionOperand`/`classify_expression` machinery a
     /// `constraint`/`calc` body uses, an `accept` shorthand trigger (`TransitionAccept::
     /// Shorthand`) that is a simple/qualified name is lowered as a `TransitionTrigger`
     /// reference, and a `do` effect that is either `TransitionEffect::Perform`'s typed
@@ -534,7 +534,7 @@ pub(crate) enum DeclarationKind {
     /// ordinary action def body. This is the priority construct for this slice -- the `if <guard>
     /// then <target>;` branches a decision fans out to are ordinary sibling `IfStmt`/`ThenAction`
     /// body elements (not nested inside the decision node's own body), already reusing the
-    /// existing `classify_constraint_expression`/lexical-lookup machinery via `lower_then_action`.
+    /// existing `classify_expression`/lexical-lookup machinery via `lower_then_action`.
     Decide,
     /// An anonymous feature synthesized for a `merge <expr>;`/`merge <expr> { ... }` merge
     /// control node (BNF `MergeStmt`, `ast::MergeStmt`), same shape and scope as `Decide`: the
@@ -689,7 +689,7 @@ pub(crate) enum DeclarationKind {
     /// size(components);`. Mirrors `ReferenceUsage`/`KermlFeature` lowering: ownership,
     /// membership, an optional `:` typing target (`FeatureTyping`), `subsets`/`redefines`
     /// relationships, and an optional `=` value expression resolved through the shared
-    /// `classify_calc_expression`/`lower_calc_expression` pipeline. Multiplicity and the
+    /// `classify_expression`/`lower_calc_expression` pipeline. Multiplicity and the
     /// `has_feature_keyword`/`body` shapes are not modeled as distinct facts here (multiplicity
     /// is unmodeled elsewhere in this codebase too, see `ParameterUsage`).
     DefaultReferenceUsage,
@@ -711,7 +711,7 @@ pub(crate) enum DeclarationKind {
     /// A KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <= that &
     /// that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7). Its body
     /// shares the `CalcDefBody` grammar (not `ConstraintDefBody`), so its boolean expression is
-    /// classified/lowered through the existing `classify_calc_expression`/`lower_calc_expression`
+    /// classified/lowered through the existing `classify_expression`/`lower_calc_expression`
     /// pipeline via the shared `lower_calc_def_body` walker, mirroring `AssertConstraintMember`'s
     /// "anonymous nested declaration" pattern. `is_negated` is not modeled as a distinct fact
     /// here (see `AssertConstraintMember`'s own `is_negated` scope boundary).
@@ -736,14 +736,14 @@ pub(crate) enum DeclarationKind {
     /// no name of its own. The `lhs` target is lowered as a `ReferenceKind::AssignTarget`
     /// reference through the same `DeclarationDomain::Any` lexical lookup `Succession`/
     /// `ThenTarget` use (an existing sibling feature, not just a Type); the `rhs` value is lowered
-    /// through the shared `lower_value_assignment`-style `classify_constraint_expression`/
+    /// through the shared `lower_value_assignment`-style `classify_expression`/
     /// `lower_constraint_expression` pipeline, publishing its own evaluation fact exactly like an
     /// attribute default value.
     Assign,
     /// An anonymous feature synthesized for a `while <condition> { ... }` loop control node (BNF
     /// `WhileStmt`, `ast::WhileStmt`) found in an action def/usage body. Owned by the enclosing
     /// action def/usage declaration, mirroring `Decide`/`Merge`'s nested-declaration shape: the
-    /// required boolean `condition` is lowered through the same `classify_constraint_expression`/
+    /// required boolean `condition` is lowered through the same `classify_expression`/
     /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
     /// transition guards/filter conditions (not `lower_succession_end`'s narrow feature-reference
     /// shape, since a loop condition is a genuine boolean expression, not a control-node
@@ -767,7 +767,7 @@ pub(crate) enum DeclarationKind {
     /// An anonymous feature synthesized for a `for <var> in <range> { ... }` loop control node
     /// (BNF `ForLoop`, `ast::ForLoop`) found in an action def/usage body. Owned by the enclosing
     /// action def/usage declaration, mirroring `While`/`Decide`'s nested-declaration shape: the
-    /// `range` collection expression is lowered through the same `classify_constraint_expression`/
+    /// `range` collection expression is lowered through the same `classify_expression`/
     /// `lower_constraint_expression` machinery as `While`'s condition (sourced at this `ForLoop`
     /// declaration, not the loop variable, since the range is evaluated once per loop, not once
     /// per iteration binding). The body recurses through `lower_action_def_body`, owned by this
@@ -1305,7 +1305,7 @@ pub(crate) enum ReferenceKind {
 /// operand references and never evaluated anything). Only expressions within slice 1's supported
 /// syntactic shapes (literal leaves, a comparison `BinaryOp` of two literals, `Parenthesized`
 /// wrapping a supported shape) reach this pass at all -- a shape slice 1 leaves unsupported
-/// publishes no evaluation fact, per `classify_constraint_expression`/`classify_calc_expression`.
+/// publishes no evaluation fact, per `classify_expression`.
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum EvaluatedValue {
     /// A genuinely computed constant `bool` result: a literal boolean leaf, or a comparison of
@@ -2552,7 +2552,7 @@ mod tests {
     #[test]
     fn assert_constraint_literal_comparison_evaluates_to_boolean_true() {
         // `assert constraint { <boolExpr> }` is semantically an anonymous constraint usage --
-        // reuses the exact same `lower_constraint_expression`/`classify_constraint_expression`
+        // reuses the exact same `lower_constraint_expression`/`classify_expression`
         // evaluation machinery as `constraint def`/`constraint` (Slice 1, `4ca42166`).
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -3147,7 +3147,7 @@ mod tests {
         // Slice 5: most real-corpus calc arithmetic lives inside a `return : Type = expr;`
         // declaration, a distinct `CalcDefBodyElement::ReturnDecl` shape bd50fccd (slice 4)
         // deferred. This wires the return declaration's own expression through the exact same
-        // classify_calc_expression/lower_calc_expression pipeline slices 1-4 already built.
+        // classify_expression/lower_calc_expression pipeline slices 1-4 already built.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tcalc def Calc { return : ScalarValues::Integer = 2 + 3; }\n\
@@ -3209,7 +3209,7 @@ mod tests {
     fn attribute_arithmetic_default_value_resolves_operands_and_evaluates() {
         // Widened value-assignment handling: `length * width` (arithmetic, not a bare literal)
         // now resolves both operand references and, since both are themselves constant-valued,
-        // evaluates via the same classify_constraint_expression/EvalNode::Arithmetic machinery
+        // evaluates via the same classify_expression/EvalNode::Arithmetic machinery
         // slice 4/6ce84b06 built for constraint/calc bodies.
         let output = build_semantic_sexpr(
             "package Demo {\n\

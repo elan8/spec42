@@ -8,7 +8,7 @@ use sysml_v2_parser::{
 use crate::model::EvaluatedValue;
 
 /// A construction-time-classified mirror of a supported constraint/calc expression tree, built by
-/// `classify_constraint_expression`/`classify_calc_expression` in lockstep with
+/// `classify_expression` in lockstep with
 /// `lower_constraint_expression`/`lower_calc_expression`'s own left-to-right traversal: each
 /// `Operand` leaf's ordinal exactly matches the `ordinal` `push_reference` assigns the
 /// `ReferenceKind::ExpressionOperand` reference pushed for the same leaf (both walk literal /
