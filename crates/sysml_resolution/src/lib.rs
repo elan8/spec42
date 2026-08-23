@@ -13,8 +13,10 @@ use std::fmt;
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
 mod action_query;
+mod check;
 mod definition_usage_query;
 mod details;
+mod diagnose;
 mod diagnostics;
 mod diagram_query;
 mod element_kind;

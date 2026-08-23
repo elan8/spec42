@@ -19,7 +19,22 @@
 //! Where the fact genuinely is not available the rule still declines to answer, and says so in a
 //! comment naming what is missing.
 
-use super::*;
+use crate::check::conformance;
+use crate::diagnose::document_range;
+use crate::lower::facts::ParameterDirection;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::MembershipKind;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
+use crate::type_query::Conformance;
+use crate::type_query::SpecializationScope;
+use crate::Diagnostic;
+use crate::DiagnosticCode;
+use crate::DiagnosticSeverity;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.

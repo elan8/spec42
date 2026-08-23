@@ -4,6 +4,8 @@
 //! re-reading authored text, and nothing is defaulted: a fact the parser cannot express is absent,
 //! and a fact resolution could not settle keeps its own outcome.
 
+use crate::diagnose::declaration_identifier_range;
+use crate::diagnose::document_range;
 use crate::evaluate::EvaluationFact;
 use crate::index::documents::leaf_ranges_containing;
 use crate::index::documents::record_visited_index_entries;
@@ -11,8 +13,6 @@ use crate::index::types;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
-use crate::model::resolver::declaration_identifier_range;
-use crate::model::resolver::document_range;
 use crate::model::resolver::writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::AuthoredReferenceId;

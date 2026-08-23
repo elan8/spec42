@@ -17,9 +17,10 @@ use crate::lower::intern::SymbolPathArena;
 use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
 #[cfg(test)]
 use crate::lower::SemanticModelBuilder;
+#[cfg(test)]
+use sysml_v2_parser::ParsedDocument;
 
 use source_identity::SourceRole;
-use sysml_v2_parser::{ast::Span, ParseError, ParsedDocument};
 
 macro_rules! semantic_id {
     ($name:ident) => {

@@ -22,8 +22,27 @@
 //! genuinely wrong is a value from an unrelated branch of the hierarchy, which is exactly a pair
 //! with no specialization path between them in either direction.
 
-use super::expression::{conforms, RequiredMeasurement, UnitOutcome};
-use super::*;
+use crate::check::conformance;
+use crate::diagnose::document_range;
+use crate::index::expressions::conforms;
+use crate::index::expressions::RequiredMeasurement;
+use crate::index::expressions::UnitOutcome;
+use crate::lower::facts::FilterForm;
+use crate::model::resolver::writer;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
+use crate::Diagnostic;
+use crate::DiagnosticCode;
+use crate::DiagnosticLocation;
+use crate::DiagnosticOrigin;
+use crate::DiagnosticSeverity;
+
 use crate::evaluation::EvaluatedScalar;
 
 /// The note attached to each admitted unit an ambiguous token could have named.

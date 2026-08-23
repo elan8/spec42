@@ -24,7 +24,33 @@
 //! where the SysML families bottom out in KerML ones -- from being reported against a table that
 //! does not describe KerML at all.
 
-use super::*;
+use crate::diagnose::document_range;
+use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::MultiplicityBound;
+use crate::model::resolver::writer;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::ReferenceKind;
+use crate::resolve::implied::conditional_library_specialization_anchor_branch;
+use crate::resolve::implied::conditional_library_specialization_predicate_holds;
+use crate::resolve::implied::conditional_library_specialization_rules;
+use crate::resolve::implied::library_specialization_metaclass;
+use crate::resolve::implied::library_specialization_rules;
+use crate::resolve::implied::LibrarySpecializationAnchor;
+use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
+use crate::type_query::Conformance;
+use crate::Diagnostic;
+use crate::DiagnosticCode;
+use crate::DiagnosticLocation;
+use crate::DiagnosticOrigin;
+use crate::DiagnosticSeverity;
+use crate::RelatedLocation;
 
 /// The SysML metaclass family a declaration belongs to.
 ///

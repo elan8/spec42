@@ -1,8 +1,8 @@
 //! Phase 6: per-document position and span lookup.
 
+use crate::diagnose::declaration_identifier_range;
+use crate::diagnose::document_range;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::declaration_identifier_range;
-use crate::model::resolver::document_range;
 use crate::model::resolver::range_contains;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;

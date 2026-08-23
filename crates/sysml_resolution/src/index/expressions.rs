@@ -39,12 +39,12 @@
 //! symbol two of them answer to is reported as ambiguous rather than decided by proximity. That is
 //! visible behaviour, not an accident -- see `tests/snapshots/resolution/ambiguous_unit_symbol.md`.
 
+use crate::diagnose::document_range;
 use crate::index::documents::record_visited_index_entries;
 use crate::index::types;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::document_range;
 use crate::model::resolver::writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::DeclarationId;

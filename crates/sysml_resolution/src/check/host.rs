@@ -25,11 +25,33 @@
 //! each document's diagnostics by range and code once every producer has contributed, so the order
 //! a rule happens to visit storage in is never observable.
 
+use crate::diagnose::document_range;
+use crate::lower::facts::AnnotationForm;
+use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::MultiplicityBound;
+use crate::model::resolver::writer;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::ReferenceKind;
+use crate::model::SymbolPathId;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
+use crate::type_query::Conformance;
+use crate::type_query::SpecializationScope;
+use crate::Diagnostic;
+use crate::DiagnosticCode;
+use crate::DiagnosticLocation;
+use crate::DiagnosticOrigin;
+use crate::DiagnosticSeverity;
+use crate::TextRange;
+
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::*;
+use crate::check::conformance::{Family, Role};
 use crate::evaluation::{EvaluatedScalar, EvaluationState};
-use crate::model::resolver::conformance::{Family, Role};
 
 /// The note attached to the earlier member a duplicate name collides with.
 pub(crate) const RELATED_FIRST_DECLARATION: &str = "First declared here.";
