@@ -1226,21 +1226,25 @@ impl<D> SemanticModel<D> {
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(!is_composite))
             }
             _ => {
-                let values = self.symbols(self.storage.declarations.iter().enumerate().filter_map(
-                    |(index, candidate)| {
-                        let candidate_id = DeclarationId::from_index(index).ok()?;
-                        (candidate_id != declaration
-                            && candidate.owner == Some(declaration)
-                            && self
-                                .memberships
-                                .get(candidate_id)
-                                .is_some_and(|membership| {
-                                    membership.kind == MembershipKind::Feature
-                                })
-                            && definition_usage_candidate_matches(kind, candidate.kind))
-                        .then_some(candidate_id)
-                    },
-                ));
+                // The members of one element, from the settled owner->member index: a query about
+                // one declaration's features costs its features, not the corpus.
+                let values =
+                    self.symbols(self.child_declarations(declaration).iter().copied().filter(
+                        |candidate_id| {
+                            *candidate_id != declaration
+                                && self
+                                    .memberships
+                                    .get(*candidate_id)
+                                    .is_some_and(|membership| {
+                                        membership.kind == MembershipKind::Feature
+                                    })
+                                && self.storage.declaration(*candidate_id).is_some_and(
+                                    |candidate| {
+                                        definition_usage_candidate_matches(kind, candidate.kind)
+                                    },
+                                )
+                        },
+                    ));
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
         }
@@ -1286,16 +1290,18 @@ impl<D> SemanticModel<D> {
                 prerequisite: RequirementDerivedFactPrerequisite::CanonicalMembershipRole,
             });
         };
-        let values = self.symbols(self.storage.declarations.iter().enumerate().filter_map(
-            |(index, candidate)| {
-                let candidate_id = DeclarationId::from_index(index).ok()?;
-                (candidate.owner == Some(declaration)
+        // Owner-scoped from the settled index rather than a corpus scan.
+        let values = self.symbols(self.child_declarations(declaration).iter().copied().filter(
+            |candidate_id| {
+                self.memberships
+                    .get(*candidate_id)
+                    .is_some_and(|membership| membership.kind == MembershipKind::Feature)
                     && self
-                        .memberships
-                        .get(candidate_id)
-                        .is_some_and(|membership| membership.kind == MembershipKind::Feature)
-                    && element_kind::membership_role(candidate.kind) == Some(role))
-                .then_some(candidate_id)
+                        .storage
+                        .declaration(*candidate_id)
+                        .is_some_and(|candidate| {
+                            element_kind::membership_role(candidate.kind) == Some(role)
+                        })
             },
         ));
         self.resolved_outcome(RequirementDerivedFactOutcome::Elements(values))
@@ -1702,14 +1708,15 @@ impl<D> SemanticModel<D> {
         }
         let _rule_id = rule.rule_id;
         let mut values = Vec::new();
-        for (index, declaration) in self.storage.declarations.iter().enumerate() {
-            if declaration.owner != Some(namespace) || declaration.kind != DeclarationKind::Import {
+        // The namespace's own members, from the settled owner->member index.
+        for import in self.child_declarations(namespace).iter().copied() {
+            if self
+                .storage
+                .declaration(import)
+                .is_none_or(|declaration| declaration.kind != DeclarationKind::Import)
+            {
                 continue;
             }
-            let import = match DeclarationId::from_index(index) {
-                Ok(import) => import,
-                Err(_) => return QueryOutcome::Unsupported,
-            };
             let relationships =
                 self.relationships_of_kinds(import, &[ReferenceKind::NamespaceImport]);
             let relationship = match relationships.as_ref() {
@@ -1960,18 +1967,28 @@ impl<D> SemanticModel<D> {
             None => VerificationRequirement::Unsupported,
         };
         let mut values = Vec::new();
-        for (index, declaration) in self.storage.declarations.iter().enumerate() {
-            let Some(document) = self.storage.document(declaration.document) else {
+        // Workspace-scoped: the settled per-document declaration slices, so an authored-workspace
+        // projection never walks the bundled standard library.
+        let workspace = (0..self.storage.documents.len())
+            .filter_map(|index| DocumentId::from_index(index).ok())
+            .filter(|document| {
+                self.storage
+                    .document(*document)
+                    .is_some_and(|record| record.role == SourceRole::Workspace)
+            })
+            .flat_map(|document| {
+                self.documents
+                    .document_declarations(document)
+                    .iter()
+                    .copied()
+            });
+        for id in workspace {
+            let Some(declaration) = self.storage.declaration(id) else {
                 continue;
             };
-            if document.role != SourceRole::Workspace
-                || declaration.kind != DeclarationKind::VerifyRequirement
-            {
+            if declaration.kind != DeclarationKind::VerifyRequirement {
                 continue;
             }
-            let Some(id) = DeclarationId::from_index(index).ok() else {
-                continue;
-            };
             let Some(objective) = declaration
                 .owner
                 .and_then(|id| self.storage.declaration(id))

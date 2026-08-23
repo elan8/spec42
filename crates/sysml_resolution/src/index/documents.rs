@@ -124,6 +124,14 @@ pub(crate) struct DocumentIndex {
     pub(crate) by_identity: HashTable<DocumentId>,
     pub(crate) hash_builder: RandomState,
     pub(crate) positions: Box<[DocumentPositions]>,
+    /// Per-document ranges into [`Self::declaration_order`]: the declarations each document
+    /// authored.
+    ///
+    /// CSR rather than a `Vec<Vec<_>>` rebuilt per caller, and prebuilt because the alternative is
+    /// a scan of every declaration in the publication per document-scoped query -- which makes one
+    /// workspace projection cost the size of the bundled standard library.
+    pub(crate) declarations: Box<[(u32, u32)]>,
+    pub(crate) declaration_order: Box<[DeclarationId]>,
 }
 
 impl DocumentIndex {
@@ -163,11 +171,46 @@ impl DocumentIndex {
             vec![Vec::new(); storage.documents.len()];
         let mut spans: Vec<Vec<(TextRange, DeclarationId)>> =
             vec![Vec::new(); storage.documents.len()];
+        // Counting CSR rather than a `Vec` per document: the ranges below index the payload
+        // directly, so building the document->declaration view costs two allocations for the whole
+        // publication instead of one per document.
+        let mut counts = vec![0u32; storage.documents.len()];
+        for declaration in storage.declarations.iter() {
+            if let Some(slot) = counts.get_mut(declaration.document.index()) {
+                *slot = slot.checked_add(1).ok_or(ResolutionError::Capacity)?;
+            }
+        }
+        let mut declarations: Vec<(u32, u32)> = Vec::with_capacity(storage.documents.len());
+        let mut cursor = 0u32;
+        for count in &counts {
+            declarations.push((cursor, cursor + count));
+            cursor += count;
+        }
+        let mut fill = declarations
+            .iter()
+            .map(|(start, _)| *start)
+            .collect::<Vec<_>>();
+        let mut declaration_order: Vec<DeclarationId> = match storage.declarations.len() {
+            0 => Vec::new(),
+            length => {
+                let placeholder =
+                    DeclarationId::from_index(0).map_err(|_| ResolutionError::Capacity)?;
+                vec![placeholder; length]
+            }
+        };
+
         for index in 0..storage.declarations.len() {
             let Ok(id) = DeclarationId::from_index(index) else {
                 continue;
             };
             let declaration = &storage.declarations[index];
+            if let Some(slot) = fill.get_mut(declaration.document.index()) {
+                let position = *slot as usize;
+                if let Some(entry) = declaration_order.get_mut(position) {
+                    *entry = id;
+                }
+                *slot += 1;
+            }
             if let Ok(range) = document_range(storage, declaration.document, &declaration.span) {
                 spans[declaration.document.index()].push((range, id));
             }
@@ -201,7 +244,17 @@ impl DocumentIndex {
             by_identity,
             hash_builder,
             positions,
+            declarations: declarations.into_boxed_slice(),
+            declaration_order: declaration_order.into_boxed_slice(),
         })
+    }
+
+    /// The declarations one document authored, as the settled slice rather than a corpus scan.
+    pub(crate) fn document_declarations(&self, document: DocumentId) -> &[DeclarationId] {
+        match self.declarations.get(document.index()) {
+            Some((start, end)) => &self.declaration_order[*start as usize..*end as usize],
+            None => &[],
+        }
     }
 
     pub(crate) fn document(
