@@ -1036,7 +1036,10 @@ fn inspection_publishes_every_authored_fact_of_an_element() {
 
     assert_eq!(wheels.kind, ElementKind::PartUsage);
     assert_eq!(wheels.name.as_deref(), Some("wheels"));
-    assert_eq!(&*wheels.qualified_name, "P::Car::wheels");
+    assert_eq!(
+        published.qualified_name(wheels.identity),
+        Some("P::Car::wheels")
+    );
     assert_eq!(wheels.membership.kind, MembershipKind::Feature);
     assert_eq!(
         wheels.membership.provenance,
@@ -1358,7 +1361,7 @@ fn construction_strategy_and_source_order_publish_equivalent_details() {
                 } else {
                     "memory://b.sysml"
                 };
-                render_details(&details_of(published, document, name))
+                render_details(published, &details_of(published, document, name))
             })
             .collect::<Vec<_>>()
     };
@@ -1406,8 +1409,8 @@ fn library_stratum_reuse_publishes_the_same_details_as_a_full_solve() {
     .unwrap();
 
     assert_eq!(
-        render_details(&details_of(&full, "memory://model.sysml", "W::w")),
-        render_details(&details_of(&warm, "memory://model.sysml", "W::w")),
+        render_details(&full, &details_of(&full, "memory://model.sysml", "W::w")),
+        render_details(&warm, &details_of(&warm, "memory://model.sysml", "W::w")),
     );
 }
 

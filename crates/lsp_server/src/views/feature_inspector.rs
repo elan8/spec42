@@ -504,7 +504,10 @@ pub(crate) fn feature_inspector_element(
     SysmlFeatureInspectorElementDto {
         id: symbol_token_text(model, inspection.identity),
         name: inspection.name.as_deref().unwrap_or_default().to_string(),
-        qualified_name: inspection.qualified_name.to_string(),
+        qualified_name: model
+            .qualified_name(inspection.identity)
+            .unwrap_or_default()
+            .to_string(),
         element_type: inspection.kind.as_str().to_string(),
         role: semantic_role(inspection.kind).to_string(),
         declaration: declaration_text(details, source),

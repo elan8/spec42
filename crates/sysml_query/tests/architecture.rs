@@ -636,7 +636,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "DiagramStateVertex::label",
     "DiagramViewCatalogEntry::name",
     "Documentation::text",
-    "ElementInspection::qualified_name",
     "PackageTargets::qualified_name",
     "QualifiedReferenceTarget::qualified_name",
     "SymbolEntry::qualified_name",

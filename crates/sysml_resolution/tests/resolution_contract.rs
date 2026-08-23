@@ -4231,12 +4231,12 @@ fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
     let names = ["P::rover", "P::Rover", "P::Vehicle", "P::selected"];
     let forward = names
         .iter()
-        .map(|name| render_details(&details_of(&published, "memory://model.sysml", name)))
+        .map(|name| render_details(&published, &details_of(&published, "memory://model.sysml", name)))
         .collect::<Vec<_>>();
     let mut reverse = names
         .iter()
         .rev()
-        .map(|name| render_details(&details_of(&published, "memory://model.sysml", name)))
+        .map(|name| render_details(&published, &details_of(&published, "memory://model.sysml", name)))
         .collect::<Vec<_>>();
     reverse.reverse();
     assert_eq!(forward, reverse);
@@ -4244,7 +4244,7 @@ fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
     for (index, name) in names.iter().enumerate() {
         assert_eq!(
             forward[index],
-            render_details(&details_of(&published, "memory://model.sysml", name))
+            render_details(&published, &details_of(&published, "memory://model.sysml", name))
         );
     }
 }

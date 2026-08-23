@@ -102,25 +102,22 @@ fn inspection_hover_markdown(
 ) -> String {
     let name = element.name.as_deref().unwrap_or("(anonymous)");
     let kind = human_kind(element.kind.as_str());
+    let qualified_name = model.qualified_name(element.identity).unwrap_or_default();
     let mut markdown = format!("**{}** `{name}`\n\n", kind);
     markdown.push_str("```sysml\n");
-    markdown.push_str(element.qualified_name.as_ref());
+    markdown.push_str(qualified_name);
     markdown.push_str("\n```\n\n");
-    markdown.push_str(&format!(
-        "**Qualified name:** `{}`\n\n",
-        element.qualified_name
-    ));
+    markdown.push_str(&format!("**Qualified name:** `{qualified_name}`\n\n"));
     if let Some(role) = element.role {
         markdown.push_str(&format!("**Role:** `{}`\n\n", role.as_str()));
     }
-    if let Some((container, _)) = element.qualified_name.rsplit_once("::") {
+    if let Some((container, _)) = qualified_name.rsplit_once("::") {
         markdown.push_str(&format!("**Container:** `{container}`\n\n"));
     }
     if let Some(types) = resolved(model.types().direct_types(element.identity)) {
         let names = types
             .iter()
-            .filter_map(|typing| resolved(model.inspection().inspect(typing.symbol)))
-            .map(|inspection| inspection.qualified_name.into_string())
+            .filter_map(|typing| model.qualified_name(typing.symbol))
             .collect::<Vec<_>>();
         if !names.is_empty() {
             markdown.push_str(&format!("**Declared type:** `{}`\n\n", names.join("`, `")));

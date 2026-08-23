@@ -588,7 +588,6 @@ impl<D> SemanticModel<D> {
                 .short_name
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
-            qualified_name: self.qualified_name(id).into(),
             location: self.source_location(id)?,
             declaration_range: document_range(
                 &self.storage,

@@ -72,6 +72,11 @@ pub struct ElementRelationship {
 /// Everything this crate knows about one element.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementInspection {
+    /// The element this inspection is about.
+    ///
+    /// The `::`-joined display path is not carried: it is a copy of text the publication already
+    /// stores, and an inspection is produced per element in queries that return many. Read it
+    /// with `PublishedResolution::qualified_name`, which borrows from the settled blob.
     pub identity: SymbolId,
     pub kind: ElementKind,
     /// The role this element plays in its owner, where the OMG carries it on the membership.
@@ -79,9 +84,6 @@ pub struct ElementInspection {
     /// The authored name, absent for an anonymous element.
     pub name: Option<Box<str>>,
     pub short_name: Option<Box<str>>,
-    /// The `::`-joined owner path. Anonymous ancestors contribute no segment, so this is a display
-    /// convenience and not an identity -- use [`ElementInspection::identity`] for that.
-    pub qualified_name: Box<str>,
     /// The element's name range, or its declaration range when it has no name.
     pub location: SourceLocation,
     /// The whole declaration's range.

@@ -1464,7 +1464,7 @@ fn write_element(
     writeln!(
         output,
         "{indent}  (qualified-name {:?})",
-        inspection.qualified_name
+        model.qualified_name(inspection.identity).unwrap_or_default()
     )?;
     write!(output, "{indent}  ")?;
     write_location(model, output, &inspection.location)?;

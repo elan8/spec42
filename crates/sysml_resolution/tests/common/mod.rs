@@ -469,7 +469,7 @@ pub fn names(entries: &[SymbolEntry]) -> Vec<&str> {
 }
 
 /// One deterministic rendering of an element's details, for equivalence assertions.
-pub fn render_details(details: &ElementDetails) -> String {
+pub fn render_details(published: &PublishedResolution, details: &ElementDetails) -> String {
     let mut output = String::new();
     let family = |output: &mut String, label: &str, family: &RelationshipFamily| {
         output.push_str(&format!(
@@ -481,7 +481,9 @@ pub fn render_details(details: &ElementDetails) -> String {
     };
     output.push_str(&format!(
         "element {} {}\n",
-        details.inspection.qualified_name,
+        published
+            .qualified_name(details.inspection.identity)
+            .unwrap_or_default(),
         details.inspection.kind.as_str()
     ));
     output.push_str(&format!(

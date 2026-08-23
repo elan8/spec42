@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **An element inspection names its element by handle; the qualified name is read from the
+  publication.** `ElementInspection::qualified_name` is gone. It was a `Box<str>` copy of the
+  `::`-joined display path the publication already stores, allocated once per inspection -- and
+  inspections are produced in bulk by details, hover and the feature inspector. Consumers now read
+  it through the borrowed `PublishedModel::qualified_name` / `PublishedResolution::qualified_name`,
+  which slices the settled blob, and the LSP and generator edges materialise an owned string only
+  where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
+  Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
+  entries to 16.
+
 - **A navigation result names its element by handle; the name is read at the editor edge.**
   `NavigationTarget` is now `Copy` -- a `SymbolId` and a `SourceLocation` -- and
   `RenameOutcome::Ready` no longer carries a `Box<str>` of the name either. A definition or
