@@ -80,7 +80,9 @@ impl PublishedResolution {
 
         let mut named = entries
             .into_iter()
-            .filter(|entry| entry.qualified_name == reference.qualified_name)
+            .filter(|entry| {
+                self.qualified_name(entry.identity) == Some(reference.qualified_name.as_ref())
+            })
             .map(QualifiedReferenceTarget::from)
             .collect::<Vec<_>>();
         canonicalize_targets(&mut named);

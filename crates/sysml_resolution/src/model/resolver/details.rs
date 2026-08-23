@@ -304,7 +304,7 @@ impl<D> SemanticModel<D> {
         }
         let entry = self.symbol_entry(target)?;
         let standard_sysml_metadata = entry.kind == ElementKind::MetadataDefinition
-            && entry.qualified_name.starts_with("SysML::Systems::");
+            && self.qualified_name(target).starts_with("SysML::Systems::");
         if !standard_sysml_metadata && entry.kind != ElementKind::Metaclass {
             return None;
         }

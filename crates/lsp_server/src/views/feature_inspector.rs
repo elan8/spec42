@@ -66,7 +66,7 @@ fn element_ref(model: &PublishedModel, entry: &SymbolEntry) -> SysmlFeatureInspe
     SysmlFeatureInspectorElementRefDto {
         id: symbol_token_text(model, entry.identity),
         name: entry.name.as_deref().unwrap_or_default().to_string(),
-        qualified_name: entry.qualified_name.to_string(),
+        qualified_name: model.qualified_name(entry.identity).unwrap_or_default().to_string(),
         element_type: entry.kind.as_str().to_string(),
         uri: model
             .document_identity(entry.location.document)

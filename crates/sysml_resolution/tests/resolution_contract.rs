@@ -3324,7 +3324,7 @@ part vehicle : Vehicle;
     };
     let vehicle = entries
         .iter()
-        .find(|entry| entry.qualified_name.as_ref() == "P::vehicle")
+        .find(|entry| published.qualified_name(entry.identity) == Some("P::vehicle"))
         .expect("vehicle usage");
     let features = match published.effective_features(vehicle.identity) {
         QueryOutcome::Resolved(features) => features,
@@ -3333,7 +3333,7 @@ part vehicle : Vehicle;
     assert_eq!(
         features
             .iter()
-            .map(|entry| entry.qualified_name.as_ref())
+            .map(|entry| published.qualified_name(entry.identity).unwrap_or_default())
             .collect::<Vec<_>>(),
         vec![
             "P::Vehicle::direct",

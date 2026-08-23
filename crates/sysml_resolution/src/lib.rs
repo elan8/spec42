@@ -1636,7 +1636,7 @@ mod tests {
             | QueryOutcome::UnsupportedWith(entries) => {
                 entries
                     .iter()
-                    .find(|entry| entry.qualified_name.as_ref() == qualified)
+                    .find(|entry| published.qualified_name(entry.identity) == Some(qualified))
                     .unwrap_or_else(|| panic!("no declaration named {qualified}"))
                     .identity
             }
@@ -1729,7 +1729,7 @@ mod tests {
     ) -> SymbolId {
         settled(published.document_symbols(document))
             .iter()
-            .find(|entry| entry.qualified_name.as_ref() == qualified_name)
+            .find(|entry| published.qualified_name(entry.identity) == Some(qualified_name))
             .unwrap_or_else(|| panic!("no declaration named {qualified_name} in {document}"))
             .identity
     }

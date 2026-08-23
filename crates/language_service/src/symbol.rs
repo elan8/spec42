@@ -27,9 +27,9 @@ pub fn symbol_entries_for_uri(model: &PublishedModel, uri: &Url) -> Vec<SymbolEn
         .into_iter()
         .filter_map(|symbol| {
             let name = symbol.name?.into_string();
-            let container_name = symbol
-                .qualified_name
-                .rsplit_once("::")
+            let container_name = model
+                .qualified_name(symbol.identity)
+                .and_then(|qualified_name| qualified_name.rsplit_once("::"))
                 .map(|(owner, _)| owner.to_string());
             let detail = symbol.kind.as_str().to_string();
             let range = TextRange::new(

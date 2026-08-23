@@ -768,7 +768,7 @@ satisfy Missing by vehicle;
     };
     let performance = requirements
         .iter()
-        .find(|value| value.qualified_name.as_ref() == "Trace::Performance")
+        .find(|value| published.qualified_name(value.identity) == Some("Trace::Performance"))
         .expect("Performance");
     let parts = match published.search_elements(ElementSearch {
         kind: ElementKind::PartUsage,
@@ -779,7 +779,7 @@ satisfy Missing by vehicle;
     };
     let vehicle = parts
         .iter()
-        .find(|value| value.qualified_name.as_ref() == "Trace::vehicle")
+        .find(|value| published.qualified_name(value.identity) == Some("Trace::vehicle"))
         .expect("vehicle");
     assert!(
         matches!(&values[0].requirement, SatisfyEndpoint::Resolved(value) if value == &performance.identity)
@@ -828,11 +828,11 @@ action def Act {
     };
     let start = actions
         .iter()
-        .find(|value| value.qualified_name.as_ref() == "Binding::Act::start")
+        .find(|value| published.qualified_name(value.identity) == Some("Binding::Act::start"))
         .expect("start action");
     let done = actions
         .iter()
-        .find(|value| value.qualified_name.as_ref() == "Binding::Act::done")
+        .find(|value| published.qualified_name(value.identity) == Some("Binding::Act::done"))
         .expect("done action");
     assert!(
         matches!(&values[0].source, BindingEndpoint::Resolved(value) if value == &start.identity)
@@ -896,7 +896,7 @@ verification def Check {
     };
     let check = cases
         .iter()
-        .find(|value| value.qualified_name.as_ref() == "V::Check")
+        .find(|value| published.qualified_name(value.identity) == Some("V::Check"))
         .expect("Check");
     assert!(values
         .iter()

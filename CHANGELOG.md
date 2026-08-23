@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A symbol entry names its element by handle; the qualified name is read from the
+  publication.** `SymbolEntry::qualified_name` is gone. Document and workspace symbols are
+  produced in bulk -- one entry per declaration in a document, every one carrying a `Box<str>`
+  copy of the `::`-joined path the publication already stores. Consumers read it through the
+  borrowed `PublishedModel::qualified_name`, `display_label` takes the name it should fall back
+  to, and the LSP, generator and report edges materialise text only where a protocol demands
+  it. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank by one entry; the three entries that
+  remain are synthesised text with nothing to borrow from, and the guard's comment says why.
+
 - **Authored text is a handle too: `sysml_contract::TextId`.** A published fact that quoted text
   the publication had already interned was allocating a second copy of it per result.
   `TextId` is the publication-scoped slot of one interned run, with the same validity story as

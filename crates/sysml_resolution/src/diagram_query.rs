@@ -386,7 +386,8 @@ impl PublishedResolution {
                     semantic_id: entry.identity,
                     reference: semantic_reference(
                         &entry,
-                        &BTreeMap::new(),
+                        self.qualified_name(entry.identity).unwrap_or_default(),
+                        entry.owner.and_then(|owner| self.qualified_name(owner)),
                         self.document_identity(entry.location.document)
                             .unwrap_or_default(),
                     ),
@@ -563,7 +564,8 @@ impl PublishedResolution {
                 semantic_id: entry.identity,
                 reference: semantic_reference(
                     entry,
-                    &all,
+                    self.qualified_name(entry.identity).unwrap_or_default(),
+                    entry.owner.and_then(|owner| self.qualified_name(owner)),
                     self.document_identity(entry.location.document)
                         .unwrap_or_default(),
                 ),
@@ -914,22 +916,19 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
 /// as a publication-scoped handle no other process could resolve.
 fn semantic_reference(
     entry: &SymbolEntry,
-    entries: &BTreeMap<SymbolId, SymbolEntry>,
+    qualified_name: &str,
+    owner_qualified_name: Option<&str>,
     document: &str,
 ) -> DiagramSemanticReference {
     if entry.name.is_some() {
         DiagramSemanticReference::Qualified {
             document: document.into(),
-            qualified_name: entry.qualified_name.clone(),
+            qualified_name: qualified_name.into(),
         }
     } else {
         DiagramSemanticReference::SourceAnchor {
             document: document.into(),
-            owner_qualified_name: entry
-                .owner
-                .as_ref()
-                .and_then(|owner| entries.get(owner))
-                .map(|owner| owner.qualified_name.clone()),
+            owner_qualified_name: owner_qualified_name.map(Into::into),
             kind: entry.kind,
             range: entry.declaration_range,
         }

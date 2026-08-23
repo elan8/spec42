@@ -303,7 +303,7 @@ mod tests {
         };
         let usage = symbols
             .iter()
-            .find(|entry| entry.qualified_name.as_ref() == "W::w")
+            .find(|entry| model.qualified_name(entry.identity) == Some("W::w"))
             .expect("the workspace usage");
         let types = match model.types().direct_types(usage.identity) {
             sysml_query::resolved_slice::QueryOutcome::Resolved(types)
@@ -335,7 +335,7 @@ mod tests {
         };
         let symbol = symbols
             .iter()
-            .find(|symbol| symbol.qualified_name.as_ref() == "App::w")
+            .find(|symbol| model.qualified_name(symbol.identity) == Some("App::w"))
             .unwrap();
         assert!(matches!(
             model.types().direct_types(symbol.identity),

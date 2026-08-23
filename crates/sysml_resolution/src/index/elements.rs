@@ -695,7 +695,6 @@ impl<D> SemanticModel<D> {
                         .name
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
-                    qualified_name: self.qualified_name(*id).into(),
                     owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
                     location: self.source_location(*id)?,
                     declaration_range: *range,
@@ -736,7 +735,6 @@ impl<D> SemanticModel<D> {
                         .name
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
-                    qualified_name: self.qualified_name(id).into(),
                     owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
                     declaration_range: location.range,
                     location,
@@ -833,7 +831,6 @@ impl<D> SemanticModel<D> {
                 .name
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
-            qualified_name: self.qualified_name(id).into(),
             owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
             declaration_range: location.range,
             location,

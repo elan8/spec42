@@ -728,11 +728,11 @@ impl GeneratorModelView {
                     sysml_query::resolved_slice::DiagramElementTyping::Absent => spec42_generator_protocol::DiagramElementTyping::Absent,
                     sysml_query::resolved_slice::DiagramElementTyping::Resolved(targets) => spec42_generator_protocol::DiagramElementTyping::Resolved(targets.iter().map(|target| {
                         let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
-                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&self.model, &target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Partial(targets) => spec42_generator_protocol::DiagramElementTyping::Partial(targets.iter().map(|target| {
                         let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
-                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&self.model, &target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Ambiguous(targets) => spec42_generator_protocol::DiagramElementTyping::Ambiguous(targets.iter().map(|target| self.diagram_reference(*target)).collect::<Result<Vec<_>, _>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Unresolved => spec42_generator_protocol::DiagramElementTyping::Unresolved,
@@ -963,7 +963,7 @@ impl GeneratorModelView {
                         })?;
                         Ok(StateMachineSummary {
                             semantic_id: self.token(identity),
-                            label: display_label(&entry.entry),
+                            label: display_label(&self.model, &entry.entry),
                             source: source_reference(
                                 &entry.entry.location,
                                 self.model
@@ -1161,7 +1161,7 @@ impl GeneratorModelView {
         let machine_inspection = self.inspection(machine_id, "state machine")?;
         let machine = StateMachineSummary {
             semantic_id: self.token(machine_id),
-            label: display_label(&machine_entry.entry),
+            label: display_label(&self.model, &machine_entry.entry),
             source: inspection_source(
                 &machine_inspection,
                 self.model
@@ -1182,7 +1182,7 @@ impl GeneratorModelView {
                 ElementKind::StateUsage | ElementKind::FinalState => {
                     nodes.push(StateTransitionNode {
                         semantic_id: self.token(child.entry.identity),
-                        label: display_label(&child.entry),
+                        label: display_label(&self.model, &child.entry),
                         kind: if child.entry.kind == ElementKind::FinalState {
                             StateTransitionNodeKind::Final
                         } else {
@@ -1240,10 +1240,10 @@ impl GeneratorModelView {
                                 ModelQueryError::Unresolved("transition trigger target".into())
                             })?;
                             TransitionTrigger::Accept {
-                                label: display_label(&target_entry.entry),
+                                label: display_label(&self.model, &target_entry.entry),
                                 target: Some(ElementIdentity {
                                     semantic_id: self.token(trigger),
-                                    label: display_label(&target_entry.entry),
+                                    label: display_label(&self.model, &target_entry.entry),
                                 }),
                                 source: inspection_source(
                                     &inspection,
@@ -1386,10 +1386,10 @@ impl GeneratorModelView {
         Ok(StateTransitionViewSummary {
             handle,
             semantic_id: self.token(view),
-            name: display_label(view_entry),
+            name: display_label(&self.model, view_entry),
             exposed_machine: StateMachineIdentity {
                 semantic_id: self.token(machine),
-                label: display_label(&machine_entry.entry),
+                label: display_label(&self.model, &machine_entry.entry),
             },
             source: inspection_source(
                 &inspection,
@@ -1418,7 +1418,7 @@ impl GeneratorModelView {
                     .document_identity(registered.entry.location.document)
                     .unwrap_or_default()
                     .to_owned(),
-                qualified_name: registered.entry.qualified_name.to_string(),
+                qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
                 source_domain,
             })
         } else {
@@ -1433,7 +1433,7 @@ impl GeneratorModelView {
                     .owner
                     .as_ref()
                     .and_then(|owner| self.by_identity.get(owner))
-                    .map(|owner| owner.entry.qualified_name.to_string()),
+                    .map(|owner| self.model.qualified_name(owner.entry.identity).unwrap_or_default().to_string()),
                 metaclass: api_metaclass(registered.entry.kind),
                 source_domain,
                 range: protocol_source_range(registered.entry.declaration_range),
@@ -1494,7 +1494,7 @@ impl GeneratorModelView {
                 .document_identity(registered.entry.location.document)
                 .unwrap_or_default()
                 .to_owned(),
-            source_qualified_name: registered.entry.qualified_name.to_string(),
+            source_qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
             relationship_kind,
             ordinal: u32::try_from(ordinal).map_err(|_| ModelQueryError::ResultLimit {
                 actual: ordinal,
@@ -1594,7 +1594,7 @@ impl GeneratorModelView {
             semantic_id,
             metaclass: api_metaclass(registered.entry.kind),
             name: registered.entry.name.as_deref().map(str::to_owned),
-            qualified_name: registered.entry.qualified_name.to_string(),
+            qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
             library_element: registered.source != ElementSource::Workspace,
         })
     }
@@ -1622,8 +1622,10 @@ impl GeneratorModelView {
     }
 }
 
-fn display_label(entry: &SymbolEntry) -> String {
-    entry.display_label().to_owned()
+fn display_label(model: &sysml_query::resolved_slice::PublishedModel, entry: &SymbolEntry) -> String {
+    entry
+        .display_label(model.qualified_name(entry.identity).unwrap_or_default())
+        .to_owned()
 }
 
 /// The boundary form of an inspection's source position.

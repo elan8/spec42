@@ -146,7 +146,6 @@ pub struct SymbolEntry {
     pub identity: SymbolId,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
-    pub qualified_name: Box<str>,
     pub owner: Option<SymbolId>,
     pub location: SourceLocation,
     pub declaration_range: TextRange,
@@ -159,7 +158,7 @@ impl SymbolEntry {
     /// default, decided here so every renderer shows the same string for the same element rather
     /// than each choosing its own fallback: it never substitutes for `identity`, and an absent
     /// `name` stays absent in the published fact.
-    pub fn display_label(&self) -> &str {
-        self.name.as_deref().unwrap_or(self.qualified_name.as_ref())
+    pub fn display_label<'a>(&'a self, qualified_name: &'a str) -> &'a str {
+        self.name.as_deref().unwrap_or(qualified_name)
     }
 }

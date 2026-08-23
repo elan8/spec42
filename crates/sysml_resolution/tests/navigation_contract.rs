@@ -1202,7 +1202,7 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
                 published
                     .document_identity(entry.location.document)
                     .unwrap_or_default(),
-                entry.qualified_name.as_ref()
+                published.qualified_name(entry.identity).unwrap_or_default()
             ))
             .collect::<Vec<_>>(),
         vec![
@@ -1224,7 +1224,7 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
     };
     assert_eq!(library.len(), 1);
     assert_eq!(
-        library[0].qualified_name.as_ref(),
+        published.qualified_name(library[0].identity).unwrap_or_default(),
         "Standard::LibraryRequirement"
     );
 }
@@ -1289,7 +1289,7 @@ fn an_ambiguous_relationship_target_keeps_every_candidate_and_chooses_none() {
             .effective_typing
             .candidates
             .iter()
-            .map(|candidate| candidate.element.qualified_name.as_ref())
+            .map(|candidate| published.qualified_name(candidate.element.identity).unwrap_or_default())
             .collect::<Vec<_>>(),
         vec!["P::A::Shared", "P::B::Shared"]
     );

@@ -1203,7 +1203,7 @@ fn write_document_symbols(
                 if let Some(name) = &entry.name {
                     write!(output, " (name {name:?})")?;
                 }
-                write!(output, " (qualified-name {:?}) ", entry.qualified_name)?;
+                write!(output, " (qualified-name {:?}) ", model.qualified_name(entry.identity).unwrap_or_default())?;
                 write_location(model, output, &entry.location)?;
                 write!(output, " (declaration ")?;
                 write_range(output, entry.declaration_range)?;
@@ -1557,7 +1557,7 @@ fn write_element(
         ("subsetting", &details.subsetting),
         ("redefinition", &details.redefinition),
     ] {
-        write_family(output, indent, label, family)?;
+        write_family(model, output, indent, label, family)?;
     }
     if details.effective_typing.outcome != RelationshipOutcome::NotApplicable {
         write!(
@@ -1569,7 +1569,7 @@ fn write_element(
             write!(
                 output,
                 " (type (qualified-name {:?})",
-                entry.element.qualified_name
+                model.qualified_name(entry.element.identity).unwrap_or_default()
             )?;
             match &entry.origin {
                 EffectiveTypeOrigin::Direct => write!(output, " (origin direct))")?,
@@ -1582,14 +1582,14 @@ fn write_element(
         writeln!(
             output,
             "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}))",
-            feature.feature.qualified_name, feature.declared_in.qualified_name
+            model.qualified_name(feature.feature.identity).unwrap_or_default(), model.qualified_name(feature.declared_in.identity).unwrap_or_default()
         )?;
     }
     for entry in details.metadata.iter() {
         writeln!(
             output,
             "{indent}  (metadata (qualified-name {:?}))",
-            entry.qualified_name
+            model.qualified_name(entry.identity).unwrap_or_default()
         )?;
     }
     for (label, connected) in [
@@ -1601,7 +1601,7 @@ fn write_element(
                 output,
                 "{indent}  ({label} (kind {:?}) (peer {:?}) (provenance {}))",
                 entry.kind,
-                entry.peer.qualified_name,
+                model.qualified_name(entry.peer.identity).unwrap_or_default(),
                 match entry.provenance {
                     RelationshipProvenance::Authored => "authored",
                     RelationshipProvenance::Implied => "implied",
@@ -1627,6 +1627,7 @@ fn write_element(
 
 /// One relationship family, omitted entirely when the element declares nothing of its kind.
 fn write_family(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     indent: &str,
     label: &str,
@@ -1641,10 +1642,10 @@ fn write_family(
         family.outcome.as_str()
     )?;
     for target in family.targets.iter() {
-        write!(output, " (target {:?})", target.qualified_name)?;
+        write!(output, " (target {:?})", model.qualified_name(target.identity).unwrap_or_default())?;
     }
     for candidate in family.candidates.iter() {
-        write!(output, " (candidate {:?})", candidate.qualified_name)?;
+        write!(output, " (candidate {:?})", model.qualified_name(candidate.identity).unwrap_or_default())?;
     }
     writeln!(output, ")")
 }
@@ -2073,7 +2074,7 @@ mod tests {
         };
         let mass = symbols
             .iter()
-            .find(|symbol| symbol.qualified_name.as_ref() == "Model::Vehicle::mass")
+            .find(|symbol| publication.qualified_name(symbol.identity) == Some("Model::Vehicle::mass"))
             .expect("mass declaration")
             .identity;
         assert!(matches!(

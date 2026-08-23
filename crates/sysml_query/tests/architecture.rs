@@ -627,11 +627,18 @@ const FACADE_OWNED_STRING_INPUT_FIELDS: &[&str] = &[
 /// publication already stores, handed to the consumer as a fresh allocation: the facade rule says
 /// a product carries a handle or a borrowed view instead. This list is the remaining debt and is
 /// only ever meant to shrink.
+///
+/// Two kinds of entry remain. Copies of stored text, which convert to a handle or a view as the
+/// family is touched. And *synthesised* text -- a string the query composes rather than one the
+/// publication stores -- which has nothing to borrow from: `SyntaxDiagnostic::message` is the
+/// parser's own wording, `SyntaxOutlineNode::name` falls back to a sanitised or placeholder name,
+/// and `PackageTargets::qualified_name` is the nested package path joined during the closure
+/// scan, read once by library closure loading on the batch path. Those stay until the value is
+/// settled into storage at the barrier, which is a representation change to admit with a bench.
 const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
 
 
     "PackageTargets::qualified_name",
-    "SymbolEntry::qualified_name",
     // Not a copy of source text: the parser's own message, and for a parser panic a message this
     // crate writes. The diagnostics are stored *inside* the `ParsedSource` next to the parse
     // errors they mirror, so a borrow of those errors would make the handle self-referential.

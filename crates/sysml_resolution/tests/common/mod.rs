@@ -213,7 +213,7 @@ pub fn symbol_named(published: &PublishedResolution, document: &str, qualified: 
         | QueryOutcome::UnsupportedWith(entries) => {
             entries
                 .iter()
-                .find(|entry| entry.qualified_name.as_ref() == qualified)
+                .find(|entry| published.qualified_name(entry.identity) == Some(qualified))
                 .unwrap_or_else(|| panic!("no declaration named {qualified}"))
                 .identity
         }
@@ -448,7 +448,7 @@ pub fn identity_of(
 ) -> SymbolId {
     settled(published.document_symbols(document))
         .iter()
-        .find(|entry| entry.qualified_name.as_ref() == qualified_name)
+        .find(|entry| published.qualified_name(entry.identity) == Some(qualified_name))
         .unwrap_or_else(|| panic!("no declaration named {qualified_name} in {document}"))
         .identity
 }
@@ -491,7 +491,7 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
         details
             .owner
             .as_ref()
-            .map(|owner| owner.qualified_name.clone())
+            .map(|owner| published.qualified_name(owner.identity).unwrap_or_default().to_owned())
     ));
     family(&mut output, "typing", &details.typing);
     family(&mut output, "specialization", &details.specialization);
@@ -505,7 +505,7 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
             .types
             .iter()
             .map(|entry| (
-                entry.element.qualified_name.clone(),
+                published.qualified_name(entry.element.identity).unwrap_or_default().to_owned(),
                 format!("{:?}", entry.origin)
             ))
             .collect::<Vec<_>>()
@@ -516,8 +516,8 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
             .inherited_features
             .iter()
             .map(|entry| (
-                entry.feature.qualified_name.clone(),
-                entry.declared_in.qualified_name.clone()
+                published.qualified_name(entry.feature.identity).unwrap_or_default().to_owned(),
+                published.qualified_name(entry.declared_in.identity).unwrap_or_default().to_owned()
             ))
             .collect::<Vec<_>>()
     ));
@@ -532,7 +532,7 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
                 .iter()
                 .map(|entry| (
                     entry.kind,
-                    entry.peer.qualified_name.clone(),
+                    published.qualified_name(entry.peer.identity).unwrap_or_default().to_owned(),
                     format!("{:?}", entry.provenance)
                 ))
                 .collect::<Vec<_>>()
