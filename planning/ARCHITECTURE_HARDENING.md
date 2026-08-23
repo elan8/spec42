@@ -44,8 +44,6 @@ Carried over from wave 2 reports:
 - 74 facade names still carry `SymbolIdentity` / `Box<str>` / `Box<[T]>`; they become movable to
   `sysml_contract` as a side effect of wave 3's `SymbolId` and view conversions. 9 never move
   (8 `spec42_constraint_manifest` *Kind re-exports, `DiagnosticCode`).
-- `index/types.rs::SpecializationScope` is a distinct internal bitset enum sharing the contract
-  enum's name; rename it (`ScopeBits`) when the index is next touched.
 - Library-search item `kind` stays in the host until per-root source kinds reach the LSP (C D13).
 - Flaky under load: `parsed_and_text_admission_publish_the_same_identity_over_the_examples` (5 ms
   wall clock), `lsp_same_file_homonym_references_are_disambiguated_by_position` (50 ms retry loop),
@@ -57,3 +55,16 @@ Carried over from wave 2 reports:
 - D items 5, 7: borrowed accessors and `impl Iterator` on facade products (touches every host once).
 - C commits 8–12: validation path → `workspace`; `server` via `workspace`; `lsp_server` drops `workspace`; dependency sets pinned in `architecture.rs`.
 - D item 8: per-document incremental reuse for workspace documents (needs cold/warm parity tests).
+
+## After wave 3 — measured, not yet scheduled
+
+- **Warm relink is 95% resolution, not lowering.** With per-document lowering reuse landed, a
+  one-line edit on the 94-document standard library measures parse ≈ 13 µs, lowering ≈ 2.7 ms,
+  resolution + implied relationships + evaluation + index + diagnostics ≈ 61 ms — all of which run
+  over the whole workspace because they read cross-document facts. The next latency win is an
+  incremental or document-local phase 3+; that is a design item, not a tuning item.
+- `AuthoredExpression.node` still clones a parser subtree; needs a stable node id upstream.
+- `LineIndex::range` cannot reject a span inside a UTF-8 code point (no text); parser spans are
+  boundary-valid today. Add a debug assertion at the barrier if the parser ever changes.
+- `concurrency_regressions.rs` still polls with `sleep(50ms)` around a superseded relink; needs a
+  decision on which publication the test asserts.
