@@ -2142,6 +2142,7 @@ dependencies = [
 name = "sysml_contract"
 version = "0.50.0"
 dependencies = [
+ "serde",
  "source_identity",
 ]
 

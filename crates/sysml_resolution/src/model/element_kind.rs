@@ -15,9 +15,7 @@
 //! The collapse table is pinned by a test, so a *new* collapse cannot appear by accident.
 
 use super::DeclarationKind;
-use crate::element_kind::{
-    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
-};
+use crate::{ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind};
 
 /// The published kind of a declaration.
 pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {

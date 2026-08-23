@@ -12,9 +12,19 @@
 #![forbid(unsafe_code)]
 
 mod diagnostic;
+mod element;
+mod element_kind;
 mod position;
 mod version;
 
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
+pub use element::{
+    AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
+    ElementSearch, ElementSource, FeatureDirection, MembershipFacts, MembershipKind,
+    MultiplicityBound, MultiplicityFacts, PortionKind, ValueKind, Visibility, VisibilityProvenance,
+};
+pub use element_kind::{
+    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
+};
 pub use position::{OccurrenceRole, TextPosition, TextRange};
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};

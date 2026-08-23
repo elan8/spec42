@@ -19,7 +19,6 @@ mod details;
 mod diagnose;
 mod diagnostics;
 mod diagram_query;
-mod element_kind;
 mod evaluate;
 mod evaluation;
 mod feature_query;
@@ -49,7 +48,10 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
-pub use sysml_contract::{OccurrenceRole, TextPosition, TextRange};
+pub use sysml_contract::{
+    ElementKind, ElementSearch, ElementSource, MembershipRole, OccurrenceRole,
+    RequirementConstraintKind, StateSubactionKind, TextPosition, TextRange,
+};
 
 pub use sysml_source as source;
 mod traceability;
@@ -80,9 +82,6 @@ pub use diagram_query::{
     DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
     DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
     DiagramViewProjection,
-};
-pub use element_kind::{
-    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,
@@ -150,25 +149,6 @@ pub use sysml_source::SourceKind;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AffectedDocument {
     pub identity: Box<str>,
-    pub source: ElementSource,
-}
-
-/// Which authored source domain an element search may observe.
-///
-/// This is deliberately provenance-based. Consumers must not infer library ownership from a
-/// document URI or qualified name.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ElementSource {
-    Workspace,
-    StandardLibrary,
-    Library,
-    External,
-}
-
-/// A typed, bounded search over declarations in one immutable publication.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct ElementSearch {
-    pub kind: ElementKind,
     pub source: ElementSource,
 }
 

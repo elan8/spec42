@@ -68,7 +68,13 @@ fn the_contract_crate_cannot_parse_serialise_or_await() {
         .lines()
         .map(str::trim)
         .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .map(|line| line.split('=').next().unwrap_or_default().trim().to_string())
+        .map(|line| {
+            line.split('=')
+                .next()
+                .unwrap_or_default()
+                .trim()
+                .to_string()
+        })
         .collect();
     assert!(
         declared.iter().all(|name| name == "serde"),
