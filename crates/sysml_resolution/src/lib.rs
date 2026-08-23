@@ -89,6 +89,8 @@ pub use evaluation::{
     EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
+pub use model::query::VisibleMemberRef;
+pub use model::query::VisibleMembers;
 pub use inspection::{
     AnnotationForm, AuthoredValue, DerivedElementOwner, Documentation,
     ElementDerivedDocumentationCollection, ElementInspection, ElementInspectionAt, ElementModifier,
@@ -286,20 +288,6 @@ pub enum RenameOutcome {
     Unsupported,
     Recovery,
     Incomplete,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct VisibleMember {
-    pub symbol: SymbolId,
-    pub name: Box<str>,
-    pub kind: ElementKind,
-    /// The role this member plays in its owner, where the OMG carries that on the owning
-    /// membership rather than on the element; `None` for an ordinary member.
-    pub role: Option<MembershipRole>,
-    pub qualified_name: Box<str>,
-    pub container_name: Option<Box<str>>,
-    pub declaring_document: Box<str>,
-    pub declaration_range: TextRange,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -782,7 +770,7 @@ impl PublishedResolution {
         document: &str,
         position: TextPosition,
         qualifier: Option<&str>,
-    ) -> QueryOutcome<Box<[VisibleMember]>> {
+    ) -> QueryOutcome<VisibleMembers<'_>> {
         self.model.visible_members(document, position, qualifier)
     }
 

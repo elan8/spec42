@@ -1,6 +1,10 @@
 //! Phase 9: the read-only query surface over a finished model.
 
-use crate::diagnose::declaration_qualified_name;
+mod visible;
+
+pub use visible::VisibleMemberRef;
+pub use visible::VisibleMembers;
+
 use crate::diagnose::document_range;
 use crate::diagnose::valid_identifier;
 use crate::index::bindings as binding;
@@ -116,7 +120,7 @@ use crate::SymbolId;
 use crate::SymbolToken;
 use crate::TextPosition;
 use crate::TextRange;
-use crate::VisibleMember;
+
 use source_identity::SourceRole;
 use spec42_constraint_manifest::ElementDerivedOwnerKind;
 use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
@@ -258,6 +262,32 @@ impl<D> SemanticModel<D> {
     /// needs to survive a rebuild takes `symbol_token` instead.
     pub(crate) fn symbol_id(&self, id: DeclarationId) -> Option<SymbolId> {
         SymbolId::from_index(self.identities.rank_of(id)?)
+    }
+
+    /// The authored name of one declaration, borrowed from the symbol blob.
+    pub(crate) fn authored_name(&self, id: DeclarationId) -> Option<&str> {
+        self.storage.symbol(self.storage.declaration(id)?.name?)
+    }
+
+    pub(crate) fn declaration_kind(&self, id: DeclarationId) -> Option<DeclarationKind> {
+        Some(self.storage.declaration(id)?.kind)
+    }
+
+    /// The authored name of the declaration's owner, borrowed from the symbol blob.
+    pub(crate) fn declaration_owner_name(&self, id: DeclarationId) -> Option<&str> {
+        let owner = self.storage.declaration(id)?.owner?;
+        self.authored_name(owner)
+    }
+
+    /// The identity of the document that declares this element.
+    pub(crate) fn declaration_document_identity(&self, id: DeclarationId) -> Option<&str> {
+        let declaration = self.storage.declaration(id)?;
+        Some(&self.storage.document(declaration.document)?.identity)
+    }
+
+    /// The settled range of the declaration's identifier.
+    pub(crate) fn declaration_identifier_range(&self, id: DeclarationId) -> Option<TextRange> {
+        self.documents.declaration_identifier(id)
     }
 
     /// The declaration a handle addresses, or `None` when it is not one of this publication's.
@@ -496,12 +526,122 @@ impl<D> SemanticModel<D> {
         }
     }
 
+    pub(crate) fn resolve_qualifier_scopes(
+        &self,
+        owner: Option<DeclarationId>,
+        qualifier: &str,
+    ) -> Result<Vec<DeclarationId>, ResolutionError> {
+        let Some(segments) = qualifier
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .map(|segment| self.storage.symbols.find(segment))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return Ok(Vec::new());
+        };
+        let Some(first) = segments.first().copied() else {
+            return Ok(Vec::new());
+        };
+        let mut candidates = Vec::new();
+        let mut work = ResolutionWork::default();
+        lookup_lexical_into(
+            &self.storage.declarations,
+            &ResolutionIndexes {
+                direct_names: &self.direct_names,
+                exported_names: &self.direct_names,
+                effective_imports: Some(&self.effective_imports),
+                exported_imports: Some(&self.effective_imports),
+                inherited_names: Some(&self.resolution.inherited_names),
+            },
+            owner,
+            first,
+            // An interactive lookup has no redefining feature to exclude.
+            LookupTarget {
+                domain: DeclarationDomain::Any,
+                excluded: None,
+            },
+            &mut candidates,
+            &mut work,
+        )?;
+        let mut next = Vec::new();
+        for segment in &segments[1..] {
+            next.clear();
+            for candidate in candidates.iter().copied() {
+                let direct = self.direct_names.candidates(Some(candidate), *segment);
+                if direct.is_empty() {
+                    next.extend_from_slice(
+                        self.effective_imports.candidates(Some(candidate), *segment),
+                    );
+                } else {
+                    next.extend_from_slice(direct);
+                }
+            }
+            next.sort_unstable();
+            next.dedup();
+            std::mem::swap(&mut candidates, &mut next);
+        }
+        Ok(candidates)
+    }
+
+    /// The documents whose diagnostics this publication derives, in canonical order.
+    ///
+    /// Every workspace-authored document, plus any admitted document the host explicitly named.
+    ///
+    /// The default is provenance: a workspace does not inherit its library's diagnostics, and
+    /// deriving every admitted document would make the barrier cost the whole library on every
+    /// rebuild. But provenance is not the same question as *authoring surface*: an editor with a
+    /// library file open is authoring it, and only the host knows that. Naming the document is how
+    /// it says so, and it is a build input rather than a query option because a diagnostic must be
+    /// settled before the publication is visible.
+    pub(crate) fn reported_document_indices(&self, reported: &[Box<str>]) -> Vec<usize> {
+        let mut indices = (0..self.storage.documents.len())
+            .filter(|index| {
+                let document = &self.storage.documents[*index];
+                document.role == source_identity::SourceRole::Workspace
+                    || reported
+                        .iter()
+                        .any(|identity| identity.as_ref() == document.identity.as_ref())
+            })
+            .collect::<Vec<_>>();
+        indices.sort_by(|left, right| {
+            self.storage.documents[*left]
+                .identity
+                .cmp(&self.storage.documents[*right].identity)
+                .then_with(|| left.cmp(right))
+        });
+        indices
+    }
+
+    /// Every declaration each admitted document authored, indexed by document.
+    ///
+    /// One pass over storage, so the diagnostic barrier costs the corpus once rather than once per
+    /// document per rule.
+    pub(crate) fn declarations_by_document(
+        &self,
+    ) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
+        let mut by_document = vec![Vec::new(); self.storage.documents.len()];
+        for index in 0..self.storage.declarations.len() {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let declaration = self
+                .storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            by_document
+                .get_mut(declaration.document.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(id);
+        }
+        Ok(by_document)
+    }
+}
+
+impl ResolvedSemanticModel {
     pub(crate) fn visible_members(
         &self,
         document: &str,
         position: TextPosition,
         qualifier: Option<&str>,
-    ) -> QueryOutcome<Box<[VisibleMember]>> {
+    ) -> QueryOutcome<VisibleMembers<'_>> {
         let recovered = matches!(
             self.metadata.completeness,
             PublicationCompleteness::ParseRecovery
@@ -564,152 +704,36 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    pub(crate) fn resolve_qualifier_scopes(
-        &self,
-        owner: Option<DeclarationId>,
-        qualifier: &str,
-    ) -> Result<Vec<DeclarationId>, ResolutionError> {
-        let Some(segments) = qualifier
-            .split("::")
-            .filter(|segment| !segment.is_empty())
-            .map(|segment| self.storage.symbols.find(segment))
-            .collect::<Option<Vec<_>>>()
-        else {
-            return Ok(Vec::new());
-        };
-        let Some(first) = segments.first().copied() else {
-            return Ok(Vec::new());
-        };
-        let mut candidates = Vec::new();
-        let mut work = ResolutionWork::default();
-        lookup_lexical_into(
-            &self.storage.declarations,
-            &ResolutionIndexes {
-                direct_names: &self.direct_names,
-                exported_names: &self.direct_names,
-                effective_imports: Some(&self.effective_imports),
-                exported_imports: Some(&self.effective_imports),
-                inherited_names: Some(&self.resolution.inherited_names),
-            },
-            owner,
-            first,
-            // An interactive lookup has no redefining feature to exclude.
-            LookupTarget {
-                domain: DeclarationDomain::Any,
-                excluded: None,
-            },
-            &mut candidates,
-            &mut work,
-        )?;
-        let mut next = Vec::new();
-        for segment in &segments[1..] {
-            next.clear();
-            for candidate in candidates.iter().copied() {
-                let direct = self.direct_names.candidates(Some(candidate), *segment);
-                if direct.is_empty() {
-                    next.extend_from_slice(
-                        self.effective_imports.candidates(Some(candidate), *segment),
-                    );
-                } else {
-                    next.extend_from_slice(direct);
-                }
-            }
-            next.sort_unstable();
-            next.dedup();
-            std::mem::swap(&mut candidates, &mut next);
-        }
-        Ok(candidates)
-    }
-
-    pub(crate) fn visible_member_records(&self, ids: &[DeclarationId]) -> Box<[VisibleMember]> {
+    /// The declarations a completion request can see, ordered and filtered once.
+    ///
+    /// Nothing is materialised: the result carries handles, and every string a caller reads is a
+    /// slice of a blob this publication already holds. The filter keeps exactly the declarations
+    /// whose facts are all settled, which is what makes [`VisibleMemberRef`]'s accessors total.
+    pub(crate) fn visible_member_records(&self, ids: &[DeclarationId]) -> VisibleMembers<'_> {
         let mut ids = ids.to_vec();
         ids.sort_unstable();
         ids.dedup();
-        let mut members = ids
-            .into_iter()
-            .filter_map(|id| {
-                let target = self.declaration_target(id)?;
-                let declaration = self.storage.declaration(id)?;
-                let qualified_name = declaration_qualified_name(&self.storage, id)?;
-                let container_name = declaration
-                    .owner
-                    .and_then(|owner| self.storage.declaration(owner)?.name)
-                    .and_then(|name| self.storage.symbol(name))
-                    .map(Into::into);
-                Some(VisibleMember {
-                    symbol: target.symbol,
-                    name: target.name,
-                    kind: element_kind::element_kind(declaration.kind),
-                    role: element_kind::membership_role(declaration.kind),
-                    qualified_name: qualified_name.into_boxed_str(),
-                    container_name,
-                    declaring_document: target.location.document,
-                    declaration_range: target.location.range,
+        ids.retain(|id| {
+            self.symbol_id(*id).is_some()
+                && self.authored_name(*id).is_some()
+                && self.declaration_document_identity(*id).is_some()
+                && self.declaration_identifier_range(*id).is_some()
+        });
+        ids.sort_by(|left, right| {
+            self.authored_name(*left)
+                .cmp(&self.authored_name(*right))
+                .then_with(|| {
+                    self.declaration_document_identity(*left)
+                        .cmp(&self.declaration_document_identity(*right))
                 })
-            })
-            .collect::<Vec<_>>();
-        members.sort_by(|a, b| {
-            a.name
-                .cmp(&b.name)
-                .then_with(|| a.declaring_document.cmp(&b.declaring_document))
-                .then_with(|| a.declaration_range.cmp(&b.declaration_range))
+                .then_with(|| {
+                    self.declaration_identifier_range(*left)
+                        .cmp(&self.declaration_identifier_range(*right))
+                })
         });
-        members.into_boxed_slice()
+        VisibleMembers::new(self, ids.into_boxed_slice())
     }
 
-    /// The documents whose diagnostics this publication derives, in canonical order.
-    ///
-    /// Every workspace-authored document, plus any admitted document the host explicitly named.
-    ///
-    /// The default is provenance: a workspace does not inherit its library's diagnostics, and
-    /// deriving every admitted document would make the barrier cost the whole library on every
-    /// rebuild. But provenance is not the same question as *authoring surface*: an editor with a
-    /// library file open is authoring it, and only the host knows that. Naming the document is how
-    /// it says so, and it is a build input rather than a query option because a diagnostic must be
-    /// settled before the publication is visible.
-    pub(crate) fn reported_document_indices(&self, reported: &[Box<str>]) -> Vec<usize> {
-        let mut indices = (0..self.storage.documents.len())
-            .filter(|index| {
-                let document = &self.storage.documents[*index];
-                document.role == source_identity::SourceRole::Workspace
-                    || reported
-                        .iter()
-                        .any(|identity| identity.as_ref() == document.identity.as_ref())
-            })
-            .collect::<Vec<_>>();
-        indices.sort_by(|left, right| {
-            self.storage.documents[*left]
-                .identity
-                .cmp(&self.storage.documents[*right].identity)
-                .then_with(|| left.cmp(right))
-        });
-        indices
-    }
-
-    /// Every declaration each admitted document authored, indexed by document.
-    ///
-    /// One pass over storage, so the diagnostic barrier costs the corpus once rather than once per
-    /// document per rule.
-    pub(crate) fn declarations_by_document(
-        &self,
-    ) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
-        let mut by_document = vec![Vec::new(); self.storage.documents.len()];
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let declaration = self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            by_document
-                .get_mut(declaration.document.index())
-                .ok_or(ResolutionError::InvalidStorage)?
-                .push(id);
-        }
-        Ok(by_document)
-    }
-}
-
-impl ResolvedSemanticModel {
     /// The diagnostics one document owns, as the settled slice rather than a filtered scan.
     ///
     /// A document this publication did not admit has no diagnostics, which is a different answer

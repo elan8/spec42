@@ -1119,7 +1119,7 @@ fn visible_members_keeps_ambiguous_qualifier_scopes_separate() {
     assert_eq!(candidates.len(), 2);
     let mut names = candidates
         .iter()
-        .flat_map(|members| members.iter().map(|member| member.name.as_ref()))
+        .flat_map(|members| members.iter().map(|member| member.name()))
         .collect::<Vec<_>>();
     names.sort_unstable();
     assert_eq!(names, ["A", "B"]);

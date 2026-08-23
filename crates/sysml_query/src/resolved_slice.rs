@@ -40,7 +40,7 @@ pub use sysml_resolution::{
     TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
     TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 /// Provenance of an admitted source; the one enum the source authority defines.
@@ -695,13 +695,17 @@ pub struct CompletionQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl CompletionQueries<'_> {
+impl<'a> CompletionQueries<'a> {
+    /// The members visible at a position, as a borrowed view over the publication.
+    ///
+    /// The view outlives this query handle: it borrows the publication, not the handle, so a
+    /// caller can read it after the `completion()` temporary is gone.
     pub fn visible_members(
         &self,
         document: &str,
         position: TextPosition,
         qualifier: Option<&str>,
-    ) -> QueryOutcome<Box<[VisibleMember]>> {
+    ) -> QueryOutcome<VisibleMembers<'a>> {
         self.model.visible_members(document, position, qualifier)
     }
 }
@@ -1261,7 +1265,7 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
 
 fn write_members_outcome(
     output: &mut dyn fmt::Write,
-    outcome: &QueryOutcome<Box<[VisibleMember]>>,
+    outcome: &QueryOutcome<VisibleMembers<'_>>,
 ) -> fmt::Result {
     write!(output, "    (visible-members ")?;
     match outcome {
@@ -1273,11 +1277,11 @@ fn write_members_outcome(
                 write!(
                     output,
                     " (member (name {:?}) (qualified-name {:?}) (kind {:?})",
-                    value.name,
-                    value.qualified_name,
-                    value.kind.as_str()
+                    value.name(),
+                    value.qualified_name(),
+                    value.kind().as_str()
                 )?;
-                if let Some(role) = value.role {
+                if let Some(role) = value.role() {
                     write!(output, " (role {:?})", role.as_str())?;
                 }
                 write!(output, ")")?;

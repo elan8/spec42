@@ -8,7 +8,6 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;
-use crate::model::DeclarationId;
 use crate::model::DocumentId;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
@@ -462,21 +461,3 @@ pub(crate) fn valid_identifier(value: &str) -> bool {
         && characters.all(identifier_character)
 }
 
-pub(crate) fn declaration_qualified_name(
-    storage: &SemanticModelStorage,
-    mut declaration: DeclarationId,
-) -> Option<String> {
-    let mut names = Vec::new();
-    loop {
-        let value = storage.declaration(declaration)?;
-        if let Some(name) = value.name.and_then(|name| storage.symbol(name)) {
-            names.push(name);
-        }
-        let Some(owner) = value.owner else {
-            break;
-        };
-        declaration = owner;
-    }
-    names.reverse();
-    Some(names.join("::"))
-}

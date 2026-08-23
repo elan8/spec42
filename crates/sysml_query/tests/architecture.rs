@@ -638,9 +638,6 @@ const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
     "SyntaxOutlineNode::name",
     "SyntaxToken::text",
     "SyntaxUnitLiteral::unit",
-    "VisibleMember::declaring_document",
-    "VisibleMember::name",
-    "VisibleMember::qualified_name",
 ];
 
 /// The count is asserted separately from the membership so a swap -- one field drained and another
