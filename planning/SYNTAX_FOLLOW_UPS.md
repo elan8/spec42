@@ -42,7 +42,7 @@ Retires: `find_reference_ranges` in `crates/language_service/src/symbol.rs` (com
 stop matching); `word_at_position` and the unit-suffix detector in
 `crates/language_service/src/text.rs`; the `"recovered_"` code-prefix test in
 `crates/lsp_server/src/analysis/diagnostics_postprocess.rs`; `recover_short_name_search_symbols`
-in `crates/lsp_server/src/workspace/library_search.rs` once outline `short_name` exists.
+in `crates/lsp_server/src/session/library_search.rs` once outline `short_name` exists.
 `crates/language_service/src/completion.rs` keeps its line-prefix shape detection as presentation
 over text the grammar has not accepted, with keyword tables sourced from the service; a
 grammar-driven `completion_context_at(position)` is a later query.

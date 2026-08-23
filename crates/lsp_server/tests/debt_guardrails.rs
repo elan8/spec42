@@ -96,7 +96,7 @@ fn lsp_workspace_does_not_own_semantic_build_or_library_cache() {
 #[test]
 fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
-    let state = fs::read_to_string(root.join("workspace/state.rs")).expect("workspace state");
+    let state = fs::read_to_string(root.join("session/state.rs")).expect("workspace state");
     assert!(
         !state.contains("recover_short_name_search_symbols"),
         "the committed symbol table must contain only exact PublishedModel query results"
@@ -208,7 +208,7 @@ fn library_closure_never_runs_on_the_edit_path() {
     for file in [
         "lsp_runtime/documents/sync.rs",
         "lsp_runtime/documents/mod.rs",
-        "workspace/handle.rs",
+        "session/handle.rs",
     ] {
         let source = std::fs::read_to_string(src.join(file)).expect("read source");
         for forbidden in [".library.resolve(", "load_library_closure_documents("] {

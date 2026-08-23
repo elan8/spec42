@@ -19,7 +19,7 @@ use workspace::{
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::state::{IndexEntry, ServerState};
+use crate::session::state::{IndexEntry, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use super::report::{build_advice, summarize};

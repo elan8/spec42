@@ -5,7 +5,7 @@ use tower_lsp::lsp_types::*;
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::word_at_position;
-use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
+use crate::session::{snapshot::ServerStateSnapshot, ServerState};
 
 use crate::lsp_runtime::navigation;
 use crate::lsp_runtime::references_resolver;

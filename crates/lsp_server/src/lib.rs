@@ -12,10 +12,10 @@ pub mod language;
 mod lsp_runtime;
 
 pub mod semantic_tokens;
+pub(crate) mod session;
 pub mod syntax;
 pub mod validation;
 pub mod views;
-pub(crate) mod workspace;
 
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{

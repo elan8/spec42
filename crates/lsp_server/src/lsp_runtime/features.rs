@@ -12,7 +12,7 @@ use tracing::info;
 use crate::common::util;
 use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
-use crate::workspace::ServerState;
+use crate::session::ServerState;
 
 use super::{hierarchy, symbols};
 

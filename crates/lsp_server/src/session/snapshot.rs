@@ -5,7 +5,7 @@ use tower_lsp::lsp_types::Url;
 use crate::common::text_span::to_core_range;
 use crate::common::util;
 use crate::language::SymbolEntry;
-use crate::workspace::ServerState;
+use crate::session::ServerState;
 
 /// Adapter that exposes LSP [`ServerState`] through the neutral [`WorkspaceSnapshot`] trait.
 pub(crate) struct ServerStateSnapshot<'a> {
@@ -100,6 +100,6 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn supports_semantic_queries(&self) -> bool {
-        crate::workspace::state::supports_semantic_queries(self.state.session.lifecycle())
+        crate::session::state::supports_semantic_queries(self.state.session.lifecycle())
     }
 }

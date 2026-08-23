@@ -12,8 +12,8 @@ use crate::language::{
     suggest_qualify_ambiguous_name_quick_fixes, suggest_search_library_for_symbol_quick_fix,
     suggest_show_standard_library_info_quick_fix, suggest_wrap_in_package,
 };
-use crate::workspace::snapshot::ServerStateSnapshot;
-use crate::workspace::ServerState;
+use crate::session::snapshot::ServerStateSnapshot;
+use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
 
 fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {

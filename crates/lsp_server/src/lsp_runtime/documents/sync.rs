@@ -136,9 +136,7 @@ pub(crate) async fn did_change(
         let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
         let parse_start = Instant::now();
         let parse_outcome = tokio::task::spawn_blocking(move || {
-            crate::workspace::handle::PreparedDocumentEdit::admit_text(
-                admit_uri, &content, &services,
-            )
+            crate::session::handle::PreparedDocumentEdit::admit_text(admit_uri, &content, &services)
         })
         .await;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;

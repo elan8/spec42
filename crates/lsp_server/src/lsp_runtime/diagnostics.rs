@@ -10,8 +10,8 @@ use crate::common::util;
 use sysml_query::publication::PublicationToken;
 use sysml_query::resolved_slice::PublishedModel;
 
-use crate::workspace::state::supports_semantic_queries;
-use crate::workspace::{RuntimeConfig, WorkspaceHandle};
+use crate::session::state::supports_semantic_queries;
+use crate::session::{RuntimeConfig, WorkspaceHandle};
 
 fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
     runtime_config
@@ -241,7 +241,7 @@ mod tests {
     /// later mutation cannot retroactively change.
     #[tokio::test]
     async fn captured_snapshot_is_immune_to_a_concurrent_relink_landing_afterward() {
-        let handle = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        let handle = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
         handle
             .complete_startup()
             .await
@@ -281,7 +281,7 @@ mod tests {
     /// current. This exercises that check, so removing it fails here.
     #[tokio::test]
     async fn diagnostics_for_a_superseded_publication_are_not_published() {
-        let handle = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        let handle = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
         handle
             .complete_startup()
             .await
@@ -311,8 +311,8 @@ mod tests {
     /// the owner in the token, a stale result from one workspace could publish into another.
     #[tokio::test]
     async fn diagnostics_from_another_session_are_never_published() {
-        let first = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
-        let second = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        let first = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
+        let second = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
         let foreign = first.snapshot().session.publication();
 
         assert!(!may_publish(&second, foreign));

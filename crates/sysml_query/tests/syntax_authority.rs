@@ -124,7 +124,7 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
-        path: "crates/lsp_server/src/workspace/library_search.rs",
+        path: "crates/lsp_server/src/session/library_search.rs",
         reason: "short-name recovery for search-only documents awaiting outline short names (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
         must_contain: None,
     },
@@ -213,9 +213,9 @@ const EXEMPTIONS: &[Exemption] = &[
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,
 /// which are `Arc`s into the syntax memo rather than a cache.
 const PARSED_TREE_FIELD_ALLOWLIST: &[(&str, &str)] = &[
-    ("crates/lsp_server/src/workspace/state.rs", "IndexEntry"),
+    ("crates/lsp_server/src/session/state.rs", "IndexEntry"),
     (
-        "crates/lsp_server/src/workspace/services.rs",
+        "crates/lsp_server/src/session/services.rs",
         "ParsedScanEntry",
     ),
 ];

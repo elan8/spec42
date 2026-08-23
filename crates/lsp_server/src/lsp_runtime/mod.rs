@@ -19,9 +19,9 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
+use crate::session::state::ServerState;
+use crate::session::{RuntimeConfig, WorkspaceHandle};
 use crate::views::dto;
-use crate::workspace::state::ServerState;
-use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };

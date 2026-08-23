@@ -55,7 +55,7 @@ pub(crate) struct RuntimeConfig {
 }
 
 /// The server's live workspace state — managed exclusively by a single
-/// `session_actor::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
+/// `session_actor::SessionActor<ServerState>` (see `crate::session::WorkspaceHandle`).
 /// `Clone` is required by the actor's `Arc::make_mut` clone-on-write mutation strategy; readers
 /// only ever see an `Arc<ServerState>` snapshot, never a lock guard.
 #[derive(Clone)]

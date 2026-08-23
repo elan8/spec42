@@ -1,7 +1,7 @@
+use crate::session::state::DocumentStore;
+use crate::session::ServerState;
 use crate::views::dto;
 use crate::views::dto::range_to_dto;
-use crate::workspace::state::DocumentStore;
-use crate::workspace::ServerState;
 use std::time::Instant;
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 use tower_lsp::jsonrpc::Result;
@@ -130,14 +130,12 @@ pub(crate) fn sysml_library_search_result(
         // documents are represented exclusively by the committed publication query.
         if !index_entry.admitted_to_publication {
             search_symbols.extend(
-                crate::workspace::library_search::recover_short_name_search_symbols(
+                crate::session::library_search::recover_short_name_search_symbols(
                     index_entry.content(),
                     uri,
                 )
                 .into_iter()
-                .map(
-                    crate::workspace::library_search::RecoverySearchSymbol::into_search_only_symbol,
-                ),
+                .map(crate::session::library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }
@@ -151,7 +149,7 @@ pub(crate) fn sysml_library_search_result(
             let score = if query.is_empty() {
                 1_000
             } else {
-                crate::workspace::library_search::library_search_score(&entry.name, &query)?
+                crate::session::library_search::library_search_score(&entry.name, &query)?
             };
             Some((score, entry))
         })
@@ -176,25 +174,25 @@ pub(crate) fn sysml_library_search_result(
 
     let total = ranked.len();
     let effective_limit = if query.is_empty() { total } else { limit };
-    let items: Vec<crate::workspace::library_search::LibrarySearchItem> = ranked
+    let items: Vec<crate::session::library_search::LibrarySearchItem> = ranked
         .into_iter()
         .take(effective_limit)
         .map(
-            |(score, entry)| crate::workspace::library_search::LibrarySearchItem {
+            |(score, entry)| crate::session::library_search::LibrarySearchItem {
                 name: entry.name.clone(),
-                kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
+                kind: crate::session::library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
                 range: entry.range,
                 score,
-                source: crate::workspace::library_search::library_source_label(&entry.uri)
+                source: crate::session::library_search::library_source_label(&entry.uri)
                     .to_string(),
                 path: entry.uri.path().to_string(),
             },
         )
         .collect();
 
-    let domain_sources = crate::workspace::library_search::build_library_tree(items);
+    let domain_sources = crate::session::library_search::build_library_tree(items);
     let sources = crate::views::library_search_adapter::to_dto_sources(domain_sources);
     let symbol_total = sources
         .iter()

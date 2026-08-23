@@ -21,8 +21,8 @@ use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 use crate::language::SymbolEntry;
-use crate::workspace::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
-use crate::workspace::state::{IndexEntry, ServerState};
+use crate::session::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
+use crate::session::state::{IndexEntry, ServerState};
 
 /// Outcome of `commit_startup_relink_or_stale`: whether the staged relink was committed, or
 /// whether it was superseded by a newer edit while it was being built (caller should retry).
@@ -35,7 +35,7 @@ pub(crate) enum StartupRelinkOutcome {
 #[cfg(test)]
 mod publication_tests {
     use super::*;
-    use crate::workspace::state::IndexEntry;
+    use crate::session::state::IndexEntry;
 
     fn entry(uri: &Url, content: &str) -> IndexEntry {
         IndexEntry::for_test(uri, content)
@@ -169,7 +169,7 @@ impl WorkspaceHandle {
     pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
         let state = self.snapshot();
         let expected_revision = state.semantic_revision;
-        let (documents, reported) = crate::workspace::state::publication_inputs(state.as_ref());
+        let (documents, reported) = crate::session::state::publication_inputs(state.as_ref());
         let publication = state.services.publication.clone();
         let prepared = match publication.prepare(&documents, reported) {
             Ok(prepared) => prepared,
@@ -206,7 +206,7 @@ impl WorkspaceHandle {
                 state.publication_failure = failure;
                 match outcome {
                     PublicationOutcome::Published => {
-                        crate::workspace::state::refresh_symbol_table_from_publication(state);
+                        crate::session::state::refresh_symbol_table_from_publication(state);
                         state
                             .services
                             .syntax
@@ -257,7 +257,7 @@ impl WorkspaceHandle {
         self.actor
             .mutate(move |s| {
                 let results =
-                    crate::workspace::services::ingest_parsed_scan_entries_batch(s, entries);
+                    crate::session::services::ingest_parsed_scan_entries_batch(s, entries);
                 s.session.bump_version();
                 results
             })
@@ -313,7 +313,7 @@ impl WorkspaceHandle {
         let metrics = self
             .actor
             .mutate(|s| {
-                let metrics = crate::workspace::services::rebuild_all_document_links(s);
+                let metrics = crate::session::services::rebuild_all_document_links(s);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.session.bump_version();
                 metrics
@@ -330,7 +330,7 @@ impl WorkspaceHandle {
         self.actor
             .mutate_if_changed(move |s| {
                 let indexed =
-                    crate::workspace::services::index_library_paths_for_search(s, &library_paths);
+                    crate::session::services::index_library_paths_for_search(s, &library_paths);
                 if indexed == 0 {
                     Mutation::Unchanged(0)
                 } else {
@@ -404,7 +404,7 @@ impl WorkspaceHandle {
                 {
                     return Mutation::Unchanged((None, None));
                 }
-                let warning = crate::workspace::services::store_document_text_fast(s, &uri, text);
+                let warning = crate::session::services::store_document_text_fast(s, &uri, text);
                 let can_relink = matches!(
                     s.session.lifecycle(),
                     SessionLifecycle::Ready | SessionLifecycle::Reindexing
@@ -435,12 +435,8 @@ impl WorkspaceHandle {
             ));
         };
         let base_content = entry.content().to_owned();
-        let (content, changed, warnings) = crate::workspace::services::apply_content_changes(
-            &base_content,
-            &uri,
-            version,
-            changes,
-        );
+        let (content, changed, warnings) =
+            crate::session::services::apply_content_changes(&base_content, &uri, version, changes);
         Ok((
             changed.then_some(PreparedDocumentEdit {
                 uri,
@@ -466,7 +462,7 @@ impl WorkspaceHandle {
                 {
                     return Mutation::Unchanged((None, Vec::new()));
                 }
-                let warnings = crate::workspace::services::apply_parsed_document_update(
+                let warnings = crate::session::services::apply_parsed_document_update(
                     s,
                     &edit.uri,
                     edit.version,
@@ -556,7 +552,7 @@ impl WorkspaceHandle {
                 {
                     return Mutation::Unchanged(None);
                 }
-                let warning = crate::workspace::services::refresh_document(s, &uri, content);
+                let warning = crate::session::services::refresh_document(s, &uri, content);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.session.bump_version();
                 Mutation::Changed(warning)
@@ -575,7 +571,7 @@ impl WorkspaceHandle {
                 if !s.index.contains_key(&uri) {
                     return Mutation::Unchanged(());
                 }
-                crate::workspace::services::remove_document(s, &uri);
+                crate::session::services::remove_document(s, &uri);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.session.bump_version();
                 Mutation::Changed(())
@@ -600,7 +596,7 @@ impl WorkspaceHandle {
                     s.library_paths = old;
                     Mutation::Unchanged(false)
                 } else {
-                    let _ = crate::workspace::services::clear_documents_under_roots(s, &old);
+                    let _ = crate::session::services::clear_documents_under_roots(s, &old);
                     s.library_paths = new_library_paths.clone();
                     s.session.begin_library_reindex();
                     Mutation::Changed(true)
@@ -618,8 +614,8 @@ impl WorkspaceHandle {
             .actor
             .mutate(move |s| {
                 let ingest_results =
-                    crate::workspace::services::ingest_parsed_scan_entries(s, entries);
-                let relink_metrics = crate::workspace::services::rebuild_all_document_links(s);
+                    crate::session::services::ingest_parsed_scan_entries(s, entries);
+                let relink_metrics = crate::session::services::rebuild_all_document_links(s);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.session.complete_reindex();
                 (ingest_results, relink_metrics)
