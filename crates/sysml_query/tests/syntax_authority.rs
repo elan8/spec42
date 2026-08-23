@@ -56,6 +56,9 @@ const RETIRED_NAMES: &[&str] = &[
     "word_at_position",
     "unit_value_suffix_at_position",
     "unit_value_suffix_selection_at_position",
+    // An element identity is a `SymbolId` handle now; the string encoding is `SymbolToken` and
+    // exists only where one has to cross a boundary.
+    "SymbolIdentity",
 ];
 
 /// Files that may work on SysML text, each with the reason and (where one exists) a predicate

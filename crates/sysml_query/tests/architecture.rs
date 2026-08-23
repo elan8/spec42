@@ -600,19 +600,162 @@ fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
     assert!(violations.is_empty(), "{}", violations.join("\n"));
 }
 
-fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
-    let mut files = Vec::new();
-    rust_sources(source_root, &mut files);
+/// The published vocabulary's remaining owned strings, named one by one.
+///
+/// The facade rule is identities, enums and borrowed views -- never owned storage -- and an owned
+/// `String` or `Box<str>` field is owned storage. Every one of these is allocated per element of
+/// every result that carries the struct, and every one duplicates bytes the publication already
+/// holds; a consumer that only wanted to compare, sort or index two elements pays for a copy it
+/// never reads. Element identities have already left the list: a handle is a `SymbolId` and the
+/// string encoding materialises through `symbol_token` only where one crosses a boundary.
+///
+/// The list is an inventory of what is left to do, not a set of allowances. It may only shrink:
+/// adding a name requires deleting this comment's claim, and the borrowed-views work drains it.
+const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
+    "AffectedDocument::identity",
+    "AuthoredUnit::authored",
+    "Diagnostic::message",
+    "DiagnosticLocation::document",
+    "DiagramEdge::semantic_id",
+    "DiagramRelationship::kind",
+    "DiagramRelationship::semantic_id",
+    "DiagramStateTransition::semantic_id",
+    "DiagramStateVertex::label",
+    "DiagramViewCatalogEntry::name",
+    "Documentation::text",
+    "EditorProbe::document",
+    "ElementInspection::qualified_name",
+    "NavigationTarget::name",
+    "PackageTargets::qualified_name",
+    "QualifiedElementReference::qualified_name",
+    "QualifiedReferenceProbe::qualified_name",
+    "QualifiedReferenceTarget::qualified_name",
+    "RelatedLocation::message",
+    "SourceLocation::document",
+    "SymbolEntry::qualified_name",
+    "SyntaxDiagnostic::message",
+    "SyntaxImport::target",
+    "SyntaxOutlineNode::name",
+    "SyntaxToken::text",
+    "SyntaxUnitLiteral::unit",
+    "VisibleMember::declaring_document",
+    "VisibleMember::name",
+    "VisibleMember::qualified_name",
+];
+
+/// The count is asserted separately from the membership so a swap -- one field drained and another
+/// added in the same change -- cannot pass as a no-op.
+#[test]
+fn the_published_vocabulary_grows_no_new_owned_string_fields() {
+    let root = repository_root();
     let mut violations = Vec::new();
+    let mut owned = BTreeSet::new();
+    visit_public_api(
+        &root.join("crates/sysml_query/src"),
+        &mut violations,
+        &mut owned,
+    );
+    visit_public_api(
+        &root.join("crates/sysml_contract/src"),
+        &mut violations,
+        &mut owned,
+    );
+    // The facade re-exports the publication's result types verbatim, so a field of one of those
+    // is a facade field wherever the struct happens to be declared. Scanning only the two facade
+    // trees would let the inventory hide behind a `pub use`.
+    let published = facade_reexported_names(&root.join("crates/sysml_query/src"));
+    let mut republished = BTreeSet::new();
+    visit_public_api(
+        &root.join("crates/sysml_resolution/src"),
+        &mut Vec::new(),
+        &mut republished,
+    );
+    owned.extend(republished.into_iter().filter(|entry| {
+        entry
+            .split_once("::")
+            .is_some_and(|(container, _)| published.contains(container))
+    }));
+    let allowed: BTreeSet<String> = FACADE_OWNED_STRING_FIELDS
+        .iter()
+        .map(|name| (*name).to_owned())
+        .collect();
+    let added: Vec<&String> = owned.difference(&allowed).collect();
+    assert!(
+        added.is_empty(),
+        "a published struct grew an owned string field; carry a handle or a borrowed view \
+         instead, or add the field to FACADE_OWNED_STRING_FIELDS with the reason it cannot:\n{added:#?}"
+    );
+    let drained: Vec<&String> = allowed.difference(&owned).collect();
+    assert!(
+        drained.is_empty(),
+        "these owned string fields are gone; delete them from FACADE_OWNED_STRING_FIELDS so the \
+         list keeps counting what is actually left:\n{drained:#?}"
+    );
+    assert_eq!(
+        owned.len(),
+        FACADE_OWNED_STRING_FIELDS.len(),
+        "the owned-string inventory changed size"
+    );
+}
+
+/// Every type name the facade re-exports from the authority or the contract crate.
+fn facade_reexported_names(facade_root: &Path) -> BTreeSet<String> {
+    let mut files = Vec::new();
+    rust_sources(facade_root, &mut files);
+    let mut names = BTreeSet::new();
     for file in files {
         let source = fs::read_to_string(&file).expect("read Rust source");
         let syntax = syn::parse_file(&source).expect("parse Rust source");
-        PublicApiVisitor {
-            file: &file,
-            violations: &mut violations,
+        for item in syntax.items {
+            let Item::Use(item_use) = item else {
+                continue;
+            };
+            if !is_public(&item_use.vis) {
+                continue;
+            }
+            let root = use_root(&item_use.tree);
+            if root.as_deref() != Some("sysml_resolution") && root.as_deref() != Some("sysml_contract")
+            {
+                continue;
+            }
+            use_identifiers(&item_use.tree, &mut names);
         }
-        .visit_file(&syntax);
     }
+    names
+}
+
+/// `String` and `Box<str>` exactly -- not a `String` inside an `Option`, a `Vec` or a map, which
+/// are their own storage questions, and not a borrowed `&str`, which is what the rule asks for.
+fn is_owned_string(ty: &Type) -> bool {
+    let Type::Path(path) = ty else {
+        return false;
+    };
+    if path.qself.is_some() {
+        return false;
+    }
+    let Some(segment) = path.path.segments.last() else {
+        return false;
+    };
+    match segment.ident.to_string().as_str() {
+        "String" => matches!(segment.arguments, syn::PathArguments::None),
+        "Box" => {
+            let syn::PathArguments::AngleBracketed(arguments) = &segment.arguments else {
+                return false;
+            };
+            matches!(
+                arguments.args.first(),
+                Some(syn::GenericArgument::Type(Type::Path(inner)))
+                    if inner.path.is_ident("str")
+            )
+        }
+        _ => false,
+    }
+}
+
+fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
+    let mut violations = Vec::new();
+    let mut owned_strings = BTreeSet::new();
+    visit_public_api(source_root, &mut violations, &mut owned_strings);
     assert!(
         violations.is_empty(),
         "{} exposes forbidden implementation types:\n{}",
@@ -621,9 +764,32 @@ fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
     );
 }
 
+/// Walks one crate's sources with the public-API visitor, collecting both the forbidden-type
+/// violations and the inventory of owned-string fields the published structs still carry.
+fn visit_public_api(
+    source_root: &Path,
+    violations: &mut Vec<String>,
+    owned_strings: &mut BTreeSet<String>,
+) {
+    let mut files = Vec::new();
+    rust_sources(source_root, &mut files);
+    for file in files {
+        let source = fs::read_to_string(&file).expect("read Rust source");
+        let syntax = syn::parse_file(&source).expect("parse Rust source");
+        PublicApiVisitor {
+            file: &file,
+            violations,
+            owned_strings,
+        }
+        .visit_file(&syntax);
+    }
+}
+
 struct PublicApiVisitor<'a> {
     file: &'a Path,
     violations: &'a mut Vec<String>,
+    /// `Struct::field` for every public struct field typed exactly `String` or `Box<str>`.
+    owned_strings: &'a mut BTreeSet<String>,
 }
 
 impl PublicApiVisitor<'_> {
@@ -643,6 +809,24 @@ impl PublicApiVisitor<'_> {
             if containing_public && (is_public(&field.vis) || matches!(fields, Fields::Unnamed(_)))
             {
                 self.check_type(&field.ty, context);
+            }
+        }
+    }
+
+    /// Records every public field of a published struct whose type is an owned string.
+    ///
+    /// The facade rule is identities, enums and borrowed views -- never owned storage. An owned
+    /// `String` in a published struct is storage: it is allocated per element of every result and
+    /// duplicates a byte sequence the publication already holds, so a consumer that only wanted to
+    /// compare or index pays for a copy it never reads. Each one left is an inventory item, not an
+    /// allowance.
+    fn record_owned_string_fields(&mut self, fields: &Fields, container: &str) {
+        for field in fields {
+            let Some(ident) = field.ident.as_ref() else {
+                continue;
+            };
+            if is_public(&field.vis) && is_owned_string(&field.ty) {
+                self.owned_strings.insert(format!("{container}::{ident}"));
             }
         }
     }
@@ -672,6 +856,9 @@ impl<'ast> Visit<'ast> for PublicApiVisitor<'_> {
 
     fn visit_item_struct(&mut self, item: &'ast syn::ItemStruct) {
         self.check_fields(&item.fields, &item.ident.to_string(), is_public(&item.vis));
+        if is_public(&item.vis) {
+            self.record_owned_string_fields(&item.fields, &item.ident.to_string());
+        }
         visit::visit_item_struct(self, item);
     }
 
