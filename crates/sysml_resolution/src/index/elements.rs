@@ -29,7 +29,7 @@ use crate::EvaluationState;
 use crate::OccurrenceRole;
 use crate::QueryOutcome;
 use crate::SourceLocation;
-use crate::SymbolIdentity;
+use crate::SymbolId;
 use crate::TextPosition;
 use source_identity::SourceRole;
 
@@ -102,6 +102,14 @@ pub(crate) fn ranges_by_declaration(
         start += count;
     }
     ranges.into_boxed_slice()
+}
+
+/// What makes one effective feature shadow another: the authored name, or -- for an anonymous
+/// member, which no name can shadow -- the member's own handle.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+enum ShadowKey {
+    Named(Box<str>),
+    Anonymous(SymbolId),
 }
 
 impl ElementFactIndex {
@@ -255,34 +263,15 @@ pub(crate) fn slice_range<'a, T>(
 }
 
 impl<D> SemanticModel<D> {
-    /// The `::`-joined owner path of a declaration.
+    /// The `::`-joined owner path of a declaration, borrowed from the settled blob.
     ///
-    /// A display convenience, not an identity: an anonymous ancestor contributes no segment, so
-    /// two elements can share a qualified name. `symbol_identity` is the identity.
-    pub(crate) fn qualified_name(&self, id: DeclarationId) -> String {
-        let mut chain = vec![id];
-        let mut cursor = self.storage.declaration(id).and_then(|node| node.owner);
-        while let Some(current) = cursor {
-            if chain.len() > self.storage.declarations.len() {
-                break;
-            }
-            chain.push(current);
-            cursor = self
-                .storage
-                .declaration(current)
-                .and_then(|node| node.owner);
-        }
-        let mut segments = Vec::new();
-        for current in chain.iter().rev() {
-            let name = self
-                .storage
-                .declaration(*current)
-                .and_then(|node| node.name)
-                .and_then(|name| self.storage.symbol(name))
-                .unwrap_or_default();
-            segments.push(name);
-        }
-        segments.join("::")
+    /// A display convenience, not an identity: an anonymous ancestor contributes an empty
+    /// segment, so two elements can share a qualified name. `symbol_id` is the identity.
+    ///
+    /// The path is written once at the barrier by `QualifiedNameIndex`, so this is a slice, not
+    /// the owner-chain walk and `join` it used to be on every element of every result.
+    pub(crate) fn qualified_name(&self, id: DeclarationId) -> &str {
+        self.qualified_names.qualified_name(id).unwrap_or_default()
     }
 
     pub(crate) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
@@ -473,7 +462,7 @@ impl<D> SemanticModel<D> {
                 continue;
             };
             let target = match self.resolution.outcome(*reference_id) {
-                Some(ResolutionStatus::Resolved(target)) => match self.symbol_identity(target) {
+                Some(ResolutionStatus::Resolved(target)) => match self.symbol_id(target) {
                     Some(identity) => RelationshipTarget::Resolved(identity),
                     None => RelationshipTarget::Unresolved,
                 },
@@ -481,7 +470,7 @@ impl<D> SemanticModel<D> {
                     self.resolution
                         .ambiguous_candidates(candidates)
                         .iter()
-                        .filter_map(|candidate| self.symbol_identity(*candidate))
+                        .filter_map(|candidate| self.symbol_id(*candidate))
                         .collect(),
                 ),
                 Some(ResolutionStatus::Unsupported) => RelationshipTarget::Unsupported,
@@ -513,7 +502,7 @@ impl<D> SemanticModel<D> {
             if !accepts(implied.kind) {
                 continue;
             }
-            let Some(target) = self.symbol_identity(implied.target) else {
+            let Some(target) = self.symbol_id(implied.target) else {
                 continue;
             };
             relationships.push(ElementRelationship {
@@ -590,7 +579,7 @@ impl<D> SemanticModel<D> {
         let declaration = self.storage.declaration(id)?;
         let facts = self.storage.declaration_facts(id)?;
         Some(ElementInspection {
-            identity: self.symbol_identity(id)?,
+            identity: self.symbol_id(id)?,
             kind: element_kind::element_kind(declaration.kind),
             role: element_kind::membership_role_with_trigger(
                 declaration.kind,
@@ -614,7 +603,7 @@ impl<D> SemanticModel<D> {
             .ok()?,
             owner: declaration
                 .owner
-                .and_then(|owner| self.symbol_identity(owner)),
+                .and_then(|owner| self.symbol_id(owner)),
             membership: self.membership_facts(id)?,
             documentation: self.documentation(id),
             multiplicity: self.multiplicity(id),
@@ -634,16 +623,8 @@ impl<D> SemanticModel<D> {
         })
     }
 
-    pub(crate) fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
-        let mut candidates = self.identity_declarations(symbol);
-        if candidates.len() > 1 {
-            let inspections = candidates
-                .into_iter()
-                .filter_map(|id| self.inspection(id))
-                .collect::<Vec<_>>();
-            return QueryOutcome::Ambiguous(inspections.into_boxed_slice());
-        }
-        let Some(id) = candidates.pop() else {
+    pub(crate) fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
+        let Some(id) = self.declaration_of(symbol) else {
             return QueryOutcome::Unresolved;
         };
         match self.inspection(id) {
@@ -712,7 +693,7 @@ impl<D> SemanticModel<D> {
             .filter_map(|(range, id)| {
                 let declaration = self.storage.declaration(*id)?;
                 Some(SymbolEntry {
-                    identity: self.symbol_identity(*id)?,
+                    identity: self.symbol_id(*id)?,
                     kind: element_kind::element_kind(declaration.kind),
                     name: declaration
                         .name
@@ -721,7 +702,7 @@ impl<D> SemanticModel<D> {
                     qualified_name: self.qualified_name(*id).into(),
                     owner: declaration
                         .owner
-                        .and_then(|owner| self.symbol_identity(owner)),
+                        .and_then(|owner| self.symbol_id(owner)),
                     location: self.source_location(*id)?,
                     declaration_range: *range,
                 })
@@ -755,7 +736,7 @@ impl<D> SemanticModel<D> {
                 let id = DeclarationId::from_index(index).ok()?;
                 let location = self.source_location(id)?;
                 Some(SymbolEntry {
-                    identity: self.symbol_identity(id)?,
+                    identity: self.symbol_id(id)?,
                     kind: search.kind,
                     name: declaration
                         .name
@@ -764,7 +745,7 @@ impl<D> SemanticModel<D> {
                     qualified_name: self.qualified_name(id).into(),
                     owner: declaration
                         .owner
-                        .and_then(|owner| self.symbol_identity(owner)),
+                        .and_then(|owner| self.symbol_id(owner)),
                     declaration_range: location.range,
                     location,
                 })
@@ -782,7 +763,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn effective_features(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[SymbolEntry]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -797,11 +778,11 @@ impl<D> SemanticModel<D> {
             .iter()
             .map(|(target, _)| *target)
             .collect::<Vec<_>>();
-        direct_types.sort_by_key(|target| self.symbol_identity(*target));
+        direct_types.sort_by_key(|target| self.symbol_id(*target));
         queue.extend(direct_types);
 
         let mut visited = std::collections::BTreeSet::new();
-        let mut names = std::collections::BTreeSet::<Box<str>>::new();
+        let mut names = std::collections::BTreeSet::<ShadowKey>::new();
         let mut result = Vec::new();
         while let Some(owner) = queue.pop_front() {
             if !visited.insert(owner) {
@@ -828,10 +809,12 @@ impl<D> SemanticModel<D> {
                 let Some(entry) = self.symbol_entry(child) else {
                     continue;
                 };
-                let shadow_key = entry
-                    .name
-                    .clone()
-                    .unwrap_or_else(|| entry.identity.as_str().into());
+                // An anonymous member shadows nothing and is shadowed by nothing, so its key
+                // is its own handle rather than a materialised identity string.
+                let shadow_key = match entry.name.clone() {
+                    Some(name) => ShadowKey::Named(name),
+                    None => ShadowKey::Anonymous(entry.identity),
+                };
                 if names.insert(shadow_key) {
                     result.push(entry);
                 }
@@ -847,7 +830,7 @@ impl<D> SemanticModel<D> {
                 })
                 .map(|(target, _)| *target)
                 .collect::<Vec<_>>();
-            bases.sort_by_key(|target| self.symbol_identity(*target));
+            bases.sort_by_key(|target| self.symbol_id(*target));
             queue.extend(bases);
         }
         self.resolved_outcome(result.into_boxed_slice())
@@ -857,7 +840,7 @@ impl<D> SemanticModel<D> {
         let declaration = self.storage.declaration(id)?;
         let location = self.source_location(id)?;
         Some(SymbolEntry {
-            identity: self.symbol_identity(id)?,
+            identity: self.symbol_id(id)?,
             kind: element_kind::element_kind(declaration.kind),
             name: declaration
                 .name
@@ -866,7 +849,7 @@ impl<D> SemanticModel<D> {
             qualified_name: self.qualified_name(id).into(),
             owner: declaration
                 .owner
-                .and_then(|owner| self.symbol_identity(owner)),
+                .and_then(|owner| self.symbol_id(owner)),
             declaration_range: location.range,
             location,
         })

@@ -123,7 +123,7 @@ pub fn find_references_at_position(
     };
     let locations_outcome = model
         .navigation()
-        .references(&target.symbol, include_declaration);
+        .references(target.symbol, include_declaration);
     let locations = match locations_outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(locations)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(locations)

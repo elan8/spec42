@@ -529,7 +529,7 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
         .iter()
         .find(|view| view.kind == DiagramViewKind::General)
         .unwrap();
-    let projection = match published.diagram_view(&structure.semantic_id) {
+    let projection = match published.diagram_view(structure.semantic_id) {
         QueryOutcome::Resolved(projection) => projection,
         other => panic!("expected General View projection, got {other:?}"),
     };
@@ -549,7 +549,7 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
         .iter()
         .find(|view| view.kind == DiagramViewKind::StateTransition)
         .unwrap();
-    let projection = match published.diagram_view(&behavior.semantic_id) {
+    let projection = match published.diagram_view(behavior.semantic_id) {
         QueryOutcome::Resolved(projection) => projection,
         other => panic!("expected State Transition projection, got {other:?}"),
     };
@@ -928,12 +928,12 @@ fn a_cyclic_hierarchy_yields_no_conformance_answer() {
     let c = symbol_named(&published, "memory://types.sysml", "P::C");
 
     assert_eq!(
-        conformance(published.conforms_to(&a, &c, SpecializationScope::AnySpecialization)),
+        conformance(published.conforms_to(a, c, SpecializationScope::AnySpecialization)),
         Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization),
         "a malformed hierarchy must not produce a published conformance fact"
     );
     assert_eq!(
-        conformance(published.conforms_to(&a, &a, SpecializationScope::AnySpecialization)),
+        conformance(published.conforms_to(a, a, SpecializationScope::AnySpecialization)),
         Conformance::Conforms,
         "reflexivity holds even inside a cycle"
     );
@@ -949,7 +949,7 @@ fn feature_typing_conformance_rejects_an_unrelated_type() {
     let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
 
     assert_eq!(
-        conformance(published.feature_typing_conforms(&specific, &general)),
+        conformance(published.feature_typing_conforms(specific, general)),
         Conformance::DoesNotConform,
         "U neither is nor specializes T"
     );
@@ -974,12 +974,12 @@ fn view_selection_keeps_unresolved_and_unsupported_predicates_explicit() {
     let candidate = identity_of(&published, document, "P::candidate");
     let unresolved = identity_of(&published, document, "P::unresolved");
     assert_eq!(
-        settled(published.view_selection(&unresolved, &candidate)).outcome,
+        settled(published.view_selection(unresolved, candidate)).outcome,
         ViewSelectionOutcome::Indeterminate(Box::new([ViewSelectionObstacle::UnresolvedPredicate]))
     );
     let unsupported = identity_of(&published, document, "P::unsupported");
     assert_eq!(
-        settled(published.view_selection(&unsupported, &candidate)).outcome,
+        settled(published.view_selection(unsupported, candidate)).outcome,
         ViewSelectionOutcome::Indeterminate(Box::new([
             ViewSelectionObstacle::UnsupportedPredicate
         ]))
@@ -1002,7 +1002,7 @@ fn feature_relationship_collection_keeps_an_unresolved_canonical_edge_visible() 
     );
     assert!(matches!(
         settled(published.feature_derived_relationships(
-            &derived,
+            derived,
             FeatureDerivedRelationshipCollection::OwnedFeatureChaining,
         ))
         .as_ref(),
@@ -1028,7 +1028,7 @@ fn exact_type_relationship_collections_project_canonical_authored_and_unresolved
     let derived = identity_of(&published, "memory://model.sysml", "Model::Derived");
     let partial = identity_of(&published, "memory://model.sysml", "Model::Partial");
     let values =
-        |collection| settled(published.type_derived_relationships(&derived, collection)).into_vec();
+        |collection| settled(published.type_derived_relationships(derived, collection)).into_vec();
     for (collection, kind) in [
         (
             TypeDerivedRelationshipCollection::OwnedSpecialization,
@@ -1070,7 +1070,7 @@ fn exact_type_relationship_collections_project_canonical_authored_and_unresolved
     assert!(matches!(
         settled(
             published.type_derived_relationships(
-                &partial,
+                partial,
                 TypeDerivedRelationshipCollection::UnioningType,
             )
         )
@@ -1095,11 +1095,11 @@ fn variable_feature_membership_is_explicitly_unsupported_without_snapshots() {
     );
     let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
     assert!(matches!(
-        published.featuring_types(&mass),
+        published.featuring_types(mass),
         QueryOutcome::Unsupported
     ));
     assert!(matches!(
-        published.featuring_type(&mass),
+        published.featuring_type(mass),
         QueryOutcome::Unsupported
     ));
     assert!(type_featuring_relationships(
@@ -1326,7 +1326,7 @@ fn element_details_over_recovery_produced_input_keep_their_recovery_outcome() {
     let symbol = identity_of(&published, "memory://recovery.sysml", "P::Wheel");
     assert!(
         matches!(
-            published.element_details(&symbol),
+            published.element_details(symbol),
             QueryOutcome::Recovered(_) | QueryOutcome::UnsupportedWith(_)
         ),
         "expected a degraded publication to say so, got: {:?}",

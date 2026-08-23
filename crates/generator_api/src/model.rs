@@ -18,7 +18,7 @@ use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKi
 use sysml_query::resolved_slice::{
     AnnotationForm, ElementKind, ElementModifier, ElementSearch, ElementSource, EvaluatedScalar,
     MultiplicityBound, MultiplicityFacts, QueryOutcome, RelationshipProvenance, RelationshipTarget,
-    SymbolEntry, SymbolIdentity,
+    SymbolEntry, SymbolId, SymbolToken,
 };
 use thiserror::Error;
 
@@ -206,8 +206,8 @@ pub struct GeneratorModelView {
     model_digest: String,
     spec42_version: String,
     query_limits: QueryLimits,
-    by_identity: HashMap<SymbolIdentity, RegisteredElement>,
-    handles: Mutex<HashMap<String, SymbolIdentity>>,
+    by_identity: HashMap<SymbolId, RegisteredElement>,
+    handles: Mutex<HashMap<String, SymbolId>>,
 }
 
 impl std::fmt::Debug for GeneratorModelView {
@@ -275,7 +275,7 @@ impl GeneratorModelView {
                 .filter(|value| {
                     value.source == ElementSource::Workspace && value.entry.owner.is_none()
                 })
-                .map(|value| &value.entry.identity),
+                .map(|value| value.entry.identity),
         )
     }
 
@@ -296,7 +296,7 @@ impl GeneratorModelView {
                             .as_ref()
                             .is_none_or(|kind| api_metaclass(value.entry.kind) == *kind)
                 })
-                .map(|value| &value.entry.identity),
+                .map(|value| value.entry.identity),
         )
     }
 
@@ -305,18 +305,18 @@ impl GeneratorModelView {
         self.summaries(
             self.by_identity
                 .values()
-                .filter(|value| value.entry.owner.as_ref() == Some(&parent))
-                .map(|value| &value.entry.identity),
+                .filter(|value| value.entry.owner == Some(parent))
+                .map(|value| value.entry.identity),
         )
     }
 
     pub fn element(&self, handle: &str) -> Result<ElementDetail, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
         let inspection = outcome(
-            self.model.inspection().inspect(&identity),
+            self.model.inspection().inspect(identity),
             "element inspection",
         )?;
-        let summary = self.summary(&identity)?;
+        let summary = self.summary(identity)?;
         let owner = inspection
             .owner
             .as_ref()
@@ -384,13 +384,13 @@ impl GeneratorModelView {
 
     pub fn typed_by(&self, handle: &str) -> Result<Option<ElementSummary>, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
-        let types = outcome(self.model.types().direct_types(&identity), "direct typing")?;
+        let types = outcome(self.model.types().direct_types(identity), "direct typing")?;
         match types.as_ref() {
             [] => Ok(None),
-            [one] => self.summary(&one.symbol).map(Some),
+            [one] => self.summary(one.symbol).map(Some),
             _ => Err(ModelQueryError::Ambiguous(format!(
                 "element `{}` has {} direct types",
-                identity.as_str(),
+                self.token(identity),
                 types.len()
             ))),
         }
@@ -404,10 +404,10 @@ impl GeneratorModelView {
         use RequirementUsageTypingSummary as Wire;
         let identity = self.resolve_handle(handle)?;
         Ok(
-            match self.model.types().requirement_usage_typing(&identity) {
+            match self.model.types().requirement_usage_typing(identity) {
                 QueryOutcome::Resolved(Owned::Missing) => Wire::Missing,
                 QueryOutcome::Resolved(Owned::Resolved(reference)) => Wire::Resolved {
-                    definition: self.summary(&reference.symbol)?,
+                    definition: self.summary(reference.symbol)?,
                     provenance: match reference.provenance {
                         RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
                         RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
@@ -426,7 +426,7 @@ impl GeneratorModelView {
                 | QueryOutcome::Unsupported
                 | QueryOutcome::UnsupportedWith(_) => Wire::Unsupported,
                 QueryOutcome::Recovered(Owned::Resolved(reference)) => Wire::RecoveredResolved {
-                    definition: self.summary(&reference.symbol)?,
+                    definition: self.summary(reference.symbol)?,
                     provenance: match reference.provenance {
                         RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
                         RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
@@ -446,7 +446,7 @@ impl GeneratorModelView {
                     candidates: values
                         .iter()
                         .flat_map(|value| match value {
-                            Owned::Resolved(reference) => self.summary(&reference.symbol).ok(),
+                            Owned::Resolved(reference) => self.summary(reference.symbol).ok(),
                             _ => None,
                         })
                         .collect(),
@@ -459,10 +459,10 @@ impl GeneratorModelView {
     pub fn relationships(&self, handle: &str) -> Result<Vec<RelationshipSummary>, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
         let inspection = outcome(
-            self.model.inspection().inspect(&identity),
+            self.model.inspection().inspect(identity),
             "element relationships",
         )?;
-        let source = self.summary(&identity)?;
+        let source = self.summary(identity)?;
         let mut values = Vec::new();
         for relationship in &inspection.relationships {
             let target = match &relationship.target {
@@ -471,21 +471,21 @@ impl GeneratorModelView {
                     return Err(ModelQueryError::Ambiguous(format!(
                         "relationship `{}` from `{}`",
                         relationship.kind,
-                        identity.as_str()
+                        self.token(identity)
                     )))
                 }
                 RelationshipTarget::Unresolved => {
                     return Err(ModelQueryError::Unresolved(format!(
                         "relationship `{}` from `{}`",
                         relationship.kind,
-                        identity.as_str()
+                        self.token(identity)
                     )))
                 }
                 RelationshipTarget::Unsupported => {
                     return Err(ModelQueryError::Unsupported(format!(
                         "relationship `{}` from `{}`",
                         relationship.kind,
-                        identity.as_str()
+                        self.token(identity)
                     )))
                 }
             };
@@ -550,7 +550,7 @@ impl GeneratorModelView {
             .iter()
             .map(|relationship| {
                 Ok(SatisfyRelationshipSummary {
-                    semantic_id: relationship.identity.as_str().to_owned(),
+                    semantic_id: self.token(relationship.identity),
                     requirement: endpoint(&relationship.requirement)?,
                     satisfying_element: endpoint(&relationship.satisfying_element)?,
                     polarity: match relationship.polarity {
@@ -618,8 +618,8 @@ impl GeneratorModelView {
             .iter()
             .map(|value| {
                 Ok(RequirementVerificationSummary {
-                    semantic_id: value.identity.as_str().to_owned(),
-                    verification_case: self.summary(&value.verification_case)?,
+                    semantic_id: self.token(value.identity),
+                    verification_case: self.summary(value.verification_case)?,
                     requirement: endpoint(&value.requirement)?,
                     provenance: match value.provenance {
                         RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
@@ -639,12 +639,12 @@ impl GeneratorModelView {
     pub fn effective_features(&self, handle: &str) -> Result<Vec<ElementSummary>, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
         let features = outcome(
-            self.model.inspection().effective_features(&identity),
+            self.model.inspection().effective_features(identity),
             "effective features",
         )?;
         let values = features
             .iter()
-            .map(|feature| self.summary(&feature.identity))
+            .map(|feature| self.summary(feature.identity))
             .collect::<Result<Vec<_>, _>>()?;
         self.enforce_limit(values.len())?;
         Ok(values)
@@ -657,7 +657,7 @@ impl GeneratorModelView {
         let mut values = catalog
             .iter()
             .map(|entry| {
-                let handle = handle_from_semantic_id(entry.semantic_id.as_str());
+                let handle = handle_from_semantic_id(&self.token(entry.semantic_id));
                 self.handles
                     .lock()
                     .expect("generator handle index poisoned")
@@ -665,7 +665,7 @@ impl GeneratorModelView {
                 Ok(DiagramViewSummary {
                     handle,
                     kind: diagram_kind(entry.kind),
-                    reference: self.diagram_reference(&entry.semantic_id)?,
+                    reference: self.diagram_reference(entry.semantic_id)?,
                     name: entry.name.to_string(),
                     source: source_reference(&entry.source),
                 })
@@ -682,10 +682,10 @@ impl GeneratorModelView {
 
     pub fn diagram_view(&self, handle: &str) -> Result<DiagramViewProjection, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
-        let projection = outcome(self.model.diagrams().view(&identity), "diagram view")?;
+        let projection = outcome(self.model.diagrams().view(identity), "diagram view")?;
         let view = DiagramViewSummary {
             handle: handle.to_owned(),
-            reference: self.diagram_reference(&projection.view.semantic_id)?,
+            reference: self.diagram_reference(projection.view.semantic_id)?,
             kind: diagram_kind(projection.view.kind),
             name: projection.view.name.to_string(),
             source: source_reference(&projection.view.source),
@@ -696,7 +696,7 @@ impl GeneratorModelView {
             .map(|element| Ok(DiagramElement {
                 occurrence: self.diagram_occurrence(&element.occurrence_id)?,
                 reference: self
-                    .diagram_reference(&element.semantic_id)
+                    .diagram_reference(element.semantic_id)
                     .expect("published diagram element"),
                 metaclass: api_metaclass(element.kind),
                 notation_role: diagram_notation_role(element.kind),
@@ -704,14 +704,14 @@ impl GeneratorModelView {
                 typing: match &element.typing {
                     sysml_query::resolved_slice::DiagramElementTyping::Absent => spec42_generator_protocol::DiagramElementTyping::Absent,
                     sysml_query::resolved_slice::DiagramElementTyping::Resolved(targets) => spec42_generator_protocol::DiagramElementTyping::Resolved(targets.iter().map(|target| {
-                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
-                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(target)?, label: display_label(&target_entry.entry) })
+                        let target_entry = self.by_identity.get(&target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Partial(targets) => spec42_generator_protocol::DiagramElementTyping::Partial(targets.iter().map(|target| {
-                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
-                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(target)?, label: display_label(&target_entry.entry) })
+                        let target_entry = self.by_identity.get(&target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
-                    sysml_query::resolved_slice::DiagramElementTyping::Ambiguous(targets) => spec42_generator_protocol::DiagramElementTyping::Ambiguous(targets.iter().map(|target| self.diagram_reference(target)).collect::<Result<Vec<_>, _>>()?),
+                    sysml_query::resolved_slice::DiagramElementTyping::Ambiguous(targets) => spec42_generator_protocol::DiagramElementTyping::Ambiguous(targets.iter().map(|target| self.diagram_reference(*target)).collect::<Result<Vec<_>, _>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Unresolved => spec42_generator_protocol::DiagramElementTyping::Unresolved,
                     sysml_query::resolved_slice::DiagramElementTyping::Unsupported => spec42_generator_protocol::DiagramElementTyping::Unsupported,
                     sysml_query::resolved_slice::DiagramElementTyping::Recovery => spec42_generator_protocol::DiagramElementTyping::Recovery,
@@ -758,11 +758,11 @@ impl GeneratorModelView {
                 );
                 Ok(DiagramRelationship {
                     reference: self.diagram_relationship_reference(
-                        &relationship.source_semantic_id,
+                        relationship.source_semantic_id,
                         kind.clone(),
                         ordinal,
                     )?,
-                    source_element: self.diagram_reference(&relationship.source_semantic_id)?,
+                    source_element: self.diagram_reference(relationship.source_semantic_id)?,
                     source_occurrence: self.diagram_occurrence(&relationship.source)?,
                     kind,
                     target: match &relationship.target {
@@ -840,12 +840,12 @@ impl GeneratorModelView {
                 };
                 Ok(DiagramEdge {
                     reference: self.diagram_relationship_reference(
-                        &edge.source_semantic_id,
+                        edge.source_semantic_id,
                         reference_kind,
                         ordinal,
                     )?,
-                    source_element: self.diagram_reference(&edge.source_semantic_id)?,
-                    target_element: self.diagram_reference(&edge.target_semantic_id)?,
+                    source_element: self.diagram_reference(edge.source_semantic_id)?,
+                    target_element: self.diagram_reference(edge.target_semantic_id)?,
                     source_occurrence: self.diagram_occurrence(&edge.source)?,
                     target_occurrence: self.diagram_occurrence(&edge.target)?,
                     kind,
@@ -859,9 +859,12 @@ impl GeneratorModelView {
             .iter()
             .cloned()
             .map(|root| {
-                self.diagram_occurrence(&sysml_query::resolved_slice::DiagramOccurrenceIdentity {
-                    semantic_path: vec![root].into_boxed_slice(),
-                })
+                let occurrence = self.model.diagrams().root_occurrence(root).ok_or_else(|| {
+                    ModelQueryError::Unresolved(
+                        "exposed diagram root is absent from the publication".into(),
+                    )
+                })?;
+                self.diagram_occurrence(&occurrence)
             })
             .collect::<Result<Vec<_>, _>>()?;
         let reasons = projection
@@ -911,13 +914,13 @@ impl GeneratorModelView {
                     .machine
                     .as_ref()
                     .map(|identity| {
-                        let entry = self.by_identity.get(identity).ok_or_else(|| {
+                        let entry = self.by_identity.get(&identity).ok_or_else(|| {
                             ModelQueryError::Unresolved(
                                 "state-machine scene frame is absent from publication".into(),
                             )
                         })?;
                         Ok(StateMachineSummary {
-                            semantic_id: identity.as_str().to_owned(),
+                            semantic_id: self.token(identity),
                             label: display_label(&entry.entry),
                             source: source_reference(&entry.entry.location),
                         })
@@ -927,7 +930,7 @@ impl GeneratorModelView {
                     .vertices
                     .iter()
                     .map(|vertex| StateTransitionNode {
-                        semantic_id: vertex.semantic_id.as_str().to_owned(),
+                        semantic_id: self.token(vertex.semantic_id),
                         label: vertex.label.to_string(),
                         kind: match vertex.kind {
                             sysml_query::resolved_slice::DiagramStateVertexKind::Initial => {
@@ -949,8 +952,8 @@ impl GeneratorModelView {
                     .map(|transition| StateTransitionEdge {
                         semantic_id: transition.semantic_id.to_string(),
                         label: transition.label.as_deref().map(str::to_owned),
-                        source: transition.source.as_str().to_owned(),
-                        target: transition.target.as_str().to_owned(),
+                        source: self.token(transition.source),
+                        target: self.token(transition.target),
                         trigger: match &transition.trigger {
                             sysml_query::resolved_slice::DiagramTransitionFeature::Absent => {
                                 TransitionTrigger::None
@@ -962,7 +965,7 @@ impl GeneratorModelView {
                             } => TransitionTrigger::Accept {
                                 label: label.to_string(),
                                 target: Some(ElementIdentity {
-                                    semantic_id: target.as_str().to_owned(),
+                                    semantic_id: self.token(target),
                                     label: label.to_string(),
                                 }),
                                 source: source_reference(source),
@@ -1029,21 +1032,21 @@ impl GeneratorModelView {
             value.source == ElementSource::Workspace && value.entry.kind == ElementKind::ViewUsage
         }) {
             let types = outcome(
-                self.model.types().direct_types(&registered.entry.identity),
+                self.model.types().direct_types(registered.entry.identity),
                 "state-transition view typing",
             )?;
             if !types.iter().any(|ty| ty.symbol == standard_view) {
                 continue;
             }
-            let machine = self.exposed_machine(&registered.entry.identity)?;
-            values.push(self.view_summary(&registered.entry.identity, &machine)?);
+            let machine = self.exposed_machine(registered.entry.identity)?;
+            values.push(self.view_summary(registered.entry.identity, machine)?);
         }
         values.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
         self.enforce_limit(values.len())?;
         Ok(values)
     }
 
-    fn standard_state_transition_view(&self) -> Result<SymbolIdentity, ModelQueryError> {
+    fn standard_state_transition_view(&self) -> Result<SymbolId, ModelQueryError> {
         let matches = self
             .by_identity
             .values()
@@ -1077,7 +1080,7 @@ impl GeneratorModelView {
                 "selected element is not a view usage".into(),
             ));
         }
-        let machine_id = self.exposed_machine(&view_id)?;
+        let machine_id = self.exposed_machine(view_id)?;
         let machine_entry = self.by_identity.get(&machine_id).ok_or_else(|| {
             ModelQueryError::Unresolved("exposed state machine is absent from publication".into())
         })?;
@@ -1086,10 +1089,10 @@ impl GeneratorModelView {
                 "state-transition view must expose one state definition".into(),
             ));
         }
-        let view = self.view_summary(&view_id, &machine_id)?;
-        let machine_inspection = self.inspection(&machine_id, "state machine")?;
+        let view = self.view_summary(view_id, machine_id)?;
+        let machine_inspection = self.inspection(machine_id, "state machine")?;
         let machine = StateMachineSummary {
-            semantic_id: machine_id.as_str().to_owned(),
+            semantic_id: self.token(machine_id),
             label: display_label(&machine_entry.entry),
             source: inspection_source(&machine_inspection),
         };
@@ -1101,11 +1104,11 @@ impl GeneratorModelView {
         let mut nodes = Vec::new();
         let mut transitions = Vec::new();
         for child in &children {
-            let inspection = self.inspection(&child.entry.identity, "state-machine member")?;
+            let inspection = self.inspection(child.entry.identity, "state-machine member")?;
             match child.entry.kind {
                 ElementKind::StateUsage | ElementKind::FinalState => {
                     nodes.push(StateTransitionNode {
-                        semantic_id: child.entry.identity.as_str().to_owned(),
+                        semantic_id: self.token(child.entry.identity),
                         label: display_label(&child.entry),
                         kind: if child.entry.kind == ElementKind::FinalState {
                             StateTransitionNodeKind::Final
@@ -1117,7 +1120,7 @@ impl GeneratorModelView {
                 }
                 ElementKind::SuccessionAsUsage => {
                     if let Some(target) = resolved_relationship(&inspection, "initialState")? {
-                        let initial_id = format!("{}#initial", child.entry.identity.as_str());
+                        let initial_id = format!("{}#initial", self.token(child.entry.identity));
                         nodes.push(StateTransitionNode {
                             semantic_id: initial_id.clone(),
                             label: String::new(),
@@ -1125,10 +1128,10 @@ impl GeneratorModelView {
                             source: inspection_source(&inspection),
                         });
                         transitions.push(StateTransitionEdge {
-                            semantic_id: format!("{}#edge", child.entry.identity.as_str()),
+                            semantic_id: format!("{}#edge", self.token(child.entry.identity)),
                             label: None,
                             source: initial_id,
-                            target: target.as_str().to_owned(),
+                            target: self.token(target),
                             trigger: TransitionTrigger::None,
                             guard: ProjectionFeature::Absent,
                             effect: ProjectionFeature::Absent,
@@ -1151,7 +1154,7 @@ impl GeneratorModelView {
                             TransitionTrigger::Accept {
                                 label: display_label(&target_entry.entry),
                                 target: Some(ElementIdentity {
-                                    semantic_id: trigger.as_str().to_owned(),
+                                    semantic_id: self.token(trigger),
                                     label: display_label(&target_entry.entry),
                                 }),
                                 source: inspection_source(&inspection),
@@ -1167,10 +1170,10 @@ impl GeneratorModelView {
                         .iter()
                         .any(|r| r.kind == "transitionEffect");
                     transitions.push(StateTransitionEdge {
-                        semantic_id: child.entry.identity.as_str().to_owned(),
+                        semantic_id: self.token(child.entry.identity),
                         label: child.entry.name.as_deref().map(str::to_owned),
-                        source: source.as_str().to_owned(),
-                        target: target.as_str().to_owned(),
+                        source: self.token(source),
+                        target: self.token(target),
                         trigger,
                         guard: if has_guard {
                             ProjectionFeature::Unsupported {
@@ -1234,23 +1237,23 @@ impl GeneratorModelView {
 
     fn inspection(
         &self,
-        identity: &SymbolIdentity,
+        identity: SymbolId,
         subject: &str,
     ) -> Result<sysml_query::resolved_slice::ElementInspection, ModelQueryError> {
         outcome(self.model.inspection().inspect(identity), subject)
     }
 
-    fn exposed_machine(&self, view: &SymbolIdentity) -> Result<SymbolIdentity, ModelQueryError> {
+    fn exposed_machine(&self, view: SymbolId) -> Result<SymbolId, ModelQueryError> {
         let mut targets = Vec::new();
         for child in self
             .by_identity
             .values()
-            .filter(|entry| entry.entry.owner.as_ref() == Some(view))
+            .filter(|entry| entry.entry.owner == Some(view))
         {
             if child.entry.kind != ElementKind::Expose {
                 continue;
             }
-            let inspection = self.inspection(&child.entry.identity, "view exposure")?;
+            let inspection = self.inspection(child.entry.identity, "view exposure")?;
             if let Some(target) = resolved_relationship(&inspection, "viewExpose")? {
                 targets.push(target);
             }
@@ -1268,26 +1271,26 @@ impl GeneratorModelView {
 
     fn view_summary(
         &self,
-        view: &SymbolIdentity,
-        machine: &SymbolIdentity,
+        view: SymbolId,
+        machine: SymbolId,
     ) -> Result<StateTransitionViewSummary, ModelQueryError> {
-        let view_entry = &self.by_identity[view].entry;
+        let view_entry = &self.by_identity[&view].entry;
         let machine_entry = self
             .by_identity
-            .get(machine)
+            .get(&machine)
             .ok_or_else(|| ModelQueryError::Unresolved("exposed machine".into()))?;
         let inspection = self.inspection(view, "state-transition view")?;
-        let handle = handle_from_semantic_id(view.as_str());
+        let handle = handle_from_semantic_id(&self.token(view));
         self.handles
             .lock()
             .expect("generator handle index poisoned")
             .insert(handle.clone(), view.clone());
         Ok(StateTransitionViewSummary {
             handle,
-            semantic_id: view.as_str().to_owned(),
+            semantic_id: self.token(view),
             name: display_label(view_entry),
             exposed_machine: StateMachineIdentity {
-                semantic_id: machine.as_str().to_owned(),
+                semantic_id: self.token(machine),
                 label: display_label(&machine_entry.entry),
             },
             source: inspection_source(&inspection),
@@ -1296,12 +1299,12 @@ impl GeneratorModelView {
 
     fn diagram_reference(
         &self,
-        identity: &SymbolIdentity,
+        identity: SymbolId,
     ) -> Result<DiagramSemanticReference, ModelQueryError> {
-        let registered = self.by_identity.get(identity).ok_or_else(|| {
+        let registered = self.by_identity.get(&identity).ok_or_else(|| {
             ModelQueryError::Unresolved(format!(
                 "diagram reference target `{}` is absent from the publication",
-                identity.as_str()
+                self.token(identity)
             ))
         })?;
         let source_domain = diagram_source_domain(registered.source);
@@ -1335,7 +1338,7 @@ impl GeneratorModelView {
             semantic_path: occurrence
                 .semantic_path
                 .iter()
-                .map(|identity| self.diagram_reference(identity))
+                .map(|identity| self.diagram_reference(*identity))
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -1345,7 +1348,7 @@ impl GeneratorModelView {
         endpoint: &sysml_query::resolved_slice::DiagramRelationshipEndpoint,
     ) -> Result<DiagramRelationshipEndpoint, ModelQueryError> {
         Ok(DiagramRelationshipEndpoint {
-            reference: self.diagram_reference(&endpoint.semantic_id)?,
+            reference: self.diagram_reference(endpoint.semantic_id)?,
             occurrence: match &endpoint.occurrence {
                 sysml_query::resolved_slice::DiagramEndpointOccurrence::Resolved(value) => {
                     DiagramEndpointOccurrence::Resolved(self.diagram_occurrence(value)?)
@@ -1367,11 +1370,11 @@ impl GeneratorModelView {
 
     fn diagram_relationship_reference(
         &self,
-        source: &SymbolIdentity,
+        source: SymbolId,
         relationship_kind: spec42_generator_protocol::RelationshipKind,
         ordinal: usize,
     ) -> Result<DiagramSemanticReference, ModelQueryError> {
-        let registered = self.by_identity.get(source).ok_or_else(|| {
+        let registered = self.by_identity.get(&source).ok_or_else(|| {
             ModelQueryError::Unresolved("diagram relationship source is absent".into())
         })?;
         Ok(DiagramSemanticReference::Relationship {
@@ -1396,14 +1399,14 @@ impl GeneratorModelView {
             Owned::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
             Owned::NonConverged => DiagramIncompleteReason::NonConverged,
             Owned::ExposureUnresolved { exposure } => DiagramIncompleteReason::ExposureUnresolved {
-                exposure: self.diagram_reference(&exposure)?,
+                exposure: self.diagram_reference(exposure)?,
             },
             Owned::ExposureAmbiguous { exposure } => DiagramIncompleteReason::ExposureAmbiguous {
-                exposure: self.diagram_reference(&exposure)?,
+                exposure: self.diagram_reference(exposure)?,
             },
             Owned::ExposureUnsupported { exposure } => {
                 DiagramIncompleteReason::ExposureUnsupported {
-                    exposure: self.diagram_reference(&exposure)?,
+                    exposure: self.diagram_reference(exposure)?,
                 }
             }
             Owned::RelationshipUnresolved { relationship } => {
@@ -1435,7 +1438,18 @@ impl GeneratorModelView {
             .contains_key(handle)
     }
 
-    fn resolve_handle(&self, handle: &str) -> Result<SymbolIdentity, ModelQueryError> {
+    /// The boundary token for one handle, as the generator protocol spells it.
+    ///
+    /// A `SymbolId` addresses an element of the publication this view wraps and means nothing
+    /// outside it; every `semanticId` the protocol carries is the token instead.
+    fn token(&self, symbol: impl std::borrow::Borrow<SymbolId>) -> String {
+        self.model
+            .symbol_token(*symbol.borrow())
+            .map(SymbolToken::into_string)
+            .unwrap_or_default()
+    }
+
+    fn resolve_handle(&self, handle: &str) -> Result<SymbolId, ModelQueryError> {
         self.handles
             .lock()
             .expect("generator handle index poisoned")
@@ -1443,14 +1457,18 @@ impl GeneratorModelView {
             .cloned()
             .ok_or_else(|| ModelQueryError::UnknownHandle(handle.to_owned()))
     }
-    fn summary(&self, identity: &SymbolIdentity) -> Result<ElementSummary, ModelQueryError> {
-        let registered = self.by_identity.get(identity).ok_or_else(|| {
+    fn summary(
+        &self,
+        identity: impl std::borrow::Borrow<SymbolId>,
+    ) -> Result<ElementSummary, ModelQueryError> {
+        let identity = *identity.borrow();
+        let registered = self.by_identity.get(&identity).ok_or_else(|| {
             ModelQueryError::Unresolved(format!(
                 "element identity `{}` is not in the publication",
-                identity.as_str()
+                self.token(identity)
             ))
         })?;
-        let semantic_id = identity.as_str().to_owned();
+        let semantic_id = self.token(identity);
         let handle = handle_from_semantic_id(&semantic_id);
         self.handles
             .lock()
@@ -1467,7 +1485,7 @@ impl GeneratorModelView {
     }
     fn summaries<'a>(
         &self,
-        identities: impl Iterator<Item = &'a SymbolIdentity>,
+        identities: impl Iterator<Item = SymbolId>,
     ) -> Result<Vec<ElementSummary>, ModelQueryError> {
         let mut values = identities
             .map(|identity| self.summary(identity))
@@ -1654,7 +1672,7 @@ fn diagram_metadata(
 fn resolved_relationship(
     inspection: &sysml_query::resolved_slice::ElementInspection,
     kind: &str,
-) -> Result<Option<SymbolIdentity>, ModelQueryError> {
+) -> Result<Option<SymbolId>, ModelQueryError> {
     let values = inspection
         .relationships
         .iter()

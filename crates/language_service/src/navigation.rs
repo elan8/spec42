@@ -1,6 +1,6 @@
 use sysml_query::resolved_slice::{
     AuthoredUnit, ElementEvaluation, ElementInspection, PublishedModel, QueryOutcome, ReferenceAt,
-    SymbolIdentity, UnitResolution,
+    SymbolId, UnitResolution,
 };
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 
@@ -115,10 +115,10 @@ fn inspection_hover_markdown(
     if let Some((container, _)) = element.qualified_name.rsplit_once("::") {
         markdown.push_str(&format!("**Container:** `{container}`\n\n"));
     }
-    if let Some(types) = resolved(model.types().direct_types(&element.identity)) {
+    if let Some(types) = resolved(model.types().direct_types(element.identity)) {
         let names = types
             .iter()
-            .filter_map(|typing| resolved(model.inspection().inspect(&typing.symbol)))
+            .filter_map(|typing| resolved(model.inspection().inspect(typing.symbol)))
             .map(|inspection| inspection.qualified_name.into_string())
             .collect::<Vec<_>>();
         if !names.is_empty() {
@@ -162,19 +162,29 @@ fn unit_literal_hover_markdown(
         .iter()
         .find(|unit| range_covers(unit.location.range, position))
         .cloned()?;
-    Some(unit_hover_markdown(&unit))
+    Some(unit_hover_markdown(workspace.published_model(), &unit))
 }
 
-fn unit_hover_markdown(unit: &AuthoredUnit) -> String {
+/// Formats one published unit outcome.
+///
+/// The named units are element handles, so the text a reader sees is asked of the publication.
+/// Without one -- a syntax-only snapshot -- the outcome's shape is still shown; only the names
+/// are missing, which is what the publication actually knows.
+fn unit_hover_markdown(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> String {
+    let name = |symbol| {
+        model
+            .and_then(|model| model.qualified_name(symbol))
+            .unwrap_or_default()
+    };
     let mut lines = vec![
         format!("**Unit literal** `[{}]`", unit.authored),
         String::new(),
     ];
     match &unit.resolution {
         UnitResolution::Resolved(resolved) => {
-            lines.push(format!("*{}*", resolved.unit.as_str()));
+            lines.push(format!("*{}*", name(resolved.unit)));
             for dimension in resolved.dimensions.iter() {
-                lines.push(format!("Measured in `{}`", dimension.as_str()));
+                lines.push(format!("Measured in `{}`", name(*dimension)));
             }
         }
         UnitResolution::UnknownSymbol => lines.push(
@@ -183,7 +193,7 @@ fn unit_hover_markdown(unit: &AuthoredUnit) -> String {
         UnitResolution::Ambiguous(candidates) => {
             lines.push("Several admitted units carry this symbol:".to_string());
             for candidate in candidates.iter() {
-                lines.push(format!("- `{}`", candidate.as_str()));
+                lines.push(format!("- `{}`", name(*candidate)));
             }
         }
         UnitResolution::UnsupportedExpression => lines.push(
@@ -218,12 +228,12 @@ fn element_evaluation_at(
             .as_ref()
             .map(|containing| containing.identity.clone()),
     }?;
-    element_evaluation(model, &symbol)
+    element_evaluation(model, symbol)
 }
 
 fn element_evaluation(
     model: &PublishedModel,
-    symbol: &SymbolIdentity,
+    symbol: SymbolId,
 ) -> Option<ElementEvaluation> {
     resolved(model.evaluation().evaluate(symbol))
 }

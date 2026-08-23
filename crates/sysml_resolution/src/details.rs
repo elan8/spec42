@@ -87,14 +87,14 @@ pub enum ViewSelectionOutcome {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ViewSelectionObstacle {
     UnresolvedPredicate,
-    AmbiguousPredicate(Box<[crate::SymbolIdentity]>),
+    AmbiguousPredicate(Box<[crate::SymbolId]>),
     UnsupportedPredicate,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ViewSelection {
-    pub view: crate::SymbolIdentity,
-    pub candidate: crate::SymbolIdentity,
+    pub view: crate::SymbolId,
+    pub candidate: crate::SymbolId,
     pub outcome: ViewSelectionOutcome,
 }
 

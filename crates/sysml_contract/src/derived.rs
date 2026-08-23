@@ -7,7 +7,7 @@
 //! "this derivation has no values" and "this derivation cannot be evaluated yet" stay different
 //! answers.
 //!
-//! The matching `*Outcome` enums do not live here: each of them carries a `Box<[SymbolIdentity]>`
+//! The matching `*Outcome` enums do not live here: each of them carries a `Box<[SymbolId]>`
 //! of results, which is the authority's storage rather than the contract's vocabulary.
 
 /// One exact derived relationship collection or operand projection defined on KerML `Type`.

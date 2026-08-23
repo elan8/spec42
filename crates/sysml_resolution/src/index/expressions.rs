@@ -63,7 +63,7 @@ use crate::OccurrenceRole;
 use crate::QueryOutcome;
 use crate::ResolvedUnit;
 use crate::SourceLocation;
-use crate::SymbolIdentity;
+use crate::SymbolId;
 use crate::TextPosition;
 use crate::TextRange;
 use crate::UnitResolution;
@@ -832,7 +832,7 @@ impl<D> SemanticModel<D> {
     /// Three indexed lookups and the rows they name -- no traversal, no re-resolution, and no
     /// evaluation. Every answer was decided before this publication became visible, so repeating
     /// the call, or asking inspection first, cannot change it.
-    pub(crate) fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+    pub(crate) fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -859,7 +859,7 @@ impl<D> SemanticModel<D> {
             .map(|unit| self.published_unit(unit))
             .collect::<Vec<_>>();
         Some(ElementEvaluation {
-            element: self.symbol_identity(declaration)?,
+            element: self.symbol_id(declaration)?,
             state: self.evaluation_for(declaration),
             units: units.into_boxed_slice(),
             expected_measurement: self.published_measurement(declaration),
@@ -888,7 +888,7 @@ impl<D> SemanticModel<D> {
                 role: OccurrenceRole::Reference,
             },
             resolution: match &unit.outcome {
-                UnitOutcome::Resolved { unit, dimensions } => match self.symbol_identity(*unit) {
+                UnitOutcome::Resolved { unit, dimensions } => match self.symbol_id(*unit) {
                     Some(identity) => UnitResolution::Resolved(ResolvedUnit {
                         unit: identity,
                         dimensions: self.symbols(dimensions.iter().copied()),

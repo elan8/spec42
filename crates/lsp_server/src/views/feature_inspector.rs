@@ -24,7 +24,7 @@ use sysml_query::resolved_slice::{
     ElementEvaluation, ElementKind, ElementModifier, EvaluatedScalar, EvaluationFailure,
     EvaluationState, FeatureDirection, MultiplicityBound, MultiplicityFacts, PortionKind,
     PublishedModel, QueryOutcome, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, SymbolEntry, TextPosition, TextRange,
+    RelationshipProvenance, SymbolEntry, SymbolId, SymbolToken, TextPosition, TextRange,
 };
 
 /// The document a declaration's authored text is read from: the source, paired with the tree the
@@ -58,9 +58,13 @@ pub(crate) fn details_at(
     }
 }
 
-fn element_ref(entry: &SymbolEntry) -> SysmlFeatureInspectorElementRefDto {
+/// The protocol form of one element reference.
+///
+/// The published handle is a `SymbolId`, valid only inside this publication; the DTO crosses a
+/// process boundary, so the identity materialises here as a `SymbolToken` and nowhere earlier.
+fn element_ref(model: &PublishedModel, entry: &SymbolEntry) -> SysmlFeatureInspectorElementRefDto {
     SysmlFeatureInspectorElementRefDto {
-        id: entry.identity.as_str().to_string(),
+        id: symbol_token_text(model, entry.identity),
         name: entry.name.as_deref().unwrap_or_default().to_string(),
         qualified_name: entry.qualified_name.to_string(),
         element_type: entry.kind.as_str().to_string(),
@@ -187,18 +191,32 @@ fn resolution_status(outcome: RelationshipOutcome) -> &'static str {
     }
 }
 
-fn resolution(family: &RelationshipFamily) -> SysmlFeatureInspectorResolutionDto {
+fn resolution(
+    model: &PublishedModel,
+    family: &RelationshipFamily,
+) -> SysmlFeatureInspectorResolutionDto {
     SysmlFeatureInspectorResolutionDto {
         status: resolution_status(family.outcome).to_string(),
-        targets: family.targets.iter().map(element_ref).collect(),
-        candidates: family.candidates.iter().map(element_ref).collect(),
+        targets: family
+            .targets
+            .iter()
+            .map(|entry| element_ref(model, entry))
+            .collect(),
+        candidates: family
+            .candidates
+            .iter()
+            .map(|entry| element_ref(model, entry))
+            .collect(),
     }
 }
 
-fn relationship(entry: &ConnectedElement) -> SysmlFeatureInspectorRelationshipDto {
+fn relationship(
+    model: &PublishedModel,
+    entry: &ConnectedElement,
+) -> SysmlFeatureInspectorRelationshipDto {
     SysmlFeatureInspectorRelationshipDto {
         rel_type: entry.kind.to_string(),
-        peer: element_ref(&entry.peer),
+        peer: element_ref(model, &entry.peer),
         provenance: match entry.provenance {
             RelationshipProvenance::Authored => "authored",
             RelationshipProvenance::Implied => "implied",
@@ -208,11 +226,12 @@ fn relationship(entry: &ConnectedElement) -> SysmlFeatureInspectorRelationshipDt
 }
 
 fn inherited_feature(
+    model: &PublishedModel,
     feature: &sysml_query::resolved_slice::InheritedFeature,
 ) -> SysmlFeatureInspectorInheritedFeatureDto {
     SysmlFeatureInspectorInheritedFeatureDto {
-        feature: element_ref(&feature.feature),
-        declared_in: element_ref(&feature.declared_in),
+        feature: element_ref(model, &feature.feature),
+        declared_in: element_ref(model, &feature.declared_in),
     }
 }
 
@@ -221,6 +240,18 @@ fn inherited_feature(
 ///
 /// A quantity's magnitude and unit are returned separately, because the unit is not part of the
 /// number and folding them into one string would make a client parse it back out.
+/// One element handle, materialised for the protocol.
+///
+/// `SymbolToken` is the only form of an element identity that may leave the process; a handle that
+/// this publication no longer knows has no token, and the DTO carries an empty identity for it
+/// exactly as the unresolvable case always did.
+fn symbol_token_text(model: &PublishedModel, symbol: SymbolId) -> String {
+    model
+        .symbol_token(symbol)
+        .map(SymbolToken::into_string)
+        .unwrap_or_default()
+}
+
 fn scalar_json(scalar: &EvaluatedScalar) -> (serde_json::Value, Option<String>) {
     match scalar {
         EvaluatedScalar::Boolean(value) => (serde_json::Value::Bool(*value), None),
@@ -462,12 +493,13 @@ pub fn empty_feature_inspector_response(
 }
 
 pub(crate) fn feature_inspector_element(
+    model: &PublishedModel,
     details: &ElementDetails,
     source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorElementDto {
     let inspection = &details.inspection;
     SysmlFeatureInspectorElementDto {
-        id: inspection.identity.as_str().to_string(),
+        id: symbol_token_text(model, inspection.identity),
         name: inspection.name.as_deref().unwrap_or_default().to_string(),
         qualified_name: inspection.qualified_name.to_string(),
         element_type: inspection.kind.as_str().to_string(),
@@ -475,7 +507,10 @@ pub(crate) fn feature_inspector_element(
         declaration: declaration_text(details, source),
         uri: inspection.location.document.to_string(),
         range: range_to_dto(inspection.declaration_range),
-        parent: details.owner.as_ref().map(element_ref),
+        parent: details
+            .owner
+            .as_ref()
+            .map(|entry| element_ref(model, entry)),
         documentation: documentation(details),
         multiplicity: multiplicity_text(inspection.multiplicity),
         direction: inspection.direction.map(|direction| {
@@ -489,44 +524,57 @@ pub(crate) fn feature_inspector_element(
         modifiers: modifiers(details),
         evaluation: evaluation(&details.evaluation),
         analysis: analysis(&details.analysis),
-        typing: resolution(&details.typing),
+        typing: resolution(model, &details.typing),
         effective_typing: SysmlFeatureInspectorResolutionDto {
             status: resolution_status(details.effective_typing.outcome).to_string(),
             targets: details
                 .effective_typing
                 .types
                 .iter()
-                .map(|entry| element_ref(&entry.element))
+                .map(|entry| element_ref(model, &entry.element))
                 .collect(),
             candidates: Vec::new(),
         },
-        specialization: resolution(&details.specialization),
-        subsetting: resolution(&details.subsetting),
-        redefinition: resolution(&details.redefinition),
+        specialization: resolution(model, &details.specialization),
+        subsetting: resolution(model, &details.subsetting),
+        redefinition: resolution(model, &details.redefinition),
         inherited_features: details
             .inherited_features
             .iter()
-            .map(inherited_feature)
+            .map(|feature| inherited_feature(model, feature))
             .collect(),
-        metadata: details.metadata.iter().map(element_ref).collect(),
-        incoming_relationships: details.incoming.iter().map(relationship).collect(),
-        outgoing_relationships: details.outgoing.iter().map(relationship).collect(),
+        metadata: details
+            .metadata
+            .iter()
+            .map(|entry| element_ref(model, entry))
+            .collect(),
+        incoming_relationships: details
+            .incoming
+            .iter()
+            .map(|entry| relationship(model, entry))
+            .collect(),
+        outgoing_relationships: details
+            .outgoing
+            .iter()
+            .map(|entry| relationship(model, entry))
+            .collect(),
     }
 }
 
 pub(crate) fn referenced_dto(
+    model: &PublishedModel,
     referenced: &ReferencedDetails,
     source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorReferenceDto {
     match referenced {
         ReferencedDetails::None => SysmlFeatureInspectorReferenceDto::None,
         ReferencedDetails::Resolved(details) => SysmlFeatureInspectorReferenceDto::Resolved {
-            element: Box::new(feature_inspector_element(details, source)),
+            element: Box::new(feature_inspector_element(model, details, source)),
         },
         ReferencedDetails::Ambiguous(candidates) => SysmlFeatureInspectorReferenceDto::Ambiguous {
             candidates: candidates
                 .iter()
-                .map(|details| feature_inspector_element(details, source))
+                .map(|details| feature_inspector_element(model, details, source))
                 .collect(),
         },
         ReferencedDetails::Unresolved => SysmlFeatureInspectorReferenceDto::Unresolved,
@@ -540,6 +588,7 @@ pub(crate) fn referenced_dto(
 /// Separate from [`build_sysml_feature_inspector_response`] so the request handler, which also
 /// needs the settled details to classify the selection, queries the publication once.
 pub(crate) fn feature_inspector_response(
+    model: &PublishedModel,
     uri: &Url,
     position: Position,
     at: &ElementDetailsAt,
@@ -549,8 +598,8 @@ pub(crate) fn feature_inspector_response(
     response.containing_element = at
         .containing
         .as_ref()
-        .map(|details| feature_inspector_element(details, source));
-    response.referenced = referenced_dto(&at.referenced, source);
+        .map(|details| feature_inspector_element(model, details, source));
+    response.referenced = referenced_dto(model, &at.referenced, source);
     response
 }
 
@@ -561,7 +610,7 @@ pub fn build_sysml_feature_inspector_response(
     source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorResultDto {
     match details_at(model, uri, position) {
-        Some(at) => feature_inspector_response(uri, position, &at, source),
+        Some(at) => feature_inspector_response(model, uri, position, &at, source),
         None => empty_feature_inspector_response(uri, position),
     }
 }

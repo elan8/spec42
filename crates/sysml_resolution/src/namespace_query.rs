@@ -4,7 +4,7 @@
 //! than inventing public relationship identities. This API therefore exposes only exact final
 //! element projections whose result can be represented without losing that distinction.
 
-use crate::{ElementRelationship, SymbolIdentity};
+use crate::{ElementRelationship, SymbolId};
 
 pub use sysml_contract::NamespaceDerivedElementCollection;
 
@@ -16,6 +16,6 @@ pub use sysml_contract::NamespaceDerivedElementCollection;
 /// target outcome.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NamespaceImportDerivedElement {
-    pub import: SymbolIdentity,
+    pub import: SymbolId,
     pub relationship: ElementRelationship,
 }

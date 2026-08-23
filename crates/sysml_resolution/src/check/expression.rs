@@ -123,7 +123,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::AttributeValueTypeIncompatible,
                 severity: DiagnosticSeverity::Error,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_identity(value.declaration),
+                subject: self.symbol_id(value.declaration),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &value.span)?,
@@ -160,7 +160,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::AssignmentValueIncompatible,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_identity(reference.source),
+                subject: self.symbol_id(reference.source),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &source.span)?,
@@ -228,7 +228,7 @@ impl<D> SemanticModel<D> {
                     code: DiagnosticCode::UnknownUnitSymbol,
                     severity: DiagnosticSeverity::Warning,
                     origin: DiagnosticOrigin::Semantic,
-                    subject: self.symbol_identity(unit.declaration),
+                    subject: self.symbol_id(unit.declaration),
                     location,
                     related: Box::default(),
                 }),
@@ -242,7 +242,7 @@ impl<D> SemanticModel<D> {
                         code: DiagnosticCode::AmbiguousUnitSymbol,
                         severity: DiagnosticSeverity::Warning,
                         origin: DiagnosticOrigin::Semantic,
-                        subject: self.symbol_identity(unit.declaration),
+                        subject: self.symbol_id(unit.declaration),
                         location,
                         related: related.into_boxed_slice(),
                     });
@@ -283,7 +283,7 @@ impl<D> SemanticModel<D> {
                         code: DiagnosticCode::IncompatibleUnitDimension,
                         severity: DiagnosticSeverity::Warning,
                         origin: DiagnosticOrigin::Semantic,
-                        subject: self.symbol_identity(unit.declaration),
+                        subject: self.symbol_id(unit.declaration),
                         location,
                         related: related.into_boxed_slice(),
                     });
@@ -348,7 +348,7 @@ impl<D> SemanticModel<D> {
                 code,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_identity(filter.owner),
+                subject: self.symbol_id(filter.owner),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &filter.span)?,
@@ -389,7 +389,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::CalculationArgumentsIncomplete,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_identity(invocation.declaration),
+                subject: self.symbol_id(invocation.declaration),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &invocation.span)?,

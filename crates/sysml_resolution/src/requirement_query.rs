@@ -4,14 +4,14 @@
 //! canonical direct feature membership roles and documentation records; they do not reparse
 //! requirement syntax or infer a role from a member name.
 
-use crate::SymbolIdentity;
+use crate::SymbolId;
 
 pub use spec42_constraint_manifest::RequirementDerivedFactKind;
 pub use sysml_contract::{RequirementDerivedFactCollection, RequirementDerivedFactPrerequisite};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequirementDerivedFactOutcome {
-    Elements(Box<[SymbolIdentity]>),
+    Elements(Box<[SymbolId]>),
     Text(Box<[Box<str>]>),
     Unsupported {
         prerequisite: RequirementDerivedFactPrerequisite,

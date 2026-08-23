@@ -3,11 +3,11 @@
 //! A qualified name is a semantic lookup key, not an element identity. The optional document
 //! identity narrows the lookup to one admitted source; without it, resolution ranges over every
 //! source domain in this immutable publication. The result always carries the publication-owned
-//! opaque [`SymbolIdentity`](crate::SymbolIdentity).
+//! opaque [`SymbolId`](crate::SymbolId).
 
 use crate::{
     ElementKind, ElementSearch, ElementSource, PublicationCompleteness, PublishedResolution,
-    QueryOutcome, SourceLocation, SymbolEntry, SymbolIdentity,
+    QueryOutcome, SourceLocation, SymbolEntry, SymbolId,
 };
 
 /// A readable element reference interpreted against one immutable publication.
@@ -24,7 +24,7 @@ pub struct QualifiedElementReference {
 /// One canonical candidate for a readable qualified reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedReferenceTarget {
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     pub kind: ElementKind,
     pub qualified_name: Box<str>,
     pub location: SourceLocation,

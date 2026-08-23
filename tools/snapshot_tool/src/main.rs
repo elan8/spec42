@@ -43,7 +43,7 @@ use sysml_query::resolved_slice::{
     QueryOutcome, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
     RelationshipTarget, RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
     RequirementDerivedFactPrerequisite, SourceKind, SpecializationCheckOutcome,
-    SpecializationCheckPrerequisite, SymbolIdentity, TextPosition, TypeDerivedElementCollection,
+    SpecializationCheckPrerequisite, SymbolId, TextPosition, TypeDerivedElementCollection,
     TypeDerivedFactCollection, TypeDerivedFactOutcome, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection,
 };
@@ -1465,14 +1465,14 @@ impl SemanticRelationshipOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum SemanticRelationshipObservation {
     Relationship {
-        source: SymbolIdentity,
+        source: SymbolId,
         kind: SemanticRelationshipKind,
         provenance: RelationshipProvenance,
         target: RelationshipTarget,
-        expected_target: Option<SymbolIdentity>,
+        expected_target: Option<SymbolId>,
     },
     Absent {
-        source: SymbolIdentity,
+        source: SymbolId,
         kind: SemanticRelationshipKind,
         provenance: RelationshipProvenance,
     },
@@ -4649,12 +4649,12 @@ struct SemanticExpectationObservations {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ElementDerivedOwnerObservation {
     Owner {
-        source: SymbolIdentity,
-        actual: SymbolIdentity,
-        expected: Option<SymbolIdentity>,
+        source: SymbolId,
+        actual: SymbolId,
+        expected: Option<SymbolId>,
     },
     Absent {
-        source: SymbolIdentity,
+        source: SymbolId,
     },
     Incomplete,
 }
@@ -4662,7 +4662,7 @@ enum ElementDerivedOwnerObservation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ElementDerivedDocumentationObservation {
     Values {
-        source: SymbolIdentity,
+        source: SymbolId,
         values: Box<[Documentation]>,
         expected: Option<ExpectedDocumentation>,
     },
@@ -4672,8 +4672,8 @@ enum ElementDerivedDocumentationObservation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum NamespaceDerivedElementObservation {
     Values {
-        values: Box<[SymbolIdentity]>,
-        expected: Option<SymbolIdentity>,
+        values: Box<[SymbolId]>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
     Unsupported,
@@ -4682,8 +4682,8 @@ enum NamespaceDerivedElementObservation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum TypeDerivedElementObservation {
     Values {
-        values: Box<[SymbolIdentity]>,
-        expected: Option<SymbolIdentity>,
+        values: Box<[SymbolId]>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
     Unsupported,
@@ -4693,7 +4693,7 @@ enum TypeDerivedElementObservation {
 enum TypeDerivedFactObservation {
     Outcome {
         value: TypeDerivedFactOutcome,
-        expected: Option<SymbolIdentity>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
 }
@@ -4702,7 +4702,7 @@ enum TypeDerivedFactObservation {
 enum ActionDerivedFactObservation {
     Outcome {
         value: ActionDerivedFactOutcome,
-        expected: Option<SymbolIdentity>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
 }
@@ -4711,7 +4711,7 @@ enum ActionDerivedFactObservation {
 enum DefinitionUsageDerivedObservation {
     Outcome {
         value: DefinitionUsageDerivedOutcome,
-        expected: Option<SymbolIdentity>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
 }
@@ -4720,7 +4720,7 @@ enum DefinitionUsageDerivedObservation {
 enum RequirementDerivedFactObservation {
     Outcome {
         value: RequirementDerivedFactOutcome,
-        expected: Option<SymbolIdentity>,
+        expected: Option<SymbolId>,
     },
     Incomplete,
 }
@@ -4819,7 +4819,7 @@ fn observe_semantic_relationship(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let inspection = match model.inspection().inspect(&source) {
+    let inspection = match model.inspection().inspect(source) {
         QueryOutcome::Resolved(inspection)
         | QueryOutcome::Recovered(inspection)
         | QueryOutcome::UnsupportedWith(inspection) => inspection,
@@ -4853,7 +4853,7 @@ fn observe_feature_derived_relationship(
     };
     let relationships = match model
         .inspection()
-        .feature_derived_relationships(&source, expectation.collection)
+        .feature_derived_relationships(source, expectation.collection)
     {
         QueryOutcome::Resolved(relationships)
         | QueryOutcome::Recovered(relationships)
@@ -4896,7 +4896,7 @@ fn observe_type_derived_relationship(
     };
     let relationships = match model
         .inspection()
-        .type_derived_relationships(&source, expectation.collection)
+        .type_derived_relationships(source, expectation.collection)
     {
         QueryOutcome::Resolved(relationships)
         | QueryOutcome::Recovered(relationships)
@@ -4939,7 +4939,7 @@ fn observe_type_derived_element(
     };
     let values = match model
         .inspection()
-        .type_derived_elements(&source, expectation.collection)
+        .type_derived_elements(source, expectation.collection)
     {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)
@@ -4974,7 +4974,7 @@ fn observe_type_derived_fact(
     };
     let value = match model
         .inspection()
-        .type_derived_fact(&source, expectation.collection)
+        .type_derived_fact(source, expectation.collection)
     {
         QueryOutcome::Resolved(value)
         | QueryOutcome::Recovered(value)
@@ -5009,7 +5009,7 @@ fn observe_action_derived_fact(
     };
     let value = match model
         .inspection()
-        .action_derived_fact(&source, expectation.collection)
+        .action_derived_fact(source, expectation.collection)
     {
         QueryOutcome::Resolved(value)
         | QueryOutcome::Recovered(value)
@@ -5044,7 +5044,7 @@ fn observe_definition_usage_derived(
     };
     let value = match model
         .inspection()
-        .definition_usage_derived(&source, expectation.kind)
+        .definition_usage_derived(source, expectation.kind)
     {
         QueryOutcome::Resolved(value)
         | QueryOutcome::Recovered(value)
@@ -5087,7 +5087,7 @@ fn observe_requirement_derived_fact(
     };
     let value = match model
         .inspection()
-        .requirement_derived_fact(&source, expectation.collection)
+        .requirement_derived_fact(source, expectation.collection)
     {
         QueryOutcome::Resolved(value)
         | QueryOutcome::Recovered(value)
@@ -5125,7 +5125,7 @@ fn observe_element_derived_owner(
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
     let ElementDerivedOwnerKind::Owner = expectation.kind;
-    let owner = match model.inspection().derived_element_owner(&source) {
+    let owner = match model.inspection().derived_element_owner(source) {
         QueryOutcome::Resolved(owner)
         | QueryOutcome::Recovered(owner)
         | QueryOutcome::UnsupportedWith(owner) => owner,
@@ -5168,7 +5168,7 @@ fn observe_element_derived_documentation(
     };
     let values = match model
         .inspection()
-        .element_derived_documentation(&source, expectation.collection)
+        .element_derived_documentation(source, expectation.collection)
     {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)
@@ -5205,7 +5205,7 @@ fn observe_namespace_derived_element(
     };
     let values = match model
         .inspection()
-        .namespace_derived_elements(&source, expectation.collection)
+        .namespace_derived_elements(source, expectation.collection)
     {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)
@@ -5241,7 +5241,7 @@ fn observe_namespace_import_derived_element(
         Err(status) => return Err(format!("owner reference is {}", status.description())),
     };
     let NamespaceImportDerivedElementKind::ImportedElement = expectation.kind;
-    let values = match model.inspection().namespace_import_derived_elements(&owner) {
+    let values = match model.inspection().namespace_import_derived_elements(owner) {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)
         | QueryOutcome::UnsupportedWith(values) => values,
@@ -5333,7 +5333,7 @@ fn observe_specialization_check(
 
 fn observe_expected_relationship(
     model: &PublishedModel,
-    source: SymbolIdentity,
+    source: SymbolId,
     kind: SemanticRelationshipKind,
     expected_target_name: Option<&str>,
     expected_provenance: Option<RelationshipProvenance>,
@@ -5389,7 +5389,7 @@ fn observe_expected_relationship(
 fn resolve_semantic_identity(
     model: &PublishedModel,
     qualified_name: &str,
-) -> Result<SymbolIdentity, SemanticIdentityStatus> {
+) -> Result<SymbolId, SemanticIdentityStatus> {
     match model
         .inspection()
         .resolve_qualified_reference(&QualifiedElementReference {

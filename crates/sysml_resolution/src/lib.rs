@@ -51,7 +51,7 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 pub use sysml_contract::{
     ElementKind, ElementSearch, ElementSource, LibrarySpecializationAnchorBranch, MembershipRole,
     OccurrenceRole, PublicationCompleteness, RequirementConstraintKind, StateSubactionKind,
-    TextPosition, TextRange,
+    SymbolId, SymbolToken, TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -245,16 +245,6 @@ impl SourceInput {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct SymbolIdentity(Box<str>);
-
-impl SymbolIdentity {
-    /// The canonical, opaque identity encoding used for equality and boundary handles.
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceLocation {
     pub document: Box<str>,
@@ -264,7 +254,7 @@ pub struct SourceLocation {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NavigationTarget {
-    pub symbol: SymbolIdentity,
+    pub symbol: SymbolId,
     pub name: Box<str>,
     pub location: SourceLocation,
 }
@@ -284,7 +274,7 @@ pub enum QueryOutcome<T> {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RenameOutcome {
     Ready {
-        symbol: SymbolIdentity,
+        symbol: SymbolId,
         name: Box<str>,
         range: TextRange,
         occurrences: Box<[SourceLocation]>,
@@ -300,7 +290,7 @@ pub enum RenameOutcome {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VisibleMember {
-    pub symbol: SymbolIdentity,
+    pub symbol: SymbolId,
     pub name: Box<str>,
     pub kind: ElementKind,
     /// The role this member plays in its owner, where the OMG carries that on the owning
@@ -772,7 +762,7 @@ impl PublishedResolution {
 
     pub fn references(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
         self.model.references(symbol, include_declaration)
@@ -798,19 +788,47 @@ impl PublishedResolution {
 
     /// The settled evaluation of one element: value, state, authored units and required
     /// measurement, from facts this publication fixed before it became visible.
-    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+    pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
         self.model.evaluate(symbol)
     }
 
     /// Everything this publication knows about one element.
-    pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
+    pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
+    }
+
+    /// The `::`-joined owner path of one element, borrowed from this publication.
+    ///
+    /// A display convenience, not an identity: an anonymous ancestor contributes an empty
+    /// segment, so two elements can share a qualified name. The path is settled at the barrier,
+    /// so this costs a slice, not an allocation; [`PublishedResolution::symbol_token`] is what a
+    /// consumer takes when it needs to keep something.
+    pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.model.symbol_qualified_name(symbol)
+    }
+
+    /// The stable, serialisable form of one element handle.
+    ///
+    /// A [`SymbolId`] addresses a slot in *this* publication and must not outlive it. A
+    /// [`SymbolToken`] is derived from the element's structure, so it is equal across builds of
+    /// the same sources and is what crosses a process or protocol boundary. Materialising one
+    /// walks the owner chain and allocates: it is a boundary operation, asked for explicitly.
+    pub fn symbol_token(&self, symbol: SymbolId) -> Option<SymbolToken> {
+        self.model.symbol_token(symbol)
+    }
+
+    /// The handle a token names in this publication, if it still names one.
+    ///
+    /// The inverse of [`PublishedResolution::symbol_token`]; `None` when the element the token
+    /// describes is not in this publication.
+    pub fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
+        self.model.resolve_token(token)
     }
 
     /// The exact derived `Element::owner` fact from the canonical ownership structure.
     pub fn derived_element_owner(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<DerivedElementOwner> {
         self.model.derived_element_owner(symbol)
     }
@@ -818,7 +836,7 @@ impl PublishedResolution {
     /// One exact derived `Element` documentation collection from canonical documentation facts.
     pub fn element_derived_documentation(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ElementDerivedDocumentationCollection,
     ) -> QueryOutcome<Box<[Documentation]>> {
         self.model.element_derived_documentation(symbol, collection)
@@ -843,7 +861,7 @@ impl PublishedResolution {
     /// relationship families, effective typing, inherited features, metadata bindings, incoming
     /// and outgoing relationships, and both evaluation channels. Assembled from the same settled
     /// facts, so the two can never disagree.
-    pub fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+    pub fn element_details(&self, symbol: SymbolId) -> QueryOutcome<ElementDetails> {
         self.model.element_details(symbol)
     }
 
@@ -878,7 +896,7 @@ impl PublishedResolution {
     /// reconstruct a relationship from names or source text.
     pub fn feature_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: FeatureDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.feature_derived_relationships(symbol, collection)
@@ -888,7 +906,7 @@ impl PublishedResolution {
     /// relationship store.
     pub fn type_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.type_derived_relationships(symbol, collection)
@@ -898,9 +916,9 @@ impl PublishedResolution {
     /// membership facts. The result never creates a public Membership relationship identity.
     pub fn type_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.type_derived_elements(symbol, collection)
     }
 
@@ -908,7 +926,7 @@ impl PublishedResolution {
     /// result owner exists yet.
     pub fn type_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedFactCollection,
     ) -> QueryOutcome<TypeDerivedFactOutcome> {
         self.model.type_derived_fact(symbol, collection)
@@ -919,7 +937,7 @@ impl PublishedResolution {
     /// variant, and time-variation predicates retain a typed unavailable-fact outcome.
     pub fn definition_usage_derived(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         kind: DefinitionUsageDerivedKind,
     ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
         self.model.definition_usage_derived(symbol, kind)
@@ -927,7 +945,7 @@ impl PublishedResolution {
 
     pub fn action_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ActionDerivedFactCollection,
     ) -> QueryOutcome<ActionDerivedFactOutcome> {
         self.model.action_derived_fact(symbol, collection)
@@ -937,7 +955,7 @@ impl PublishedResolution {
     /// roles or documentation records.
     pub fn requirement_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: RequirementDerivedFactCollection,
     ) -> QueryOutcome<RequirementDerivedFactOutcome> {
         self.model.requirement_derived_fact(symbol, collection)
@@ -947,7 +965,7 @@ impl PublishedResolution {
     /// canonical FeatureMembership and TypeFeaturing publication.
     pub fn type_featuring_check(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         rule: TypeFeaturingCheckKind,
     ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
         self.model.type_featuring_check(symbol, rule)
@@ -976,9 +994,9 @@ impl PublishedResolution {
     /// membership facts. Unsupported and incomplete outcomes remain explicit.
     pub fn namespace_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: NamespaceDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.namespace_derived_elements(symbol, collection)
     }
 
@@ -986,7 +1004,7 @@ impl PublishedResolution {
     /// Namespace owns. Each result carries the canonical import identity and target outcome.
     pub fn namespace_import_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
         self.model.namespace_import_derived_elements(symbol)
     }
@@ -1010,33 +1028,33 @@ impl PublishedResolution {
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.
-    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+    pub fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
     }
 
     /// Applies every owned and inherited condition of `view` to one candidate element.
     pub fn view_selection(
         &self,
-        view: &SymbolIdentity,
-        candidate: &SymbolIdentity,
+        view: SymbolId,
+        candidate: SymbolId,
     ) -> QueryOutcome<ViewSelection> {
         self.model.view_selection(view, candidate)
     }
 
     /// The types a feature declares.
-    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn direct_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.direct_types(symbol)
     }
 
     pub fn requirement_usage_typing(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<RequirementUsageTyping> {
         self.model.requirement_usage_typing(symbol)
     }
 
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
-    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+    pub fn effective_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[EffectiveType]>> {
         self.model.effective_types(symbol)
     }
 
@@ -1046,12 +1064,12 @@ impl PublishedResolution {
     /// This is the semantic owner's typed anchor outcome, not a lookup reconstructed from a
     /// display name. A missing library is `Unresolved`; competing library declarations are
     /// returned as `Ambiguous` candidates.
-    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolId> {
         self.model.part_definition_specialization_anchor()
     }
 
     /// The canonical anchor outcome for one generated unconditional library-specialization rule.
-    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_specialization_anchor(rule_id)
     }
 
@@ -1062,7 +1080,7 @@ impl PublishedResolution {
         &self,
         rule_id: &str,
         branch: LibrarySpecializationAnchorBranch,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         self.model
             .library_specialization_anchor_branch(rule_id, branch)
     }
@@ -1072,7 +1090,7 @@ impl PublishedResolution {
     /// Unlike [`Self::library_specialization_anchor`], this includes generated
     /// `redefinesFromLibrary` contracts. The stable manifest rule ID is the only selector;
     /// callers cannot recover a rule from a display name or metaclass spelling.
-    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_rule_anchor(rule_id)
     }
 
@@ -1087,32 +1105,32 @@ impl PublishedResolution {
     /// The supertypes one specialization edge away.
     pub fn direct_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_supertypes(symbol, scope)
     }
 
     /// Every supertype, reflexively including `symbol` itself.
     pub fn all_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.all_supertypes(symbol, scope)
     }
 
     /// The declarations one specialization edge below `symbol`.
     pub fn direct_subtypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_subtypes(symbol, scope)
     }
 
     /// The type that features `symbol`, if any.
-    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+    pub fn featuring_type(&self, symbol: SymbolId) -> QueryOutcome<Option<SymbolId>> {
         self.model.featuring_type(symbol)
     }
 
@@ -1120,15 +1138,15 @@ impl PublishedResolution {
     ///
     /// A variable FeatureMembership without a canonical `snapshots` prerequisite is explicitly
     /// unsupported rather than treated as an unfeatured ordinary member.
-    pub fn featuring_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn featuring_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.featuring_types(symbol)
     }
 
     /// Whether `specific` conforms to `general` (KerML §8.4.3.2), reflexively and transitively.
     pub fn conforms_to(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
         scope: SpecializationScope,
     ) -> QueryOutcome<Conformance> {
         self.model.conforms_to(specific, general, scope)
@@ -1137,8 +1155,8 @@ impl PublishedResolution {
     /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
     pub fn feature_typing_conforms(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
     ) -> QueryOutcome<Conformance> {
         self.model.feature_typing_conforms(specific, general)
     }
@@ -1146,8 +1164,8 @@ impl PublishedResolution {
     /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
     pub fn subsetting_conforms(
         &self,
-        subsetting: &SymbolIdentity,
-        subsetted: &SymbolIdentity,
+        subsetting: SymbolId,
+        subsetted: SymbolId,
     ) -> QueryOutcome<SubsettingConformance> {
         self.model.subsetting_conforms(subsetting, subsetted)
     }
@@ -1268,7 +1286,7 @@ mod tests {
             other => panic!("the probe must resolve to a target, got: {other:?}"),
         };
         let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
-            published.references(&symbol, false)
+            published.references(symbol, false)
         });
         assert!(
             matches!(outcome, QueryOutcome::Resolved(_)),
@@ -1323,7 +1341,7 @@ mod tests {
         source: &str,
         document: &str,
         needle: &str,
-    ) -> SymbolIdentity {
+    ) -> SymbolId {
         match published.inspect_at(document, position_of(source, needle)) {
             QueryOutcome::Resolved(at) => {
                 at.containing
@@ -1344,7 +1362,7 @@ mod tests {
             .1;
         let symbol = probe_symbol(&published, source, document, needle);
         let (outcome, visited) =
-            crate::index::documents::measure_visited_index_entries(|| published.evaluate(&symbol));
+            crate::index::documents::measure_visited_index_entries(|| published.evaluate(symbol));
         assert!(
             matches!(outcome, QueryOutcome::Resolved(_)),
             "the evaluation query must resolve, got: {outcome:?}"
@@ -1387,7 +1405,7 @@ mod tests {
         let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
         let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
         let measure = || {
-            crate::index::documents::measure_visited_index_entries(|| published.evaluate(&symbol))
+            crate::index::documents::measure_visited_index_entries(|| published.evaluate(symbol))
         };
         let (first, first_cost) = measure();
         let (second, second_cost) = measure();
@@ -1409,17 +1427,17 @@ mod tests {
             let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
             let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
             let (evaluation, cost) = crate::index::documents::measure_visited_index_entries(|| {
-                published.evaluate(&symbol)
+                published.evaluate(symbol)
             });
-            let inspection = published.inspect(&symbol);
+            let inspection = published.inspect(symbol);
             (evaluation, inspection, cost)
         };
         let inspection_first = {
             let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
             let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
-            let inspection = published.inspect(&symbol);
+            let inspection = published.inspect(symbol);
             let (evaluation, cost) = crate::index::documents::measure_visited_index_entries(|| {
-                published.evaluate(&symbol)
+                published.evaluate(symbol)
             });
             (evaluation, inspection, cost)
         };
@@ -1567,7 +1585,7 @@ mod tests {
         published: &PublishedResolution,
         document: &str,
         qualified: &str,
-    ) -> SymbolIdentity {
+    ) -> SymbolId {
         match published.document_symbols(document) {
             QueryOutcome::Resolved(entries)
             | QueryOutcome::Recovered(entries)
@@ -1628,18 +1646,21 @@ mod tests {
     fn an_unknown_identity_is_unresolved_rather_than_empty() {
         let published = publication_for(&[("memory://types.sysml", "package P { part def A; }")]);
         let a = symbol_named(&published, "memory://types.sysml", "P::A");
-        let missing = SymbolIdentity("no-such-declaration".into());
+        // A handle ranking past the end of the publication: the only stale handle the authority
+        // can tell apart from a live one. `SymbolId` documents why the token form exists for the
+        // rest.
+        let missing = SymbolId::from_index(u32::MAX as usize - 1).expect("a handle beyond any publication");
 
         assert!(
             matches!(
-                published.direct_supertypes(&missing, SpecializationScope::AnySpecialization),
+                published.direct_supertypes(missing, SpecializationScope::AnySpecialization),
                 QueryOutcome::Unresolved
             ),
             "an identity that names nothing must not answer with an empty supertype list"
         );
         assert!(
             matches!(
-                published.conforms_to(&a, &missing, SpecializationScope::AnySpecialization),
+                published.conforms_to(a, missing, SpecializationScope::AnySpecialization),
                 QueryOutcome::Unresolved
             ),
             "conformance against an unknown identity is unanswerable, not false"
@@ -1659,7 +1680,7 @@ mod tests {
         published: &PublishedResolution,
         document: &str,
         qualified_name: &str,
-    ) -> SymbolIdentity {
+    ) -> SymbolId {
         settled(published.document_symbols(document))
             .iter()
             .find(|entry| entry.qualified_name.as_ref() == qualified_name)
@@ -1679,7 +1700,7 @@ mod tests {
             let published = publication_for(sources);
             let symbol = identity_of(&published, "memory://i.sysml", "P::w");
             let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
-                published.element_details(&symbol)
+                published.element_details(symbol)
             });
             assert!(
                 matches!(outcome, QueryOutcome::Resolved(_)),

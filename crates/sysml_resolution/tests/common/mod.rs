@@ -129,7 +129,7 @@ pub fn target_symbol(
     document: &str,
     line: u32,
     character: u32,
-) -> SymbolIdentity {
+) -> SymbolId {
     match published.target_at(document, TextPosition { line, character }) {
         QueryOutcome::Resolved(target) => target.symbol,
         other => panic!("expected a resolved navigation target, got: {other:?}"),
@@ -145,7 +145,7 @@ pub fn inspect_named(
     character: u32,
 ) -> ElementInspection {
     let symbol = target_symbol(published, document, line, character);
-    match published.inspect(&symbol) {
+    match published.inspect(symbol) {
         QueryOutcome::Resolved(inspection) => inspection,
         other => panic!("expected a resolved inspection, got: {other:?}"),
     }
@@ -185,7 +185,7 @@ pub fn probe_symbol(
     source: &str,
     document: &str,
     needle: &str,
-) -> SymbolIdentity {
+) -> SymbolId {
     match published.inspect_at(document, position_of(source, needle)) {
         QueryOutcome::Resolved(at) => {
             at.containing
@@ -206,7 +206,7 @@ pub fn symbol_named(
     published: &PublishedResolution,
     document: &str,
     qualified: &str,
-) -> SymbolIdentity {
+) -> SymbolId {
     match published.document_symbols(document) {
         QueryOutcome::Resolved(entries)
         | QueryOutcome::Recovered(entries)
@@ -229,7 +229,7 @@ pub fn conformance(outcome: QueryOutcome<Conformance>) -> Conformance {
     }
 }
 
-pub fn symbols(outcome: QueryOutcome<Box<[SymbolIdentity]>>) -> Vec<SymbolIdentity> {
+pub fn symbols(outcome: QueryOutcome<Box<[SymbolId]>>) -> Vec<SymbolId> {
     match outcome {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)
@@ -444,7 +444,7 @@ pub fn identity_of(
     published: &PublishedResolution,
     document: &str,
     qualified_name: &str,
-) -> SymbolIdentity {
+) -> SymbolId {
     settled(published.document_symbols(document))
         .iter()
         .find(|entry| entry.qualified_name.as_ref() == qualified_name)
@@ -458,7 +458,7 @@ pub fn details_of(
     document: &str,
     qualified_name: &str,
 ) -> ElementDetails {
-    settled(published.element_details(&identity_of(published, document, qualified_name)))
+    settled(published.element_details(identity_of(published, document, qualified_name)))
 }
 
 pub fn names(entries: &[SymbolEntry]) -> Vec<&str> {
@@ -575,7 +575,7 @@ pub fn specialization_relationships(
     document: &str,
     qualified_name: &str,
 ) -> Vec<ElementRelationship> {
-    settled(published.inspect(&identity_of(published, document, qualified_name)))
+    settled(published.inspect(identity_of(published, document, qualified_name)))
         .relationships
         .into_vec()
         .into_iter()
@@ -588,7 +588,7 @@ pub fn type_featuring_relationships(
     document: &str,
     qualified_name: &str,
 ) -> Vec<ElementRelationship> {
-    settled(published.inspect(&identity_of(published, document, qualified_name)))
+    settled(published.inspect(identity_of(published, document, qualified_name)))
         .relationships
         .into_vec()
         .into_iter()

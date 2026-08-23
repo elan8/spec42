@@ -35,7 +35,7 @@ pub use sysml_resolution::{
     RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
     SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
     SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextPosition,
     TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
     TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
@@ -269,6 +269,29 @@ impl PublishedModel {
         DebugQueries { model: &self.inner }
     }
 
+    /// The `::`-joined display path of one element, borrowed from this publication.
+    ///
+    /// A display convenience, not an identity: two elements under an anonymous ancestor can share
+    /// one. Borrowed, so showing a name costs no allocation.
+    pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.inner.qualified_name(symbol)
+    }
+
+    /// The stable, serialisable form of one element handle.
+    ///
+    /// A [`SymbolId`] addresses an element of *this* publication and must not outlive it. Take a
+    /// [`SymbolToken`] for anything that crosses a process or protocol boundary -- an LSP DTO, a
+    /// JSON report, an archive entry, the generator protocol -- or that has to survive a rebuild.
+    /// Materialising one allocates; it is a boundary operation, asked for explicitly.
+    pub fn symbol_token(&self, symbol: SymbolId) -> Option<SymbolToken> {
+        self.inner.symbol_token(symbol)
+    }
+
+    /// The handle a token names in this publication, if it still names one.
+    pub fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
+        self.inner.resolve_token(token)
+    }
+
     pub fn publication(&self) -> PublicationQueries<'_> {
         PublicationQueries { model: &self.inner }
     }
@@ -408,8 +431,16 @@ impl DiagramQueries<'_> {
         self.model.diagram_view_catalog()
     }
 
-    pub fn view(&self, identity: &SymbolIdentity) -> QueryOutcome<DiagramViewProjection> {
+    pub fn view(&self, identity: SymbolId) -> QueryOutcome<DiagramViewProjection> {
         self.model.diagram_view(identity)
+    }
+
+    /// The occurrence identity the projection uses for one exposed root.
+    ///
+    /// An occurrence carries the scene key generators and reports publish, which is derived from
+    /// boundary tokens; a consumer takes the occurrence from here rather than assembling a path.
+    pub fn root_occurrence(&self, root: SymbolId) -> Option<DiagramOccurrenceIdentity> {
+        self.model.diagram_root_occurrence(root)
     }
 }
 
@@ -457,7 +488,7 @@ pub struct EvaluationQueries<'a> {
 
 impl EvaluationQueries<'_> {
     /// What this publication settled for one element's authored expression.
-    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+    pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
         self.model.evaluate(symbol)
     }
 }
@@ -472,19 +503,19 @@ pub struct TypeQueries<'a> {
 
 impl TypeQueries<'_> {
     /// The types a feature declares.
-    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn direct_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.direct_types(symbol)
     }
 
     pub fn requirement_usage_typing(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<RequirementUsageTyping> {
         self.model.requirement_usage_typing(symbol)
     }
 
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
-    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+    pub fn effective_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[EffectiveType]>> {
         self.model.effective_types(symbol)
     }
 
@@ -493,7 +524,7 @@ impl TypeQueries<'_> {
     ///
     /// Missing and ambiguous anchors stay explicit query outcomes; this facade never substitutes
     /// a name from a rendered model or from fixture metadata.
-    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolId> {
         self.model.part_definition_specialization_anchor()
     }
 
@@ -501,7 +532,7 @@ impl TypeQueries<'_> {
     ///
     /// The rule ID identifies an authoritative manifest entry. An absent or unresolved anchor is
     /// `Unresolved`; competing standard-library declarations remain `Ambiguous` candidates.
-    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_specialization_anchor(rule_id)
     }
 
@@ -511,14 +542,14 @@ impl TypeQueries<'_> {
         &self,
         rule_id: &str,
         branch: LibrarySpecializationAnchorBranch,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         self.model
             .library_specialization_anchor_branch(rule_id, branch)
     }
 
     /// The typed canonical anchor outcome for any generated exact library rule, including
     /// `specializesFromLibrary` and `redefinesFromLibrary` contracts.
-    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_rule_anchor(rule_id)
     }
 
@@ -533,45 +564,45 @@ impl TypeQueries<'_> {
     /// The supertypes one specialization edge away.
     pub fn direct_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_supertypes(symbol, scope)
     }
 
     /// Every supertype, reflexively including `symbol` itself, as the Pilot's `allSupertypes` does.
     pub fn all_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.all_supertypes(symbol, scope)
     }
 
     /// The declarations one specialization edge below `symbol`.
     pub fn direct_subtypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_subtypes(symbol, scope)
     }
 
     /// The type that features `symbol`, if any.
-    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+    pub fn featuring_type(&self, symbol: SymbolId) -> QueryOutcome<Option<SymbolId>> {
         self.model.featuring_type(symbol)
     }
 
     /// Every effective TypeFeaturing target, retaining authored versus implied provenance.
-    pub fn featuring_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn featuring_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.featuring_types(symbol)
     }
 
     /// Whether `specific` conforms to `general` (KerML §8.4.3.2).
     pub fn conforms_to(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
         scope: SpecializationScope,
     ) -> QueryOutcome<Conformance> {
         self.model.conforms_to(specific, general, scope)
@@ -580,8 +611,8 @@ impl TypeQueries<'_> {
     /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
     pub fn feature_typing_conforms(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
     ) -> QueryOutcome<Conformance> {
         self.model.feature_typing_conforms(specific, general)
     }
@@ -589,8 +620,8 @@ impl TypeQueries<'_> {
     /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
     pub fn subsetting_conforms(
         &self,
-        subsetting: &SymbolIdentity,
-        subsetted: &SymbolIdentity,
+        subsetting: SymbolId,
+        subsetted: SymbolId,
     ) -> QueryOutcome<SubsettingConformance> {
         self.model.subsetting_conforms(subsetting, subsetted)
     }
@@ -638,7 +669,7 @@ impl NavigationQueries<'_> {
 
     pub fn references(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
         self.model.references(symbol, include_declaration)
@@ -694,7 +725,7 @@ impl InspectionQueries<'_> {
     }
 
     /// Everything the publication knows about one element.
-    pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
+    pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
     }
 
@@ -703,7 +734,7 @@ impl InspectionQueries<'_> {
     /// unresolved query.
     pub fn derived_element_owner(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<DerivedElementOwner> {
         self.model.derived_element_owner(symbol)
     }
@@ -712,7 +743,7 @@ impl InspectionQueries<'_> {
     /// contract and projected from canonical documentation facts.
     pub fn element_derived_documentation(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ElementDerivedDocumentationCollection,
     ) -> QueryOutcome<Box<[Documentation]>> {
         self.model.element_derived_documentation(symbol, collection)
@@ -734,7 +765,7 @@ impl InspectionQueries<'_> {
     /// to decide how to combine. The facade adapts nothing here -- every field, including which
     /// relationship families are applicable and what each of them settled to, was decided by
     /// `sysml_resolution` at the publication barrier.
-    pub fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+    pub fn element_details(&self, symbol: SymbolId) -> QueryOutcome<ElementDetails> {
         self.model.element_details(symbol)
     }
 
@@ -766,7 +797,7 @@ impl InspectionQueries<'_> {
     /// One exact Feature relationship collection from the canonical relationship store.
     pub fn feature_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: FeatureDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.feature_derived_relationships(symbol, collection)
@@ -775,7 +806,7 @@ impl InspectionQueries<'_> {
     /// One exact Type relationship collection or operand projection from canonical facts.
     pub fn type_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.type_derived_relationships(symbol, collection)
@@ -784,9 +815,9 @@ impl InspectionQueries<'_> {
     /// One exact Type element-valued derivation from canonical ownership and membership facts.
     pub fn type_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.type_derived_elements(symbol, collection)
     }
 
@@ -794,7 +825,7 @@ impl InspectionQueries<'_> {
     /// its canonical semantic owner can publish the normative values.
     pub fn type_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedFactCollection,
     ) -> QueryOutcome<TypeDerivedFactOutcome> {
         self.model.type_derived_fact(symbol, collection)
@@ -804,7 +835,7 @@ impl InspectionQueries<'_> {
     /// semantic publication. The façade does not reconstruct direct or inherited membership.
     pub fn definition_usage_derived(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         kind: DefinitionUsageDerivedKind,
     ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
         self.model.definition_usage_derived(symbol, kind)
@@ -812,7 +843,7 @@ impl InspectionQueries<'_> {
 
     pub fn action_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ActionDerivedFactCollection,
     ) -> QueryOutcome<ActionDerivedFactOutcome> {
         self.model.action_derived_fact(symbol, collection)
@@ -822,7 +853,7 @@ impl InspectionQueries<'_> {
     /// documentation records remain owned by the resolved semantic publication.
     pub fn requirement_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: RequirementDerivedFactCollection,
     ) -> QueryOutcome<RequirementDerivedFactOutcome> {
         self.model.requirement_derived_fact(symbol, collection)
@@ -831,7 +862,7 @@ impl InspectionQueries<'_> {
     /// The manifest-scoped outcome for one exact TypeFeaturing check.
     pub fn type_featuring_check(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         rule: TypeFeaturingCheckKind,
     ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
         self.model.type_featuring_check(symbol, rule)
@@ -857,9 +888,9 @@ impl InspectionQueries<'_> {
     /// facts. This facade does not recreate Namespace membership from syntax or scope labels.
     pub fn namespace_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: NamespaceDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.namespace_derived_elements(symbol, collection)
     }
 
@@ -867,7 +898,7 @@ impl InspectionQueries<'_> {
     /// opaque facade preserves each import's canonical identity and typed target outcome.
     pub fn namespace_import_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
         self.model.namespace_import_derived_elements(symbol)
     }
@@ -890,7 +921,7 @@ impl InspectionQueries<'_> {
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.
-    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+    pub fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
     }
 }
@@ -952,7 +983,7 @@ impl DebugQueries<'_> {
                 write_locations_outcome(
                     output,
                     "references",
-                    &self.model.references(&target.symbol, true),
+                    &self.model.references(target.symbol, true),
                 )?;
             }
             write_rename_outcome(
@@ -1022,7 +1053,7 @@ impl DebugQueries<'_> {
                     qualified_name: probe.qualified_name.clone().into(),
                     expected_kind: probe.expected_kind,
                 });
-            write_qualified_reference_outcome(output, &outcome)?;
+            write_qualified_reference_outcome(self.model, output, &outcome)?;
             writeln!(output, "  )")?;
         }
         write!(output, ")")
@@ -1030,13 +1061,20 @@ impl DebugQueries<'_> {
 }
 
 fn write_qualified_reference_target(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     target: &QualifiedReferenceTarget,
 ) -> fmt::Result {
+    // The probe report is a baseline artefact, so it carries the boundary token, not the handle:
+    // a handle is a rank inside one publication and means nothing in a recorded file.
     write!(
         output,
         "(candidate (identity {:?}) (kind {:?}) (qualified-name {:?}) ",
-        target.identity.as_str(),
+        model
+            .symbol_token(target.identity)
+            .as_ref()
+            .map(SymbolToken::as_str)
+            .unwrap_or_default(),
         target.kind.as_str(),
         target.qualified_name
     )?;
@@ -1045,6 +1083,7 @@ fn write_qualified_reference_target(
 }
 
 fn write_qualified_reference_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     outcome: &QualifiedReferenceOutcome,
 ) -> fmt::Result {
@@ -1052,15 +1091,15 @@ fn write_qualified_reference_outcome(
     match outcome {
         QualifiedReferenceOutcome::Resolved(target) => {
             write!(output, " (status resolved) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::Recovered(target) => {
             write!(output, " (status recovery) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::UnsupportedWith(target) => {
             write!(output, " (status unsupported) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::Ambiguous(targets)
         | QualifiedReferenceOutcome::WrongKind(targets) => {
@@ -1072,7 +1111,7 @@ fn write_qualified_reference_outcome(
             write!(output, " (status {status}) (candidates")?;
             for target in targets {
                 write!(output, " ")?;
-                write_qualified_reference_target(output, target)?;
+                write_qualified_reference_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1651,8 +1690,16 @@ pub struct RawStorageIsNotPublic;
 mod tests {
     use super::{
         build, build_measured, AdmittedSource, BuildRequest, ConstructionStrategy,
-        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind,
+        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind, SymbolId,
     };
+
+    /// The display path of an anchor handle, for assertions that name an element in prose.
+    ///
+    /// A handle carries no text, so a test that wants to say "this anchor is the one in `Items`"
+    /// asks the publication, exactly as a host would.
+    fn qualified(model: &PublishedModel, symbol: impl std::borrow::Borrow<SymbolId>) -> &str {
+        model.qualified_name(*symbol.borrow()).unwrap_or_default()
+    }
 
     #[test]
     fn immutable_publication_can_be_shared_by_async_hosts() {
@@ -1720,7 +1767,7 @@ mod tests {
 
         assert!(matches!(
             publication.types().library_specialization_anchor(ITEM_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("Items")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("Items")
         ));
         assert!(matches!(
             publication
@@ -1790,63 +1837,63 @@ mod tests {
 
         assert!(matches!(
             publication.types().library_specialization_anchor(POLARITY_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("satisfiedRequirementChecks")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("satisfiedRequirementChecks")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 POLARITY_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("notSatisfiedRequirementChecks")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("notSatisfiedRequirementChecks")
         ));
         assert!(matches!(
             publication
                 .types()
                 .library_specialization_anchor(MEMBERSHIP_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("constraints")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("constraints")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 MEMBERSHIP_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("assumptions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("assumptions")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(IF_ACTION_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenActions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenActions")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 IF_ACTION_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenElseActions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenElseActions")
         ));
         let flow_binary_anchor = publication
             .types()
             .library_specialization_anchor(FLOW_BINARY_RULE);
         assert!(
-            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if anchor.as_str().contains("Message")),
+            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if qualified(&publication, anchor).contains("Message")),
             "expected the flow-definition anchor, got {flow_binary_anchor:?}"
         );
         assert!(matches!(
             publication.types().library_specialization_anchor(FLOW_USAGE_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flows")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flows")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(FLOW_WITH_ENDS_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flowTransfers")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flowTransfers")
         ));
         assert!(matches!(
             publication
                 .types()
                 .library_specialization_anchor(FEATURE_DATA_VALUE_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("dataValues")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("dataValues")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(FEATURE_END_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("participant")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("participant")
         ));
     }
 
@@ -1883,9 +1930,9 @@ mod tests {
             matches!(
                 anchor_outcome,
                 QueryOutcome::Resolved(ref anchor)
-                    if anchor.as_str().contains("Transfers")
-                        && anchor.as_str().contains("Transfer")
-                        && anchor.as_str().contains("payload")
+                    if qualified(&publication, anchor).contains("Transfers")
+                        && qualified(&publication, anchor).contains("Transfer")
+                        && qualified(&publication, anchor).contains("payload")
             ),
             "{anchor_outcome:?}"
         );
@@ -1933,7 +1980,7 @@ mod tests {
             .identity
             .clone();
         assert!(matches!(
-            publication.types().featuring_types(&mass),
+            publication.types().featuring_types(mass),
             QueryOutcome::Resolved(values)
                 if values.len() == 1
                     && values[0].provenance == sysml_resolution::RelationshipProvenance::Implied

@@ -73,6 +73,16 @@ pub(crate) struct IdentityIndex {
     /// walk into an exactly sized buffer rather than a measuring walk followed by a writing one --
     /// and the `Box<str>` handed to the boundary is never reallocated to shrink it.
     pub(crate) lengths: Box<[u32]>,
+    /// Declarations in ascending canonical-identity order: `order[rank]` is the declaration whose
+    /// identity sorts at `rank`.
+    ///
+    /// This is what makes the publication's element handle orderable. A handle is a rank in this
+    /// permutation rather than a raw storage ordinal, so comparing two handles is an integer
+    /// compare that answers exactly what comparing their canonical identity strings answered --
+    /// every sorted result the authority publishes keeps its order without materialising a byte.
+    pub(crate) order: Box<[DeclarationId]>,
+    /// The inverse permutation: each declaration's rank in `order`.
+    pub(crate) rank: Box<[u32]>,
 }
 
 impl std::fmt::Debug for IdentityIndex {
@@ -184,6 +194,28 @@ impl IdentityIndex {
                 heads.insert_unique(hash, id, rehash);
             }
         }
+        // The handle order is the canonical-identity order, settled once here. Sorting needs the
+        // encodings, so they are materialised for the comparison and dropped again: the index
+        // keeps the permutation (four bytes per element each way), never the strings.
+        let mut encodings: Vec<Box<str>> = Vec::with_capacity(declarations);
+        for index in 0..declarations {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            current.clear();
+            write_identity(storage, &occurrences, id, &mut current)?;
+            encodings.push(current.as_str().into());
+        }
+        let mut order: Vec<DeclarationId> = Vec::with_capacity(declarations);
+        for index in 0..declarations {
+            order.push(DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?);
+        }
+        order.sort_unstable_by(|left, right| {
+            encodings[left.index()].cmp(&encodings[right.index()])
+        });
+        drop(encodings);
+        let mut rank = vec![0u32; declarations];
+        for (position, id) in order.iter().enumerate() {
+            rank[id.index()] = u32::try_from(position).map_err(|_| ResolutionError::Capacity)?;
+        }
         Ok(Self {
             occurrences,
             shorthand,
@@ -191,7 +223,19 @@ impl IdentityIndex {
             hash_builder,
             next: next.into_boxed_slice(),
             lengths: lengths.into_boxed_slice(),
+            order: order.into_boxed_slice(),
+            rank: rank.into_boxed_slice(),
         })
+    }
+
+    /// The rank of a declaration in canonical-identity order.
+    pub(crate) fn rank_of(&self, id: DeclarationId) -> Option<usize> {
+        self.rank.get(id.index()).map(|rank| *rank as usize)
+    }
+
+    /// The declaration at one rank of the canonical-identity order.
+    pub(crate) fn at_rank(&self, rank: usize) -> Option<DeclarationId> {
+        self.order.get(rank).copied()
     }
 
     /// Whether the writer may identify this declaration by qualified name alone.

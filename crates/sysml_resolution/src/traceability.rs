@@ -1,4 +1,4 @@
-use crate::{RelationshipProvenance, SourceLocation, SymbolIdentity};
+use crate::{RelationshipProvenance, SourceLocation, SymbolId};
 pub use spec42_constraint_manifest::BindingConnectorCheckKind;
 pub use sysml_contract::{
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, SatisfyPolarity,
@@ -7,8 +7,8 @@ pub use sysml_contract::{
 /// The settled target of one directional end of an authored satisfy relationship.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SatisfyEndpoint {
-    Resolved(SymbolIdentity),
-    Ambiguous(Box<[SymbolIdentity]>),
+    Resolved(SymbolId),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     Unsupported,
 }
@@ -17,7 +17,7 @@ pub enum SatisfyEndpoint {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SatisfyRelationship {
     /// Stable identity of the anonymous relationship usage, preserving duplicates.
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     /// The `satisfy` operand: the requirement being satisfied.
     pub requirement: SatisfyEndpoint,
     /// The `by` operand: the element claimed to satisfy the requirement.
@@ -34,8 +34,8 @@ pub struct SatisfyRelationship {
 /// consumer from accidentally treating its left/right pair as a satisfy statement.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BindingEndpoint {
-    Resolved(SymbolIdentity),
-    Ambiguous(Box<[SymbolIdentity]>),
+    Resolved(SymbolId),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     Unsupported,
 }
@@ -50,7 +50,7 @@ pub struct BindingConnector {
     /// Stable identity of the authored binding-connector declaration or anonymous `bind`
     /// statement. Separate authored statements remain separate facts even when their endpoints
     /// are identical.
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     pub source: BindingEndpoint,
     pub target: BindingEndpoint,
     pub provenance: RelationshipProvenance,

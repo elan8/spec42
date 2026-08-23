@@ -24,6 +24,7 @@ use crate::index::expressions::ExpressionIndex;
 use crate::index::expressions::ExpressionInputs;
 use crate::index::expressions::SettledFilter;
 use crate::index::identity::IdentityIndex;
+use crate::index::qualified::QualifiedNameIndex;
 use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types::TypeIndex;
 use crate::lower::storage::ParsedSources;
@@ -174,6 +175,7 @@ impl Evaluated {
     pub(crate) fn index(self) -> Result<(Indexed, ParsedSources), ResolutionError> {
         let has_evaluation = !self.evaluation.is_empty();
         let identities = IdentityIndex::build(&self.storage)?;
+        let qualified_names = QualifiedNameIndex::build(&self.storage)?;
         let documents = DocumentIndex::build(&self.storage, &self.sources)?;
         let reverse_references =
             ReverseReferenceIndex::build(self.storage.declarations.len(), &self.resolution)?;
@@ -205,6 +207,7 @@ impl Evaluated {
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
             identities,
+            qualified_names,
             documents,
             memberships: self.memberships,
             reverse_references,
@@ -246,6 +249,7 @@ impl Indexed {
                 direct_names: self.direct_names,
                 effective_imports: self.effective_imports,
                 identities: self.identities,
+                qualified_names: self.qualified_names,
                 documents: self.documents,
                 memberships: self.memberships,
                 reverse_references: self.reverse_references,

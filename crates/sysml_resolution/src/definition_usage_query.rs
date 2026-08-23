@@ -4,7 +4,7 @@
 //! publication's canonical direct owner, feature-membership, declaration-kind, and modifier
 //! facts.  It never reconstructs a broader inherited `feature` collection from syntax or names.
 
-use crate::SymbolIdentity;
+use crate::SymbolId;
 
 pub use spec42_constraint_manifest::DefinitionUsageDerivedKind;
 pub use sysml_contract::DefinitionUsageDerivedPrerequisite;
@@ -14,7 +14,7 @@ pub use sysml_contract::DefinitionUsageDerivedPrerequisite;
 pub enum DefinitionUsageDerivedOutcome {
     /// A final element-valued collection. The declarations retain their canonical identities and
     /// are deterministically ordered by the owner-defined symbol projection.
-    Elements(Box<[SymbolIdentity]>),
+    Elements(Box<[SymbolId]>),
     /// A scalar property whose complete canonical modifier facts are available.
     Boolean(bool),
     /// The precise first fact family that is not currently a published canonical input.

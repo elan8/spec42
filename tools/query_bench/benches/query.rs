@@ -13,7 +13,7 @@ use divan::Bencher;
 use spec42_query_bench::{
     cold_build, completion_position, navigation_position, warm_relink, Corpus, Fixture,
 };
-use sysml_query::resolved_slice::{QueryOutcome, SymbolIdentity};
+use sysml_query::resolved_slice::{QueryOutcome, SymbolId};
 
 /// Divan's allocation profiler. It reports allocations alongside time for every case here; the
 /// per-element normalisation is the `spec42-query-bench-allocations` binary's job.
@@ -90,7 +90,7 @@ fn q_target_at(bencher: Bencher) {
 fn q_references(bencher: Bencher) {
     let fixture = fixture();
     let symbol = navigation_symbol(fixture);
-    bencher.bench(|| black_box(fixture.model.navigation().references(&symbol, true)));
+    bencher.bench(|| black_box(fixture.model.navigation().references(symbol, true)));
 }
 
 /// Case 5: the outline of the largest library document.
@@ -121,7 +121,7 @@ fn q_diagnostics_for_document(bencher: Bencher) {
     });
 }
 
-fn navigation_symbol(fixture: &Fixture) -> SymbolIdentity {
+fn navigation_symbol(fixture: &Fixture) -> SymbolId {
     match fixture
         .model
         .navigation()

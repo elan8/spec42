@@ -5,7 +5,7 @@
 //! or any other storage this crate uses to produce them.
 
 use crate::inspection::{MultiplicityFacts, RelationshipProvenance};
-use crate::SymbolIdentity;
+use crate::SymbolId;
 pub use spec42_constraint_manifest::TypeDerivedFactKind;
 pub use spec42_constraint_manifest::TypeFeaturingCheckKind;
 pub use sysml_contract::{
@@ -17,10 +17,10 @@ pub use sysml_contract::{
 /// A future canonical value of one exact Type derived-fact query.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeDerivedFactValue {
-    Feature(SymbolIdentity),
-    FeatureMembership { member: SymbolIdentity },
+    Feature(SymbolId),
+    FeatureMembership { member: SymbolId },
     Multiplicity(MultiplicityFacts),
-    Conjugator { original_type: SymbolIdentity },
+    Conjugator { original_type: SymbolId },
 }
 
 /// A typed result for exact Type derivations that are not yet executable.
@@ -35,7 +35,7 @@ pub enum TypeDerivedFactOutcome {
 /// One type a feature declares.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TypeReference {
-    pub symbol: SymbolIdentity,
+    pub symbol: SymbolId,
     pub provenance: RelationshipProvenance,
 }
 
@@ -44,7 +44,7 @@ pub struct TypeReference {
 pub enum RequirementUsageTyping {
     Missing,
     Resolved(TypeReference),
-    Ambiguous(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     Unsupported,
 }
@@ -55,12 +55,12 @@ pub enum EffectiveTypeOrigin {
     /// The feature declares this typing itself.
     Direct,
     /// The feature inherits it from a feature it subsets or redefines.
-    Inherited(SymbolIdentity),
+    Inherited(SymbolId),
 }
 
 /// One type a feature has, directly or by inheritance.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EffectiveType {
-    pub symbol: SymbolIdentity,
+    pub symbol: SymbolId,
     pub origin: EffectiveTypeOrigin,
 }

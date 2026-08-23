@@ -371,7 +371,7 @@ impl<D> SemanticModel<D> {
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
-            subject: self.symbol_identity(reference.source),
+            subject: self.symbol_id(reference.source),
             location: DiagnosticLocation {
                 document: writer::document_identity(self, source.document).into(),
                 range: document_range(&self.storage, source.document, &reference.span)?,
@@ -1520,7 +1520,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::ViewpointRepLanguageUnresolved,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_identity(record.declaration),
+                subject: self.symbol_id(record.declaration),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &record.span)?,
@@ -1586,7 +1586,7 @@ impl<D> SemanticModel<D> {
                             code: DiagnosticCode::InvalidMultiplicity,
                             severity: DiagnosticSeverity::Warning,
                             origin: DiagnosticOrigin::Semantic,
-                            subject: self.symbol_identity(id),
+                            subject: self.symbol_id(id),
                             location: DiagnosticLocation {
                                 document: writer::document_identity(self, document).into(),
                                 range: document_range(&self.storage, document, &multiplicity.span)?,
@@ -1892,7 +1892,7 @@ impl<D> SemanticModel<D> {
             code: DiagnosticCode::MissingLibraryContext,
             severity: DiagnosticSeverity::Information,
             origin: DiagnosticOrigin::Semantic,
-            subject: self.symbol_identity(source),
+            subject: self.symbol_id(source),
             location: DiagnosticLocation {
                 document: writer::document_identity(self, document).into(),
                 range,

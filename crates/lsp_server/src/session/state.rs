@@ -305,7 +305,7 @@ mod tests {
             .iter()
             .find(|entry| entry.qualified_name.as_ref() == "W::w")
             .expect("the workspace usage");
-        let types = match model.types().direct_types(&usage.identity) {
+        let types = match model.types().direct_types(usage.identity) {
             sysml_query::resolved_slice::QueryOutcome::Resolved(types)
             | sysml_query::resolved_slice::QueryOutcome::Recovered(types)
             | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(types) => types,
@@ -338,7 +338,7 @@ mod tests {
             .find(|symbol| symbol.qualified_name.as_ref() == "App::w")
             .unwrap();
         assert!(matches!(
-            model.types().direct_types(&symbol.identity),
+            model.types().direct_types(symbol.identity),
             sysml_query::resolved_slice::QueryOutcome::Resolved(ref types) if types.len() == 1
         ));
     }
@@ -380,7 +380,7 @@ mod tests {
                 )
             })
             .expect("selected GeneralView");
-        let projection = match model.diagrams().view(&view.semantic_id) {
+        let projection = match model.diagrams().view(view.semantic_id) {
             sysml_query::resolved_slice::QueryOutcome::Resolved(projection) => projection,
             other => panic!("expected resolved GeneralView projection, got: {other:?}"),
         };

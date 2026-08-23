@@ -22,7 +22,7 @@ use serde::Serialize;
 use sysml_query::resolved_slice::{
     build_measured, AdmittedSource as QuerySourceDocument, BuildMeasurements, BuildRequest,
     ConstructionStrategy, PublicationCompleteness, PublishedModel, QueryOutcome, SourceKind,
-    SpecializationScope, SymbolIdentity, TextPosition,
+    SpecializationScope, SymbolId, TextPosition,
 };
 
 const REVIEWED_PRIMARY_TARGET_NS: u64 = 1_000_000_000;
@@ -220,7 +220,7 @@ struct PreparedQueries {
     /// The symbols the probes actually landed on, deduplicated. Every downstream query below is
     /// keyed on one of these, so result counts describe real published elements rather than the
     /// probe count.
-    symbols: Vec<SymbolIdentity>,
+    symbols: Vec<SymbolId>,
 }
 
 #[derive(Clone)]
@@ -590,7 +590,7 @@ fn run_navigation_queries(
 
 fn run_reference_queries(model: &PublishedModel, prepared: &PreparedQueries) -> QueryCounts {
     let mut counts = QueryCounts::default();
-    for symbol in &prepared.symbols {
+    for &symbol in &prepared.symbols {
         counts.operations += 1;
         let occurrences = model.navigation().references(symbol, true);
         if let QueryOutcome::Resolved(locations) | QueryOutcome::Recovered(locations) = &occurrences
@@ -604,7 +604,7 @@ fn run_reference_queries(model: &PublishedModel, prepared: &PreparedQueries) -> 
 
 fn run_type_queries(model: &PublishedModel, prepared: &PreparedQueries) -> QueryCounts {
     let mut counts = QueryCounts::default();
-    for symbol in &prepared.symbols {
+    for &symbol in &prepared.symbols {
         counts.operations += 2;
         let effective = model.types().effective_types(symbol);
         let supertypes = model

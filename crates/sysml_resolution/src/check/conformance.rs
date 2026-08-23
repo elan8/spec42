@@ -566,7 +566,7 @@ impl<D> SemanticModel<D> {
                     code,
                     severity,
                     origin: DiagnosticOrigin::Semantic,
-                    subject: self.symbol_identity(relationship.source),
+                    subject: self.symbol_id(relationship.source),
                     location: DiagnosticLocation {
                         document: writer::document_identity(self, document).into(),
                         range: document_range(&self.storage, document, &source.span)?,
@@ -854,7 +854,7 @@ impl<D> SemanticModel<D> {
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
-            subject: self.symbol_identity(declaration),
+            subject: self.symbol_id(declaration),
             location: self.declaration_location(declaration)?,
             related: Box::default(),
         })
@@ -878,7 +878,7 @@ impl<D> SemanticModel<D> {
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
-            subject: self.symbol_identity(reference.source),
+            subject: self.symbol_id(reference.source),
             location: DiagnosticLocation {
                 document: writer::document_identity(self, source.document).into(),
                 range: document_range(&self.storage, source.document, &reference.span)?,

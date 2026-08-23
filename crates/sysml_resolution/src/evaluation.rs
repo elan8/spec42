@@ -14,7 +14,7 @@
 
 use std::fmt;
 
-use crate::{SourceLocation, SymbolIdentity};
+use crate::{SourceLocation, SymbolId};
 
 pub use sysml_contract::EvaluationFailure;
 
@@ -122,9 +122,9 @@ impl fmt::Display for EvaluationState {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedUnit {
     /// The unit declaration itself, such as `SI::kilogram`.
-    pub unit: SymbolIdentity,
+    pub unit: SymbolId,
     /// The measurement-reference types it is an instance of, in canonical order.
-    pub dimensions: Box<[SymbolIdentity]>,
+    pub dimensions: Box<[SymbolId]>,
 }
 
 /// What the publication settled for one authored unit token.
@@ -139,7 +139,7 @@ pub enum UnitResolution {
     /// A catalog is admitted and no unit in it carries this symbol.
     UnknownSymbol,
     /// Several admitted units carry this symbol, so choosing one would be a guess.
-    Ambiguous(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolId]>),
     /// The token is not a single unit symbol.
     ///
     /// The parser hands a unit over as opaque text rather than as a reference, because a unit may
@@ -175,7 +175,7 @@ pub struct AuthoredUnit {
 /// one of the questions unanswerable.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementEvaluation {
-    pub element: SymbolIdentity,
+    pub element: SymbolId,
     pub state: EvaluationState,
     /// The unit tokens authored in this element's expression, in authored order.
     ///
@@ -209,7 +209,7 @@ pub enum ExpectedMeasurement {
     /// type resolved but its measurement-reference feature has no type this publication can read.
     Indeterminate,
     /// The element's values must be measured in one of these measurement-reference types.
-    Required(Box<[SymbolIdentity]>),
+    Required(Box<[SymbolId]>),
 }
 
 /// What one publication settled about a verdict-bearing element's expression.

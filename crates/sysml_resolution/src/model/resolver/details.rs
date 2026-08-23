@@ -33,7 +33,7 @@ use crate::OccurrenceRole;
 use crate::QueryOutcome;
 use crate::RelationshipProvenance;
 use crate::SourceLocation;
-use crate::SymbolIdentity;
+use crate::SymbolId;
 use crate::TextPosition;
 
 /// The relationship families an element-details answer reports separately.
@@ -139,8 +139,8 @@ pub(crate) fn is_verdict_bearing(kind: ElementKind) -> bool {
 impl<D> SemanticModel<D> {
     pub(crate) fn view_selection(
         &self,
-        view: &SymbolIdentity,
-        candidate: &SymbolIdentity,
+        view: SymbolId,
+        candidate: SymbolId,
     ) -> QueryOutcome<ViewSelection> {
         let view_id = match self.single_declaration(view) {
             Ok(id) => id,
@@ -255,7 +255,7 @@ impl<D> SemanticModel<D> {
                             .resolution
                             .ambiguous_candidates(range)
                             .iter()
-                            .filter_map(|id| self.symbol_identity(*id))
+                            .filter_map(|id| self.symbol_id(*id))
                             .collect::<Vec<_>>();
                         candidates.sort();
                         candidates.dedup();
@@ -311,22 +311,14 @@ impl<D> SemanticModel<D> {
         entry.name.as_deref().and_then(ElementKind::parse)
     }
 
-    pub(crate) fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+    pub(crate) fn element_details(&self, symbol: SymbolId) -> QueryOutcome<ElementDetails> {
         if matches!(
             self.metadata.completeness,
             PublicationCompleteness::NonConverged
         ) {
             return QueryOutcome::Incomplete;
         }
-        let mut candidates = self.identity_declarations(symbol);
-        if candidates.len() > 1 {
-            let details = candidates
-                .into_iter()
-                .filter_map(|id| self.details(id))
-                .collect::<Vec<_>>();
-            return QueryOutcome::Ambiguous(details.into_boxed_slice());
-        }
-        let Some(id) = candidates.pop() else {
+        let Some(id) = self.declaration_of(symbol) else {
             return QueryOutcome::Unresolved;
         };
         match self.details(id) {
@@ -483,7 +475,7 @@ impl<D> SemanticModel<D> {
                     origin: match source {
                         types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
                         types::EffectiveTypeSource::Inherited(from) => {
-                            EffectiveTypeOrigin::Inherited(self.symbol_identity(*from)?)
+                            EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?)
                         }
                     },
                 })
@@ -509,7 +501,7 @@ impl<D> SemanticModel<D> {
             .iter()
             .chain(redefinition.candidates.iter())
         {
-            let Ok(feature_id) = self.single_declaration::<()>(&feature.identity) else {
+            let Ok(feature_id) = self.single_declaration::<()>(feature.identity) else {
                 continue;
             };
             for (target, _) in self.types.effective_types(feature_id) {
@@ -585,7 +577,7 @@ impl<D> SemanticModel<D> {
                     .map(|(target, _)| *target),
             )
             .collect::<Vec<_>>();
-        seed.sort_by_key(|target| self.symbol_identity(*target));
+        seed.sort_by_key(|target| self.symbol_id(*target));
         seed.dedup();
         queue.extend(seed);
 
@@ -646,7 +638,7 @@ impl<D> SemanticModel<D> {
                 })
                 .map(|(target, _)| *target)
                 .collect::<Vec<_>>();
-            bases.sort_by_key(|target| self.symbol_identity(*target));
+            bases.sort_by_key(|target| self.symbol_id(*target));
             queue.extend(bases);
         }
         inherited.into_boxed_slice()

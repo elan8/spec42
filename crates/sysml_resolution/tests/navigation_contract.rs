@@ -575,7 +575,7 @@ fn state_transition_scene_owns_vertices_and_composed_transitions() {
         .iter()
         .find(|view| view.kind == DiagramViewKind::StateTransition)
         .unwrap();
-    let projection = match published.diagram_view(&view.semantic_id) {
+    let projection = match published.diagram_view(view.semantic_id) {
         QueryOutcome::Resolved(projection) => projection,
         other => panic!("expected state scene, got {other:?}"),
     };
@@ -644,7 +644,7 @@ fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() 
         .iter()
         .find(|view| view.kind == DiagramViewKind::General)
         .unwrap();
-    let projection = match published.diagram_view(&view.semantic_id) {
+    let projection = match published.diagram_view(view.semantic_id) {
         QueryOutcome::Resolved(projection) => projection,
         other => panic!("expected General View projection, got {other:?}"),
     };
@@ -960,6 +960,10 @@ fn anonymous_declarations_under_different_owners_get_distinct_identities() {
 
 /// The identity is structural, so editing an unrelated document cannot change it. A dense
 /// storage ordinal would shift as soon as any earlier document gained a declaration.
+///
+/// The structural identity is the *token*: a `SymbolId` is a rank within one publication and is
+/// deliberately not comparable across builds, which is why anything that has to survive an edit
+/// takes a token first.
 #[test]
 fn element_identity_survives_an_edit_to_an_unrelated_document() {
     let before = publication_for(&[
@@ -974,10 +978,15 @@ fn element_identity_survives_an_edit_to_an_unrelated_document() {
         ("memory://b.sysml", "package B { part def Engine; }"),
     ]);
 
-    let engine_before = target_symbol(&before, "memory://b.sysml", 0, 21);
-    let engine_after = target_symbol(&after, "memory://b.sysml", 0, 21);
+    let engine_before = before
+        .symbol_token(target_symbol(&before, "memory://b.sysml", 0, 21))
+        .expect("expected a token for a symbol this publication just answered with");
+    let engine_after = after
+        .symbol_token(target_symbol(&after, "memory://b.sysml", 0, 21))
+        .expect("expected a token for a symbol this publication just answered with");
     assert_eq!(
-        engine_before, engine_after,
+        engine_before.as_str(),
+        engine_after.as_str(),
         "expected an unrelated document's edit to leave this element's identity unchanged"
     );
 }
@@ -1003,7 +1012,7 @@ fn duplicate_sibling_names_stay_separately_addressable() {
         "expected identically named siblings to carry distinct identities"
     );
 
-    for symbol in [&first, &second] {
+    for symbol in [first, second] {
         match published.references(symbol, true) {
             QueryOutcome::Resolved(locations) => assert_eq!(
                 locations.len(),
@@ -1141,7 +1150,7 @@ fn document_symbols_lists_every_declaration_with_its_identity() {
     assert_eq!(wheel.kind, ElementKind::PartDefinition);
     assert!(
         matches!(
-            published.inspect(&wheel.identity),
+            published.inspect(wheel.identity),
             QueryOutcome::Resolved(_)
         ),
         "an outline entry's identity must address the same element"
@@ -1230,7 +1239,7 @@ fn namespace_import_derived_elements_preserve_canonical_target_outcomes() {
     );
     let model = identity_of(&published, "memory://model.sysml", "Model");
     let library = identity_of(&published, "memory://library.sysml", "Library");
-    let values = settled(published.namespace_import_derived_elements(&model));
+    let values = settled(published.namespace_import_derived_elements(model));
     assert_eq!(values.len(), 1);
     assert_eq!(values[0].relationship.kind, "namespaceImport");
     assert_eq!(
@@ -1310,10 +1319,10 @@ fn element_details_agrees_with_the_services_it_is_assembled_from() {
         ConstructionSchedule::Sequential,
     );
     let symbol = identity_of(&published, "memory://model.sysml", "P::rover");
-    let details = settled(published.element_details(&symbol));
-    assert_eq!(details.inspection, settled(published.inspect(&symbol)));
-    assert_eq!(details.evaluation, settled(published.evaluate(&symbol)));
-    let effective = settled(published.effective_types(&symbol));
+    let details = settled(published.element_details(symbol));
+    assert_eq!(details.inspection, settled(published.inspect(symbol)));
+    assert_eq!(details.evaluation, settled(published.evaluate(symbol)));
+    let effective = settled(published.effective_types(symbol));
     assert_eq!(
         details
             .effective_typing

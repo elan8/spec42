@@ -10,7 +10,7 @@
 //! type name, which throws away everything its own model knows. Rendering is a consumer's job.
 
 use crate::evaluation::EvaluationState;
-use crate::{ElementKind, MembershipRole, SourceLocation, SymbolIdentity, TextRange};
+use crate::{ElementKind, MembershipRole, SourceLocation, SymbolId, TextRange};
 
 pub use sysml_contract::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
@@ -40,15 +40,15 @@ pub struct Documentation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DerivedElementOwner {
     NoOwner,
-    Owner(SymbolIdentity),
+    Owner(SymbolId),
 }
 
 /// What resolution concluded about one authored reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RelationshipTarget {
-    Resolved(SymbolIdentity),
+    Resolved(SymbolId),
     /// Resolution found more than one candidate, all retained in canonical order.
-    Ambiguous(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     /// The reference's form is outside the supported resolution slice.
     Unsupported,
@@ -72,7 +72,7 @@ pub struct ElementRelationship {
 /// Everything this crate knows about one element.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementInspection {
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     pub kind: ElementKind,
     /// The role this element plays in its owner, where the OMG carries it on the membership.
     pub role: Option<MembershipRole>,
@@ -86,7 +86,7 @@ pub struct ElementInspection {
     pub location: SourceLocation,
     /// The whole declaration's range.
     pub declaration_range: TextRange,
-    pub owner: Option<SymbolIdentity>,
+    pub owner: Option<SymbolId>,
     pub membership: MembershipFacts,
     pub documentation: Box<[Documentation]>,
     pub multiplicity: MultiplicityFacts,
@@ -136,11 +136,11 @@ pub struct ElementInspectionAt {
 /// One entry of a document's symbol outline.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SymbolEntry {
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
     pub qualified_name: Box<str>,
-    pub owner: Option<SymbolIdentity>,
+    pub owner: Option<SymbolId>,
     pub location: SourceLocation,
     pub declaration_range: TextRange,
 }

@@ -112,7 +112,8 @@ use crate::RelationshipProvenance;
 use crate::RelationshipTarget;
 use crate::RenameOutcome;
 use crate::SourceLocation;
-use crate::SymbolIdentity;
+use crate::SymbolId;
+use crate::SymbolToken;
 use crate::TextPosition;
 use crate::TextRange;
 use crate::VisibleMember;
@@ -249,29 +250,59 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    /// The canonical structural identity of one declaration.
+    /// The handle for one declaration of this publication.
     ///
-    /// Stable across builds of the same sources, unlike the dense storage ordinal, so a consumer
-    /// may hold one across a rebuild; see `IdentityIndex`.
-    pub(crate) fn symbol_identity(&self, id: DeclarationId) -> Option<SymbolIdentity> {
-        self.identities
-            .identity(&self.storage, id)
-            .map(SymbolIdentity)
+    /// The handle is the declaration's rank in canonical-identity order, so minting one is an
+    /// array read and comparing two is an integer compare that orders exactly as comparing the
+    /// two canonical identity strings did. It is valid for this publication only; a consumer that
+    /// needs to survive a rebuild takes `symbol_token` instead.
+    pub(crate) fn symbol_id(&self, id: DeclarationId) -> Option<SymbolId> {
+        SymbolId::from_index(self.identities.rank_of(id)?)
     }
 
-    /// Every declaration carrying `identity`.
+    /// The declaration a handle addresses, or `None` when it is not one of this publication's.
     ///
-    /// More than one only when the source authors identically named siblings; callers publish that
-    /// as an explicit ambiguous outcome rather than choosing between them.
-    pub(crate) fn identity_declarations(&self, identity: &SymbolIdentity) -> Vec<DeclarationId> {
-        self.identities.declarations(&self.storage, &identity.0)
+    /// A handle that ranks beyond this publication names nothing, and every query built on this
+    /// answers `Unresolved` for it rather than an empty result -- an identity that names nothing
+    /// is unanswerable, not false. A handle from *another* publication whose rank is still in
+    /// range is indistinguishable from a valid one and will answer about whatever element now
+    /// holds that rank; that is why `SymbolId` documents one-publication validity, and why
+    /// `symbol_token` exists for anything that has to outlive a build.
+    pub(crate) fn declaration_of(&self, symbol: SymbolId) -> Option<DeclarationId> {
+        self.identities.at_rank(symbol.index())
+    }
+
+    /// One declaration's `::`-joined display path, borrowed from the settled blob.
+    pub(crate) fn symbol_qualified_name(&self, symbol: SymbolId) -> Option<&str> {
+        let id = self.declaration_of(symbol)?;
+        self.qualified_names.qualified_name(id)
+    }
+
+    /// The stable structural encoding of a handle, materialised for a boundary.
+    ///
+    /// The encoding is derived from the owner chain, so this allocates: it is what a consumer
+    /// asks for explicitly when a string has to leave the process.
+    pub(crate) fn symbol_token(&self, symbol: SymbolId) -> Option<SymbolToken> {
+        let id = self.declaration_of(symbol)?;
+        self.identities
+            .identity(&self.storage, id)
+            .map(SymbolToken::from_encoded)
+    }
+
+    /// The handle a token names in this publication, if it still names one.
+    pub(crate) fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
+        self.identities
+            .declarations(&self.storage, token.as_str())
+            .first()
+            .copied()
+            .and_then(|id| self.symbol_id(id))
     }
 
     pub(crate) fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
         let declaration = self.storage.declaration(id)?;
         let name = self.storage.symbol(declaration.name?)?;
         Some(NavigationTarget {
-            symbol: self.symbol_identity(id)?,
+            symbol: self.symbol_id(id)?,
             name: name.into(),
             location: SourceLocation {
                 document: self
@@ -341,7 +372,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn references(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
         if matches!(
@@ -350,25 +381,7 @@ impl<D> SemanticModel<D> {
         ) {
             return QueryOutcome::Incomplete;
         }
-        let mut targets = self.identity_declarations(symbol);
-        if targets.len() > 1 {
-            // The caller's identity names identically authored siblings. Answering for one of
-            // them would silently pick; answering for all of them as one list would merge distinct
-            // elements' references, so each candidate's own list is published separately.
-            let per_candidate = targets
-                .into_iter()
-                .map(
-                    |target| match self.references_for(target, include_declaration) {
-                        QueryOutcome::Resolved(locations)
-                        | QueryOutcome::Recovered(locations)
-                        | QueryOutcome::UnsupportedWith(locations) => locations,
-                        _ => Box::default(),
-                    },
-                )
-                .collect::<Vec<_>>();
-            return QueryOutcome::Ambiguous(per_candidate.into_boxed_slice());
-        }
-        let Some(target) = targets.pop() else {
+        let Some(target) = self.declaration_of(symbol) else {
             return QueryOutcome::Unresolved;
         };
         self.references_for(target, include_declaration)
@@ -444,16 +457,7 @@ impl<D> SemanticModel<D> {
             if !valid_identifier(name) {
                 return RenameOutcome::InvalidName;
             }
-            let mut candidates = self.identity_declarations(&target.symbol);
-            if candidates.len() > 1 {
-                let mut ambiguous = candidates
-                    .into_iter()
-                    .filter_map(|candidate| self.declaration_target(candidate))
-                    .collect::<Vec<_>>();
-                ambiguous.sort_by(target_order);
-                return RenameOutcome::Ambiguous(ambiguous.into_boxed_slice());
-            }
-            let Some(id) = candidates.pop() else {
+            let Some(id) = self.declaration_of(target.symbol) else {
                 return RenameOutcome::Incomplete;
             };
             let Some(declaration) = self.storage.declaration(id) else {
@@ -473,7 +477,7 @@ impl<D> SemanticModel<D> {
                 }
             }
         }
-        let occurrences = match self.references(&target.symbol, true) {
+        let occurrences = match self.references(target.symbol, true) {
             QueryOutcome::Resolved(value) => value,
             _ => return RenameOutcome::Incomplete,
         };
@@ -773,7 +777,7 @@ impl<D> SemanticModel<D> {
     /// identically authored siblings and choosing between them would be a guess.
     pub(crate) fn single_declaration<T>(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> Result<DeclarationId, QueryOutcome<T>> {
         if matches!(
             self.metadata.completeness,
@@ -781,19 +785,15 @@ impl<D> SemanticModel<D> {
         ) {
             return Err(QueryOutcome::Incomplete);
         }
-        let mut candidates = self.identity_declarations(symbol);
-        if candidates.len() > 1 {
-            return Err(QueryOutcome::Unresolved);
-        }
-        candidates.pop().ok_or(QueryOutcome::Unresolved)
+        self.declaration_of(symbol).ok_or(QueryOutcome::Unresolved)
     }
 
     pub(crate) fn symbols(
         &self,
         declarations: impl Iterator<Item = DeclarationId>,
-    ) -> Box<[SymbolIdentity]> {
+    ) -> Box<[SymbolId]> {
         let mut symbols = declarations
-            .filter_map(|id| self.symbol_identity(id))
+            .filter_map(|id| self.symbol_id(id))
             .collect::<Vec<_>>();
         symbols.sort();
         symbols.dedup();
@@ -802,7 +802,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn direct_types(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[TypeReference]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -814,7 +814,7 @@ impl<D> SemanticModel<D> {
             .iter()
             .filter_map(|(target, provenance)| {
                 Some(TypeReference {
-                    symbol: self.symbol_identity(*target)?,
+                    symbol: self.symbol_id(*target)?,
                     provenance: match provenance {
                         types::FactProvenance::Authored => RelationshipProvenance::Authored,
                         types::FactProvenance::Implied => RelationshipProvenance::Implied,
@@ -831,7 +831,7 @@ impl<D> SemanticModel<D> {
     /// and target-resolution state are all the same facts an element inspection publishes.
     pub(crate) fn feature_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: FeatureDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         let declaration = match self.single_declaration(symbol) {
@@ -868,7 +868,7 @@ impl<D> SemanticModel<D> {
     /// retaining authored/implied provenance and unresolved target state.
     pub(crate) fn type_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         let declaration = match self.single_declaration(symbol) {
@@ -898,9 +898,9 @@ impl<D> SemanticModel<D> {
     /// themselves.
     pub(crate) fn type_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -1064,7 +1064,7 @@ impl<D> SemanticModel<D> {
     /// does not own.
     pub(crate) fn type_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedFactCollection,
     ) -> QueryOutcome<TypeDerivedFactOutcome> {
         let declaration = match self.single_declaration(symbol) {
@@ -1146,7 +1146,7 @@ impl<D> SemanticModel<D> {
     /// never fabricated from an element role.
     pub(crate) fn definition_usage_derived(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         kind: DefinitionUsageDerivedKind,
     ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
         let declaration = match self.single_declaration(symbol) {
@@ -1247,7 +1247,7 @@ impl<D> SemanticModel<D> {
     /// property identity, while this implementation reads only canonical lowered facts.
     pub(crate) fn requirement_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: RequirementDerivedFactCollection,
     ) -> QueryOutcome<RequirementDerivedFactOutcome> {
         let declaration = match self.single_declaration(symbol) {
@@ -1304,7 +1304,7 @@ impl<D> SemanticModel<D> {
     /// identities, so this returns the first unavailable canonical fact rather than guessing.
     pub(crate) fn action_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ActionDerivedFactCollection,
     ) -> QueryOutcome<ActionDerivedFactOutcome> {
         let declaration = match self.single_declaration(symbol) {
@@ -1356,7 +1356,7 @@ impl<D> SemanticModel<D> {
     /// spelling or reconstruct `isFeaturingType` downstream.
     pub(crate) fn type_featuring_check(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         kind: TypeFeaturingCheckKind,
     ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
         let declaration = match self.single_declaration(symbol) {
@@ -1568,7 +1568,7 @@ impl<D> SemanticModel<D> {
     /// fact. The query neither reads source text nor follows rendered qualified names.
     pub(crate) fn derived_element_owner(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<DerivedElementOwner> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -1585,7 +1585,7 @@ impl<D> SemanticModel<D> {
             .storage
             .declaration(declaration)
             .and_then(|declaration| declaration.owner)
-            .and_then(|owner| self.symbol_identity(owner))
+            .and_then(|owner| self.symbol_id(owner))
             .map_or(DerivedElementOwner::NoOwner, DerivedElementOwner::Owner);
         self.resolved_outcome(value)
     }
@@ -1594,7 +1594,7 @@ impl<D> SemanticModel<D> {
     /// documentation records. It does not inspect source syntax or recreate ownership paths.
     pub(crate) fn element_derived_documentation(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ElementDerivedDocumentationCollection,
     ) -> QueryOutcome<Box<[Documentation]>> {
         let declaration = match self.single_declaration(symbol) {
@@ -1631,9 +1631,9 @@ impl<D> SemanticModel<D> {
     /// records into a second relationship store.
     pub(crate) fn namespace_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: NamespaceDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -1680,7 +1680,7 @@ impl<D> SemanticModel<D> {
     /// from rendered source. Each value retains the same typed target outcome as inspection.
     pub(crate) fn namespace_import_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
         let namespace = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -1716,7 +1716,7 @@ impl<D> SemanticModel<D> {
                 [relationship] => relationship,
                 _ => return QueryOutcome::Unsupported,
             };
-            let Some(import) = self.symbol_identity(import) else {
+            let Some(import) = self.symbol_id(import) else {
                 return QueryOutcome::Unsupported;
             };
             values.push(NamespaceImportDerivedElement {
@@ -1730,7 +1730,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn requirement_usage_typing(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<RequirementUsageTyping> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -1754,16 +1754,14 @@ impl<D> SemanticModel<D> {
                     .types
                     .direct_types(declaration)
                     .iter()
-                    .filter_map(|(target, _)| self.symbol_identity(*target))
+                    .filter_map(|(target, _)| self.symbol_id(*target))
                     .collect::<Vec<_>>();
                 RequirementUsageTyping::Ambiguous(candidates.into_boxed_slice())
             }
             (Some(relationship), None) => match &relationship.target {
                 RelationshipTarget::Resolved(target) => {
-                    let target_is_requirement_definition = self
-                        .identity_declarations(target)
-                        .into_iter()
-                        .any(|target| {
+                    let target_is_requirement_definition =
+                        self.declaration_of(*target).is_some_and(|target| {
                             self.storage.declaration(target).is_some_and(|declaration| {
                                 declaration.kind == DeclarationKind::RequirementDefinition
                             })
@@ -1793,14 +1791,14 @@ impl<D> SemanticModel<D> {
             .and_then(|reference| self.resolution.outcome(*reference))
         {
             Some(ResolutionStatus::Resolved(target)) => self
-                .symbol_identity(target)
+                .symbol_id(target)
                 .map(SatisfyEndpoint::Resolved)
                 .unwrap_or(SatisfyEndpoint::Unresolved),
             Some(ResolutionStatus::Ambiguous(candidates)) => SatisfyEndpoint::Ambiguous(
                 self.resolution
                     .ambiguous_candidates(candidates)
                     .iter()
-                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .filter_map(|candidate| self.symbol_id(*candidate))
                     .collect(),
             ),
             Some(ResolutionStatus::Unsupported) => SatisfyEndpoint::Unsupported,
@@ -1842,7 +1840,7 @@ impl<D> SemanticModel<D> {
                     .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
                 let facts = self.storage.declaration_facts(id)?;
                 Some(SatisfyRelationship {
-                    identity: self.symbol_identity(id)?,
+                    identity: self.symbol_id(id)?,
                     requirement: endpoint(requirement),
                     satisfying_element: endpoint(satisfying),
                     polarity: if facts.negated.unwrap_or(false) {
@@ -1873,13 +1871,13 @@ impl<D> SemanticModel<D> {
     pub(crate) fn binding_connectors(&self) -> QueryOutcome<Box<[BindingConnector]>> {
         let endpoint = |endpoint: &binding::BindingEndpointFact| match endpoint {
             binding::BindingEndpointFact::Resolved(target) => self
-                .symbol_identity(*target)
+                .symbol_id(*target)
                 .map(BindingEndpoint::Resolved)
                 .unwrap_or(BindingEndpoint::Unresolved),
             binding::BindingEndpointFact::Ambiguous(candidates) => BindingEndpoint::Ambiguous(
                 candidates
                     .iter()
-                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .filter_map(|candidate| self.symbol_id(*candidate))
                     .collect(),
             ),
             binding::BindingEndpointFact::Unresolved => BindingEndpoint::Unresolved,
@@ -1896,7 +1894,7 @@ impl<D> SemanticModel<D> {
                     return None;
                 }
                 Some(BindingConnector {
-                    identity: self.symbol_identity(fact.connector)?,
+                    identity: self.symbol_id(fact.connector)?,
                     source: endpoint(&fact.source),
                     target: endpoint(&fact.target),
                     provenance: match fact.provenance {
@@ -1942,14 +1940,14 @@ impl<D> SemanticModel<D> {
             .and_then(|reference| self.resolution.outcome(reference))
         {
             Some(ResolutionStatus::Resolved(target)) => self
-                .symbol_identity(target)
+                .symbol_id(target)
                 .map(VerificationRequirement::Resolved)
                 .unwrap_or(VerificationRequirement::Unresolved),
             Some(ResolutionStatus::Ambiguous(candidates)) => VerificationRequirement::Ambiguous(
                 self.resolution
                     .ambiguous_candidates(candidates)
                     .iter()
-                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .filter_map(|candidate| self.symbol_id(*candidate))
                     .collect(),
             ),
             Some(ResolutionStatus::Unsupported) => VerificationRequirement::Unsupported,
@@ -2014,8 +2012,8 @@ impl<D> SemanticModel<D> {
                 })
                 .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
             let (Some(identity), Some(verification_case), Some(location)) = (
-                self.symbol_identity(id),
-                self.symbol_identity(case_id),
+                self.symbol_id(id),
+                self.symbol_id(case_id),
                 self.source_location(id),
             ) else {
                 continue;
@@ -2041,7 +2039,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn effective_types(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[EffectiveType]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -2053,11 +2051,11 @@ impl<D> SemanticModel<D> {
             .iter()
             .filter_map(|(target, source)| {
                 Some(EffectiveType {
-                    symbol: self.symbol_identity(*target)?,
+                    symbol: self.symbol_id(*target)?,
                     origin: match source {
                         types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
                         types::EffectiveTypeSource::Inherited(from) => {
-                            EffectiveTypeOrigin::Inherited(self.symbol_identity(*from)?)
+                            EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?)
                         }
                     },
                 })
@@ -2072,14 +2070,14 @@ impl<D> SemanticModel<D> {
     /// A missing anchor remains `Unresolved`; multiple standard-library candidates remain
     /// `Ambiguous` with every canonical identity. Callers therefore never need to recover the
     /// anchor from a rendered name or substitute a workspace declaration.
-    pub(crate) fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+    pub(crate) fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolId> {
         self.library_specialization_anchor("sysml-2.0:8.3.11.2:checkPartDefinitionSpecialization")
     }
 
     pub(crate) fn library_specialization_anchor(
         &self,
         rule_id: &str,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         self.library_rule_anchor(rule_id)
     }
 
@@ -2089,7 +2087,7 @@ impl<D> SemanticModel<D> {
         &self,
         rule_id: &str,
         branch: LibrarySpecializationAnchorBranch,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         self.library_anchor_outcome(
             self.resolution
                 .library_specialization_anchors
@@ -2101,24 +2099,24 @@ impl<D> SemanticModel<D> {
     ///
     /// The stable manifest rule ID selects the fact; this intentionally does not infer a rule from
     /// a metaclass, display name, or anchor text.
-    pub(crate) fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub(crate) fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.library_anchor_outcome(self.resolution.library_specialization_anchor(rule_id))
     }
 
     pub(crate) fn library_anchor_outcome(
         &self,
         outcome: Option<&LibrarySpecializationAnchor>,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         match outcome {
             Some(LibrarySpecializationAnchor::Resolved(anchor)) => self
-                .symbol_identity(*anchor)
+                .symbol_id(*anchor)
                 .map_or(QueryOutcome::Unresolved, |anchor| {
                     self.resolved_outcome(anchor)
                 }),
             Some(LibrarySpecializationAnchor::Ambiguous(candidates)) => QueryOutcome::Ambiguous(
                 candidates
                     .iter()
-                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .filter_map(|candidate| self.symbol_id(*candidate))
                     .collect(),
             ),
             Some(LibrarySpecializationAnchor::Missing) | None => QueryOutcome::Unresolved,
@@ -2148,9 +2146,9 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn direct_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2173,9 +2171,9 @@ impl<D> SemanticModel<D> {
     /// did not get it would silently answer "does not conform" for a type against itself.
     pub(crate) fn all_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2195,9 +2193,9 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn direct_subtypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2215,8 +2213,8 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn featuring_type(
         &self,
-        symbol: &SymbolIdentity,
-    ) -> QueryOutcome<Option<SymbolIdentity>> {
+        symbol: SymbolId,
+    ) -> QueryOutcome<Option<SymbolId>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2228,7 +2226,7 @@ impl<D> SemanticModel<D> {
             .types
             .featuring_types(declaration)
             .iter()
-            .filter_map(|(owner, _)| self.symbol_identity(*owner))
+            .filter_map(|(owner, _)| self.symbol_id(*owner))
             .collect::<Vec<_>>();
         match featuring.as_slice() {
             [] => self.resolved_outcome(None),
@@ -2241,7 +2239,7 @@ impl<D> SemanticModel<D> {
     /// fact family, retaining authored versus implied provenance.
     pub(crate) fn featuring_types(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[TypeReference]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -2252,7 +2250,7 @@ impl<D> SemanticModel<D> {
             .featuring_types(declaration)
             .iter()
             .filter_map(|(target, provenance)| {
-                self.symbol_identity(*target).map(|symbol| TypeReference {
+                self.symbol_id(*target).map(|symbol| TypeReference {
                     symbol,
                     provenance: match provenance {
                         types::FactProvenance::Authored => RelationshipProvenance::Authored,
@@ -2275,8 +2273,8 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn conforms_to(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
         scope: SpecializationScope,
     ) -> QueryOutcome<Conformance> {
         let specific = match self.single_declaration(specific) {
@@ -2411,8 +2409,8 @@ impl<D> SemanticModel<D> {
     /// feature that inherits its typing along a redefinition chain is not mistaken for untyped.
     pub(crate) fn feature_typing_conforms(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
     ) -> QueryOutcome<Conformance> {
         let specific = match self.single_declaration(specific) {
             Ok(declaration) => declaration,
@@ -2499,8 +2497,8 @@ impl<D> SemanticModel<D> {
     /// KerML §8.4.3.4, with its two halves kept apart.
     pub(crate) fn subsetting_conforms(
         &self,
-        subsetting: &SymbolIdentity,
-        subsetted: &SymbolIdentity,
+        subsetting: SymbolId,
+        subsetted: SymbolId,
     ) -> QueryOutcome<SubsettingConformance> {
         let subsetting = match self.single_declaration(subsetting) {
             Ok(declaration) => declaration,

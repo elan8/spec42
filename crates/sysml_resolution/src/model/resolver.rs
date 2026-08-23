@@ -23,6 +23,7 @@ use crate::index::documents::DocumentIndex;
 use crate::index::elements as inspection;
 use crate::index::expressions as expression;
 use crate::index::identity::IdentityIndex;
+use crate::index::qualified::QualifiedNameIndex;
 use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types;
 #[cfg(test)]
@@ -168,6 +169,8 @@ pub(crate) struct SemanticModel<D> {
     pub(crate) direct_names: NameIndex,
     pub(crate) effective_imports: NameIndex,
     pub(crate) identities: IdentityIndex,
+    /// Every declaration's `::`-joined display path, settled at the barrier into one blob.
+    pub(crate) qualified_names: QualifiedNameIndex,
     pub(crate) documents: DocumentIndex,
     pub(crate) memberships: MembershipIndex,
     pub(crate) reverse_references: ReverseReferenceIndex,

@@ -29,6 +29,7 @@ pub(crate) fn sysml_feature_inspector_result(
     let at = crate::views::feature_inspector::details_at(model, &uri, position);
     let mut response = match &at {
         Some(at) => crate::views::feature_inspector::feature_inspector_response(
+            model,
             &uri,
             position,
             at,

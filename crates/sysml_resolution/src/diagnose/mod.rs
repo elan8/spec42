@@ -135,7 +135,7 @@ impl<D> SemanticModel<D> {
                 }
                 diagnostics.push(Diagnostic {
                     message: code.describe().into(),
-                    subject: self.symbol_identity(reference.source),
+                    subject: self.symbol_id(reference.source),
                     code,
                     severity,
                     origin: DiagnosticOrigin::Semantic,

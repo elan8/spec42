@@ -232,11 +232,11 @@ fn hierarchy_step(
     let outcome = if ascending {
         model
             .types()
-            .direct_supertypes(&element.identity, SpecializationScope::AnySpecialization)
+            .direct_supertypes(element.identity, SpecializationScope::AnySpecialization)
     } else {
         model
             .types()
-            .direct_subtypes(&element.identity, SpecializationScope::AnySpecialization)
+            .direct_subtypes(element.identity, SpecializationScope::AnySpecialization)
     };
     let symbols = match outcome {
         QueryOutcome::Resolved(symbols)
@@ -247,7 +247,7 @@ fn hierarchy_step(
     Some(
         symbols
             .iter()
-            .filter_map(|symbol| match model.inspection().inspect(symbol) {
+            .filter_map(|symbol| match model.inspection().inspect(*symbol) {
                 QueryOutcome::Resolved(inspection)
                 | QueryOutcome::Recovered(inspection)
                 | QueryOutcome::UnsupportedWith(inspection) => {

@@ -133,7 +133,7 @@ fn main() -> Result<(), String> {
     };
     if let Some(symbol) = reference_symbol {
         measurements.push(measure("q_references", || {
-            outcome_len(fixture.model.navigation().references(&symbol, true))
+            outcome_len(fixture.model.navigation().references(symbol, true))
         }));
     }
 

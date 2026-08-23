@@ -611,7 +611,7 @@ mod tests {
     }
 
     /// The kebab names are the *identity* channel, not the classification channel: they are
-    /// length-prefixed into every published `SymbolIdentity`
+    /// length-prefixed into every published `SymbolId`
     /// (`model/resolver.rs`, `encode_identity`). Changing one silently changes identities that
     /// consumers may be holding, so any edit here has to move `IDENTITY_ENCODING_VERSION` too.
     #[test]

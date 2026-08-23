@@ -38,7 +38,7 @@
 //! indeterminate conformance answer, an unresolved reference a later rule would have judged, and an
 //! evaluation that did not run are each already their own published state.
 
-use crate::{PublicationCompleteness, SymbolIdentity, TextRange};
+use crate::{PublicationCompleteness, SymbolId, TextRange};
 
 pub use sysml_contract::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 
@@ -80,7 +80,7 @@ pub struct Diagnostic {
     ///
     /// Absent for a parse error, an unsupported construct, and any other diagnostic whose subject
     /// is a span rather than a declaration this publication named.
-    pub subject: Option<SymbolIdentity>,
+    pub subject: Option<SymbolId>,
     /// Where the diagnostic is reported. This is the authored site, not a definition it names.
     pub location: DiagnosticLocation,
     /// Further sites that explain the diagnostic, in canonical order.
