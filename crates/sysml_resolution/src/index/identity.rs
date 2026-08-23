@@ -44,9 +44,15 @@ pub(crate) const IDENTITY_ENCODING_VERSION: &str = "element/v1";
 ///
 /// The spec calls for exactly this much and no more -- `Element::elementId` is "set by tooling",
 /// and `Element::path()` is "a unique location description in containment structure".
+///
+/// The encoding is *derived*, not stored. An element's identity is its owner's identity plus one
+/// more segment, so keeping a string per declaration meant keeping a full copy of the owner's --
+/// with the document URI repeated inside every element of the publication, and a construction cost
+/// of O(declarations x depth) bytes. The index therefore keeps only the per-declaration facts the
+/// encoding cannot recover on its own (the occurrence ordinal) and walks the owner chain that
+/// `storage` already holds when a string is actually asked for. Materialising an identity is a
+/// boundary operation: `write_identity` for one, and nothing resident per element.
 pub(crate) struct IdentityIndex {
-    /// One canonical identity string per `DeclarationId`, parallel to `storage.declarations`.
-    pub(crate) text: Box<[Box<str>]>,
     /// Each declaration's ordinal among its identically named, same-kind siblings.
     pub(crate) occurrences: Box<[u32]>,
     /// Whether this declaration's identity is recoverable from its qualified name alone, so the
@@ -61,6 +67,12 @@ pub(crate) struct IdentityIndex {
     pub(crate) hash_builder: RandomState,
     /// Next declaration sharing this one's identity, in ascending `DeclarationId` order.
     pub(crate) next: Box<[Option<DeclarationId>]>,
+    /// The byte length each declaration's identity encodes to.
+    ///
+    /// Four bytes per element instead of the encoding itself, so materialising an identity is one
+    /// walk into an exactly sized buffer rather than a measuring walk followed by a writing one --
+    /// and the `Box<str>` handed to the boundary is never reallocated to shrink it.
+    pub(crate) lengths: Box<[u32]>,
 }
 
 impl std::fmt::Debug for IdentityIndex {
@@ -69,7 +81,7 @@ impl std::fmt::Debug for IdentityIndex {
         // it would only add noise to a published model's debug output.
         formatter
             .debug_struct("IdentityIndex")
-            .field("declarations", &self.text.len())
+            .field("declarations", &self.occurrences.len())
             .finish_non_exhaustive()
     }
 }
@@ -77,7 +89,6 @@ impl std::fmt::Debug for IdentityIndex {
 impl IdentityIndex {
     pub(crate) fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let occurrences = name_occurrences(storage)?;
-        let mut text: Vec<Box<str>> = Vec::with_capacity(storage.declarations.len());
         let mut name_paths: Vec<Option<usize>> = Vec::with_capacity(storage.declarations.len());
         let mut name_path_ids = std::collections::HashMap::new();
         name_path_ids
@@ -89,23 +100,16 @@ impl IdentityIndex {
             let declaration = storage
                 .declaration(id)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            let document = storage
-                .document(declaration.document)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            let mut identity = if let Some(owner) = declaration.owner {
+            // The derivation walks owners, so the chain has to be acyclic and document-local; that
+            // is checked once here rather than assumed by every later materialisation.
+            if let Some(owner) = declaration.owner {
                 let owner_declaration = storage
                     .declaration(owner)
                     .ok_or(ResolutionError::InvalidStorage)?;
                 if owner.index() >= index || owner_declaration.document != declaration.document {
                     return Err(ResolutionError::InvalidStorage);
                 }
-                text[owner.index()].to_string()
-            } else {
-                let mut identity = String::from(IDENTITY_ENCODING_VERSION);
-                push_identity_field(&mut identity, &document.identity);
-                identity
-            };
-            push_identity_segment(storage, id, &occurrences, &mut identity)?;
+            }
             let name_path = if declaration
                 .owner
                 .is_some_and(|owner| name_paths.get(owner.index()).copied().flatten().is_none())
@@ -132,7 +136,6 @@ impl IdentityIndex {
             } else {
                 None
             };
-            text.push(identity.into_boxed_str());
             name_paths.push(name_path);
         }
         // A qualified name identifies a declaration only when nothing else in the publication
@@ -141,21 +144,39 @@ impl IdentityIndex {
             .map(|index| name_paths[index].is_some_and(|path| name_path_counts[path] == 1))
             .collect::<Vec<_>>()
             .into_boxed_slice();
-        let mut next = vec![None; text.len()];
+        let declarations = storage.declarations.len();
+        let mut next = vec![None; declarations];
         let hash_builder = RandomState::default();
         let mut heads: HashTable<DeclarationId> = HashTable::new();
+        // One scratch buffer for the whole pass: the identity of each declaration is materialised
+        // to be hashed and then reused, so the index costs no resident string per element.
+        let mut current = String::new();
+        let mut lengths = vec![0u32; declarations];
+        let candidate_text = std::cell::RefCell::new(String::new());
         // Reverse order so each chain ends up in ascending `DeclarationId` order, which keeps an
         // ambiguous outcome's candidate list canonically ordered without a later sort.
-        for index in (0..text.len()).rev() {
+        for index in (0..declarations).rev() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let hash = hash_builder.hash_one(text[index].as_ref());
-            let matches = |candidate: &DeclarationId| text[candidate.index()] == text[index];
+            current.clear();
+            write_identity(storage, &occurrences, id, &mut current)?;
+            lengths[index] = u32::try_from(current.len()).map_err(|_| ResolutionError::Capacity)?;
+            let hash = hash_builder.hash_one(current.as_str());
+            let equals = |candidate: &DeclarationId, expected: &str| {
+                let mut scratch = candidate_text.borrow_mut();
+                scratch.clear();
+                write_identity(storage, &occurrences, *candidate, &mut *scratch).is_ok()
+                    && scratch.as_str() == expected
+            };
+            let matches = |candidate: &DeclarationId| equals(candidate, current.as_str());
             if let Some(existing) = heads.find_mut(hash, matches) {
                 next[index] = Some(*existing);
                 *existing = id;
             } else {
                 let rehash = |candidate: &DeclarationId| {
-                    hash_builder.hash_one(text[candidate.index()].as_ref())
+                    let mut scratch = candidate_text.borrow_mut();
+                    scratch.clear();
+                    let _ = write_identity(storage, &occurrences, *candidate, &mut *scratch);
+                    hash_builder.hash_one(scratch.as_str())
                 };
                 heads
                     .try_reserve(1, rehash)
@@ -164,12 +185,12 @@ impl IdentityIndex {
             }
         }
         Ok(Self {
-            text: text.into_boxed_slice(),
             occurrences,
             shorthand,
             heads,
             hash_builder,
             next: next.into_boxed_slice(),
+            lengths: lengths.into_boxed_slice(),
         })
     }
 
@@ -183,17 +204,40 @@ impl IdentityIndex {
         self.occurrences.get(id.index()).copied()
     }
 
-    pub(crate) fn identity(&self, id: DeclarationId) -> Option<&str> {
-        self.text.get(id.index()).map(AsRef::as_ref)
+    /// The canonical identity of one declaration, materialised.
+    ///
+    /// A boundary operation: the encoding is derived from the owner chain on demand, so a caller
+    /// that only needs to compare or index elements should carry the `DeclarationId` instead.
+    pub(crate) fn identity(
+        &self,
+        storage: &SemanticModelStorage,
+        id: DeclarationId,
+    ) -> Option<Box<str>> {
+        if id.index() >= self.occurrences.len() {
+            return None;
+        }
+        // The settled length gives the buffer its exact size, so materialising one identity is a
+        // single walk and a single allocation -- and `into_boxed_str` below copies nothing.
+        let length = *self.lengths.get(id.index())? as usize;
+        let mut output = String::with_capacity(length);
+        write_identity(storage, &self.occurrences, id, &mut output).ok()?;
+        Some(output.into_boxed_str())
     }
 
     /// Every declaration carrying `identity`, in ascending `DeclarationId` order.
-    pub(crate) fn declarations(&self, identity: &str) -> Vec<DeclarationId> {
+    pub(crate) fn declarations(
+        &self,
+        storage: &SemanticModelStorage,
+        identity: &str,
+    ) -> Vec<DeclarationId> {
         let hash = self.hash_builder.hash_one(identity);
+        let mut scratch = String::new();
         let Some(head) = self
             .heads
             .find(hash, |candidate| {
-                self.text[candidate.index()].as_ref() == identity
+                scratch.clear();
+                write_identity(storage, &self.occurrences, *candidate, &mut scratch).is_ok()
+                    && scratch == identity
             })
             .copied()
         else {
@@ -209,12 +253,74 @@ impl IdentityIndex {
     }
 }
 
+/// Writes the canonical identity of `id` into `output`.
+///
+/// The encoding is the owner's encoding plus this declaration's own segment, so the derivation is
+/// the owner chain: the document field is written once at the root and each segment follows in
+/// root-to-leaf order. `IdentityIndex::build` checks that the chain strictly descends and stays
+/// within one document, so this recursion is bounded by the authored nesting depth.
+pub(crate) fn write_identity(
+    storage: &SemanticModelStorage,
+    occurrences: &[u32],
+    id: DeclarationId,
+    output: &mut String,
+) -> Result<(), ResolutionError> {
+    let declaration = storage
+        .declaration(id)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    match declaration.owner {
+        Some(owner) => write_identity(storage, occurrences, owner, output)?,
+        None => {
+            let document = storage
+                .document(declaration.document)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            output.push_str(IDENTITY_ENCODING_VERSION);
+            push_identity_field(output, &document.identity);
+        }
+    }
+    push_identity_segment(storage, id, occurrences, output)
+}
+
 /// Appends one length-prefixed field, so a document identity or an authored name containing any
 /// byte sequence -- including the encoding's own punctuation -- cannot forge a segment boundary.
+/// Formatted straight into the output rather than through an intermediate `String`: an identity is
+/// now materialised on demand, so a heap allocation per field would be a heap allocation per
+/// element of every query result.
 pub(crate) fn push_identity_field(output: &mut String, value: &str) {
-    output.push_str(&value.len().to_string());
+    push_decimal(output, value.len() as u64);
     output.push(':');
     output.push_str(value);
+}
+
+/// A length-prefixed field whose value is itself a decimal number.
+pub(crate) fn push_identity_number(output: &mut String, value: u32) {
+    push_decimal(output, decimal_digits(u64::from(value)));
+    output.push(':');
+    push_decimal(output, u64::from(value));
+}
+
+fn decimal_digits(value: u64) -> u64 {
+    if value == 0 {
+        1
+    } else {
+        u64::from(value.ilog10()) + 1
+    }
+}
+
+fn push_decimal(output: &mut String, value: u64) {
+    let mut digits = [0u8; 20];
+    let mut cursor = digits.len();
+    let mut remaining = value;
+    loop {
+        cursor -= 1;
+        digits[cursor] = b'0' + (remaining % 10) as u8;
+        remaining /= 10;
+        if remaining == 0 {
+            break;
+        }
+    }
+    // Every byte written above is an ASCII digit, so the slice is valid UTF-8.
+    output.push_str(std::str::from_utf8(&digits[cursor..]).unwrap_or_default());
 }
 
 /// The ownership chain from `id` up to the document root, ordered leaf-first.
@@ -272,22 +378,20 @@ pub(crate) fn push_identity_segment(
                     .symbol(name)
                     .ok_or(ResolutionError::InvalidStorage)?,
             );
-            push_identity_field(
+            push_identity_number(
                 output,
-                &occurrences
+                *occurrences
                     .get(id.index())
-                    .ok_or(ResolutionError::InvalidStorage)?
-                    .to_string(),
+                    .ok_or(ResolutionError::InvalidStorage)?,
             );
         }
         None => {
             output.push('a');
-            push_identity_field(
+            push_identity_number(
                 output,
-                &segment
+                segment
                     .anonymous_ordinal
-                    .ok_or(ResolutionError::InvalidStorage)?
-                    .to_string(),
+                    .ok_or(ResolutionError::InvalidStorage)?,
             );
         }
     }

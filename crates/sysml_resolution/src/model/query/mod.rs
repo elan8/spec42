@@ -258,8 +258,8 @@ impl<D> SemanticModel<D> {
     /// may hold one across a rebuild; see `IdentityIndex`.
     pub(crate) fn symbol_identity(&self, id: DeclarationId) -> Option<SymbolIdentity> {
         self.identities
-            .identity(id)
-            .map(|text| SymbolIdentity(text.into()))
+            .identity(&self.storage, id)
+            .map(SymbolIdentity)
     }
 
     /// Every declaration carrying `identity`.
@@ -267,7 +267,7 @@ impl<D> SemanticModel<D> {
     /// More than one only when the source authors identically named siblings; callers publish that
     /// as an explicit ambiguous outcome rather than choosing between them.
     pub(crate) fn identity_declarations(&self, identity: &SymbolIdentity) -> Vec<DeclarationId> {
-        self.identities.declarations(&identity.0)
+        self.identities.declarations(&self.storage, &identity.0)
     }
 
     pub(crate) fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
