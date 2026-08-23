@@ -580,7 +580,7 @@ impl<D> SemanticModel<D> {
                     .iter()
                     .filter(|(_, scopes)| {
                         types::scopes_of(*scopes)
-                            .any(|scope| scope == types::SpecializationScope::Subclassification)
+                            .any(|scope| scope == types::ScopeBits::Subclassification)
                     })
                     .map(|(target, _)| *target),
             )
@@ -642,7 +642,7 @@ impl<D> SemanticModel<D> {
                 .iter()
                 .filter(|(_, scopes)| {
                     types::scopes_of(*scopes)
-                        .any(|scope| scope == types::SpecializationScope::Subclassification)
+                        .any(|scope| scope == types::ScopeBits::Subclassification)
                 })
                 .map(|(target, _)| *target)
                 .collect::<Vec<_>>();

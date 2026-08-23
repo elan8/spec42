@@ -203,7 +203,7 @@ pub(crate) fn canonical_targets<T>(
 
 pub(crate) fn write_scopes(
     output: &mut dyn fmt::Write,
-    scopes: impl Iterator<Item = types::SpecializationScope>,
+    scopes: impl Iterator<Item = types::ScopeBits>,
 ) -> fmt::Result {
     write!(output, " (scopes")?;
     for scope in scopes {
@@ -228,11 +228,11 @@ pub(crate) fn set_operator_name(operator: types::SetOperator) -> &'static str {
     }
 }
 
-pub(crate) fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
+pub(crate) fn specialization_scope(scope: types::ScopeBits) -> &'static str {
     match scope {
-        types::SpecializationScope::AnySpecialization => "any",
-        types::SpecializationScope::Subclassification => "subclassification",
-        types::SpecializationScope::FeatureSpecialization => "feature",
+        types::ScopeBits::AnySpecialization => "any",
+        types::ScopeBits::Subclassification => "subclassification",
+        types::ScopeBits::FeatureSpecialization => "feature",
     }
 }
 

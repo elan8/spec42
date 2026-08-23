@@ -20,11 +20,15 @@ use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
 
-/// Which specialization edges a path may use.
+/// Which specialization edges a path may use, as the bitset the closure tags each edge and path
+/// with.
 ///
 /// A closed set: each variant is a published query contract, not a caller-assembled edge filter.
+/// Named for the bits rather than for the scope so it does not shadow the contract enum
+/// `sysml_contract::SpecializationScope`, which is the same closed set as the *published* query
+/// argument; this one is the index's internal encoding of it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum SpecializationScope {
+pub(crate) enum ScopeBits {
     /// Every `Specialization` subkind, as the Pilot's `Type::supertypes` does.
     AnySpecialization,
     /// `Subclassification` alone: generalization between classifiers, ignoring the feature-level
@@ -38,7 +42,7 @@ pub(crate) enum SpecializationScope {
     FeatureSpecialization,
 }
 
-impl SpecializationScope {
+impl ScopeBits {
     /// Every published scope, widest first, so rendered output has one fixed order.
     pub(crate) const ALL: [Self; 3] = [
         Self::AnySpecialization,
@@ -63,15 +67,13 @@ impl SpecializationScope {
 /// a subclassification path at that edge and never regains it.
 pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
     match kind {
-        ReferenceKind::Subclassification => Some(
-            SpecializationScope::AnySpecialization.bit()
-                | SpecializationScope::Subclassification.bit(),
-        ),
-        ReferenceKind::Subsetting | ReferenceKind::Redefinition => Some(
-            SpecializationScope::AnySpecialization.bit()
-                | SpecializationScope::FeatureSpecialization.bit(),
-        ),
-        ReferenceKind::FeatureTyping => Some(SpecializationScope::AnySpecialization.bit()),
+        ReferenceKind::Subclassification => {
+            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit())
+        }
+        ReferenceKind::Subsetting | ReferenceKind::Redefinition => {
+            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit())
+        }
+        ReferenceKind::FeatureTyping => Some(ScopeBits::AnySpecialization.bit()),
         _ => None,
     }
 }
@@ -244,7 +246,7 @@ impl SpecializationClosure {
     pub(crate) fn scoped_ancestors(
         &self,
         declaration: DeclarationId,
-    ) -> impl Iterator<Item = (DeclarationId, Vec<SpecializationScope>)> + '_ {
+    ) -> impl Iterator<Item = (DeclarationId, Vec<ScopeBits>)> + '_ {
         self.entries(declaration)
             .iter()
             .map(|(ancestor, scopes)| (*ancestor, scopes_of(*scopes).collect()))
@@ -258,7 +260,7 @@ impl SpecializationClosure {
         &self,
         specific: DeclarationId,
         general: DeclarationId,
-        scope: SpecializationScope,
+        scope: ScopeBits,
     ) -> bool {
         let entries = self.entries(specific);
         entries
@@ -421,7 +423,7 @@ impl TypeIndex {
                 effective.push((declaration, (*target, EffectiveTypeSource::Direct)));
             }
             for (ancestor, scopes) in specialization.entries(declaration) {
-                if scopes & SpecializationScope::FeatureSpecialization.bit() == 0 {
+                if scopes & ScopeBits::FeatureSpecialization.bit() == 0 {
                     continue;
                 }
                 for (target, _) in direct_types.row(*ancestor) {
@@ -667,8 +669,8 @@ pub(crate) fn set_operator(kind: ReferenceKind) -> Option<SetOperator> {
 }
 
 /// The scopes a tagged edge or path belongs to, in the fixed published order.
-pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = SpecializationScope> {
-    SpecializationScope::ALL
+pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = ScopeBits> {
+    ScopeBits::ALL
         .into_iter()
         .filter(move |scope| bits & scope.bit() != 0)
 }

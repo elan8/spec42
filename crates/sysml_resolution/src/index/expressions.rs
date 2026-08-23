@@ -691,11 +691,9 @@ pub(crate) fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
 /// Whether `specific` is `general` or specializes it, in any specialization scope.
 pub(crate) fn conforms(types: &TypeIndex, specific: DeclarationId, general: DeclarationId) -> bool {
     specific == general
-        || types.specialization().reaches(
-            specific,
-            general,
-            types::SpecializationScope::AnySpecialization,
-        )
+        || types
+            .specialization()
+            .reaches(specific, general, types::ScopeBits::AnySpecialization)
 }
 
 /// Which measurement reference each quantity value definition requires.
@@ -732,7 +730,7 @@ impl MeasurementReferences {
                 && !model.types.specialization().reaches(
                     id,
                     root,
-                    types::SpecializationScope::FeatureSpecialization,
+                    types::ScopeBits::FeatureSpecialization,
                 )
             {
                 continue;
@@ -786,7 +784,7 @@ impl MeasurementReferences {
                         && model.types.specialization().reaches(
                             *other,
                             *owner,
-                            types::SpecializationScope::AnySpecialization,
+                            types::ScopeBits::AnySpecialization,
                         )
                 })
             })

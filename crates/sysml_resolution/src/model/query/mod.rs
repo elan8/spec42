@@ -2465,7 +2465,7 @@ impl<D> SemanticModel<D> {
                         && !self.types.specialization().reaches(
                             general,
                             *from,
-                            types::SpecializationScope::FeatureSpecialization,
+                            types::ScopeBits::FeatureSpecialization,
                         )
                 }
             })
@@ -2536,13 +2536,11 @@ impl<D> SemanticModel<D> {
     }
 }
 
-pub(crate) fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
+pub(crate) fn internal_scope(scope: SpecializationScope) -> types::ScopeBits {
     match scope {
-        SpecializationScope::AnySpecialization => types::SpecializationScope::AnySpecialization,
-        SpecializationScope::Subclassification => types::SpecializationScope::Subclassification,
-        SpecializationScope::FeatureSpecialization => {
-            types::SpecializationScope::FeatureSpecialization
-        }
+        SpecializationScope::AnySpecialization => types::ScopeBits::AnySpecialization,
+        SpecializationScope::Subclassification => types::ScopeBits::Subclassification,
+        SpecializationScope::FeatureSpecialization => types::ScopeBits::FeatureSpecialization,
     }
 }
 
