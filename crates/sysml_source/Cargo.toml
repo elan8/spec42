@@ -8,6 +8,7 @@ description = "Source authority: admission of SysML text as identified documents
 
 [dependencies]
 source_identity = { path = "../source_identity" }
+sysml_contract = { path = "../sysml_contract" }
 url = "2"
 ignore = "0.4"
 

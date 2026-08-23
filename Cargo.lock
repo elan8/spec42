@@ -2092,6 +2092,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sysml_contract"
+version = "0.50.0"
+dependencies = [
+ "source_identity",
+]
+
+[[package]]
 name = "sysml_diagnostics"
 version = "0.50.0"
 dependencies = [
@@ -2106,6 +2113,7 @@ dependencies = [
  "proc-macro2",
  "serde_json",
  "syn 2.0.119",
+ "sysml_contract",
  "sysml_resolution",
 ]
 
@@ -2120,6 +2128,7 @@ dependencies = [
  "source_identity",
  "spec42-constraint-manifest",
  "sysml-v2-parser",
+ "sysml_contract",
  "sysml_source",
  "tempfile",
 ]
@@ -2130,6 +2139,7 @@ version = "0.50.0"
 dependencies = [
  "ignore",
  "source_identity",
+ "sysml_contract",
  "tempfile",
  "url",
 ]

@@ -21,6 +21,23 @@ const LINKS: &[(&str, &str)] = &[
     ("sysml_source", "crates/sysml_resolution/Cargo.toml"),
 ];
 
+/// The vocabulary crate is not a link of the chain -- it has more than one dependant by design --
+/// but the same consumer rule applies to it, so the set of manifests that may name it is closed
+/// here. The two authorities implement the contract and the facade re-exports it; nothing else
+/// may name it, because a consumer that did would pin the vocabulary's crate identity instead of
+/// the facade's.
+const CONTRACT_CRATE: &str = "sysml_contract";
+const CONTRACT_DEPENDANTS: &[&str] = &[
+    "crates/sysml_query/Cargo.toml",
+    "crates/sysml_resolution/Cargo.toml",
+    "crates/sysml_source/Cargo.toml",
+];
+
+/// The only SysML crate `sysml_contract` itself may name. Its position in the map -- above
+/// `source_identity`, below `sysml_source` -- is exactly this list being what it is: a crate that
+/// cannot name the source authority or the parser cannot compute a fact, whatever it contains.
+const CONTRACT_MAY_DEPEND_ON: &[&str] = &["source_identity"];
+
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -201,7 +218,92 @@ fn each_link_has_exactly_one_dependant_in_every_resolved_graph() {
     }
 }
 
-/// Rule 3: the parser guard's lockfile rule also holds in the fuzz workspace.
+/// Rule 3: only the two authorities and the facade may name the vocabulary crate.
+///
+/// `deny.toml` states the same ban with the same three wrappers. This adds what the resolved
+/// graph cannot express: the manifest scan reaches the `fuzz/` nested workspace, and it sees a
+/// rename (`contract = { package = "sysml_contract" }`) that would otherwise enter the graph
+/// under a name no ban mentions.
+#[test]
+fn only_the_authorities_and_the_facade_may_name_the_contract_crate() {
+    let root = repo_root();
+    let mut offenders = Vec::new();
+    for manifest in manifests(&root) {
+        let relative = manifest
+            .strip_prefix(&root)
+            .unwrap_or(&manifest)
+            .to_string_lossy()
+            .replace('\\', "/");
+        let lines = dependency_lines(&manifest, CONTRACT_CRATE);
+        if lines.is_empty() || CONTRACT_DEPENDANTS.contains(&relative.as_str()) {
+            continue;
+        }
+        offenders.push(format!("{relative} names {CONTRACT_CRATE}: {lines:?}"));
+    }
+    assert!(
+        offenders.is_empty(),
+        "the semantic vocabulary is re-exported verbatim by `sysml_query`; only the crates that \
+         implement it and the facade that publishes it may name it. Offending manifests:\n  {}",
+        offenders.join("\n  ")
+    );
+}
+
+/// Rule 4: the vocabulary crate sits above `source_identity` and below `sysml_source`.
+///
+/// Position in the dependency map is not decoration: `sysml_contract` may hold no state and
+/// derive no fact, and the enforceable form of that is the set of crates it can reach. It names
+/// `source_identity` so digests can appear in contract types, and nothing else -- so it cannot
+/// reach a parser, a document, or a resolution graph, and a type that needed one could not be
+/// moved into it by accident.
+#[test]
+fn the_contract_crate_sits_above_source_identity_and_below_the_source_authority() {
+    let root = repo_root();
+    let manifest = root.join("crates/sysml_contract/Cargo.toml");
+    let text = fs::read_to_string(&manifest).expect("read sysml_contract manifest");
+
+    let mut named: Vec<String> = Vec::new();
+    let mut section = String::new();
+    for line in text.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') {
+            section = trimmed.trim_matches(['[', ']']).to_string();
+            continue;
+        }
+        if trimmed.is_empty() || trimmed.starts_with('#') || !section.ends_with("dependencies") {
+            continue;
+        }
+        let key = dependency_key(trimmed);
+        if key.starts_with("sysml") || key == "source_identity" || key == "kpar" {
+            named.push(key.to_string());
+        }
+    }
+    named.sort();
+    named.dedup();
+    assert_eq!(
+        named,
+        CONTRACT_MAY_DEPEND_ON
+            .iter()
+            .map(|name| name.to_string())
+            .collect::<Vec<_>>(),
+        "`sysml_contract` must name `source_identity` and no other SysML crate"
+    );
+
+    for (dependant, must_name) in [
+        ("crates/sysml_source/Cargo.toml", CONTRACT_CRATE),
+        ("crates/sysml_resolution/Cargo.toml", CONTRACT_CRATE),
+    ] {
+        assert!(
+            !dependency_lines(&root.join(dependant), must_name).is_empty(),
+            "{dependant} must depend on `{must_name}`: the authority implements the contract"
+        );
+    }
+    assert!(
+        dependency_lines(&manifest, "sysml_source").is_empty(),
+        "`sysml_contract` is below the source authority and must not name it"
+    );
+}
+
+/// Rule 5: the parser guard's lockfile rule also holds in the fuzz workspace.
 ///
 /// `parser_authority.rs` reads the root lockfile. The fuzz workspace resolves its own graph and
 /// must not reach the parser directly either.

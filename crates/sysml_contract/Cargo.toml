@@ -1,0 +1,10 @@
+[package]
+name = "sysml_contract"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "The semantic vocabulary every SysML answer is spoken in; it computes nothing"
+
+[dependencies]
+source_identity = { path = "../source_identity" }

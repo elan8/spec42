@@ -12,6 +12,7 @@ members = [
   "crates/kpar",
   "crates/server",
   "crates/source_identity",
+  "crates/sysml_contract",
   "crates/sysml_source",
   "crates/sysml_diagnostics",
   "crates/sysml_query",

@@ -29,7 +29,15 @@ const FACADE_ONLY_DIAGNOSTIC_CONSUMERS: &[&str] =
     &["spec42-resolution-benchmark", "spec42-snapshot"];
 
 /// The authority chain: a crate that no consumer may depend on.
-const AUTHORITY_CRATES: &[&str] = &["sysml-v2-parser", "sysml_resolution", "sysml_source"];
+/// `sysml_contract` is not an authority, but it is on this list for the same reason: the facade
+/// re-exports the vocabulary verbatim, so a consumer that named the contract crate directly would
+/// depend on where a type currently lives rather than on the facade that publishes it.
+const AUTHORITY_CRATES: &[&str] = &[
+    "sysml-v2-parser",
+    "sysml_contract",
+    "sysml_resolution",
+    "sysml_source",
+];
 
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "ParsedDocument",
@@ -198,6 +206,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
             "source_identity".to_owned(),
             "spec42_constraint_manifest".to_owned(),
             "sysml-v2-parser".to_owned(),
+            "sysml_contract".to_owned(),
             "sysml_source".to_owned(),
         ]),
         "the immutable resolution owner dependency boundary changed"
@@ -270,8 +279,10 @@ fn facade_depends_only_on_the_immutable_resolution_owner() {
         .collect::<BTreeSet<_>>();
     assert_eq!(
         dependencies,
-        BTreeSet::from(["sysml_resolution".to_owned()]),
-        "the query facade's normal dependency boundary changed"
+        BTreeSet::from(["sysml_contract".to_owned(), "sysml_resolution".to_owned(),]),
+        "the query facade depends on the semantic authority and the vocabulary it re-exports, and \
+         on nothing else: a third dependency here is a consumer-visible surface the facade would \
+         be publishing without owning"
     );
     assert!(
         query["features"]
@@ -508,6 +519,19 @@ fn the_inspector_dto_has_no_generic_attribute_map() {
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(
         &repository_root().join("crates/sysml_query/src"),
+    );
+}
+
+/// The vocabulary crate is where the storage-free rule has teeth.
+///
+/// The facade scan can only catch a raw type that reaches the facade's own signatures. Every name
+/// the facade re-exports is defined in `sysml_contract`, so as types move there this is the tree
+/// that decides whether the published vocabulary names an implementation type. A contract crate
+/// that mentioned a parse tree or a resolution graph would have stopped being a contract.
+#[test]
+fn the_contract_crate_public_api_contains_no_raw_semantic_storage() {
+    assert_source_tree_has_no_raw_semantic_storage(
+        &repository_root().join("crates/sysml_contract/src"),
     );
 }
 
