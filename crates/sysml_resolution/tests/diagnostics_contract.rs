@@ -1237,7 +1237,11 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
             .is_empty()
     );
     assert_eq!(
-        missing.diagnostics().get(0).expect("one diagnostic").category(),
+        missing
+            .diagnostics()
+            .get(0)
+            .expect("one diagnostic")
+            .category(),
         DiagnosticCategory::MissingContext
     );
 

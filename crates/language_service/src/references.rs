@@ -96,7 +96,7 @@ pub fn resolve_symbol_target_at_position(
             .symbol_name(target.symbol)
             .unwrap_or_default()
             .to_owned(),
-        definition_location: location(workspace, &model, target.location),
+        definition_location: location(workspace, model, target.location),
         identifier_range: target.location.range,
     })
 }

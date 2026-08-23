@@ -2201,7 +2201,7 @@ fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
     assert!(!published
         .diagnostics()
         .iter()
-        .any(|diagnostic| diagnostic.code() == & DiagnosticCode::ViewTypeNonStandard));
+        .any(|diagnostic| diagnostic.code() == &DiagnosticCode::ViewTypeNonStandard));
 }
 
 /// The library-context hint is a fact about the publication, not about a host's configuration.

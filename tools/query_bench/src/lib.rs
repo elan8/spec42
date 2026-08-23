@@ -222,7 +222,9 @@ pub fn published_element_count(
 
 /// How many values an outcome carries; an unresolved outcome carries none.
 /// The number of results a borrowed-view outcome carries.
-pub fn view_outcome_len(outcome: QueryOutcome<sysml_query::resolved_slice::VisibleMembers<'_>>) -> usize {
+pub fn view_outcome_len(
+    outcome: QueryOutcome<sysml_query::resolved_slice::VisibleMembers<'_>>,
+) -> usize {
     match outcome {
         QueryOutcome::Resolved(values)
         | QueryOutcome::Recovered(values)

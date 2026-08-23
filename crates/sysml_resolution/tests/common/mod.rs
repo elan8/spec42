@@ -90,7 +90,11 @@ pub fn diagnostics_sexpr_for(source: &str) -> String {
 
 /// The typed diagnostics of one single-document publication.
 pub fn diagnostics_for(source: &str) -> Vec<Diagnostic> {
-    published_for(source).diagnostics().iter().cloned().collect()
+    published_for(source)
+        .diagnostics()
+        .iter()
+        .cloned()
+        .collect()
 }
 
 pub fn published_for(source: &str) -> PublishedResolution {

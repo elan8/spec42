@@ -251,7 +251,7 @@ fn hierarchy_step(
                 QueryOutcome::Resolved(inspection)
                 | QueryOutcome::Recovered(inspection)
                 | QueryOutcome::UnsupportedWith(inspection) => {
-                    hierarchy::type_hierarchy_item(&model, &inspection)
+                    hierarchy::type_hierarchy_item(model, &inspection)
                 }
                 _ => None,
             })
@@ -268,7 +268,7 @@ pub(crate) fn prepare_type_hierarchy(
     let Some(element) = element_at(state, &uri_norm, pos) else {
         return Ok(None);
     };
-    Ok(hierarchy::type_hierarchy_item(&state.published_model(), &element).map(|item| vec![item]))
+    Ok(hierarchy::type_hierarchy_item(state.published_model(), &element).map(|item| vec![item]))
 }
 
 pub(crate) fn supertypes(

@@ -55,7 +55,8 @@ pub fn document_diagnostics(
 }
 
 fn is_parse_error(diagnostic: &Diagnostic) -> bool {
-    diagnostic.origin() == DiagnosticOrigin::Parser && diagnostic.severity() == PublishedSeverity::Error
+    diagnostic.origin() == DiagnosticOrigin::Parser
+        && diagnostic.severity() == PublishedSeverity::Error
 }
 
 fn project(diagnostic: &Diagnostic, uri: &Url) -> SemanticDiagnostic {

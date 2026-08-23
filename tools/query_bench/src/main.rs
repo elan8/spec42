@@ -11,8 +11,8 @@ use std::hint::black_box;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use spec42_query_bench::{
-    cold_build, completion_position, navigation_position, outcome_len, view_outcome_len, warm_relink,
-    Corpus, Fixture,
+    cold_build, completion_position, navigation_position, outcome_len, view_outcome_len,
+    warm_relink, Corpus, Fixture,
 };
 use sysml_query::resolved_slice::QueryOutcome;
 

@@ -338,7 +338,7 @@ impl PublishedResolution {
                         .name
                         .clone()
                         .unwrap_or_else(|| entry.qualified_name.clone()),
-                    source: entry.location.clone(),
+                    source: entry.location,
                 });
             }
         }
@@ -519,7 +519,7 @@ impl PublishedResolution {
                 name: entry.name.clone(),
                 typing: diagram_element_typing(self.element_details(entry.identity)),
                 owner: owner.clone(),
-                source: entry.location.clone(),
+                source: entry.location,
                 compartments: Box::default(),
             })
             .collect::<Vec<_>>();
@@ -625,7 +625,7 @@ impl PublishedResolution {
                         kind: relationship.kind.into(),
                         target,
                         provenance: relationship.provenance,
-                        source_location: relationship.location.clone(),
+                        source_location: relationship.location,
                     });
                 }
             }
@@ -649,7 +649,7 @@ impl PublishedResolution {
                     } else {
                         RelationshipProvenance::Implied
                     },
-                    source_location: Some(element.source.clone()),
+                    source_location: Some(element.source),
                 })
             })
             .collect::<Vec<_>>();
@@ -707,7 +707,7 @@ impl PublishedResolution {
                         target_semantic_id: target.semantic_id(),
                         kind: DiagramEdgeKind::InitialState,
                         provenance: initial.provenance,
-                        source_location: initial.source_location.clone(),
+                        source_location: initial.source_location,
                     });
                 }
             }
@@ -979,7 +979,7 @@ fn diagram_scene(
                         semantic_id: element.semantic_id,
                         label: element.name.clone().unwrap_or_default(),
                         kind,
-                        source: element.source.clone(),
+                        source: element.source,
                     })
                 })
                 .collect::<Vec<_>>();
@@ -1014,10 +1014,7 @@ fn diagram_scene(
                         guard: feature("transitionGuard"),
                         effect: feature("transitionEffect"),
                         provenance: edge.provenance,
-                        source_location: edge
-                            .source_location
-                            .clone()
-                            .unwrap_or_else(|| origin.source.clone()),
+                        source_location: edge.source_location.unwrap_or(origin.source),
                     })
                 })
                 .collect::<Vec<_>>();
@@ -1048,10 +1045,7 @@ fn transition_feature(
                 .and_then(|entry| entry.name.clone())
                 .unwrap_or_default(),
             target: target.semantic_id,
-            source: relationship
-                .source_location
-                .clone()
-                .unwrap_or_else(|| origin.source.clone()),
+            source: relationship.source_location.unwrap_or(origin.source),
         },
         DiagramRelationshipTarget::Unresolved => DiagramTransitionFeature::Unresolved,
         DiagramRelationshipTarget::Ambiguous(_) => DiagramTransitionFeature::Ambiguous,
@@ -1107,7 +1101,7 @@ fn edge_from_relationships(
         },
         source_location: relationships
             .iter()
-            .find_map(|relationship| relationship.source_location.clone()),
+            .find_map(|relationship| relationship.source_location),
     }
 }
 
