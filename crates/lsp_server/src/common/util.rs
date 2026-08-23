@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use tower_lsp::lsp_types::{Position, Range, Url};
 
 use crate::language::{position_to_byte_offset, SymbolEntry};
+use language_service::utf16_len;
 
 /// Applies an incremental content change (range + new text) to the document.
 /// Uses LSP UTF-16 positions and only slices on validated UTF-8 byte boundaries.
@@ -55,10 +56,6 @@ pub fn parse_for_editor(text: &str) -> sysml_query::syntax::ParsedSource {
 pub struct UntypedPartUsage {
     pub name: String,
     pub range: Range,
-}
-
-fn utf16_len(s: &str) -> u32 {
-    s.encode_utf16().count() as u32
 }
 
 fn parse_untyped_part_usage_line(raw_line: &str) -> Option<String> {

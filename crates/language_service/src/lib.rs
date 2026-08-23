@@ -49,7 +49,8 @@ pub use symbol::{
 };
 pub use text::{
     completion_prefix, line_prefix_at_position, position_to_byte_offset,
-    unit_value_suffix_at_position, unit_value_suffix_selection_at_position, word_at_position,
+    unit_value_suffix_at_position, unit_value_suffix_selection_at_position, utf16_len,
+    word_at_position,
 };
 pub use workspace::{InMemoryWorkspace, WorkspaceSnapshot};
 pub use workspace_symbols::search_workspace_symbols;

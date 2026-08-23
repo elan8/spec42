@@ -2,7 +2,6 @@ use std::path::{Path, PathBuf};
 
 use tower_lsp::lsp_types::Url;
 
-use crate::common::util;
 use workspace::snapshot::discovery;
 
 use super::ValidationRequest;
@@ -25,10 +24,13 @@ pub(super) fn discover_target_files(targets: &[PathBuf]) -> Result<Vec<PathBuf>,
     }
 }
 
+/// The workspace snapshot owner's path -> `file://` identity, in this module's error shape.
+///
+/// Delegates rather than re-deriving: the owner resolves a relative path against the working
+/// directory and canonicalises before normalising, so a local `Url::from_file_path` would admit a
+/// different URI for the same file than the publication is keyed by.
 pub(super) fn path_to_file_url(path: &Path) -> Result<Url, String> {
-    Url::from_file_path(path)
-        .map(|uri| util::normalize_file_uri(&uri))
-        .map_err(|_| format!("Could not convert {} to file:// URL.", path.display()))
+    discovery::path_to_file_url(path).map_err(|e| e.to_string())
 }
 
 #[cfg(test)]

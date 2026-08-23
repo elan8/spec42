@@ -10,6 +10,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{Position, Url};
 
 use crate::common::util;
+use crate::language::position_to_byte_offset;
 use crate::views::dto::{
     range_to_dto, PositionDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
     SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorEvaluationDto,
@@ -369,26 +370,9 @@ fn declaration_text(details: &ElementDetails, source: Option<&str>) -> String {
 /// numbering counts. A range that does not land on a character boundary yields `None` rather than
 /// a slice taken from somewhere else, and the caller falls back.
 fn slice_range(text: &str, range: TextRange) -> Option<&str> {
-    let start = byte_offset(text, range.start)?;
-    let end = byte_offset(text, range.end)?;
+    let start = position_to_byte_offset(text, range.start.line, range.start.character)?;
+    let end = position_to_byte_offset(text, range.end.line, range.end.character)?;
     text.get(start..end)
-}
-
-fn byte_offset(text: &str, position: TextPosition) -> Option<usize> {
-    let mut line = 0u32;
-    let mut character = 0u32;
-    for (offset, value) in text.char_indices() {
-        if line == position.line && character == position.character {
-            return Some(offset);
-        }
-        if value == '\n' {
-            line += 1;
-            character = 0;
-        } else {
-            character += 1;
-        }
-    }
-    (line == position.line && character == position.character).then_some(text.len())
 }
 
 /// Whether the publication places `position` on this element's own name.

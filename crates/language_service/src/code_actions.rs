@@ -4,6 +4,7 @@ use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
+use crate::text::utf16_len;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagnosticLine {
@@ -19,10 +20,6 @@ fn line_full_range(line: u32, line_text: &str) -> TextRange {
         TextPosition::new(line, 0),
         TextPosition::new(line, utf16_len(line_text)),
     )
-}
-
-fn utf16_len(s: &str) -> u32 {
-    s.encode_utf16().count() as u32
 }
 
 fn parse_untyped_part_usage_name(raw_line: &str) -> Option<String> {

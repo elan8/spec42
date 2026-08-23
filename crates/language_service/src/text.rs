@@ -1,5 +1,13 @@
 //! Position and word resolution for editor services (line/character to byte offset, word at cursor, etc.).
 
+/// Length of `text` in UTF-16 code units — the unit LSP character offsets are expressed in.
+///
+/// The single owner: hosts computing a character offset must not re-derive it, because a copy
+/// that counts `char`s instead silently disagrees on anything outside the basic plane.
+pub fn utf16_len(text: &str) -> u32 {
+    text.encode_utf16().count() as u32
+}
+
 /// Converts an LSP-style (line, character) position to a byte offset in `text`.
 /// Positions are expressed in UTF-16 code units, so this helper only returns offsets that
 /// land on valid UTF-8 boundaries.
