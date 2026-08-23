@@ -12,7 +12,7 @@ blake3.workspace = true
 hashbrown = "0.17"
 rayon = "1.12"
 source_identity = { path = "../source_identity" }
-sysml_contract = { path = "../sysml_contract" }
+sysml_contract = { path = "../sysml_contract", features = ["serde"] }
 sysml_source = { path = "../sysml_source" }
 sysml-v2-parser.workspace = true
 serde.workspace = true

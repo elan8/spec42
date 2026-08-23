@@ -12,7 +12,9 @@
 #![forbid(unsafe_code)]
 
 mod diagnostic;
+mod position;
 mod version;
 
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
+pub use position::{OccurrenceRole, TextPosition, TextRange};
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};

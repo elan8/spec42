@@ -59,19 +59,34 @@ fn the_contract_crate_names_exactly_one_sysml_crate() {
 #[test]
 fn the_contract_crate_cannot_parse_serialise_or_await() {
     let text = fs::read_to_string(manifest_path()).expect("read sysml_contract manifest");
+    let features = text
+        .split("[features]")
+        .nth(1)
+        .map(|rest| rest.split("\n[").next().unwrap_or(rest).to_string())
+        .unwrap_or_default();
+    let declared: BTreeSet<String> = features
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .map(|line| line.split('=').next().unwrap_or_default().trim().to_string())
+        .collect();
     assert!(
-        !text.contains("[features]"),
-        "a feature on the contract crate can admit a dependency; add one only deliberately"
+        declared.iter().all(|name| name == "serde"),
+        "a feature on the contract crate can admit a dependency; `serde` is the one derive-only \
+         exception and anything else is added deliberately, not by accident: {declared:?}"
     );
     let forbidden = [
         "sysml-v2-parser",
         "sysml_source",
         "sysml_resolution",
         "tokio",
-        "serde",
         "url",
         "ignore",
     ];
+    assert!(
+        !text.contains("serde") || text.contains("serde = { workspace = true, optional = true }"),
+        "`serde` may appear only as an optional dependency behind the `serde` feature"
+    );
     let keys = dependency_keys(&text);
     let offenders: Vec<&str> = forbidden
         .into_iter()

@@ -49,6 +49,8 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
+pub use sysml_contract::{OccurrenceRole, TextPosition, TextRange};
+
 pub use sysml_source as source;
 mod traceability;
 mod type_query;
@@ -245,34 +247,6 @@ impl SourceInput {
     }
 }
 
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
-)]
-pub struct TextPosition {
-    pub line: u32,
-    pub character: u32,
-}
-
-impl TextPosition {
-    pub const fn new(line: u32, character: u32) -> Self {
-        Self { line, character }
-    }
-}
-
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
-)]
-pub struct TextRange {
-    pub start: TextPosition,
-    pub end: TextPosition,
-}
-
-impl TextRange {
-    pub const fn new(start: TextPosition, end: TextPosition) -> Self {
-        Self { start, end }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SymbolIdentity(Box<str>);
 
@@ -281,12 +255,6 @@ impl SymbolIdentity {
     pub fn as_str(&self) -> &str {
         &self.0
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum OccurrenceRole {
-    Declaration,
-    Reference,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
