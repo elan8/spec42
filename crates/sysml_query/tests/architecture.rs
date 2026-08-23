@@ -611,8 +611,23 @@ fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
 ///
 /// The list is an inventory of what is left to do, not a set of allowances. It may only shrink:
 /// adding a name requires deleting this comment's claim, and the borrowed-views work drains it.
-const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
+/// Owned strings a *consumer supplies* when it asks a question. A query input is constructed by
+/// the caller, from a name it already holds as text, and is dropped when the answer comes back;
+/// there is no published storage for it to borrow from. Owning is the correct shape here, so this
+/// set is expected to stay -- but it is asserted exactly, so a *product* cannot be smuggled in by
+/// calling itself an input.
+const FACADE_OWNED_STRING_INPUT_FIELDS: &[&str] = &[
     "AffectedDocument::identity",
+    "EditorProbe::document",
+    "QualifiedElementReference::qualified_name",
+    "QualifiedReferenceProbe::qualified_name",
+];
+
+/// Owned strings a *query product* still carries. Every entry here is a copy of text the
+/// publication already stores, handed to the consumer as a fresh allocation: the facade rule says
+/// a product carries a handle or a borrowed view instead. This list is the remaining debt and is
+/// only ever meant to shrink.
+const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "AuthoredUnit::authored",
     "DiagramEdge::semantic_id",
     "DiagramRelationship::kind",
@@ -621,12 +636,9 @@ const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
     "DiagramStateVertex::label",
     "DiagramViewCatalogEntry::name",
     "Documentation::text",
-    "EditorProbe::document",
     "ElementInspection::qualified_name",
     "NavigationTarget::name",
     "PackageTargets::qualified_name",
-    "QualifiedElementReference::qualified_name",
-    "QualifiedReferenceProbe::qualified_name",
     "QualifiedReferenceTarget::qualified_name",
     "SourceLocation::document",
     "SymbolEntry::qualified_name",
@@ -636,7 +648,6 @@ const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
     "SyntaxToken::text",
     "SyntaxUnitLiteral::unit",
 ];
-
 /// The count is asserted separately from the membership so a swap -- one field drained and another
 /// added in the same change -- cannot pass as a no-op.
 #[test]
@@ -669,25 +680,37 @@ fn the_published_vocabulary_grows_no_new_owned_string_fields() {
             .split_once("::")
             .is_some_and(|(container, _)| published.contains(container))
     }));
-    let allowed: BTreeSet<String> = FACADE_OWNED_STRING_FIELDS
+    let inputs: BTreeSet<String> = FACADE_OWNED_STRING_INPUT_FIELDS
         .iter()
         .map(|name| (*name).to_owned())
         .collect();
+    let products: BTreeSet<String> = FACADE_OWNED_STRING_PRODUCT_FIELDS
+        .iter()
+        .map(|name| (*name).to_owned())
+        .collect();
+    let overlap: Vec<&String> = inputs.intersection(&products).collect();
+    assert!(
+        overlap.is_empty(),
+        "a field is listed as both a query input and a query product; it is one or the \
+         other:\n{overlap:#?}"
+    );
+    let allowed: BTreeSet<String> = inputs.union(&products).cloned().collect();
     let added: Vec<&String> = owned.difference(&allowed).collect();
     assert!(
         added.is_empty(),
         "a published struct grew an owned string field; carry a handle or a borrowed view \
-         instead, or add the field to FACADE_OWNED_STRING_FIELDS with the reason it cannot:\n{added:#?}"
+         instead, or -- if a consumer supplies it as a query input -- add it to \
+         FACADE_OWNED_STRING_INPUT_FIELDS:\n{added:#?}"
     );
     let drained: Vec<&String> = allowed.difference(&owned).collect();
     assert!(
         drained.is_empty(),
-        "these owned string fields are gone; delete them from FACADE_OWNED_STRING_FIELDS so the \
-         list keeps counting what is actually left:\n{drained:#?}"
+        "these owned string fields are gone; delete them from the input or product list so the \
+         lists keep counting what is actually left:\n{drained:#?}"
     );
     assert_eq!(
         owned.len(),
-        FACADE_OWNED_STRING_FIELDS.len(),
+        FACADE_OWNED_STRING_INPUT_FIELDS.len() + FACADE_OWNED_STRING_PRODUCT_FIELDS.len(),
         "the owned-string inventory changed size"
     );
 }
