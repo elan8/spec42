@@ -155,7 +155,8 @@ impl DiagramOccurrenceIdentity {
             .expect("a diagram occurrence path is never empty")
     }
 
-    fn stable_key(&self) -> &str {
+    /// The settled boundary form of this occurrence.
+    pub fn stable_key(&self) -> &str {
         &self.key
     }
 }
@@ -208,7 +209,8 @@ pub enum DiagramEndpointOccurrence {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramRelationship {
-    pub semantic_id: Box<str>,
+    /// Position of this relationship among the source element's published relationships.
+    pub ordinal: u32,
     pub source: DiagramOccurrenceIdentity,
     pub source_semantic_id: SymbolId,
     pub kind: DiagramRelationshipKind,
@@ -230,7 +232,10 @@ pub enum DiagramEdgeKind {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramEdge {
-    pub semantic_id: Box<str>,
+    /// Index into the projection's `elements` of the element this edge was composed for: the
+    /// contained element for containment, the state for an initial-state edge, the transition or
+    /// connector usage for a composed edge.
+    pub origin: u32,
     pub source: DiagramOccurrenceIdentity,
     pub source_semantic_id: SymbolId,
     pub target: DiagramOccurrenceIdentity,
@@ -284,9 +289,28 @@ pub enum DiagramTransitionFeature {
     Unsupported,
 }
 
+/// Whether a state-transition edge is the machine's initial-state edge or an authored transition.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramTransitionRole {
+    Initial,
+    Transition,
+}
+
+impl DiagramTransitionRole {
+    /// The suffix a scene id carries for this role.
+    pub const fn scene_suffix(self) -> &'static str {
+        match self {
+            Self::Initial => "initial",
+            Self::Transition => "edge",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramStateTransition {
-    pub semantic_id: Box<str>,
+    /// Index into the projection's `elements` of the element the transition was composed for.
+    pub origin: u32,
+    pub role: DiagramTransitionRole,
     pub label: Option<Box<str>>,
     pub source: SymbolId,
     pub target: SymbolId,
@@ -647,12 +671,7 @@ impl PublishedResolution {
                         }
                     };
                     relationships.push(DiagramRelationship {
-                        semantic_id: format!(
-                            "{}#{}:{index}",
-                            element.occurrence_id.stable_key(),
-                            kind.name()
-                        )
-                        .into(),
+                        ordinal: index as u32,
                         source: element.occurrence_id.clone(),
                         source_semantic_id: element.semantic_id,
                         kind,
@@ -663,13 +682,20 @@ impl PublishedResolution {
                 }
             }
         }
-        relationships.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        relationships.sort_by_cached_key(|relationship| {
+            format!(
+                "{}#{}:{}",
+                relationship.source.stable_key(),
+                relationship.kind.name(),
+                relationship.ordinal
+            )
+        });
         let mut edges = elements
             .iter()
-            .filter_map(|element| {
+            .enumerate()
+            .filter_map(|(origin, element)| {
                 element.owner.as_ref().map(|owner| DiagramEdge {
-                    semantic_id: format!("{}#containment", element.occurrence_id.stable_key(),)
-                        .into(),
+                    origin: origin as u32,
                     source: owner.clone(),
                     source_semantic_id: owner.semantic_id(),
                     target: element.occurrence_id.clone(),
@@ -686,13 +712,13 @@ impl PublishedResolution {
                 })
             })
             .collect::<Vec<_>>();
-        for element in &elements {
+        for (origin, element) in elements.iter().enumerate() {
             let outgoing = relationships
                 .iter()
                 .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
             if let Some(edge) = composed_edge(
-                element,
+                origin as u32,
                 &outgoing,
                 DiagramRelationshipKind::TransitionSource,
                 DiagramRelationshipKind::TransitionTarget,
@@ -702,7 +728,7 @@ impl PublishedResolution {
                 continue;
             }
             if let Some(edge) = composed_edge(
-                element,
+                origin as u32,
                 &outgoing,
                 DiagramRelationshipKind::FlowSource,
                 DiagramRelationshipKind::FlowTarget,
@@ -728,7 +754,11 @@ impl PublishedResolution {
                     .collect::<Vec<_>>();
                 if let [source, target] = endpoints.as_slice() {
                     edges.push(edge_from_relationships(
-                        element, source, target, edge_kind, &outgoing,
+                        origin as u32,
+                        source,
+                        target,
+                        edge_kind,
+                        &outgoing,
                     ));
                 }
             }
@@ -738,8 +768,7 @@ impl PublishedResolution {
             {
                 if let Some(target) = resolved_target(&initial.target) {
                     edges.push(DiagramEdge {
-                        semantic_id: format!("{}#initial", element.occurrence_id.stable_key())
-                            .into(),
+                        origin: origin as u32,
                         source: element.occurrence_id.clone(),
                         source_semantic_id: element.semantic_id,
                         target: target.clone(),
@@ -751,7 +780,13 @@ impl PublishedResolution {
                 }
             }
         }
-        edges.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        edges.sort_by_cached_key(|edge| {
+            format!(
+                "{}#{}",
+                elements[edge.origin as usize].occurrence_id.stable_key(),
+                edge_scene_suffix(&edge.kind)
+            )
+        });
         let scene = diagram_scene(
             view_entry.kind,
             &projected_roots,
@@ -1036,17 +1071,17 @@ fn diagram_scene(
                     )
                 })
                 .filter_map(|edge| {
-                    let origin = elements.iter().find(|element| {
-                        edge.semantic_id.as_ref()
-                            == format!("{}#edge", element.occurrence_id.stable_key())
-                            || edge.semantic_id.as_ref()
-                                == format!("{}#initial", element.occurrence_id.stable_key())
-                    })?;
+                    let origin = elements.get(edge.origin as usize)?;
                     let feature = |relationship_kind| {
                         transition_feature(origin, relationship_kind, relationships, entries)
                     };
                     Some(DiagramStateTransition {
-                        semantic_id: edge.semantic_id.clone(),
+                        origin: edge.origin,
+                        role: if edge.kind == DiagramEdgeKind::InitialState {
+                            DiagramTransitionRole::Initial
+                        } else {
+                            DiagramTransitionRole::Transition
+                        },
                         label: origin.name.clone(),
                         source: edge.source_semantic_id,
                         target: edge.target_semantic_id,
@@ -1101,7 +1136,7 @@ fn transition_feature(
 }
 
 fn composed_edge(
-    element: &DiagramElement,
+    origin: u32,
     relationships: &[&DiagramRelationship],
     source_kind: DiagramRelationshipKind,
     target_kind: DiagramRelationshipKind,
@@ -1116,7 +1151,7 @@ fn composed_edge(
     let source = resolved_target(&source_relationship.target)?;
     let target = resolved_target(&target_relationship.target)?;
     Some(edge_from_relationships(
-        element,
+        origin,
         source,
         target,
         kind,
@@ -1125,14 +1160,14 @@ fn composed_edge(
 }
 
 fn edge_from_relationships(
-    element: &DiagramElement,
+    origin: u32,
     source: &DiagramOccurrenceIdentity,
     target: &DiagramOccurrenceIdentity,
     kind: DiagramEdgeKind,
     relationships: &[&DiagramRelationship],
 ) -> DiagramEdge {
     DiagramEdge {
-        semantic_id: format!("{}#edge", element.occurrence_id.stable_key()).into(),
+        origin,
         source: source.clone(),
         source_semantic_id: source.semantic_id(),
         target: target.clone(),
@@ -1274,6 +1309,28 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
         "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
         _ => None,
+    }
+}
+
+/// The suffix a scene id carries for an edge of this kind.
+fn edge_scene_suffix(kind: &DiagramEdgeKind) -> &'static str {
+    match kind {
+        DiagramEdgeKind::Containment => "containment",
+        DiagramEdgeKind::InitialState => "initial",
+        _ => "edge",
+    }
+}
+
+impl DiagramViewProjection {
+    /// The boundary form of a transition's scene id: the origin occurrence's settled key and the
+    /// role suffix. Rendered where a protocol needs text; the projection itself carries handles.
+    pub fn transition_scene_id(&self, transition: &DiagramStateTransition) -> Option<String> {
+        let origin = self.elements.get(transition.origin as usize)?;
+        Some(format!(
+            "{}#{}",
+            origin.occurrence_id.stable_key(),
+            transition.role.scene_suffix()
+        ))
     }
 }
 

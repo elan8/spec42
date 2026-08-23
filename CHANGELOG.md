@@ -34,6 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
   Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
   entries to 16.
+- **Diagram scene ids are typed; relationships, edges and transitions carry no synthesised
+  string.** `DiagramRelationship::semantic_id`, `DiagramEdge::semantic_id` and
+  `DiagramStateTransition::semantic_id` were `Box<str>`s composed from an occurrence key and a
+  suffix, allocated per scene item and used only to order the scene and to pair a transition with
+  its origin. A relationship now carries its `ordinal`; an edge and a transition carry the `origin`
+  index into the projection's elements, and a transition its `DiagramTransitionRole`. Ordering is
+  unchanged (the same key is compared, once, at construction), and the generator boundary renders
+  the transition id through `DiagramViewProjection::transition_scene_id`, so protocol output is
+  byte-identical. Enforcement: the owned-string inventory's product list in `architecture.rs`
+  shrank by three entries.
+
 - **A projected diagram relationship states its kind as an enum, not as text.**
   `DiagramRelationship::kind` was a `Box<str>` of the canonical reference name, so every consumer
   that dispatched on it -- the edge composer, the transition-feature lookup, the generator

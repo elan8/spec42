@@ -1006,7 +1006,9 @@ impl GeneratorModelView {
                     .transitions
                     .iter()
                     .map(|transition| StateTransitionEdge {
-                        semantic_id: transition.semantic_id.to_string(),
+                        semantic_id: projection
+                            .transition_scene_id(transition)
+                            .unwrap_or_default(),
                         label: transition.label.as_deref().map(str::to_owned),
                         source: self.token(transition.source),
                         target: self.token(transition.target),

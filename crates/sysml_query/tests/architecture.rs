@@ -628,9 +628,7 @@ const FACADE_OWNED_STRING_INPUT_FIELDS: &[&str] = &[
 /// a product carries a handle or a borrowed view instead. This list is the remaining debt and is
 /// only ever meant to shrink.
 const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
-    "DiagramEdge::semantic_id",
-    "DiagramRelationship::semantic_id",
-    "DiagramStateTransition::semantic_id",
+
 
     "PackageTargets::qualified_name",
     "SymbolEntry::qualified_name",
