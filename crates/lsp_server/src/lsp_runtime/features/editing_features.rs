@@ -15,6 +15,7 @@ use crate::language::{
 use crate::session::snapshot::ServerStateSnapshot;
 use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
+use sysml_query::syntax::SyntaxOutlineKind;
 
 pub(crate) fn signature_help(
     state: &ServerState,
@@ -22,24 +23,33 @@ pub(crate) fn signature_help(
     pos: Position,
 ) -> Result<Option<SignatureHelp>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let line = text.lines().nth(pos.line as usize).unwrap_or("");
+    let line = entry.content().lines().nth(pos.line as usize).unwrap_or("");
     let cursor_prefix = line
         .chars()
         .take(pos.character as usize)
         .collect::<String>();
     let active_param = cursor_prefix.matches(',').count() as u32;
-    let label = if line.contains("part def") {
-        "part def <Name> : <Type>"
-    } else if line.contains("port def") || line.contains("port ") {
-        "port <name> : <PortType>"
-    } else if line.contains("attribute") {
-        "attribute <name> : <AttributeType>"
-    } else {
-        "name : Type"
+    // Which declaration shape to prompt for is a question about the declaration the cursor is
+    // in, and the syntax service answers it. Testing the line's text for `part def` used to
+    // prompt from a keyword in a comment, and from the *enclosing* declaration's keyword when
+    // the cursor sat on a nested member.
+    let label = match entry
+        .parsed
+        .declaration_at(pos.line)
+        .map(|declaration| declaration.kind)
+    {
+        Some(SyntaxOutlineKind::PartDef) => "part def <Name> : <Type>",
+        Some(SyntaxOutlineKind::PortDef | SyntaxOutlineKind::PortUsage) => {
+            "port <name> : <PortType>"
+        }
+        Some(SyntaxOutlineKind::AttributeDef | SyntaxOutlineKind::AttributeUsage) => {
+            "attribute <name> : <AttributeType>"
+        }
+        _ => "name : Type",
     };
     Ok(Some(SignatureHelp {
         signatures: vec![SignatureInformation {
@@ -180,9 +190,7 @@ pub(crate) fn workspace_symbol(
             let uri = Url::parse(&entry.uri).ok()?;
             Some(SymbolInformation {
                 name: entry.name,
-                kind: crate::language::outline_kind_to_lsp(
-                    entry.detail.as_deref().unwrap_or("symbol"),
-                ),
+                kind: crate::language::element_kind_label_to_lsp(entry.detail.as_deref()),
                 tags: None,
                 deprecated: None,
                 location: Location {

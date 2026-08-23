@@ -19,6 +19,7 @@ mod element_kind;
 mod position;
 mod publication;
 mod relationship;
+mod syntax;
 mod version;
 
 pub use derived::{
@@ -52,4 +53,5 @@ pub use relationship::{
     SpecializationCheckPrerequisite, SpecializationScope, SubsettingConformance,
     TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
+pub use syntax::{ImportScope, SyntaxOutlineKind};
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};

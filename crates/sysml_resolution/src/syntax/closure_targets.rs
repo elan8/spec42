@@ -55,7 +55,7 @@ fn subsetting_target<'a>(
         .map(|view| view.authored_text())
 }
 
-fn typing_target_display(
+pub(super) fn typing_target_display(
     document: &ParsedRoot,
     relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
 ) -> Option<String> {

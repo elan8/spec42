@@ -90,6 +90,33 @@ impl ParsedSource {
         outline::document_outline(self.inner())
     }
 
+    /// The innermost declaration whose extent covers `line` (zero-based), if any.
+    ///
+    /// The question "what am I inside" asked of the grammar, so a host never has to find the
+    /// declaration header by scanning back up the text for a keyword.
+    pub fn declaration_at(&self, line: u32) -> Option<SyntaxOutlineNode> {
+        self.enclosing_declarations(line).pop()
+    }
+
+    /// Every declaration whose extent covers `line`, outermost first.
+    pub fn enclosing_declarations(&self, line: u32) -> Vec<SyntaxOutlineNode> {
+        fn descend(nodes: &[SyntaxOutlineNode], line: u32, out: &mut Vec<SyntaxOutlineNode>) {
+            for node in nodes {
+                if node.contains_line(line) {
+                    out.push(SyntaxOutlineNode {
+                        children: Vec::new(),
+                        ..node.clone()
+                    });
+                    descend(&node.children, line, out);
+                    return;
+                }
+            }
+        }
+        let mut out = Vec::new();
+        descend(&self.outline(), line, &mut out);
+        out
+    }
+
     /// Multi-line regions an editor may fold.
     pub fn folding_regions(&self) -> Vec<SyntaxFoldingRegion> {
         outline::folding_regions(self.inner())
@@ -261,19 +288,52 @@ mod closure_targets;
 mod outline;
 
 pub use closure_targets::PackageTargets;
+pub use sysml_contract::SyntaxOutlineKind;
 
 /// One node of a document outline, as the grammar sees it.
 ///
-/// `kind` is the authored declaration keyword (`part def`, `feature decl`, ...), not an editor
-/// symbol category: mapping it to an LSP `SymbolKind` is presentation policy and stays with the
-/// host adapter.
+/// `kind` names the declaration production ([`SyntaxOutlineKind`]), not an editor symbol
+/// category: mapping it to an LSP `SymbolKind` is presentation policy and stays with the host
+/// adapter, which matches on the enum rather than comparing the authored keyword.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SyntaxOutlineNode {
     pub name: String,
-    pub kind: String,
+    /// The `< ... >` short name, when one was authored.
+    pub short_name: Option<String>,
+    pub kind: SyntaxOutlineKind,
+    /// The type this declaration is typed by or specializes, as authored.
+    pub typed_by: Option<String>,
+    /// The whole declaration, header and body.
     pub range: SyntaxRange,
     pub selection_range: SyntaxRange,
+    /// The declaration header alone: everything before the `{`, or the whole declaration when it
+    /// was written with the `;` form. What a host prints as the declaration's signature.
+    pub head_range: SyntaxRange,
+    /// The braced body, `{` to `}`, when the declaration has one.
+    pub body_range: Option<SyntaxRange>,
     pub children: Vec<SyntaxOutlineNode>,
+}
+
+impl SyntaxOutlineNode {
+    /// A node with no name, no typing and no body: the defaults a construction site fills in.
+    pub(super) fn bare(range: SyntaxRange) -> Self {
+        Self {
+            name: String::new(),
+            short_name: None,
+            kind: SyntaxOutlineKind::Package,
+            typed_by: None,
+            range,
+            selection_range: range,
+            head_range: range,
+            body_range: None,
+            children: Vec::new(),
+        }
+    }
+
+    /// Whether `line` (zero-based) falls inside this declaration.
+    pub fn contains_line(&self, line: u32) -> bool {
+        self.range.start_line <= line && line <= self.range.end_line
+    }
 }
 
 /// A multi-line region an editor may fold, named by what it is.
@@ -349,4 +409,49 @@ fn recovery_signature(errors: &[sysml_v2_parser::ParseError]) -> Vec<String> {
             )
         })
         .collect()
+}
+
+#[cfg(test)]
+mod outline_query_tests {
+    use super::*;
+
+    fn parse(text: &str) -> ParsedSource {
+        SyntaxAuthority::new().parse_text(text)
+    }
+
+    #[test]
+    fn an_outline_node_reports_its_whole_extent_head_and_body() {
+        let parsed = parse("package Demo {\n  part def Rover :> Base {\n    part wheel;\n  }\n}");
+        let outline = parsed.outline();
+        let package = &outline[0];
+        assert_eq!((package.range.start_line, package.range.end_line), (0, 4));
+        assert_eq!(
+            (package.head_range.start_line, package.head_range.end_line),
+            (0, 0),
+            "the head stops at the opening brace"
+        );
+        let body = package.body_range.expect("braced body");
+        assert_eq!((body.start_line, body.end_line), (0, 4));
+
+        let rover = &package.children[0];
+        assert_eq!(rover.kind, SyntaxOutlineKind::PartDef);
+        assert_eq!(rover.typed_by.as_deref(), Some("Base"));
+    }
+
+    #[test]
+    fn enclosing_declarations_run_outermost_first() {
+        let parsed = parse("package Demo {\n  part def Rover {\n    part wheel;\n  }\n}");
+        let enclosing = parsed.enclosing_declarations(2);
+        let kinds: Vec<_> = enclosing.iter().map(|node| node.kind).collect();
+        assert_eq!(
+            kinds,
+            vec![SyntaxOutlineKind::Package, SyntaxOutlineKind::PartDef]
+        );
+        assert_eq!(
+            parsed.declaration_at(2).map(|node| node.kind),
+            Some(SyntaxOutlineKind::PartDef),
+            "the innermost declaration is the one the cursor is in"
+        );
+        assert!(parsed.declaration_at(99).is_none());
+    }
 }

@@ -12,7 +12,31 @@ use sysml_v2_parser::ast::{
 use super::token_util::{
     identification_name, qualified_identification_name, span_to_source_range as span_to_range,
 };
-use super::{SyntaxFoldingKind, SyntaxFoldingRegion, SyntaxOutlineNode};
+
+/// A node's true extent, resolved through the document's own position index.
+///
+/// The outline reports where a declaration *ends*, which is what makes "which declaration covers
+/// this line" and "where does this body fold" answerable. The single-line projection the token
+/// collector keeps (see [`span_to_source_range`](super::token_util::span_to_source_range)) puts
+/// the end of a multi-line declaration on its opening line, which would make every such question
+/// answer "no".
+fn node_range(
+    document: &sysml_v2_parser::ParsedDocument,
+    span: &sysml_v2_parser::Span,
+) -> SyntaxRange {
+    match document.range(span) {
+        Some(range) => SyntaxRange {
+            start_line: range.start.line.saturating_sub(1),
+            start_character: (range.start.column as u32).saturating_sub(1),
+            end_line: range.end.line.saturating_sub(1),
+            end_character: (range.end.column as u32).saturating_sub(1),
+        },
+        None => span_to_range(span),
+    }
+}
+use super::{
+    SyntaxFoldingKind, SyntaxFoldingRegion, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange,
+};
 
 pub(super) fn document_outline(
     document: &sysml_v2_parser::ParsedDocument,
@@ -27,7 +51,7 @@ pub(super) fn document_outline(
                 } else {
                     name
                 };
-                let range = span_to_range(&p.span);
+                let range = node_range(document, &p.span);
                 let children = match &p.body {
                     PackageBody::Brace { elements, .. } => elements
                         .iter()
@@ -35,12 +59,16 @@ pub(super) fn document_outline(
                         .collect(),
                     _ => vec![],
                 };
+                let (head_range, body_range) = split_body(document, &p.body, range);
                 Some(SyntaxOutlineNode {
                     name,
-                    kind: "package".to_string(),
+                    kind: SyntaxOutlineKind::Package,
                     range,
                     selection_range: range,
+                    head_range,
+                    body_range,
                     children,
+                    ..SyntaxOutlineNode::bare(range)
                 })
             }
             RootElement::Namespace(n) => {
@@ -50,7 +78,7 @@ pub(super) fn document_outline(
                 } else {
                     name
                 };
-                let range = span_to_range(&n.span);
+                let range = node_range(document, &n.span);
                 let children = match &n.body {
                     PackageBody::Brace { elements, .. } => elements
                         .iter()
@@ -58,12 +86,16 @@ pub(super) fn document_outline(
                         .collect(),
                     _ => vec![],
                 };
+                let (head_range, body_range) = split_body(document, &n.body, range);
                 Some(SyntaxOutlineNode {
                     name,
-                    kind: "namespace".to_string(),
+                    kind: SyntaxOutlineKind::Namespace,
                     range,
                     selection_range: range,
+                    head_range,
+                    body_range,
                     children,
+                    ..SyntaxOutlineNode::bare(range)
                 })
             }
             RootElement::LibraryPackage(lp) => {
@@ -73,7 +105,7 @@ pub(super) fn document_outline(
                 } else {
                     name
                 };
-                let range = span_to_range(&lp.span);
+                let range = node_range(document, &lp.span);
                 let children = match &lp.body {
                     PackageBody::Brace { elements, .. } => elements
                         .iter()
@@ -81,12 +113,16 @@ pub(super) fn document_outline(
                         .collect(),
                     _ => vec![],
                 };
+                let (head_range, body_range) = split_body(document, &lp.body, range);
                 Some(SyntaxOutlineNode {
                     name,
-                    kind: "library package".to_string(),
+                    kind: SyntaxOutlineKind::LibraryPackage,
                     range,
                     selection_range: range,
+                    head_range,
+                    body_range,
                     children,
+                    ..SyntaxOutlineNode::bare(range)
                 })
             }
             RootElement::Import(_) => None,
@@ -103,12 +139,7 @@ pub(super) fn document_outline(
 fn normalize_outline_symbols(symbols: &mut [SyntaxOutlineNode]) {
     for symbol in symbols {
         if symbol.name.trim().is_empty() {
-            let fallback = if symbol.kind.trim().is_empty() {
-                "(anonymous)".to_string()
-            } else {
-                format!("(anonymous {})", symbol.kind.trim())
-            };
-            symbol.name = fallback;
+            symbol.name = format!("(anonymous {})", symbol.kind.keyword());
         }
         if !symbol.children.is_empty() {
             normalize_outline_symbols(&mut symbol.children);
@@ -144,6 +175,41 @@ pub(super) fn folding_regions(
     }
 
     out
+}
+
+/// Split a declaration's extent into its header and its braced body.
+///
+/// The grammar records the exact `{` and `}` tokens, so a host asking "where does this
+/// declaration's signature end" never has to count braces in the text.
+fn split_body<E>(
+    document: &sysml_v2_parser::ParsedDocument,
+    body: &sysml_v2_parser::ast::Body<E>,
+    range: SyntaxRange,
+) -> (SyntaxRange, Option<SyntaxRange>) {
+    match body {
+        sysml_v2_parser::ast::Body::Semicolon { .. } => (range, None),
+        sysml_v2_parser::ast::Body::Brace {
+            open_span,
+            close_span,
+            ..
+        } => {
+            let open = node_range(document, open_span);
+            let close = node_range(document, close_span);
+            let head = SyntaxRange {
+                start_line: range.start_line,
+                start_character: range.start_character,
+                end_line: open.start_line,
+                end_character: open.start_character,
+            };
+            let body_range = SyntaxRange {
+                start_line: open.start_line,
+                start_character: open.start_character,
+                end_line: close.end_line,
+                end_character: close.end_character,
+            };
+            (head, Some(body_range))
+        }
+    }
 }
 
 fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
@@ -187,7 +253,7 @@ fn outline_symbol_from_element(
     node: &sysml_v2_parser::Node<PackageBodyElement>,
 ) -> Option<SyntaxOutlineNode> {
     use sysml_v2_parser::ast::PackageBodyElement as PBE;
-    let range = span_to_range(&node.span);
+    let range = node_range(document, &node.span);
     match &node.value {
         PBE::Package(p) => {
             let name = qualified_identification_name(document, &p.identification);
@@ -203,12 +269,16 @@ fn outline_symbol_from_element(
                     .collect(),
                 _ => vec![],
             };
+            let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name,
-                kind: "package".to_string(),
+                kind: SyntaxOutlineKind::Package,
                 range,
                 selection_range: range,
+                head_range,
+                body_range,
                 children,
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::PartDef(p) => {
@@ -217,30 +287,42 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PartDefBody::Brace { elements, .. } => outline_symbols_from_part_def_body(elements),
+                PartDefBody::Brace { elements, .. } => outline_symbols_from_part_def_body(document, elements),
                 _ => vec![],
             };
+            let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name,
-                kind: "part def".to_string(),
+                short_name: p.identification.short_name.clone(),
+                kind: SyntaxOutlineKind::PartDef,
+                typed_by: super::closure_targets::typing_target_display(document, p.specializes.as_deref()),
                 range,
                 selection_range: range,
+                head_range,
+                body_range,
                 children,
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::PartUsage(p) => {
             let children = match &p.body {
                 PartUsageBody::Brace { elements, .. } => {
-                    outline_symbols_from_part_usage_body(elements)
+                    outline_symbols_from_part_usage_body(document, elements)
                 }
                 _ => vec![],
             };
+            let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name: p.name.clone(),
-                kind: "part".to_string(),
+                short_name: p.short_name.clone(),
+                kind: SyntaxOutlineKind::PartUsage,
+                typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
                 range,
                 selection_range: range,
+                head_range,
+                body_range,
                 children,
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::PortDef(p) => {
@@ -249,15 +331,20 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PortDefBody::Brace { elements, .. } => outline_symbols_from_port_def_body(elements),
+                PortDefBody::Brace { elements, .. } => outline_symbols_from_port_def_body(document, elements),
                 _ => vec![],
             };
+            let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name,
-                kind: "port def".to_string(),
+                short_name: p.identification.short_name.clone(),
+                kind: SyntaxOutlineKind::PortDef,
                 range,
                 selection_range: range,
+                head_range,
+                body_range,
                 children,
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::InterfaceDef(p) => {
@@ -267,18 +354,20 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "interface".to_string(),
+                kind: SyntaxOutlineKind::InterfaceDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::AttributeDef(p) => Some(SyntaxOutlineNode {
             name: p.name.clone(),
-            kind: "attribute def".to_string(),
+            kind: SyntaxOutlineKind::AttributeDef,
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
         }),
         // `feature myFeature : BaseFeature;` and `class VehicleClass;` arrive as typed nodes now,
         // where they used to be opaque `FeatureDecl`/`ClassifierDecl` raw text whose declared name
@@ -289,10 +378,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name: p.value.name.clone(),
-                kind: "feature decl".to_string(),
+                kind: SyntaxOutlineKind::FeatureDecl,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::KermlClassifier(p) => {
@@ -302,10 +392,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "classifier decl".to_string(),
+                kind: SyntaxOutlineKind::ClassifierDecl,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::FeatureDecl(p) => {
@@ -315,10 +406,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "feature decl".to_string(),
+                kind: SyntaxOutlineKind::FeatureDecl,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::ClassifierDecl(p) => {
@@ -328,10 +420,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "classifier decl".to_string(),
+                kind: SyntaxOutlineKind::ClassifierDecl,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::ActionDef(p) => {
@@ -341,18 +434,20 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "action def".to_string(),
+                kind: SyntaxOutlineKind::ActionDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::ActionUsage(p) => Some(SyntaxOutlineNode {
             name: p.name.clone(),
-            kind: "action".to_string(),
+            kind: SyntaxOutlineKind::ActionUsage,
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
         }),
         PBE::ViewDef(p) => {
             let name = identification_name(&p.identification);
@@ -361,10 +456,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "view def".to_string(),
+                kind: SyntaxOutlineKind::ViewDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::ViewpointDef(p) => {
@@ -374,10 +470,11 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "viewpoint def".to_string(),
+                kind: SyntaxOutlineKind::ViewpointDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::RenderingDef(p) => {
@@ -387,32 +484,36 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
-                kind: "rendering def".to_string(),
+                kind: SyntaxOutlineKind::RenderingDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::ViewUsage(p) => Some(SyntaxOutlineNode {
             name: p.name.clone(),
-            kind: "view".to_string(),
+            kind: SyntaxOutlineKind::ViewUsage,
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
         }),
         PBE::ViewpointUsage(p) => Some(SyntaxOutlineNode {
             name: p.name.clone(),
-            kind: "viewpoint".to_string(),
+            kind: SyntaxOutlineKind::ViewpointUsage,
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
         }),
         PBE::RenderingUsage(p) => Some(SyntaxOutlineNode {
             name: p.name.clone(),
-            kind: "rendering".to_string(),
+            kind: SyntaxOutlineKind::RenderingUsage,
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
         }),
         PBE::Import(_) | PBE::AliasDef(_) => None,
         _ => None,
@@ -420,26 +521,29 @@ fn outline_symbol_from_element(
 }
 
 fn outline_symbols_from_part_def_body(
+    document: &sysml_v2_parser::ParsedDocument,
     elements: &[sysml_v2_parser::Node<PartDefBodyElement>],
 ) -> Vec<SyntaxOutlineNode> {
     let mut out = Vec::new();
     for node in elements {
         use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
-        let range = span_to_range(&node.span);
+        let range = node_range(document, &node.span);
         match &node.value {
             PDBE::AttributeDef(n) => out.push(SyntaxOutlineNode {
                 name: n.name.clone(),
-                kind: "attribute def".to_string(),
+                kind: SyntaxOutlineKind::AttributeDef,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             }),
             PDBE::PortUsage(n) => out.push(SyntaxOutlineNode {
                 name: n.name.clone(),
-                kind: "port".to_string(),
+                kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             }),
             _ => {}
         }
@@ -448,48 +552,57 @@ fn outline_symbols_from_part_def_body(
 }
 
 fn outline_symbols_from_part_usage_body(
+    document: &sysml_v2_parser::ParsedDocument,
     elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
 ) -> Vec<SyntaxOutlineNode> {
     let mut out = Vec::new();
     for node in elements {
         use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
-        let range = span_to_range(&node.span);
+        let range = node_range(document, &node.span);
         match &node.value {
             PUBE::AttributeUsage(n) => out.push(SyntaxOutlineNode {
                 name: n.name.clone(),
-                kind: "attribute".to_string(),
+                kind: SyntaxOutlineKind::AttributeUsage,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             }),
             PUBE::PartUsage(n) => {
                 let children = match &n.body {
                     PartUsageBody::Brace { elements, .. } => {
-                        outline_symbols_from_part_usage_body(elements)
+                        outline_symbols_from_part_usage_body(document, elements)
                     }
                     _ => vec![],
                 };
+                let (head_range, body_range) = split_body(document, &n.body, range);
                 out.push(SyntaxOutlineNode {
                     name: n.name.clone(),
-                    kind: "part".to_string(),
+                    short_name: n.short_name.clone(),
+                    kind: SyntaxOutlineKind::PartUsage,
                     range,
                     selection_range: range,
+                    head_range,
+                    body_range,
                     children,
+                    ..SyntaxOutlineNode::bare(range)
                 });
             }
             PUBE::PortUsage(n) => out.push(SyntaxOutlineNode {
                 name: n.name.clone(),
-                kind: "port".to_string(),
+                kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             }),
             PUBE::Ref(n) => out.push(SyntaxOutlineNode {
                 name: n.value.name.clone(),
-                kind: "ref".to_string(),
+                kind: SyntaxOutlineKind::Ref,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             }),
             _ => {}
         }
@@ -498,19 +611,21 @@ fn outline_symbols_from_part_usage_body(
 }
 
 fn outline_symbols_from_port_def_body(
+    document: &sysml_v2_parser::ParsedDocument,
     elements: &[sysml_v2_parser::Node<PortDefBodyElement>],
 ) -> Vec<SyntaxOutlineNode> {
     let mut out = Vec::new();
     for node in elements {
         use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
-        let range = span_to_range(&node.span);
+        let range = node_range(document, &node.span);
         if let PDBE::PortUsage(n) = &node.value {
             out.push(SyntaxOutlineNode {
                 name: n.name.clone(),
-                kind: "port".to_string(),
+                kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,
                 children: vec![],
+                ..SyntaxOutlineNode::bare(range)
             });
         }
     }

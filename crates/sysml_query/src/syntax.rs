@@ -12,7 +12,8 @@ pub use sysml_resolution::source::ContentDigest;
 pub use sysml_resolution::syntax::{
     is_reserved_keyword, reserved_keywords, PackageTargets, ParsedSource, SyntaxClosureFacts,
     SyntaxDiagnostic, SyntaxDiagnosticCategory, SyntaxDiagnosticSeverity, SyntaxFoldingKind,
-    SyntaxFoldingRegion, SyntaxOutlineNode, SyntaxRange, SyntaxRole, RESERVED_KEYWORDS,
+    SyntaxFoldingRegion, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange, SyntaxRole,
+    RESERVED_KEYWORDS,
 };
 
 use sysml_resolution::syntax::SyntaxAuthority;

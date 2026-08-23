@@ -148,10 +148,11 @@ pub(crate) fn linked_editing_range(
     pos: Position,
 ) -> Result<Option<LinkedEditingRanges>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
+    let text = entry.content();
     let (line, _, _, word) = match word_at_position(text, pos.line, pos.character) {
         Some(parts) => parts,
         None => return Ok(None),
@@ -159,13 +160,14 @@ pub(crate) fn linked_editing_range(
     if is_reserved_keyword(&word) {
         return Ok(None);
     }
-    let line_text = text.lines().nth(line as usize).unwrap_or("");
-    let declaration_like = line_text.contains(" def ")
-        || line_text.trim_start().starts_with("part ")
-        || line_text.trim_start().starts_with("port ")
-        || line_text.trim_start().starts_with("attribute ")
-        || line_text.trim_start().starts_with("action ");
-    if !declaration_like {
+    // Linked editing only applies on a declaration's own header line. The syntax service says
+    // which line that is; this used to guess from the line's leading keyword, which both missed
+    // declaration forms it had not enumerated and fired inside comments and strings.
+    let on_declaration_header = entry
+        .parsed
+        .declaration_at(line)
+        .is_some_and(|declaration| declaration.head_range.start_line == line);
+    if !on_declaration_header {
         return Ok(None);
     }
     let ranges: Vec<_> = crate::language::find_reference_ranges(text, &word)

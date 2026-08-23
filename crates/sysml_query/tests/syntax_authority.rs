@@ -99,16 +99,6 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/features.rs",
-        reason: "linked-editing declaration-line test awaiting declaration_at (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/features/editing_features.rs",
-        reason: "keyword signature help awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
         path: "crates/lsp_server/src/lsp_runtime/features/completion.rs",
         reason: "completion snippet bodies are presentation",
         must_contain: None,
@@ -116,16 +106,6 @@ const EXEMPTIONS: &[Exemption] = &[
     Exemption {
         path: "crates/lsp_server/src/lsp_runtime/navigation.rs",
         reason: "import document links awaiting structured imports (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/language/symbols.rs",
-        reason: "outline-kind keyword strings map to LSP symbol kinds awaiting an enum (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/views/feature_inspector.rs",
-        reason: "declaration head text of a publication-owned range awaiting a head range (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
         must_contain: None,
     },
     Exemption {

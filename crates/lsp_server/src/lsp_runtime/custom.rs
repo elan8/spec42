@@ -32,7 +32,7 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri,
             position,
             at,
-            Some(text.as_str()),
+            Some((text.as_str(), &entry.parsed)),
         ),
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
@@ -176,9 +176,9 @@ pub(crate) fn sysml_library_search_result(
         .take(effective_limit)
         .map(|(score, entry)| language_service::LibrarySearchItem {
             name: entry.name.clone(),
-            kind: crate::language::symbol_kind_label(crate::language::outline_kind_to_lsp(
-                entry.detail.as_deref().unwrap_or("symbol"),
-            ))
+            kind: crate::language::symbol_kind_label(
+                crate::language::element_kind_label_to_lsp(entry.detail.as_deref()),
+            )
             .to_string(),
             container: entry.container_name.clone(),
             uri: entry.uri.to_string(),

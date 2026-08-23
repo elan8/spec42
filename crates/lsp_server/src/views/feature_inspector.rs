@@ -27,6 +27,14 @@ use sysml_query::resolved_slice::{
     RelationshipProvenance, SymbolEntry, TextPosition, TextRange,
 };
 
+/// The document a declaration's authored text is read from: the source, paired with the tree the
+/// syntax service parsed for it.
+///
+/// Both, because the publication's declaration range covers the body as well as the header, and
+/// only the grammar knows where the header ends. A borrowed pair rather than a struct: nothing
+/// here owns a tree, it reads the one the host already holds.
+pub type DeclarationSource<'a> = (&'a str, &'a sysml_query::syntax::ParsedSource);
+
 /// The settled details a position identifies, whatever completeness they were published under.
 ///
 /// A recovery or unsupported publication still answers; only a non-converged one has nothing to
@@ -337,7 +345,7 @@ fn documentation(details: &ElementDetails) -> Option<String> {
 /// Source text, not a reconstruction: a signature rebuilt from published facts would have to guess
 /// the keyword the author used, and a keyword is a syntax fact rather than a semantic one. The
 /// range is the publication's own declaration range, so the slice is exactly the declaration.
-fn declaration_text(details: &ElementDetails, source: Option<&str>) -> String {
+fn declaration_text(details: &ElementDetails, source: Option<DeclarationSource<'_>>) -> String {
     let fallback = || {
         format!(
             "{} {}",
@@ -347,15 +355,31 @@ fn declaration_text(details: &ElementDetails, source: Option<&str>) -> String {
         .trim_end()
         .to_string()
     };
-    let Some(source) = source else {
+    let Some((text, parsed)) = source else {
         return fallback();
     };
-    let Some(text) = slice_range(source, details.inspection.declaration_range) else {
+    // A body is not part of the declaration a reader wants to see, and where it begins is the
+    // grammar's answer: the syntax service publishes the declaration's head range. Cutting the
+    // publication's range at the first `{` used to truncate a declaration whose header carried
+    // one in a string or a comment, and kept the whole body when it carried none.
+    let declaration_range = details.inspection.declaration_range;
+    let head_range = parsed
+        .enclosing_declarations(declaration_range.start.line)
+        .into_iter()
+        .rev()
+        .find(|declaration| declaration.range.start_line == declaration_range.start.line)
+        .map(|declaration| {
+            let head = declaration.head_range;
+            TextRange::new(
+                TextPosition::new(head.start_line, head.start_character),
+                TextPosition::new(head.end_line, head.end_character),
+            )
+        })
+        .unwrap_or(declaration_range);
+    let Some(text) = slice_range(text, head_range) else {
         return fallback();
     };
-    // A body is not part of the declaration a reader wants to see.
-    let head = text.split('{').next().unwrap_or(text);
-    let collapsed = head.split_whitespace().collect::<Vec<_>>().join(" ");
+    let collapsed = text.split_whitespace().collect::<Vec<_>>().join(" ");
     let collapsed = collapsed.trim_end_matches(';').trim().to_string();
     if collapsed.is_empty() {
         fallback()
@@ -439,7 +463,7 @@ pub fn empty_feature_inspector_response(
 
 pub(crate) fn feature_inspector_element(
     details: &ElementDetails,
-    source: Option<&str>,
+    source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorElementDto {
     let inspection = &details.inspection;
     SysmlFeatureInspectorElementDto {
@@ -492,7 +516,7 @@ pub(crate) fn feature_inspector_element(
 
 pub(crate) fn referenced_dto(
     referenced: &ReferencedDetails,
-    source: Option<&str>,
+    source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorReferenceDto {
     match referenced {
         ReferencedDetails::None => SysmlFeatureInspectorReferenceDto::None,
@@ -519,7 +543,7 @@ pub(crate) fn feature_inspector_response(
     uri: &Url,
     position: Position,
     at: &ElementDetailsAt,
-    source: Option<&str>,
+    source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorResultDto {
     let mut response = empty_feature_inspector_response(uri, position);
     response.containing_element = at
@@ -534,7 +558,7 @@ pub fn build_sysml_feature_inspector_response(
     model: &PublishedModel,
     uri: &Url,
     position: Position,
-    source: Option<&str>,
+    source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorResultDto {
     match details_at(model, uri, position) {
         Some(at) => feature_inspector_response(uri, position, &at, source),
@@ -549,8 +573,10 @@ mod tests {
 
     fn inspect(source: &str, line: u32, character: u32) -> SysmlFeatureInspectorResultDto {
         let uri = Url::parse("file:///inspector.sysml").expect("uri");
+        let services = sysml_query::Services::new();
         let document = SourceService::new().admit_url(uri.clone(), source, SourceKind::Workspace);
-        let model = sysml_query::Services::new()
+        let parsed = services.syntax.parse(&document);
+        let model = services
             .publication
             .publish(&[document], [])
             .expect("publication");
@@ -558,7 +584,7 @@ mod tests {
             &model,
             &uri,
             Position::new(line, character),
-            Some(source),
+            Some((source, &parsed)),
         )
     }
 
