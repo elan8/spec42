@@ -214,8 +214,8 @@ fn compare_related_lists(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_diagnostics::DiagnosticSeverity;
     use crate::snapshot::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
+    use sysml_diagnostics::DiagnosticSeverity;
     use sysml_query::resolved_slice::{TextPosition, TextRange};
     use url::Url;
 

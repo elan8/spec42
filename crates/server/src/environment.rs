@@ -598,10 +598,7 @@ pub fn workspace_references_standard_library(path: &Path) -> bool {
                 continue;
             }
             let path = entry.path();
-            if !path
-                .extension()
-                .is_some_and(|ext| ext == "sysml" || ext == "kerml")
-            {
+            if !sysml_query::source::is_sysml_like(path) {
                 continue;
             }
             *budget = budget.saturating_sub(1);

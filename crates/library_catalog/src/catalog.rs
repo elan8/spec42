@@ -410,13 +410,7 @@ fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceMani
             continue;
         }
         let path = entry.path();
-        let is_admitted = path
-            .extension()
-            .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| {
-                ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml")
-            });
-        if !is_admitted {
+        if !sysml_query::source::is_sysml_like(path) {
             continue;
         }
         let Ok(bytes) = std::fs::read(path) else {
