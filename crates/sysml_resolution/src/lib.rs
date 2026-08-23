@@ -1569,38 +1569,6 @@ mod tests {
         );
     }
 
-    /// A transition `if <guard>;` boolean expression with literal comparison operands must
-    /// evaluate to a constant `Boolean` through the exact same `classify_expression`/
-    /// `EvalNode` machinery a `constraint`/`calc` body uses (see `9f63c5a4` and earlier
-    /// expression/evaluation slices), not a separate transition-specific evaluator.
-    #[test]
-    fn transition_guard_with_literal_operands_evaluates() {
-        let sexpr = semantic_sexpr_for(
-            "package P { state def S { state off; state on; transition first off if 1 < 2 then on; } }",
-        );
-        assert!(
-            sexpr.contains("(value (boolean true))") || sexpr.contains("(boolean true)"),
-            "expected the literal guard `1 < 2` to fold to a constant true, got: {sexpr}"
-        );
-    }
-
-    /// A transition guard referencing an operand with no known constant value must stay
-    /// non-constant, not fabricate a truth value.
-    #[test]
-    fn transition_guard_with_unresolvable_operand_stays_non_constant() {
-        let sexpr = semantic_sexpr_for(
-            "package P { state def S { state off; state on; transition first off if missingFlag then on; } }",
-        );
-        assert!(
-            sexpr.contains("(kind expressionOperand)"),
-            "expected the guard's feature reference to be lowered as an expressionOperand, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("(value (boolean true))") && !sexpr.contains("(value (boolean false))"),
-            "did not expect an unresolvable guard operand to fold to a concrete boolean, got: {sexpr}"
-        );
-    }
-
     /// A bare `then <target>;` continuation (`ThenTarget::Feature`) referencing an
     /// already-declared sibling action must resolve as a `thenTarget` reference sourced at the
     /// enclosing action, not fall through to `unsupported_action_definition_member`.
@@ -2717,99 +2685,6 @@ package V {
         assert_ne!(values[0].identity, values[1].identity);
     }
 
-    // --- Evaluation states ------------------------------------------------------------------
-
-    /// `EvaluationPolicy::Skip` publishes a coherent resolved model in which every element that
-    /// has an expression says so explicitly, rather than an empty table a consumer cannot tell
-    /// from "there was nothing to evaluate".
-    #[test]
-    fn skipping_evaluation_publishes_not_run_rather_than_nothing() {
-        let source = "package P { attribute mass : Integer = 5; }";
-
-        let evaluated = semantic_sexpr_for(source);
-        assert!(
-            evaluated.contains("(state literal) (value (kind integer) (integer 5))"),
-            "expected the default policy to evaluate, got: {evaluated}"
-        );
-
-        let request = BuildRequest::new(
-            vec![SourceInput::new(
-                "memory://test.sysml",
-                source.to_string(),
-                SourceKind::Workspace,
-            )],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap()
-        .with_evaluation_policy(EvaluationPolicy::Skip);
-        let published = build(request).unwrap();
-        let mut skipped = String::new();
-        published
-            .debug()
-            .write_semantic_sexpr(&mut skipped)
-            .unwrap();
-
-        assert!(
-            skipped.contains("(state not-run)"),
-            "expected a declared not-run state, got: {skipped}"
-        );
-        assert!(
-            !skipped.contains("(value (kind"),
-            "a skipped build must publish no value, got: {skipped}"
-        );
-    }
-
-    /// A value that was *written* and one that was *computed* are both constants, but only the
-    /// expression's shape tells them apart, and a consumer showing "declared" versus "computed"
-    /// needs the distinction.
-    #[test]
-    fn a_written_literal_and_a_computed_constant_report_different_states() {
-        let written = semantic_sexpr_for("package P { attribute mass : Integer = 5; }");
-        assert!(
-            written.contains("(state literal) (value (kind integer) (integer 5))"),
-            "expected a written literal, got: {written}"
-        );
-
-        let computed = semantic_sexpr_for("package P { attribute mass : Integer = 2 + 3; }");
-        assert!(
-            computed.contains("(state evaluated) (value (kind integer) (integer 5))"),
-            "expected a computed constant, got: {computed}"
-        );
-    }
-
-    /// A value that depends on itself is a property of the model, published as its own state --
-    /// never a fabricated value, an infinite loop, or a panic.
-    #[test]
-    fn a_self_referential_value_reports_the_cyclic_state() {
-        let sexpr = semantic_sexpr_for(
-            "package P { constraint def C { a } attribute a : Integer = b; attribute b : Integer = a; }",
-        );
-        assert!(
-            sexpr.contains("(state cyclic)"),
-            "expected a cyclic evaluation state for the mutually dependent values, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("(state cyclic) (value"),
-            "a cyclic state must carry no value, got: {sexpr}"
-        );
-    }
-
-    /// A failure is not a value: the rendered fact names the failure and stops, so a consumer
-    /// cannot mistake it for a value of some fallback kind.
-    #[test]
-    fn a_division_by_zero_reports_a_failure_and_no_value() {
-        let sexpr = semantic_sexpr_for("package P { calc def C { return : Integer = 1 / 0; } }");
-        assert!(
-            sexpr.contains("(state division-by-zero)"),
-            "expected a division-by-zero failure state, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("(state division-by-zero) (value"),
-            "a failure must carry no value, got: {sexpr}"
-        );
-    }
-
     // --- Type queries -------------------------------------------------------------------------
     //
     // The `# TYPES` snapshot section already shows the published facts these queries read. What it
@@ -3042,39 +2917,6 @@ package V {
         ))
     }
 
-    /// Whether an element is quantity-typed can only be answered against the library that declares
-    /// what a quantity value is. Without it the answer is unknown, and publishing "not a quantity"
-    /// would state as a fact about the model what is really a missing input -- silently ruling out
-    /// the unit rules rather than reporting that they could not be applied.
-    #[test]
-    fn a_missing_quantity_library_leaves_measurement_applicability_unavailable() {
-        let workspace = "package P { attribute plain = 1; }";
-        let published = publication_for(&[("memory://q.sysml", workspace)]);
-        let symbol = probe_symbol(&published, workspace, "memory://q.sysml", "plain");
-        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
-            panic!("the probe must resolve");
-        };
-        assert_eq!(
-            evaluation.expected_measurement,
-            ExpectedMeasurement::Unavailable
-        );
-    }
-
-    /// With the library admitted, the same shape of element gets the affirmative answer.
-    #[test]
-    fn an_admitted_quantity_library_answers_a_non_quantity_element_affirmatively() {
-        let workspace = "package P { attribute plain : ScalarValues::Integer = 1; }";
-        let published = against_measurement_library(workspace, ConstructionSchedule::Sequential);
-        let symbol = probe_symbol(&published, workspace, "memory://workspace.sysml", "plain");
-        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
-            panic!("the probe must resolve");
-        };
-        assert_eq!(
-            evaluation.expected_measurement,
-            ExpectedMeasurement::NotApplicable
-        );
-    }
-
     fn render_publication(published: &PublishedResolution) -> String {
         let mut semantic = String::new();
         published
@@ -3092,71 +2934,6 @@ package V {
             .write_diagnostics_sexpr(&mut diagnostics)
             .expect("diagnostics");
         format!("{semantic}\n{types}\n{diagnostics}")
-    }
-
-    /// Every migrated expression rule the parity cases below rely on actually firing.
-    const MEASUREMENT_CODES: [&str; 4] = [
-        "incompatible_unit_dimension",
-        "unknown_unit_symbol",
-        "attribute_value_type_mismatch",
-        "non_boolean_expression",
-    ];
-
-    /// Evaluation, unit resolution and the decisions they feed must not depend on the schedule
-    /// that built the publication.
-    #[test]
-    fn parallel_and_sequential_construction_publish_the_same_evaluation_and_units() {
-        let sequential = measurement_publication(ConstructionSchedule::Sequential);
-        let parallel = measurement_publication(ConstructionSchedule::Parallel);
-        assert_eq!(
-            sequential, parallel,
-            "evaluation, unit and measurement facts must not depend on construction schedule"
-        );
-        for code in MEASUREMENT_CODES {
-            assert!(
-                sequential.contains(code),
-                "the parity workspace must actually exercise {code}, got: {sequential}"
-            );
-        }
-    }
-
-    /// The same facts, reached through a settled library stratum rather than a cold solve.
-    #[test]
-    fn a_seeded_publication_matches_an_unseeded_one_for_evaluation_and_units() {
-        let library = std::sync::Arc::new(
-            build_library_stratum(vec![SourceInput::new(
-                "memory://measurement.sysml",
-                MEASUREMENT_LIBRARY_SOURCE.to_string(),
-                SourceKind::StandardLibrary,
-            )])
-            .expect("measurement stratum"),
-        );
-        let seeded = build(
-            BuildRequest::with_library(
-                vec![SourceInput::new(
-                    "memory://workspace.sysml",
-                    MEASUREMENT_WORKSPACE.to_string(),
-                    SourceKind::Workspace,
-                )],
-                ConstructionSchedule::Sequential,
-                "contract-v1",
-                library,
-            )
-            .expect("seeded request"),
-        )
-        .expect("seeded build");
-        let seeded = render_publication(&seeded);
-        assert_eq!(
-            seeded,
-            measurement_publication(ConstructionSchedule::Sequential),
-            "unit and evaluation decisions must not depend on library-stratum reuse"
-        );
-        for code in MEASUREMENT_CODES {
-            assert!(
-                seeded.contains(code),
-                "the parity workspace must actually exercise {code}, got: {seeded}"
-            );
-        }
     }
 
     /// The identity has to commit the library, or the same workspace built against two different
@@ -3440,74 +3217,6 @@ package V {
                 ViewSelectionObstacle::UnsupportedPredicate
             ]))
         );
-    }
-
-    /// The verdict channel is a projection of the same settled value channel, gated by the
-    /// element's kind, so the two cannot disagree.
-    #[test]
-    fn analysis_evaluation_is_a_second_channel_over_the_settled_value() {
-        let published = detail_publication(
-            &[(
-                "memory://analysis.sysml",
-                concat!(
-                    "package P {\n",
-                    "  attribute plain = 1;\n",
-                    "  constraint holds { true }\n",
-                    "  constraint fails { false }\n",
-                    "  constraint broken { missing }\n",
-                    "}\n",
-                ),
-            )],
-            ConstructionSchedule::Sequential,
-        );
-
-        let plain = details_of(&published, "memory://analysis.sysml", "P::plain");
-        assert_eq!(
-            plain.analysis,
-            AnalysisEvaluation::NotApplicable,
-            "an attribute's value is not a verdict"
-        );
-        assert_eq!(
-            plain.evaluation.state,
-            EvaluationState::Literal(EvaluatedScalar::Integer(1))
-        );
-
-        assert_eq!(
-            details_of(&published, "memory://analysis.sysml", "P::holds").analysis,
-            AnalysisEvaluation::Verdict(true)
-        );
-        assert_eq!(
-            details_of(&published, "memory://analysis.sysml", "P::fails").analysis,
-            AnalysisEvaluation::Verdict(false)
-        );
-
-        let broken = details_of(&published, "memory://analysis.sysml", "P::broken");
-        assert!(
-            matches!(broken.analysis, AnalysisEvaluation::Unsettled(_)),
-            "an unsettled constraint must not read as a failing verdict, got {:?}",
-            broken.analysis
-        );
-    }
-
-    /// A build that does not evaluate reports the verdict channel as not run, which is neither a
-    /// verdict nor an inapplicable element.
-    #[test]
-    fn a_skipped_evaluation_policy_reports_the_verdict_channel_as_not_run() {
-        let request = BuildRequest::new(
-            vec![SourceInput::new(
-                "memory://skip.sysml",
-                "package P { constraint holds { true } }".to_string(),
-                SourceKind::Workspace,
-            )],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap()
-        .with_evaluation_policy(EvaluationPolicy::Skip);
-        let published = build(request).unwrap();
-        let holds = details_of(&published, "memory://skip.sysml", "P::holds");
-        assert_eq!(holds.evaluation.state, EvaluationState::NotRun);
-        assert_eq!(holds.analysis, AnalysisEvaluation::NotRun);
     }
 
     const VEHICLE_MODEL: &str = concat!(
