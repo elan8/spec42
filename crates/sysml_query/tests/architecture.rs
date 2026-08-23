@@ -640,7 +640,13 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "PackageTargets::qualified_name",
     "QualifiedReferenceTarget::qualified_name",
     "SymbolEntry::qualified_name",
+    // Not a copy of source text: the parser's own message, and for a parser panic a message this
+    // crate writes. The diagnostics are stored *inside* the `ParsedSource` next to the parse
+    // errors they mirror, so a borrow of those errors would make the handle self-referential.
     "SyntaxDiagnostic::message",
+    // Only sometimes a copy: an anonymous declaration is named `(anonymous package)` and a
+    // declaration the grammar keeps as raw text is named by sanitising that text into an
+    // identifier. Neither name is a span of the source, so there is nothing to slice.
     "SyntaxOutlineNode::name",
 ];
 /// The count is asserted separately from the membership so a swap -- one field drained and another
