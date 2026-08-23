@@ -614,8 +614,6 @@ fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
 const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
     "AffectedDocument::identity",
     "AuthoredUnit::authored",
-    "Diagnostic::message",
-    "DiagnosticLocation::document",
     "DiagramEdge::semantic_id",
     "DiagramRelationship::kind",
     "DiagramRelationship::semantic_id",
@@ -630,7 +628,6 @@ const FACADE_OWNED_STRING_FIELDS: &[&str] = &[
     "QualifiedElementReference::qualified_name",
     "QualifiedReferenceProbe::qualified_name",
     "QualifiedReferenceTarget::qualified_name",
-    "RelatedLocation::message",
     "SourceLocation::document",
     "SymbolEntry::qualified_name",
     "SyntaxDiagnostic::message",

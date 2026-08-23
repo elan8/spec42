@@ -719,12 +719,12 @@ fn a_document_query_answers_from_the_publication_index_and_repeats_identically()
     let second = published.document_diagnostics("memory://test.sysml");
     assert_eq!(first, second, "a repeated query returns identical values");
     assert_eq!(
-        first.diagnostics.as_ref(),
-        published.diagnostics().diagnostics.as_ref(),
+        first.iter().collect::<Vec<_>>(),
+        published.diagnostics().iter().collect::<Vec<_>>(),
         "the document slice is the publication's own sequence"
     );
     let absent = published.document_diagnostics("memory://absent.sysml");
-    assert!(absent.diagnostics.is_empty());
+    assert!(absent.is_empty());
     assert_eq!(
         absent.completeness, first.completeness,
         "completeness travels with the answer even when there is nothing to report"

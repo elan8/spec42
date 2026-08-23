@@ -457,10 +457,10 @@ pub struct DiagnosticQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl DiagnosticQueries<'_> {
+impl<'a> DiagnosticQueries<'a> {
     /// The published diagnostics, canonically ordered, with the completeness of the publication
     /// that produced them. Only workspace-authored documents are reported.
-    pub fn published(&self) -> PublishedDiagnostics {
+    pub fn published(&self) -> PublishedDiagnostics<'a> {
         self.model.diagnostics()
     }
 
@@ -470,7 +470,7 @@ impl DiagnosticQueries<'_> {
     /// computes: repeating the query, or asking about documents in any order, answers identically.
     /// A document this publication did not admit answers with no diagnostics and the same
     /// completeness, which is why the completeness travels with the answer.
-    pub fn for_document(&self, document: &str) -> PublishedDiagnostics {
+    pub fn for_document(&self, document: &str) -> PublishedDiagnostics<'a> {
         self.model.document_diagnostics(document)
     }
 }

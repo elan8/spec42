@@ -43,9 +43,8 @@ pub fn document_diagnostics(
     policy: ReportingPolicy,
 ) -> Vec<SemanticDiagnostic> {
     let published = model.diagnostics().for_document(uri.as_str());
-    let has_parse_error = published.diagnostics.iter().any(is_parse_error);
+    let has_parse_error = published.iter().any(is_parse_error);
     published
-        .diagnostics
         .iter()
         .filter(|diagnostic| {
             !(policy.parse_errors_only_when_source_is_invalid && has_parse_error)
@@ -56,32 +55,31 @@ pub fn document_diagnostics(
 }
 
 fn is_parse_error(diagnostic: &Diagnostic) -> bool {
-    diagnostic.origin == DiagnosticOrigin::Parser && diagnostic.severity == PublishedSeverity::Error
+    diagnostic.origin() == DiagnosticOrigin::Parser && diagnostic.severity() == PublishedSeverity::Error
 }
 
 fn project(diagnostic: &Diagnostic, uri: &Url) -> SemanticDiagnostic {
     SemanticDiagnostic {
         uri: uri.clone(),
-        range: diagnostic.location.range,
-        severity: severity(diagnostic.severity),
-        source: match diagnostic.origin {
+        range: diagnostic.location().range(),
+        severity: severity(diagnostic.severity()),
+        source: match diagnostic.origin() {
             DiagnosticOrigin::Parser => PARSER_SOURCE,
             DiagnosticOrigin::Semantic => SEMANTIC_SOURCE,
         }
         .to_string(),
-        code: diagnostic.code.as_str().to_string(),
-        message: diagnostic.message.to_string(),
+        code: diagnostic.code().as_str().to_string(),
+        message: diagnostic.message().to_string(),
         related_information: diagnostic
-            .related
-            .iter()
+            .related()
             .filter_map(|related| {
                 // A related site the host cannot address is dropped rather than pointed at the
                 // reporting document: the diagnostic itself is still correct without it, and
                 // substituting a URI would send a reader to the wrong file.
                 Some(DiagnosticRelatedInfo {
-                    uri: Url::parse(&related.location.document).ok()?,
-                    range: related.location.range,
-                    message: related.message.to_string(),
+                    uri: Url::parse(related.location().document()).ok()?,
+                    range: related.location().range(),
+                    message: related.message().to_string(),
                 })
             })
             .collect(),

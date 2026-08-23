@@ -739,27 +739,23 @@ impl ResolvedSemanticModel {
     /// A document this publication did not admit has no diagnostics, which is a different answer
     /// from "no diagnostic was reported": the caller asked about a document that is not part of
     /// this model, and the empty slice says so alongside the publication's completeness.
-    pub(crate) fn published_document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
+    pub(crate) fn published_document_diagnostics(&self, document: &str) -> PublishedDiagnostics<'_> {
         let diagnostics = match self.documents.document(&self.storage, document) {
             Some(id) => match self.diagnostics.by_document.get(id.index()) {
-                Some((start, end)) => {
-                    self.diagnostics.diagnostics[*start as usize..*end as usize].into()
-                }
-                None => Box::default(),
+                Some((start, end)) => self
+                    .diagnostics
+                    .diagnostics
+                    .get(*start as usize..*end as usize)
+                    .unwrap_or_default(),
+                None => &[],
             },
-            None => Box::default(),
+            None => &[],
         };
-        PublishedDiagnostics {
-            completeness: self.completeness(),
-            diagnostics,
-        }
+        PublishedDiagnostics::new(self.completeness(), diagnostics)
     }
 
-    pub(crate) fn published_diagnostics(&self) -> PublishedDiagnostics {
-        PublishedDiagnostics {
-            completeness: self.completeness(),
-            diagnostics: self.diagnostics.diagnostics.clone(),
-        }
+    pub(crate) fn published_diagnostics(&self) -> PublishedDiagnostics<'_> {
+        PublishedDiagnostics::new(self.completeness(), &self.diagnostics.diagnostics)
     }
 
     pub(crate) fn diagnostics(&self) -> &[Diagnostic] {

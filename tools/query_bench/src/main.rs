@@ -152,7 +152,6 @@ fn main() -> Result<(), String> {
             .model
             .diagnostics()
             .for_document(&fixture.workspace_document)
-            .diagnostics
             .len()
     }));
 

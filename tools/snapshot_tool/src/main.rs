@@ -2811,12 +2811,11 @@ fn regenerate_snapshot(
     let observed_diagnostics: Vec<_> = canonical_model
         .diagnostics()
         .published()
-        .diagnostics
         .iter()
         .map(|diagnostic| ObservedDiagnostic {
             category: diagnostic.category().as_str().to_string(),
-            origin: diagnostic.origin.as_str().to_string(),
-            severity: diagnostic.severity.as_str().to_string(),
+            origin: diagnostic.origin().as_str().to_string(),
+            severity: diagnostic.severity().as_str().to_string(),
         })
         .collect();
     let mut expectation = check_fixture_expectation(

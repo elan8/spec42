@@ -51,12 +51,53 @@ pub use sysml_contract::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverit
 /// Only workspace-authored documents are reported. Library and standard-library sources are
 /// admitted to the same semantic system, but their diagnostics are not the authoring surface this
 /// contract describes, and reporting them would make every workspace inherit the library's.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PublishedDiagnostics {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PublishedDiagnostics<'m> {
     pub completeness: PublicationCompleteness,
     /// Canonically ordered: by document identity, then by range, then by code. The order is a
     /// property of the publication, not of traversal, storage, or scheduling.
-    pub diagnostics: Box<[Diagnostic]>,
+    ///
+    /// A slice of the settled sequence, never a copy of it: asking a publication for its
+    /// diagnostics costs a bounds check, not one allocated message, document identity and related
+    /// site per entry.
+    diagnostics: &'m [Diagnostic],
+}
+
+impl<'m> PublishedDiagnostics<'m> {
+    pub(crate) fn new(
+        completeness: PublicationCompleteness,
+        diagnostics: &'m [Diagnostic],
+    ) -> Self {
+        Self {
+            completeness,
+            diagnostics,
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.diagnostics.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.diagnostics.is_empty()
+    }
+
+    pub fn get(&self, index: usize) -> Option<&'m Diagnostic> {
+        self.diagnostics.get(index)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &'m Diagnostic> + 'm {
+        self.diagnostics.iter()
+    }
+}
+
+impl<'m> IntoIterator for PublishedDiagnostics<'m> {
+    type Item = &'m Diagnostic;
+    type IntoIter = std::slice::Iter<'m, Diagnostic>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.diagnostics.iter()
+    }
 }
 
 /// One published diagnostic.
@@ -71,26 +112,66 @@ pub struct PublishedDiagnostics {
 /// own from the code, and it is never a semantic input: no consumer may recover a fact from it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Diagnostic {
-    pub code: DiagnosticCode,
-    pub severity: DiagnosticSeverity,
-    pub origin: DiagnosticOrigin,
+    pub(crate) code: DiagnosticCode,
+    pub(crate) severity: DiagnosticSeverity,
+    pub(crate) origin: DiagnosticOrigin,
     /// A stable owner-produced sentence. Presentation only.
-    pub message: Box<str>,
+    pub(crate) message: Box<str>,
     /// The element the diagnostic is about, where one exists.
     ///
     /// Absent for a parse error, an unsupported construct, and any other diagnostic whose subject
     /// is a span rather than a declaration this publication named.
-    pub subject: Option<SymbolId>,
+    pub(crate) subject: Option<SymbolId>,
     /// Where the diagnostic is reported. This is the authored site, not a definition it names.
-    pub location: DiagnosticLocation,
+    pub(crate) location: DiagnosticLocation,
     /// Further sites that explain the diagnostic, in canonical order.
     ///
     /// Ambiguity reports every candidate here. An empty slice means the diagnostic has no related
     /// site, never that the related sites were unavailable.
-    pub related: Box<[RelatedLocation]>,
+    pub(crate) related: Box<[RelatedLocation]>,
 }
 
 impl Diagnostic {
+    /// The stable public identifier and typed outcome of this diagnostic.
+    pub fn code(&self) -> &DiagnosticCode {
+        &self.code
+    }
+
+    pub fn severity(&self) -> DiagnosticSeverity {
+        self.severity
+    }
+
+    pub fn origin(&self) -> DiagnosticOrigin {
+        self.origin
+    }
+
+    /// The owner-produced sentence, borrowed from the settled diagnostic.
+    ///
+    /// Presentation only, and never a semantic input: no consumer may recover a fact from it.
+    pub fn message(&self) -> &str {
+        &self.message
+    }
+
+    /// The element the diagnostic is about, where one exists.
+    pub fn subject(&self) -> Option<SymbolId> {
+        self.subject
+    }
+
+    /// Where the diagnostic is reported: the authored site, not a definition it names.
+    pub fn location(&self) -> &DiagnosticLocation {
+        &self.location
+    }
+
+    /// Further sites that explain the diagnostic, in canonical order.
+    pub fn related(&self) -> impl Iterator<Item = &RelatedLocation> + '_ {
+        self.related.iter()
+    }
+
+    /// The number of related sites, without walking them.
+    pub fn related_len(&self) -> usize {
+        self.related.len()
+    }
+
     /// The neutral category settled by the diagnostic's owning code declaration.
     ///
     /// Keeping this as an accessor prevents a second, mutable category store from drifting away
@@ -107,16 +188,38 @@ impl Diagnostic {
 /// declaration nor a reference. Reusing it would require inventing a role.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagnosticLocation {
-    pub document: Box<str>,
-    pub range: TextRange,
+    pub(crate) document: Box<str>,
+    pub(crate) range: TextRange,
+}
+
+impl DiagnosticLocation {
+    /// The document identity, borrowed from the settled diagnostic.
+    pub fn document(&self) -> &str {
+        &self.document
+    }
+
+    pub fn range(&self) -> TextRange {
+        self.range
+    }
 }
 
 /// One explanatory site of a diagnostic, with the owner's own note about why it is related.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RelatedLocation {
-    pub location: DiagnosticLocation,
+    pub(crate) location: DiagnosticLocation,
     /// A stable owner-produced sentence. Presentation only.
-    pub message: Box<str>,
+    pub(crate) message: Box<str>,
+}
+
+impl RelatedLocation {
+    pub fn location(&self) -> &DiagnosticLocation {
+        &self.location
+    }
+
+    /// A stable owner-produced sentence. Presentation only.
+    pub fn message(&self) -> &str {
+        &self.message
+    }
 }
 
 /// Declares every code this publication itself can report, once.

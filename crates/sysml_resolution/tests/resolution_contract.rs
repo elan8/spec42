@@ -2177,9 +2177,8 @@ fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
         build(request)
             .unwrap()
             .document_diagnostics("memory://test.sysml")
-            .diagnostics
             .iter()
-            .map(|diagnostic| diagnostic.code.as_str().to_string())
+            .map(|diagnostic| diagnostic.code().as_str().to_string())
             .collect::<Vec<_>>()
     };
     assert!(
@@ -2201,9 +2200,8 @@ fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
         published_for("package P { view def RequirementView; view v : RequirementView; }");
     assert!(!published
         .diagnostics()
-        .diagnostics
         .iter()
-        .any(|diagnostic| diagnostic.code == DiagnosticCode::ViewTypeNonStandard));
+        .any(|diagnostic| diagnostic.code() == & DiagnosticCode::ViewTypeNonStandard));
 }
 
 /// The library-context hint is a fact about the publication, not about a host's configuration.
@@ -2217,9 +2215,8 @@ fn the_library_context_hint_reads_what_the_publication_admitted() {
     let codes = |published: PublishedResolution| {
         published
             .document_diagnostics("memory://workspace.sysml")
-            .diagnostics
             .iter()
-            .map(|diagnostic| diagnostic.code.as_str().to_string())
+            .map(|diagnostic| diagnostic.code().as_str().to_string())
             .collect::<Vec<_>>()
     };
 
@@ -2310,9 +2307,8 @@ fn an_admitted_library_document_is_reported_only_when_the_host_names_it() {
     let codes = |published: &PublishedResolution, document: &str| {
         published
             .document_diagnostics(document)
-            .diagnostics
             .iter()
-            .map(|diagnostic| diagnostic.code.as_str().to_string())
+            .map(|diagnostic| diagnostic.code().as_str().to_string())
             .collect::<Vec<_>>()
     };
 
@@ -2349,9 +2345,8 @@ fn an_admitted_library_document_is_reported_only_when_the_host_names_it() {
     assert!(
         named
             .diagnostics()
-            .diagnostics
             .iter()
-            .any(|diagnostic| diagnostic.location.document.as_ref() == "memory://lib.sysml"),
+            .any(|diagnostic| diagnostic.location().document() == "memory://lib.sysml"),
         "the aggregate carries the named document too, so the two cannot disagree"
     );
 }
@@ -4929,7 +4924,7 @@ fn part_definition_specialization_is_implied_from_the_canonical_standard_library
             .as_ref(),
         &[part],
     );
-    assert!(published.diagnostics().diagnostics.is_empty());
+    assert!(published.diagnostics().is_empty());
 }
 
 /// The generated rule table, rather than the compatibility `PartDefinition` query, owns
@@ -4973,7 +4968,7 @@ fn generated_library_specialization_rules_publish_generic_anchor_outcomes() {
             location: None,
         }]
     );
-    assert!(published.diagnostics().diagnostics.is_empty());
+    assert!(published.diagnostics().is_empty());
 }
 
 /// The exact flow predicates are evaluated from the canonical endpoint facts: positional
@@ -5808,9 +5803,8 @@ fn specialization_cycle_validation_consumes_the_implied_part_definition_fact() {
     assert_eq!(
         published
             .diagnostics()
-            .diagnostics
             .iter()
-            .map(|diagnostic| diagnostic.code.as_str())
+            .map(|diagnostic| diagnostic.code().as_str())
             .collect::<Vec<_>>(),
         vec!["specialization_cycle"]
     );
@@ -5851,7 +5845,7 @@ fn part_definition_specialization_has_sequential_parallel_and_warm_library_parit
         (
             specialization_relationships(published, "memory://model.sysml", "Model::Component"),
             settled(published.direct_supertypes(component, SpecializationScope::Subclassification)),
-            published.diagnostics(),
+            published.diagnostics().iter().cloned().collect::<Vec<_>>(),
         )
     };
     assert_eq!(render(&sequential), render(&parallel));

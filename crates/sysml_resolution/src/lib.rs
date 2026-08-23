@@ -724,7 +724,7 @@ impl PublishedResolution {
     ///
     /// This is the complete production validation surface; see [`DiagnosticCode`] for every
     /// family it decides.
-    pub fn diagnostics(&self) -> PublishedDiagnostics {
+    pub fn diagnostics(&self) -> PublishedDiagnostics<'_> {
         self.model.published_diagnostics()
     }
 
@@ -736,7 +736,7 @@ impl PublishedResolution {
     ///
     /// A document this publication did not admit answers with no diagnostics and the same
     /// completeness, which is why the completeness travels with them.
-    pub fn document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
+    pub fn document_diagnostics(&self, document: &str) -> PublishedDiagnostics<'_> {
         self.model.published_document_diagnostics(document)
     }
 

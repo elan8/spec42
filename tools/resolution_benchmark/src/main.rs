@@ -507,7 +507,7 @@ fn measure_downstream(
     let mut diagnostic_results = 0u64;
     for _ in 0..repetitions {
         let published = model.diagnostics().published();
-        diagnostic_results += published.diagnostics.len() as u64;
+        diagnostic_results += published.len() as u64;
         black_box(published);
     }
     measurements.push(QueryMeasurement {

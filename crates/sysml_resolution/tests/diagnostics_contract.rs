@@ -568,7 +568,7 @@ fn every_diagnostic_carries_an_owner_produced_message() {
     assert!(!diagnostics.is_empty());
     for diagnostic in &diagnostics {
         assert!(
-            !diagnostic.message.trim().is_empty(),
+            !diagnostic.message().trim().is_empty(),
             "empty message: {diagnostic:#?}"
         );
         assert!(
@@ -1145,12 +1145,11 @@ fn polarity_branch_anchor_failures_are_explicit_and_deduplicated() {
     ));
     let missing_published_diagnostics = missing.diagnostics();
     let missing_diagnostics = missing_published_diagnostics
-        .diagnostics
         .iter()
         .filter(|diagnostic| {
-            diagnostic.code.as_str() == "missing_library_anchor"
+            diagnostic.code().as_str() == "missing_library_anchor"
                 && diagnostic
-                    .message
+                    .message()
                     .contains("Requirements::notSatisfiedRequirementChecks")
         })
         .collect::<Vec<_>>();
@@ -1186,17 +1185,16 @@ fn polarity_branch_anchor_failures_are_explicit_and_deduplicated() {
     ));
     let ambiguous_published_diagnostics = ambiguous.diagnostics();
     let ambiguous_diagnostics = ambiguous_published_diagnostics
-        .diagnostics
         .iter()
         .filter(|diagnostic| {
-            diagnostic.code.as_str() == "ambiguous_library_anchor"
+            diagnostic.code().as_str() == "ambiguous_library_anchor"
                 && diagnostic
-                    .message
+                    .message()
                     .contains("Requirements::notSatisfiedRequirementChecks")
         })
         .collect::<Vec<_>>();
     assert_eq!(ambiguous_diagnostics.len(), 1);
-    assert_eq!(ambiguous_diagnostics[0].related.len(), 2);
+    assert_eq!(ambiguous_diagnostics[0].related_len(), 2);
 }
 
 /// Anchor failures remain typed published states and report one actionable cause, rather than
@@ -1229,9 +1227,8 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
     assert_eq!(
         missing
             .diagnostics()
-            .diagnostics
             .iter()
-            .map(|diagnostic| diagnostic.code.as_str())
+            .map(|diagnostic| diagnostic.code().as_str())
             .collect::<Vec<_>>(),
         vec!["missing_library_anchor"]
     );
@@ -1240,7 +1237,7 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
             .is_empty()
     );
     assert_eq!(
-        missing.diagnostics().diagnostics[0].category(),
+        missing.diagnostics().get(0).expect("one diagnostic").category(),
         DiagnosticCategory::MissingContext
     );
 
@@ -1269,11 +1266,12 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
         ambiguous.part_definition_specialization_anchor(),
         QueryOutcome::Ambiguous(candidates) if candidates.len() == 2
     ));
-    let diagnostics = ambiguous.diagnostics().diagnostics;
+    let published_diagnostics = ambiguous.diagnostics();
+    let diagnostics = published_diagnostics.iter().collect::<Vec<_>>();
     assert_eq!(diagnostics.len(), 1);
-    assert_eq!(diagnostics[0].code.as_str(), "ambiguous_library_anchor");
+    assert_eq!(diagnostics[0].code().as_str(), "ambiguous_library_anchor");
     assert_eq!(diagnostics[0].category(), DiagnosticCategory::Ambiguous);
-    assert_eq!(diagnostics[0].related.len(), 2);
+    assert_eq!(diagnostics[0].related_len(), 2);
 }
 
 /// A missing generated anchor is reported once for every affected document and anchor, not
@@ -1306,10 +1304,11 @@ fn generated_library_anchor_diagnostics_deduplicate_by_anchor_and_document() {
         published.library_specialization_anchor(ITEM_RULE),
         QueryOutcome::Unresolved
     ));
-    let diagnostics = published.diagnostics().diagnostics;
+    let published_diagnostics = published.diagnostics();
+    let diagnostics = published_diagnostics.iter().collect::<Vec<_>>();
     assert_eq!(diagnostics.len(), 1);
-    assert_eq!(diagnostics[0].code.as_str(), "missing_library_anchor");
-    assert!(diagnostics[0].message.contains("Items::Item"));
+    assert_eq!(diagnostics[0].code().as_str(), "missing_library_anchor");
+    assert!(diagnostics[0].message().contains("Items::Item"));
 }
 
 /// Recovery-produced input is still answered, and the outcome says the publication recovered
