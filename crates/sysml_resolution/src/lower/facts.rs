@@ -16,7 +16,7 @@ use sysml_v2_parser::{
 
 use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, ReferenceKind,
-    SymbolId, SymbolPathId, Visibility,
+    NameId, SymbolPathId, Visibility,
 };
 use crate::TextPosition;
 use crate::TextRange;
@@ -151,7 +151,7 @@ pub(crate) struct DeclarationModifiers {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct DeclarationFacts {
     /// The `<shortName>` identification prefix, where the owning parser node has the field.
-    pub(crate) short_name: Option<SymbolId>,
+    pub(crate) short_name: Option<NameId>,
     pub(crate) modifiers: DeclarationModifiers,
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,
@@ -225,10 +225,10 @@ pub(crate) enum AnnotationForm {
 pub(crate) struct DocumentationRecord {
     pub(crate) declaration: DeclarationId,
     pub(crate) form: AnnotationForm,
-    pub(crate) locale: Option<SymbolId>,
+    pub(crate) locale: Option<NameId>,
     /// The `rep` language string; always `None` for the other two forms.
-    pub(crate) language: Option<SymbolId>,
-    pub(crate) text: SymbolId,
+    pub(crate) language: Option<NameId>,
+    pub(crate) text: NameId,
     pub(crate) span: Span,
 }
 
@@ -638,7 +638,7 @@ impl LineIndex {
 pub(crate) struct Declaration {
     pub(crate) document: DocumentId,
     pub(crate) owner: Option<DeclarationId>,
-    pub(crate) name: Option<SymbolId>,
+    pub(crate) name: Option<NameId>,
     pub(crate) anonymous_ordinal: Option<u32>,
     pub(crate) kind: DeclarationKind,
     pub(crate) span: Span,
@@ -743,7 +743,7 @@ pub(crate) struct AuthoredUnitToken {
     /// Authored order within `declaration`, left to right, assigned in lockstep with lowering.
     pub(crate) ordinal: u32,
     /// The token exactly as the author wrote it, never normalized to a canonical unit identity.
-    pub(crate) text: SymbolId,
+    pub(crate) text: NameId,
     /// The token's own range: the text between `[` and `]`, excluding the brackets.
     pub(crate) span: Span,
 }

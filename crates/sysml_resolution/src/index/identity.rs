@@ -5,7 +5,7 @@ use crate::model::render as writer;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
 use hashbrown::HashTable;
 use std::collections::hash_map::RandomState;
@@ -334,7 +334,7 @@ fn push_decimal(output: &mut String, value: u64) {
 pub(crate) fn name_occurrences(
     storage: &SemanticModelStorage,
 ) -> Result<Box<[u32]>, ResolutionError> {
-    let mut seen: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind, SymbolId), u32> =
+    let mut seen: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind, NameId), u32> =
         BTreeMap::new();
     let mut occurrences = Vec::with_capacity(storage.declarations.len());
     for declaration in storage.declarations.iter() {

@@ -30,7 +30,7 @@ macro_rules! semantic_id {
 
 semantic_id!(DocumentId);
 semantic_id!(DeclarationId);
-semantic_id!(SymbolId);
+semantic_id!(NameId);
 semantic_id!(SymbolPathId);
 semantic_id!(AuthoredReferenceId);
 

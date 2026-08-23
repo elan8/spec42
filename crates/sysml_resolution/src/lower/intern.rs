@@ -5,7 +5,7 @@ use std::hash::BuildHasher;
 
 use hashbrown::HashTable;
 
-use crate::model::{ConstructionError, SymbolId, SymbolPathId};
+use crate::model::{ConstructionError, NameId, SymbolPathId};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SymbolPath {
@@ -17,7 +17,7 @@ pub(crate) struct SymbolPath {
 #[derive(Debug)]
 pub(crate) struct SymbolPathArena {
     pub(crate) paths: Box<[SymbolPath]>,
-    pub(crate) segments: Box<[SymbolId]>,
+    pub(crate) segments: Box<[NameId]>,
 }
 
 impl SymbolPathArena {
@@ -26,7 +26,7 @@ impl SymbolPathArena {
         self.paths.len()
     }
 
-    pub(crate) fn get(&self, id: SymbolPathId) -> Option<(&[SymbolId], bool)> {
+    pub(crate) fn get(&self, id: SymbolPathId) -> Option<(&[NameId], bool)> {
         let path = self.paths.get(id.index())?;
         if path.len == 0 {
             return None;
@@ -40,7 +40,7 @@ impl SymbolPathArena {
 #[derive(Debug, Default)]
 pub(crate) struct SymbolPathArenaBuilder {
     pub(crate) paths: Vec<SymbolPath>,
-    pub(crate) segments: Vec<SymbolId>,
+    pub(crate) segments: Vec<NameId>,
     pub(crate) index: HashTable<SymbolPathId>,
     pub(crate) hash_builder: RandomState,
 }
@@ -48,7 +48,7 @@ pub(crate) struct SymbolPathArenaBuilder {
 impl SymbolPathArenaBuilder {
     pub(crate) fn push(
         &mut self,
-        segments: &[SymbolId],
+        segments: &[NameId],
         rooted: bool,
     ) -> Result<SymbolPathId, ConstructionError> {
         if segments.is_empty() {
@@ -115,15 +115,15 @@ impl SymbolTable {
         self.spans.len()
     }
 
-    pub(crate) fn get(&self, id: SymbolId) -> Option<&str> {
+    pub(crate) fn get(&self, id: NameId) -> Option<&str> {
         let (start, len) = *self.spans.get(id.index())?;
         let end = start.checked_add(len)?;
         self.bytes.get(start as usize..end as usize)
     }
 
-    pub(crate) fn find(&self, value: &str) -> Option<SymbolId> {
+    pub(crate) fn find(&self, value: &str) -> Option<NameId> {
         self.spans.iter().enumerate().find_map(|(index, _)| {
-            let id = SymbolId::from_index(index).ok()?;
+            let id = NameId::from_index(index).ok()?;
             (self.get(id) == Some(value)).then_some(id)
         })
     }
@@ -133,7 +133,7 @@ impl SymbolTable {
 pub(crate) struct SymbolTableBuilder {
     pub(crate) bytes: String,
     pub(crate) spans: Vec<(u32, u32)>,
-    pub(crate) index: HashTable<SymbolId>,
+    pub(crate) index: HashTable<NameId>,
     pub(crate) hash_builder: RandomState,
 }
 
@@ -142,18 +142,18 @@ impl SymbolTableBuilder {
         self.spans.len()
     }
 
-    pub(crate) fn get(&self, id: SymbolId) -> &str {
+    pub(crate) fn get(&self, id: NameId) -> &str {
         let (start, len) = self.spans[id.index()];
         &self.bytes[start as usize..(start + len) as usize]
     }
 
-    pub(crate) fn intern(&mut self, value: &str) -> Result<SymbolId, ConstructionError> {
+    pub(crate) fn intern(&mut self, value: &str) -> Result<NameId, ConstructionError> {
         let hash = self.hash_builder.hash_one(value);
         if let Some(existing) = self.index.find(hash, |id| self.get(*id) == value) {
             return Ok(*existing);
         }
 
-        let id = SymbolId::from_index(self.spans.len())?;
+        let id = NameId::from_index(self.spans.len())?;
         let start = u32::try_from(self.bytes.len()).map_err(|_| ConstructionError::Capacity)?;
         let len = u32::try_from(value.len()).map_err(|_| ConstructionError::Capacity)?;
         start.checked_add(len).ok_or(ConstructionError::Capacity)?;
@@ -216,19 +216,19 @@ mod tests {
     #[test]
     fn semantic_paths_are_interned_across_arena_growth() {
         let mut paths = SymbolPathArenaBuilder::default();
-        let vehicle = paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap();
+        let vehicle = paths.push(&[NameId(1), NameId(2)], false).unwrap();
         for index in 0..256 {
             paths
-                .push(&[SymbolId(index), SymbolId(index + 1)], true)
+                .push(&[NameId(index), NameId(index + 1)], true)
                 .unwrap();
         }
 
         assert_eq!(
-            paths.push(&[SymbolId(1), SymbolId(2)], false).unwrap(),
+            paths.push(&[NameId(1), NameId(2)], false).unwrap(),
             vehicle
         );
         assert_ne!(
-            paths.push(&[SymbolId(1), SymbolId(2)], true).unwrap(),
+            paths.push(&[NameId(1), NameId(2)], true).unwrap(),
             vehicle
         );
     }

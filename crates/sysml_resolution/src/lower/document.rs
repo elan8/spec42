@@ -40,13 +40,13 @@ use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::model::SymbolPathId;
 
 /// One document's lowering product, in a document-local identity space.
 ///
 /// Every `DocumentId` inside is [`DocumentId::from_index(0)`]; every `DeclarationId`,
-/// `AuthoredReferenceId`, `SymbolId` and `SymbolPathId` indexes this value's own arenas. The value
+/// `AuthoredReferenceId`, `NameId` and `SymbolPathId` indexes this value's own arenas. The value
 /// is immutable and shareable: a publication authority holds it behind an `Arc` and splices the
 /// same value into every later build whose document has the same content.
 #[derive(Debug)]
@@ -111,7 +111,7 @@ struct Relocation {
     document: DocumentId,
     declaration_base: usize,
     reference_base: usize,
-    symbols: Vec<SymbolId>,
+    symbols: Vec<NameId>,
     paths: Vec<SymbolPathId>,
 }
 
@@ -137,7 +137,7 @@ impl Relocation {
         )
     }
 
-    fn symbol(&self, local: SymbolId) -> Result<SymbolId, ConstructionError> {
+    fn symbol(&self, local: NameId) -> Result<NameId, ConstructionError> {
         self.symbols
             .get(local.index())
             .copied()
@@ -146,8 +146,8 @@ impl Relocation {
 
     fn optional_symbol(
         &self,
-        local: Option<SymbolId>,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
+        local: Option<NameId>,
+    ) -> Result<Option<NameId>, ConstructionError> {
         local.map(|id| self.symbol(id)).transpose()
     }
 
@@ -193,7 +193,7 @@ impl SemanticModelBuilder {
             .try_reserve(lowered.symbols.len())
             .map_err(|_| ConstructionError::Capacity)?;
         for index in 0..lowered.symbols.len() {
-            let local = SymbolId::from_index(index)?;
+            let local = NameId::from_index(index)?;
             let text = lowered
                 .symbols
                 .get(local)

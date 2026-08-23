@@ -7,7 +7,7 @@ use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::model::Visibility;
 use crate::resolve::record_lookup;
 use crate::resolve::results::ResolutionError;
@@ -20,7 +20,7 @@ use crate::resolve::ResolutionReferenceFact;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct NameKey {
     pub(crate) owner: Option<DeclarationId>,
-    pub(crate) name: SymbolId,
+    pub(crate) name: NameId,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -243,7 +243,7 @@ impl NameIndex {
     pub(crate) fn candidates(
         &self,
         owner: Option<DeclarationId>,
-        name: SymbolId,
+        name: NameId,
     ) -> &[DeclarationId] {
         let key = NameKey { owner, name };
         let Ok(index) = self.keys.binary_search(&key) else {
@@ -259,7 +259,7 @@ impl NameIndex {
     pub(crate) fn entries_for_owner(
         &self,
         owner: Option<DeclarationId>,
-    ) -> impl Iterator<Item = (SymbolId, &[DeclarationId])> {
+    ) -> impl Iterator<Item = (NameId, &[DeclarationId])> {
         let start = self.keys.partition_point(|key| key.owner < owner);
         let end = self.keys.partition_point(|key| key.owner <= owner);
         self.keys[start..end]
@@ -536,7 +536,7 @@ pub(crate) fn extend_import_entries(
     local: &mut Vec<(NameKey, DeclarationId)>,
     exported: &mut Vec<(NameKey, DeclarationId)>,
     owner: Option<DeclarationId>,
-    name: SymbolId,
+    name: NameId,
     candidates: &[DeclarationId],
     import_is_public: bool,
 ) {
@@ -574,7 +574,7 @@ pub(crate) fn lookup_lexical_into(
     declarations: &[Declaration],
     indexes: &ResolutionIndexes<'_>,
     mut owner: Option<DeclarationId>,
-    name: SymbolId,
+    name: NameId,
     target: LookupTarget,
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,

@@ -61,7 +61,7 @@ use crate::model::MembershipKind;
 #[cfg(test)]
 use crate::model::ReferenceKind;
 #[cfg(test)]
-use crate::model::SymbolId;
+use crate::model::NameId;
 #[cfg(test)]
 use crate::model::SymbolPathId;
 #[cfg(test)]
@@ -861,7 +861,7 @@ mod tests {
     fn declaration(
         document: DocumentId,
         owner: Option<DeclarationId>,
-        name: Option<SymbolId>,
+        name: Option<NameId>,
         kind: DeclarationKind,
     ) -> Declaration {
         Declaration {
@@ -2969,17 +2969,17 @@ mod tests {
             Some(ResolutionStatus::Resolved(DeclarationId(1)))
         );
         assert_eq!(
-            direct_names.candidates(Some(DeclarationId(0)), SymbolId(2)),
+            direct_names.candidates(Some(DeclarationId(0)), NameId(2)),
             &[DeclarationId(1)]
         );
         assert_eq!(
-            effective_imports.candidates(Some(DeclarationId(2)), SymbolId(2)),
+            effective_imports.candidates(Some(DeclarationId(2)), NameId(2)),
             &[DeclarationId(1)]
         );
         assert_eq!(fixture.paths.paths.len(), 2);
         assert_eq!(
             fixture.paths.get(SymbolPathId(0)),
-            Some((&[SymbolId(0)][..], false))
+            Some((&[NameId(0)][..], false))
         );
         assert_eq!(resolution.outcomes.len(), fixture.references.len());
     }
@@ -2990,19 +2990,19 @@ mod tests {
             declaration(
                 DocumentId(0),
                 None,
-                Some(SymbolId(0)),
+                Some(NameId(0)),
                 DeclarationKind::Package,
             ),
             declaration(
                 DocumentId(0),
                 Some(DeclarationId(0)),
-                Some(SymbolId(1)),
+                Some(NameId(1)),
                 DeclarationKind::Namespace,
             ),
             declaration(
                 DocumentId(0),
                 Some(DeclarationId(1)),
-                Some(SymbolId(2)),
+                Some(NameId(2)),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
@@ -3028,7 +3028,7 @@ mod tests {
         let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
 
         assert!(effective_imports
-            .candidates(Some(DeclarationId(2)), SymbolId(2))
+            .candidates(Some(DeclarationId(2)), NameId(2))
             .is_empty());
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -3061,7 +3061,7 @@ mod tests {
         assert_eq!(resolution.work.direct_index_entries, 6);
         assert_eq!(resolution.work.effective_index_entries, 3);
         assert_eq!(
-            effective_imports.candidates(Some(DeclarationId(6)), SymbolId(4)),
+            effective_imports.candidates(Some(DeclarationId(6)), NameId(4)),
             &[DeclarationId(1)]
         );
         assert_eq!(
@@ -3080,7 +3080,7 @@ mod tests {
             Some(ResolutionStatus::Resolved(DeclarationId(1)))
         );
         assert_eq!(
-            effective_imports.candidates(Some(DeclarationId(3)), SymbolId(2)),
+            effective_imports.candidates(Some(DeclarationId(3)), NameId(2)),
             &[DeclarationId(2)]
         );
         assert_eq!(
@@ -3096,7 +3096,7 @@ mod tests {
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(resolution.work.passes, 3);
         assert_eq!(
-            effective_imports.candidates(Some(DeclarationId(0)), SymbolId(3)),
+            effective_imports.candidates(Some(DeclarationId(0)), NameId(3)),
             &[DeclarationId(5)]
         );
         assert_eq!(
@@ -3115,7 +3115,7 @@ mod tests {
             Some(ResolutionStatus::Resolved(DeclarationId(1)))
         );
         assert_eq!(
-            effective_imports.candidates(Some(DeclarationId(5)), SymbolId(2)),
+            effective_imports.candidates(Some(DeclarationId(5)), NameId(2)),
             &[DeclarationId(2)]
         );
         assert_eq!(
@@ -3766,21 +3766,21 @@ mod tests {
             (
                 NameKey {
                     owner: None,
-                    name: SymbolId(0),
+                    name: NameId(0),
                 },
                 DeclarationId(2),
             ),
             (
                 NameKey {
                     owner: None,
-                    name: SymbolId(0),
+                    name: NameId(0),
                 },
                 DeclarationId(1),
             ),
         ])
         .unwrap();
         assert_eq!(
-            index.candidates(None, SymbolId(0)),
+            index.candidates(None, NameId(0)),
             &[DeclarationId(1), DeclarationId(2)]
         );
     }
@@ -3791,35 +3791,35 @@ mod tests {
             (
                 NameKey {
                     owner: Some(DeclarationId(u32::MAX)),
-                    name: SymbolId(u32::MAX),
+                    name: NameId(u32::MAX),
                 },
                 DeclarationId(u32::MAX),
             ),
             (
                 NameKey {
                     owner: Some(DeclarationId(0)),
-                    name: SymbolId(u32::MAX),
+                    name: NameId(u32::MAX),
                 },
                 DeclarationId(0),
             ),
             (
                 NameKey {
                     owner: None,
-                    name: SymbolId(u32::MAX),
+                    name: NameId(u32::MAX),
                 },
                 DeclarationId(u32::MAX),
             ),
             (
                 NameKey {
                     owner: Some(DeclarationId(0)),
-                    name: SymbolId(0),
+                    name: NameId(0),
                 },
                 DeclarationId(u32::MAX),
             ),
             (
                 NameKey {
                     owner: None,
-                    name: SymbolId(0),
+                    name: NameId(0),
                 },
                 DeclarationId(0),
             ),

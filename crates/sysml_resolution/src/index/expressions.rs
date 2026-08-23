@@ -51,7 +51,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -222,7 +222,7 @@ pub(crate) struct SettledUnit {
     pub(crate) declaration: DeclarationId,
     pub(crate) document: DocumentId,
     pub(crate) ordinal: u32,
-    pub(crate) text: SymbolId,
+    pub(crate) text: NameId,
     pub(crate) span: Span,
     pub(crate) outcome: UnitOutcome,
 }
@@ -506,7 +506,7 @@ pub(crate) fn bindable_parameter_counts(
 #[derive(Debug, Default)]
 pub(crate) struct UnitCatalog {
     /// `(symbol, unit)` sorted by symbol, so a token is a binary search rather than a scan.
-    pub(crate) by_symbol: Box<[(SymbolId, DeclarationId)]>,
+    pub(crate) by_symbol: Box<[(NameId, DeclarationId)]>,
     /// The measurement-reference types of each admitted unit.
     pub(crate) dimensions: std::collections::BTreeMap<DeclarationId, Box<[DeclarationId]>>,
     /// Whether a catalog exists at all: false when the library declaring `MeasurementUnit` is not
@@ -568,7 +568,7 @@ impl UnitCatalog {
     }
 
     /// What one authored token names.
-    pub(crate) fn resolve(&self, storage: &SemanticModelStorage, text: SymbolId) -> UnitOutcome {
+    pub(crate) fn resolve(&self, storage: &SemanticModelStorage, text: NameId) -> UnitOutcome {
         if !self.admitted {
             return UnitOutcome::CatalogUnavailable;
         }

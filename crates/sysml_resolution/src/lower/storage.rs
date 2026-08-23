@@ -18,7 +18,7 @@ use crate::lower::intern::SymbolPathArena;
 use crate::lower::intern::SymbolTable;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
 #[derive(Debug)]
@@ -95,7 +95,7 @@ impl SemanticModelStorage {
         self.declaration_facts.get(id.index())
     }
 
-    pub(crate) fn symbol(&self, id: SymbolId) -> Option<&str> {
+    pub(crate) fn symbol(&self, id: NameId) -> Option<&str> {
         self.symbols.get(id)
     }
 }

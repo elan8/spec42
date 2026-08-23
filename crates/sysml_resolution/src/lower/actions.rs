@@ -17,7 +17,7 @@ use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
@@ -949,7 +949,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         expression: &Node<Expression>,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
+    ) -> Result<Option<NameId>, ConstructionError> {
         let Expression::FeatureRef(target) = &expression.value else {
             return Ok(None);
         };

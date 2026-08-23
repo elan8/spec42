@@ -9,7 +9,7 @@ use crate::model::query::range_contains;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
 use crate::TextPosition;
 use crate::TextRange;
@@ -150,7 +150,7 @@ pub(crate) struct DocumentIndex {
     /// A find-all-references result points at the segment naming the target, not at the whole
     /// path, and which segment that is depends on which declaration the caller asked about -- so
     /// the settled fact is per segment name, and the query picks the one it needs.
-    pub(crate) reference_identifier_entries: Box<[(SymbolId, TextRange)]>,
+    pub(crate) reference_identifier_entries: Box<[(NameId, TextRange)]>,
 }
 
 impl DocumentIndex {
@@ -276,7 +276,7 @@ impl DocumentIndex {
         // The reference-segment ranges, settled with the same text the declaration ranges used.
         let mut reference_identifiers: Vec<(u32, u32)> =
             Vec::with_capacity(storage.references.len());
-        let mut reference_identifier_entries: Vec<(SymbolId, TextRange)> = Vec::new();
+        let mut reference_identifier_entries: Vec<(NameId, TextRange)> = Vec::new();
         for reference in storage.references.iter() {
             let start = u32::try_from(reference_identifier_entries.len())
                 .map_err(|_| ResolutionError::Capacity)?;
@@ -331,7 +331,7 @@ impl DocumentIndex {
     pub(crate) fn reference_identifier(
         &self,
         id: AuthoredReferenceId,
-        name: SymbolId,
+        name: NameId,
     ) -> Option<TextRange> {
         let (start, end) = *self.reference_identifiers.get(id.index())?;
         self.reference_identifier_entries[start as usize..end as usize]

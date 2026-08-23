@@ -42,7 +42,7 @@ use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::model::SymbolId;
+use crate::model::NameId;
 use crate::model::Visibility;
 use hashbrown::HashTable;
 use std::hash::BuildHasher;
@@ -97,7 +97,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) invocations: Vec<AuthoredInvocation>,
     pub(crate) symbols: SymbolTableBuilder,
     pub(crate) paths: SymbolPathArenaBuilder,
-    pub(crate) path_scratch: Vec<SymbolId>,
+    pub(crate) path_scratch: Vec<NameId>,
     pub(crate) next_anonymous_ordinals:
         BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
     pub(crate) next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
@@ -156,14 +156,14 @@ impl SemanticModelBuilder {
         Ok(id)
     }
 
-    pub(crate) fn intern_name(&mut self, value: &str) -> Result<SymbolId, ConstructionError> {
+    pub(crate) fn intern_name(&mut self, value: &str) -> Result<NameId, ConstructionError> {
         self.symbols.intern(value)
     }
 
     pub(crate) fn intern_declared_name(
         &mut self,
         value: &str,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
+    ) -> Result<Option<NameId>, ConstructionError> {
         (!value.is_empty())
             .then(|| self.intern_name(value))
             .transpose()
@@ -174,7 +174,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
-        name: Option<SymbolId>,
+        name: Option<NameId>,
     ) -> Result<DeclarationId, ConstructionError> {
         self.push_typed_declaration(
             document,
@@ -208,7 +208,7 @@ impl SemanticModelBuilder {
         document: DocumentId,
         owner: Option<DeclarationId>,
         kind: DeclarationKind,
-        name: Option<SymbolId>,
+        name: Option<NameId>,
         span: Span,
         facts: DeclarationFacts,
     ) -> Result<DeclarationId, ConstructionError> {
@@ -254,9 +254,9 @@ impl SemanticModelBuilder {
         &mut self,
         declaration: DeclarationId,
         form: AnnotationForm,
-        locale: Option<SymbolId>,
-        language: Option<SymbolId>,
-        text: SymbolId,
+        locale: Option<NameId>,
+        language: Option<NameId>,
+        text: NameId,
         span: Span,
     ) -> Result<(), ConstructionError> {
         if declaration.index() >= self.declarations.len()
@@ -281,7 +281,7 @@ impl SemanticModelBuilder {
     pub(crate) fn intern_short_name(
         &mut self,
         short_name: Option<&String>,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
+    ) -> Result<Option<NameId>, ConstructionError> {
         match short_name {
             Some(value) => self.intern_declared_name(value),
             None => Ok(None),
@@ -1067,7 +1067,7 @@ impl SemanticModelBuilder {
     pub(crate) fn simple_name(
         &mut self,
         identification: &QualifiedIdentification,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
+    ) -> Result<Option<NameId>, ConstructionError> {
         identification
             .simple_name()
             .filter(|name| !name.is_empty())
