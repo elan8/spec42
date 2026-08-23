@@ -11,6 +11,8 @@
 
 #![forbid(unsafe_code)]
 
+mod diagnostic;
 mod version;
 
+pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
