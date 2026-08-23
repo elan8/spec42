@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A navigation result names its element by handle; the name is read at the editor edge.**
+  `NavigationTarget` is now `Copy` -- a `SymbolId` and a `SourceLocation` -- and
+  `RenameOutcome::Ready` no longer carries a `Box<str>` of the name either. A definition or
+  reference query that returns several candidates was allocating a copy of a name the publication
+  already stores, once per candidate, for text most consumers never render. `PublishedModel`
+  (and `PublishedResolution`) grew a borrowed `symbol_name`, which slices the settled symbol blob;
+  the LSP edge materialises there, where the protocol demands an owned string anyway. Candidate
+  ordering still breaks ties on the authored name, read through the publication, so output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank from 18 entries to 17.
+
+- **The owned-string inventory says which owned strings are debt.** `FACADE_OWNED_STRING_FIELDS`
+  split into `FACADE_OWNED_STRING_INPUT_FIELDS` -- names a consumer hands in to ask a question,
+  which no publication storage backs and which are correctly owned -- and
+  `FACADE_OWNED_STRING_PRODUCT_FIELDS`, the copies a query hands back, which is the list meant to
+  shrink. Both sets are asserted exactly and are checked for overlap, so a product cannot be
+  reclassified as an input to escape the rule.
+
 - **A published location names its document by handle, not by a copy of the URI.**
   `sysml_contract::DocumentId` is a `Copy`, publication-scoped ordinal with the same validity
   story as `SymbolId`: valid for exactly the publication that minted it, and

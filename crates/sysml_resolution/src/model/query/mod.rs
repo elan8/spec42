@@ -303,6 +303,11 @@ impl<D> SemanticModel<D> {
         self.identities.at_rank(symbol.index())
     }
 
+    /// The authored name behind one handle, borrowed from the symbol blob.
+    pub(crate) fn symbol_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.authored_name(self.declaration_of(symbol)?)
+    }
+
     /// One declaration's `::`-joined display path, borrowed from the settled blob.
     pub(crate) fn symbol_qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         let id = self.declaration_of(symbol)?;
@@ -381,7 +386,10 @@ impl<D> SemanticModel<D> {
     ) -> std::cmp::Ordering {
         self.document_order(left.location.document, right.location.document)
             .then_with(|| left.location.range.cmp(&right.location.range))
-            .then_with(|| left.name.cmp(&right.name))
+            .then_with(|| {
+                self.symbol_name(left.symbol)
+                    .cmp(&self.symbol_name(right.symbol))
+            })
     }
 
     /// The handle a token names in this publication, if it still names one.
@@ -395,10 +403,9 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
         let declaration = self.storage.declaration(id)?;
-        let name = self.storage.symbol(declaration.name?)?;
+        declaration.name?;
         Some(NavigationTarget {
             symbol: self.symbol_id(id)?,
-            name: name.into(),
             location: SourceLocation {
                 document: self.document_handle(declaration.document)?,
                 range: self.documents.declaration_identifier(id)?,
@@ -581,7 +588,6 @@ impl<D> SemanticModel<D> {
             .unwrap_or(target.location.range);
         RenameOutcome::Ready {
             symbol: target.symbol,
-            name: target.name,
             range,
             occurrences,
         }

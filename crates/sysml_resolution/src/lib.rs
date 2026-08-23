@@ -262,10 +262,15 @@ pub struct SourceLocation {
     pub role: OccurrenceRole,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// One navigation candidate: which element, and where it was found.
+///
+/// The name is not carried. It is a copy of text the publication already stores, and a
+/// definition query that returns a handful of candidates would allocate one per candidate for a
+/// string most consumers only need at the editor edge. Read it there with
+/// [`PublishedResolution::symbol_name`], which borrows from the settled symbol blob.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NavigationTarget {
     pub symbol: SymbolId,
-    pub name: Box<str>,
     pub location: SourceLocation,
 }
 
@@ -285,7 +290,6 @@ pub enum QueryOutcome<T> {
 pub enum RenameOutcome {
     Ready {
         symbol: SymbolId,
-        name: Box<str>,
         range: TextRange,
         occurrences: Box<[SourceLocation]>,
     },
@@ -791,6 +795,15 @@ impl PublishedResolution {
     /// Everything this publication knows about one element.
     pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
+    }
+
+    /// The authored name of one element, borrowed from this publication.
+    ///
+    /// `None` where the element is anonymous. Results that identify elements carry the handle,
+    /// not the text; this is where a consumer that has to show a name reads one, at the cost of
+    /// a slice.
+    pub fn symbol_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.model.symbol_name(symbol)
     }
 
     /// The `::`-joined owner path of one element, borrowed from this publication.

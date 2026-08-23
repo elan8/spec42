@@ -270,6 +270,14 @@ impl PublishedModel {
         DebugQueries { model: &self.inner }
     }
 
+    /// The authored name of one element, borrowed from this publication.
+    ///
+    /// `None` where the element is anonymous. Results carry the handle rather than a copy of the
+    /// name; this is where a host that has to render one reads it.
+    pub fn symbol_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.inner.symbol_name(symbol)
+    }
+
     /// The `::`-joined display path of one element, borrowed from this publication.
     ///
     /// A display convenience, not an identity: two elements under an anonymous ancestor can share
@@ -1224,7 +1232,11 @@ fn write_target(
     output: &mut dyn fmt::Write,
     target: &NavigationTarget,
 ) -> fmt::Result {
-    write!(output, "(candidate (name {:?}) ", target.name)?;
+    write!(
+        output,
+        "(candidate (name {:?}) ",
+        model.symbol_name(target.symbol).unwrap_or_default()
+    )?;
     write_location(model, output, &target.location)?;
     write!(output, ")")
 }
@@ -1296,11 +1308,11 @@ fn write_rename_outcome(
     write!(output, "    (rename ")?;
     match outcome {
         RenameOutcome::Ready {
-            name,
+            symbol,
             range,
             occurrences,
-            ..
         } => {
+            let name = model.symbol_name(*symbol).unwrap_or_default();
             write!(output, "(status ready) (name {name:?}) ")?;
             write_range(output, *range)?;
             write!(output, " (occurrences {})", occurrences.len())?;

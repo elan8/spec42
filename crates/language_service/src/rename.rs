@@ -73,7 +73,9 @@ pub fn rename_target(
     let uri = workspace.resolve_uri_for_path(document_path)?;
     let model = workspace.published_model()?;
     let sysml_query::resolved_slice::RenameOutcome::Ready {
-        name, occurrences, ..
+        symbol,
+        occurrences,
+        ..
     } = model.edits().prepare_rename(uri.as_str(), position, None)
     else {
         return None;
@@ -93,7 +95,7 @@ pub fn rename_target(
         .collect::<Vec<_>>();
     let definition = references.first()?.clone();
     Some(RenameTarget {
-        name: name.to_string(),
+        name: model.symbol_name(symbol).unwrap_or_default().to_owned(),
         definition,
         references,
     })
