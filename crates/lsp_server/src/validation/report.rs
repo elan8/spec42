@@ -29,13 +29,13 @@ pub(super) fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
     summary
 }
 
-pub(super) fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<String> {
+pub(super) fn build_advice(
+    documents: &[ValidatedDocument],
+    cascade_dominated: bool,
+    no_library_paths: bool,
+) -> Vec<String> {
     let mut advice = Vec::new();
-    if documents.iter().any(|document| {
-        crate::analysis::diagnostics_postprocess::diagnostics_dominated_by_cascades(
-            &document.diagnostics,
-        )
-    }) {
+    if cascade_dominated {
         advice.push(
             "Many errors may be cascades from a few root syntax issues; fix the earliest error in each file first."
                 .to_string(),
@@ -112,18 +112,18 @@ mod tests {
             Some(DiagnosticSeverity::ERROR),
             Some("unresolved_import_target"),
         )]);
-        let advice = build_advice(std::slice::from_ref(&document), true);
+        let advice = build_advice(std::slice::from_ref(&document), false, true);
         assert_eq!(advice.len(), 1);
         assert!(advice[0].contains("Configure SysML library roots"));
 
-        let no_advice_when_paths_exist = build_advice(&[document], false);
+        let no_advice_when_paths_exist = build_advice(&[document], false, false);
         assert!(no_advice_when_paths_exist.is_empty());
 
         let unrelated = make_document(vec![make_diagnostic(
             Some(DiagnosticSeverity::ERROR),
             Some("other_code"),
         )]);
-        let no_advice_for_unrelated = build_advice(&[unrelated], true);
+        let no_advice_for_unrelated = build_advice(&[unrelated], false, true);
         assert!(no_advice_for_unrelated.is_empty());
     }
 }

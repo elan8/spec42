@@ -5,12 +5,9 @@ use sysml_query::resolved_slice::{
 };
 use url::Url;
 
-use crate::types::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
-
-/// The `source` value a parser-owned diagnostic carries, as editors already key on it.
-const PARSER_SOURCE: &str = "sysml";
-/// The `source` value a resolution-owned diagnostic carries.
-const SEMANTIC_SOURCE: &str = "semantic";
+use crate::types::{
+    DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic, PARSER_SOURCE, SEMANTIC_SOURCE,
+};
 
 /// What a host chooses to report, over diagnostics it does not decide.
 ///

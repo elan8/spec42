@@ -11,7 +11,8 @@ use std::sync::Arc;
 
 use sysml_query::resolved_slice::PublishedModel;
 use sysml_query::source::SourceDocument;
-use tower_lsp::lsp_types::{Diagnostic, Url};
+use sysml_diagnostics::{diagnostics_dominated_by_cascades, SemanticDiagnostic};
+use tower_lsp::lsp_types::Url;
 use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
     WorkspaceLoadRequest,
@@ -122,9 +123,20 @@ pub fn semantic_report_from_built_workspace(
 
     let state = server_state_from_built(built, workspace_root_url.clone(), &config.services);
 
-    let documents = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
+    let reported = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
+    let cascade_dominated = reported
+        .iter()
+        .any(|document| diagnostics_dominated_by_cascades(&document.diagnostics));
+    let documents: Vec<ValidatedDocument> = reported
+        .into_iter()
+        .map(ReportedDocument::into_validated)
+        .collect();
     let summary = summarize(&documents);
-    let advice = build_advice(&documents, request.library_paths.is_empty());
+    let advice = build_advice(
+        &documents,
+        cascade_dominated,
+        request.library_paths.is_empty(),
+    );
 
     let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),
@@ -171,11 +183,31 @@ fn server_state_from_built(
     state
 }
 
+/// One document's report before the protocol projection, so the advice question is asked of the
+/// reporting policy over its own neutral values rather than of the LSP types.
+pub(super) struct ReportedDocument {
+    uri: Url,
+    diagnostics: Vec<SemanticDiagnostic>,
+}
+
+impl ReportedDocument {
+    fn into_validated(self) -> ValidatedDocument {
+        ValidatedDocument {
+            uri: self.uri.to_string(),
+            diagnostics: self
+                .diagnostics
+                .into_iter()
+                .map(crate::analysis::diagnostics_adapter::semantic_to_lsp_diagnostic)
+                .collect(),
+        }
+    }
+}
+
 pub(super) fn collect_target_documents(
     state: &ServerState,
     target_files: &[std::path::PathBuf],
     strict_diagnostics: bool,
-) -> Result<Vec<ValidatedDocument>, String> {
+) -> Result<Vec<ReportedDocument>, String> {
     const DIAGNOSTICS_STACK_SIZE: usize = 2 * 1024 * 1024;
 
     std::thread::scope(|scope| {
@@ -196,17 +228,14 @@ fn collect_target_documents_inner(
     state: &ServerState,
     target_files: &[std::path::PathBuf],
     strict_diagnostics: bool,
-) -> Result<Vec<ValidatedDocument>, String> {
+) -> Result<Vec<ReportedDocument>, String> {
     let target_urls = target_file_urls(target_files)?;
 
     Ok(target_urls
         .into_iter()
         .map(|uri| {
             let diagnostics = collect_diagnostics_for_document(state, &uri, strict_diagnostics);
-            ValidatedDocument {
-                uri: uri.to_string(),
-                diagnostics,
-            }
+            ReportedDocument { uri, diagnostics }
         })
         .collect::<Vec<_>>())
 }
@@ -222,8 +251,8 @@ fn collect_diagnostics_for_document(
     state: &ServerState,
     uri: &Url,
     strict_diagnostics: bool,
-) -> Vec<Diagnostic> {
-    diagnostics_core::collect_document_diagnostics(
+) -> Vec<SemanticDiagnostic> {
+    diagnostics_core::collect_reported_diagnostics(
         Some(state.published_model()),
         uri,
         diagnostics_core::validation_reporting(strict_diagnostics),

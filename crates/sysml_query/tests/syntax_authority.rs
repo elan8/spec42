@@ -129,11 +129,6 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
-        path: "crates/lsp_server/src/analysis/diagnostics_postprocess.rs",
-        reason: "recovery-code prefix test awaiting a structured category (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
-    },
-    Exemption {
         path: "crates/lsp_server/src/views/feature_inspector.rs",
         reason: "declaration head text of a publication-owned range awaiting a head range (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
         must_contain: None,
