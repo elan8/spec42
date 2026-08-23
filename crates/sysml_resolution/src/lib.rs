@@ -18,6 +18,7 @@ mod details;
 mod diagnostics;
 mod diagram_query;
 mod element_kind;
+mod evaluate;
 mod evaluation;
 mod feature_query;
 mod inspection;

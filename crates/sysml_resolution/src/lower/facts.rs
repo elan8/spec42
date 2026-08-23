@@ -13,9 +13,10 @@ use sysml_v2_parser::{
     ParseError, ParsedDocument,
 };
 
+use crate::evaluate::classify::ExpressionEvalShape;
 use crate::model::{
-    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, ExpressionEvalShape,
-    MembershipKind, ReferenceKind, SymbolId, SymbolPathId, Visibility,
+    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, ReferenceKind,
+    SymbolId, SymbolPathId, Visibility,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
