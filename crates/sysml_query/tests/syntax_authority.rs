@@ -51,6 +51,7 @@ const RETIRED_NAMES: &[&str] = &[
     "ParseOutcome",
     "SemanticCoordinator",
     "build_semantic_model_from_documents",
+    "import_statement_ranges",
 ];
 
 /// Files that may work on SysML text, each with the reason and (where one exists) a predicate
@@ -79,6 +80,11 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
+        path: "crates/lsp_server/src/common/util.rs",
+        reason: "reads LSP configuration JSON whose boolean literals collide with the keyword table; it probes no SysML text",
+        must_contain: Some("parse_diagnose_library_paths_from_value"),
+    },
+    Exemption {
         path: "crates/language_service/src/keywords.rs",
         reason: "keyword hover prose keyed by keyword; the table itself is the facade's",
         must_contain: Some("pub use sysml_query::syntax::{is_reserved_keyword, RESERVED_KEYWORDS};"),
@@ -94,18 +100,8 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
-        path: "crates/lsp_server/src/common/util.rs",
-        reason: "import-statement line ranges awaiting structured imports (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
-        must_contain: None,
-    },
-    Exemption {
         path: "crates/lsp_server/src/lsp_runtime/features/completion.rs",
         reason: "completion snippet bodies are presentation",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/navigation.rs",
-        reason: "import document links awaiting structured imports (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
         must_contain: None,
     },
     Exemption {
@@ -116,11 +112,6 @@ const EXEMPTIONS: &[Exemption] = &[
     Exemption {
         path: "crates/sysml_tokens/src/ast_ranges.rs",
         reason: "declaration-name narrowing awaiting name-only token roles (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/server/src/environment.rs",
-        reason: "budgeted standard-library detection awaiting referenced_namespace_roots (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
         must_contain: None,
     },
     Exemption {

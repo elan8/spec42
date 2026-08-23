@@ -142,6 +142,31 @@ impl ParsedSource {
         declares_single_anonymous_package_in(self.inner())
     }
 
+    /// Every `import` the source writes, in source order, with its range and owning package.
+    pub fn imports(&self) -> Vec<SyntaxImport> {
+        imports::imports(self.inner())
+    }
+
+    /// Every type a declaration in this source names, in source order.
+    pub fn type_references(&self) -> Vec<String> {
+        closure_targets::type_reference_targets(self.inner())
+    }
+
+    /// The distinct namespaces this source reaches into: the first segment of every import target
+    /// and every type reference it names.
+    ///
+    /// What "does this source use the standard library" reduces to, asked of the grammar instead
+    /// of by looking for package names in the file's bytes -- where a name in a comment, a string
+    /// or a longer identifier answered yes.
+    pub fn referenced_namespace_roots(&self) -> std::collections::BTreeSet<String> {
+        self.imports()
+            .into_iter()
+            .map(|import| import.target)
+            .chain(self.type_references())
+            .filter_map(|name| imports::namespace_root(&name).map(str::to_string))
+            .collect()
+    }
+
     /// Everything library-closure resolution needs about this source, from one parsed tree.
     pub fn closure_facts(&self) -> SyntaxClosureFacts {
         closure_targets::closure_facts(self.inner())
@@ -285,10 +310,33 @@ pub enum SyntaxRole {
 }
 
 mod closure_targets;
+mod imports;
 mod outline;
 
 pub use closure_targets::PackageTargets;
-pub use sysml_contract::SyntaxOutlineKind;
+pub use sysml_contract::{ImportScope, SyntaxOutlineKind};
+
+/// One `import` as authored: what it names, what it admits, where it is written, and which
+/// package owns it.
+///
+/// The range covers the whole statement, so a host that wants to link or fold an import never has
+/// to find it by looking for the keyword in the line.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SyntaxImport {
+    /// The qualified name the import targets, without the shape suffix.
+    pub target: String,
+    pub scope: ImportScope,
+    pub range: SyntaxRange,
+    /// The qualified name of the package the import is written in, if any.
+    pub owner_package: Option<String>,
+}
+
+impl SyntaxImport {
+    /// The import as authored, target and shape suffix together.
+    pub fn authored_target(&self) -> String {
+        format!("{}{}", self.target, self.scope.suffix())
+    }
+}
 
 /// One node of a document outline, as the grammar sees it.
 ///

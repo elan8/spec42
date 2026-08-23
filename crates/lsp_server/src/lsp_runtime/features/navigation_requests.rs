@@ -57,11 +57,12 @@ pub(crate) fn references(
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let links = navigation::collect_document_links(text, |import_name| {
+    let imports = entry.parsed.imports();
+    let links = navigation::collect_document_links(entry.content(), &imports, |import_name| {
         state
             .symbol_table
             .iter()

@@ -642,6 +642,13 @@ pub(crate) fn push_import_target(
     out.push(format!("{target}{suffix}"));
 }
 
+/// Every type a declaration names, in source order.
+pub(super) fn type_reference_targets(document: &ParsedRoot) -> Vec<String> {
+    let mut sink = RefSink::default();
+    collect_type_reference_targets_from_root(document, &mut sink);
+    sink.targets
+}
+
 /// Everything closure resolution asks, from one already-parsed tree.
 pub(super) fn closure_facts(document: &ParsedRoot) -> super::SyntaxClosureFacts {
     let mut packages = Vec::new();
