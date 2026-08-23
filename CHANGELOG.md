@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The editor host and the batch host are siblings again: `lsp_server` no longer depends on
+  `workspace`.** Batch validation — walk a directory, publish once, collect the diagnostics the
+  publication settled — moved from `lsp_server::validation` to `workspace::validation`, where the
+  rest of the batch path already lived. There is now one validation report type
+  (`HostValidationReport`, grown an `advice` field and shared with the snapshot's own eager
+  validation), one summariser, one target-discovery helper, and one entry point whose reporting
+  policy the caller chooses. `server` reaches validation through `workspace` and keeps
+  `lsp_server` only to launch the editor host; it no longer re-derives library advice by
+  re-scanning the workspace's `.sysml` text and grepping the report it was handed. The report
+  crosses the graph as neutral `SemanticDiagnostic` values, and `spec42 check --format json` keeps
+  publishing the LSP diagnostic shape as a CLI projection, so existing baselines still apply.
+  Enforcement: `architecture.rs` pins the exact dependency sets of both hosts, fails if
+  `lsp_server/src/validation` reappears, and adds two AST guards — no host function takes SysML
+  text as a parameter, and no host field keys derived data by document — each against an
+  allow-list that only ever shrinks.
+
 - **Spec42 now has a sole-authority pipeline: the parser is depended on only by `sysml_resolution`,
   `sysml_resolution` only by `sysml_query`, and `sysml_source` only by `sysml_resolution`; every
   consumer works with the facade's services and nothing else.** `design.md` at the repository root

@@ -301,13 +301,11 @@ fn print_text_report(report: &HostValidationReport) {
                 format!("[{}] ", diagnostic.code)
             };
             println!(
-                "{}:{}:{}: {}{}{}",
+                "{}:{}:{}: {severity} {code}{}",
                 document.uri,
                 diagnostic.range.start.line + 1,
                 diagnostic.range.start.character + 1,
-                severity,
-                " ",
-                format_args!("{code}{}", diagnostic.message)
+                diagnostic.message
             );
         }
     }

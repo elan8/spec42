@@ -167,13 +167,12 @@ flowchart BT
     workspace --> langsvc
     workspace --> diagnostics
     lsp --> actor
-    lsp --> workspace
     lsp --> catalog
     lsp --> langsvc
     lsp --> tokens
     lsp --> diagnostics
     lsp --> query
-    server --> lsp
+    server -->|launch only| lsp
     server --> workspace
     server --> catalog
     server --> query
@@ -205,7 +204,7 @@ are hosts. No grey or green edge reaches yellow.
 | `library_catalog` | library provisioning: bundled and managed standard/domain libraries, configuration, data directories; yields library roots | `kpar` |
 | `session_actor` | generic asynchronous mailbox over embedder state; knows nothing about SysML | — |
 | `workspace` | batch host: engine, directory snapshot, validation path and reports, comparison, schema versions | `sysml_query`, `library_catalog`, `language_service`, `sysml_diagnostics` |
-| `lsp_server` | editor host: session, LSP handlers, host adapters; no dependency on the batch host | consumers above, not `workspace` |
+| `lsp_server` | editor host: session, LSP handlers, host adapters; owns no validation pipeline and no batch entry point | consumers above, not `workspace` |
 | `server` | CLI, MCP, and LSP binary; validation through `workspace`, `lsp_server` is a launch edge only | consumers above |
 | `generator_api`, `generator_host`, `generator_conformance` | sandboxed generators over typed model queries | `sysml_query` |
 
@@ -221,7 +220,7 @@ publication lifecycle state outside a `PublicationSession`.
 |---|---|
 | Batch (`workspace`) | load a directory through the source service, publish once through the publication service, query, compare; no session |
 | Editor (`lsp_server`) | keeps `ServerState` inside a `session_actor` mailbox; `ServerState` holds the `PublicationSession` and, per document, a `SourceDocument` and its `ParsedSource`; every parse goes through the syntax service |
-| CLI / MCP (`server`) | thin adapters over the batch host and the editor host's validation path; one `Services` shared by both |
+| CLI / MCP (`server`) | thin adapters over the batch host: validation, reports, generation; reaches `lsp_server` only to launch the editor host (`run_lsp`, config, tracing, custom RPC); one `Services` shared by both |
 | Generators | receive an immutable `PublishedModel` and typed queries; never source text |
 
 ## Publication lifecycle and identity
@@ -272,8 +271,9 @@ Each invariant above is checked in a place the constrained crates cannot disable
 | Invariant | Where it is enforced |
 |---|---|
 | the parser is a dependency of `sysml_resolution` only; `sysml_resolution` of `sysml_query` only; `sysml_source` of `sysml_resolution` only | `deny.toml` (`cargo deny check bans`, resolved graph, dev-dependencies included); `crates/source_identity/tests/parser_authority.rs` and `authority_chain.rs` (manifest shape, nested `fuzz/` workspace, both lockfiles, local facade renames) |
-| exact dependency sets of the chain crates, the facade, `session_actor`, and `workspace`; every downstream crate is a designated consumer; no async runtime in the chain | `crates/sysml_query/tests/architecture.rs` (cargo metadata) |
+| exact dependency sets of the chain crates, the facade, `session_actor`, `workspace`, `lsp_server` (no `workspace`) and `server`; every downstream crate is a designated consumer; no async runtime in the chain | `crates/sysml_query/tests/architecture.rs` (cargo metadata) |
 | the facade publishes no parser or graph type and no text-taking syntax entry point | `crates/sysml_query/tests/architecture.rs` (public API visitor) |
 | no consumer re-implements a facade query, revives a retired heuristic, holds a parsed tree or stratum outside the allow-listed host fields, or reads SysML files | `crates/sysml_query/tests/syntax_authority.rs` (retired-name list, shadowed-name set, source-probe detector with predicate-backed exemptions, field and I/O bans) |
+| a host declares no SysML text entry point and no document-keyed map outside the session's index, both against a shrinking allow-list | `crates/sysml_query/tests/architecture.rs` (AST visitors over `lsp_server/src` and `server/src`) |
 | one `Services` per host; library closure never on the edit path | `crates/lsp_server/tests/debt_guardrails.rs` |
 | reporting policy decides nothing semantic | `crates/sysml_diagnostics/tests/dependency_guardrails.rs` |

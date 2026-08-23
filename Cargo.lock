@@ -1319,7 +1319,6 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "wat",
- "workspace",
 ]
 
 [[package]]
@@ -1894,7 +1893,6 @@ dependencies = [
  "toml 0.8.23",
  "tower-lsp",
  "url",
- "walkdir",
  "wat",
  "workspace",
  "zip",
