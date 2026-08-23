@@ -16,7 +16,7 @@ parallel worktrees; a wave waits for the previous one to merge.
 | `hardening/resolution-split` | B steps 1–7: pure `mod` moves of `model.rs`/`resolver.rs` into `pipeline/ lower/ resolve/ evaluate/ index/ check/ diagnose/ model/query/`, then explicit imports. Serial, one agent. | B §6 |
 | `hardening/lsp-dedup` | C commits 1–3: rename `lsp_server/src/workspace` → `session`; one range projection; drop duplicate utf16/byte_offset/file_url helpers; generalise guards. | C §5 group A |
 | `hardening/consumer-dedup` | C commits 4, 4b, 4c, 4d: one SymbolKind table; severity label fix (`information` vs `info`, CHANGELOG); one SysML file predicate; one digest/display-name. | C §5 groups B, E |
-| `hardening/bench` | D item 6: divan bench set (cold stdlib build, warm relink, completion/navigation/diagnostics queries) + allocations-per-element assertion; baseline numbers recorded. | D §4, §6.6 |
+| `hardening/bench` | *Landed:* `tools/query_bench` — divan bench set (cold stdlib build, warm relink, completion/navigation/outline/diagnostics queries) plus an allocations-per-element measurement; baselines in `planning/BENCH_BASELINE.md`. | D §4, §6.6 |
 
 ## Wave 2 (after wave 1 merges)
 

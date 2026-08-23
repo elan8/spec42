@@ -341,6 +341,19 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 
 Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals while the nightly step remains non-blocking.
 
+### Query benchmarks
+
+A representation change is admitted with a benchmark showing it neutral-or-better on the bundled standard-library corpus. The six cases are the cold build, the warm relink one keystroke costs, and the four keystroke-path queries:
+
+```
+cargo bench -p spec42-query-bench
+cargo run --release -p spec42-query-bench --bin spec42-query-bench-allocations
+```
+
+The first reports wall time and divan's allocation profile per case; the second reports allocations and allocations per published element under a counting global allocator (the two cannot share a binary, because each installs its own `#[global_allocator]`). Recorded baselines, with the machine and commit they were taken on, are in `planning/BENCH_BASELINE.md`; add a row there when a representation change moves the numbers.
+
+`tools/semantic_benchmark` remains the JSON-reporting cold-build tool with a phase breakdown; the divan set is the admission gate.
+
 ## AI assistants
 
 **VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`).
