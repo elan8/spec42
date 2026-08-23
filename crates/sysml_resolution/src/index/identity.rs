@@ -197,19 +197,29 @@ impl IdentityIndex {
         // The handle order is the canonical-identity order, settled once here. Sorting needs the
         // encodings, so they are materialised for the comparison and dropped again: the index
         // keeps the permutation (four bytes per element each way), never the strings.
-        let mut encodings: Vec<Box<str>> = Vec::with_capacity(declarations);
+        //
+        // One blob and one offset table rather than a `Box<str>` per declaration: the comparison
+        // wants slices, and a string per element would put an allocation per element back into
+        // every relink -- which is the cost this whole change exists to remove.
+        let mut encodings = String::new();
+        let mut encoding_bounds: Vec<u32> = Vec::with_capacity(declarations + 1);
+        encoding_bounds.push(0);
         for index in 0..declarations {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            current.clear();
-            write_identity(storage, &occurrences, id, &mut current)?;
-            encodings.push(current.as_str().into());
+            write_identity(storage, &occurrences, id, &mut encodings)?;
+            encoding_bounds
+                .push(u32::try_from(encodings.len()).map_err(|_| ResolutionError::Capacity)?);
         }
+        let encoding_of = |id: DeclarationId| {
+            let start = encoding_bounds[id.index()] as usize;
+            let end = encoding_bounds[id.index() + 1] as usize;
+            &encodings[start..end]
+        };
         let mut order: Vec<DeclarationId> = Vec::with_capacity(declarations);
         for index in 0..declarations {
             order.push(DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?);
         }
-        order
-            .sort_unstable_by(|left, right| encodings[left.index()].cmp(&encodings[right.index()]));
+        order.sort_unstable_by(|left, right| encoding_of(*left).cmp(encoding_of(*right)));
         drop(encodings);
         let mut rank = vec![0u32; declarations];
         for (position, id) in order.iter().enumerate() {
