@@ -239,7 +239,7 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let engine = build_engine(cli)?;
     let config = Arc::new(
         lsp_server::default_server_config()
-            .with_publication_coordinator(engine.publication_coordinator())
+            .with_services(engine.services().clone())
             .with_default_library_paths(environment.library_paths.clone())
             .with_standard_library_paths(environment.stdlib_roots.clone())
             .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(
@@ -376,7 +376,7 @@ fn run_sysand(command: &SysandCommand) -> Result<ExitCode, String> {
 fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let selected =
-        |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
+        |id: &Option<String>| -> Result<Vec<&library_catalog::KparLibraryComponent>, String> {
             match id {
                 None => Ok(environment.kpar_libraries.iter().collect()),
                 Some(wanted) => {

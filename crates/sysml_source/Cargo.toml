@@ -4,8 +4,12 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Protocol-neutral SysML source documents and provider contracts"
+description = "Source authority: admission of SysML text as identified documents, URI and line-ending policy, and filesystem providers"
 
 [dependencies]
 source_identity = { path = "../source_identity" }
 url = "2"
+ignore = "0.4"
+
+[dev-dependencies]
+tempfile = "3"

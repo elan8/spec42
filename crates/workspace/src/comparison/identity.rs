@@ -36,7 +36,7 @@ pub(crate) fn assess_identity_preservation(
 mod tests {
     use std::collections::BTreeMap;
 
-    use source_identity::ContentDigest;
+    use sysml_query::source::ContentDigest;
 
     use super::*;
     use crate::version::{HostArtifactMetadata, HostSchemaVersions};

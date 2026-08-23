@@ -7,13 +7,36 @@ use serde_json::Value;
 use syn::visit::{self, Visit};
 use syn::{Fields, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
+/// Every crate that consumes SysML through the facade. None may name an authority crate.
 const DESIGNATED_CONSUMERS: &[&str] = &[
+    "generator_api",
+    "generator_conformance",
+    "kpar",
+    "language_service",
+    "lsp_server",
+    "server",
     "spec42-resolution-benchmark",
+    "spec42-semantic-benchmark",
     "spec42-snapshot",
-    "workspace_session",
+    "sysml_diagnostics",
+    "sysml_tokens",
+    "workspace",
 ];
 
+/// Consumers that read diagnostics only as published facts and must not carry the reporting
+/// policy crate; hosts that render diagnostics legitimately depend on it.
+const FACADE_ONLY_DIAGNOSTIC_CONSUMERS: &[&str] =
+    &["spec42-resolution-benchmark", "spec42-snapshot"];
+
+/// The authority chain: a crate that no consumer may depend on.
+const AUTHORITY_CRATES: &[&str] = &["sysml-v2-parser", "sysml_resolution", "sysml_source"];
+
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
+    "ParsedDocument",
+    "ParseResult",
+    "ParseError",
+    "RootElement",
+    "sysml_v2_parser",
     "SemanticGraph",
     "SemanticNode",
     "SemanticModel",
@@ -70,10 +93,18 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
                 !dependency_names.contains("sysml_model"),
                 "designated semantic consumer {name} must not depend directly on sysml_model"
             );
-            assert!(
-                !dependency_names.contains("sysml_diagnostics"),
-                "designated semantic consumer {name} must use the facade diagnostic service"
-            );
+            for authority in AUTHORITY_CRATES {
+                assert!(
+                    !dependency_names.contains(authority),
+                    "designated consumer {name} must reach {authority} through sysml_query"
+                );
+            }
+            if FACADE_ONLY_DIAGNOSTIC_CONSUMERS.contains(&name) {
+                assert!(
+                    !dependency_names.contains("sysml_diagnostics"),
+                    "designated semantic consumer {name} must use the facade diagnostic service"
+                );
+            }
         }
     }
 
@@ -98,7 +129,7 @@ fn facade_tests_do_not_duplicate_semantic_pipeline_snapshots() {
         }
         let source = fs::read_to_string(&path).expect("read facade test");
         if source.contains("BuildRequest")
-            || source.contains("SourceDocument")
+            || source.contains("AdmittedSource")
             || source.contains("target_at(")
             || source.contains("visible_members(")
             || source.contains("prepare_rename(")
@@ -143,10 +174,12 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         .iter()
         .find(|package| package["name"] == "sysml_resolution")
         .expect("resolution package");
+    // Normal dependencies only: a dev-dependency never reaches the graph a consumer resolves.
     let actual_dependencies = resolution["dependencies"]
         .as_array()
         .expect("resolution dependencies")
         .iter()
+        .filter(|dependency| dependency["kind"].is_null())
         .map(|dependency| {
             dependency["rename"]
                 .as_str()
@@ -165,6 +198,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
             "source_identity".to_owned(),
             "spec42_constraint_manifest".to_owned(),
             "sysml-v2-parser".to_owned(),
+            "sysml_source".to_owned(),
         ]),
         "the immutable resolution owner dependency boundary changed"
     );
@@ -312,7 +346,6 @@ fn migrated_validation_paths_cannot_return_to_the_graph() {
     let root = repository_root();
     let migrated = [
         "crates/workspace/src/snapshot/validation.rs",
-        "crates/semantic_publication/src/lib.rs",
         "crates/lsp_server/src/analysis/diagnostics_core.rs",
         "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
         "crates/lsp_server/src/lsp_runtime/diagnostics.rs",
@@ -479,9 +512,9 @@ fn query_facade_public_api_contains_no_raw_semantic_storage() {
 }
 
 #[test]
-fn workspace_publication_owner_contains_no_raw_semantic_storage() {
+fn the_session_actor_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(
-        &repository_root().join("crates/workspace_session/src"),
+        &repository_root().join("crates/session_actor/src"),
     );
 }
 
@@ -751,4 +784,79 @@ fn repository_root() -> PathBuf {
         .and_then(Path::parent)
         .expect("crate is under repository/crates")
         .to_path_buf()
+}
+
+/// The host crates stay split by responsibility: the generic actor knows no SysML crate, the
+/// provisioning crate reads no SysML through anything but the facade (via kpar), and the batch
+/// host carries neither storage nor async runtime nor protocol.
+#[test]
+fn host_crates_keep_their_declared_dependency_sets() {
+    let root = repository_root();
+    let output = Command::new(env!("CARGO"))
+        .args(["metadata", "--format-version", "1", "--no-deps"])
+        .current_dir(&root)
+        .output()
+        .expect("run cargo metadata");
+    assert!(output.status.success());
+    let metadata: Value = serde_json::from_slice(&output.stdout).expect("parse cargo metadata");
+    let packages = metadata["packages"].as_array().expect("packages array");
+    let normal_dependencies = |name: &str| -> BTreeSet<String> {
+        packages
+            .iter()
+            .find(|package| package["name"] == name)
+            .unwrap_or_else(|| panic!("{name} package"))["dependencies"]
+            .as_array()
+            .expect("dependencies")
+            .iter()
+            .filter(|dependency| dependency["kind"].is_null())
+            .map(|dependency| {
+                dependency["rename"]
+                    .as_str()
+                    .or_else(|| dependency["name"].as_str())
+                    .expect("dependency name")
+                    .to_owned()
+            })
+            .collect()
+    };
+    let set = |names: &[&str]| {
+        names
+            .iter()
+            .map(|name| (*name).to_owned())
+            .collect::<BTreeSet<_>>()
+    };
+
+    assert_eq!(
+        normal_dependencies("session_actor"),
+        set(&["thiserror", "tokio", "tracing"]),
+        "session_actor is a generic actor and names no SysML crate"
+    );
+    assert_eq!(
+        normal_dependencies("library_catalog"),
+        set(&[
+            "directories",
+            "kpar",
+            "serde",
+            "sysml_query",
+            "tempfile",
+            "toml",
+            "walkdir",
+            "zip"
+        ]),
+        "library_catalog provisions library roots and nothing else"
+    );
+    assert_eq!(
+        normal_dependencies("workspace"),
+        set(&[
+            "language_service",
+            "library_catalog",
+            "serde",
+            "serde_json",
+            "sysml_diagnostics",
+            "sysml_query",
+            "tempfile",
+            "thiserror",
+            "url",
+        ]),
+        "workspace is a batch host over the facade"
+    );
 }

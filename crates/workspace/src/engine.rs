@@ -1,13 +1,15 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{WorkspaceError, WorkspaceResult};
-use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
+use library_catalog::{
+    resolve_library_catalog, HostLibraryRequest, LibraryCatalog, StandardLibraryConfig,
+};
 use std::sync::Arc;
-use sysml_source::SysmlDocumentProvider;
+use sysml_query::source::{SourceProvider, SourceService};
+use sysml_query::Services;
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -21,7 +23,7 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
-    publication: Arc<crate::PublicationCoordinator>,
+    services: Services,
 }
 
 #[derive(Debug, Default)]
@@ -62,8 +64,15 @@ impl Spec42Engine {
         &self.metadata
     }
 
-    pub fn publication_coordinator(&self) -> Arc<crate::PublicationCoordinator> {
-        Arc::clone(&self.publication)
+    /// The one set of services this engine publishes through. A host embedding the engine in a
+    /// server shares these with the editor host rather than constructing its own.
+    pub fn services(&self) -> &Services {
+        &self.services
+    }
+
+    /// The source service every document of this engine is admitted through.
+    pub fn source(&self) -> &SourceService {
+        &self.services.source
     }
 
     pub fn schema_versions(&self) -> HostSchemaVersions {
@@ -72,7 +81,7 @@ impl Spec42Engine {
 
     pub fn load_workspace(
         &self,
-        provider: impl SysmlDocumentProvider,
+        provider: impl SourceProvider,
         request: WorkspaceLoadRequest,
         context: HostContext,
     ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
@@ -179,7 +188,8 @@ impl EngineBuilder {
             extra_library_paths: self.extra_library_paths,
         };
 
-        let catalog = resolve_library_catalog(&request)?;
+        let catalog = resolve_library_catalog(&request)
+            .map_err(|error| WorkspaceError::unresolved_library_environment(error.to_string()))?;
         Ok(Spec42Engine {
             cache_dir,
             catalog,
@@ -187,7 +197,7 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
-            publication: Arc::new(crate::PublicationCoordinator::new()),
+            services: Services::new(),
         })
     }
 

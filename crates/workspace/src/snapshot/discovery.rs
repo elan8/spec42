@@ -1,12 +1,16 @@
 //! Target discovery and URI helpers for workspace snapshots.
+//!
+//! File walking and URI normalisation belong to the source authority; this module only adds the
+//! batch host's target semantics (a workspace root inferred from the first target) and maps the
+//! authority's errors to the host's.
 
-use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use url::Url;
-use walkdir::WalkDir;
+use sysml_query::source::{SourceError, SourceService, Url};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
+
+pub use sysml_query::source::is_sysml_like;
 
 pub fn resolve_workspace_root(
     targets: &[PathBuf],
@@ -33,32 +37,9 @@ pub fn resolve_workspace_root(
 }
 
 pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf>> {
-    let mut files = BTreeSet::new();
-    for target in targets {
-        let path = normalize_existing_path(target)?;
-        if path.is_file() {
-            if is_sysml_like(&path) {
-                files.insert(path);
-            }
-            continue;
-        }
-        for entry in WalkDir::new(&path)
-            .follow_links(false)
-            .into_iter()
-            .filter_map(Result::ok)
-        {
-            let entry_path = entry.path();
-            if entry.file_type().is_file() && is_sysml_like(entry_path) {
-                files.insert(entry_path.to_path_buf());
-            }
-        }
-    }
-    if files.is_empty() {
-        return Err(WorkspaceError::unresolved_library_environment(
-            "No .sysml or .kerml files were found under the requested path.",
-        ));
-    }
-    Ok(files.into_iter().collect())
+    SourceService::new()
+        .discover(targets)
+        .map_err(map_source_error)
 }
 
 /// Convert a filesystem path to a canonicalized, drive-letter-normalized `file://` URL.
@@ -66,30 +47,14 @@ pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf
 /// Public so embedders constructing publications directly can compute `library_urls` with the
 /// same normalization that workspace snapshot construction applies.
 pub fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
-    let absolute = if path.is_absolute() {
-        path.to_path_buf()
-    } else {
-        std::env::current_dir()
-            .map_err(|err| {
-                WorkspaceError::unresolved_library_environment(format!(
-                    "Failed to resolve current directory: {err}"
-                ))
-            })?
-            .join(path)
-    };
-    let canonical = std::fs::canonicalize(&absolute).unwrap_or(absolute);
-    let url = if canonical.is_dir() {
-        Url::from_directory_path(&canonical)
-    } else {
-        Url::from_file_path(&canonical)
+    sysml_query::source::path_to_file_url(path).map_err(map_source_error)
+}
+
+fn map_source_error(error: SourceError) -> WorkspaceError {
+    match error {
+        SourceError::InvalidUri { .. } => WorkspaceError::invalid_document_uri(error.to_string()),
+        other => WorkspaceError::unresolved_library_environment(other.to_string()),
     }
-    .map_err(|_| {
-        WorkspaceError::invalid_document_uri(format!(
-            "Failed to convert path to file URI: {}",
-            canonical.display()
-        ))
-    })?;
-    Ok(language_service::uri::normalize_uri(&url))
 }
 
 fn normalize_existing_path(path: &Path) -> WorkspaceResult<PathBuf> {
@@ -100,11 +65,4 @@ fn normalize_existing_path(path: &Path) -> WorkspaceResult<PathBuf> {
         )));
     }
     Ok(std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf()))
-}
-
-pub fn is_sysml_like(path: &Path) -> bool {
-    path.extension()
-        .and_then(|ext| ext.to_str())
-        .map(|ext| matches!(ext, "sysml" | "kerml"))
-        .unwrap_or(false)
 }

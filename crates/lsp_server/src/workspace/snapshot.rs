@@ -26,7 +26,7 @@ impl<'a> ServerStateSnapshot<'a> {
             state,
             symbol_table,
             perf_logging_enabled,
-            published_model: Some(state.published_model.clone().into_model()),
+            published_model: Some(Arc::clone(state.session.current())),
         }
     }
 }
@@ -72,7 +72,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
         self.state
             .index
             .get(&util::normalize_file_uri(uri))
-            .map(|entry| entry.content.as_str())
+            .map(|entry| entry.content())
     }
 
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {

@@ -7,36 +7,16 @@ semantic representation.
 
 ## Ownership
 
-| Layer | Responsibility |
-|---|---|
-| `sysml-v2-parser` | Source-fidelity syntax and editor recovery |
-| `sysml_resolution` | Semantic construction, resolution, diagnostics, evaluation, and publication identity |
-| `sysml_query` | Opaque typed query facade over the immutable publication |
-| `workspace` | Source admission and atomic publication ownership |
-| `language_service` | Protocol-neutral editor features over typed queries |
-| `lsp_server` and `server` | Thin protocol and CLI adapters |
-| `generator_api` and `generator_host` | Sandboxed consumers of typed immutable model queries |
-
-```text
-sources + configuration
-        │
-        ▼
- parser-owned syntax/recovery
-        │
-        ▼
- sysml_resolution publication barrier
-        │
-        ▼
- Arc<PublishedModel>
-   ├── diagnostics/navigation/edits/completion
-   ├── inspection/types/evaluation
-   └── generator model queries
-```
+Which crate owns what is stated once, in [`design.md`](../../design.md): two authorities (source,
+semantic) behind one facade, five services, and the crate map. This document records the
+contracts of the semantic core's query products.
 
 Every consumer of one workspace revision receives the same publication handle. Full rebuilds are
 the current correctness path. Incremental graph patching and persistent semantic graph caches were
 removed; immutable incremental construction may return only after cold/full equivalence and
-supersession behavior are established.
+supersession behavior are established. The syntax service's parse memo is not a semantic cache: it
+holds parsed trees keyed by content digest so that a revision is parsed once, and it changes no
+semantic answer.
 
 ## Identity and qualified references
 

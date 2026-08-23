@@ -3,7 +3,7 @@ mod comparison_fixtures;
 
 use comparison_fixtures::{memory_document, test_engine};
 use tempfile::tempdir;
-use workspace::{HostContext, InMemoryDocumentProvider, ValidationTiming, WorkspaceLoadRequest};
+use workspace::{HostContext, InMemoryProvider, ValidationTiming, WorkspaceLoadRequest};
 
 const MODEL: &str = r#"
 package Demo {
@@ -19,11 +19,11 @@ fn deferred_validation_matches_eager_after_ensure() {
     let model_path = cache.path().join("Demo.sysml");
     std::fs::write(&model_path, MODEL).expect("write model");
     let document = memory_document(&model_path, MODEL);
-    let provider = InMemoryDocumentProvider::new(vec![document.clone()]);
+    let provider = InMemoryProvider::new(vec![document.clone()]);
 
     let eager = engine
         .load_workspace(
-            InMemoryDocumentProvider::new(vec![document.clone()]),
+            InMemoryProvider::new(vec![document.clone()]),
             WorkspaceLoadRequest::single_target(model_path.clone())
                 .with_validation_timing(ValidationTiming::Eager),
             HostContext::default(),

@@ -32,17 +32,17 @@ fn parse_clean_fixture_path() -> PathBuf {
 fn parse_with_diagnostics_clean_fixture_has_no_errors() {
     let path = parse_clean_fixture_path();
     let content = std::fs::read_to_string(&path).expect("read parse_clean.sysml");
-    let result = sysml_resolution::syntax::parse_for_editor(&content);
+    let result = sysml_query::syntax::SyntaxService::new().parse_text(&content);
 
-    if !result.diagnostics.is_empty() {
+    if !result.diagnostics().is_empty() {
         eprintln!(
             "parse_with_diagnostics reported {} error(s) on {} ({} bytes, {} lines):",
-            result.diagnostics.len(),
+            result.diagnostics().len(),
             path.display(),
             content.len(),
             content.lines().count()
         );
-        for (i, e) in result.diagnostics.iter().enumerate() {
+        for (i, e) in result.diagnostics().iter().enumerate() {
             eprintln!(
                 "  error {}: {} (line {:?}, column {:?}, code {:?})",
                 i + 1,
@@ -64,12 +64,12 @@ fn parse_with_diagnostics_clean_fixture_has_no_errors() {
         );
         panic!(
             "expected no parse errors for parse_clean.sysml; got {} (see stderr)",
-            result.diagnostics.len()
+            result.diagnostics().len()
         );
     }
 
     assert!(
-        result.document.has_root_elements(),
+        result.has_root_elements(),
         "expected at least one root element (package)"
     );
 }
@@ -85,8 +85,8 @@ fn parse_with_diagnostics_invalid_returns_errors() {
     ];
     let mut any_has_errors = false;
     for content in invalid_inputs {
-        let result = sysml_resolution::syntax::parse_for_editor(content);
-        if !result.diagnostics.is_empty() {
+        let result = sysml_query::syntax::SyntaxService::new().parse_text(content);
+        if !result.diagnostics().is_empty() {
             any_has_errors = true;
             break;
         }
@@ -106,26 +106,26 @@ fn parse_with_diagnostics_common_invalid_inputs_have_codes_and_ranges() {
     ];
 
     for (label, content) in invalid_inputs {
-        let result = sysml_resolution::syntax::parse_for_editor(content);
+        let result = sysml_query::syntax::SyntaxService::new().parse_text(content);
         assert!(
-            !result.diagnostics.is_empty(),
+            !result.diagnostics().is_empty(),
             "{label}: expected at least one parser diagnostic"
         );
         assert!(
-            result.diagnostics.iter().any(|error| error
+            result.diagnostics().iter().any(|error| error
                 .code
                 .as_deref()
                 .is_some_and(|code| !code.trim().is_empty())),
             "{label}: expected at least one parser diagnostic with a stable code, got {:?}",
-            result.diagnostics
+            result.diagnostics()
         );
         assert!(
             result
-                .diagnostics
+                .diagnostics()
                 .iter()
                 .any(|error| error.range().is_some()),
             "{label}: expected at least one parser diagnostic with an LSP range, got {:?}",
-            result.diagnostics
+            result.diagnostics()
         );
     }
 }

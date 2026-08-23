@@ -1,25 +1,16 @@
-use std::fs;
+//! The batch host's source provider: the workspace tree plus either the whole library roots or
+//! the import closure the workspace needs.
+//!
+//! Walking and reading are the source authority's; this type only decides *which* roots are in
+//! play and what provenance each one carries.
+
 use std::path::{Path, PathBuf};
 
-use ignore::WalkBuilder;
-use url::Url;
-
-use crate::library::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
-use source_identity::ContentDigest;
-use sysml_source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
-
-/// Reads `path` as bytes exactly once, computes its BLAKE3 content digest from that single
-/// buffer, and decodes it as UTF-8 from the same buffer (plan §5.1). A read failure or a UTF-8
-/// decode failure is a provider error; it is never swallowed or hidden behind a cache hit.
-fn read_source_exactly_once(path: &Path) -> Result<(String, ContentDigest, i64), String> {
-    let bytes =
-        fs::read(path).map_err(|err| format!("failed to read {}: {err}", path.display()))?;
-    let digest = ContentDigest::of_bytes(&bytes);
-    let byte_len = bytes.len() as i64;
-    let content = String::from_utf8(bytes)
-        .map_err(|err| format!("failed to decode {} as UTF-8: {err}", path.display()))?;
-    Ok((content, digest, byte_len))
-}
+use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
+use sysml_query::source::{
+    FilesystemProvider, SourceAuthority, SourceError, SourceKind, SourceLoadReport, SourceProvider,
+};
+use sysml_query::Services;
 
 #[derive(Debug, Clone)]
 pub struct FileSystemDocumentProvider {
@@ -29,15 +20,19 @@ pub struct FileSystemDocumentProvider {
     standard_library_paths: Vec<PathBuf>,
     full_library_scan: bool,
     library_seed_packages: Vec<String>,
+    services: Services,
 }
 
 pub type HostFilesystemProvider = FileSystemDocumentProvider;
 
 impl FileSystemDocumentProvider {
+    /// `services` are the host's: the closure is resolved through them so the library documents
+    /// this provider yields are memo hits for the publication that admits them.
     pub fn new(
         target: PathBuf,
         workspace_root: Option<PathBuf>,
         library_paths: Vec<PathBuf>,
+        services: Services,
     ) -> Self {
         Self {
             target,
@@ -46,6 +41,7 @@ impl FileSystemDocumentProvider {
             standard_library_paths: Vec::new(),
             full_library_scan: false,
             library_seed_packages: Vec::new(),
+            services,
         }
     }
 
@@ -53,11 +49,13 @@ impl FileSystemDocumentProvider {
         target: &Path,
         workspace_root: Option<&Path>,
         library_paths: &[PathBuf],
+        services: Services,
     ) -> Self {
         Self::new(
             target.to_path_buf(),
             workspace_root.map(Path::to_path_buf),
             library_paths.to_vec(),
+            services,
         )
     }
 
@@ -66,8 +64,9 @@ impl FileSystemDocumentProvider {
         workspace_root: Option<&Path>,
         library_paths: &[PathBuf],
         standard_library_paths: &[PathBuf],
+        services: Services,
     ) -> Self {
-        Self::from_paths(target, workspace_root, library_paths)
+        Self::from_paths(target, workspace_root, library_paths, services)
             .with_standard_library_paths(standard_library_paths.to_vec())
     }
 
@@ -92,8 +91,8 @@ impl FileSystemDocumentProvider {
     }
 }
 
-impl SysmlDocumentProvider for FileSystemDocumentProvider {
-    fn load_documents(&self) -> Result<Vec<SysmlDocument>, String> {
+impl SourceProvider for FileSystemDocumentProvider {
+    fn load(&self, authority: &SourceAuthority) -> Result<SourceLoadReport, SourceError> {
         let workspace_root = resolve_workspace_root(&self.target, self.workspace_root.as_deref());
         let workspace_root = canonicalize_or_self(&workspace_root);
         let standard_library_paths = self
@@ -102,201 +101,75 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
             .map(|path| canonicalize_or_self(path))
             .collect::<Vec<_>>();
 
-        let mut documents = Vec::new();
-        let mut workspace_file_contents = Vec::new();
-        let mut workspace_path_hints = Vec::new();
-        let mut workspace_digests = Vec::new();
-        let mut workspace_byte_sizes = Vec::new();
-
+        let mut report = SourceLoadReport::default();
         if workspace_root.exists() {
-            for path in collect_sysml_files(&workspace_root)? {
-                let (content, digest, byte_len) = read_source_exactly_once(&path)?;
-                let path_hint = path
-                    .strip_prefix(&workspace_root)
-                    .ok()
-                    .map(|relative| relative.to_string_lossy().replace('\\', "/"))
-                    .unwrap_or_else(|| path.display().to_string());
-                workspace_path_hints.push(path_hint);
-                workspace_file_contents.push(content);
-                workspace_digests.push(digest);
-                workspace_byte_sizes.push(byte_len);
-            }
-        }
-
-        for ((path_hint, content), (digest, byte_len)) in workspace_path_hints
-            .iter()
-            .zip(workspace_file_contents.iter())
-            .zip(workspace_digests.iter().zip(workspace_byte_sizes.iter()))
-        {
-            let path = workspace_root.join(path_hint);
-            let uri = path_to_url(&path)?;
-            documents.push(SysmlDocument {
-                uri,
-                content: content.clone(),
-                path_hint: Some(path_hint.clone()),
-                source_kind: SysmlDocumentSourceKind::Workspace,
-                content_digest: Some(*digest),
-                byte_size: Some(*byte_len),
-            });
+            let workspace =
+                FilesystemProvider::new(vec![workspace_root.clone()], SourceKind::Workspace)
+                    .load(authority)?;
+            merge(&mut report, workspace);
         }
 
         if self.full_library_scan {
             for library_path in &self.library_paths {
                 let library_root = canonicalize_or_self(library_path);
-                let source_kind = library_source_kind(&library_root, &standard_library_paths);
                 if !library_root.exists() {
                     continue;
                 }
-                for path in collect_sysml_files(&library_root)? {
-                    let (content, digest, byte_len) = read_source_exactly_once(&path)?;
-                    let path_hint = path
-                        .strip_prefix(&library_root)
-                        .ok()
-                        .map(|relative| relative.to_string_lossy().replace('\\', "/"))
-                        .unwrap_or_else(|| path.display().to_string());
-                    let uri = path_to_url(&path)?;
-                    documents.push(SysmlDocument {
-                        uri,
-                        content,
-                        path_hint: Some(path_hint),
-                        source_kind,
-                        content_digest: Some(digest),
-                        byte_size: Some(byte_len),
-                    });
-                }
+                let kind = library_source_kind(&library_root, &standard_library_paths);
+                merge(&mut report, authority.list(&[library_root], kind)?);
             }
-        } else {
-            let library_roots: Vec<String> = self
-                .library_paths
-                .iter()
-                .map(|path| {
-                    canonicalize_or_self(path)
-                        .to_string_lossy()
-                        .replace('\\', "/")
-                })
-                .collect();
-            if !library_roots.is_empty() && !workspace_file_contents.is_empty() {
-                let workspace_sources: Vec<WorkspaceSource<'_>> = workspace_path_hints
-                    .iter()
-                    .zip(workspace_file_contents.iter())
-                    .map(|(path_hint, content)| WorkspaceSource {
-                        path: path_hint.as_str(),
-                        content: content.as_str(),
-                    })
-                    .collect();
-                let options = LibraryClosureOptions {
-                    seed_packages: self.library_seed_packages.clone(),
-                    ..LibraryClosureOptions::default()
-                };
-                let loaded = resolve_library_closure(&workspace_sources, &library_roots, &options)?;
-                for file in loaded {
-                    let path = PathBuf::from(&file.root).join(&file.path);
-                    let uri = path_to_url(&path)?;
-                    // `resolve_library_closure` already performed the single admitting read and
-                    // UTF-8 decode of this file. Since that decode succeeded, re-encoding the
-                    // resulting `String` via `as_bytes()` reconstructs the exact original byte
-                    // sequence (UTF-8 decode is bijective for valid input), so hashing it here is
-                    // equivalent to hashing the original read buffer directly.
-                    let digest = ContentDigest::of_bytes(file.content.as_bytes());
-                    let byte_size = file.content.len() as i64;
-                    documents.push(SysmlDocument {
-                        uri,
-                        content: file.content,
-                        path_hint: Some(file.path.replace('\\', "/")),
-                        source_kind: library_source_kind(
-                            &canonicalize_or_self(&PathBuf::from(&file.root)),
-                            &standard_library_paths,
-                        ),
-                        content_digest: Some(digest),
-                        byte_size: Some(byte_size),
-                    });
-                }
-            }
+            return Ok(report);
         }
 
-        Ok(documents)
-    }
-}
-
-fn library_source_kind(root: &Path, standard_library_paths: &[PathBuf]) -> SysmlDocumentSourceKind {
-    if standard_library_paths.iter().any(|path| path == root) {
-        SysmlDocumentSourceKind::StandardLibrary
-    } else {
-        SysmlDocumentSourceKind::Library
-    }
-}
-
-fn collect_sysml_files(root: &Path) -> Result<Vec<PathBuf>, String> {
-    let mut paths = Vec::new();
-    for entry in WalkBuilder::new(root)
-        .follow_links(false)
-        .require_git(false)
-        .build()
-        .filter_map(Result::ok)
-    {
-        if !entry
-            .file_type()
-            .is_some_and(|file_type| file_type.is_file())
-        {
-            continue;
-        }
-        let path = entry.path();
-        if path
-            .extension()
-            .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| {
-                ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml")
+        let roots: Vec<LibraryRoot> = self
+            .library_paths
+            .iter()
+            .map(|path| {
+                let path = canonicalize_or_self(path);
+                let kind = library_source_kind(&path, &standard_library_paths);
+                LibraryRoot { path, kind }
             })
-        {
-            paths.push(path.to_path_buf());
+            .collect();
+        let workspace: Vec<_> = report
+            .documents
+            .iter()
+            .filter(|document| document.kind() == SourceKind::Workspace)
+            .map(|document| self.services.syntax.parse(document))
+            .collect();
+        if roots.is_empty() || workspace.is_empty() {
+            return Ok(report);
         }
+        let options = LibraryClosureOptions {
+            seed_packages: self.library_seed_packages.clone(),
+            ..LibraryClosureOptions::default()
+        };
+        let closure = self
+            .services
+            .library
+            .resolve(&workspace, &roots, &options)?;
+        report.documents.extend(closure.documents);
+        Ok(report)
     }
-    paths.sort();
-    Ok(paths)
+}
+
+fn merge(into: &mut SourceLoadReport, from: SourceLoadReport) {
+    into.documents.extend(from.documents);
+    into.skipped.extend(from.skipped);
+    into.roots_scanned += from.roots_scanned;
+    into.roots_skipped += from.roots_skipped;
+    into.candidate_files += from.candidate_files;
+}
+
+fn library_source_kind(root: &Path, standard_library_paths: &[PathBuf]) -> SourceKind {
+    if standard_library_paths.iter().any(|path| path == root) {
+        SourceKind::StandardLibrary
+    } else {
+        SourceKind::Library
+    }
 }
 
 fn canonicalize_or_self(path: &Path) -> PathBuf {
     std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
-}
-
-fn path_to_url(path: &Path) -> Result<Url, String> {
-    let absolute = if path.is_absolute() {
-        path.to_path_buf()
-    } else {
-        std::env::current_dir()
-            .map_err(|err| format!("failed to resolve current directory: {err}"))?
-            .join(path)
-    };
-    let canonical = canonicalize_or_self(&absolute);
-    let url = Url::from_file_path(&canonical).map_err(|_| {
-        format!(
-            "failed to convert path to file URI: {}",
-            canonical.display()
-        )
-    })?;
-    Ok(normalize_file_url_drive_letter(url))
-}
-
-/// Lowercases the Windows drive letter in a `file://` URL so all paths use a
-/// consistent form (`file:///c:/...` not `file:///C:/...`). This matches the
-/// normalisation applied by the kernel/LSP layer and ensures graph node URIs
-/// are comparable to the target URLs used in workspace lookups.
-fn normalize_file_url_drive_letter(url: Url) -> Url {
-    if url.scheme() != "file" {
-        return url;
-    }
-    let path = url.path();
-    // Windows path: /C:/... — lowercase the drive letter at index 1.
-    if path.len() >= 3 {
-        let bytes = path.as_bytes();
-        if bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
-            let new_path = format!("/{}{}", (bytes[1] as char).to_ascii_lowercase(), &path[2..]);
-            if let Ok(normalized) = Url::parse(&format!("file://{new_path}")) {
-                return normalized;
-            }
-        }
-    }
-    url
 }
 
 fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathBuf {

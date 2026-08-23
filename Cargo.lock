@@ -598,15 +598,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dirs"
-version = "5.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44c45a9d03d6676652bcb5e724c7e988de1acad23a711b5217ab9cbecbec2225"
-dependencies = [
- "dirs-sys",
-]
-
-[[package]]
 name = "dirs-sys"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -826,11 +817,9 @@ dependencies = [
  "generator_api",
  "generator_host",
  "rayon",
- "semantic_publication",
  "serde",
  "serde_json",
  "sysml_query",
- "sysml_source",
  "tempfile",
  "toml 0.8.23",
 ]
@@ -1161,7 +1150,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml_resolution",
+ "sysml_query",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1175,8 +1164,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml_query",
- "sysml_resolution",
- "sysml_source",
  "tempfile",
  "url",
 ]
@@ -1204,6 +1191,22 @@ name = "libm"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
+
+[[package]]
+name = "library_catalog"
+version = "0.50.0"
+dependencies = [
+ "directories",
+ "kpar",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sysml_query",
+ "tempfile",
+ "toml 0.8.23",
+ "walkdir",
+ "zip",
+]
 
 [[package]]
 name = "libredox"
@@ -1263,19 +1266,17 @@ dependencies = [
  "generator_api",
  "generator_host",
  "glob",
- "ignore",
  "language_service",
  "petgraph",
  "rayon",
  "serde",
  "serde_json",
  "server",
+ "session_actor",
  "sha2",
  "spec42-generator-protocol",
  "sysml_diagnostics",
  "sysml_query",
- "sysml_resolution",
- "sysml_source",
  "sysml_tokens",
  "tempfile",
  "thiserror 2.0.19",
@@ -1285,10 +1286,8 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
- "walkdir",
  "wat",
  "workspace",
- "workspace_session",
 ]
 
 [[package]]
@@ -1753,16 +1752,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "semantic_publication"
-version = "0.50.0"
-dependencies = [
- "blake3",
- "sysml_query",
- "sysml_source",
- "url",
-]
-
-[[package]]
 name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1854,6 +1843,7 @@ dependencies = [
  "generator_api",
  "generator_host",
  "kpar",
+ "library_catalog",
  "lsp_server",
  "rquickjs",
  "serde",
@@ -1869,6 +1859,15 @@ dependencies = [
  "wat",
  "workspace",
  "zip",
+]
+
+[[package]]
+name = "session_actor"
+version = "0.50.0"
+dependencies = [
+ "thiserror 2.0.19",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2005,12 +2004,10 @@ dependencies = [
  "generator_api",
  "generator_host",
  "rayon",
- "semantic_publication",
  "serde",
  "serde_json",
  "spec42-constraint-manifest",
  "sysml_query",
- "sysml_source",
  "tempfile",
  "toml 0.8.23",
 ]
@@ -2106,6 +2103,7 @@ dependencies = [
 name = "sysml_query"
 version = "0.50.0"
 dependencies = [
+ "proc-macro2",
  "serde_json",
  "syn 2.0.119",
  "sysml_resolution",
@@ -2122,13 +2120,17 @@ dependencies = [
  "source_identity",
  "spec42-constraint-manifest",
  "sysml-v2-parser",
+ "sysml_source",
+ "tempfile",
 ]
 
 [[package]]
 name = "sysml_source"
 version = "0.50.0"
 dependencies = [
+ "ignore",
  "source_identity",
+ "tempfile",
  "url",
 ]
 
@@ -2137,7 +2139,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "sysml_resolution",
+ "sysml_query",
 ]
 
 [[package]]
@@ -2975,48 +2977,18 @@ dependencies = [
 name = "workspace"
 version = "0.50.0"
 dependencies = [
- "blake3",
- "directories",
- "dirs",
- "ignore",
  "kpar",
  "language_service",
- "petgraph",
- "postcard",
+ "library_catalog",
  "proc-macro2",
- "rayon",
- "semantic_publication",
  "serde",
  "serde_json",
- "sha2",
- "source_identity",
  "syn 2.0.119",
  "sysml_diagnostics",
  "sysml_query",
- "sysml_resolution",
- "sysml_source",
  "tempfile",
  "thiserror 2.0.19",
- "toml 0.8.23",
- "tracing",
  "url",
- "walkdir",
- "zip",
- "zstd",
-]
-
-[[package]]
-name = "workspace_session"
-version = "0.50.0"
-dependencies = [
- "semantic_publication",
- "sysml_query",
- "sysml_source",
- "thiserror 2.0.19",
- "tokio",
- "tracing",
- "url",
- "workspace",
 ]
 
 [[package]]

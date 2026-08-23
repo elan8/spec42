@@ -4,35 +4,22 @@
 
 use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
 use sysml_query::resolved_slice::TextPosition;
-use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_query::source::{SourceDocument, SourceKind, SourceService};
 
-pub fn document(path: &str, content: &str) -> SysmlDocument {
-    SysmlDocument::from_memory_path(
-        "test",
-        path,
-        content.to_string(),
-        SysmlDocumentSourceKind::Workspace,
-        None,
-        None,
-    )
-    .expect("document")
+pub fn document(path: &str, content: &str) -> SourceDocument {
+    SourceService::new()
+        .admit_memory("test", path, content, SourceKind::Workspace)
+        .expect("document")
 }
 
-pub fn workspace_from_docs(docs: Vec<SysmlDocument>) -> InMemoryWorkspace {
+pub fn workspace_from_docs(docs: Vec<SourceDocument>) -> InMemoryWorkspace {
     use std::sync::Arc;
-    use sysml_query::resolved_slice::{
-        build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
-    };
+    use sysml_query::resolved_slice::{build, AdmittedSource, BuildRequest, ConstructionStrategy};
     let sources = docs
         .iter()
         .map(|doc| {
-            let kind = match doc.source_kind {
-                SysmlDocumentSourceKind::Workspace => SourceKind::Workspace,
-                SysmlDocumentSourceKind::StandardLibrary => SourceKind::StandardLibrary,
-                SysmlDocumentSourceKind::Library => SourceKind::Library,
-                SysmlDocumentSourceKind::External => SourceKind::External,
-            };
-            SourceDocument::from_uri(doc.uri.as_str(), doc.content.clone(), kind).expect("source")
+            AdmittedSource::from_uri(doc.uri().as_str(), doc.content().to_owned(), doc.kind())
+                .expect("source")
         })
         .collect();
     let request =

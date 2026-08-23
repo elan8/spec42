@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use sysml_query::resolved_slice::PublishedModel;
-use sysml_source::SysmlDocument;
+use sysml_query::source::SourceDocument;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
@@ -19,7 +19,7 @@ use workspace::{
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+use crate::workspace::state::{IndexEntry, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use super::report::{build_advice, summarize};
@@ -35,7 +35,7 @@ pub struct BuiltWorkspaceInput {
     /// re-parse them with a tolerant parser and still report syntax errors; without this,
     /// documents dropped from `parsed_documents` silently vanish from the index and produce
     /// zero diagnostics instead of a parse error.
-    pub all_documents: Vec<SysmlDocument>,
+    pub all_documents: Vec<SourceDocument>,
     pub library_urls: Vec<Url>,
     pub workspace_root: Option<PathBuf>,
 }
@@ -83,6 +83,7 @@ pub(super) fn validate_paths_with_semantics(
         workspace_root.as_deref(),
         engine.package_roots(),
         &engine.library_catalog().stdlib.roots,
+        engine.services().clone(),
     );
     let load_request = WorkspaceLoadRequest::single_target(target)
         .with_workspace_root(workspace_root.clone())
@@ -119,7 +120,7 @@ pub fn semantic_report_from_built_workspace(
         .map(|path| path_to_file_url(path.as_path()))
         .transpose()?;
 
-    let state = server_state_from_built(built, workspace_root_url.clone());
+    let state = server_state_from_built(built, workspace_root_url.clone(), &config.services);
 
     let documents = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
@@ -142,35 +143,32 @@ pub fn semantic_report_from_built_workspace(
     Ok(SemanticValidationReport { validation: report })
 }
 
+/// A ready server state over an already-built publication, sharing the host's services so the
+/// documents the engine parsed are memo hits here rather than a second parse.
 fn server_state_from_built(
     built: &BuiltWorkspaceInput,
     workspace_root_url: Option<Url>,
+    services: &sysml_query::Services,
 ) -> ServerState {
     let mut index = HashMap::new();
     for document in &built.all_documents {
         index.insert(
-            document.uri.clone(),
+            document.uri().clone(),
             IndexEntry {
-                content: document.content.clone(),
-                parsed: Some(crate::common::util::parse_for_editor(&document.content).document),
-                parse_metadata: ParseMetadata::default(),
+                document: document.clone(),
+                parsed: services.syntax.parse(document),
                 admitted_to_publication: true,
             },
         );
     }
-    let mut session = workspace::WorkspaceSession::new();
-    session.begin_startup();
-    session.complete_startup();
-    ServerState {
-        workspace_roots: workspace_root_url.iter().cloned().collect(),
-        library_paths: built.library_urls.clone(),
-        index,
-        session,
-        ..ServerState::with_initial_publication(
-            Arc::new(workspace::PublicationCoordinator::new()),
-            built.published_model.clone(),
-        )
-    }
+    let mut state =
+        ServerState::with_initial_publication(services.clone(), built.published_model.clone());
+    state.session.begin_startup();
+    state.session.complete_startup();
+    state.workspace_roots = workspace_root_url.iter().cloned().collect();
+    state.library_paths = built.library_urls.clone();
+    state.index = index;
+    state
 }
 
 pub(super) fn collect_target_documents(
@@ -226,7 +224,7 @@ fn collect_diagnostics_for_document(
     strict_diagnostics: bool,
 ) -> Vec<Diagnostic> {
     diagnostics_core::collect_document_diagnostics(
-        Some(state.published_model.model()),
+        Some(state.published_model()),
         uri,
         diagnostics_core::validation_reporting(strict_diagnostics),
         diagnostics_core::validation_postprocess_options(strict_diagnostics),

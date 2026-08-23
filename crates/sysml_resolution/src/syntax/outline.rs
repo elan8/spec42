@@ -14,8 +14,9 @@ use super::token_util::{
 };
 use super::{SyntaxFoldingKind, SyntaxFoldingRegion, SyntaxOutlineNode};
 
-pub fn document_outline(document: &super::SyntaxDocument) -> Vec<SyntaxOutlineNode> {
-    let document = document.inner();
+pub(super) fn document_outline(
+    document: &sysml_v2_parser::ParsedDocument,
+) -> Vec<SyntaxOutlineNode> {
     let mut out = Vec::new();
     for node in &document.elements {
         let sym = match &node.value {
@@ -117,7 +118,9 @@ fn normalize_outline_symbols(symbols: &mut [SyntaxOutlineNode]) {
 
 /// Collects folding ranges from the AST. This reuses the document-symbol outline ranges and
 /// produces one folding range per symbol whose extent spans multiple lines.
-pub fn folding_regions(document: &super::SyntaxDocument) -> Vec<SyntaxFoldingRegion> {
+pub(super) fn folding_regions(
+    document: &sysml_v2_parser::ParsedDocument,
+) -> Vec<SyntaxFoldingRegion> {
     let symbols = document_outline(document);
     let mut out = Vec::new();
 

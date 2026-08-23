@@ -9,12 +9,12 @@
 use std::sync::Arc;
 
 use crate::error::WorkspaceResult;
-use crate::provider::InMemoryDocumentProvider;
 use crate::snapshot::build::{build_workspace_snapshot, HostWorkspaceSnapshot};
 use crate::snapshot::changes::{apply_document_changes, DocumentChanges};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::request::WorkspaceLoadRequest;
 use crate::Spec42Engine;
+use sysml_query::source::InMemoryProvider;
 
 pub fn update_workspace_snapshot(
     engine: &Spec42Engine,
@@ -28,11 +28,11 @@ pub fn update_workspace_snapshot(
     let merged_documents = apply_document_changes(previous.documents(), &changes)?;
     let total_bytes = merged_documents
         .iter()
-        .map(|doc| doc.content.len() as u64)
+        .map(|doc| doc.byte_len() as u64)
         .sum();
     context.enforce_document_limits(merged_documents.len(), total_bytes)?;
 
-    let provider = InMemoryDocumentProvider::new(merged_documents);
+    let provider = InMemoryProvider::new(merged_documents);
     build_workspace_snapshot(
         engine,
         engine.library_catalog(),

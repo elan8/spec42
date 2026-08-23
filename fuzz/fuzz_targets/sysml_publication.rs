@@ -3,14 +3,14 @@
 
 use libfuzzer_sys::fuzz_target;
 use sysml_query::resolved_slice::{
-    build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+    build, BuildRequest, ConstructionStrategy, AdmittedSource, SourceKind,
 };
 
 fuzz_target!(|data: &[u8]| {
     let Ok(source) = std::str::from_utf8(data) else {
         return;
     };
-    let document = SourceDocument::from_memory_path(
+    let document = AdmittedSource::from_memory_path(
         "fuzz",
         "input.sysml",
         source.to_owned(),

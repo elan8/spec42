@@ -10,8 +10,11 @@ use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::views::dto::SemanticIndexReadyNotificationDto;
 use crate::workspace::state::ServerState;
-use crate::workspace::{parse_scanned_entries, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
-use workspace_session::RelinkToken;
+use crate::workspace::{
+    parse_scanned_documents, parse_scanned_entries, scan_sysml_files, RuntimeConfig,
+    WorkspaceHandle,
+};
+use sysml_query::publication::RelinkToken;
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
@@ -63,7 +66,7 @@ async fn publish_semantic_change(
         .cloned()
         .collect::<Vec<_>>();
     let mut diagnostic_uris = crate::workspace::import_graph::affected_diagnostic_documents(
-        old.published_model.model(),
+        old.published_model(),
         workspace_uris,
         &changed_uri,
     )
@@ -169,12 +172,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry {
-                content: "package Demo { part def Thing; }".to_string(),
-                parsed: None,
-                parse_metadata: Default::default(),
-                admitted_to_publication: true,
-            },
+            crate::workspace::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 
@@ -193,12 +191,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry {
-                content: "package Demo { part def Thing; }".to_string(),
-                parsed: None,
-                parse_metadata: Default::default(),
-                admitted_to_publication: true,
-            },
+            crate::workspace::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 

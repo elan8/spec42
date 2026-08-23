@@ -106,8 +106,9 @@ pub trait ValidationPipelineHook: Send + Sync {
 /// Server configuration built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
-    /// Shared authority for semantic publication and reusable library state.
-    pub publication_coordinator: Arc<workspace::PublicationCoordinator>,
+    /// The one set of services this host publishes through, shared with the engine that embeds
+    /// it so the two never hold separate memos or library strata.
+    pub services: sysml_query::Services,
     /// Optional library roots supplied by the host (e.g. materialized standard library), merged
     /// before client `libraryPaths` during LSP initialize / configuration.
     pub default_library_paths: Vec<PathBuf>,
@@ -126,7 +127,7 @@ pub struct Spec42Config {
 impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
-            .field("publication_coordinator", &"shared")
+            .field("services", &"shared")
             .field("default_library_paths", &self.default_library_paths)
             .field("standard_library_paths", &self.standard_library_paths)
             .field("capability_augmenters", &self.capability_augmenters.len())
@@ -145,11 +146,8 @@ impl Spec42Config {
         Self::default()
     }
 
-    pub fn with_publication_coordinator(
-        mut self,
-        coordinator: Arc<workspace::PublicationCoordinator>,
-    ) -> Self {
-        self.publication_coordinator = coordinator;
+    pub fn with_services(mut self, services: sysml_query::Services) -> Self {
+        self.services = services;
         self
     }
 

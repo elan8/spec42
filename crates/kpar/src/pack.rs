@@ -382,12 +382,18 @@ fn package_name_from_strict_ast(path: &str, bytes: &[u8]) -> Result<Option<Strin
     let source = std::str::from_utf8(bytes).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' is not valid UTF-8: {error}"))
     })?;
-    // The parser authority answers this. `kpar` needs a package identity, not a syntax tree, and
+    // The syntax service answers this. `kpar` needs a package identity, not a syntax tree, and
     // parsing here would be a second parse of the same text against an AST this crate would then
-    // have to keep in step with the pinned revision.
-    let names = sysml_resolution::syntax::package_declaration_names(source).map_err(|error| {
-        KparError::InvalidArchive(format!("source '{path}' failed strict parsing: {error}"))
-    })?;
+    // have to keep in step with the pinned revision. Any diagnostic is a rejection: an archive
+    // entry's identity is decided, never recovered.
+    let parsed = sysml_query::syntax::SyntaxService::new().parse_text(source);
+    if let Some(error) = parsed.first_error() {
+        return Err(KparError::InvalidArchive(format!(
+            "source '{path}' failed strict parsing: {}",
+            error.message
+        )));
+    }
+    let names = parsed.top_level_package_names();
     if names.len() == 1 {
         Ok(names.into_iter().next())
     } else {
@@ -405,6 +411,26 @@ mod tests {
     use super::*;
     use crate::read::{materialize, open_kpar_path, verify_checksums};
     use tempfile::tempdir;
+
+    #[test]
+    fn archive_identity_is_strict_a_malformed_source_is_rejected_not_recovered() {
+        assert_eq!(
+            package_name_from_strict_ast("ok.sysml", b"package Only { part def P; }")
+                .unwrap()
+                .as_deref(),
+            Some("Only")
+        );
+        assert_eq!(
+            package_name_from_strict_ast("two.sysml", b"package A; package B;").unwrap(),
+            None
+        );
+        let error = package_name_from_strict_ast("bad.sysml", b"package Broken { @@@ ")
+            .expect_err("a source with any diagnostic has no archive identity");
+        assert!(
+            error.to_string().contains("failed strict parsing"),
+            "{error}"
+        );
+    }
 
     fn test_project() -> Project {
         Project {

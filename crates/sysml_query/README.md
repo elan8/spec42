@@ -45,25 +45,27 @@ affordable on a rebuild-per-keystroke host. Reuse is discarded whenever workspac
 change a settled library answer.
 
 The facade has one dependency. Its transitive closure is
-`sysml_query -> sysml_resolution -> parser-next` and cannot reach `sysml_model` or
-`sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete publications rather
-than falling back. There is no feature to select, so no consumer can opt back in.
-`workspace_session` stores only `Arc<PublishedModel>` and validates replacement identity and
-completeness through the typed publication service.
+`sysml_query -> sysml_resolution -> { sysml-v2-parser, sysml_source -> source_identity }` and cannot
+reach `sysml_diagnostics` or any host crate; unsupported syntax and recovery remain explicit
+incomplete publications rather than falling back. There is no feature to select, so no consumer can
+opt back in. Beyond the publication queries, the facade exposes the source, syntax, library-closure
+and publication services a host obtains from one `Services` value; see `design.md`.
+`sysml_query::publication::PublicationSession` stores only `Arc<PublishedModel>` and admits a
+replacement only when its identity is exactly the one the build was started for.
 
-The normal `sysml_query` test gate enforces the boundary in three ways:
+The normal `sysml_query` test gate enforces the boundary in four ways:
 
 - Cargo metadata verifies the facade's own dependency set is exactly `sysml_resolution` and that it
-  declares no features, verifies designated consumers depend on `sysml_query` rather than
-  the deleted `sysml_model` crate, and rejects any attempt to reintroduce an implementation
-  dependency outside this facade.
-- A `syn`-based public-API inspection rejects raw storage types, aliases, and public glob exports;
-  it also verifies the model publication has no public graph/node/state/index escape hatch.
+  declares no features, pins the exact dependency sets of the authority and host crates, and
+  verifies every designated consumer depends on `sysml_query` and on no authority crate.
+- A `syn`-based public-API inspection rejects parser types, raw storage types, aliases, and public
+  glob exports; it also verifies the model publication has no public graph/node/state/index escape
+  hatch.
+- `tests/syntax_authority.rs` rejects consumers that re-answer syntax questions from text: retired
+  helpers, shadowed service queries, parsed trees or caches held outside the authorities, SysML
+  file reads, and string probes against reserved keywords, qualified names, operators or braces.
 - Compiler-fail documentation tests prove consumers cannot import raw state/index types, call an
   implementation view, or access the opaque handle's private field.
-
-No crate may depend directly on the deleted `sysml_model` crate. The metadata gate prevents its
-reintroduction and requires production semantic consumers to depend on this facade.
 
 Diagnostics are published as typed values, and this is now the whole validation surface a host
 reports. `PublishedModel::diagnostics()` returns the codes, severities, ranges, messages, subject

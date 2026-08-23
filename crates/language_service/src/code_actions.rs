@@ -627,7 +627,9 @@ fn suggest_create_usage_from_definition_impl(
 }
 
 pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSuggestion> {
-    if !sysml_resolution::syntax::declares_single_anonymous_package_with_members(source) {
+    // An unparseable document is not a document with one anonymous package.
+    let parsed = sysml_query::syntax::SyntaxService::new().parse_text(source);
+    if !parsed.is_clean() || !parsed.declares_single_anonymous_package_with_members() {
         return None;
     }
     let lines: Vec<&str> = source.lines().collect();

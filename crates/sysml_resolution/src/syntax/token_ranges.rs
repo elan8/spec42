@@ -88,11 +88,10 @@ impl<'a> RangeCtx<'a> {
 }
 
 /// Collect every span the grammar gives a role, in source order.
-pub fn semantic_token_roles(
-    document: &super::SyntaxDocument,
+pub(super) fn semantic_token_roles(
+    document: &sysml_v2_parser::ParsedDocument,
     source: &str,
 ) -> Vec<(SyntaxRange, SyntaxRole)> {
-    let document = document.inner();
     let ctx = RangeCtx { source, document };
     let mut out = Vec::new();
     for node in &document.elements {

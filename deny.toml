@@ -1,6 +1,6 @@
 # Dependency policy, checked by `cargo deny check bans`.
 #
-# The rule this file exists for is the parser ban below. Everything else here is deliberately
+# The rules this file exists for are the authority bans below. Everything else here is deliberately
 # permissive: this is not a licence or advisory gate, and CI runs only the `bans` check so that
 # turning one on later is a decision rather than an accident.
 
@@ -20,15 +20,30 @@ wildcards = "allow"
 # so a rename (`parser = { package = "sysml-v2-parser" }`) or a transitive path through a crate
 # that never names the parser is caught by construction, not by anticipating its spelling.
 #
-# Every other crate reaches syntax through `sysml_resolution::syntax`, which hands out plain data.
-# A crate without this dependency cannot hold, walk, cache, or serialize a `ParsedDocument`.
+# Every other crate reaches syntax through `sysml_query::syntax`, which hands out opaque handles and
+# plain data. A crate without this dependency cannot hold, walk, cache, or serialize a parser tree.
 #
 # The guard test is NOT redundant with this and must stay:
 #   * it checks manifest *shape* -- that the pin is a bare 40-hex git rev with no
 #     `version`/`branch`/`tag`/`path`, and that the authority inherits it with `workspace = true`;
-#   * it covers `fuzz/Cargo.toml`, a nested workspace this file's graph does not reach;
+#   * it covers `fuzz/Cargo.toml` and `fuzz/Cargo.lock`, a nested workspace this file's graph
+#     does not reach;
 #   * it rejects reintroducing a repository-local parser facade, which is a path dependency on a
 #     differently-named package and so is invisible to a ban on the upstream name.
 [[bans.deny]]
 name = "sysml-v2-parser"
+wrappers = ["sysml_resolution"]
+
+# The next two links of the same chain. The semantic authority is banned outright except as a
+# direct dependency of the query facade, and the source authority except as a direct dependency
+# of the semantic authority. A consumer without these dependencies cannot name a parsed tree, a
+# resolution graph, or a document constructor; it reaches all three through `sysml_query`.
+# cargo-deny checks workspace members like any other crate and `wrappers` is checked against every
+# direct dependant including dev-dependencies, so a test-only dependency is rejected as well.
+[[bans.deny]]
+name = "sysml_resolution"
+wrappers = ["sysml_query"]
+
+[[bans.deny]]
+name = "sysml_source"
 wrappers = ["sysml_resolution"]

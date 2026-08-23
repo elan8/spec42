@@ -9,12 +9,12 @@ use std::sync::Arc;
 
 use generator_api::{GeneratorModelView, QueryLimits};
 use sysml_query::resolved_slice::{
-    build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+    build, AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
 };
 
 /// Publishes `source` and wraps it in the view the runtime serves queries from.
 pub fn published_model_view(source: &str) -> Arc<GeneratorModelView> {
-    let document = SourceDocument::from_memory_path(
+    let document = AdmittedSource::from_memory_path(
         "generator-host-tests",
         "model.sysml",
         source.to_owned(),

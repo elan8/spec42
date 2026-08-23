@@ -15089,11 +15089,12 @@ impl SymbolTableBuilder {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub(crate) struct OwnedSourceRecord {
     pub(crate) identity: Box<str>,
     pub(crate) role: SourceRole,
-    pub(crate) content: String,
+    pub(crate) payload: crate::SourcePayload,
+    pub(crate) syntax: Option<Arc<crate::syntax::SyntaxAuthority>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -15170,7 +15171,7 @@ impl SemanticModelBuildCoordinator {
         }
 
         let parse_started = Instant::now();
-        let parsed: Vec<(Box<str>, SourceRole, sysml_v2_parser::ParseResult)> = match schedule {
+        let parsed: Vec<AdmittedSource> = match schedule {
             BuildSchedule::Sequential => sources
                 .into_iter()
                 .map(Self::parse_source)
@@ -15202,9 +15203,9 @@ impl SemanticModelBuildCoordinator {
                 .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
             documents.push(admitted);
         }
-        for (identity, role, parsed) in parsed {
+        for (identity, role, tree, errors) in parsed {
             let document = builder
-                .admit_document(identity, role, Arc::new(parsed.document), parsed.errors)
+                .admit_document(identity, role, tree, errors)
                 .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
             documents.push(document);
         }
@@ -15230,16 +15231,29 @@ impl SemanticModelBuildCoordinator {
         ))
     }
 
-    fn parse_source(
-        source: OwnedSourceRecord,
-    ) -> Result<(Box<str>, SourceRole, sysml_v2_parser::ParseResult), CoordinatorError> {
-        Ok((
-            source.identity,
-            source.role,
-            sysml_v2_parser::parse_for_editor_owned(source.content),
-        ))
+    /// A parsed handle is admitted as it is (two reference-count bumps); text is parsed here,
+    /// the cold path for stateless callers.
+    fn parse_source(source: OwnedSourceRecord) -> Result<AdmittedSource, CoordinatorError> {
+        let (tree, errors) = match source.payload {
+            crate::SourcePayload::Parsed(parsed) => parsed.admission_parts(),
+            crate::SourcePayload::Pending(document) => match source.syntax {
+                Some(syntax) => syntax.parse(&document).admission_parts(),
+                None => crate::syntax::ParsedSource::parse_text(
+                    document.content().to_owned(),
+                    document.digest(),
+                )
+                .admission_parts(),
+            },
+            crate::SourcePayload::Text(content) => {
+                let result = sysml_v2_parser::parse_for_editor_owned(content);
+                (Arc::new(result.document), result.errors)
+            }
+        };
+        Ok((source.identity, source.role, tree, errors))
     }
 }
+
+type AdmittedSource = (Box<str>, SourceRole, Arc<ParsedDocument>, Vec<ParseError>);
 
 /// Storage order for admitted sources: every library role precedes workspace sources.
 ///

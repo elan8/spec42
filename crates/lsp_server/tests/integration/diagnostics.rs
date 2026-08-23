@@ -242,10 +242,11 @@ fn workspace_surveillance_drone_has_no_unresolved_action_type_references() {
     let drone_content = fs::read_to_string(&fixture_path).expect("read drone fixture");
     fs::write(&drone_path, &drone_content).expect("write SurveillanceDrone.sysml fixture");
 
-    if sysml_resolution::syntax::parse_strict(&drone_content).is_err() {
+    let drone_parsed = sysml_query::syntax::SyntaxService::new().parse_text(&drone_content);
+    if !drone_parsed.is_clean() {
         panic!(
             "sysml_v2_parser::parse failed for surveillance_drone_full.sysml; first errors: {:?}",
-            util::parse_failure_diagnostics(&drone_content, 5)
+            util::parse_failure_diagnostics(&drone_parsed, 5)
         );
     }
 

@@ -1,9 +1,12 @@
 #![recursion_limit = "256"]
 
-//! Opaque parser-owned semantic construction and batch resolution.
+//! The semantic authority.
 //!
-//! Syntax documents, dense IDs, semantic storage, solver state, and indexes remain private. The
-//! public contract accepts immutable source inputs and streams owner-defined canonical output.
+//! The only crate that calls the parser, holds parsed trees ([`syntax`]), lowers and resolves,
+//! decides diagnostics, computes library closure ([`library`]), and constructs and publishes a
+//! model with its lifecycle ([`publication`]). Parser documents, dense IDs, semantic storage,
+//! solver state and indexes stay private; its single dependant is the `sysml_query` facade, and it
+//! never reads a file — documents come from the source authority it re-exports as [`source`].
 
 use std::fmt;
 
@@ -18,13 +21,22 @@ mod element_kind;
 mod evaluation;
 mod feature_query;
 mod inspection;
+pub mod library;
 mod model;
 mod namespace_query;
+pub mod publication;
 mod qualified_reference;
 mod redefinition_query;
 mod requirement_query;
 mod specialization_query;
 pub mod syntax;
+
+/// The semantic contract version every resolved publication is recorded under.
+pub const RESOLVED_CONTRACT: &str = "parser-owned-resolution-v1";
+
+/// The source authority, re-exported so the facade reaches it through this crate and the
+/// authority chain stays linear: `sysml_source` has exactly one dependant.
+pub use sysml_source as source;
 mod traceability;
 mod type_query;
 mod verification;
@@ -112,13 +124,8 @@ pub struct BuildMeasurements {
     pub resolution: std::time::Duration,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum SourceKind {
-    Workspace,
-    StandardLibrary,
-    Library,
-    External,
-}
+/// Provenance of an admitted source. Defined by the source authority; one enum everywhere.
+pub use sysml_source::SourceKind;
 
 /// One admitted document whose settled semantic dependencies reach a changed document.
 ///
@@ -149,10 +156,31 @@ pub struct ElementSearch {
     pub source: ElementSource,
 }
 
+/// What a source was admitted as: text the build parses itself, or a tree already parsed by the
+/// syntax authority. Hosts admit handles so the editor's parse and the build's parse are one;
+/// stateless callers (benchmarks, fuzzing, tests) may still admit text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum SourcePayload {
+    Text(String),
+    Parsed(syntax::ParsedSource),
+    /// An admitted document the build parses through the syntax authority's memo.
+    Pending(sysml_source::SourceDocument),
+}
+
+impl SourcePayload {
+    fn byte_len(&self) -> u64 {
+        match self {
+            SourcePayload::Text(text) => text.len() as u64,
+            SourcePayload::Parsed(parsed) => parsed.source().len() as u64,
+            SourcePayload::Pending(document) => document.byte_len() as u64,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceInput {
     identity: Box<str>,
-    content: String,
+    payload: SourcePayload,
     kind: SourceKind,
     content_digest: ContentDigest,
 }
@@ -170,9 +198,35 @@ impl SourceInput {
         let content_digest = ContentDigest::of_bytes(content.as_bytes());
         Self {
             identity: identity.into(),
-            content,
+            payload: SourcePayload::Text(content),
             kind,
             content_digest,
+        }
+    }
+
+    /// Admit a document the build will parse through the syntax authority's memo. The identity
+    /// is known now; the tree is fetched (a memo hit, or one parse) when the request is built.
+    pub fn pending(identity: impl Into<Box<str>>, document: sysml_source::SourceDocument) -> Self {
+        Self {
+            identity: identity.into(),
+            content_digest: document.digest(),
+            kind: document.kind(),
+            payload: SourcePayload::Pending(document),
+        }
+    }
+
+    /// Admit a tree the syntax authority already parsed. The publication identity is the same as
+    /// admitting the text: the digest and byte length come from the handle.
+    pub fn from_parsed(
+        identity: impl Into<Box<str>>,
+        parsed: syntax::ParsedSource,
+        kind: SourceKind,
+    ) -> Self {
+        Self {
+            identity: identity.into(),
+            content_digest: parsed.digest(),
+            payload: SourcePayload::Parsed(parsed),
+            kind,
         }
     }
 }
@@ -358,6 +412,8 @@ pub struct BuildRequest {
     library: Option<std::sync::Arc<LibraryStratum>>,
     reported: Vec<Box<str>>,
     identity: PublicationIdentity,
+    /// The memo pending sources are parsed through; absent, they are parsed cold.
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
 }
 
 fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
@@ -366,7 +422,7 @@ fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
         path_hint: None,
         role: source_role(source.kind),
         content_digest: source.content_digest,
-        byte_len: source.content.len() as u64,
+        byte_len: source.payload.byte_len(),
         library_root_slot: None,
         relative_path: None,
     }
@@ -413,11 +469,20 @@ impl LibraryStratum {
 /// The sources are the library's own; a workspace document admitted here would become part of the
 /// stratum and be reused by every publication built against it.
 pub fn build_library_stratum(sources: Vec<SourceInput>) -> Result<LibraryStratum, BuildFailure> {
-    let request = BuildRequest::new(
+    build_library_stratum_with(sources, None)
+}
+
+/// [`build_library_stratum`] parsing pending sources through `syntax`'s memo.
+pub fn build_library_stratum_with(
+    sources: Vec<SourceInput>,
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
+) -> Result<LibraryStratum, BuildFailure> {
+    let mut request = BuildRequest::new(
         sources,
         ConstructionSchedule::Parallel,
         LIBRARY_STRATUM_CONTRACT,
     )?;
+    request.syntax = syntax;
     let manifest_entries = request.sources.iter().map(manifest_entry).collect();
     let identities = request
         .sources
@@ -470,7 +535,14 @@ impl BuildRequest {
                 evaluation_policy: EvaluationPolicy::default(),
                 reported_documents: Box::default(),
             },
+            syntax: None,
         })
+    }
+
+    /// Parse pending sources through `syntax`'s memo rather than cold.
+    pub fn with_syntax(mut self, syntax: std::sync::Arc<syntax::SyntaxAuthority>) -> Self {
+        self.syntax = Some(syntax);
+        self
     }
 
     /// Builds against a library that has already been parsed and solved.
@@ -593,13 +665,15 @@ pub fn build_measured(
         ConstructionSchedule::Sequential => BuildSchedule::Sequential,
         ConstructionSchedule::Parallel => BuildSchedule::Parallel,
     };
+    let syntax = request.syntax;
     let sources = request
         .sources
         .into_iter()
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
             role: source_role(source.kind),
-            content: source.content,
+            payload: source.payload,
+            syntax: syntax.clone(),
         })
         .collect();
     let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(
@@ -8336,5 +8410,59 @@ package P {
             published.affected_documents("memory://a.sysml"),
             QueryOutcome::Recovered(_)
         ));
+    }
+}
+
+#[cfg(test)]
+mod parsed_admission_tests {
+    use super::*;
+    use sysml_source::{SourceAuthority, SourceKind};
+
+    /// Admitting a parsed handle and admitting its text are the same publication: same identity,
+    /// same manifest, same model digest. The examples corpus is the evidence.
+    #[test]
+    fn parsed_and_text_admission_publish_the_same_identity_over_the_examples() {
+        let examples = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples");
+        let documents = SourceAuthority::new()
+            .list(&[examples], SourceKind::Workspace)
+            .expect("examples corpus")
+            .documents;
+        assert!(documents.len() > 5, "examples corpus present");
+        let authority = syntax::SyntaxAuthority::new();
+
+        let text = documents
+            .iter()
+            .map(|document| {
+                SourceInput::new(
+                    document.uri().as_str(),
+                    document.content().to_owned(),
+                    document.kind(),
+                )
+            })
+            .collect();
+        let parsed = documents
+            .iter()
+            .map(|document| {
+                SourceInput::from_parsed(
+                    document.uri().as_str(),
+                    authority.parse(document),
+                    document.kind(),
+                )
+            })
+            .collect();
+
+        let from_text = BuildRequest::new(text, ConstructionSchedule::Parallel, "test").unwrap();
+        let from_parsed =
+            BuildRequest::new(parsed, ConstructionSchedule::Parallel, "test").unwrap();
+        assert_eq!(from_text.identity(), from_parsed.identity());
+
+        let (text_model, _) = build_measured(from_text).unwrap();
+        let (parsed_model, parsed_timing) = build_measured(from_parsed).unwrap();
+        assert_eq!(text_model.identity(), parsed_model.identity());
+        assert!(
+            parsed_timing.parse < std::time::Duration::from_millis(5),
+            "handles are admitted without a parse: {:?}",
+            parsed_timing.parse
+        );
     }
 }

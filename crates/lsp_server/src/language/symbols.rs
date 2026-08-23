@@ -5,7 +5,7 @@ use crate::common::text_span::to_lsp_range;
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
-use sysml_resolution::syntax::SyntaxDocument;
+use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{
     DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
 };
@@ -61,7 +61,7 @@ fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
 }
 
 /// Collects document symbols (outline) from the AST.
-pub fn collect_document_symbols(root: &SyntaxDocument) -> Vec<DocumentSymbol> {
+pub fn collect_document_symbols(root: &ParsedSource) -> Vec<DocumentSymbol> {
     ls_document_symbols(root)
         .into_iter()
         .map(map_outline_symbol)
@@ -69,7 +69,7 @@ pub fn collect_document_symbols(root: &SyntaxDocument) -> Vec<DocumentSymbol> {
 }
 
 /// Collects folding ranges from the AST.
-pub fn collect_folding_ranges(root: &SyntaxDocument) -> Vec<FoldingRange> {
+pub fn collect_folding_ranges(root: &ParsedSource) -> Vec<FoldingRange> {
     ls_folding_ranges(root)
         .into_iter()
         .map(|range| FoldingRange {
@@ -107,7 +107,7 @@ pub struct SymbolEntry {
 /// Built from the published outline rather than a private AST walk: the outline already names
 /// each declaration and its authored keyword, which is exactly what this reported.
 #[cfg(test)]
-pub fn collect_named_elements(document: &SyntaxDocument) -> Vec<(String, String)> {
+pub fn collect_named_elements(document: &ParsedSource) -> Vec<(String, String)> {
     fn push(node: &language_service::OutlineSymbol, out: &mut Vec<(String, String)>) {
         if !node.name.is_empty() {
             out.push((node.name.clone(), format!("{} '{}'", node.kind, node.name)));

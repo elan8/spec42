@@ -26,7 +26,7 @@ pub(crate) async fn did_open(
         let snap = handle.snapshot();
         match snap.index.get(&uri_norm) {
             None => "newFile",
-            Some(entry) if entry.content != text => "contentChanged",
+            Some(entry) if entry.content() != text => "contentChanged",
             _ => "alreadyIndexed",
         }
     };
@@ -132,15 +132,20 @@ pub(crate) async fn did_change(
     // keeps this off the async executor thread.
     let mut token = None;
     if let Some(edit) = edit {
-        let content = edit.content.clone();
+        let services = handle.snapshot().services.clone();
+        let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
         let parse_start = Instant::now();
-        let parse_outcome =
-            tokio::task::spawn_blocking(move || util::parse_for_editor(&content)).await;
+        let parse_outcome = tokio::task::spawn_blocking(move || {
+            crate::workspace::handle::PreparedDocumentEdit::admit_text(
+                admit_uri, &content, &services,
+            )
+        })
+        .await;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
-            Ok(parsed_result) => {
+            Ok((document, parsed)) => {
                 let (relink, parse_warnings) = handle
-                    .apply_parsed_document_update(edit, parsed_result, parse_time_ms)
+                    .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
                 token = relink;
@@ -216,7 +221,7 @@ pub(crate) fn watched_file_content_already_current(
         .snapshot()
         .index
         .get(uri)
-        .map(|entry| entry.content == content)
+        .map(|entry| entry.content() == content)
         .unwrap_or(false)
 }
 
@@ -241,38 +246,55 @@ pub(crate) async fn did_change_watched_files(
     for event in params.changes {
         let uri_norm = util::normalize_file_uri(&event.uri);
         if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
-            match event.uri.to_file_path() {
-                Ok(path) => match tokio::fs::read_to_string(&path).await {
-                    Ok(content) => {
-                        // The editor already sent `textDocument/didChange` for its own edits
-                        // (handled cheaply/incrementally); saving that same content to disk
-                        // then fires this notification too, with disk content that's already
-                        // byte-identical to what the server has tracked. Doing the full,
-                        // synchronous `refresh_document` (whole-graph relink + eager evaluate)
-                        // again in that case is pure waste — skip it. A genuinely external
-                        // edit (another editor, git checkout, a formatter) still has different
-                        // content and gets the full treatment below, unchanged.
-                        if watched_file_content_already_current(handle, &uri_norm, &content) {
-                            continue;
-                        }
-
-                        let refresh_start = Instant::now();
-                        let warning = handle
-                            .refresh_document(uri_norm.clone(), content)
-                            .await
-                            .unwrap_or_default();
-                        refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
-                        if let Some(message) = warning {
-                            runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
-                        }
-                        changed_or_created_uris.push(uri_norm.clone());
+            // The source authority reads the file: admission, line-ending policy and digest are
+            // its decisions, and the document is a memo candidate for the publication.
+            let admitted = match event.uri.to_file_path() {
+                Ok(path) => {
+                    let services = handle.snapshot().services.clone();
+                    Some(
+                        tokio::task::spawn_blocking(move || {
+                            services
+                                .source
+                                .admit_path(&path, sysml_query::source::SourceKind::Workspace)
+                                .map_err(|error| error.to_string())
+                        })
+                        .await
+                        .unwrap_or_else(|error| Err(error.to_string())),
+                    )
+                }
+                Err(_) => None,
+            };
+            match admitted {
+                Some(Ok(document)) => {
+                    let content = document.content().to_owned();
+                    // The editor already sent `textDocument/didChange` for its own edits
+                    // (handled cheaply/incrementally); saving that same content to disk
+                    // then fires this notification too, with disk content that's already
+                    // byte-identical to what the server has tracked. Doing the full,
+                    // synchronous `refresh_document` (whole-graph relink + eager evaluate)
+                    // again in that case is pure waste — skip it. A genuinely external
+                    // edit (another editor, git checkout, a formatter) still has different
+                    // content and gets the full treatment below, unchanged.
+                    if watched_file_content_already_current(handle, &uri_norm, &content) {
+                        continue;
                     }
-                    Err(error) => runtime_warnings.push(format!(
-                        "didChangeWatchedFiles: failed to read changed file {}: {}",
-                        uri_norm, error
-                    )),
-                },
-                Err(_) => runtime_warnings.push(format!(
+
+                    let refresh_start = Instant::now();
+                    let warning = handle
+                        .refresh_document(uri_norm.clone(), content)
+                        .await
+                        .unwrap_or_default();
+                    refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
+                    if let Some(message) = warning {
+                        runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
+                    }
+                    changed_or_created_uris.push(uri_norm.clone());
+                }
+                Some(Err(error)) => runtime_warnings.push(format!(
+                    "didChangeWatchedFiles: failed to read changed file {}: {}",
+                    uri_norm, error
+                )),
+                None => runtime_warnings.push(format!(
                     "didChangeWatchedFiles: ignored non-file URI {}",
                     uri_norm
                 )),
@@ -363,8 +385,9 @@ pub(crate) async fn did_change_configuration(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
+        let services = handle.snapshot().services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse, None)
+            parse_scanned_entries(entries, should_parallel_parse, &services)
         })
         .await
         .unwrap_or_default();

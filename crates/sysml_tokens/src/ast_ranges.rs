@@ -5,7 +5,7 @@
 //! presentation policy, and that is this crate's business -- so the mapping from role to token
 //! index lives here and nowhere else.
 
-use sysml_resolution::syntax::{semantic_token_roles, SyntaxDocument, SyntaxRange, SyntaxRole};
+use sysml_query::syntax::{ParsedSource, SyntaxRange, SyntaxRole};
 
 use crate::types::*;
 
@@ -42,8 +42,9 @@ fn token_index(role: SyntaxRole) -> u32 {
 }
 
 /// AST-driven semantic token ranges for a document the authority already parsed.
-pub fn ast_semantic_ranges(document: &SyntaxDocument, source: &str) -> Vec<(SourceRange, u32)> {
-    semantic_token_roles(document, source)
+pub fn ast_semantic_ranges(document: &ParsedSource, _source: &str) -> Vec<(SourceRange, u32)> {
+    document
+        .token_roles()
         .into_iter()
         .map(|(range, role)| (range.into(), token_index(role)))
         .collect()

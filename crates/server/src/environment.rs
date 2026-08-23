@@ -10,12 +10,12 @@ use crate::stdlib::{
     StandardLibraryStatus,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
-use workspace::catalog::{HostLibraryRequest, KparLibraryComponent};
-use workspace::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
+use library_catalog::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
+use library_catalog::{HostLibraryRequest, KparLibraryComponent};
 use workspace::{EngineBuilder, Spec42Engine};
 
 #[cfg(test)]
-use workspace::catalog::resolve_stdlib_component_for_test;
+use library_catalog::catalog::resolve_stdlib_component_for_test;
 
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct ConfigFile {

@@ -2,18 +2,15 @@
 
 use std::collections::HashSet;
 
-use sysml_source::SysmlDocument;
-use url::Url;
+use sysml_query::source::{SourceDocument, Url};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
-
-use super::build::enrich_document_hashes;
 
 /// Added, changed, and removed logical documents applied on top of a prior snapshot.
 #[derive(Debug, Clone, Default)]
 pub struct DocumentChanges {
-    pub added: Vec<SysmlDocument>,
-    pub changed: Vec<SysmlDocument>,
+    pub added: Vec<SourceDocument>,
+    pub changed: Vec<SourceDocument>,
     pub removed: Vec<Url>,
 }
 
@@ -22,12 +19,12 @@ impl DocumentChanges {
         Self::default()
     }
 
-    pub fn with_added(mut self, documents: Vec<SysmlDocument>) -> Self {
+    pub fn with_added(mut self, documents: Vec<SourceDocument>) -> Self {
         self.added = documents;
         self
     }
 
-    pub fn with_changed(mut self, documents: Vec<SysmlDocument>) -> Self {
+    pub fn with_changed(mut self, documents: Vec<SourceDocument>) -> Self {
         self.changed = documents;
         self
     }
@@ -38,7 +35,7 @@ impl DocumentChanges {
     }
 
     /// Replace one workspace document by URI (convenience for single-save editor flows).
-    pub fn replace(mut self, document: SysmlDocument) -> Self {
+    pub fn replace(mut self, document: SourceDocument) -> Self {
         self.changed = vec![document];
         self
     }
@@ -49,7 +46,7 @@ impl DocumentChanges {
             .added
             .iter()
             .chain(self.changed.iter())
-            .map(|doc| doc.uri.to_string())
+            .map(|doc| doc.uri().to_string())
             .chain(self.removed.iter().map(|uri| uri.to_string()))
         {
             if !seen.insert(uri.clone()) {
@@ -64,29 +61,26 @@ impl DocumentChanges {
 
 /// Merge logical document changes onto a prior document set.
 pub fn apply_document_changes(
-    previous: &[SysmlDocument],
+    previous: &[SourceDocument],
     changes: &DocumentChanges,
-) -> WorkspaceResult<Vec<SysmlDocument>> {
+) -> WorkspaceResult<Vec<SourceDocument>> {
     changes.validate()?;
 
     let removed: HashSet<String> = changes.removed.iter().map(|uri| uri.to_string()).collect();
     let changed: HashSet<String> = changes
         .changed
         .iter()
-        .map(|doc| doc.uri.to_string())
+        .map(|doc| doc.uri().to_string())
         .collect();
 
-    let mut documents: Vec<SysmlDocument> = previous
+    let mut documents: Vec<SourceDocument> = previous
         .iter()
-        .filter(|doc| !removed.contains(&doc.uri.to_string()))
-        .filter(|doc| !changed.contains(&doc.uri.to_string()))
+        .filter(|doc| !removed.contains(&doc.uri().to_string()))
+        .filter(|doc| !changed.contains(&doc.uri().to_string()))
         .cloned()
         .collect();
 
     documents.extend(changes.changed.clone());
     documents.extend(changes.added.clone());
-
-    let mut enriched = documents;
-    enrich_document_hashes(&mut enriched);
-    Ok(enriched)
+    Ok(documents)
 }

@@ -1,9 +1,7 @@
 # Upstream sysml-v2-parser gaps
 
 This is the active record of information the parser must preserve or distinguish before spec42 can
-implement the corresponding semantic or syntax-fidelity behavior without guessing. It also records
-the separate, downstream migration required to delete `spec42-sysml-parser`; the two categories must
-not be conflated.
+implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
 `lukewilliamboswell/sysml-v2-parser@f52100fd71b5950fba6a8e9ba2760f1a1887ce34`. Every gap below was
@@ -46,25 +44,6 @@ upstream, not yet lowered here".
   spec42 owning-layer test proving that no source-text reconstruction remains.
 - Closing a gap requires re-verifying it against the newly pinned full commit and removing the entry
   from this active plan. Git history, not a completed section here, records the old gap.
-
-## Parser authority
-
-`crates/sysml_resolution` is the only crate that may name the parser, because it is the one that
-lowers the AST to the semantic graph. Every other crate reaches syntax through
-`sysml_resolution::syntax`, which returns plain data -- ranges, roles, outline nodes, closure
-targets, an opaque `SyntaxDocument` handle. A crate with no parser dependency therefore cannot
-hold, cache, serialize, or walk a `ParsedDocument`, and breaking that is a compile error rather
-than a review comment.
-
-`crates/source_identity/tests/parser_authority.rs` enforces it in four rules: the root workspace
-owns the pin as a bare 40-character git revision; only `crates/sysml_resolution/Cargo.toml` may
-mention the parser, and only as `workspace = true`; no manifest may reintroduce a repository-local
-facade via a `path =` alias; and `Cargo.lock` must resolve exactly one `sysml-v2-parser`, from git,
-with no registry checksum. It lives in `source_identity` because that crate has no parser
-dependency and never will -- a guard the guarded thing could disable is not a guard.
-
-The former `crates/sysml_parser` facade, which held a crates.io 0.54 copy and the pinned revision
-apart, is deleted. Git history records that migration; it is not pending work.
 
 ## Open semantic grammar and provenance gaps
 

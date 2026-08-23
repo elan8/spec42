@@ -7,8 +7,8 @@ use tracing::info;
 
 use crate::analysis::diagnostics_core;
 use crate::common::util;
+use sysml_query::publication::PublicationToken;
 use sysml_query::resolved_slice::PublishedModel;
-use workspace::PublicationToken;
 
 use crate::workspace::state::supports_semantic_queries;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
@@ -64,8 +64,7 @@ pub(crate) async fn publish_document_diagnostics(
     // after a newer one and leave the editor showing diagnostics for text the author has replaced.
     let publication = snap.session.publication();
     let diagnostics =
-        collect_diagnostics_for_document(Some(snap.published_model.clone().into_model()), &uri)
-            .await;
+        collect_diagnostics_for_document(Some(Arc::clone(snap.session.current())), &uri).await;
     if !publish_if_current(client, handle, publication, uri.clone(), diagnostics).await {
         if perf_logging_enabled(runtime_config) {
             info!(
@@ -175,7 +174,7 @@ pub(crate) async fn publish_workspace_diagnostics(
     let publication = snap.session.publication();
     let mut join_set = tokio::task::JoinSet::new();
     for uri in docs {
-        let model = Some(snap.published_model.clone().into_model());
+        let model = Some(Arc::clone(snap.session.current()));
         let client = client.clone();
         let handle = handle.clone();
         join_set.spawn(async move {
@@ -249,7 +248,10 @@ mod tests {
             .expect("actor mutate should not panic");
 
         let snap = handle.snapshot();
-        assert_eq!(snap.session.lifecycle(), workspace::SessionLifecycle::Ready);
+        assert_eq!(
+            snap.session.lifecycle(),
+            sysml_query::publication::SessionLifecycle::Ready
+        );
 
         // A concurrent edit to some other document schedules a relink, flipping the *live*
         // session to Reindexing. Diagnostics for a document diagnosed against `snap` must not
@@ -261,12 +263,12 @@ mod tests {
 
         assert_eq!(
             handle.snapshot().session.lifecycle(),
-            workspace::SessionLifecycle::Reindexing,
+            sysml_query::publication::SessionLifecycle::Reindexing,
             "sanity check: the live session did move on"
         );
         assert_eq!(
             snap.session.lifecycle(),
-            workspace::SessionLifecycle::Ready,
+            sysml_query::publication::SessionLifecycle::Ready,
             "a snapshot captured before a concurrent relink must stay Ready — proving it's \
              immune to a later, independent read observing Reindexing"
         );

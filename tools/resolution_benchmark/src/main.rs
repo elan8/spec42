@@ -20,8 +20,8 @@ use std::time::{Duration, Instant};
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sysml_query::resolved_slice::{
-    build_measured, BuildMeasurements, BuildRequest, ConstructionStrategy, PublicationCompleteness,
-    PublishedModel, QueryOutcome, SourceDocument as QuerySourceDocument, SourceKind,
+    build_measured, AdmittedSource as QuerySourceDocument, BuildMeasurements, BuildRequest,
+    ConstructionStrategy, PublicationCompleteness, PublishedModel, QueryOutcome, SourceKind,
     SpecializationScope, SymbolIdentity, TextPosition,
 };
 

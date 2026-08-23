@@ -1,24 +1,66 @@
 use crate::common::util;
 use crate::workspace::library_search;
-use crate::workspace::parse_cache;
-use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
+use crate::workspace::state::{DocumentStore, IndexEntry, ScanSummary};
 use rayon::prelude::*;
-use std::path::Path;
 use std::time::Instant;
-use sysml_resolution::syntax::SyntaxDocument;
+use sysml_query::source::{SourceDocument, SourceKind};
+use sysml_query::syntax::ParsedSource;
+use sysml_query::Services;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
 }
 
+/// Walks the given roots for SysML sources through the source service.
+///
+/// Ignore rules (`.gitignore` and friends) are honoured by the provider, so a project's own
+/// `target/` or `node_modules/` is not indexed. Disk content arrives already normalised to LF,
+/// which is what the editor sends on `didOpen`, so a CRLF file does not look "changed" when
+/// opened. Counts are kept for the startup log.
+pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSummary) {
+    use sysml_query::source::{FilesystemProvider, SourceError, SourceKind, SourceService};
+
+    let mut summary = ScanSummary::default();
+    let mut paths = Vec::new();
+    for root in roots {
+        match root.to_file_path() {
+            Ok(path) => paths.push(path),
+            Err(_) => summary.roots_skipped_non_file += 1,
+        }
+    }
+    let provider = FilesystemProvider::new(paths, SourceKind::Workspace);
+    let report = match SourceService::new().load(&provider) {
+        Ok(report) => report,
+        Err(error) => {
+            tracing::warn!(%error, "workspace scan failed");
+            return (Vec::new(), summary);
+        }
+    };
+    summary.roots_scanned = report.roots_scanned;
+    summary.roots_skipped_non_file += report.roots_skipped;
+    summary.candidate_files = report.candidate_files;
+    summary.files_loaded = report.documents.len();
+    for skipped in &report.skipped {
+        match skipped.error {
+            SourceError::InvalidUri { .. } => summary.uri_failures += 1,
+            _ => summary.read_failures += 1,
+        }
+    }
+    let out = report
+        .documents
+        .into_iter()
+        .map(|document| (document.uri().clone(), document.content().to_owned()))
+        .collect();
+    (out, summary)
+}
+
 #[derive(Debug)]
 pub(crate) struct ParsedScanEntry {
     pub(crate) uri: Url,
-    pub(crate) content: String,
-    pub(crate) parsed: Option<SyntaxDocument>,
+    pub(crate) document: SourceDocument,
+    pub(crate) parsed: ParsedSource,
     pub(crate) parse_errors: Vec<String>,
-    pub(crate) parse_metadata: ParseMetadata,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -55,74 +97,49 @@ fn warning_from_parse_errors(
     }
 }
 
-fn parse_scanned_entry(uri: Url, content: String, cache_dir: Option<&Path>) -> ParsedScanEntry {
-    // Try cache before parsing.
-    if let Some(dir) = cache_dir {
-        let hash = parse_cache::content_hash(content.as_bytes());
-        if let Some(root) = parse_cache::load(dir, &hash) {
-            tracing::debug!(uri = %uri, "parse cache hit");
-            return ParsedScanEntry {
-                uri,
-                content,
-                parsed: Some(root),
-                parse_errors: vec![],
-                parse_metadata: ParseMetadata { parse_cached: true },
-            };
-        }
-        tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
-        // Cache miss: parse normally then store.
-        let entry = parse_scanned_entry_cold(uri, content);
-        if let Some(root) = &entry.parsed {
-            parse_cache::store(dir, &hash, root);
-        }
-        return entry;
-    }
-    parse_scanned_entry_cold(uri, content)
-}
-
-fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
-    let parse_start = Instant::now();
-    let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        util::parse_for_editor(&content)
-    }));
-    let _parse_time_ms = elapsed_ms(parse_start);
-    let parser_panicked = parsed_result.is_err();
-    let (parsed, mut parse_errors) = match parsed_result {
-        Ok(result) => {
-            let errs = result
-                .diagnostics
-                .iter()
-                .take(5)
-                .map(|e| {
-                    let loc = e
-                        .range()
-                        .map(|range| format!("{}:{}", range.start_line, range.start_character))
-                        .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
-                    format!("{loc} {}", e.message)
-                })
-                .collect::<Vec<_>>();
-            (Some(result.document), errs)
-        }
-        Err(_) => (None, util::parse_failure_diagnostics(&content, 5)),
-    };
-    if parser_panicked {
-        parse_errors.push("parser panicked while parsing scanned workspace file".to_string());
-    }
+fn parse_scanned_entry(uri: Url, content: String, services: &Services) -> ParsedScanEntry {
+    // The syntax service captures a parser panic itself and reports it as a diagnostic over an
+    // empty tree, so a scanned file always yields a document. Provenance is decided at
+    // publication time from the configured roots; admission here is as workspace text.
+    let document = services
+        .source
+        .admit_url(uri.clone(), &content, SourceKind::Workspace);
+    let parsed = services.syntax.parse(&document);
+    let parse_errors = util::parse_failure_diagnostics(&parsed, 5);
     ParsedScanEntry {
         uri,
-        content,
+        document,
         parsed,
         parse_errors,
-        parse_metadata: ParseMetadata {
-            parse_cached: false,
-        },
     }
+}
+
+/// Scan entries for documents the source authority already admitted (the library closure).
+pub(crate) fn parse_scanned_documents(
+    documents: Vec<SourceDocument>,
+    parallel_enabled: bool,
+    services: &Services,
+) -> Vec<ParsedScanEntry> {
+    let entry = |document: SourceDocument| {
+        let parsed = services.syntax.parse(&document);
+        let parse_errors = util::parse_failure_diagnostics(&parsed, 5);
+        ParsedScanEntry {
+            uri: document.uri().clone(),
+            document,
+            parsed,
+            parse_errors,
+        }
+    };
+    if !parallel_enabled || documents.len() < 2 {
+        return documents.into_iter().map(entry).collect();
+    }
+    documents.into_par_iter().map(entry).collect()
 }
 
 pub(crate) fn parse_scanned_entries(
     entries: Vec<(Url, String)>,
     parallel_enabled: bool,
-    cache_dir: Option<std::path::PathBuf>,
+    services: &Services,
 ) -> Vec<ParsedScanEntry> {
     if entries.is_empty() {
         return Vec::new();
@@ -131,7 +148,7 @@ pub(crate) fn parse_scanned_entries(
     if !parallel_enabled || entries.len() < 2 {
         return entries
             .into_iter()
-            .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
+            .map(|(uri, content)| parse_scanned_entry(uri, content, services))
             .collect();
     }
 
@@ -139,7 +156,7 @@ pub(crate) fn parse_scanned_entries(
     // the original order regardless of which worker finishes first.
     entries
         .into_par_iter()
-        .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
+        .map(|(uri, content)| parse_scanned_entry(uri, content, services))
         .collect()
 }
 
@@ -167,9 +184,8 @@ fn refresh_symbols_for_uri(state: &mut impl DocumentStore, uri: &Url) {
 pub(crate) fn store_parsed_document_text(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
-    text: String,
-    parsed: Option<SyntaxDocument>,
-    parse_metadata: ParseMetadata,
+    document: SourceDocument,
+    parsed: ParsedSource,
     parse_errors: &[String],
     diagnostic_count: usize,
     context: &str,
@@ -178,9 +194,8 @@ pub(crate) fn store_parsed_document_text(
     state.index_mut().insert(
         uri_norm.clone(),
         IndexEntry {
-            content: text,
+            document,
             parsed,
-            parse_metadata,
             admitted_to_publication: true,
         },
     );
@@ -193,23 +208,26 @@ pub(crate) fn store_document_text(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parsed_result = util::parse_for_editor(&text);
-    let parse_errors = parsed_result
-        .diagnostics
+    let document =
+        state
+            .services()
+            .source
+            .admit_url(uri_norm.clone(), &text, SourceKind::Workspace);
+    let parsed = state.services().syntax.parse(&document);
+    let parse_errors = parsed
+        .diagnostics()
         .iter()
         .take(5)
         .map(|e| e.message.clone())
         .collect::<Vec<_>>();
+    let diagnostic_count = parsed.diagnostics().len();
     store_parsed_document_text(
         state,
         uri_norm,
-        text,
-        Some(parsed_result.document),
-        ParseMetadata {
-            parse_cached: false,
-        },
+        document,
+        parsed,
         &parse_errors,
-        parsed_result.diagnostics.len(),
+        diagnostic_count,
         "store_document_text",
         true,
     )
@@ -223,23 +241,26 @@ pub(crate) fn store_document_text_fast(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parsed_result = util::parse_for_editor(&text);
-    let parse_errors = parsed_result
-        .diagnostics
+    let document =
+        state
+            .services()
+            .source
+            .admit_url(uri_norm.clone(), &text, SourceKind::Workspace);
+    let parsed = state.services().syntax.parse(&document);
+    let parse_errors = parsed
+        .diagnostics()
         .iter()
         .take(5)
         .map(|e| e.message.clone())
         .collect::<Vec<_>>();
+    let diagnostic_count = parsed.diagnostics().len();
     store_parsed_document_text(
         state,
         uri_norm,
-        text,
-        Some(parsed_result.document),
-        ParseMetadata {
-            parse_cached: false,
-        },
+        document,
+        parsed,
         &parse_errors,
-        parsed_result.diagnostics.len(),
+        diagnostic_count,
         "store_document_text_fast",
         false,
     )
@@ -263,9 +284,8 @@ pub(crate) fn ingest_parsed_scan_entries(
         let warning = store_parsed_document_text(
             state,
             &uri_norm,
-            entry.content,
+            entry.document,
             entry.parsed,
-            entry.parse_metadata,
             &entry.parse_errors,
             entry.parse_errors.len(),
             "workspace_scan",
@@ -288,9 +308,8 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
         state.index_mut().insert(
             uri_norm.clone(),
             IndexEntry {
-                content: entry.content,
+                document: entry.document,
                 parsed: entry.parsed,
-                parse_metadata: entry.parse_metadata,
                 admitted_to_publication: true,
             },
         );

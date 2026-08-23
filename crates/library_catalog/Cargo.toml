@@ -1,0 +1,30 @@
+[package]
+name = "library_catalog"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Library provisioning: bundled and managed standard/domain libraries, their configuration and data directories, resolved to library roots"
+build = "build.rs"
+
+[features]
+default = ["embed-stdlib", "embed-kpar-libraries"]
+embed-stdlib = []
+embed-kpar-libraries = []
+
+[build-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+kpar = { path = "../kpar" }
+
+[dependencies]
+kpar = { path = "../kpar" }
+sysml_query = { path = "../sysml_query" }
+tempfile = "3"
+serde = { workspace = true }
+toml = "0.8"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+directories = "5"
+walkdir = "2"

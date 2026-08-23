@@ -19,8 +19,6 @@ spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = ".
 generator_api = { path = "../../crates/generator_api" }
 generator_host = { path = "../../crates/generator_host" }
 sysml_query = { path = "../../crates/sysml_query" }
-sysml_source = { path = "../../crates/sysml_source" }
-semantic_publication.workspace = true
 
 [dev-dependencies]
 tempfile = "3"

@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Spec42 now has a sole-authority pipeline: the parser is depended on only by `sysml_resolution`,
+  `sysml_resolution` only by `sysml_query`, and `sysml_source` only by `sysml_resolution`; every
+  consumer works with the facade's services and nothing else.** `design.md` at the repository root
+  states the architecture: a source authority (`sysml_source`: admission, URI and line-ending
+  policy, providers, digests), a semantic authority (`sysml_resolution`: the one parser call and
+  its memo, lowering, resolution, library closure, publication and its session lifecycle), and the
+  `sysml_query` facade with `source`, `syntax`, `library` and `publication` services obtained from
+  one `Services` per host. A source revision is now parsed once — the editor's syntax queries and
+  the semantic build share one memoised tree — and the editor host's index holds reference-counted
+  documents and trees, so its actor's copy-on-write clone on every mutation no longer copies every
+  file's text and tree. `semantic_publication` and `workspace_session` are retired
+  (`session_actor` is the generic actor that remains); `workspace` is split into the
+  `library_catalog` provisioning crate and a batch host. The on-disk parse cache and the unwired
+  content-addressed cache substrate are deleted: the bundled standard library parses in
+  milliseconds in parallel, and a disk tier may return only with a benchmark showing it beats
+  recomputation. Enforcement: three `cargo deny` bans, std-only manifest and lockfile guards in
+  `source_identity`, exact dependency pins in `architecture.rs`, and a new
+  `syntax_authority.rs` guard that rejects retired helpers, shadowed service queries, caches and
+  SysML file reads outside the authorities, and string probes for SysML syntax; the heuristics it
+  still exempts are recorded with their retiring queries in `planning/SYNTAX_FOLLOW_UPS.md`.
+- **Library closure is resolved from parsed facts rather than text, with visible differences.**
+  A `SysML::` mention in a comment no longer admits the `SysML` package (authored imports and
+  typing references do); `import sysml::*` admits every package under a standard-library root by
+  provenance rather than by a `sysml.library` path suffix; a unit catalogue is recognised by an
+  attribute with a short name typed by a `…Unit` anywhere in the file, including at package level;
+  a malformed library file still contributes the packages and imports it did declare.
+- **Semantic-token highlighting no longer paints `provides`, `requires` or `value` as keywords.**
+  The lexer's keyword table was a second copy that included three words OMG 8.2.2.1.2 does not
+  reserve; both tables are now the facade's single 128-word vocabulary.
+- **Every publication now admits the standard-library packages its implied specializations
+  anchor into.** The library closure seeds the root packages of the resolver's generated library
+  rules (`Parts`, `Items`, `States`, `Views`, `Requirements`, …) from standard-library roots, so
+  `missing_library_anchor` no longer appears for models that never import them — including a
+  workspace that declares its own `package Views`, since anchors resolve by standard-library
+  role, not by bare name. `crates/server/tests/examples_are_clean.rs` now asserts every
+  `examples/` workspace validates with no errors, warnings or infos.
+- **Line endings are normalised to LF before a document is digested, on every path.** The
+  editor already sent LF text; batch snapshots of CRLF files now carry the same digests the
+  editor would, so `document_digests` in persisted artifact metadata change for CRLF files.
+
 - **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
   effective feature membership.** The four SysML collections read the specialization closure that
   `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*

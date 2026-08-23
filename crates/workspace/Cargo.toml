@@ -4,51 +4,22 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Protocol-neutral workspace build, snapshot, comparison and library management"
-build = "build.rs"
-
-[features]
-default = ["embed-stdlib", "embed-kpar-libraries"]
-embed-stdlib = []
-embed-kpar-libraries = []
-
-[build-dependencies]
-serde = { workspace = true }
-serde_json = { workspace = true }
-sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-kpar = { path = "../kpar" }
+description = "Batch host: engine, directory snapshots, validation, comparison and schema versions over the typed facade"
 
 [dependencies]
-kpar = { path = "../kpar" }
+library_catalog = { path = "../library_catalog" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
-sysml_source = { path = "../sysml_source" }
-source_identity = { path = "../source_identity" }
 language_service = { path = "../language_service" }
-semantic_publication.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-sha2 = "0.10"
-toml = "0.8"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-directories = "5"
-dirs = "5"
 url = "2"
-walkdir = "2"
-ignore = "0.4"
-sysml_resolution = { path = "../sysml_resolution" }
-petgraph = { workspace = true }
-tracing = "0.1"
-postcard = { workspace = true }
-rayon = "1.12"
 tempfile = "3"
-blake3 = { workspace = true }
-zstd = { workspace = true }
 
 [dev-dependencies]
-source_identity = { path = "../source_identity" }
+kpar = { path = "../kpar" }
+library_catalog = { path = "../library_catalog" }
 syn = { version = "2", features = ["full", "visit"] }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 
@@ -63,14 +34,6 @@ path = "tests/library_source_resolution.rs"
 [[test]]
 name = "artifact_metadata_serde"
 path = "tests/artifact_metadata_serde.rs"
-
-[[test]]
-name = "cache_store"
-path = "tests/cache_store.rs"
-
-[[test]]
-name = "cache_artifacts"
-path = "tests/cache_artifacts.rs"
 
 [[test]]
 name = "host_errors"

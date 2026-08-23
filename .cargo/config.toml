@@ -3,7 +3,7 @@
 # rustflags = ["-D", "warnings"]
 
 # Local dev: build against a sibling sysml-v2-parser checkout instead of the revision pinned in
-# the root Cargo.toml. See DEVELOPMENT.md "Parser Dependency Policy".
+# the root Cargo.toml. See DEVELOPMENT.md "Authority Pipeline Policy".
 #
 # The patch key must be the git URL, not `crates-io`. The workspace no longer depends on the
 # published crate at all, so a `[patch.crates-io]` entry would resolve nothing and silently leave

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use sysml_query::resolved_slice::TextPosition;
-use sysml_source::SysmlDocument;
+use sysml_query::source::SourceDocument;
 use url::Url;
 
 use crate::symbol::{symbol_entries_for_uri, SymbolEntry};
@@ -48,41 +48,39 @@ pub trait WorkspaceSnapshot {
 impl InMemoryWorkspace {
     /// Index documents against the exact immutable publication owned by the host.
     pub fn from_documents_and_publication(
-        documents: Vec<SysmlDocument>,
+        documents: Vec<SourceDocument>,
         published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
     ) -> Result<Self, String> {
         let mut documents_map = HashMap::new();
         let mut path_to_uri = HashMap::new();
 
         for document in &documents {
-            let path = document
-                .uri
+            let full_path = document
+                .uri()
                 .path()
                 .trim_start_matches('/')
                 .replace('\\', "/");
-            let path = document
-                .uri
+            let last_segment = document
+                .uri()
                 .path()
                 .split('/')
                 .next_back()
                 .map(str::to_string)
                 .filter(|segment| !segment.is_empty())
-                .unwrap_or_else(|| path.clone());
+                .unwrap_or(full_path);
+            // The logical path a host addresses this document by, when it gave one.
+            let path = document
+                .path_hint()
+                .map(str::to_owned)
+                .unwrap_or(last_segment);
 
-            // Prefer path_hint from original documents when available.
-            let path = documents
-                .iter()
-                .find(|doc| doc.uri == document.uri)
-                .and_then(|doc| doc.path_hint.clone())
-                .unwrap_or(path);
-
-            let uri = normalize_uri(&document.uri);
+            let uri = document.uri().clone();
             path_to_uri.insert(path.clone(), uri.clone());
             documents_map.insert(
                 uri,
                 DocumentEntry {
                     path,
-                    content: document.content.clone(),
+                    content: document.content().to_owned(),
                 },
             );
         }

@@ -1,23 +1,46 @@
 use crate::language::SymbolEntry;
+use session_actor::TracksRelink;
 use std::sync::Arc;
-use sysml_resolution::syntax::SyntaxDocument;
-use tower_lsp::lsp_types::Url;
-use workspace_session::{
-    PublishedModelSnapshot, RelinkToken, SemanticPublicationAuthority, TracksRelink,
+use sysml_query::publication::{
+    PublicationBuildFailure, PublicationSession, RelinkToken, SessionLifecycle,
 };
+use sysml_query::source::SourceDocument;
+use sysml_query::syntax::ParsedSource;
+use sysml_query::Services;
+use tower_lsp::lsp_types::Url;
 
-#[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct ParseMetadata {
-    pub(crate) parse_cached: bool,
-}
-
+/// One indexed document: its admitted source and the tree the syntax service parsed for it.
+///
+/// Both are reference-counted handles, so the actor's copy-on-write clone of the whole index
+/// on every mutation costs a refcount bump per entry, not a copy of every file's text and tree.
 #[derive(Debug, Clone)]
 pub(crate) struct IndexEntry {
-    pub(crate) content: String,
-    pub(crate) parsed: Option<SyntaxDocument>,
-    pub(crate) parse_metadata: ParseMetadata,
+    pub(crate) document: SourceDocument,
+    pub(crate) parsed: ParsedSource,
     /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
     pub(crate) admitted_to_publication: bool,
+}
+
+impl IndexEntry {
+    pub(crate) fn content(&self) -> &str {
+        self.document.content()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn for_test(uri: &Url, content: &str) -> Self {
+        let services = Services::default();
+        let document = services.source.admit_url(
+            uri.clone(),
+            content,
+            sysml_query::source::SourceKind::Workspace,
+        );
+        let parsed = services.syntax.parse(&document);
+        Self {
+            document,
+            parsed,
+            admitted_to_publication: true,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -32,7 +55,7 @@ pub(crate) struct RuntimeConfig {
 }
 
 /// The server's live workspace state — managed exclusively by a single
-/// `workspace_session::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
+/// `session_actor::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
 /// `Clone` is required by the actor's `Arc::make_mut` clone-on-write mutation strategy; readers
 /// only ever see an `Arc<ServerState>` snapshot, never a lock guard.
 #[derive(Clone)]
@@ -40,7 +63,10 @@ pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
     pub(crate) standard_library_paths: Vec<Url>,
-    pub(crate) session: workspace::WorkspaceSession,
+    /// The one set of services this host publishes through.
+    pub(crate) services: Services,
+    /// The publication lifecycle and the current immutable publication.
+    pub(crate) session: PublicationSession,
     /// Changes only when admitted semantic inputs/reporting change. Guards model mirroring from
     /// edits that race construction without treating search-only bookkeeping as semantic change.
     pub(crate) semantic_revision: u64,
@@ -54,53 +80,54 @@ pub(crate) struct ServerState {
     /// addition to the workspace's own, so an author editing a library file sees its diagnostics
     /// without every workspace inheriting the whole library's.
     pub(crate) open_in_editor: std::collections::BTreeSet<Url>,
-    /// Reader projection obtained only from the semantic publication authority.
-    pub(crate) published_model: PublishedModelSnapshot,
-    /// The single live owner of build/cache policy and atomic publication.
-    pub(crate) publication_authority: Arc<SemanticPublicationAuthority>,
     /// Last explicitly observed construction failure. The last good model remains readable.
-    pub(crate) publication_failure: Option<Arc<workspace::PublicationBuildFailure>>,
+    pub(crate) publication_failure: Option<Arc<PublicationBuildFailure>>,
 }
 
 impl Default for ServerState {
     fn default() -> Self {
-        Self::with_publication_coordinator(Arc::new(workspace::PublicationCoordinator::new()))
+        Self::new(Services::new())
     }
 }
 
 impl ServerState {
-    pub(crate) fn with_publication_coordinator(
-        coordinator: Arc<workspace::PublicationCoordinator>,
-    ) -> Self {
-        let initial = coordinator
-            .publish(&[], [])
-            .expect("an empty initial semantic publication must be constructible");
-        Self::with_initial_publication(coordinator, initial)
+    pub(crate) fn new(services: Services) -> Self {
+        let session = services.publication.session_empty();
+        Self::with_session(services, session)
     }
 
     pub(crate) fn with_initial_publication(
-        coordinator: Arc<workspace::PublicationCoordinator>,
+        services: Services,
         initial: Arc<sysml_query::resolved_slice::PublishedModel>,
     ) -> Self {
-        let authority = Arc::new(SemanticPublicationAuthority::new(coordinator, initial));
-        let published_model = authority.snapshot();
+        let session = services.publication.session_seeded(initial);
+        Self::with_session(services, session)
+    }
+
+    fn with_session(services: Services, session: PublicationSession) -> Self {
         Self {
             workspace_roots: Vec::new(),
             library_paths: Vec::new(),
             standard_library_paths: Vec::new(),
-            session: workspace::WorkspaceSession::new(),
+            services,
+            session,
             semantic_revision: 0,
             index: std::collections::HashMap::new(),
             symbol_table: Vec::new(),
             open_in_editor: std::collections::BTreeSet::new(),
-            published_model,
-            publication_authority: authority,
             publication_failure: None,
         }
+    }
+
+    /// The current immutable publication.
+    pub(crate) fn published_model(&self) -> &Arc<sysml_query::resolved_slice::PublishedModel> {
+        self.session.current()
     }
 }
 
 impl TracksRelink for ServerState {
+    type Token = RelinkToken;
+
     fn is_token_current(&self, token: &RelinkToken) -> bool {
         self.session.is_token_current(token)
     }
@@ -118,6 +145,8 @@ pub(crate) trait DocumentStore {
     fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry>;
     fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry>;
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
+    /// The services this store admits and parses through.
+    fn services(&self) -> &Services;
     /// Configured library roots: generic libraries first, then the standard library.
     fn library_roots(&self) -> (&[Url], &[Url]);
     /// Documents the editor has open, whose diagnostics are reported whatever their provenance.
@@ -135,7 +164,10 @@ impl DocumentStore for ServerState {
         &mut self.symbol_table
     }
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
-        Some(self.published_model.model())
+        Some(self.session.current())
+    }
+    fn services(&self) -> &Services {
+        &self.services
     }
     fn library_roots(&self) -> (&[Url], &[Url]) {
         (&self.library_paths, &self.standard_library_paths)
@@ -153,8 +185,8 @@ impl DocumentStore for ServerState {
 /// library stratum can be reused.
 pub(crate) fn publication_inputs(
     state: &impl DocumentStore,
-) -> (Vec<sysml_source::SysmlDocument>, Vec<Box<str>>) {
-    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+) -> (Vec<SourceDocument>, Vec<Box<str>>) {
+    use sysml_query::source::SourceKind;
 
     let (library_paths, standard_library_paths) = state.library_roots();
     let mut documents = Vec::new();
@@ -175,21 +207,14 @@ pub(crate) fn publication_inputs(
         if library && state.open_in_editor().contains(uri) {
             reported.push(uri.as_str().into());
         }
-        let source_kind = if standard {
-            SysmlDocumentSourceKind::StandardLibrary
+        let kind = if standard {
+            SourceKind::StandardLibrary
         } else if library {
-            SysmlDocumentSourceKind::Library
+            SourceKind::Library
         } else {
-            SysmlDocumentSourceKind::Workspace
+            SourceKind::Workspace
         };
-        documents.push(SysmlDocument {
-            uri: uri.clone(),
-            content: entry.content.clone(),
-            path_hint: None,
-            source_kind,
-            content_digest: None,
-            byte_size: None,
-        });
+        documents.push(entry.document.with_kind(kind));
     }
 
     // A failed rebuild must not replace the last coherent publication. Readers may continue using
@@ -199,18 +224,18 @@ pub(crate) fn publication_inputs(
 
 /// Replaces the symbol projection from the committed immutable publication.
 pub(crate) fn refresh_symbol_table_from_publication(state: &mut ServerState) {
-    let model = state.published_model.model();
+    let model = Arc::clone(state.session.current());
     let mut symbols = Vec::new();
     let mut uris = state.index.keys().cloned().collect::<Vec<_>>();
     uris.sort();
     for uri in uris {
-        symbols.extend(crate::language::symbol_entries_for_uri(model, &uri));
+        symbols.extend(crate::language::symbol_entries_for_uri(&model, &uri));
     }
     state.symbol_table = symbols;
 }
 
-pub(crate) fn supports_semantic_queries(lifecycle: workspace::SessionLifecycle) -> bool {
-    matches!(lifecycle, workspace::SessionLifecycle::Ready)
+pub(crate) fn supports_semantic_queries(lifecycle: SessionLifecycle) -> bool {
+    matches!(lifecycle, SessionLifecycle::Ready)
 }
 
 #[derive(Debug, Default)]
@@ -242,36 +267,29 @@ mod tests {
             ..ServerState::default()
         };
         for (uri, content) in [(library_uri, library), (workspace_uri, workspace)] {
-            state.index.insert(
-                uri,
-                IndexEntry {
-                    content: content.to_string(),
-                    parsed: None,
-                    parse_metadata: ParseMetadata::default(),
-                    admitted_to_publication: true,
-                },
-            );
+            let entry = IndexEntry::for_test(&uri, content);
+            state.index.insert(uri, entry);
         }
         state
     }
 
     async fn publish(state: &mut ServerState) {
+        use sysml_query::publication::{PublicationOutcome, SemanticBuild};
         let (documents, reported) = publication_inputs(state);
-        let build = state
-            .publication_authority
-            .begin_build(&documents, reported)
-            .await
+        let prepared = state
+            .services
+            .publication
+            .prepare(&documents, reported)
             .unwrap();
-        let result = state
-            .publication_authority
-            .finish_build(build.construct())
-            .await
-            .unwrap();
+        let token = state.session.begin_build(prepared.identity().clone());
+        let completion = state
+            .services
+            .publication
+            .construct(SemanticBuild::new(token, prepared));
         assert_eq!(
-            result.outcome,
-            workspace_session::SemanticPublicationOutcome::Published
+            completion.admit(&mut state.session),
+            PublicationOutcome::Published
         );
-        state.published_model = state.publication_authority.snapshot();
     }
 
     /// Without the configured libraries in the publication, every reference into them is
@@ -284,7 +302,7 @@ mod tests {
         );
         publish(&mut state).await;
 
-        let model = state.published_model.model();
+        let model = state.session.current();
         let symbols = match model.inspection().document_symbols("file:///model.sysml") {
             sysml_query::resolved_slice::QueryOutcome::Resolved(entries)
             | sysml_query::resolved_slice::QueryOutcome::Recovered(entries)
@@ -316,7 +334,7 @@ mod tests {
         );
         state.library_paths = std::mem::take(&mut state.standard_library_paths);
         publish(&mut state).await;
-        let model = state.published_model.clone().into_model();
+        let model = Arc::clone(state.session.current());
         let symbols = match model.inspection().document_symbols("file:///model.sysml") {
             sysml_query::resolved_slice::QueryOutcome::Resolved(symbols)
             | sysml_query::resolved_slice::QueryOutcome::Recovered(symbols)
@@ -351,7 +369,7 @@ mod tests {
         );
         publish(&mut state).await;
 
-        let model = state.published_model.model();
+        let model = state.session.current();
         let catalog = match model.diagrams().catalog() {
             sysml_query::resolved_slice::QueryOutcome::Resolved(catalog)
             | sysml_query::resolved_slice::QueryOutcome::Recovered(catalog)

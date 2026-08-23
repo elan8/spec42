@@ -22,8 +22,8 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri, position,
         ));
     };
-    let model = state.published_model.model();
-    let text = entry.content.clone();
+    let model = state.published_model();
+    let text = entry.content().to_owned();
     // Queried once: the response and the selection classification below are two readings of the
     // same settled answer, and asking twice would suggest they could differ.
     let at = crate::views::feature_inspector::details_at(model, &uri, position);
@@ -131,7 +131,7 @@ pub(crate) fn sysml_library_search_result(
         if !index_entry.admitted_to_publication {
             search_symbols.extend(
                 crate::workspace::library_search::recover_short_name_search_symbols(
-                    &index_entry.content,
+                    index_entry.content(),
                     uri,
                 )
                 .into_iter()
