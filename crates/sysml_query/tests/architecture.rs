@@ -643,7 +643,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "SyntaxDiagnostic::message",
     "SyntaxImport::target",
     "SyntaxOutlineNode::name",
-    "SyntaxUnitLiteral::unit",
 ];
 /// The count is asserted separately from the membership so a swap -- one field drained and another
 /// added in the same change -- cannot pass as a no-op.

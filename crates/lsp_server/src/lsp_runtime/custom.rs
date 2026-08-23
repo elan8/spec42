@@ -44,7 +44,7 @@ pub(crate) fn sysml_feature_inspector_result(
     {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
             kind: "unit".to_string(),
-            text: Some(literal.unit),
+            text: Some(literal.unit.to_string()),
             range: Some(range_to_dto(TextRange {
                 start: TextPosition {
                     line: literal.range.start_line,

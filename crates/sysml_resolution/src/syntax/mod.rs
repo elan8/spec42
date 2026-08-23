@@ -155,7 +155,7 @@ impl ParsedSource {
     /// The pinned grammar keeps no node for the unit suffix, so this is a lexical answer — but a
     /// lexical answer the authority owns, next to the fact that a source uses unit literals at
     /// all.
-    pub fn unit_literal_at(&self, line: u32, character: u32) -> Option<SyntaxUnitLiteral> {
+    pub fn unit_literal_at(&self, line: u32, character: u32) -> Option<SyntaxUnitLiteral<'_>> {
         cursor::unit_literal_at(self.source(), line, character)
     }
 

@@ -34,9 +34,9 @@ impl<'p> SyntaxToken<'p> {
 
 /// A value-with-unit literal such as `10 [kg]`: the unit expression, and where it is written.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SyntaxUnitLiteral {
-    /// The unit expression inside the brackets, trimmed.
-    pub unit: String,
+pub struct SyntaxUnitLiteral<'p> {
+    /// The unit expression inside the brackets, trimmed: a slice of the parsed source, not a copy.
+    pub unit: &'p str,
     /// The range of the unit expression itself, brackets excluded.
     pub range: SyntaxRange,
 }
@@ -103,11 +103,11 @@ fn covers(span: &SyntaxRange, line: u32, character: u32) -> bool {
         && (line < span.end_line || character < span.end_character)
 }
 
-pub(super) fn unit_literal_at(
-    source: &str,
+pub(super) fn unit_literal_at<'p>(
+    source: &'p str,
     line: u32,
     character: u32,
-) -> Option<SyntaxUnitLiteral> {
+) -> Option<SyntaxUnitLiteral<'p>> {
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
     let cursor = character as usize;
@@ -132,7 +132,8 @@ pub(super) fn unit_literal_at(
         }
     }
     let (open, close) = innermost?;
-    let inner: String = chars[open + 1..close].iter().collect();
+    let inner =
+        &line_text[char_to_byte(line_text, open + 1)..char_to_byte(line_text, close)];
     let leading = inner.chars().take_while(|ch| ch.is_whitespace()).count();
     let trailing = inner
         .chars()
@@ -144,7 +145,7 @@ pub(super) fn unit_literal_at(
         return None;
     }
     Some(SyntaxUnitLiteral {
-        unit: unit.to_string(),
+        unit,
         range: SyntaxRange {
             start_line: line,
             start_character: (open + 1 + leading) as u32,
