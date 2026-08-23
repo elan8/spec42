@@ -13,21 +13,22 @@ use super::{SyntaxRange, SyntaxRole};
 
 /// The token under a cursor: what it spells, where it sits, and what the grammar calls it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SyntaxToken {
+pub struct SyntaxToken<'p> {
     /// The token's extent, always within one line.
     pub range: SyntaxRange,
-    /// The token as authored, qualified-name separators included.
-    pub text: String,
+    /// The token as authored, qualified-name separators included: a slice of the parsed source,
+    /// not a copy.
+    pub text: &'p str,
     /// The role the grammar gives the span, when the parser classified one there.
     pub role: Option<SyntaxRole>,
     /// Whether the token spells a reserved keyword.
     pub is_keyword: bool,
 }
 
-impl SyntaxToken {
+impl<'p> SyntaxToken<'p> {
     /// The last segment of a qualified name — what a lookup by simple name asks for.
-    pub fn simple_name(&self) -> &str {
-        self.text.rsplit("::").next().unwrap_or(&self.text)
+    pub fn simple_name(&self) -> &'p str {
+        self.text.rsplit("::").next().unwrap_or(self.text)
     }
 }
 
@@ -44,12 +45,12 @@ fn continues_identifier(ch: char) -> bool {
     ch.is_alphanumeric() || ch == '_' || ch == ':' || ch == '>'
 }
 
-pub(super) fn token_at(
-    source: &str,
+pub(super) fn token_at<'p>(
+    source: &'p str,
     roles: &[(SyntaxRange, SyntaxRole)],
     line: u32,
     character: u32,
-) -> Option<SyntaxToken> {
+) -> Option<SyntaxToken<'p>> {
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
     let cursor = character as usize;
@@ -67,7 +68,9 @@ pub(super) fn token_at(
     if start >= end {
         return None;
     }
-    let text: String = chars[start..end].iter().collect();
+    // The cursor convention is character indices; a slice needs byte offsets into the same line,
+    // so the two are converted here rather than by copying the token out of the source.
+    let text = &line_text[char_to_byte(line_text, start)..char_to_byte(line_text, end)];
     let range = SyntaxRange {
         start_line: line,
         start_character: start as u32,
@@ -79,11 +82,18 @@ pub(super) fn token_at(
         .find(|(span, _)| covers(span, line, start as u32))
         .map(|(_, role)| *role);
     Some(SyntaxToken {
-        is_keyword: super::is_reserved_keyword(&text),
+        is_keyword: super::is_reserved_keyword(text),
         text,
         range,
         role,
     })
+}
+
+/// The byte offset of character index `index` in `text`, or the text's length past the end.
+fn char_to_byte(text: &str, index: usize) -> usize {
+    text.char_indices()
+        .nth(index)
+        .map_or(text.len(), |(offset, _)| offset)
 }
 
 fn covers(span: &SyntaxRange, line: u32, character: u32) -> bool {

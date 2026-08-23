@@ -146,7 +146,7 @@ impl ParsedSource {
     ///
     /// One rule for what continues an identifier, and one place that knows `::` is part of a
     /// qualified name — rather than a copy per host, each slightly different.
-    pub fn token_at(&self, line: u32, character: u32) -> Option<SyntaxToken> {
+    pub fn token_at(&self, line: u32, character: u32) -> Option<SyntaxToken<'_>> {
         cursor::token_at(self.source(), &self.token_roles(), line, character)
     }
 

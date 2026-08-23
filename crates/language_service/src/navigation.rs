@@ -18,9 +18,9 @@ pub fn hover_at_position(
     // The token under the cursor, and its simple name, from the syntax service: which characters
     // continue an identifier and where a qualified name divides are the grammar's rules, not a
     // rule each service restates.
-    let token = workspace
-        .parsed(&uri_norm)?
-        .token_at(position.line, position.character)?;
+    // The handle is held for as long as the token, which borrows its source text.
+    let parsed = workspace.parsed(&uri_norm)?;
+    let token = parsed.token_at(position.line, position.character)?;
     let lookup_name = token.simple_name().to_string();
     let range = Some(TextRange {
         start: TextPosition {

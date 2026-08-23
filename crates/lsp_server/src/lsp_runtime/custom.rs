@@ -62,7 +62,7 @@ pub(crate) fn sysml_feature_inspector_result(
     let Some(token) = entry.parsed.token_at(position.line, position.character) else {
         return Ok(response);
     };
-    let word = token.text.clone();
+    let word = token.text;
     let selection_range = TextRange {
         start: TextPosition {
             line: token.range.start_line,
@@ -73,14 +73,14 @@ pub(crate) fn sysml_feature_inspector_result(
             character: token.range.end_character,
         },
     };
-    response.selection.text = Some(word.clone());
+    response.selection.text = Some(word.to_string());
     response.selection.range = Some(range_to_dto(selection_range));
 
     if token.is_keyword {
         response.selection.kind = "keyword".to_string();
         response.language_help = language_service::keyword_help(&word).map(|help| {
             dto::SysmlFeatureInspectorLanguageHelpDto {
-                keyword: word,
+                keyword: word.to_string(),
                 description: help.description.to_string(),
                 syntax: help.syntax.map(str::to_string),
             }
