@@ -10,6 +10,15 @@
 //! handles; consumers cannot obtain a parser tree, the structural graph, resolver state, fact
 //! collections, or query-index storage. See `design.md` at the repository root.
 
+/// The version of the semantic vocabulary this build speaks.
+///
+/// Re-exported verbatim from `sysml_contract`, which owns it. Until now nothing outside the
+/// authority could name the contract version at all: a host that records which vocabulary an
+/// artefact was produced under had no value to record, and no test outside `sysml_resolution`
+/// asserted it. It is published here because the version of a contract is part of the contract,
+/// and because consumers reach the vocabulary only through this facade.
+pub use sysml_contract::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
+
 pub mod library;
 pub mod publication;
 pub mod resolved_slice;

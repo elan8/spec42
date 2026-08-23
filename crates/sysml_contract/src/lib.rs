@@ -10,3 +10,7 @@
 //! a deliberate, versioned contract change.
 
 #![forbid(unsafe_code)]
+
+mod version;
+
+pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};

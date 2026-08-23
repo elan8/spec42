@@ -32,7 +32,13 @@ mod specialization_query;
 pub mod syntax;
 
 /// The semantic contract version every resolved publication is recorded under.
-pub const RESOLVED_CONTRACT: &str = "parser-owned-resolution-v1";
+///
+/// The value is [`sysml_contract::SEMANTIC_CONTRACT_VERSION`] and is defined there: the crate that
+/// defines the vocabulary carries the version of that vocabulary, so this authority cannot bump
+/// the version its own answers are recorded under without editing the contract. This alias is the
+/// `&str` form the build request and the model writer still take; it is retired once those take
+/// the typed value.
+pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as_str();
 
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
