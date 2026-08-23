@@ -22,6 +22,7 @@ members = [
   "crates/session_actor",
   "tools/snapshot_tool",
   "tools/constraint_manifest",
+  "tools/query_bench",
   "tools/resolution_benchmark",
   "tools/semantic_benchmark",
 ]
