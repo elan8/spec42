@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `AuthoredUnit::authored` -- the unit token as written between the brackets -- is the first fact
   to carry the handle instead of a `Box<str>`; the hover edge reads the text through the
   publication. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the
-  owned-string inventory's *product* list in `architecture.rs` shrank from 15 entries to 14.
+  owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
 
 - **A qualified-reference candidate names its element by handle.**
   `QualifiedReferenceTarget::qualified_name` is gone. The caller supplied that name in the
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   publication's own storage. Consumers read it through the borrowed
   `PublishedResolution::qualified_name`. Rendering is unchanged, so snapshot output is
   byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
-  shrank from 16 entries to 15.
+  shrank by one entry.
 
 - **An element inspection names its element by handle; the qualified name is read from the
   publication.** `ElementInspection::qualified_name` is gone. It was a `Box<str>` copy of the
@@ -32,8 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it through the borrowed `PublishedModel::qualified_name` / `PublishedResolution::qualified_name`,
   which slices the settled blob, and the LSP and generator edges materialise an owned string only
   where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
-  Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
-  entries to 16.
+  Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
 - **Diagram scene ids are typed; relationships, edges and transitions carry no synthesised
   string.** `DiagramRelationship::semantic_id`, `DiagramEdge::semantic_id` and
   `DiagramStateTransition::semantic_id` were `Box<str>`s composed from an occurrence key and a
@@ -59,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `messageSource`/`messageTarget` for a sequence view, none of which any reference kind emits.
   Both are now written as what they always evaluated to -- an absent guard, and nothing required
   of a sequence view -- rather than as a lookup that quietly fails. Enforcement: the owned-string
-  inventory's product list in `architecture.rs` shrank from 15 entries to 14.
+  inventory's product list in `architecture.rs` shrank by one entry.
 
 - **A diagram catalog entry names its view by handle; the display name is read at the edge.**
   `DiagramViewCatalogEntry` no longer carries a `Box<str>` of the view usage's name. The catalog
@@ -69,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each consumer: `PublishedResolution::diagram_view_name` (facade: `diagrams().view_name`)
   applies it and borrows the result. Catalog order was already the handle's canonical identity
   order, so nothing about ordering or output changes. Enforcement: the owned-string inventory's
-  product list in `architecture.rs` shrank from 16 entries to 15.
+  product list in `architecture.rs` shrank by one entry.
 
 - **A state-transition vertex names its element by handle; the label is read at the edge.**
   `DiagramStateVertex` is now `Copy` -- a `SymbolId`, a vertex kind and a `SourceLocation`. The
@@ -77,8 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stores, allocated once per vertex for text only a renderer needs. A consumer reads it with
   `symbol_name`, which borrows from the settled symbol blob. Output is byte-identical: the
   generator boundary materialises the same `unwrap_or_default` empty label for an anonymous state.
-  Enforcement: the owned-string inventory's product list in `architecture.rs` shrank from 17
-  entries to 16.
+  Enforcement: the owned-string inventory's product list in `architecture.rs` shrank by one entry.
 
 - **A navigation result names its element by handle; the name is read at the editor edge.**
   `NavigationTarget` is now `Copy` -- a `SymbolId` and a `SourceLocation` -- and
@@ -89,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the LSP edge materialises there, where the protocol demands an owned string anyway. Candidate
   ordering still breaks ties on the authored name, read through the publication, so output is
   byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
-  shrank from 18 entries to 17.
+  shrank by one entry.
 
 - **The owned-string inventory says which owned strings are debt.** `FACADE_OWNED_STRING_FIELDS`
   split into `FACADE_OWNED_STRING_INPUT_FIELDS` -- names a consumer hands in to ask a question,
@@ -108,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   they need text, through the borrowed `PublishedModel::document_identity`; `document_of` is the
   inverse a host uses when an editor request names a document by URI. Contractually ordered
   results still sort by identity, not by ordinal, so output is byte-identical. Enforcement: the
-  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank from 23 entries to 22.
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank by one entry.
 
 - **The keystroke-path facade products are borrowed views over the publication, not owned copies
   of it.** `visible_members` answers with `VisibleMembers<'m>`/`VisibleMemberRef<'m>`: handles plus
