@@ -13,6 +13,8 @@ use std::{
 
 use hashbrown::HashTable;
 
+use crate::lower::facts::*;
+
 use crate::lower::intern::{
     SymbolPathArena, SymbolPathArenaBuilder, SymbolTable, SymbolTableBuilder,
 };
@@ -25,8 +27,8 @@ use sysml_v2_parser::{
         AliasBody, AliasDef, Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage,
         AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember,
         AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
-        AttributeUsage, BasicFeaturePrefix, BinaryOperator, Bind, BindingConnectorUsage, CalcDef,
-        CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
+        AttributeUsage, BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody,
+        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
         CaseUsage as ParserCaseUsage, CommentAnnotation, ConcernUsage as ParserConcernUsage,
         ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
         ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
@@ -35,31 +37,30 @@ use sysml_v2_parser::{
         DoAction, DocComment, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationBodyElement, EnumerationUsage as ParserEnumerationUsage,
         ExhibitState as ParserExhibitState, ExitAction, ExposeMember, Expression,
-        ExtendedDefinition, FeaturePrefix, FeaturePrefixHead, FeatureRelationshipPart,
-        FeatureValue, FeatureValueKind as ParserFeatureValueKind, FeatureVariability, FinalState,
-        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage,
-        ForLoop, FrameMember, GuardedSuccession, IfStmt, Import, ImportShape, InOut, InOutDecl,
+        ExtendedDefinition, FeaturePrefixHead, FeatureRelationshipPart, FeatureValue,
+        FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
+        FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
+        FrameMember, GuardedSuccession, IfStmt, Import, ImportShape, InOut, InOutDecl,
         IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement, InterfaceEnd,
         InterfaceEndTarget, InterfacePart, InterfaceUsage as ParserInterfaceUsage,
         InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember,
-        KermlClassifierDecl, KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember,
-        KermlFeature, KermlFeatureKind, KermlInvariantMember, KermlSuccessionMember,
-        KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
+        KermlClassifierDecl, KermlConnectorEnd, KermlConnectorMember, KermlFeature,
+        KermlInvariantMember, KermlSuccessionMember, KermlTypeRelationship,
+        KermlTypeRelationshipKeyword, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataBody,
         MetadataBodyElement, MetadataBodyUsage, MetadataDef, MetadataUsage as ParserMetadataUsage,
-        Multiplicity, NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
-        OccurrencePortionKind as ParserOccurrencePortionKind,
-        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OccurrenceUsagePrefix,
-        OwnedCrossFeature, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
-        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
-        Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
-        PerformInOutBinding, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
-        RefDecl, ReferenceSeparator, RelationshipBodyElement, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RenderingUsage as ParserRenderingUsage, RenderingUsageBody,
-        RenderingUsageBodyElement, RequireConstraint, RequirementActorDecl, RequirementDef,
-        RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
-        ReturnDecl, RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload,
+        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
+        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OwnedCrossFeature, Package,
+        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformActionTarget,
+        PerformBody, PerformBodyElement, PerformInOutBinding, PortBody, PortBodyElement, PortDef,
+        PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
+        QualifiedIdentification, QualifiedReferenceId, RefDecl, ReferenceSeparator,
+        RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+        RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
+        RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
+        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload,
         SequenceExpressionList, Span, StakeholderMember, StateDef, StateDefBody,
         StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
         SubsettingRelationship, TerminateStmt, TextualRepresentation, ThenAction, ThenStmt,
@@ -921,7 +922,7 @@ pub(crate) enum DeclarationKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum MembershipKind {
+pub(crate) enum MembershipKind {
     Owning,
     Feature,
     Import,
@@ -929,7 +930,7 @@ enum MembershipKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Visibility {
+pub(crate) enum Visibility {
     Default,
     Public,
     Private,
@@ -1451,7 +1452,7 @@ pub(crate) enum EvaluatedValue {
 /// can re-walk this tree at resolution time and pair each `Operand(n)` with the n-th
 /// `ExpressionOperand` reference sourced at the same declaration.
 #[derive(Debug, Clone, PartialEq)]
-enum EvalNode {
+pub(crate) enum EvalNode {
     Literal(EvaluatedValue),
     /// The n-th (0-based) `ExpressionOperand` reference sourced at the owning declaration, in
     /// left-to-right expression order.
@@ -1505,7 +1506,7 @@ enum EvalNode {
 /// `Unsupported` expressions (any shape `lower_constraint_expression`/`lower_calc_expression` does
 /// not recognize) publish no evaluation fact at all.
 #[derive(Debug, Clone, PartialEq)]
-enum ExpressionEvalShape {
+pub(crate) enum ExpressionEvalShape {
     /// The authored expression is itself a literal value -- nothing was folded.
     Literal(EvaluatedValue),
     /// A tree with no operand leaf, folded at construction (`2 + 3`). Kept apart from `Literal`
@@ -2304,675 +2305,6 @@ fn flatten_member_access_chain(node: &Node<Expression>) -> Option<Vec<QualifiedR
         } => flatten_member_access_chain(operand),
         _ => None,
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum AuthoredImportShape {
-    Membership,
-    Namespace,
-    Filter,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct AuthoredImportFacts {
-    shape: AuthoredImportShape,
-    recursive: bool,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-struct RelationshipFlags {
-    conjugated: bool,
-    implied: bool,
-    recursive: bool,
-    wildcard: bool,
-    direction: Option<ParameterDirection>,
-    /// Mirrors the `variation` keyword prefix (BNF `BasicDefinitionPrefix`, `DefinitionPrefix::
-    /// Variation`) on the owning `part`/`part def` declaration whose `FeatureTyping`/
-    /// `Subclassification` reference carries this flag -- the same convention `conjugated` uses
-    /// for a port's typing target polarity, rather than inventing a new relationship kind. Set on
-    /// `lower_part_usage`'s own typing reference (e.g. `variation part transmission :
-    /// Transmission;`); the sibling `abstract` prefix is deliberately left unrepresented, as
-    /// before this slice.
-    variation: bool,
-}
-
-/// The `in`/`out`/`inout` direction prefix on a directed parameter declaration (BNF `InOutDecl`),
-/// carried as a fact on the declaration's `FeatureTyping` reference (see
-/// `DeclarationKind::ParameterUsage`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ParameterDirection {
-    In,
-    Out,
-    InOut,
-}
-
-/// One authored multiplicity bound (`[lower..upper]`).
-///
-/// The parser stores each bound as a full `Expression` (`ast::Multiplicity`), and a bound written
-/// as `*` -- or omitted entirely, as in `[1..*]`'s upper and both of `[*]`'s -- is `None` on that
-/// side. A missing bound in an authored multiplicity is therefore the unbounded bound, which is
-/// why absence and `Unbounded` are the same fact here; a declaration with no `[...]` at all
-/// carries no `MultiplicityRecord` in the first place.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum MultiplicityBound {
-    /// No bound authored on this side: unbounded.
-    Unbounded,
-    /// A bound that folds to a literal integer from literals alone (`[3]`, `[0..4]`).
-    Literal(i64),
-    /// A bound authored as a non-literal expression (`[1..n]`, `[a#(0)]`). Published as an explicit
-    /// non-literal fact -- its effective value needs operand resolution, which this fact family
-    /// deliberately does not perform, and it is never recovered by re-reading authored text.
-    Expression,
-}
-
-/// The authored multiplicity of one declaration (BNF `MultiplicityBounds`).
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct MultiplicityRecord {
-    lower: MultiplicityBound,
-    upper: MultiplicityBound,
-    span: Span,
-}
-
-/// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
-///
-/// Note the bare `portion` keyword is a separate, unrelated modifier. In KerML scope it is
-/// reachable as `ast::KermlFeatureMember::is_portion` and lowers to `DeclarationModifiers::portion`;
-/// only the two portion *kinds* below are reachable here, and only on `OccurrenceUsage`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum PortionKind {
-    Snapshot,
-    Timeslice,
-}
-
-/// The closed set of declaration modifier prefixes the pinned parser can express.
-///
-/// Deliberately not a `Vec<String>` of labels: each flag is a typed fact with exactly one parser
-/// field behind it. Modifiers the parser cannot represent at all -- SysML `readonly`, SysML
-/// `variable`, `unique`, and the bare `portion` prefix -- are absent from this set by construction
-/// rather than defaulted to `false`; see `planning/UPSTREAM_PARSER_GAPS.md`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-struct DeclarationModifiers {
-    /// `abstract` (`ast::DefinitionPrefix::Abstract`, or a bare `is_abstract` field).
-    is_abstract: bool,
-    /// `variation` (`ast::DefinitionPrefix::Variation`, or a bare `is_variation` field).
-    variation: bool,
-    /// `individual`.
-    individual: bool,
-    /// `derived`.
-    derived: bool,
-    /// `end` used as a feature prefix (distinct from the `end name : T;` declaration form, which
-    /// is its own `DeclarationKind`).
-    end: bool,
-    /// `ref` used as a feature prefix (distinct from the `ref name : T;` declaration form).
-    reference: bool,
-    /// `constant`.
-    constant: bool,
-    /// `event`.
-    event: bool,
-    /// `standard`, on a library package.
-    standard: bool,
-    /// `all`, the sufficiency prefix.
-    all: bool,
-    /// KerML `composite`.
-    composite: bool,
-    /// KerML `portion` (reachable only through `KermlFeatureMember`).
-    portion: bool,
-    /// KerML `var`.
-    var: bool,
-    /// KerML `member`.
-    member: bool,
-    /// `ordered`, the collection modifier.
-    ordered: bool,
-    /// `nonunique`, the collection modifier.
-    nonunique: bool,
-}
-
-/// The authored presentation-adjacent facts of one declaration, recorded at the point its typed
-/// parser node is lowered.
-///
-/// Held in a dense side table parallel to `SemanticModelStorage::declarations` rather than widened
-/// into `Declaration`, which stays the compact identity/ownership record every resolution index is
-/// built over.
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
-struct DeclarationFacts {
-    /// The `<shortName>` identification prefix, where the owning parser node has the field.
-    short_name: Option<SymbolId>,
-    modifiers: DeclarationModifiers,
-    portion_kind: Option<PortionKind>,
-    direction: Option<ParameterDirection>,
-    multiplicity: Option<MultiplicityRecord>,
-    /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
-    ///
-    /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but
-    /// generated library-specialization predicates consume this one canonical semantic fact.
-    negated: Option<bool>,
-    /// Whether this `AcceptActionUsage` is the typed trigger action of a transition. The parser
-    /// records the trigger shape on `TransitionAccept`; lowering publishes it on the synthesized
-    /// accept action so generated rules never infer it from an owner name or reference spelling.
-    is_trigger_action: Option<bool>,
-    /// Whether this `IfActionUsage` has its typed `elseAction` branch. The parser records this as
-    /// `IfStmt::else_body`; lowering publishes the presence bit so generated specialization rules
-    /// select their anchor without reconstructing control-flow syntax.
-    has_else_action: Option<bool>,
-    /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
-    ///
-    /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the
-    /// only flow-use form this lowering admits. It is intentionally absent for unsupported named
-    /// or typed flow forms, so generated specialization predicates cannot turn an incomplete
-    /// lowering into a positive result.
-    owned_end_feature_count: Option<u32>,
-    /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
-    ///
-    /// Present only on a declaration lowered from an `end` member of a connection/interface/
-    /// occurrence definition body, and it is what makes a connector end *positional*: KerML orders
-    /// a connector's ends, and the source/target distinction of a binary connection-like
-    /// definition is that order and nothing else. An `end` member's declared label is optional and
-    /// carries no ordering, so recovering the position from a name would be a guess.
-    ///
-    /// Absent on every other declaration, including a feature carrying the `end` modifier prefix:
-    /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
-    /// The two are distinct and both are needed.
-    positional_end: Option<u32>,
-}
-
-impl DeclarationFacts {
-    /// Facts for a declaration with no authored modifier, multiplicity, direction, or short name.
-    ///
-    /// Used both by synthesized anonymous scopes -- `BareConnect`, `Transition`, the state action
-    /// bindings and other declarations the lowering mints to give nested references a lexical
-    /// scope, which have no authored declaration syntax at all -- and by authored declaration
-    /// forms whose parser node carries none of these fields.
-    fn none() -> Self {
-        Self::default()
-    }
-}
-
-/// Which annotation production a `DocumentationRecord` came from.
-///
-/// The parser discards `/** ... */` and `//` as lexer trivia, so only the three keyworded forms
-/// survive into the AST at all.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum AnnotationForm {
-    /// `doc /* ... */` (`ast::DocComment`).
-    Documentation,
-    /// `comment /* ... */` (`ast::CommentAnnotation`).
-    Comment,
-    /// `rep <language> "..." /* ... */` (`ast::TextualRepresentation`).
-    TextualRepresentation,
-}
-
-/// One documentation/comment/textual-representation annotation bound to its annotated declaration.
-///
-/// The parser models these as *sibling* body elements with no parent link, so lowering binds the
-/// annotations at the head of a declaration's own body to that declaration. A declaration may
-/// carry several, which is why this is a table rather than a field on `DeclarationFacts`.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct DocumentationRecord {
-    declaration: DeclarationId,
-    form: AnnotationForm,
-    locale: Option<SymbolId>,
-    /// The `rep` language string; always `None` for the other two forms.
-    language: Option<SymbolId>,
-    text: SymbolId,
-    span: Span,
-}
-
-/// Whether a feature value binds (`=`) or assigns (`:=`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum FeatureValueKind {
-    Bind,
-    Assign,
-}
-
-/// The authored feature value of one declaration (`ast::FeatureValue`).
-///
-/// Keeps all five authored spellings distinguishable: `= e`, `:= e`, `default = e`, `default := e`,
-/// and the operator-less `default e`.
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct FeatureValueRecord {
-    declaration: DeclarationId,
-    kind: FeatureValueKind,
-    is_default: bool,
-    has_operator: bool,
-    span: Span,
-}
-
-/// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.
-///
-/// A declaration with no `[...]` written yields `None`; that is genuinely "no multiplicity
-/// authored", distinct from `[*]`, which yields a record with both bounds `Unbounded`.
-fn multiplicity_facts(multiplicity: Option<&Node<Multiplicity>>) -> Option<MultiplicityRecord> {
-    let multiplicity = multiplicity?;
-    Some(MultiplicityRecord {
-        lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
-        upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
-        span: multiplicity.value.span.clone(),
-    })
-}
-
-fn multiplicity_bound(expression: Option<&Node<Expression>>) -> MultiplicityBound {
-    let Some(expression) = expression else {
-        return MultiplicityBound::Unbounded;
-    };
-    match literal_bound_value(&expression.value) {
-        Some(value) => MultiplicityBound::Literal(value),
-        None => MultiplicityBound::Expression,
-    }
-}
-
-/// Folds a multiplicity bound expression to a literal integer, or reports that it is not one.
-///
-/// Deliberately narrow: only an integer literal (optionally parenthesised) is a literal bound.
-/// Everything else -- a feature reference, an arithmetic expression, an index -- is published as
-/// `MultiplicityBound::Expression` rather than guessed at, because folding it needs operand
-/// resolution this fact family does not perform.
-fn literal_bound_value(expression: &Expression) -> Option<i64> {
-    match expression {
-        Expression::LiteralInteger(value) => Some(*value),
-        Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
-            [only] => literal_bound_value(&only.expression.value),
-            _ => None,
-        },
-        _ => None,
-    }
-}
-
-/// Splits a `definition_prefix`/`usage_prefix` field into its two independent modifier facts.
-fn definition_prefix_modifiers(prefix: Option<&DefinitionPrefix>) -> (bool, bool) {
-    match prefix {
-        Some(DefinitionPrefix::Abstract) => (true, false),
-        Some(DefinitionPrefix::Variation) => (false, true),
-        None => (false, false),
-    }
-}
-
-/// The [`Node`]-wrapped spelling of [`definition_prefix_modifiers`], for the definition kinds
-/// whose `definition_prefix` slot carries the authored keyword's own span.
-fn definition_prefix_node_modifiers(prefix: Option<&Node<DefinitionPrefix>>) -> (bool, bool) {
-    definition_prefix_modifiers(prefix.map(|prefix| &prefix.value))
-}
-
-/// Splits the shared `OccurrenceUsagePrefix` (BNF `OccurrenceUsagePrefix`, SysML 564) into the
-/// independent modifier facts this model records.
-///
-/// The occurrence-usage families (`PartUsage`/`ItemUsage`/`PortUsage`/`OccurrenceUsage`) used to
-/// carry `usage_prefix`/`is_individual`/`is_reference`/`is_derived`/`is_constant` as five separate
-/// fields; upstream folded them into the one component the grammar spells, where presence of the
-/// authored keyword's span *is* the property. Callers add the multiplicity keyword facts on top
-/// through struct update syntax, since those come from `MultiplicityPart` rather than the prefix.
-fn occurrence_prefix_modifiers(prefix: &OccurrenceUsagePrefix) -> DeclarationModifiers {
-    let (is_abstract, variation) =
-        definition_prefix_node_modifiers(prefix.basic.ref_prefix.variance.as_ref());
-    DeclarationModifiers {
-        is_abstract,
-        variation,
-        individual: prefix.individual_span.is_some(),
-        derived: prefix.basic.ref_prefix.derived_span.is_some(),
-        reference: prefix.basic.reference_span.is_some(),
-        constant: prefix.basic.ref_prefix.constant_span.is_some(),
-        ..DeclarationModifiers::default()
-    }
-}
-
-/// The [`Node`]-wrapped spelling of [`direction_fact`], for the prefix components that carry the
-/// authored `in`/`out`/`inout` keyword's own span.
-fn direction_node_fact(direction: Option<&Node<InOut>>) -> Option<ParameterDirection> {
-    direction_fact(direction.map(|direction| &direction.value))
-}
-
-/// The [`Node`]-wrapped spelling of [`portion_kind_fact`], for `OccurrenceUsagePrefix::portion`.
-fn portion_kind_node_fact(kind: Option<&Node<ParserOccurrencePortionKind>>) -> Option<PortionKind> {
-    portion_kind_fact(kind.map(|kind| &kind.value))
-}
-
-fn portion_kind_fact(kind: Option<&ParserOccurrencePortionKind>) -> Option<PortionKind> {
-    match kind? {
-        ParserOccurrencePortionKind::Snapshot => Some(PortionKind::Snapshot),
-        ParserOccurrencePortionKind::Timeslice => Some(PortionKind::Timeslice),
-    }
-}
-
-/// Maps a bodied KerML classifier's keyword to the metaclass it denotes.
-///
-/// `assoc` and `association` are the short and spelled-out spellings of one keyword (see
-/// `KermlClassifierKeyword`'s own doc comments), so both denote KerML `Association`; every other
-/// keyword denotes a distinct metaclass.
-fn kerml_classifier_kind(keyword: &KermlClassifierKeyword) -> DeclarationKind {
-    match keyword {
-        KermlClassifierKeyword::Type => DeclarationKind::KermlType,
-        KermlClassifierKeyword::Classifier => DeclarationKind::KermlClassifier,
-        // Upstream routed `class` through the shared KerML classifier declaration, deleting the
-        // dedicated `ClassDef` node, so this keyword is now the only spelling a `class` reaches
-        // and it keeps the `ClassDefinition` kind the dedicated production used to publish.
-        // `DeclarationKind::KermlClass` is consequently unreachable.
-        KermlClassifierKeyword::Class => DeclarationKind::ClassDefinition,
-        KermlClassifierKeyword::Struct => DeclarationKind::KermlStructure,
-        KermlClassifierKeyword::Assoc | KermlClassifierKeyword::Association => {
-            DeclarationKind::KermlAssociation
-        }
-        KermlClassifierKeyword::AssocStruct => DeclarationKind::KermlAssociationStructure,
-        KermlClassifierKeyword::Datatype => DeclarationKind::KermlDataType,
-        KermlClassifierKeyword::Metaclass => DeclarationKind::KermlMetaclass,
-        KermlClassifierKeyword::Behavior => DeclarationKind::KermlBehavior,
-        KermlClassifierKeyword::Function => DeclarationKind::KermlFunction,
-        KermlClassifierKeyword::Predicate => DeclarationKind::KermlPredicate,
-        KermlClassifierKeyword::Interaction => DeclarationKind::KermlInteraction,
-        KermlClassifierKeyword::Multiplicity => DeclarationKind::KermlMultiplicity,
-    }
-}
-
-/// Maps a KerML feature member's kind keyword to the metaclass it denotes.
-/// The declaration kind a KerML feature member's authored kind keyword names.
-///
-/// `None` is the keyword-less prefixed spelling (`portion redefines portionOfLife = ...;`), where
-/// the grammar implies `Feature`, so it maps to the same kind a written `feature` does.
-fn kerml_feature_kind(kind: Option<&Node<KermlFeatureKind>>) -> DeclarationKind {
-    match kind.map(|kind| kind.value) {
-        None | Some(KermlFeatureKind::Feature) => DeclarationKind::KermlFeature,
-        Some(KermlFeatureKind::Step) => DeclarationKind::KermlStep,
-        Some(KermlFeatureKind::Expr) => DeclarationKind::KermlExpression,
-        Some(KermlFeatureKind::Bool) => DeclarationKind::KermlBooleanExpression,
-    }
-}
-
-/// Splits `BasicFeaturePrefix` (KerML BNF 577) into the independent modifier facts this model
-/// records.
-///
-/// `var` stays the authored `var` keyword rather than the metamodel's derived `isVariable` (which
-/// `const` also sets), matching what [`DeclarationModifiers::var`] has always meant; `const` now
-/// lands on `constant`, which the old `is_const` field never reached.
-fn basic_feature_prefix_modifiers(prefix: &BasicFeaturePrefix) -> DeclarationModifiers {
-    DeclarationModifiers {
-        is_abstract: prefix.is_abstract(),
-        derived: prefix.is_derived(),
-        composite: prefix.is_composite(),
-        portion: prefix.is_portion(),
-        var: matches!(
-            prefix.variability.as_ref().map(|slot| slot.value),
-            Some(FeatureVariability::Var)
-        ),
-        constant: prefix.is_constant(),
-        ..DeclarationModifiers::default()
-    }
-}
-
-/// Splits the shared KerML `FeaturePrefix` (KerML BNF 584) into the independent modifier facts
-/// this model records.
-///
-/// Upstream folded the seven booleans `KermlFeatureMember` used to carry into the choice the
-/// grammar writes, so `end`-ness is the alternative taken rather than a flag beside it, and
-/// `composite`/`portion` and `var`/`const` are each one slot. The `EndFeaturePrefix` alternative
-/// carries no direction, abstractness or portioning at all, which is what makes `in end feature
-/// x;` unauthorable rather than merely unparsed (gap 59).
-fn kerml_feature_prefix_modifiers(prefix: &FeaturePrefix) -> DeclarationModifiers {
-    match &prefix.head {
-        FeaturePrefixHead::Basic(basic) => basic_feature_prefix_modifiers(basic),
-        FeaturePrefixHead::End { prefix, .. } => DeclarationModifiers {
-            end: true,
-            constant: prefix.is_constant(),
-            ..DeclarationModifiers::default()
-        },
-    }
-}
-
-fn direction_fact(direction: Option<&InOut>) -> Option<ParameterDirection> {
-    match direction? {
-        InOut::In => Some(ParameterDirection::In),
-        InOut::Out => Some(ParameterDirection::Out),
-        InOut::InOut => Some(ParameterDirection::InOut),
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ParserReferenceId {
-    document: DocumentId,
-    local: QualifiedReferenceId,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum UnsupportedFamily {
-    PackageMember,
-    PartDefinitionMember,
-    PartUsageMember,
-    AttributeMember,
-    RequirementDefinitionMember,
-    PortDefinitionMember,
-    /// No remaining `PortBodyElement` fallback variant constructs this family (every variant is
-    /// now dispatched to a lowering function), but the diagnostic code itself remains part of
-    /// `writer.rs`'s exhaustive mapping for schema stability.
-    #[allow(dead_code)]
-    PortUsageMember,
-    ActionDefinitionMember,
-    ActionUsageMember,
-    /// Shared by `state def` and `state` usage bodies (both use `StateDefBody`/
-    /// `StateDefBodyElement` in the typed AST -- there is no separate `StateUsageBody`).
-    StateDefinitionMember,
-    /// Shared by `connection def` and `connection` usage bodies (both use `ConnectionDefBody`/
-    /// `ConnectionDefBodyElement` in the typed AST -- there is no separate `ConnectionUsageBody`).
-    ConnectionDefinitionMember,
-    /// Shared by `occurrence def` and `occurrence` usage bodies (both share `OccurrenceBodyElement`
-    /// -- `OccurrenceDef.body` wraps it in the generic `DefinitionBody`/`DefinitionBodyElement`,
-    /// while `OccurrenceUsage.body` (`OccurrenceUsageBody`) holds it directly). Occurrence-specific
-    /// semantics -- individual/portion-of-life, time-slicing, snapshot facts, `exhibit`/
-    /// `succession`/`satisfy`/`allocate`/connector-end body constructs -- are the out-of-scope
-    /// surface for this slice.
-    OccurrenceDefinitionMember,
-    /// `analysis def` body members not modeled by this slice (subject/actor/objective/first-
-    /// succession/return/nested case structure); shares `UseCaseDefBody`/`UseCaseDefBodyElement`
-    /// with `case`/`verification` case bodies in the typed AST, but this family name is scoped to
-    /// `analysis def` specifically since `analysis` usage lowering is deferred.
-    AnalysisCaseDefinitionMember,
-    /// `constraint def`/`constraint` usage body members not modeled by this slice (constraint
-    /// expression content, nested constraint members). Shared by both forms since
-    /// `ConstraintDefBody`/`ConstraintDefBodyElement` is the same typed AST shape for both.
-    ConstraintDefinitionMember,
-    /// `calc def`/`calc` usage body members not modeled by this slice (calculation expression
-    /// content, in/out/return parameters, nested calc structure). Shared by both forms since
-    /// `CalcDefBody`/`CalcDefBodyElement` is the same typed AST shape for both.
-    CalcDefinitionMember,
-    /// `interface def` body members not modeled by this slice; shares the same `end`/`connect`/
-    /// attribute/item/port/flow member set as `ConnectionDefinitionMember`, kept as its own family
-    /// name so interface def diagnostics stay distinct from connection def ones at the same span
-    /// shape.
-    InterfaceDefinitionMember,
-    /// `view def` body members not modeled by this slice: `render` (`ViewRenderingUsage`),
-    /// `filter` (view composition), `expose`/`satisfy` are `view` usage-body-only constructs
-    /// (`ViewBodyElement`, not `ViewDefBodyElement`) and don't appear here at all.
-    ViewDefinitionMember,
-    /// `rendering def` body members not modeled by this slice: shares the same `filter`/`render`
-    /// member set as `ViewDefinitionMember` (`RenderingDefBody`/`RenderingDefBodyElement` mirror
-    /// `ViewDefBody`/`ViewDefBodyElement` exactly), kept as its own family name so `rendering def`
-    /// diagnostics stay distinct from `view def` ones at the same span shape.
-    RenderingDefinitionMember,
-    /// `case def` body members not modeled by this slice (subject/actor/objective/first-
-    /// succession/return/nested case structure); shares `UseCaseDefBody`/`UseCaseDefBodyElement`
-    /// with `analysis`/`verification`/`use case` case bodies in the typed AST, but this family
-    /// name is scoped to `case def` specifically since `case` usage lowering is deferred.
-    CaseDefinitionMember,
-    /// `verification def` body members not modeled by this slice; shares the same
-    /// `UseCaseDefBody`/`UseCaseDefBodyElement` shape as `CaseDefinitionMember`, kept as its own
-    /// family name so verification def diagnostics stay distinct from case/analysis/use-case def
-    /// ones at the same span shape.
-    VerificationCaseDefinitionMember,
-    /// `use case def` body members not modeled by this slice; shares the same `UseCaseDefBody`/
-    /// `UseCaseDefBodyElement` shape as `CaseDefinitionMember`, kept as its own family name so use
-    /// case def diagnostics stay distinct from case/analysis/verification def ones at the same
-    /// span shape.
-    UseCaseDefinitionMember,
-    /// Members inside a `ref { ... }` body that this slice does not model. A `ref` body is the
-    /// general usage-member set (`RefBody = Body<PartUsageBodyElement>`, `UsageBody =
-    /// DefinitionBody` per SysML 8.2.2.6.2), so it is dispatched through the same
-    /// `lower_part_usage_body_element` walker every other usage body uses; this family keeps its
-    /// unsupported members distinguishable from a `part` usage body's. The `ref` declaration
-    /// itself (name, typing, redefines, subsets) is lowered via `DeclarationKind::ReferenceUsage`
-    /// regardless of what its body holds.
-    ReferenceUsageMember,
-    /// Members of a KerML `RelationshipBody` (`import`/`dependency`/`alias`/plain `connect`
-    /// bodies) that this slice does not model. The body's annotating members are recorded against
-    /// the relationship's own declaration; this family covers unmodeled facts of an owned
-    /// `feature` member (BNF `RelationshipBody`'s `ownedRelatedElement`).
-    RelationshipBodyMember,
-    ParserUnsupported,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct UnsupportedRecord {
-    document: DocumentId,
-    family: UnsupportedFamily,
-    span: Span,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct RecoveryRecord {
-    document: DocumentId,
-    span: Span,
-}
-
-#[derive(Debug)]
-struct CanonicalDocument {
-    identity: Box<str>,
-    /// The role this source plays in the build, carried through from the admitted
-    /// [`OwnedSourceRecord`]. Library sources participate in one semantic system with workspace
-    /// sources, so this is never an admission filter; it is what lets owner-defined projections
-    /// report the authored workspace without also reporting the whole standard library.
-    role: SourceRole,
-    parsed: Arc<ParsedDocument>,
-    parse_errors: Box<[ParseError]>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct Declaration {
-    document: DocumentId,
-    owner: Option<DeclarationId>,
-    name: Option<SymbolId>,
-    anonymous_ordinal: Option<u32>,
-    kind: DeclarationKind,
-    span: Span,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct MembershipRecord {
-    member: DeclarationId,
-    kind: MembershipKind,
-    visibility: Visibility,
-    span: Span,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct AuthoredReference {
-    source: DeclarationId,
-    kind: ReferenceKind,
-    target: ParserReferenceId,
-    path: SymbolPathId,
-    ordinal: u32,
-    import: Option<AuthoredImportFacts>,
-    flags: RelationshipFlags,
-    span: Span,
-}
-
-struct PendingReference {
-    source: DeclarationId,
-    kind: ReferenceKind,
-    document: DocumentId,
-    local: QualifiedReferenceId,
-    flags: RelationshipFlags,
-    span: Span,
-    import: Option<AuthoredImportFacts>,
-}
-
-/// A construction-time-classified evaluation candidate: the declaration a supported constraint/
-/// calc expression belongs to, plus its `ExpressionEvalShape`.
-///
-/// `Unsupported` is stored like every other shape. "This declaration authored an expression whose
-/// shape is outside the evaluated slice" and "this declaration authored no expression at all" are
-/// different facts, and dropping the first would publish the second in its place.
-#[derive(Debug, Clone)]
-struct PendingEvaluationFact {
-    declaration: DeclarationId,
-    shape: ExpressionEvalShape,
-}
-
-/// One authored unit token: the `kg` in `10 [kg]`.
-///
-/// Kept apart from the quantity value it qualifies. The value carries the token's spelling because
-/// a consumer rendering `10 [kg]` needs it; this record carries the token's *identity site* -- the
-/// document and the exact range inside the brackets -- which is what a diagnostic about the unit
-/// must point at. Neither is derivable from the other.
-#[derive(Debug, Clone)]
-struct AuthoredUnitToken {
-    /// The declaration whose expression the token was written in.
-    declaration: DeclarationId,
-    document: DocumentId,
-    /// Authored order within `declaration`, left to right, assigned in lockstep with lowering.
-    ordinal: u32,
-    /// The token exactly as the author wrote it, never normalized to a canonical unit identity.
-    text: SymbolId,
-    /// The token's own range: the text between `[` and `]`, excluding the brackets.
-    span: Span,
-}
-
-/// Which member form a `filter` statement was written in.
-///
-/// The rule that a filter condition must be Boolean is authored per SysML §on view definitions; a
-/// package-level `filter` is the import-filtering production and is a different statement with a
-/// different owner. Recording the form is what lets a rule address one of them without asking the
-/// owner's metaclass to stand in for the syntax the author used.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum FilterForm {
-    /// A `filter` inside a `view def` or `view` body.
-    View,
-    /// A `filter` inside a `rendering def` body.
-    Rendering,
-    /// A `filter` written directly in a package body, filtering its imports.
-    PackageImport,
-}
-
-/// One authored `filter` condition.
-///
-/// A filter's condition is lowered against its owning declaration rather than a declaration of its
-/// own -- the parser gives it no identity, and minting one would invent an element the author did
-/// not write -- so it needs its own fact to carry the range and the classified expression a rule
-/// about *this* condition must read.
-#[derive(Debug, Clone)]
-struct AuthoredFilterCondition {
-    /// The view, rendering or package the filter is written in.
-    owner: DeclarationId,
-    document: DocumentId,
-    form: FilterForm,
-    /// The condition expression's own range.
-    span: Span,
-    shape: ExpressionEvalShape,
-    predicate: FilterPredicate,
-}
-
-/// Candidate-dependent portion of a view condition. Unlike ordinary constant evaluation, an
-/// `@Metadata` test has no truth value until an exposed element is supplied.
-#[derive(Debug, Clone)]
-enum FilterPredicate {
-    Boolean(bool),
-    Metadata(u32),
-    And(Box<FilterPredicate>, Box<FilterPredicate>),
-    Or(Box<FilterPredicate>, Box<FilterPredicate>),
-    Unsupported,
-}
-
-/// One authored invocation, paired with the callee reference that names what it invokes.
-///
-/// The argument count is a property of the call site and exists nowhere else: the callee's own
-/// declaration says how many parameters it has, and the resolved reference says which callee it
-/// is, but only this record says how many arguments were written.
-#[derive(Debug, Clone)]
-struct AuthoredInvocation {
-    /// The declaration the invocation was written in.
-    declaration: DeclarationId,
-    document: DocumentId,
-    /// The `ReferenceKind::InvocationCallee` reference naming the callee, so the settled callee is
-    /// read from that reference's resolution outcome rather than re-resolved here.
-    callee: AuthoredReferenceId,
-    /// How many arguments the author wrote.
-    argument_count: u32,
-    /// The invocation expression's own range.
-    span: Span,
 }
 
 #[derive(Debug)]
