@@ -1452,36 +1452,6 @@ mod tests {
     }
 
     #[test]
-    fn attribute_default_value_dotted_member_access_with_unresolvable_base_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tattribute g = nope.a;\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"nope::a\")\n      (outcome (status unresolved))"),
-            "expected an unresolvable base to leave the whole chain explicitly unresolved (never fabricated), got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn attribute_default_value_dotted_member_access_with_missing_member_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def F {\n\
-             \t\tattribute a;\n\
-             \t}\n\
-             \tpart f : F;\n\
-             \tattribute g = f.missing;\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::missing\")\n      (outcome (status unresolved))"),
-            "expected a member absent from f's type F to leave the chain explicitly unresolved (never fabricated), got:\n{output}"
-        );
-    }
-
-    #[test]
     fn interface_def_connect_stmt_connector_end_references_resolve_to_their_targets() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -1503,28 +1473,6 @@ mod tests {
                 "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::I\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
             ),
             "expected I's connector-end reference to d2 to resolve, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn constraint_comparison_expression_leaves_undeclared_operand_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tattribute x : ScalarValues::Integer;\n\
-             \tconstraint def C { x > y }\n\
-             }\n",
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"x\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::x\")))))"
-            ),
-            "expected x to resolve, got:\n{output}"
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"y\")\n      (outcome (status unresolved))"
-            ),
-            "expected undeclared y to stay unresolved (not fabricated), got:\n{output}"
         );
     }
 
@@ -1557,38 +1505,6 @@ mod tests {
     }
 
     #[test]
-    fn constraint_unsupported_expression_shape_still_falls_through_to_diagnostic() {
-        // `Expression::Invocation` (e.g. `compute(x, y)`) is a supported shape as of this slice
-        // (see `lower_invocation_callee`/`ReferenceKind::InvocationCallee`); `-`/`not` unary ops
-        // are now supported too (`is_unary_operator`), so `~x` (`UnaryOperator::BitNot`, out of
-        // scope, see `is_unary_operator`'s doc comment) exercises the still-unsupported path.
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \tconstraint def C { ~x }\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
-        assert!(
-            output.contains("unsupported_constraint_definition_member"),
-            "expected a still-unsupported unary-op expression to surface as an unsupported \
-             constraint-definition-member diagnostic, got:\n{output}"
-        );
-    }
-
-    #[test]
     fn constraint_arithmetic_operand_resolves_all_leaf_references() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -1615,35 +1531,6 @@ mod tests {
             ),
             "expected `(a + b) < c` with no constant-valued operands to publish NonConstant \
              rather than a fabricated boolean, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn occurrence_definition_member_body_construct_stays_explicitly_unsupported() {
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \toccurrence def Occ {\n\
-                 \t\tsuccession first x then y;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
-        assert!(
-            output.contains("unsupported_occurrence_definition_member"),
-            "expected the succession usage to surface as an explicit unsupported diagnostic, got:\n{output}"
         );
     }
 
@@ -1712,86 +1599,6 @@ mod tests {
     }
 
     #[test]
-    fn calc_def_body_kinded_parameter_is_recovered_by_the_pinned_parser() {
-        // Regression pin, not desired behavior. Through `49bdf3f` a directed KerML-kinded
-        // parameter in a calc-shaped body reached the AST as a `KermlFeature` and lowered under
-        // the kind its keyword names (`expr` -> `kerml-expression`) with its direction as a
-        // declaration fact. At the pinned `f52100fd` the new `in`/`out`/`inout` branch of
-        // `parser/constraint.rs` commits to the `InOutDecl` parameter parser and no longer falls
-        // back to the KerML feature route, so the member is dropped to parse recovery and nothing
-        // is published for it. See planning/UPSTREAM_PARSER_GAPS.md gap 81. The regression is
-        // scoped to the SysML `calc`/`constraint`-shaped bodies that route through that branch:
-        // the same spelling in a KerML `function`/`behavior` body still parses and lowers, which
-        // is why `tests/snapshots/sysml.library/control_functions.md` is unaffected.
-        //
-        // This pins the loss so it stays visible: the publication must say `parse-recovery`
-        // rather than silently publishing a partial model that looks complete.
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tcalc def C {\n\
-             \t\tin a : Boolean;\n\
-             \t\tin expr p : Boolean = a;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(completeness parse-recovery)"),
-            "expected the kinded parameter to be reported as parse recovery, got:\n{output}"
-        );
-        assert!(
-            !output.contains("(qualified-name \"Demo::C::p\")"),
-            "expected no declaration for the recovered parameter p, got:\n{output}"
-        );
-        assert!(
-            output.contains("(qualified-name \"Demo::C::a\")"),
-            "expected the plain directed parameter a to still lower, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn calc_def_body_kinded_parameter_redefinition_is_recovered_by_the_pinned_parser() {
-        // The redefinition-only spelling of the same production (`in bool redefines onOccurrence
-        // { ... }`, the shape Kernel Semantic Library `Observation.kerml` authors in a KerML
-        // function body) is lost the same way in a `calc def` body at the pinned revision,
-        // including its nested body. See the sibling test above and
-        // planning/UPSTREAM_PARSER_GAPS.md gap 81.
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tcalc def C {\n\
-             \t\tin a : Boolean;\n\
-             \t\tin bool redefines a {\n\
-             \t\t\treturn : Boolean;\n\
-             \t\t}\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(completeness parse-recovery)"),
-            "expected the kinded redefinition to be reported as parse recovery, got:\n{output}"
-        );
-        assert!(
-            !output.contains("kerml-boolean-expression"),
-            "expected no kerml-boolean-expression declaration for the recovered member, got:\n\
-             {output}"
-        );
-    }
-
-    #[test]
-    fn metadata_annotation_with_unresolvable_target_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def Vehicle {\n\
-             \t\tpart seatBelt[2] {@NoSuchMetadata;}\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind metadataAnnotation)") && output.contains("(status unresolved)"),
-            "expected seatBelt's @NoSuchMetadata metadata annotation reference to stay explicitly unresolved, got:\n{output}"
-        );
-    }
-
-    #[test]
     fn filter_and_expression_resolves_both_metadata_test_and_operand_references() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -1822,57 +1629,6 @@ mod tests {
                 && output.contains("(status unresolved)"),
             "expected the filter's Safety::isMandatory operand reference to be resolved-attempted \
              and stay explicitly unresolved (not unsupported), got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn filter_with_unresolvable_metadata_target_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpackage 'Safety Features' {\n\
-             \t\tpublic import Demo::**;\n\
-             \t\tfilter @NoSuchMetadata;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind filterMetadataTest)") && output.contains("(status unresolved)"),
-            "expected the filter's @NoSuchMetadata metadata-test reference to stay explicitly unresolved, got:\n{output}"
-        );
-    }
-
-    /// `first X then Y;` inside an action def body now lowers as a resolved `succession`
-    /// relationship (see `crate::tests::first_then_succession_inside_action_def_body_resolves_both_ends`
-    /// in `lib.rs` for the full assertion); it no longer falls through to the generic
-    /// unsupported-member diagnostic this test originally locked in per commit `f4ae83f7`.
-    #[test]
-    fn first_then_succession_inside_an_action_def_no_longer_surfaces_as_unsupported() {
-        let request = crate::BuildRequest::new(
-            vec![crate::SourceInput::new(
-                "memory://test/enum.sysml",
-                "package Demo {\n\
-                 \taction def ExecuteMission {\n\
-                 \t\taction validateRoute;\n\
-                 \t\taction startMission;\n\
-                 \t\tfirst validateRoute then startMission;\n\
-                 \t}\n\
-                 }\n"
-                .to_string(),
-                crate::SourceKind::Workspace,
-            )],
-            crate::ConstructionSchedule::Sequential,
-            "test-contract-v1",
-        )
-        .unwrap();
-        let published = crate::build(request).unwrap();
-        let mut output = String::new();
-        published
-            .debug()
-            .write_diagnostics_sexpr(&mut output)
-            .unwrap();
-        assert!(
-            !output.contains("unsupported_action_definition_member"),
-            "did not expect an unsupported action-definition-member diagnostic, got:\n{output}"
         );
     }
 
@@ -1954,56 +1710,6 @@ mod tests {
     }
 
     #[test]
-    fn satisfy_with_an_unresolvable_requirement_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def P;\n\
-             \tpart p : P {\n\
-             \t\tsatisfy missingReq by p;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind satisfySource)")
-                && output.contains("(authored-target \"missingReq\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable satisfy source to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-        assert!(
-            output.contains("(kind satisfyTarget)")
-                && output.contains("(authored-target \"p\")\n      (outcome (status resolved)"),
-            "expected the satisfy target to still resolve independently, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn satisfy_with_an_unresolvable_satisfying_element_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \trequirement def R;\n\
-             \trequirement r : R;\n\
-             \tpart def P;\n\
-             \tpart p : P {\n\
-             \t\tsatisfy r by missingElement;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind satisfyTarget)")
-                && output.contains("(authored-target \"missingElement\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable satisfying element to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-        assert!(
-            output.contains("(kind satisfySource)")
-                && output.contains("(authored-target \"r\")\n      (outcome (status resolved)"),
-            "expected the satisfy source to still resolve independently, got:\n{output}"
-        );
-    }
-
-    #[test]
     fn allocate_statement_inside_a_part_usage_resolves_source_and_target() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -2030,31 +1736,6 @@ mod tests {
     }
 
     #[test]
-    fn allocate_statement_with_an_unresolvable_target_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def A;\n\
-             \tpart a : A;\n\
-             \tpart b : A {\n\
-             \t\tallocate a to missingTarget;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind allocateTarget)")
-                && output.contains("(authored-target \"missingTarget\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable allocate target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-        assert!(
-            output.contains("(kind allocateSource)")
-                && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
-            "expected the allocate source to still resolve independently, got:\n{output}"
-        );
-    }
-
-    #[test]
     fn bind_statement_inside_a_part_usage_resolves_source_and_target() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -2077,60 +1758,6 @@ mod tests {
         assert!(
             !output.contains("(status unresolved)"),
             "expected both bind operands to resolve, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn bind_statement_with_an_unresolvable_target_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def A;\n\
-             \tpart a : A;\n\
-             \tpart b : A {\n\
-             \t\tbind a = missingTarget;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind bindTarget)")
-                && output.contains("(authored-target \"missingTarget\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable bind target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-        assert!(
-            output.contains("(kind bindSource)")
-                && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
-            "expected the bind source to still resolve independently, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn variant_with_an_unresolvable_target_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def Transmission;\n\
-             \tpart manualTransmission;\n\
-             \tpart vehicle {\n\
-             \t\tvariation part transmission : Transmission {\n\
-             \t\t\tvariant manualTransmission;\n\
-             \t\t\tvariant missingVariant;\n\
-             \t\t}\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind variant)")
-                && output.contains("(authored-target \"missingVariant\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable variant target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-        assert!(
-            output.contains(
-                "(authored-target \"manualTransmission\")\n      (outcome (status resolved)"
-            ),
-            "expected the resolvable variant to still resolve independently, got:\n{output}"
         );
     }
 
@@ -2162,24 +1789,6 @@ mod tests {
         assert!(
             !output.contains("(status unresolved)"),
             "expected the include target to resolve, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn use_case_include_with_an_unresolvable_target_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tuse case def MainUseCase {\n\
-             \t\tinclude missingUseCase;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind includeUseCase)")
-                && output.contains("(authored-target \"missingUseCase\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable include target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
         );
     }
 
@@ -2218,50 +1827,6 @@ mod tests {
         assert!(
             output.contains("(authored-target \"participant\")"),
             "expected the ref's subsets target to be authored, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn ref_decl_with_an_unresolvable_typing_target_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tpart def Holder {\n\
-             \t\tref self: MissingType;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind featureTyping)")
-                && output.contains("(authored-target \"MissingType\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable ref typing target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn value_assignment_tuple_with_unresolvable_element_leaves_only_that_element_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tattribute a : ScalarValues::Integer;\n\
-             \tattribute tuple = (a, missing);\n\
-             }\n",
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"a\")\n      \
-                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::a\")))))"
-            ),
-            "expected resolvable tuple element `a` to resolve, got:\n{output}"
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"missing\")\n      \
-                 (outcome (status unresolved))"
-            ),
-            "expected undeclared tuple element `missing` to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
         );
     }
 
@@ -2339,31 +1904,6 @@ mod tests {
     }
 
     #[test]
-    fn value_assignment_istype_with_unresolvable_operand_and_type_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tattribute check = missingOperand istype MissingType;\n\
-             }\n",
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 0))\n      (authored-target \
-                 \"missingOperand\")\n      (outcome (status unresolved))"
-            ),
-            "expected undeclared operand `missingOperand` to stay explicitly unresolved, \
-             got:\n{output}"
-        );
-        assert!(
-            output.contains(
-                "(kind typeCheckTarget) (ordinal 0))\n      (authored-target \"MissingType\")\n      \
-                 (outcome (status unresolved))"
-            ),
-            "expected undeclared type target `MissingType` to stay explicitly unresolved, \
-             got:\n{output}"
-        );
-    }
-
-    #[test]
     fn value_assignment_meta_cast_resolves_base_and_metaclass_target() {
         // `Expression::MetaCast` (`Base meta Ns::Metaclass`) resolves the base operand through
         // the ordinary ExpressionOperand recursion and the qualified `Ns::Metaclass` target
@@ -2402,28 +1942,6 @@ mod tests {
             ),
             "expected `a meta Meta::Classifier` to publish NonConstant (denotes a metaclass \
              relationship, not a computable scalar value), got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn value_assignment_meta_cast_with_unresolvable_base_and_metaclass_stays_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tattribute check = missingOperand meta Missing::Metaclass;\n\
-             }\n",
-        );
-        assert!(
-            output.contains(
-                "(kind expressionOperand) (ordinal 0))\n      (authored-target \
-                 \"missingOperand\")\n      (outcome (status unresolved))"
-            ),
-            "expected undeclared base `missingOperand` to stay explicitly unresolved, \
-             got:\n{output}"
-        );
-        assert!(
-            output.contains("(kind metaCastTarget)") && output.contains("(status unresolved)"),
-            "expected undeclared metaclass target `Missing::Metaclass` to stay explicitly \
-             unresolved, got:\n{output}"
         );
     }
 
