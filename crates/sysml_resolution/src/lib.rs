@@ -51,7 +51,8 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 pub use sysml_contract::{
     DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
     LibrarySpecializationAnchorBranch, MembershipRole, OccurrenceRole, PublicationCompleteness,
-    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition, TextRange,
+    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition,
+    TextRange,
 };
 
 pub use sysml_source as source;

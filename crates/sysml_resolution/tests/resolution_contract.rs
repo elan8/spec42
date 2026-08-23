@@ -3814,7 +3814,10 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
     ));
     assert_eq!(documentation.len(), 1);
     assert_eq!(documentation[0].form, AnnotationForm::Documentation);
-    assert_eq!(&*documentation[0].text, " vehicle documentation ");
+    assert_eq!(
+        published.text(documentation[0].text).unwrap_or_default(),
+        " vehicle documentation "
+    );
     assert!(documentation[0].language.is_none());
 
     let representations = settled(published.element_derived_documentation(
@@ -3827,7 +3830,10 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
         AnnotationForm::TextualRepresentation
     );
     assert_eq!(representations[0].language.as_deref(), Some("Alf"));
-    assert_eq!(&*representations[0].text, " vehicle implementation ");
+    assert_eq!(
+        published.text(representations[0].text).unwrap_or_default(),
+        " vehicle implementation "
+    );
 }
 
 #[test]
@@ -4231,12 +4237,22 @@ fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
     let names = ["P::rover", "P::Rover", "P::Vehicle", "P::selected"];
     let forward = names
         .iter()
-        .map(|name| render_details(&published, &details_of(&published, "memory://model.sysml", name)))
+        .map(|name| {
+            render_details(
+                &published,
+                &details_of(&published, "memory://model.sysml", name),
+            )
+        })
         .collect::<Vec<_>>();
     let mut reverse = names
         .iter()
         .rev()
-        .map(|name| render_details(&published, &details_of(&published, "memory://model.sysml", name)))
+        .map(|name| {
+            render_details(
+                &published,
+                &details_of(&published, "memory://model.sysml", name),
+            )
+        })
         .collect::<Vec<_>>();
     reverse.reverse();
     assert_eq!(forward, reverse);
@@ -4244,7 +4260,10 @@ fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
     for (index, name) in names.iter().enumerate() {
         assert_eq!(
             forward[index],
-            render_details(&published, &details_of(&published, "memory://model.sysml", name))
+            render_details(
+                &published,
+                &details_of(&published, "memory://model.sysml", name)
+            )
         );
     }
 }

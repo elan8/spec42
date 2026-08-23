@@ -37,8 +37,8 @@ pub use sysml_resolution::{
     SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
     SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
     StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
-    TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
     TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
     VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
@@ -1481,7 +1481,9 @@ fn write_element(
     writeln!(
         output,
         "{indent}  (qualified-name {:?})",
-        model.qualified_name(inspection.identity).unwrap_or_default()
+        model
+            .qualified_name(inspection.identity)
+            .unwrap_or_default()
     )?;
     write!(output, "{indent}  ")?;
     write_location(model, output, &inspection.location)?;

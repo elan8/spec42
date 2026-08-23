@@ -361,13 +361,19 @@ fn modifiers(details: &ElementDetails) -> Vec<String> {
     modifiers
 }
 
-fn documentation(details: &ElementDetails) -> Option<String> {
+fn documentation(model: &PublishedModel, details: &ElementDetails) -> Option<String> {
     let text = details
         .inspection
         .documentation
         .iter()
         .filter(|entry| entry.form == AnnotationForm::Documentation)
-        .map(|entry| entry.text.trim().to_string())
+        .map(|entry| {
+            model
+                .text(entry.text)
+                .unwrap_or_default()
+                .trim()
+                .to_string()
+        })
         .filter(|text| !text.is_empty())
         .collect::<Vec<_>>()
         .join("\n\n");
@@ -520,7 +526,7 @@ pub(crate) fn feature_inspector_element(
             .owner
             .as_ref()
             .map(|entry| element_ref(model, entry)),
-        documentation: documentation(details),
+        documentation: documentation(model, details),
         multiplicity: multiplicity_text(inspection.multiplicity),
         direction: inspection.direction.map(|direction| {
             match direction {

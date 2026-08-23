@@ -10,7 +10,7 @@
 //! type name, which throws away everything its own model knows. Rendering is a consumer's job.
 
 use crate::evaluation::EvaluationState;
-use crate::{ElementKind, MembershipRole, SourceLocation, SymbolId, TextRange};
+use crate::{ElementKind, MembershipRole, SourceLocation, SymbolId, TextId, TextRange};
 
 pub use sysml_contract::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
@@ -29,7 +29,12 @@ pub struct Documentation {
     pub locale: Option<Box<str>>,
     /// The `rep` language; always `None` for the other two forms.
     pub language: Option<Box<str>>,
-    pub text: Box<str>,
+    /// The body, as a handle into the publication's interned text.
+    ///
+    /// Not a copy: a documentation body is often the longest string on an element, and an
+    /// inspection is produced per element in bulk answers. Read it with
+    /// [`PublishedResolution::text`](crate::PublishedResolution::text).
+    pub text: TextId,
 }
 
 /// The exact derived `Element::owner` value.

@@ -356,7 +356,7 @@ impl GeneratorModelView {
                 .documentation
                 .iter()
                 .find(|doc| doc.form == AnnotationForm::Documentation)
-                .map(|doc| doc.text.to_string()),
+                .map(|doc| self.model.text(doc.text).unwrap_or_default().to_owned()),
             short_name: inspection.short_name.as_deref().map(str::to_owned),
             direction: inspection.direction.map(|direction| {
                 match direction {

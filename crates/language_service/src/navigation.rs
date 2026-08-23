@@ -124,7 +124,7 @@ fn inspection_hover_markdown(
         }
     }
     for documentation in element.documentation.iter() {
-        markdown.push_str(documentation.text.as_ref());
+        markdown.push_str(model.text(documentation.text).unwrap_or_default());
         markdown.push_str("\n\n");
     }
     if show_location {

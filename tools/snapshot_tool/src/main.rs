@@ -4663,6 +4663,8 @@ enum ElementDerivedDocumentationObservation {
     Values {
         source: SymbolId,
         values: Box<[Documentation]>,
+        /// The authored text of each value, read through the publication at observation time.
+        texts: Box<[String]>,
         expected: Option<ExpectedDocumentation>,
     },
     Incomplete,
@@ -5184,9 +5186,14 @@ fn observe_element_derived_documentation(
         }
         QueryOutcome::Recovery => return Err("element documentation query is recovery".to_string()),
     };
+    let texts = values
+        .iter()
+        .map(|value| model.text(value.text).unwrap_or_default().to_owned())
+        .collect();
     Ok(ElementDerivedDocumentationObservation::Values {
         source,
         values,
+        texts,
         expected: expectation.expected.clone(),
     })
 }
@@ -5659,14 +5666,15 @@ fn compare_element_derived_documentation_observation(
             ElementDerivedDocumentationOutcome::Resolved,
             ElementDerivedDocumentationObservation::Values {
                 values,
+                texts,
                 expected: Some(expected),
                 ..
             },
-        ) if values.iter().any(|actual| {
+        ) if values.iter().zip(texts.iter()).any(|(actual, text)| {
             actual.form == expected.form
                 && actual.locale.as_deref() == expected.locale.as_deref()
                 && actual.language.as_deref() == expected.language.as_deref()
-                && actual.text.as_ref() == expected.text
+                && text.as_str() == expected.text
         }) =>
         {
             Ok(())

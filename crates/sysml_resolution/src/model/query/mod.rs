@@ -1365,7 +1365,7 @@ impl<D> SemanticModel<D> {
                 .into_vec()
                 .into_iter()
                 .filter(|value| value.form == InspectionAnnotationForm::Documentation)
-                .map(|value| value.text)
+                .filter_map(|value| self.text(value.text).map(Box::<str>::from))
                 .collect::<Vec<_>>()
                 .into_boxed_slice();
             return self.resolved_outcome(RequirementDerivedFactOutcome::Text(values));

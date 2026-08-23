@@ -631,7 +631,7 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "DiagramEdge::semantic_id",
     "DiagramRelationship::semantic_id",
     "DiagramStateTransition::semantic_id",
-    "Documentation::text",
+
     "PackageTargets::qualified_name",
     "SymbolEntry::qualified_name",
     // Not a copy of source text: the parser's own message, and for a parser panic a message this

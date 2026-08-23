@@ -1069,7 +1069,12 @@ fn inspection_publishes_every_authored_fact_of_an_element() {
 
     let car = inspect_named(&published, "memory://i.sysml", 3, 11);
     assert_eq!(car.documentation.len(), 1, "expected the doc comment");
-    assert_eq!(&*car.documentation[0].text, " the car ");
+    assert_eq!(
+        published
+            .text(car.documentation[0].text)
+            .unwrap_or_default(),
+        " the car "
+    );
     assert_eq!(car.documentation[0].form, AnnotationForm::Documentation);
 }
 

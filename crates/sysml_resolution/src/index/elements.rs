@@ -322,23 +322,27 @@ impl<D> SemanticModel<D> {
         )
         .iter()
         .map(|index| &self.storage.documentation[*index as usize])
-        .map(|record| Documentation {
-            form: match record.form {
-                crate::lower::facts::AnnotationForm::Documentation => AnnotationForm::Documentation,
-                crate::lower::facts::AnnotationForm::Comment => AnnotationForm::Comment,
-                crate::lower::facts::AnnotationForm::TextualRepresentation => {
-                    AnnotationForm::TextualRepresentation
-                }
-            },
-            locale: record
-                .locale
-                .and_then(|id| self.storage.symbol(id))
-                .map(Into::into),
-            language: record
-                .language
-                .and_then(|id| self.storage.symbol(id))
-                .map(Into::into),
-            text: self.storage.symbol(record.text).unwrap_or_default().into(),
+        .filter_map(|record| {
+            Some(Documentation {
+                form: match record.form {
+                    crate::lower::facts::AnnotationForm::Documentation => {
+                        AnnotationForm::Documentation
+                    }
+                    crate::lower::facts::AnnotationForm::Comment => AnnotationForm::Comment,
+                    crate::lower::facts::AnnotationForm::TextualRepresentation => {
+                        AnnotationForm::TextualRepresentation
+                    }
+                },
+                locale: record
+                    .locale
+                    .and_then(|id| self.storage.symbol(id))
+                    .map(Into::into),
+                language: record
+                    .language
+                    .and_then(|id| self.storage.symbol(id))
+                    .map(Into::into),
+                text: crate::TextId::from_index(record.text.index())?,
+            })
         })
         .collect()
     }
