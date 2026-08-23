@@ -13,9 +13,10 @@ use std::sync::{Arc, Mutex};
 
 use sysml_source::{SourceDocument, SourceKind};
 
+use crate::lower::memo::LoweringMemo;
 use crate::syntax::SyntaxAuthority;
 use crate::{
-    build, build_library_stratum_with, BuildRequest, ConstructionSchedule, LibraryStratum,
+    build, build_library_stratum_memoized, BuildRequest, ConstructionSchedule, LibraryStratum,
     PublicationIdentity, PublishedResolution, SourceInput,
 };
 
@@ -102,6 +103,10 @@ struct CachedLibraryStratum {
 pub struct PublicationAuthority {
     syntax: Arc<SyntaxAuthority>,
     library: Mutex<Option<CachedLibraryStratum>>,
+    /// Phase 2's memo: one lowering product per admitted document, keyed by content digest at
+    /// every provenance rather than only at the library boundary. Owned here so it is reached
+    /// only through this handle, and so its lifetime is the host session's.
+    lowering: Arc<LoweringMemo>,
 }
 
 impl PublicationAuthority {
@@ -109,6 +114,7 @@ impl PublicationAuthority {
         Self {
             syntax,
             library: Mutex::new(None),
+            lowering: Arc::new(LoweringMemo::new()),
         }
     }
 
@@ -174,7 +180,8 @@ impl PublicationAuthority {
             PublicationBuildFailure::at(PublicationFailureStage::RequestConstruction, error)
         })?
         .reporting(reported)
-        .with_syntax(Arc::clone(&self.syntax));
+        .with_syntax(Arc::clone(&self.syntax))
+        .with_lowering(Arc::clone(&self.lowering));
         Ok(PreparedPublication { request })
     }
 
@@ -193,9 +200,10 @@ impl PublicationAuthority {
             }
         }
         let stratum = Arc::new(
-            build_library_stratum_with(
+            build_library_stratum_memoized(
                 libraries.iter().map(|(_, source)| source.clone()).collect(),
                 Some(Arc::clone(&self.syntax)),
+                Some(Arc::clone(&self.lowering)),
             )
             .map_err(|error| {
                 PublicationBuildFailure::at(PublicationFailureStage::LibraryConstruction, error)

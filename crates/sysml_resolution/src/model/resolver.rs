@@ -231,6 +231,7 @@ impl<D> SemanticModel<D> {
             .map(|document| crate::pipeline::PreparedDocument {
                 identity: document.identity,
                 role: document.role,
+                digest: document.digest,
                 parsed: document.parsed,
                 parse_errors: document.parse_errors.into_vec(),
             })
@@ -891,6 +892,7 @@ mod tests {
     /// is no longer part of the storage.
     fn empty_parsed_sources() -> crate::lower::storage::ParsedSources {
         crate::lower::storage::ParsedSources::new(vec![crate::lower::facts::AdmittedDocument {
+            digest: source_identity::ContentDigest::of_bytes(&[]),
             identity: "test".into(),
             role: SourceRole::Workspace,
             parsed: std::sync::Arc::new(ParsedDocument {

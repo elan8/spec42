@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use source_identity::ContentDigest;
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
@@ -562,6 +563,9 @@ pub(crate) struct AdmittedDocument {
     /// sources, so this is never an admission filter; it is what lets owner-defined projections
     /// report the authored workspace without also reporting the whole standard library.
     pub(crate) role: SourceRole,
+    /// The digest of the text this tree was parsed from: the complete key of this document's
+    /// lowering product, since the lowering walk reads the tree and nothing else.
+    pub(crate) digest: ContentDigest,
     pub(crate) parsed: Arc<ParsedDocument>,
     pub(crate) parse_errors: Box<[ParseError]>,
 }

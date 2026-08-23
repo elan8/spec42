@@ -21,6 +21,11 @@ pub(crate) struct SymbolPathArena {
 }
 
 impl SymbolPathArena {
+    /// How many distinct paths this arena interned.
+    pub(crate) fn len(&self) -> usize {
+        self.paths.len()
+    }
+
     pub(crate) fn get(&self, id: SymbolPathId) -> Option<(&[SymbolId], bool)> {
         let path = self.paths.get(id.index())?;
         if path.len == 0 {
@@ -105,6 +110,11 @@ pub(crate) struct SymbolTable {
 }
 
 impl SymbolTable {
+    /// How many distinct names this table interned.
+    pub(crate) fn len(&self) -> usize {
+        self.spans.len()
+    }
+
     pub(crate) fn get(&self, id: SymbolId) -> Option<&str> {
         let (start, len) = *self.spans.get(id.index())?;
         let end = start.checked_add(len)?;

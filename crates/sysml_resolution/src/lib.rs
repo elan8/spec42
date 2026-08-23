@@ -364,6 +364,11 @@ pub struct BuildRequest {
     identity: PublicationIdentity,
     /// The memo pending sources are parsed through; absent, they are parsed cold.
     syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
+    /// The memo unchanged documents take their lowering product from; absent, every document is
+    /// lowered by this build. Never observable from a publication: `design.md` keeps memos behind
+    /// service handles, and the only trace a consumer sees is the counted facts on
+    /// [`BuildMeasurements`].
+    lowering: Option<std::sync::Arc<lower::memo::LoweringMemo>>,
 }
 
 fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
@@ -427,12 +432,25 @@ pub fn build_library_stratum_with(
     sources: Vec<SourceInput>,
     syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
 ) -> Result<LibraryStratum, BuildFailure> {
+    build_library_stratum_memoized(sources, syntax, None)
+}
+
+/// [`build_library_stratum_with`] reusing the lowering product of every unchanged document.
+///
+/// Crate-private: the memo is the publication authority's, and `design.md` keeps memos behind
+/// service handles rather than in a build entry point a consumer can call.
+pub(crate) fn build_library_stratum_memoized(
+    sources: Vec<SourceInput>,
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
+    lowering: Option<std::sync::Arc<lower::memo::LoweringMemo>>,
+) -> Result<LibraryStratum, BuildFailure> {
     let mut request = BuildRequest::new(
         sources,
         ConstructionSchedule::Parallel,
         LIBRARY_STRATUM_CONTRACT,
     )?;
     request.syntax = syntax;
+    request.lowering = lowering;
     let manifest_entries = request.sources.iter().map(manifest_entry).collect();
     let identities = request
         .sources
@@ -486,12 +504,21 @@ impl BuildRequest {
                 reported_documents: Box::default(),
             },
             syntax: None,
+            lowering: None,
         })
     }
 
     /// Parse pending sources through `syntax`'s memo rather than cold.
     pub fn with_syntax(mut self, syntax: std::sync::Arc<syntax::SyntaxAuthority>) -> Self {
         self.syntax = Some(syntax);
+        self
+    }
+
+    /// Builds through `memo`, reusing the lowering product of every document whose content is
+    /// unchanged. Owned by the publication authority; not part of the request's identity, because
+    /// reuse cannot change what is built.
+    pub(crate) fn with_lowering(mut self, memo: std::sync::Arc<lower::memo::LoweringMemo>) -> Self {
+        self.lowering = Some(memo);
         self
     }
 
@@ -639,6 +666,7 @@ fn build_parts(
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
             role: source_role(source.kind),
+            digest: source.content_digest,
             payload: source.payload,
             syntax: syntax.clone(),
         })
@@ -650,6 +678,7 @@ fn build_parts(
             request.policy,
             request.library.as_deref().map(|library| &library.prepared),
             &request.reported,
+            request.lowering.as_deref(),
         )
         .map_err(|error| match error {
             CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,

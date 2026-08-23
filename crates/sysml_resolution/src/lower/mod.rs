@@ -47,6 +47,7 @@ use crate::model::Visibility;
 use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
+use source_identity::ContentDigest;
 use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
@@ -65,9 +66,11 @@ use sysml_v2_parser::{ParseError, ParsedDocument};
 pub(crate) mod actions;
 pub(crate) mod connections;
 pub(crate) mod constraints;
+pub(crate) mod document;
 pub(crate) mod facts;
 pub(crate) mod intern;
 pub(crate) mod kerml;
+pub(crate) mod memo;
 pub(crate) mod metadata;
 pub(crate) mod parts;
 pub(crate) mod requirements;
@@ -112,6 +115,7 @@ impl SemanticModelBuilder {
         &mut self,
         identity: impl Into<Box<str>>,
         role: SourceRole,
+        digest: ContentDigest,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
     ) -> Result<DocumentId, ConstructionError> {
@@ -140,6 +144,7 @@ impl SemanticModelBuilder {
         self.documents.push(AdmittedDocument {
             identity,
             role,
+            digest,
             parsed,
             parse_errors: parse_errors.into_boxed_slice(),
         });
@@ -2034,7 +2039,13 @@ mod tests {
         let mut builder = SemanticModelBuilder::default();
         let parsed = empty_document();
         let document = builder
-            .admit_document("model", SourceRole::Workspace, parsed.clone(), Vec::new())
+            .admit_document(
+                "model",
+                SourceRole::Workspace,
+                ContentDigest::of_bytes(&[]),
+                parsed.clone(),
+                Vec::new(),
+            )
             .unwrap();
         let first_name = builder.intern_name("Vehicle").unwrap();
         let second_name = builder.intern_name("Vehicle").unwrap();
@@ -2069,6 +2080,7 @@ mod tests {
                 .admit_document(
                     format!("model-{index}"),
                     SourceRole::Workspace,
+                    ContentDigest::of_bytes(&[]),
                     parsed.clone(),
                     Vec::new(),
                 )
@@ -2078,7 +2090,13 @@ mod tests {
 
         assert_eq!(
             builder
-                .admit_document("model-0", SourceRole::Workspace, parsed, Vec::new())
+                .admit_document(
+                    "model-0",
+                    SourceRole::Workspace,
+                    ContentDigest::of_bytes(&[]),
+                    parsed,
+                    Vec::new(),
+                )
                 .unwrap_err(),
             ConstructionError::DuplicateDocumentIdentity
         );
@@ -2090,7 +2108,13 @@ mod tests {
         let parsed = empty_document();
         let mut builder = SemanticModelBuilder::default();
         let document = builder
-            .admit_document("model", SourceRole::Workspace, parsed, Vec::new())
+            .admit_document(
+                "model",
+                SourceRole::Workspace,
+                ContentDigest::of_bytes(&[]),
+                parsed,
+                Vec::new(),
+            )
             .unwrap();
         let owner_name = builder.intern_name("Owner").unwrap();
         let owner = builder
