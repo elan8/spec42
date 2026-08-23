@@ -1,76 +1,70 @@
-use std::collections::BTreeMap;
+//! Ranking, origin labelling and grouping for the library symbol browser.
+//!
+//! Editor intelligence over the symbol entries a publication already settled: which candidates a
+//! query matches and how strongly, which library each one came from, and how they group into
+//! sources and packages for a browsable tree. No host re-derives any of it, and none of it decides
+//! a semantic fact — the entries themselves come from [`crate::symbol_entries_for_uri`] over the
+//! published model.
+//!
+//! The `kind` an item carries is the host's own symbol-kind vocabulary, which the host fills in;
+//! this module only groups on it.
+
+use std::collections::{BTreeMap, HashSet};
 
 use sysml_query::resolved_slice::{TextPosition, TextRange};
-use tower_lsp::lsp_types::{Range, SymbolKind, Url};
+use url::Url;
 
-#[derive(Debug, Clone)]
-pub(crate) struct LibrarySearchItem {
-    pub(crate) name: String,
-    pub(crate) kind: String,
-    pub(crate) container: Option<String>,
-    pub(crate) uri: String,
-    pub(crate) range: Range,
-    pub(crate) score: i64,
-    pub(crate) source: String,
-    pub(crate) path: String,
+use crate::symbol::SymbolEntry;
+
+/// One ranked library symbol, in the protocol-neutral shape a host renders.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LibrarySearchItem {
+    pub name: String,
+    pub kind: String,
+    pub container: Option<String>,
+    pub uri: String,
+    pub range: TextRange,
+    pub score: i64,
+    pub source: String,
+    pub path: String,
 }
 
-#[derive(Debug, Clone)]
-pub(crate) struct LibrarySearchPackage {
-    pub(crate) name: String,
-    pub(crate) path: String,
-    pub(crate) source: String,
-    pub(crate) symbols: Vec<LibrarySearchItem>,
+/// The symbols of one library document, under the package name it declares.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LibrarySearchPackage {
+    pub name: String,
+    pub path: String,
+    pub source: String,
+    pub symbols: Vec<LibrarySearchItem>,
 }
 
-#[derive(Debug, Clone)]
-pub(crate) struct LibrarySearchSource {
-    pub(crate) source: String,
-    pub(crate) packages: Vec<LibrarySearchPackage>,
+/// The packages of one library origin (`standard`, `domain`, `custom`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LibrarySearchSource {
+    pub source: String,
+    pub packages: Vec<LibrarySearchPackage>,
 }
 
-pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
-    match kind {
-        SymbolKind::FILE => "file",
-        SymbolKind::MODULE => "module",
-        SymbolKind::NAMESPACE => "namespace",
-        SymbolKind::PACKAGE => "package",
-        SymbolKind::CLASS => "class",
-        SymbolKind::METHOD => "method",
-        SymbolKind::PROPERTY => "property",
-        SymbolKind::FIELD => "field",
-        SymbolKind::CONSTRUCTOR => "constructor",
-        SymbolKind::ENUM => "enum",
-        SymbolKind::INTERFACE => "interface",
-        SymbolKind::FUNCTION => "function",
-        SymbolKind::VARIABLE => "variable",
-        SymbolKind::CONSTANT => "constant",
-        SymbolKind::STRING => "string",
-        SymbolKind::NUMBER => "number",
-        SymbolKind::BOOLEAN => "boolean",
-        SymbolKind::ARRAY => "array",
-        SymbolKind::OBJECT => "object",
-        SymbolKind::KEY => "key",
-        SymbolKind::NULL => "null",
-        SymbolKind::ENUM_MEMBER => "enumMember",
-        SymbolKind::STRUCT => "struct",
-        SymbolKind::EVENT => "event",
-        SymbolKind::OPERATOR => "operator",
-        SymbolKind::TYPE_PARAMETER => "typeParameter",
-        _ => "symbol",
+/// How strongly `name` matches an already lowercased `query_lc`, or `None` for no match.
+///
+/// Exact beats prefix beats substring beats subsequence, and a shorter name wins within a band, so
+/// the ordering is total and independent of the order candidates arrive in.
+pub fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
+    let name_lc = name.to_ascii_lowercase();
+    if name_lc == query_lc {
+        return Some(10_000);
     }
-}
-
-fn is_valid_decl_name(token: &str) -> bool {
-    let mut chars = token.chars();
-    match chars.next() {
-        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
-        _ => return false,
+    if name_lc.starts_with(query_lc) {
+        return Some(8_000 - (name_lc.len() as i64));
     }
-    chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
+    if let Some(pos) = name_lc.find(query_lc) {
+        return Some(6_000 - (pos as i64) * 10 - (name_lc.len() as i64));
+    }
+    fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
 }
 
-pub(crate) fn build_library_tree(items: Vec<LibrarySearchItem>) -> Vec<LibrarySearchSource> {
+/// Groups ranked items into the source/package tree the browser renders.
+pub fn build_library_tree(items: Vec<LibrarySearchItem>) -> Vec<LibrarySearchSource> {
     let mut by_source: BTreeMap<String, BTreeMap<String, Vec<LibrarySearchItem>>> = BTreeMap::new();
     let mut package_name_by_source_path: BTreeMap<(String, String), String> = BTreeMap::new();
 
@@ -141,7 +135,8 @@ fn package_name_from_path(path: &str) -> String {
     file.to_string()
 }
 
-pub(crate) fn library_source_label(uri: &Url) -> &'static str {
+/// Which library a document came from, as the browser groups them.
+pub fn library_source_label(uri: &Url) -> &'static str {
     let path = uri.path().to_ascii_lowercase();
     if path.contains("/standard-library/") {
         "standard"
@@ -152,37 +147,26 @@ pub(crate) fn library_source_label(uri: &Url) -> &'static str {
     }
 }
 
-pub(crate) fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
-    let name_lc = name.to_ascii_lowercase();
-    if name_lc == query_lc {
-        return Some(10_000);
-    }
-    if name_lc.starts_with(query_lc) {
-        return Some(8_000 - (name_lc.len() as i64));
-    }
-    if let Some(pos) = name_lc.find(query_lc) {
-        return Some(6_000 - (pos as i64) * 10 - (name_lc.len() as i64));
-    }
-    fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
-}
-
 /// A syntax-recovery search candidate for a document deliberately excluded from semantic
 /// publication. This is not a resolved symbol and must never be used by semantic consumers.
 #[derive(Debug, Clone)]
-pub(crate) struct RecoverySearchSymbol(crate::language::SymbolEntry);
+pub struct RecoverySearchSymbol(SymbolEntry);
 
 impl RecoverySearchSymbol {
-    pub(crate) fn into_search_only_symbol(self) -> crate::language::SymbolEntry {
+    /// Unwraps the candidate for the search index, naming what it is at the call site.
+    pub fn into_search_only_symbol(self) -> SymbolEntry {
         self.0
     }
 }
 
-pub(crate) fn recover_short_name_search_symbols(
-    content: &str,
-    uri: &Url,
-) -> Vec<RecoverySearchSymbol> {
+/// Recovers `<shortName>` declarations from a library document the publication did not admit.
+///
+/// Search-only recovery, and typed as such: a caller must name
+/// [`RecoverySearchSymbol::into_search_only_symbol`] to use one, so a recovered candidate cannot be
+/// mistaken for a published symbol.
+pub fn recover_short_name_search_symbols(content: &str, uri: &Url) -> Vec<RecoverySearchSymbol> {
     let mut entries: Vec<RecoverySearchSymbol> = Vec::new();
-    let mut existing_names = std::collections::HashSet::new();
+    let mut existing_names = HashSet::new();
     for (line_idx, line) in content.lines().enumerate() {
         let mut cursor = 0usize;
         while let Some(open_rel) = line[cursor..].find('<') {
@@ -215,7 +199,7 @@ pub(crate) fn recover_short_name_search_symbols(
                     Some("short name from declaration".to_string()),
                 ),
             };
-            entries.push(RecoverySearchSymbol(crate::language::SymbolEntry {
+            entries.push(RecoverySearchSymbol(SymbolEntry {
                 name: token.to_string(),
                 uri: uri.clone(),
                 range: TextRange::new(
@@ -231,6 +215,15 @@ pub(crate) fn recover_short_name_search_symbols(
         }
     }
     entries
+}
+
+fn is_valid_decl_name(token: &str) -> bool {
+    let mut chars = token.chars();
+    match chars.next() {
+        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
+        _ => return false,
+    }
+    chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
 }
 
 fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
@@ -257,8 +250,7 @@ fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
 
 #[cfg(test)]
 mod tests {
-    use super::{library_search_score, library_source_label};
-    use tower_lsp::lsp_types::Url;
+    use super::*;
 
     #[test]
     fn library_search_score_prefers_exact_match() {
@@ -280,4 +272,5 @@ mod tests {
         assert_eq!(library_source_label(&domain), "domain");
         assert_eq!(library_source_label(&custom), "custom");
     }
+
 }

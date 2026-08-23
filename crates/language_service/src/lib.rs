@@ -9,6 +9,7 @@ pub mod completion;
 pub mod dto;
 pub mod formatting;
 pub mod keywords;
+pub mod library_search;
 pub mod lookup;
 pub mod navigation;
 mod outline;
@@ -37,6 +38,11 @@ pub use dto::{
     TextEditSuggestion, WorkspaceSymbolMatch,
 };
 pub use formatting::{format_document_text, FormatOptions};
+pub use library_search::{
+    build_library_tree, library_search_score, library_source_label,
+    recover_short_name_search_symbols, LibrarySearchItem, LibrarySearchPackage,
+    LibrarySearchSource, RecoverySearchSymbol,
+};
 pub use keywords::{
     is_reserved_keyword, keyword_doc, keyword_help, keyword_hover_markdown, sysml_keywords,
     KeywordHelp, RESERVED_KEYWORDS,

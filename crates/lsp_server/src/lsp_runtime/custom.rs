@@ -130,12 +130,9 @@ pub(crate) fn sysml_library_search_result(
         // documents are represented exclusively by the committed publication query.
         if !index_entry.admitted_to_publication {
             search_symbols.extend(
-                crate::session::library_search::recover_short_name_search_symbols(
-                    index_entry.content(),
-                    uri,
-                )
-                .into_iter()
-                .map(crate::session::library_search::RecoverySearchSymbol::into_search_only_symbol),
+                language_service::recover_short_name_search_symbols(index_entry.content(), uri)
+                    .into_iter()
+                    .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }
@@ -149,7 +146,7 @@ pub(crate) fn sysml_library_search_result(
             let score = if query.is_empty() {
                 1_000
             } else {
-                crate::session::library_search::library_search_score(&entry.name, &query)?
+                language_service::library_search_score(&entry.name, &query)?
             };
             Some((score, entry))
         })
@@ -174,30 +171,25 @@ pub(crate) fn sysml_library_search_result(
 
     let total = ranked.len();
     let effective_limit = if query.is_empty() { total } else { limit };
-    let items: Vec<crate::session::library_search::LibrarySearchItem> = ranked
+    let items: Vec<language_service::LibrarySearchItem> = ranked
         .into_iter()
         .take(effective_limit)
-        .map(
-            |(score, entry)| crate::session::library_search::LibrarySearchItem {
-                name: entry.name.clone(),
-                kind: crate::session::library_search::symbol_kind_label(
-                    crate::language::outline_kind_to_lsp(
-                        entry.detail.as_deref().unwrap_or("symbol"),
-                    ),
-                )
-                .to_string(),
-                container: entry.container_name.clone(),
-                uri: entry.uri.to_string(),
-                range: crate::common::text_span::to_lsp_range(entry.range),
-                score,
-                source: crate::session::library_search::library_source_label(&entry.uri)
-                    .to_string(),
-                path: entry.uri.path().to_string(),
-            },
-        )
+        .map(|(score, entry)| language_service::LibrarySearchItem {
+            name: entry.name.clone(),
+            kind: crate::language::symbol_kind_label(crate::language::outline_kind_to_lsp(
+                entry.detail.as_deref().unwrap_or("symbol"),
+            ))
+            .to_string(),
+            container: entry.container_name.clone(),
+            uri: entry.uri.to_string(),
+            range: entry.range,
+            score,
+            source: language_service::library_source_label(&entry.uri).to_string(),
+            path: entry.uri.path().to_string(),
+        })
         .collect();
 
-    let domain_sources = crate::session::library_search::build_library_tree(items);
+    let domain_sources = language_service::build_library_tree(items);
     let sources = crate::views::library_search_adapter::to_dto_sources(domain_sources);
     let symbol_total = sources
         .iter()

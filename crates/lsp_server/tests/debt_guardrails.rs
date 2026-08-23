@@ -102,11 +102,18 @@ fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
         "the committed symbol table must contain only exact PublishedModel query results"
     );
 
-    // Recovery has one declaration and four deliberately search-only call sites. A new use must
-    // make its non-admitted provenance explicit and update this architectural gate deliberately.
+    // Recovery is declared in `language_service::library_search`, not here; this crate has four
+    // deliberately search-only call sites. A new use must make its non-admitted provenance
+    // explicit and update this architectural gate deliberately.
+    assert!(
+        !fs::read_to_string(root.join("session/services.rs"))
+            .expect("session services")
+            .contains("fn recover_short_name_search_symbols"),
+        "the editor host must not own a second short-name recovery"
+    );
     assert_eq!(
         count_occurrences(&root, "recover_short_name_search_symbols"),
-        5,
+        4,
         "syntax-recovery search projection escaped its reviewed boundary"
     );
     assert_eq!(

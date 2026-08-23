@@ -1,7 +1,6 @@
 pub(crate) mod handle;
 pub(crate) mod import_graph;
 pub(crate) mod library_closure;
-pub(crate) mod library_search;
 pub(crate) mod services;
 pub(crate) mod snapshot;
 pub(crate) mod state;

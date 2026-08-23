@@ -1,5 +1,5 @@
 use crate::common::util;
-use crate::session::library_search;
+use language_service::library_search;
 use crate::session::state::{DocumentStore, IndexEntry, ScanSummary};
 use rayon::prelude::*;
 use std::time::Instant;

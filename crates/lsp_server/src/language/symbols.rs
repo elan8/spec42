@@ -18,6 +18,42 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
         .collect()
 }
 
+/// The one label a host prints for an LSP [`SymbolKind`], the inverse of the table above.
+///
+/// It lives beside `outline_kind_to_lsp` so the crate's kind vocabulary has one home: the library
+/// browser labels an outline kind by composing the two, rather than keeping a third table.
+pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
+    match kind {
+        SymbolKind::FILE => "file",
+        SymbolKind::MODULE => "module",
+        SymbolKind::NAMESPACE => "namespace",
+        SymbolKind::PACKAGE => "package",
+        SymbolKind::CLASS => "class",
+        SymbolKind::METHOD => "method",
+        SymbolKind::PROPERTY => "property",
+        SymbolKind::FIELD => "field",
+        SymbolKind::CONSTRUCTOR => "constructor",
+        SymbolKind::ENUM => "enum",
+        SymbolKind::INTERFACE => "interface",
+        SymbolKind::FUNCTION => "function",
+        SymbolKind::VARIABLE => "variable",
+        SymbolKind::CONSTANT => "constant",
+        SymbolKind::STRING => "string",
+        SymbolKind::NUMBER => "number",
+        SymbolKind::BOOLEAN => "boolean",
+        SymbolKind::ARRAY => "array",
+        SymbolKind::OBJECT => "object",
+        SymbolKind::KEY => "key",
+        SymbolKind::NULL => "null",
+        SymbolKind::ENUM_MEMBER => "enumMember",
+        SymbolKind::STRUCT => "struct",
+        SymbolKind::EVENT => "event",
+        SymbolKind::OPERATOR => "operator",
+        SymbolKind::TYPE_PARAMETER => "typeParameter",
+        _ => "symbol",
+    }
+}
+
 /// The single `&str` outline-kind -> LSP [`SymbolKind`] table for this crate.
 ///
 /// The strings are the published outline kind vocabulary (`language_service`); document symbols
