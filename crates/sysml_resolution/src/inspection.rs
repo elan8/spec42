@@ -325,3 +325,15 @@ pub struct SymbolEntry {
     pub location: SourceLocation,
     pub declaration_range: TextRange,
 }
+
+impl SymbolEntry {
+    /// What to call this element in text a person reads.
+    ///
+    /// The authored name when there is one, and the qualified name otherwise. A presentation
+    /// default, decided here so every renderer shows the same string for the same element rather
+    /// than each choosing its own fallback: it never substitutes for `identity`, and an absent
+    /// `name` stays absent in the published fact.
+    pub fn display_label(&self) -> &str {
+        self.name.as_deref().unwrap_or(self.qualified_name.as_ref())
+    }
+}

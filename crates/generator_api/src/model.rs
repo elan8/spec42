@@ -1489,11 +1489,7 @@ impl GeneratorModelView {
 }
 
 fn display_label(entry: &SymbolEntry) -> String {
-    entry
-        .name
-        .as_deref()
-        .unwrap_or(entry.qualified_name.as_ref())
-        .to_owned()
+    entry.display_label().to_owned()
 }
 
 fn inspection_source(
