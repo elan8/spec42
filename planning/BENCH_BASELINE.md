@@ -61,3 +61,17 @@ the published element count for the two build cases, the returned result count f
   library stratum is reused and the whole workspace is re-lowered (`D_performance.md` §3, item 8).
   Cold build is roughly 2.7× the relink, so the settled library stratum is being reused correctly;
   what remains is workspace-side reuse.
+
+## Re-baseline — end of wave 3 (2026-08-24, same machine, quiet)
+
+Commit: tip of `architecture-hardening` after waves 1–3. Medians (divan):
+
+| Case | Median | vs. original baseline |
+|---|---|---|
+| cold_build_stdlib | 136.9 ms | 254.7 ms |
+| warm_relink_one_document | 56.6 ms | 83.4 ms |
+| q_visible_members | 5.90 µs (4 allocs) | 42.2 µs (601 allocs) |
+| q_document_symbols | 20.8 µs | 235.1 µs (4,554 allocs) |
+| q_target_at | 48 ns | 300 ns |
+| q_references | 45 ns | 1.09 µs |
+| q_diagnostics_for_document | 18 ns (0 allocs) | 29 ns (0 allocs) |
