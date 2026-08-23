@@ -184,7 +184,11 @@ pub(crate) fn sysml_library_search_result(
             uri: entry.uri.to_string(),
             range: entry.range,
             score,
-            source: language_service::library_source_label(&entry.uri).to_string(),
+            source: language_service::library_source_label(
+                &entry.uri,
+                &state.standard_library_paths,
+            )
+            .to_string(),
             path: entry.uri.path().to_string(),
         })
         .collect();

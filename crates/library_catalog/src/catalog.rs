@@ -171,7 +171,7 @@ fn resolve_stdlib_component(
             };
             return Ok(StdlibComponent {
                 path: Some(managed_path.clone()),
-                roots: stdlib_resolution_roots(&managed_path, Some(&metadata)),
+                roots: stdlib_library_roots(&managed_path, Some(&metadata)),
                 source: Some(source),
                 used_legacy_vscode_fallback: false,
             });
@@ -185,7 +185,7 @@ fn resolve_stdlib_component(
                 .map_err(CatalogError::from)?;
         let path = PathBuf::from(&metadata.install_path);
         return Ok(StdlibComponent {
-            roots: stdlib_resolution_roots(&path, Some(&metadata)),
+            roots: stdlib_library_roots(&path, Some(&metadata)),
             path: Some(path),
             source: Some("bundled".to_string()),
             used_legacy_vscode_fallback: false,
@@ -194,7 +194,7 @@ fn resolve_stdlib_component(
 
     if let Some(path) = legacy_vscode_stdlib_path(&request.standard_library) {
         return Ok(StdlibComponent {
-            roots: stdlib_resolution_roots(&path, None),
+            roots: stdlib_library_roots(&path, None),
             path: Some(path),
             source: Some("legacy-vscode".to_string()),
             used_legacy_vscode_fallback: true,
@@ -364,18 +364,6 @@ fn merge_package_roots(
         .into_iter()
         .filter(|path| deduped.insert(path.display().to_string()))
         .collect()
-}
-
-fn stdlib_resolution_roots(
-    install_path: &Path,
-    metadata: Option<&crate::library::stdlib::StandardLibraryMetadata>,
-) -> Vec<PathBuf> {
-    let roots = stdlib_library_roots(install_path, metadata);
-    if roots.is_empty() {
-        vec![install_path.to_path_buf()]
-    } else {
-        roots
-    }
 }
 
 /// Scans every configured package root (in configured precedence order) and hashes every

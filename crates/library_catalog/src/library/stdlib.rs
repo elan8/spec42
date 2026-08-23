@@ -117,6 +117,12 @@ pub fn managed_install_path(
         .join(content)
 }
 
+/// The resolution roots one standard-library install offers, defaulted once.
+///
+/// Recorded metadata wins when every root it names still exists; otherwise the install directory
+/// is discovered. The empty case is settled here and only here: an install with no discoverable
+/// root resolves against the install directory itself, so a caller never re-applies the default
+/// and the two layers cannot disagree about what an empty discovery means.
 pub fn stdlib_library_roots(
     install_path: &Path,
     metadata: Option<&StandardLibraryMetadata>,
@@ -133,7 +139,11 @@ pub fn stdlib_library_roots(
             }
         }
     }
-    discover_library_roots(install_path)
+    let discovered = discover_library_roots(install_path);
+    if discovered.is_empty() {
+        return vec![install_path.to_path_buf()];
+    }
+    discovered
 }
 
 pub fn load_managed_metadata(

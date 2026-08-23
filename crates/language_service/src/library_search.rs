@@ -136,16 +136,31 @@ fn package_name_from_path(path: &str) -> String {
 }
 
 /// Which library a document came from, as the browser groups them.
-pub fn library_source_label(uri: &Url) -> &'static str {
-    let path = uri.path().to_ascii_lowercase();
-    if path.contains("/standard-library/") {
-        "standard"
-    } else if path.contains("/domain-libraries/") {
-        "domain"
-    } else {
-        "custom"
+///
+/// `standard_library_roots` is the configuration's own answer to "which roots are the standard
+/// library", the same list the host classifies `SourceKind::StandardLibrary` from, so the
+/// load-bearing case is decided by what configuration states rather than by a path substring.
+///
+/// The remaining split is a presentation grouping and degrades explicitly: `domain` names the
+/// managed domain-library layout `library_catalog` materialises under the data directory, and
+/// anything else is `custom`. Neither answer is a semantic fact, and neither changes what a
+/// document resolves to.
+pub fn library_source_label(uri: &Url, standard_library_roots: &[Url]) -> &'static str {
+    if sysml_query::source::uri_under_any(uri, standard_library_roots) {
+        return "standard";
     }
+    if uri
+        .path()
+        .to_ascii_lowercase()
+        .contains(MANAGED_DOMAIN_LIBRARY_SEGMENT)
+    {
+        return "domain";
+    }
+    "custom"
 }
+
+/// The directory segment the managed domain-library install uses.
+const MANAGED_DOMAIN_LIBRARY_SEGMENT: &str = "/domain-libraries/";
 
 /// A syntax-recovery search candidate for a document deliberately excluded from semantic
 /// publication. This is not a resolved symbol and must never be used by semantic consumers.
@@ -260,7 +275,10 @@ mod tests {
     }
 
     #[test]
-    fn library_source_label_classifies_bundled_roots() {
+    fn library_source_label_reads_the_configured_standard_library_roots() {
+        let root =
+            Url::parse("file:///tmp/data/standard-library/versions/2026-04/sysml.library/")
+                .expect("url");
         let stdlib = Url::parse(
             "file:///tmp/data/standard-library/versions/2026-04/sysml.library/ScalarValues.sysml",
         )
@@ -268,9 +286,22 @@ mod tests {
         let domain = Url::parse("file:///tmp/data/domain-libraries/versions/dc378a9/tree/generic/RequirementMetadata.sysml")
             .expect("url");
         let custom = Url::parse("file:///workspace/libs/Domain.sysml").expect("url");
-        assert_eq!(library_source_label(&stdlib), "standard");
-        assert_eq!(library_source_label(&domain), "domain");
-        assert_eq!(library_source_label(&custom), "custom");
+        let roots = vec![root];
+        assert_eq!(library_source_label(&stdlib, &roots), "standard");
+        assert_eq!(library_source_label(&domain, &roots), "domain");
+        assert_eq!(library_source_label(&custom, &roots), "custom");
+    }
+
+    #[test]
+    fn a_standard_library_root_outside_the_conventional_layout_is_still_standard() {
+        let root = Url::parse("file:///opt/my-sysml-lib/").expect("url");
+        let document = Url::parse("file:///opt/my-sysml-lib/ScalarValues.sysml").expect("url");
+        assert_eq!(
+            library_source_label(&document, std::slice::from_ref(&root)),
+            "standard",
+            "configuration states which roots are the standard library; a path convention does not"
+        );
+        assert_eq!(library_source_label(&document, &[]), "custom");
     }
 
 }
