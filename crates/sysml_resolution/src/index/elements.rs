@@ -4,7 +4,36 @@
 //! re-reading authored text, and nothing is defaulted: a fact the parser cannot express is absent,
 //! and a fact resolution could not settle keeps its own outcome.
 
-use super::*;
+use crate::evaluate::EvaluationFact;
+use crate::index::documents::leaf_ranges_containing;
+use crate::index::documents::record_visited_index_entries;
+use crate::index::types;
+use crate::lower::facts::ParameterDirection;
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::element_kind;
+use crate::model::resolver::declaration_identifier_range;
+use crate::model::resolver::document_range;
+use crate::model::resolver::writer;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DocumentId;
+use crate::model::ReferenceKind;
+use crate::model::SymbolPathId;
+use crate::resolve::names::EffectiveVisibility;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
+use crate::resolve::results::ResolutionStatus;
+use crate::ElementSearch;
+use crate::ElementSource;
+use crate::EvaluationState;
+use crate::OccurrenceRole;
+use crate::QueryOutcome;
+use crate::SourceLocation;
+use crate::SymbolIdentity;
+use crate::TextPosition;
+use source_identity::SourceRole;
+
 use crate::inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
@@ -33,7 +62,7 @@ pub(crate) struct ElementFactIndex {
     pub(crate) implied_order: Box<[u32]>,
     /// Implied relationships ordered by *target* declaration.
     ///
-    /// The authored direction already has [`super::ReverseReferenceIndex`]; without this one, the
+    /// The authored direction already has [`crate::index::reverse_references::ReverseReferenceIndex`]; without this one, the
     /// relationships the resolver synthesized would be visible only from their source, so an
     /// element would be told nothing points at it when something does.
     pub(crate) incoming_implied: Box<[(u32, u32)]>,
@@ -285,10 +314,10 @@ impl ResolvedSemanticModel {
         let membership = self.memberships.get(id)?;
         Some(MembershipFacts {
             kind: match membership.kind {
-                super::MembershipKind::Owning => MembershipKind::Owning,
-                super::MembershipKind::Feature => MembershipKind::Feature,
-                super::MembershipKind::Import => MembershipKind::Import,
-                super::MembershipKind::Alias => MembershipKind::Alias,
+                crate::model::MembershipKind::Owning => MembershipKind::Owning,
+                crate::model::MembershipKind::Feature => MembershipKind::Feature,
+                crate::model::MembershipKind::Import => MembershipKind::Import,
+                crate::model::MembershipKind::Alias => MembershipKind::Alias,
             },
             visibility: match membership.visibility {
                 EffectiveVisibility::Public => Visibility::Public,
@@ -313,9 +342,9 @@ impl ResolvedSemanticModel {
         .map(|index| &self.storage.documentation[*index as usize])
         .map(|record| Documentation {
             form: match record.form {
-                super::AnnotationForm::Documentation => AnnotationForm::Documentation,
-                super::AnnotationForm::Comment => AnnotationForm::Comment,
-                super::AnnotationForm::TextualRepresentation => {
+                crate::lower::facts::AnnotationForm::Documentation => AnnotationForm::Documentation,
+                crate::lower::facts::AnnotationForm::Comment => AnnotationForm::Comment,
+                crate::lower::facts::AnnotationForm::TextualRepresentation => {
                     AnnotationForm::TextualRepresentation
                 }
             },
@@ -342,8 +371,8 @@ impl ResolvedSemanticModel {
         .map(|index| &self.storage.feature_values[*index as usize])
         .map(|record| AuthoredValue {
             kind: match record.kind {
-                super::FeatureValueKind::Bind => ValueKind::Bind,
-                super::FeatureValueKind::Assign => ValueKind::Assign,
+                crate::lower::facts::FeatureValueKind::Bind => ValueKind::Bind,
+                crate::lower::facts::FeatureValueKind::Assign => ValueKind::Assign,
             },
             is_default: record.is_default,
             has_operator: record.has_operator,
@@ -357,10 +386,12 @@ impl ResolvedSemanticModel {
         let Some(multiplicity) = &facts.multiplicity else {
             return MultiplicityFacts::Absent;
         };
-        let bound = |value: super::MultiplicityBound| match value {
-            super::MultiplicityBound::Unbounded => MultiplicityBound::Unbounded,
-            super::MultiplicityBound::Literal(value) => MultiplicityBound::Literal(value),
-            super::MultiplicityBound::Expression => MultiplicityBound::Expression,
+        let bound = |value: crate::lower::facts::MultiplicityBound| match value {
+            crate::lower::facts::MultiplicityBound::Unbounded => MultiplicityBound::Unbounded,
+            crate::lower::facts::MultiplicityBound::Literal(value) => {
+                MultiplicityBound::Literal(value)
+            }
+            crate::lower::facts::MultiplicityBound::Expression => MultiplicityBound::Expression,
         };
         MultiplicityFacts::Declared {
             lower: bound(multiplicity.lower),
@@ -592,8 +623,8 @@ impl ResolvedSemanticModel {
             multiplicity: self.multiplicity(id),
             modifiers: self.modifiers(id),
             portion_kind: facts.portion_kind.map(|kind| match kind {
-                super::PortionKind::Snapshot => PortionKind::Snapshot,
-                super::PortionKind::Timeslice => PortionKind::Timeslice,
+                crate::lower::facts::PortionKind::Snapshot => PortionKind::Snapshot,
+                crate::lower::facts::PortionKind::Timeslice => PortionKind::Timeslice,
             }),
             direction: facts.direction.map(|direction| match direction {
                 ParameterDirection::In => FeatureDirection::In,

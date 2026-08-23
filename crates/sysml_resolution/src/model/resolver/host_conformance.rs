@@ -27,9 +27,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::conformance::{Family, Role};
 use super::*;
 use crate::evaluation::{EvaluatedScalar, EvaluationState};
+use crate::model::resolver::conformance::{Family, Role};
 
 /// The note attached to the earlier member a duplicate name collides with.
 pub(crate) const RELATED_FIRST_DECLARATION: &str = "First declared here.";

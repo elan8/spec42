@@ -1,8 +1,8 @@
 //! Phase 3: the name and scope indexes the solver looks names up in.
 
+use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::MembershipRecord;
-use crate::model::resolver::record_visited_index_entries;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::MembershipKind;

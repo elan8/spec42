@@ -5,7 +5,16 @@
 //! reads the same connector fact and cannot accidentally match a left end from one statement to a
 //! right end from another.
 
-use super::*;
+use crate::index::types;
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
+use crate::resolve::results::ResolutionStatus;
+
 use crate::{
     BindingConnectorCheckKind, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite,

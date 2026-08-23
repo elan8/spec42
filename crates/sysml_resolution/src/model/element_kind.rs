@@ -619,7 +619,7 @@ mod tests {
     #[test]
     fn identity_kind_names_are_frozen_with_the_encoding_version() {
         assert_eq!(
-            crate::model::resolver::IDENTITY_ENCODING_VERSION,
+            crate::index::identity::IDENTITY_ENCODING_VERSION,
             "element/v1",
             "the identity encoding version changed; confirm every kebab kind name below is still \
              correct for it"

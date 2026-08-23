@@ -5,16 +5,9 @@
 //! This module deliberately exposes no storage, graph adapter, or independently publishable
 //! authored model. The publication owner consumes the typed coordinator outcome below.
 
-use std::{
-    collections::{hash_map::RandomState, BTreeMap},
-    hash::BuildHasher,
-    sync::Arc,
-};
-
-use hashbrown::HashTable;
+use std::sync::Arc;
 
 use crate::evaluate::classify::*;
-use crate::evaluate::fold::*;
 use crate::lower::facts::*;
 use crate::lower::storage::SemanticModelStorage;
 
@@ -1398,7 +1391,7 @@ pub(crate) enum EvaluatedValue {
 }
 
 pub(crate) mod element_kind;
-mod evaluation;
+pub(crate) mod evaluation;
 pub(crate) mod resolver;
 
 #[cfg(test)]

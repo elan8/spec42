@@ -39,7 +39,35 @@
 //! symbol two of them answer to is reported as ambiguous rather than decided by proximity. That is
 //! visible behaviour, not an accident -- see `tests/snapshots/resolution/ambiguous_unit_symbol.md`.
 
-use super::*;
+use crate::index::documents::record_visited_index_entries;
+use crate::index::types;
+use crate::lower::facts::FilterForm;
+use crate::lower::facts::ParameterDirection;
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::resolver::document_range;
+use crate::model::resolver::writer;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::SymbolId;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
+use crate::AuthoredUnit;
+use crate::ElementEvaluation;
+use crate::EvaluationState;
+use crate::ExpectedMeasurement;
+use crate::OccurrenceRole;
+use crate::QueryOutcome;
+use crate::ResolvedUnit;
+use crate::SourceLocation;
+use crate::SymbolIdentity;
+use crate::TextPosition;
+use crate::TextRange;
+use crate::UnitResolution;
+use source_identity::SourceRole;
+use sysml_v2_parser::ast::Span;
+
 use crate::evaluation::EvaluatedScalar;
 
 /// A normative standard-library declaration this fact family is rooted in.
@@ -216,7 +244,7 @@ pub(crate) struct SettledFilter {
     pub(crate) form: FilterForm,
     pub(crate) span: Span,
     pub(crate) state: EvaluationState,
-    pub(crate) predicate: super::super::FilterPredicate,
+    pub(crate) predicate: crate::lower::facts::FilterPredicate,
 }
 
 /// One authored invocation whose callee settled, with both argument counts.
@@ -893,7 +921,7 @@ impl ResolvedSemanticModel {
 
 #[cfg(test)]
 mod tests {
-    use super::unit_symbol_path;
+    use crate::model::resolver::expression::unit_symbol_path;
 
     /// A plain identifier and a qualified path are names; both reach the catalog.
     #[test]

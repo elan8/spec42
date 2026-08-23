@@ -21,6 +21,7 @@ mod element_kind;
 mod evaluate;
 mod evaluation;
 mod feature_query;
+mod index;
 mod inspection;
 pub mod library;
 mod lower;
@@ -3392,7 +3393,7 @@ mod tests {
             .expect("the probed document is in the workspace")
             .1;
         let position = position_of(source, needle);
-        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+        let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
             published.inspect_at(document, position)
         });
         assert!(
@@ -3415,7 +3416,7 @@ mod tests {
             QueryOutcome::Resolved(target) => target.symbol,
             other => panic!("the probe must resolve to a target, got: {other:?}"),
         };
-        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+        let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
             published.references(&symbol, false)
         });
         assert!(
@@ -3439,7 +3440,7 @@ mod tests {
             .expect("the probed document is in the workspace")
             .1;
         let position = position_of(source, needle);
-        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+        let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
             published.visible_members(document, position, qualifier)
         });
         assert!(
@@ -3492,7 +3493,7 @@ mod tests {
             .1;
         let symbol = probe_symbol(&published, source, document, needle);
         let (outcome, visited) =
-            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol));
+            crate::index::documents::measure_visited_index_entries(|| published.evaluate(&symbol));
         assert!(
             matches!(outcome, QueryOutcome::Resolved(_)),
             "the evaluation query must resolve, got: {outcome:?}"
@@ -3535,7 +3536,7 @@ mod tests {
         let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
         let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
         let measure = || {
-            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol))
+            crate::index::documents::measure_visited_index_entries(|| published.evaluate(&symbol))
         };
         let (first, first_cost) = measure();
         let (second, second_cost) = measure();
@@ -3556,7 +3557,7 @@ mod tests {
         let evaluation_first = {
             let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
             let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
-            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+            let (evaluation, cost) = crate::index::documents::measure_visited_index_entries(|| {
                 published.evaluate(&symbol)
             });
             let inspection = published.inspect(&symbol);
@@ -3566,7 +3567,7 @@ mod tests {
             let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
             let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
             let inspection = published.inspect(&symbol);
-            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+            let (evaluation, cost) = crate::index::documents::measure_visited_index_entries(|| {
                 published.evaluate(&symbol)
             });
             (evaluation, inspection, cost)
@@ -6099,7 +6100,7 @@ package P {
         let cost = |sources: &[(&str, &str)]| {
             let published = publication_for(sources);
             let symbol = identity_of(&published, "memory://i.sysml", "P::w");
-            let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+            let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
                 published.element_details(&symbol)
             });
             assert!(

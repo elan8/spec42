@@ -11,7 +11,14 @@
 //! is a lookup rather than a traversal, an answer cannot depend on the order queries arrive in,
 //! and the publication keeps its "the only interior mutation is source line indexing" invariant.
 
-use super::*;
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::MembershipKind;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
+use crate::resolve::results::ResolutionStatus;
 
 /// Which specialization edges a path may use.
 ///
