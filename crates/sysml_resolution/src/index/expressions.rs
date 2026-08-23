@@ -45,7 +45,7 @@ use crate::index::types;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;

@@ -321,7 +321,7 @@ pub(crate) fn membership_role_with_trigger(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::model::resolver::writer::declaration_kind;
+    use crate::model::render::declaration_kind;
     use std::collections::{BTreeMap, BTreeSet};
 
     /// Every declaration kind.

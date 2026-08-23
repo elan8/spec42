@@ -20,8 +20,6 @@ use crate::lower::SemanticModelBuilder;
 #[cfg(test)]
 use sysml_v2_parser::ParsedDocument;
 
-use source_identity::SourceRole;
-
 macro_rules! semantic_id {
     ($name:ident) => {
         #[repr(transparent)]
@@ -1393,6 +1391,8 @@ pub(crate) enum EvaluatedValue {
 
 pub(crate) mod element_kind;
 pub(crate) mod evaluation;
+pub(crate) mod query;
+pub(crate) mod render;
 pub(crate) mod resolver;
 
 #[cfg(test)]

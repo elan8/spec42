@@ -27,7 +27,7 @@
 use crate::diagnose::document_range;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;

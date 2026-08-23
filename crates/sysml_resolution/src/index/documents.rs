@@ -3,7 +3,7 @@
 use crate::diagnose::declaration_identifier_range;
 use crate::diagnose::document_range;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::range_contains;
+use crate::model::query::range_contains;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;

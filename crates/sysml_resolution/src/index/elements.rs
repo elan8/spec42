@@ -13,7 +13,7 @@ use crate::index::types;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;

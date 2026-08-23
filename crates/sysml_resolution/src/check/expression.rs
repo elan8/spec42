@@ -28,7 +28,7 @@ use crate::index::expressions::conforms;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::lower::facts::FilterForm;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;

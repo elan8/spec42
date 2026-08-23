@@ -1,7 +1,7 @@
 //! Phase 6: stable element identity, encoded once per publication.
 
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;

@@ -3,9 +3,75 @@
 //! The writer accepts only the resolved owner and a caller-provided `fmt::Write`. It does not
 //! expose storage collections or return projections that could become a second semantic model.
 
+#[cfg(test)]
+use crate::build;
+use crate::diagnose::document_range;
+#[cfg(test)]
+use crate::evaluate::compute_evaluation;
+#[cfg(test)]
+use crate::evaluate::SettledEvaluation;
+#[cfg(test)]
+#[cfg(test)]
+#[cfg(test)]
+use crate::evaluation::EvaluationPolicy;
+#[cfg(test)]
+use crate::index::bindings as binding;
+#[cfg(test)]
+use crate::index::bindings::BindingConnectorIndex;
+#[cfg(test)]
+use crate::index::documents::DocumentIndex;
+#[cfg(test)]
+use crate::index::elements as inspection;
+#[cfg(test)]
+use crate::index::elements::ElementFactIndex;
+use crate::index::expressions as expression;
+#[cfg(test)]
+use crate::index::expressions::ExpressionIndex;
+#[cfg(test)]
+use crate::index::identity::IdentityIndex;
+#[cfg(test)]
+use crate::index::reverse_references::ReverseReferenceIndex;
+use crate::index::types;
+#[cfg(test)]
+use crate::index::types::TypeIndex;
+use crate::lower::facts::AnnotationForm;
+use crate::lower::facts::AuthoredImportFacts;
+use crate::lower::facts::AuthoredImportShape;
+use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::FeatureValueKind;
+use crate::lower::facts::FilterForm;
+use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::ParameterDirection;
+use crate::lower::facts::PortionKind;
+#[cfg(test)]
+use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
+#[cfg(test)]
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::resolver::PublicationCompleteness;
+#[cfg(test)]
+use crate::model::resolver::PublicationMetadata;
+use crate::model::resolver::PublicationPhase;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentId;
+use crate::model::MembershipKind;
+use crate::model::ReferenceKind;
+use crate::model::SymbolPathId;
+use crate::model::Visibility;
+#[cfg(test)]
+use crate::resolve::names::EffectiveScopeIndex;
+#[cfg(test)]
+use crate::resolve::resolve_dense;
+use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::results::ResolutionStatus;
+use crate::Diagnostic;
+use crate::TextRange;
+use source_identity::SourceRole;
+
 use std::fmt;
 
-use super::*;
 use crate::evaluation::EvaluatedScalar;
 
 pub(crate) fn write_semantic(

@@ -29,7 +29,7 @@ use crate::diagnose::document_range;
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
-use crate::model::resolver::writer;
+use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
