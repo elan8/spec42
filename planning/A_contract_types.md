@@ -16,6 +16,43 @@ Counted from the `pub use` blocks in each facade module (workspace at `sole-auth
 Of the 142 in `resolved_slice.rs`: **83 enums**, **51 structs**, 8 names that are aliases/trait-ish
 (the `*CheckKind` / `*DerivedFactKind` families defined via macro or re-export chains).
 
+### What step 3 actually moved
+
+The estimate below of "~104 pure contract value types" was too generous. Counted against the
+finished crate rather than by eye, the 142 names in `resolved_slice.rs` split three ways:
+
+| | Count | |
+|---|---|---|
+| **Moved in step 3** | **59** | field-free enums, `Copy` value structs, `ElementKind` and its macro |
+| **Never movable** | **9** | 8 manifest re-exports + `DiagnosticCode` |
+| **Waiting for wave 3** | **74** | every name carrying a `SymbolIdentity`, `Box<str>` or `Box<[T]>` |
+
+The 9 that never move are the eight `spec42_constraint_manifest` re-exports —
+`ActionDerivedFactKind`, `BindingConnectorCheckKind`, `DefinitionUsageDerivedKind`,
+`RedefinitionCheckKind`, `RequirementDerivedFactKind`, `SpecializationCheckKind`,
+`TypeDerivedFactKind`, `TypeFeaturingCheckKind` — plus `DiagnosticCode`. Each is generated from
+the pinned manifest, and `sysml_contract` may name no crate but `source_identity`. They stay
+re-exported through `sysml_resolution`.
+
+The 74 that wait are not a separate category from (c) below: an enum whose only disqualification
+is one `SymbolIdentity` arm (`DerivedElementOwner`, `EffectiveTypeOrigin`, `RelationshipTarget`)
+becomes movable the moment step 5 replaces that identity with a `Copy` `SymbolId`, and the owned
+collection types become movable when step 6 converts them to views. So step 3 is finished, and the
+remainder of the vocabulary follows the identity and view work rather than needing a fourth batch
+of its own.
+
+Two carry-overs worth naming, because each is a rule the moves discovered:
+
+- **A method whose body names a crate the contract may not depend on does not travel with its
+  type.** `RequirementDerivedFactCollection::from_kind` maps the manifest's rule table onto the
+  vocabulary, so it stays behind as the free fn `requirement_collection_from_kind`. Same for
+  `DiagramViewKind::definition_name`, which matches a catalog entry against a standard library
+  declaration and is authority behaviour rather than consumer vocabulary.
+- **`SpecializationScope` is two types, not one.** The contract enum is the published query scope;
+  `index/types.rs` keeps a separate `pub(crate)` enum of the same name carrying the closure's
+  scope bitset. They are converted at the query boundary by `internal_scope` and must stay apart:
+  the bitset is storage, and giving the contract enum a `bit()` would publish it.
+
 ### Classification
 
 **(a) Pure contract value types — ~104.** Field-free or scalar-field enums (`ElementKind`,
