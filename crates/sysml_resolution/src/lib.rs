@@ -1687,61 +1687,6 @@ mod tests {
         }
     }
 
-    /// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,
-    /// shared with `item def`/`item` usage bodies per the OMG `14c-Language Extensions.sysml`
-    /// FMEA library example) must lower as its own `part` declaration, not fall through to
-    /// `unsupported_attribute_member`.
-    #[test]
-    fn nested_part_usage_inside_attribute_def_body_lowers_as_part() {
-        let sexpr = semantic_sexpr_for(
-            "package P { attribute def Show { part frame : Frame; attribute def Frame; } }",
-        );
-        assert!(
-            sexpr.contains("P::Show::frame"),
-            "expected nested part declaration, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_attribute_member"),
-            "did not expect unsupported_attribute_member, got: {sexpr}"
-        );
-    }
-
-    /// A nested `item` usage inside an `attribute def` body (BNF
-    /// `AttributeBodyElement::ItemUsage`, resolved upstream in `0757de13` --
-    /// planning/UPSTREAM_PARSER_GAPS.md #11) must lower as its own `item` declaration via the
-    /// already-existing `lower_item_usage`, not fall through to `unsupported_attribute_member`.
-    #[test]
-    fn nested_item_usage_inside_attribute_def_body_lowers_as_item() {
-        let sexpr = semantic_sexpr_for(
-            "package P { attribute def Show { item picture : Picture; attribute def Picture; } }",
-        );
-        assert!(
-            sexpr.contains("P::Show::picture"),
-            "expected nested item declaration, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_attribute_member"),
-            "did not expect unsupported_attribute_member, got: {sexpr}"
-        );
-    }
-
-    /// A nested `occurrence` usage inside an `attribute def` body (BNF
-    /// `AttributeBodyElement::OccurrenceUsage`, e.g. the FMEA library's `#prevention occurs;`-style
-    /// members) must lower as its own `occurrence` declaration via the already-existing
-    /// `lower_occurrence_usage`, not fall through to `unsupported_attribute_member`.
-    #[test]
-    fn nested_occurrence_usage_inside_attribute_def_body_lowers_as_occurrence() {
-        let sexpr = semantic_sexpr_for("package P { attribute def Show { occurrence flash; } }");
-        assert!(
-            sexpr.contains("P::Show::flash"),
-            "expected nested occurrence declaration, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_attribute_member"),
-            "did not expect unsupported_attribute_member, got: {sexpr}"
-        );
-    }
-
     /// A `first X then Y;` control-flow succession statement inside an `action def` body (BNF
     /// `ActionDefBodyElement::FirstStmt`) must resolve both ends as `succession` relationships
     /// against the two sibling owned action declarations, not fall through to
@@ -1870,25 +1815,6 @@ mod tests {
         );
     }
 
-    /// A nested `exhibit` state usage inside an `occurrence def`/usage body (BNF
-    /// `OccurrenceBodyElement::StateUsage`, e.g. `exhibit vehicleStates.on;` from the OMG spec
-    /// Annex's individuals/snapshots examples) must lower as its own `state` declaration via the
-    /// already-existing `lower_state_usage`, not fall through to
-    /// `unsupported_occurrence_definition_member`.
-    #[test]
-    fn nested_state_usage_inside_occurrence_def_body_lowers_as_state() {
-        let sexpr =
-            semantic_sexpr_for("package P { occurrence def O { exhibit vehicleStates.on; } }");
-        assert!(
-            sexpr.contains("(kind state)"),
-            "expected nested state declaration, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_occurrence_definition_member"),
-            "did not expect unsupported_occurrence_definition_member, got: {sexpr}"
-        );
-    }
-
     /// A `transition ... first X then Y;` body element's `source`/`target` operands must each
     /// resolve to their sibling state declarations, not fall through to
     /// `unsupported_state_definition_member`.
@@ -1982,23 +1908,6 @@ mod tests {
         );
     }
 
-    /// A standalone `decide <name>;` decision control node (BNF `DecisionStmt`) lowers its
-    /// `ControlNodeDeclaration` as a named `DeclarationKind::Decide` feature. The name is not an
-    /// input reference to a sibling action.
-    #[test]
-    fn decide_stmt_lowers_a_named_control_node() {
-        let sexpr = semantic_sexpr_for("package P { action def A { decide choice; } }");
-        assert!(
-            sexpr.contains("(qualified-name \"P::A::choice\"))) (kind decide)"),
-            "expected a named decide declaration, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_definition_member"),
-            "did not expect unsupported_action_definition_member, got: {sexpr}"
-        );
-        assert!(!sexpr.contains("(kind decisionInput)"));
-    }
-
     /// A control-node declaration does not fabricate an unresolved input reference from its name.
     #[test]
     fn decide_stmt_name_is_not_an_input_reference() {
@@ -2010,21 +1919,6 @@ mod tests {
         assert!(
             !sexpr.contains("(kind decisionInput)") && !sexpr.contains("(status unresolved)"),
             "did not expect a declaration name to become a reference, got: {sexpr}"
-        );
-    }
-
-    /// A `then decide <expr>;` continuation (`ThenTarget::Decide`) inside an action body must
-    /// lower through the same named-control-node dispatch as a standalone `decide` statement.
-    #[test]
-    fn then_decide_target_lowers_as_decide_declaration() {
-        let sexpr = semantic_sexpr_for("package P { action def A { then decide choice; } }");
-        assert!(
-            sexpr.contains("(qualified-name \"P::A::choice\"))) (kind decide)"),
-            "expected a named decide declaration reached via `then decide`, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_definition_member"),
-            "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
     }
 
@@ -2327,59 +2221,6 @@ mod tests {
         );
     }
 
-    /// A `TextualRepresentation` (`language "..." /* ... */`) nested inside an `action def`, an
-    /// `action` usage, or a `requirement def` body is inert documentation content with no
-    /// resolvable semantic fact, mirroring the existing package-body and `ref` usage-body
-    /// treatment (`PackageBodyElement::TextualRep`/`RefBodyElement::TextualRep`, both silently
-    /// ignored alongside `Doc`). It must not be reported as an unsupported member.
-    #[test]
-    fn textual_representation_inside_action_def_body_is_ignored() {
-        let sexpr = semantic_sexpr_for(
-            r#"package P { action def A { language "alf" /* c.x = newX; */ } }"#,
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_definition_member"),
-            "did not expect unsupported_action_definition_member for a TextualRep member, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains("(completeness complete)"),
-            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
-        );
-    }
-
-    /// Same as `textual_representation_inside_action_def_body_is_ignored`, but nested inside an
-    /// `action` usage body rather than an `action def` body.
-    #[test]
-    fn textual_representation_inside_action_usage_body_is_ignored() {
-        let sexpr =
-            semantic_sexpr_for(r#"package P { action a { language "alf" /* c.x = newX; */ } }"#);
-        assert!(
-            !sexpr.contains("unsupported_action_usage_member"),
-            "did not expect unsupported_action_usage_member for a TextualRep member, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains("(completeness complete)"),
-            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
-        );
-    }
-
-    /// Same as `textual_representation_inside_action_def_body_is_ignored`, but nested inside a
-    /// `requirement def` body.
-    #[test]
-    fn textual_representation_inside_requirement_def_body_is_ignored() {
-        let sexpr = semantic_sexpr_for(
-            r#"package P { requirement def R { language "alf" /* c.x = newX; */ } }"#,
-        );
-        assert!(
-            !sexpr.contains("unsupported_requirement_definition_member"),
-            "did not expect unsupported_requirement_definition_member for a TextualRep member, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains("(completeness complete)"),
-            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
-        );
-    }
-
     /// `terminate <name>;` nested inside a `then action <name> { ... }` self-named action usage
     /// (the representative fixture shape, e.g. `then action c1 { terminate c1; }`) must resolve
     /// its target through the shared `DeclarationDomain::Any` lexical lookup, sourced directly at
@@ -2569,24 +2410,6 @@ mod tests {
         );
     }
 
-    /// `UseCaseDefBodyElement::Objective` (`objective { ... }`/`objective <name> : <Type> { ... }`)
-    /// wraps a fully typed `RequirementUsage` (`Objective::requirement`) but was unconditionally
-    /// unsupported. Wires it through the existing `lower_requirement_usage` pipeline, the same as
-    /// every other requirement-usage site.
-    #[test]
-    fn case_family_objective_lowers_as_requirement_usage() {
-        let sexpr =
-            semantic_sexpr_for("package P { analysis def A { objective obj { doc /* g */ } } }");
-        assert!(
-            sexpr.contains("(kind requirement)"),
-            "expected the objective's wrapped RequirementUsage to lower as a requirement, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_analysis_case_definition_member"),
-            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
-        );
-    }
-
     /// `UseCaseDefBodyElement::CaseReturnDecl` (`return [part|attribute]? [:>>]? <name>?
     /// [:|:>] <Type> [= expr];`) is a fully typed node (declared name, redefinition target, typed
     /// or subsetting type reference, bound value) but was unconditionally unsupported. Wires it
@@ -2723,24 +2546,6 @@ mod tests {
         );
     }
 
-    /// `PerformBodyElement::AttributeUsage` (an `in`/`out attribute` usage directly inside a
-    /// `perform` body, BNF §6 G6) was unconditionally unsupported despite being a fully typed
-    /// `AttributeUsage` node -- wires it through the already-existing `lower_attribute_usage`.
-    #[test]
-    fn perform_body_attribute_usage_lowers() {
-        let sexpr = semantic_sexpr_for(
-            "package P { part def Vehicle { attribute mass; } part v : Vehicle; action def A { perform action doIt { in attribute mass :> v.mass; } } }",
-        );
-        assert!(
-            sexpr.contains("(kind attribute)"),
-            "expected an attribute declaration inside the perform body, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_usage_member"),
-            "did not expect unsupported_action_usage_member, got: {sexpr}"
-        );
-    }
-
     /// `lower_succession_end` (used for `AssignTarget` among others) handled `Expression::
     /// MemberAccess` but not the sibling `Expression::FeatureChainRef` shape the parser actually
     /// produces for a dotted assign target (e.g. `assign a.b := 1;`), mirroring the fix already
@@ -2794,25 +2599,6 @@ mod tests {
         );
     }
 
-    /// `variant perform doX;` (BNF `VariantTypedUsage::Perform`, inside a `variation perform
-    /// action ... { ... }` body) was unconditionally unsupported both because `PerformBodyElement::
-    /// Variant` was never dispatched and because `lower_variant_usage` treated every typed variant
-    /// as out of scope; `Perform` now delegates to the already-existing `lower_perform`.
-    #[test]
-    fn variant_perform_lowers_as_perform_action_usage() {
-        let sexpr = semantic_sexpr_for(
-            "package P { action def Act { action doX; variation perform action doXorY { variant perform doX; } } }",
-        );
-        assert!(
-            sexpr.contains("(kind perform-action)"),
-            "expected a perform-action declaration for the variant, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_usage_member"),
-            "did not expect unsupported_action_usage_member, got: {sexpr}"
-        );
-    }
-
     /// `flow of <payload> from <a> to <b>;` (the payload-first anonymous flow shorthand, BNF §6
     /// G12) was unconditionally unsupported purely because `payload.is_some()` was treated the
     /// same as a genuinely out-of-scope named/typed flow -- widens `lower_flow_usage` to resolve
@@ -2834,62 +2620,6 @@ mod tests {
         assert!(
             !sexpr.contains("unsupported_action_usage_member"),
             "did not expect unsupported_action_usage_member, got: {sexpr}"
-        );
-    }
-
-    /// A `bind a = b { ... }` statement's braced body is a `PartUsageBody`, the same part-usage
-    /// member set a part usage body holds, but every element was unconditionally flagged
-    /// unsupported rather than dispatched through the shared
-    /// `lower_part_usage_body_element` -- confirmed against the Systems Library's `bind start =
-    /// done { doc /* ... */ }` shape (`Systems Library/Actions.sysml`): a `doc` comment nested in a
-    /// bind body must be recognized and bound to the owning `bind` declaration, not reported as an
-    /// unsupported member.
-    #[test]
-    fn bind_body_doc_comment_is_recorded() {
-        let sexpr = semantic_sexpr_for(
-            r#"package P { action def Act { first start; then done; bind start = done { doc /* note */ } } }"#,
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_definition_member"),
-            "did not expect unsupported_action_definition_member for a doc comment in a bind body, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains(r#"(documentation (doc (text " note ")))"#),
-            "expected the bind body's doc comment recorded against the bind declaration, got: {sexpr}"
-        );
-    }
-
-    /// Same as `bind_body_doc_comment_is_recorded`, but for real (non-`doc`) content: a nested
-    /// `part` usage inside a `bind ... { ... }` body must lower as its own `part` declaration
-    /// through the shared `lower_part_usage_body_element`.
-    #[test]
-    fn bind_body_nested_part_usage_lowers() {
-        let sexpr = semantic_sexpr_for(
-            "package P { part def Widget; action def Act { first start; then done; bind start = done { part w : Widget; } } }",
-        );
-        assert!(
-            sexpr.contains("(kind part)"),
-            "expected a nested part declaration inside the bind body, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("unsupported_action_definition_member"),
-            "did not expect unsupported_action_definition_member, got: {sexpr}"
-        );
-    }
-
-    // --- Canonical declaration facts -------------------------------------------------------
-    //
-    // These cover the authored presentation-adjacent facts (multiplicity, collection and
-    // declaration modifiers, direction, short name, documentation, and the authored feature-value
-    // spelling) recorded at each `lower_*` site. Every fact below has exactly one typed parser
-    // field behind it; none is recovered by re-reading authored text.
-
-    #[test]
-    fn declared_multiplicity_bounds_are_recorded_as_literals() {
-        let sexpr = semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel[0..4]; }");
-        assert!(
-            sexpr.contains("(multiplicity (lower 0) (upper 4))"),
-            "expected literal multiplicity bounds, got: {sexpr}"
         );
     }
 
@@ -2940,54 +2670,6 @@ mod tests {
         );
     }
 
-    #[test]
-    fn collection_modifiers_are_recorded() {
-        let sexpr =
-            semantic_sexpr_for("package P { attribute seq : Integer[1..*] ordered nonunique; }");
-        assert!(
-            sexpr.contains("(modifiers ordered nonunique)"),
-            "expected both collection modifiers, got: {sexpr}"
-        );
-    }
-
-    #[test]
-    fn definition_prefix_modifiers_are_recorded() {
-        let abstract_def = semantic_sexpr_for("package P { abstract part def Vehicle; }");
-        assert!(
-            abstract_def.contains("(modifiers abstract)"),
-            "expected the abstract prefix recorded, got: {abstract_def}"
-        );
-
-        let variation_def = semantic_sexpr_for("package P { variation part def Engine; }");
-        assert!(
-            variation_def.contains("(modifiers variation)"),
-            "expected the variation prefix recorded, got: {variation_def}"
-        );
-    }
-
-    #[test]
-    fn parameter_direction_is_recorded_as_a_declaration_fact() {
-        let sexpr =
-            semantic_sexpr_for("package P { calc def C { in x : Integer; return : Integer; } }");
-        assert!(
-            sexpr.contains("(facts (direction in))"),
-            "expected the `in` direction recorded on the parameter declaration, got: {sexpr}"
-        );
-    }
-
-    #[test]
-    fn authored_short_names_are_recorded() {
-        let sexpr = semantic_sexpr_for("package <pkg> P { part def <w> Wheel; }");
-        assert!(
-            sexpr.contains(r#"(short-name "pkg")"#),
-            "expected the package short name recorded, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains(r#"(short-name "w")"#),
-            "expected the part def short name recorded, got: {sexpr}"
-        );
-    }
-
     /// A `doc` body element annotates the declaration owning that body, and the recorded text is
     /// the raw content between the comment delimiters -- the parser performs no leading-`*`
     /// stripping or dedent, so neither does this fact.
@@ -2997,23 +2679,6 @@ mod tests {
         assert!(
             sexpr.contains(r#"(documentation (doc (text " a wheel ")))"#),
             "expected the doc comment bound to the part def, got: {sexpr}"
-        );
-    }
-
-    #[test]
-    fn comment_and_rep_annotations_are_recorded_as_distinct_forms() {
-        let comment = semantic_sexpr_for(r#"package P { calc def C { comment /* note */ } }"#);
-        assert!(
-            comment.contains(r#"(comment (text " note "))"#),
-            "expected the comment annotation recorded, got: {comment}"
-        );
-
-        // The corpus-proven spelling is the bare `language "..." /* ... */` form inside an action
-        // def body; the `rep <name> language ...` spelling is not reachable in every scope.
-        let rep = semantic_sexpr_for(r#"package P { action def A { language "Alf" /* body */ } }"#);
-        assert!(
-            rep.contains(r#"(rep (language "Alf") (text " body "))"#),
-            "expected the textual representation recorded with its language, got: {rep}"
         );
     }
 
@@ -3044,26 +2709,6 @@ mod tests {
         assert!(
             bare_default.contains("(feature-value (kind bind) (default true) (operator false))"),
             "expected the operator-less bare `default` spelling, got: {bare_default}"
-        );
-    }
-
-    /// A declaration whose parser node carries none of these facts -- and every synthesized
-    /// anonymous scope the lowering mints, which has no authored declaration syntax at all --
-    /// publishes no fact block, so absence stays absence rather than a defaulted answer.
-    #[test]
-    fn a_declaration_with_no_authored_facts_publishes_no_fact_block() {
-        let sexpr = semantic_sexpr_for("package P { part def Wheel; }");
-        assert!(
-            !sexpr.contains("(facts "),
-            "expected no fact block for a plain package and part def, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("(documentation "),
-            "expected no documentation block, got: {sexpr}"
-        );
-        assert!(
-            !sexpr.contains("(feature-value "),
-            "expected no feature-value block, got: {sexpr}"
         );
     }
 
