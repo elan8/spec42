@@ -164,7 +164,7 @@ impl IdentityIndex {
             let equals = |candidate: &DeclarationId, expected: &str| {
                 let mut scratch = candidate_text.borrow_mut();
                 scratch.clear();
-                write_identity(storage, &occurrences, *candidate, &mut *scratch).is_ok()
+                write_identity(storage, &occurrences, *candidate, &mut scratch).is_ok()
                     && scratch.as_str() == expected
             };
             let matches = |candidate: &DeclarationId| equals(candidate, current.as_str());
@@ -175,7 +175,7 @@ impl IdentityIndex {
                 let rehash = |candidate: &DeclarationId| {
                     let mut scratch = candidate_text.borrow_mut();
                     scratch.clear();
-                    let _ = write_identity(storage, &occurrences, *candidate, &mut *scratch);
+                    let _ = write_identity(storage, &occurrences, *candidate, &mut scratch);
                     hash_builder.hash_one(scratch.as_str())
                 };
                 heads

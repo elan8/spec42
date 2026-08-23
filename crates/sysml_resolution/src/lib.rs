@@ -439,10 +439,10 @@ pub fn build_library_stratum_with(
         .iter()
         .map(|source| source.identity.clone())
         .collect();
-    let published = build(request)?;
+    let (published, _, sources) = build_parts(request)?;
     let prepared = published
         .model
-        .prepared_library()
+        .prepared_library(sources)
         .map_err(|_| BuildFailure::ConstructionFailed)?;
     Ok(LibraryStratum {
         prepared,
@@ -611,6 +611,23 @@ pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure>
 pub fn build_measured(
     request: BuildRequest,
 ) -> Result<(PublishedResolution, BuildMeasurements), BuildFailure> {
+    build_parts(request).map(|(publication, measurements, _)| (publication, measurements))
+}
+
+/// [`build_measured`] plus the build's own parse product, which only a library-stratum build keeps.
+///
+/// The publication never holds it: `design.md` gives the parse tree to the syntax service, and the
+/// stratum is the one consumer that legitimately reuses it.
+fn build_parts(
+    request: BuildRequest,
+) -> Result<
+    (
+        PublishedResolution,
+        BuildMeasurements,
+        crate::lower::storage::ParsedSources,
+    ),
+    BuildFailure,
+> {
     let schedule = match request.schedule {
         ConstructionSchedule::Sequential => BuildSchedule::Sequential,
         ConstructionSchedule::Parallel => BuildSchedule::Parallel,
@@ -626,17 +643,18 @@ pub fn build_measured(
             syntax: syntax.clone(),
         })
         .collect();
-    let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(
-        sources,
-        schedule,
-        request.policy,
-        request.library.as_deref().map(|library| &library.prepared),
-        &request.reported,
-    )
-    .map_err(|error| match error {
-        CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
-        CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
-    })?;
+    let (model, sources, measurements) =
+        SemanticModelBuildCoordinator::build_measured_with_library(
+            sources,
+            schedule,
+            request.policy,
+            request.library.as_deref().map(|library| &library.prepared),
+            &request.reported,
+        )
+        .map_err(|error| match error {
+            CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
+            CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
+        })?;
     Ok((
         PublishedResolution {
             identity: request.identity,
@@ -648,6 +666,7 @@ pub fn build_measured(
             resolution: measurements.resolution,
             sources_parsed: measurements.sources_parsed,
         },
+        sources,
     ))
 }
 

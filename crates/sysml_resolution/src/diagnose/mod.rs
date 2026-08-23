@@ -1,7 +1,9 @@
 //! Phase 8: diagnostics, decided from the assembled model and nowhere else.
 
 use crate::diagnostics::UNCODED_PARSE_ERROR;
+use crate::lower::facts::LineIndex;
 use crate::lower::facts::UnsupportedFamily;
+use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
@@ -35,6 +37,7 @@ impl<D> SemanticModel<D> {
     /// keeps the barrier's cost proportional to the workspace rather than to the library.
     pub(crate) fn derive_diagnostics(
         &self,
+        sources: &ParsedSources,
         reported: &[Box<str>],
     ) -> Result<DerivedDiagnostics, ResolutionError> {
         let mut diagnostics = Vec::new();
@@ -49,9 +52,12 @@ impl<D> SemanticModel<D> {
             let document_id = DocumentId(document_index as u32);
             let first = diagnostics.len();
 
-            for error in document.parse_errors.iter() {
-                let range = parse_error_range(&document.parsed, error)
+            for error in sources.parse_errors(document_id) {
+                let parsed = sources
+                    .parsed(document_id)
                     .ok_or(ResolutionError::InvalidStorage)?;
+                let range =
+                    parse_error_range(parsed, error).ok_or(ResolutionError::InvalidStorage)?;
                 diagnostics.push(Diagnostic {
                     // The parser owns both the code and the sentence; neither is re-derived here.
                     message: error.message.as_str().into(),
@@ -184,23 +190,14 @@ pub(crate) fn document_range(
     document: DocumentId,
     span: &Span,
 ) -> Result<TextRange, ResolutionError> {
-    let parsed = &storage
+    // From the settled line index, not from the parse tree: a sealed publication answers a
+    // location question from a fact it kept, never by re-reading source it no longer owns.
+    storage
         .document(document)
         .ok_or(ResolutionError::InvalidStorage)?
-        .parsed;
-    let range = parsed.range(span).ok_or(ResolutionError::InvalidStorage)?;
-    Ok(TextRange {
-        start: TextPosition {
-            line: range.start.line.saturating_sub(1),
-            character: u32::try_from(range.start.column.saturating_sub(1))
-                .map_err(|_| ResolutionError::Capacity)?,
-        },
-        end: TextPosition {
-            line: range.end.line.saturating_sub(1),
-            character: u32::try_from(range.end.column.saturating_sub(1))
-                .map_err(|_| ResolutionError::Capacity)?,
-        },
-    })
+        .lines
+        .range(span)
+        .ok_or(ResolutionError::InvalidStorage)
 }
 
 pub(crate) fn parser_diagnostic_category(
@@ -360,15 +357,18 @@ pub(crate) fn reference_diagnostic(
 /// back to the whole-span search rather than losing its location entirely.
 pub(crate) fn declaration_identifier_range(
     storage: &SemanticModelStorage,
+    sources: &ParsedSources,
     document: DocumentId,
     span: &Span,
     identifier: &str,
 ) -> Result<TextRange, ResolutionError> {
-    let parsed = &storage
+    let lines = &storage
         .document(document)
         .ok_or(ResolutionError::InvalidStorage)?
-        .parsed;
-    let source = parsed
+        .lines;
+    let source = sources
+        .parsed(document)
+        .ok_or(ResolutionError::InvalidStorage)?
         .source
         .slice(span)
         .ok_or(ResolutionError::InvalidStorage)?;
@@ -380,7 +380,7 @@ pub(crate) fn declaration_identifier_range(
         .or_else(|| word_boundary_matches(header, identifier).next())
         .or_else(|| word_boundary_matches(source, identifier).last())
         .ok_or(ResolutionError::InvalidStorage)?;
-    identifier_text_range(parsed, span, relative, identifier.len())
+    identifier_text_range(lines, span, relative, identifier.len())
 }
 
 /// Whether `start` falls inside an unclosed `<`...`>` short-name group.
@@ -407,26 +407,29 @@ pub(crate) fn word_boundary_matches<'a>(
 
 pub(crate) fn identifier_range(
     storage: &SemanticModelStorage,
+    sources: &ParsedSources,
     document: DocumentId,
     span: &Span,
     identifier: &str,
 ) -> Result<TextRange, ResolutionError> {
-    let parsed = &storage
+    let lines = &storage
         .document(document)
         .ok_or(ResolutionError::InvalidStorage)?
-        .parsed;
-    let source = parsed
+        .lines;
+    let source = sources
+        .parsed(document)
+        .ok_or(ResolutionError::InvalidStorage)?
         .source
         .slice(span)
         .ok_or(ResolutionError::InvalidStorage)?;
     let relative = word_boundary_matches(source, identifier)
         .last()
         .ok_or(ResolutionError::InvalidStorage)?;
-    identifier_text_range(parsed, span, relative, identifier.len())
+    identifier_text_range(lines, span, relative, identifier.len())
 }
 
 pub(crate) fn identifier_text_range(
-    parsed: &ParsedDocument,
+    lines: &LineIndex,
     span: &Span,
     relative: usize,
     length: usize,
@@ -438,26 +441,13 @@ pub(crate) fn identifier_text_range(
     let end_offset = start_offset
         .checked_add(length)
         .ok_or(ResolutionError::Capacity)?;
-    let start = parsed
-        .source
-        .position_at(start_offset)
+    let start = lines
+        .position(start_offset)
         .ok_or(ResolutionError::InvalidStorage)?;
-    let end = parsed
-        .source
-        .position_at(end_offset)
+    let end = lines
+        .position(end_offset)
         .ok_or(ResolutionError::InvalidStorage)?;
-    Ok(TextRange {
-        start: TextPosition {
-            line: start.line.saturating_sub(1),
-            character: u32::try_from(start.column.saturating_sub(1))
-                .map_err(|_| ResolutionError::Capacity)?,
-        },
-        end: TextPosition {
-            line: end.line.saturating_sub(1),
-            character: u32::try_from(end.column.saturating_sub(1))
-                .map_err(|_| ResolutionError::Capacity)?,
-        },
-    })
+    Ok(TextRange { start, end })
 }
 
 pub(crate) fn identifier_character(character: char) -> bool {

@@ -58,7 +58,14 @@ impl SemanticModelBuildCoordinator {
         policy: EvaluationPolicy,
         library: Option<&PreparedLibrary>,
         reported: &[Box<str>],
-    ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
+    ) -> Result<
+        (
+            resolver::ResolvedSemanticModel,
+            crate::lower::storage::ParsedSources,
+            BuildPhaseDurations,
+        ),
+        CoordinatorError,
+    > {
         // Library sources are ordered ahead of workspace sources so that the dense declaration
         // domain assigns them a contiguous prefix. Rendered output is sorted independently by
         // document identity, so this affects storage order only. Duplicate detection therefore
@@ -133,11 +140,12 @@ impl SemanticModelBuildCoordinator {
                 .canonicalize_document(document)
                 .map_err(|_| CoordinatorError::ConstructionFailed)?;
         }
-        let storage = builder.freeze();
+        let (storage, sources) = builder.freeze();
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
-        let model = phase::build_model(
+        let (model, sources) = phase::build_model(
             storage,
+            sources,
             policy,
             library.map(|library| &library.settled),
             reported,
@@ -146,6 +154,7 @@ impl SemanticModelBuildCoordinator {
         let resolution = resolution_started.elapsed();
         Ok((
             model,
+            sources,
             BuildPhaseDurations {
                 parse,
                 lowering,

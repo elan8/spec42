@@ -9,7 +9,7 @@ use crate::evaluate::fold::{
     eval_node_is_pure_literal, fold_eval_node, literal_expression_value, EvalNode,
 };
 use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, FilterPredicate};
-use crate::lower::storage::SemanticModelStorage;
+use crate::lower::storage::ParsedSources;
 use crate::model::EvaluatedValue;
 
 /// The classification `classify_expression` assign to one
@@ -278,14 +278,14 @@ pub(crate) fn classify_calc_node(
 /// construction; an absent arena still cannot be read, and `Unsupported` is the honest answer for
 /// an expression whose value this engine cannot determine.
 pub(crate) fn classify_authored(
-    storage: &SemanticModelStorage,
+    sources: &ParsedSources,
     expression: &AuthoredExpression,
 ) -> ExpressionEvalShape {
-    let Some(document) = storage.documents.get(expression.document.index()) else {
+    let Some(parsed) = sources.parsed(expression.document) else {
         return ExpressionEvalShape::Unsupported;
     };
     classify_expression(
-        &document.parsed,
+        parsed,
         &expression.node,
         expression.grammar,
         expression.operand_start,

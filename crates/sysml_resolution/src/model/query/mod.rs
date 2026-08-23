@@ -1,9 +1,7 @@
 //! Phase 9: the read-only query surface over a finished model.
 
-use crate::diagnose::declaration_identifier_range;
 use crate::diagnose::declaration_qualified_name;
 use crate::diagnose::document_range;
-use crate::diagnose::identifier_range;
 use crate::diagnose::valid_identifier;
 use crate::index::bindings as binding;
 use crate::index::documents::leaf_ranges_containing;
@@ -21,7 +19,6 @@ use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::model::SymbolId;
 use crate::namespace_query::NamespaceDerivedElementCollection;
 use crate::namespace_query::NamespaceImportDerivedElement;
 use crate::redefinition_query::RedefinitionCheckKind;
@@ -282,13 +279,7 @@ impl<D> SemanticModel<D> {
                     .document(declaration.document)?
                     .identity
                     .clone(),
-                range: declaration_identifier_range(
-                    &self.storage,
-                    declaration.document,
-                    &declaration.span,
-                    name,
-                )
-                .ok()?,
+                range: self.documents.declaration_identifier(id)?,
                 role: OccurrenceRole::Declaration,
             },
         })
@@ -406,16 +397,17 @@ impl<D> SemanticModel<D> {
             let Some(source) = self.storage.declaration(reference.source) else {
                 return QueryOutcome::Incomplete;
             };
-            let Some(name) = self
-                .storage
-                .symbol(target_declaration.name.unwrap_or(SymbolId(u32::MAX)))
-            else {
-                return QueryOutcome::Incomplete;
-            };
-            let range = identifier_range(&self.storage, source.document, &reference.span, name)
-                .or_else(|_| document_range(&self.storage, source.document, &reference.span));
-            let Ok(range) = range else {
-                return QueryOutcome::Incomplete;
+            // An unnamed target has no identifier to point at, so the whole reference span is the
+            // honest location -- the same answer the text search used to fall back to.
+            let range = match target_declaration
+                .name
+                .and_then(|name| self.documents.reference_identifier(*id, name))
+            {
+                Some(range) => range,
+                None => match document_range(&self.storage, source.document, &reference.span) {
+                    Ok(range) => range,
+                    Err(_) => return QueryOutcome::Incomplete,
+                },
             };
             locations.push(SourceLocation {
                 document: self

@@ -26,6 +26,7 @@ use crate::index::expressions::SettledFilter;
 use crate::index::identity::IdentityIndex;
 use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types::TypeIndex;
+use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::Indexed;
 use crate::model::resolver::NotYetDiagnosed;
@@ -45,14 +46,21 @@ use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::SolverStatus;
 
-/// Phase 2's product: the frozen storage of authored facts and nothing else.
+/// Phase 2's product: the frozen storage of authored facts, plus the parse product the phases
+/// after it still read.
+///
+/// The two travel together only as far as the publication barrier. `design.md`: a sealed
+/// publication holds no parse tree, so [`Indexed::diagnose`] consumes the parse product and the
+/// model that comes out of it cannot name one.
 pub(crate) struct Lowered {
     storage: SemanticModelStorage,
+    sources: ParsedSources,
 }
 
 /// Phase 3 + 4's product: settled name-resolution outcomes and implied relationships.
 pub(crate) struct Resolved {
     storage: SemanticModelStorage,
+    sources: ParsedSources,
     direct_names: NameIndex,
     effective_imports: NameIndex,
     memberships: MembershipIndex,
@@ -63,6 +71,7 @@ pub(crate) struct Resolved {
 /// Phase 5's product: the evaluated values, decided here and only here.
 pub(crate) struct Evaluated {
     storage: SemanticModelStorage,
+    sources: ParsedSources,
     direct_names: NameIndex,
     effective_imports: NameIndex,
     memberships: MembershipIndex,
@@ -75,11 +84,14 @@ pub(crate) struct Evaluated {
 /// Phase 8's product: the only value a `ResolvedSemanticModel` can be taken out of.
 pub(crate) struct Complete {
     model: ResolvedSemanticModel,
+    /// Kept only so a library-stratum build can hand the trees to the next publication; a
+    /// workspace build drops them with this value.
+    sources: ParsedSources,
 }
 
-impl From<SemanticModelStorage> for Lowered {
-    fn from(storage: SemanticModelStorage) -> Self {
-        Self { storage }
+impl From<(SemanticModelStorage, ParsedSources)> for Lowered {
+    fn from((storage, sources): (SemanticModelStorage, ParsedSources)) -> Self {
+        Self { storage, sources }
     }
 }
 
@@ -94,11 +106,8 @@ impl Lowered {
         library: Option<&SettledLibrary>,
     ) -> Result<Resolved, ResolutionError> {
         let storage = self.storage;
-        let has_recovery = storage
-            .documents
-            .iter()
-            .any(|document| !document.parse_errors.is_empty())
-            || !storage.recovery.is_empty();
+        let sources = self.sources;
+        let has_recovery = sources.any_parse_errors() || !storage.recovery.is_empty();
         let has_unsupported = !storage.unsupported.is_empty();
         let seed = library
             .filter(|library| library.admits(&storage))
@@ -128,6 +137,7 @@ impl Lowered {
         };
         Ok(Resolved {
             storage,
+            sources,
             direct_names,
             effective_imports,
             memberships,
@@ -141,12 +151,13 @@ impl Resolved {
     /// Phase 5: the single evaluation writer.
     pub(crate) fn evaluate(self, policy: EvaluationPolicy) -> Evaluated {
         let (evaluation, filter_conditions) =
-            match compute_evaluation(&self.storage, &self.resolution, policy) {
+            match compute_evaluation(&self.storage, &self.sources, &self.resolution, policy) {
                 SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
                 SettledEvaluation::Vacuous => (Box::default(), None),
             };
         Evaluated {
             storage: self.storage,
+            sources: self.sources,
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
             memberships: self.memberships,
@@ -160,10 +171,10 @@ impl Resolved {
 
 impl Evaluated {
     /// Phase 6: every derived-fact index, assembled at one barrier.
-    pub(crate) fn index(self) -> Result<Indexed, ResolutionError> {
+    pub(crate) fn index(self) -> Result<(Indexed, ParsedSources), ResolutionError> {
         let has_evaluation = !self.evaluation.is_empty();
         let identities = IdentityIndex::build(&self.storage)?;
-        let documents = DocumentIndex::build(&self.storage)?;
+        let documents = DocumentIndex::build(&self.storage, &self.sources)?;
         let reverse_references =
             ReverseReferenceIndex::build(self.storage.declarations.len(), &self.resolution)?;
         let effective_scopes = EffectiveScopeIndex::build(
@@ -189,7 +200,7 @@ impl Evaluated {
             },
             self.filter_conditions,
         )?;
-        Ok(Indexed {
+        let indexed = Indexed {
             storage: self.storage,
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
@@ -210,7 +221,8 @@ impl Evaluated {
                 completeness: self.completeness,
                 has_evaluation,
             },
-        })
+        };
+        Ok((indexed, self.sources))
     }
 }
 
@@ -219,9 +231,16 @@ impl Indexed {
     ///
     /// The settled product is put into the model at construction; there is no window in which a
     /// model exists with an empty diagnostic sequence standing in for an underived one.
-    pub(crate) fn diagnose(self, reported: &[Box<str>]) -> Result<Complete, ResolutionError> {
-        let (diagnostics, by_document) = self.derive_diagnostics(reported)?;
+    pub(crate) fn diagnose(
+        self,
+        sources: ParsedSources,
+        reported: &[Box<str>],
+    ) -> Result<Complete, ResolutionError> {
+        let (diagnostics, by_document) = self.derive_diagnostics(&sources, reported)?;
+        // The parse product is consumed here and goes no further: this is the barrier that makes
+        // "a sealed publication holds no parse tree" true by construction rather than by review.
         Ok(Complete {
+            sources,
             model: ResolvedSemanticModel {
                 storage: self.storage,
                 direct_names: self.direct_names,
@@ -248,22 +267,22 @@ impl Indexed {
 }
 
 impl Complete {
-    pub(crate) fn into_model(self) -> ResolvedSemanticModel {
-        self.model
+    pub(crate) fn into_parts(self) -> (ResolvedSemanticModel, ParsedSources) {
+        (self.model, self.sources)
     }
 }
 
 /// The whole phase order in one expression, for the coordinator and for tests.
 pub(crate) fn build_model(
     storage: SemanticModelStorage,
+    sources: ParsedSources,
     policy: EvaluationPolicy,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
-) -> Result<ResolvedSemanticModel, ResolutionError> {
-    Ok(Lowered::from(storage)
+) -> Result<(ResolvedSemanticModel, ParsedSources), ResolutionError> {
+    let (indexed, sources) = Lowered::from((storage, sources))
         .resolve(library)?
         .evaluate(policy)
-        .index()?
-        .diagnose(reported)?
-        .into_model())
+        .index()?;
+    Ok(indexed.diagnose(sources, reported)?.into_parts())
 }

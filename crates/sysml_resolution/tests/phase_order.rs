@@ -4,7 +4,7 @@
 //! each phase reads the frozen product of the phases before it and publishes its own, and nothing
 //! loops back. Ordering is enforced at runtime by the coordinator's call sequence — which no test
 //! can see once a module has been added that quietly reaches forward. This file guards the
-//! ordering structurally, in three rules:
+//! ordering structurally, in four rules:
 //!
 //! 1. **The phase order is declared once.** [`PHASES`] is that declaration: one module directory
 //!    per phase, in build order. A new phase directory under `src/` that is not listed here fails
@@ -17,6 +17,9 @@
 //!    `ExpressionEvalShape` while evaluation settled the same category later. Lowering now records
 //!    the authored site and evaluation alone classifies it, so the shape vocabulary must not
 //!    appear outside `evaluate/`, and the retired two-writer helpers must stay deleted.
+//! 4. **The sealed publication holds no parse tree.** `design.md` gives source fidelity to the
+//!    syntax service; the model settles what a location query needs at the barrier and drops the
+//!    trees. The sealed types must therefore declare no field naming the parse product.
 //!
 //! Rules 1 and 2 read `use` paths and `crate::` mentions out of the source text. That is a
 //! deliberately shallow reading: it sees the names a phase spells, which is exactly what the
@@ -89,6 +92,13 @@ const FORWARD_EDGES: &[ForwardEdge] = &[
         to: "diagnose",
         item: "declaration_identifier_range",
         reason: "span projection for a declaration's own identifier; derives no diagnostic",
+    },
+    ForwardEdge {
+        from: "index",
+        to: "diagnose",
+        item: "identifier_range",
+        reason: "the same span projection for one segment of an authored reference path; the \
+                 index settles it at the barrier so a navigation query never reads source text",
     },
     ForwardEdge {
         from: "evaluate",
@@ -345,6 +355,49 @@ fn the_retired_evaluation_writer_helpers_stay_deleted() {
                     file.display()
                 );
             }
+        }
+    }
+}
+
+/// Rule 4: the sealed publication holds no parse tree and no source text.
+///
+/// `design.md`: *a sealed publication holds no parse tree* -- the tree and the text are the syntax
+/// service's, and a location query is answered from a fact the barrier settled rather than by
+/// re-reading source. That is a property of two struct declarations, so it is checked as one:
+/// neither the sealed document record nor the model that holds it may declare a field whose type
+/// names the parse product.
+///
+/// The check reads the field lines of the named types out of the source text. Shallow, like rules
+/// 1 and 2, and for the same reason: the claim is about what the sealed types *spell*. The parse
+/// product reaches the construction phases under its own name (`ParsedSources`), which is what
+/// makes "who still reads a tree" a grep rather than an audit.
+#[test]
+fn the_sealed_model_types_declare_no_parse_tree_or_source_text() {
+    const FORBIDDEN: &[&str] = &["ParsedDocument", "ParsedSources", "SourceStorage", "Arc"];
+    const SEALED: &[(&str, &str)] = &[
+        ("lower/facts.rs", "pub(crate) struct CanonicalDocument {"),
+        ("model/resolver.rs", "pub(crate) struct SemanticModel<D> {"),
+    ];
+
+    for (file, header) in SEALED {
+        let path = src_dir().join(file);
+        let text = fs::read_to_string(&path).expect("sealed model source is readable");
+        let start = text
+            .find(header)
+            .unwrap_or_else(|| panic!("{file} still declares `{header}`"));
+        let body = &text[start + header.len()..];
+        let end = body
+            .find("\n}")
+            .unwrap_or_else(|| panic!("{file}: `{header}` has a terminated body"));
+        let fields = &body[..end];
+        for name in FORBIDDEN {
+            assert!(
+                !mentions_identifier(fields, name),
+                "`{header}` in {file} declares a field naming `{name}`. A sealed publication holds \
+                 no parse tree and no source text (design.md): settle the fact the query needs at \
+                 the publication barrier, and let `ParsedSources` -- which the barrier drops -- be \
+                 the only thing that names the parse product.",
+            );
         }
     }
 }

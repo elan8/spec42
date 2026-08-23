@@ -2,11 +2,14 @@
 
 use crate::diagnose::declaration_identifier_range;
 use crate::diagnose::document_range;
+use crate::diagnose::identifier_range;
+use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::query::range_contains;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
+use crate::model::SymbolId;
 use crate::resolve::results::ResolutionError;
 use crate::TextPosition;
 use crate::TextRange;
@@ -132,10 +135,29 @@ pub(crate) struct DocumentIndex {
     /// workspace projection cost the size of the bundled standard library.
     pub(crate) declarations: Box<[(u32, u32)]>,
     pub(crate) declaration_order: Box<[DeclarationId]>,
+    /// Each declaration's settled identifier range, dense by `DeclarationId`.
+    ///
+    /// `design.md`: a sealed publication answers a location query from a settled fact, never by
+    /// re-reading source text. Locating the declared name inside a declaration's span is the one
+    /// answer that needed the text, so it is settled here, at the barrier, while the parse product
+    /// is still in scope. `None` for a declaration with no authored name, or one whose header the
+    /// parser could not recover.
+    pub(crate) declaration_identifiers: Box<[Option<TextRange>]>,
+    /// Per-reference ranges into [`Self::reference_identifier_entries`].
+    pub(crate) reference_identifiers: Box<[(u32, u32)]>,
+    /// For each authored reference, the range of each distinct name its path spells.
+    ///
+    /// A find-all-references result points at the segment naming the target, not at the whole
+    /// path, and which segment that is depends on which declaration the caller asked about -- so
+    /// the settled fact is per segment name, and the query picks the one it needs.
+    pub(crate) reference_identifier_entries: Box<[(SymbolId, TextRange)]>,
 }
 
 impl DocumentIndex {
-    pub(crate) fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+    pub(crate) fn build(
+        storage: &SemanticModelStorage,
+        sources: &ParsedSources,
+    ) -> Result<Self, ResolutionError> {
         let hash_builder = RandomState::default();
         let mut by_identity: HashTable<DocumentId> = HashTable::new();
         for index in 0..storage.documents.len() {
@@ -190,6 +212,8 @@ impl DocumentIndex {
             .iter()
             .map(|(start, _)| *start)
             .collect::<Vec<_>>();
+        let mut declaration_identifiers: Vec<Option<TextRange>> =
+            vec![None; storage.declarations.len()];
         let mut declaration_order: Vec<DeclarationId> = match storage.declarations.len() {
             0 => Vec::new(),
             length => {
@@ -199,11 +223,15 @@ impl DocumentIndex {
             }
         };
 
-        for index in 0..storage.declarations.len() {
+        for (index, (declaration, settled_identifier)) in storage
+            .declarations
+            .iter()
+            .zip(declaration_identifiers.iter_mut())
+            .enumerate()
+        {
             let Ok(id) = DeclarationId::from_index(index) else {
                 continue;
             };
-            let declaration = &storage.declarations[index];
             if let Some(slot) = fill.get_mut(declaration.document.index()) {
                 let position = *slot as usize;
                 if let Some(entry) = declaration_order.get_mut(position) {
@@ -217,9 +245,14 @@ impl DocumentIndex {
             let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
                 continue;
             };
-            if let Ok(range) =
-                declaration_identifier_range(storage, declaration.document, &declaration.span, name)
-            {
+            if let Ok(range) = declaration_identifier_range(
+                storage,
+                sources,
+                declaration.document,
+                &declaration.span,
+                name,
+            ) {
+                *settled_identifier = Some(range);
                 identifiers[declaration.document.index()].push((range, id));
             }
         }
@@ -240,13 +273,71 @@ impl DocumentIndex {
             .collect::<Vec<_>>()
             .into_boxed_slice();
 
+        // The reference-segment ranges, settled with the same text the declaration ranges used.
+        let mut reference_identifiers: Vec<(u32, u32)> =
+            Vec::with_capacity(storage.references.len());
+        let mut reference_identifier_entries: Vec<(SymbolId, TextRange)> = Vec::new();
+        for reference in storage.references.iter() {
+            let start = u32::try_from(reference_identifier_entries.len())
+                .map_err(|_| ResolutionError::Capacity)?;
+            let Some(source) = storage.declaration(reference.source) else {
+                reference_identifiers.push((start, start));
+                continue;
+            };
+            if let Some((segments, _)) = storage.paths.get(reference.path) {
+                for segment in segments {
+                    if reference_identifier_entries[start as usize..]
+                        .iter()
+                        .any(|(name, _)| name == segment)
+                    {
+                        continue;
+                    }
+                    let Some(text) = storage.symbol(*segment) else {
+                        continue;
+                    };
+                    if let Ok(range) =
+                        identifier_range(storage, sources, source.document, &reference.span, text)
+                    {
+                        reference_identifier_entries.push((*segment, range));
+                    }
+                }
+            }
+            let end = u32::try_from(reference_identifier_entries.len())
+                .map_err(|_| ResolutionError::Capacity)?;
+            reference_identifiers.push((start, end));
+        }
+
         Ok(Self {
             by_identity,
             hash_builder,
             positions,
             declarations: declarations.into_boxed_slice(),
             declaration_order: declaration_order.into_boxed_slice(),
+            declaration_identifiers: declaration_identifiers.into_boxed_slice(),
+            reference_identifiers: reference_identifiers.into_boxed_slice(),
+            reference_identifier_entries: reference_identifier_entries.into_boxed_slice(),
         })
+    }
+
+    /// The settled identifier range of one declaration.
+    pub(crate) fn declaration_identifier(&self, id: DeclarationId) -> Option<TextRange> {
+        self.declaration_identifiers
+            .get(id.index())
+            .copied()
+            .flatten()
+    }
+
+    /// The settled range of the segment spelling `name` inside one authored reference.
+    pub(crate) fn reference_identifier(
+        &self,
+        id: AuthoredReferenceId,
+        name: SymbolId,
+    ) -> Option<TextRange> {
+        let (start, end) = *self.reference_identifiers.get(id.index())?;
+        self.reference_identifier_entries[start as usize..end as usize]
+            .iter()
+            .find(|(segment, _)| *segment == name)
+            .map(|(_, range)| *range)
     }
 
     /// The declarations one document authored, as the settled slice rather than a corpus scan.

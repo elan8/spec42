@@ -4,7 +4,6 @@
 //! re-reading authored text, and nothing is defaulted: a fact the parser cannot express is absent,
 //! and a fact resolution could not settle keeps its own outcome.
 
-use crate::diagnose::declaration_identifier_range;
 use crate::diagnose::document_range;
 use crate::evaluate::EvaluationFact;
 use crate::index::documents::leaf_ranges_containing;
@@ -293,14 +292,12 @@ impl<D> SemanticModel<D> {
             .document(declaration.document)?
             .identity
             .clone();
-        let range = match declaration.name.and_then(|name| self.storage.symbol(name)) {
-            Some(name) => declaration_identifier_range(
-                &self.storage,
-                declaration.document,
-                &declaration.span,
-                name,
-            )
-            .ok()?,
+        // The settled identifier range, not a text scan: the publication no longer owns the source
+        // this used to re-read. A named declaration whose identifier the barrier could not settle
+        // has no location, exactly as the failed search had none; only an unnamed one falls back to
+        // its whole span.
+        let range = match declaration.name {
+            Some(_) => self.documents.declaration_identifier(id)?,
             None => document_range(&self.storage, declaration.document, &declaration.span).ok()?,
         };
         Some(SourceLocation {

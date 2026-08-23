@@ -1,5 +1,6 @@
 //! Phase 2 barrier: the immutable product lowering freezes into.
 
+use crate::lower::facts::AdmittedDocument;
 use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
@@ -18,6 +19,7 @@ use crate::lower::intern::SymbolTable;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
 use crate::model::SymbolId;
+use sysml_v2_parser::{ParseError, ParsedDocument};
 
 #[derive(Debug)]
 pub(crate) struct SemanticModelStorage {
@@ -37,6 +39,47 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+}
+
+/// The parse product of every admitted document, held alongside the storage until the publication
+/// barrier and then dropped.
+///
+/// `design.md`: a sealed publication holds no parse tree. Phases that must read source text -- the
+/// evaluation classifier, the parse-error projection, and the barrier that settles identifier
+/// ranges -- name this value explicitly, so the set of readers is the set of places this type
+/// appears, and none of them is a query.
+#[derive(Debug, Default)]
+pub(crate) struct ParsedSources {
+    documents: Box<[AdmittedDocument]>,
+}
+
+impl ParsedSources {
+    pub(crate) fn new(documents: Vec<AdmittedDocument>) -> Self {
+        Self {
+            documents: documents.into_boxed_slice(),
+        }
+    }
+
+    pub(crate) fn parsed(&self, id: DocumentId) -> Option<&ParsedDocument> {
+        self.documents.get(id.index()).map(|d| d.parsed.as_ref())
+    }
+
+    pub(crate) fn parse_errors(&self, id: DocumentId) -> &[ParseError] {
+        self.documents
+            .get(id.index())
+            .map(|d| d.parse_errors.as_ref())
+            .unwrap_or_default()
+    }
+
+    pub(crate) fn any_parse_errors(&self) -> bool {
+        self.documents
+            .iter()
+            .any(|document| !document.parse_errors.is_empty())
+    }
+
+    pub(crate) fn into_documents(self) -> Vec<AdmittedDocument> {
+        self.documents.into_vec()
+    }
 }
 
 impl SemanticModelStorage {

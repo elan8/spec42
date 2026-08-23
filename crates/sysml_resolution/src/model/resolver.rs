@@ -128,7 +128,6 @@ use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
 #[cfg(test)]
 use spec42_constraint_manifest::LibrarySpecializationPredicate;
-use std::sync::Arc;
 #[cfg(test)]
 use sysml_v2_parser::ast::Span;
 
@@ -218,18 +217,22 @@ impl<D> SemanticModel<D> {
     ///
     /// The parsed documents come out by reference-counted handle rather than by copy, so reuse
     /// shares one parse of the library across every publication built against it.
+    ///
+    /// The trees come from the build's own parse product rather than from the model: the model does
+    /// not have them, which is the point -- a sealed publication holds no parse tree, so reuse is
+    /// arranged by the builder that still owns them.
     pub(crate) fn prepared_library(
         &self,
+        sources: crate::lower::storage::ParsedSources,
     ) -> Result<crate::pipeline::PreparedLibrary, crate::pipeline::CoordinatorError> {
-        let documents = self
-            .storage
-            .documents
-            .iter()
+        let documents = sources
+            .into_documents()
+            .into_iter()
             .map(|document| crate::pipeline::PreparedDocument {
-                identity: document.identity.clone(),
+                identity: document.identity,
                 role: document.role,
-                parsed: Arc::clone(&document.parsed),
-                parse_errors: document.parse_errors.to_vec(),
+                parsed: document.parsed,
+                parse_errors: document.parse_errors.into_vec(),
             })
             .collect();
         Ok(crate::pipeline::PreparedLibrary {
@@ -880,6 +883,16 @@ mod tests {
         CanonicalDocument {
             identity: "test".into(),
             role: SourceRole::Workspace,
+            lines: crate::lower::facts::LineIndex::build(""),
+        }
+    }
+
+    /// The matching parse product: classification reads the owning document's parser arena, which
+    /// is no longer part of the storage.
+    fn empty_parsed_sources() -> crate::lower::storage::ParsedSources {
+        crate::lower::storage::ParsedSources::new(vec![crate::lower::facts::AdmittedDocument {
+            identity: "test".into(),
+            role: SourceRole::Workspace,
             parsed: std::sync::Arc::new(ParsedDocument {
                 source: SourceStorage::default(),
                 qualified_references: QualifiedReferenceArena::default(),
@@ -888,7 +901,7 @@ mod tests {
                 },
             }),
             parse_errors: Box::new([]),
-        }
+        }])
     }
 
     fn storage_with_one_filter() -> SemanticModelStorage {
@@ -1096,6 +1109,7 @@ mod tests {
         let storage = storage_with_one_filter();
         let settled = compute_evaluation(
             &storage,
+            &empty_parsed_sources(),
             &resolution_with_status(SolverStatus::Converged),
             EvaluationPolicy::Evaluate,
         );
@@ -1121,6 +1135,7 @@ mod tests {
         let storage = storage_with_one_filter();
         let settled = compute_evaluation(
             &storage,
+            &empty_parsed_sources(),
             &resolution_with_status(SolverStatus::NonConverged),
             EvaluationPolicy::Evaluate,
         );

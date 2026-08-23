@@ -2,6 +2,7 @@
 
 use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_node_modifiers;
+use crate::lower::facts::AdmittedDocument;
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::AuthoredFilterCondition;
@@ -20,6 +21,7 @@ use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
+use crate::lower::facts::LineIndex;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
@@ -31,6 +33,7 @@ use crate::lower::facts::UnsupportedFamily;
 use crate::lower::facts::UnsupportedRecord;
 use crate::lower::intern::SymbolPathArenaBuilder;
 use crate::lower::intern::SymbolTableBuilder;
+use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
@@ -74,7 +77,7 @@ pub(crate) mod views;
 
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
-    pub(crate) documents: Vec<CanonicalDocument>,
+    pub(crate) documents: Vec<AdmittedDocument>,
     pub(crate) document_index: HashTable<DocumentId>,
     pub(crate) document_hash_builder: RandomState,
     pub(crate) declarations: Vec<Declaration>,
@@ -134,7 +137,7 @@ impl SemanticModelBuilder {
                 hash_builder.hash_one(documents[candidate.index()].identity.as_ref())
             })
             .map_err(|_| ConstructionError::Capacity)?;
-        self.documents.push(CanonicalDocument {
+        self.documents.push(AdmittedDocument {
             identity,
             role,
             parsed,
@@ -900,9 +903,25 @@ impl SemanticModelBuilder {
             .unwrap_or(0)
     }
 
-    pub(crate) fn freeze(self) -> SemanticModelStorage {
-        SemanticModelStorage {
-            documents: self.documents.into_boxed_slice(),
+    /// The phase-2 barrier: the sealed storage and, separately, the parse product the later
+    /// construction phases still read.
+    ///
+    /// They come apart here so that nothing downstream can put a tree back into the model: the
+    /// sealed `SemanticModelStorage` keeps each document's identity, role and line index, and the
+    /// trees leave in a value the publication barrier drops.
+    pub(crate) fn freeze(self) -> (SemanticModelStorage, ParsedSources) {
+        let mut documents = Vec::with_capacity(self.documents.len());
+        let mut canonical = Vec::with_capacity(self.documents.len());
+        for document in self.documents {
+            canonical.push(CanonicalDocument {
+                identity: document.identity.clone(),
+                role: document.role,
+                lines: LineIndex::build(document.parsed.source.as_str()),
+            });
+            documents.push(document);
+        }
+        let storage = SemanticModelStorage {
+            documents: canonical.into_boxed_slice(),
             declarations: self.declarations.into_boxed_slice(),
             declaration_facts: self.declaration_facts.into_boxed_slice(),
             memberships: self.memberships.into_boxed_slice(),
@@ -917,7 +936,8 @@ impl SemanticModelBuilder {
             unit_tokens: self.unit_tokens.into_boxed_slice(),
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
-        }
+        };
+        (storage, ParsedSources::new(documents))
     }
 
     pub(crate) fn canonicalize_document(
@@ -2026,10 +2046,12 @@ mod tests {
             .push_declaration(document, Some(root), Some(second_name))
             .unwrap();
 
-        let model = builder.freeze();
+        let (model, sources) = builder.freeze();
         assert_eq!(model.document(document).unwrap().identity.as_ref(), "model");
+        // The trees leave with the parse product, not with the storage: the sealed model keeps
+        // only what a settled span needs.
         assert!(Arc::ptr_eq(
-            &model.document(document).unwrap().parsed,
+            &sources.into_documents()[document.index()].parsed,
             &parsed
         ));
         assert_eq!(model.declaration(root).unwrap().owner, None);

@@ -17,6 +17,8 @@ use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, ReferenceKind,
     SymbolId, SymbolPathId, Visibility,
 };
+use crate::TextPosition;
+use crate::TextRange;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AuthoredImportShape {
@@ -546,8 +548,14 @@ pub(crate) struct RecoveryRecord {
     pub(crate) span: Span,
 }
 
+/// One admitted document's parse product, held by the construction phases and by nothing else.
+///
+/// `design.md`: a sealed publication holds no parse tree. The tree and the source text are the
+/// syntax service's to own; the phases that lower, evaluate and settle facts from them read them
+/// through this record, which is dropped at the publication barrier. What survives into the sealed
+/// model is [`CanonicalDocument`] -- an identity, a role, and the line index a settled span needs.
 #[derive(Debug)]
-pub(crate) struct CanonicalDocument {
+pub(crate) struct AdmittedDocument {
     pub(crate) identity: Box<str>,
     /// The role this source plays in the build, carried through from the admitted
     /// [`OwnedSourceRecord`]. Library sources participate in one semantic system with workspace
@@ -556,6 +564,70 @@ pub(crate) struct CanonicalDocument {
     pub(crate) role: SourceRole,
     pub(crate) parsed: Arc<ParsedDocument>,
     pub(crate) parse_errors: Box<[ParseError]>,
+}
+
+/// One document as the sealed publication holds it: no tree, no source text.
+#[derive(Debug)]
+pub(crate) struct CanonicalDocument {
+    pub(crate) identity: Box<str>,
+    /// See [`AdmittedDocument::role`].
+    pub(crate) role: SourceRole,
+    /// Where each line of the admitted source began, so a settled byte span still projects to a
+    /// line/column range once the text itself is gone.
+    pub(crate) lines: LineIndex,
+}
+
+/// The byte offset of every line start in one admitted source.
+///
+/// Four bytes per line, against the whole source text and AST it replaces in the sealed model. A
+/// settled parser `Span` is projected through this rather than by re-reading the document, which is
+/// what lets the publication answer a location query without a parse tree.
+#[derive(Debug, Default)]
+pub(crate) struct LineIndex {
+    /// Byte offset of the first byte of every line; always begins with `0`.
+    starts: Box<[u32]>,
+    /// Byte length of the source, so an out-of-bounds span is rejected rather than clamped.
+    length: u32,
+}
+
+impl LineIndex {
+    pub(crate) fn build(text: &str) -> Self {
+        let mut starts = vec![0u32];
+        starts.extend(text.bytes().enumerate().filter_map(|(index, byte)| {
+            (byte == b'\n')
+                .then(|| u32::try_from(index + 1).ok())
+                .flatten()
+        }));
+        Self {
+            starts: starts.into_boxed_slice(),
+            length: u32::try_from(text.len()).unwrap_or(u32::MAX),
+        }
+    }
+
+    /// The zero-based line and byte column of `offset`, or `None` past the end of the source.
+    pub(crate) fn position(&self, offset: usize) -> Option<TextPosition> {
+        let offset = u32::try_from(offset).ok()?;
+        if offset > self.length {
+            return None;
+        }
+        let line = self
+            .starts
+            .partition_point(|start| *start <= offset)
+            .checked_sub(1)?;
+        Some(TextPosition {
+            line: u32::try_from(line).ok()?,
+            character: offset - self.starts.get(line)?,
+        })
+    }
+
+    /// The zero-based range a settled byte span covers.
+    pub(crate) fn range(&self, span: &Span) -> Option<TextRange> {
+        let end = span.offset.checked_add(span.len)?;
+        Some(TextRange {
+            start: self.position(span.offset)?,
+            end: self.position(end)?,
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1610,9 +1610,14 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
         };
-        let model =
-            crate::pipeline::phase::build_model(storage, EvaluationPolicy::Evaluate, None, &[])
-                .unwrap();
+        let (model, _) = crate::pipeline::phase::build_model(
+            storage,
+            crate::lower::storage::ParsedSources::default(),
+            EvaluationPolicy::Evaluate,
+            None,
+            &[],
+        )
+        .unwrap();
         let mut output = String::new();
         model
             .write_semantic_sexpr(

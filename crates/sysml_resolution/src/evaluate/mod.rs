@@ -9,6 +9,7 @@ use crate::evaluate::fold::fold_eval_node;
 use crate::evaluate::fold::fold_eval_node_pending;
 use crate::index::expressions as expression;
 use crate::lower::facts::AuthoredFilterCondition;
+use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::evaluation;
 use crate::model::AuthoredReferenceId;
@@ -60,6 +61,7 @@ pub(crate) struct EvaluationFact {
 /// infinite loop, or a panic.
 pub(crate) fn compute_evaluation(
     storage: &SemanticModelStorage,
+    sources: &ParsedSources,
     resolution: &ResolutionResults,
     policy: EvaluationPolicy,
 ) -> SettledEvaluation {
@@ -79,11 +81,11 @@ pub(crate) fn compute_evaluation(
                 .iter()
                 .map(|pending| EvaluationFact {
                     declaration: pending.declaration,
-                    state: skipped(&classify_authored(storage, &pending.expression)),
+                    state: skipped(&classify_authored(sources, &pending.expression)),
                 })
                 .collect(),
             filters: settled_filters(storage, |condition| {
-                skipped(&classify_authored(storage, &condition.expression))
+                skipped(&classify_authored(sources, &condition.expression))
             }),
         };
     }
@@ -121,7 +123,7 @@ pub(crate) fn compute_evaluation(
     let shapes: Vec<ExpressionEvalShape> = storage
         .evaluation_facts
         .iter()
-        .map(|pending| classify_authored(storage, &pending.expression))
+        .map(|pending| classify_authored(sources, &pending.expression))
         .collect();
 
     // Every declaration whose expression can ever settle to a constant -- the only declarations
@@ -216,7 +218,7 @@ pub(crate) fn compute_evaluation(
     // on one, and folding them here cannot change what any declaration evaluated to.
     let filters = settled_filters(storage, |condition| {
         fold_settled_expression(
-            &classify_authored(storage, &condition.expression),
+            &classify_authored(sources, &condition.expression),
             condition.owner,
             &operand_targets,
             &outcomes,
