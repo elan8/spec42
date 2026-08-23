@@ -95,7 +95,7 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/lsp_server/src/common/util.rs",
-        reason: "untyped-part-usage line scan awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
+        reason: "import-statement line ranges awaiting structured imports (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
         must_contain: None,
     },
     Exemption {
@@ -105,7 +105,7 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/lsp_server/src/lsp_runtime/features/editing_features.rs",
-        reason: "brace-folding fallback and keyword signature help awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
+        reason: "keyword signature help awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
         must_contain: None,
     },
     Exemption {

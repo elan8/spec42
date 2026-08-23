@@ -58,27 +58,10 @@ pub struct UntypedPartUsage {
     pub range: Range,
 }
 
-fn parse_untyped_part_usage_line(raw_line: &str) -> Option<String> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {
-        return None;
-    }
-    if !trimmed.ends_with(';') || trimmed.contains(':') {
-        return None;
-    }
-    let after_part = trimmed.strip_prefix("part ")?;
-    let name = after_part.strip_suffix(';')?.trim();
-    if name.is_empty() || name.contains(char::is_whitespace) {
-        return None;
-    }
-    Some(name.to_string())
-}
-
 pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
     let mut out = Vec::new();
     for (line_idx, raw_line) in content.lines().enumerate() {
-        let Some(name) = parse_untyped_part_usage_line(raw_line) else {
+        let Some(name) = language_service::parse_untyped_part_usage_name(raw_line) else {
             continue;
         };
         let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());

@@ -21,6 +21,7 @@ pub mod uri;
 pub mod workspace;
 pub mod workspace_symbols;
 
+pub use code_actions::parse_untyped_part_usage_name;
 pub use code_actions::{
     suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
     suggest_create_definition_for_unresolved_type_quick_fix,

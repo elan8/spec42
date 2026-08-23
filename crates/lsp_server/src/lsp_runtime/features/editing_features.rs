@@ -16,35 +16,6 @@ use crate::session::snapshot::ServerStateSnapshot;
 use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
 
-fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
-    let mut out = Vec::new();
-    let mut stack: Vec<u32> = Vec::new();
-
-    for (line_idx, line) in text.lines().enumerate() {
-        let line_no = line_idx as u32;
-        for ch in line.chars() {
-            if ch == '{' {
-                stack.push(line_no);
-            } else if ch == '}' {
-                if let Some(start_line) = stack.pop() {
-                    if line_no > start_line {
-                        out.push(FoldingRange {
-                            start_line,
-                            start_character: None,
-                            end_line: line_no,
-                            end_character: None,
-                            kind: Some(FoldingRangeKind::Region),
-                            collapsed_text: None,
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    out
-}
-
 pub(crate) fn signature_help(
     state: &ServerState,
     uri: Url,
@@ -190,11 +161,10 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let parsed_ranges = collect_folding_ranges(&entry.parsed);
-    if !parsed_ranges.is_empty() {
-        return Ok(Some(parsed_ranges));
-    }
-    Ok(Some(collect_brace_folding_ranges(entry.content())))
+    // One derivation: the syntax service's folding regions, which already survive parser
+    // recovery. An empty answer means the document has no foldable region, not that a second
+    // heuristic should guess one.
+    Ok(Some(collect_folding_ranges(&entry.parsed)))
 }
 
 #[allow(deprecated)]

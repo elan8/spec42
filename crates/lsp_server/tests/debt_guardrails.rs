@@ -262,11 +262,6 @@ fn no_duplicate_free_function_bodies_across_consumer_crates() {
     /// Each entry is debt with a named destination in C section 5; none may be extended, and an
     /// entry that stops colliding must be deleted rather than repointed.
     const ALLOWED: &[&[&str]] = &[
-        // D10 — the SysML text probe leaves the host with the syntax-service queries.
-        &[
-            "language_service/src/code_actions.rs::parse_untyped_part_usage_name",
-            "lsp_server/src/common/util.rs::parse_untyped_part_usage_line",
-        ],
         // D8 — the host's re-exported test of the owner's behaviour.
         &[
             "language_service/src/symbol.rs::find_reference_ranges_finds_multiple_occurrences",
