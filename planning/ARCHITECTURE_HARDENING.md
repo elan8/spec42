@@ -80,11 +80,17 @@ work. Types that become field-free move to `sysml_contract`.
 
 ## After wave 3 — measured, not yet scheduled
 
-- **Warm relink is 95% resolution, not lowering.** With per-document lowering reuse landed, a
-  one-line edit on the 94-document standard library measures parse ≈ 13 µs, lowering ≈ 2.7 ms,
-  resolution + implied relationships + evaluation + index + diagnostics ≈ 61 ms — all of which run
-  over the whole workspace because they read cross-document facts. The next latency win is an
-  incremental or document-local phase 3+; that is a design item, not a tuning item.
+- **Warm relink is 95% resolution, not lowering — and making resolution incremental is out of
+  scope until after 1.0.0.** With per-document lowering reuse landed, a one-line edit on the
+  94-document standard library measures parse ≈ 13 µs, lowering ≈ 2.7 ms, resolution + implied
+  relationships + evaluation + index + diagnostics ≈ 61 ms, all of which run over the whole
+  workspace because they read cross-document facts. An incremental or document-local phase 3+
+  would be the next latency win, but it is deliberately not scheduled: the semantic lowering and
+  the typed queries are not yet complete, and optimising the resolution implementation before
+  that surface is locked down and validated by snapshot tests would mean re-doing the work every
+  time the semantics move. Revisit once 1.0.0 has full coverage of lowering and queries under
+  snapshot lock; until then, the `documents_lowered` / `documents_reused` facts and the parity
+  test are the scaffolding that later work builds on.
 - `AuthoredExpression.node` still clones a parser subtree; needs a stable node id upstream.
 - `LineIndex::range` cannot reject a span inside a UTF-8 code point (no text); parser spans are
   boundary-valid today. Add a debug assertion at the barrier if the parser ever changes.
