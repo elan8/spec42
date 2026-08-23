@@ -12,6 +12,7 @@
 #![forbid(unsafe_code)]
 
 mod diagnostic;
+mod diagram;
 mod element;
 mod element_kind;
 mod position;
@@ -19,6 +20,9 @@ mod relationship;
 mod version;
 
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
+pub use diagram::{
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
+};
 pub use element::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
     ElementSearch, ElementSource, FeatureDirection, MembershipFacts, MembershipKind,

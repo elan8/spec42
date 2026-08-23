@@ -6,54 +6,25 @@ use crate::{
     SymbolIdentity, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramViewKind {
-    General,
-    Interconnection,
-    ActionFlow,
-    StateTransition,
-    Sequence,
-    Browser,
-    Grid,
-    Geometry,
-}
+pub use sysml_contract::{
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
+};
 
-impl DiagramViewKind {
-    pub const ALL: [Self; 8] = [
-        Self::General,
-        Self::Interconnection,
-        Self::ActionFlow,
-        Self::StateTransition,
-        Self::Sequence,
-        Self::Browser,
-        Self::Grid,
-        Self::Geometry,
-    ];
-
-    pub const fn id(self) -> &'static str {
-        match self {
-            Self::General => "general-view",
-            Self::Interconnection => "interconnection-view",
-            Self::ActionFlow => "action-flow-view",
-            Self::StateTransition => "state-transition-view",
-            Self::Sequence => "sequence-view",
-            Self::Browser => "browser-view",
-            Self::Grid => "grid-view",
-            Self::Geometry => "geometry-view",
-        }
-    }
-
-    const fn definition_name(self) -> &'static str {
-        match self {
-            Self::General => "GeneralView",
-            Self::Interconnection => "InterconnectionView",
-            Self::ActionFlow => "ActionFlowView",
-            Self::StateTransition => "StateTransitionView",
-            Self::Sequence => "SequenceView",
-            Self::Browser => "BrowserView",
-            Self::Grid => "GridView",
-            Self::Geometry => "GeometryView",
-        }
+/// The standard library declaration name each view kind is defined by.
+///
+/// Deliberately not a method on [`DiagramViewKind`]: matching a projected catalog entry against a
+/// library declaration is how *this* authority finds a view definition, not part of the vocabulary
+/// a consumer is handed.
+const fn definition_name(kind: DiagramViewKind) -> &'static str {
+    match kind {
+        DiagramViewKind::General => "GeneralView",
+        DiagramViewKind::Interconnection => "InterconnectionView",
+        DiagramViewKind::ActionFlow => "ActionFlowView",
+        DiagramViewKind::StateTransition => "StateTransitionView",
+        DiagramViewKind::Sequence => "SequenceView",
+        DiagramViewKind::Browser => "BrowserView",
+        DiagramViewKind::Grid => "GridView",
+        DiagramViewKind::Geometry => "GeometryView",
     }
 }
 
@@ -174,28 +145,6 @@ pub enum DiagramElementTyping {
     Incomplete,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramCompartmentKind {
-    Attributes,
-    Parts,
-    Ports,
-    Items,
-    Constraints,
-    Requirements,
-    Actions,
-    States,
-    Calculations,
-    Connections,
-    Interfaces,
-    Occurrences,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramCompartmentProvenance {
-    Direct,
-    Inherited,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramCompartment {
     pub kind: DiagramCompartmentKind,
@@ -277,13 +226,6 @@ pub struct DiagramStateTransitionScene {
     pub transitions: Box<[DiagramStateTransition]>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DiagramStateVertexKind {
-    Initial,
-    State,
-    Final,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramStateVertex {
     pub semantic_id: SymbolIdentity,
@@ -339,7 +281,7 @@ impl PublishedResolution {
             }));
             let matches = entries
                 .iter()
-                .filter(|entry| entry.name.as_deref() == Some(kind.definition_name()))
+                .filter(|entry| entry.name.as_deref() == Some(definition_name(kind)))
                 .collect::<Vec<_>>();
             if matches.len() > 1 {
                 return QueryOutcome::Ambiguous(Box::new([]));
