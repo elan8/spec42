@@ -33,11 +33,20 @@ one chain, behind one facade:
 `sysml_query` is the **facade**: the only crate a consumer may name for anything SysML. It exposes
 the authorities as typed services and contains no semantic logic of its own.
 
+`sysml_contract` is the **vocabulary**: the value types every SysML answer is spoken in — element
+kinds, visibilities, relationship families, outcome and prerequisite enums, positions and ranges,
+diagnostic codes, opaque identity newtypes, the sealed view traits, and the semantic contract
+version. It computes nothing, holds no state, and names no authority. The authority *implements*
+the contract; the facade *re-exports* it verbatim; consumers reach it only through the facade.
+*Why:* a contract the authority defines is not a contract — every internal rename is an API break
+and every field is a pinned representation. A contract the authority implements lets the authority
+change layout freely and makes a vocabulary change a deliberate, versioned act.
+
 Each link in the chain has exactly one dependant:
 
 ```text
-sysml-v2-parser ──► sysml_resolution ──► sysml_query ──► consumers
-source_identity ──► sysml_source ──────┘
+sysml-v2-parser ──────────────────────► sysml_resolution ──► sysml_query ──► consumers
+source_identity ──► sysml_contract ──► sysml_source ──────┘
 ```
 
 Invariants of the pipeline:
@@ -56,6 +65,23 @@ Invariants of the pipeline:
   semantics — declared packages, import closure, token roles, anything — the derivation lives in the
   semantic authority and is reached through a typed query. A consumer that needs a new answer
   extends the service; it does not compute the answer from facade data, source text, or names.
+  *Why:* two derivations of one fact drift; the repository has already shipped divergent severity
+  labels and file-admission predicates from exactly this pattern.
+- **Facade types expose identities, enums, and borrowed views — never owned storage.** A public
+  contract type may carry `Copy` values, exhaustive enums, opaque ids, and `&'m` accessors or
+  `impl Iterator` over a publication; it may not carry `String`, `Box<str>`, `Vec`, `Box<[T]>`, or
+  map fields. An element handle is an identity, not a string; materialising its text is a boundary
+  operation a consumer asks for explicitly. *Why:* an owned field is an allocation per result on
+  every keystroke and a pinned representation the authority can never change; a borrowed view costs
+  nothing and lets dense layouts, arenas, and interning change underneath without touching a host.
+- **A sealed publication holds no parse tree.** Every location, range, and name a query can return is
+  settled into the model at the publication barrier; the parse tree is owned by the syntax service
+  only. *Why:* retaining trees multiplies resident memory by the corpus and turns every navigation
+  query into a source-text scan.
+- **Representation changes are admitted with a benchmark.** A change to storage layout, indexing, or
+  reuse lands only with the bench set (`cargo bench` on the bundled standard-library corpus: cold
+  build, warm relink, and the keystroke-path queries) showing neutral-or-better. *Why:* the memoisation
+  invariant says consumers cannot tell; the bench is how maintainers can.
 
 ## Services
 
@@ -76,6 +102,31 @@ benchmarks. There is exactly one `Services` per host process.
 
 New capability lands in this order: implementation in the owning authority, a typed contract in
 `sysml_query`, then use from a host. Never the reverse.
+
+## Phases inside the semantic authority
+
+The authority is one crate but not one module. Construction is a sequence of phases, each a
+module under `sysml_resolution/src/` with one writer that consumes the previous phase's product
+and yields the next as a distinct type:
+
+```text
+pipeline ─► lower ─► resolve ─► evaluate ─► index ─► check ─► diagnose ─► publication
+            Lowered   Resolved   Evaluated   Indexed  ───────────────────► Complete
+```
+
+- A phase reads only earlier products and writes only its own store; the previous product is
+  moved, not borrowed mutably, so there is no write-back and no half-built model to observe.
+- Every derived fact has one writer. Evaluation is decided in `evaluate`, never at lowering time;
+  diagnostics are decided in `diagnose`, never mid-construction.
+- `model/query` reads `Complete` only. Projections (diagram scenes, navigation) read settled indexes;
+  they do not derive at projection time.
+- No `use super::*` outside `#[cfg(test)]`; a phase names what it depends on.
+- Tests that build a full model and assert on its canonical projection are contract tests and live
+  in `tests/`; only tests of interning, arena growth, solver bounds, and memo lifecycle stay inline.
+
+*Why:* the crate is half the repository. Without phase boundaries the sole authority becomes the
+sole file nobody can safely change — the same failure the authority pipeline exists to prevent,
+one level down.
 
 ## Crate map
 
@@ -143,8 +194,9 @@ are hosts. No grey or green edge reaches yellow.
 | Crate | Role | May depend on (SysML crates) |
 |---|---|---|
 | `source_identity` | typed content digests and manifests; home of the std-only authority guards | — |
-| `sysml_source` | source authority | `source_identity` |
-| `sysml_resolution` | semantic authority | `sysml-v2-parser`, `sysml_source` |
+| `sysml_contract` | the semantic vocabulary and its version; value types, opaque ids, sealed views; computes nothing | `source_identity` |
+| `sysml_source` | source authority | `source_identity`, `sysml_contract` |
+| `sysml_resolution` | semantic authority; implements `sysml_contract` | `sysml-v2-parser`, `sysml_source`, `sysml_contract` |
 | `sysml_query` | facade | `sysml_resolution` |
 | `sysml_diagnostics` | transport-neutral diagnostic values and reporting policy; decides nothing semantic | `sysml_query` |
 | `sysml_tokens` | projection of facade token roles onto editor token indices; host-neutral | `sysml_query` |
@@ -152,9 +204,9 @@ are hosts. No grey or green edge reaches yellow.
 | `language_service` | protocol-neutral editor intelligence over typed queries | `sysml_query` |
 | `library_catalog` | library provisioning: bundled and managed standard/domain libraries, configuration, data directories; yields library roots | `kpar` |
 | `session_actor` | generic asynchronous mailbox over embedder state; knows nothing about SysML | — |
-| `workspace` | batch host: engine, directory snapshot, validation, comparison, schema versions | `sysml_query`, `library_catalog`, `language_service`, `sysml_diagnostics` |
-| `lsp_server` | editor host: document lifecycle, LSP handlers, host adapters | consumers above |
-| `server` | CLI, MCP, and LSP binary | consumers above |
+| `workspace` | batch host: engine, directory snapshot, validation path and reports, comparison, schema versions | `sysml_query`, `library_catalog`, `language_service`, `sysml_diagnostics` |
+| `lsp_server` | editor host: session, LSP handlers, host adapters; no dependency on the batch host | consumers above, not `workspace` |
+| `server` | CLI, MCP, and LSP binary; validation through `workspace`, `lsp_server` is a launch edge only | consumers above |
 | `generator_api`, `generator_host`, `generator_conformance` | sandboxed generators over typed model queries | `sysml_query` |
 
 ## Hosts
@@ -193,6 +245,25 @@ the last coherent publication in place and report a typed outcome.
 
 Library documents are resolved once into a library stratum keyed by their digests and reused across
 publications whose library inputs are unchanged.
+
+## Versioning and compatibility
+
+| Surface | Versioned by | Stable across |
+|---|---|---|
+| semantic vocabulary | `sysml_contract::SEMANTIC_CONTRACT_VERSION`, hashed into every publication identity | a release; bumped when a contract type or derivation meaning changes |
+| diagnostic codes | `DiagnosticCode` in `sysml_contract`; codes are never reused | all releases |
+| KPAR archive | `kpar` schema version | documented in `docs/reference` |
+| generator protocol | `generator_protocol` version | documented in `docs/generation` |
+
+Cold, warm, sequential, and parallel builds of the same inputs yield the same identity; this is a
+user-facing guarantee (reproducible validation in CI) and is tested as one.
+
+## Amending this document
+
+A change here is a change to the architecture. It lands as the first commit of the PR that
+implements it, with: the invariant, its *why*, the enforcement row that makes it irreversible, and
+the benchmark where representation is involved. A guard is never loosened to admit a change; the
+change is redesigned or the invariant is amended here first.
 
 ## Enforcement
 
