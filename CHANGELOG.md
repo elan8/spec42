@@ -33,6 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   which slices the settled blob, and the LSP and generator edges materialise an owned string only
   where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
   Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
+- **A state-transition vertex names its element by handle; the label is read at the edge.**
+  `DiagramStateVertex` is now `Copy` -- a `SymbolId`, a vertex kind and a `SourceLocation`. The
+  label it used to carry was a copy of the element's authored name, which the publication already
+  stores, allocated once per vertex for text only a renderer needs. A consumer reads it with
+  `symbol_name`, which borrows from the settled symbol blob. Output is byte-identical: the
+  generator boundary materialises the same `unwrap_or_default` empty label for an anonymous state.
+  Enforcement: the owned-string inventory's product list in `architecture.rs` shrank from 17
   entries to 16.
 
 - **A navigation result names its element by handle; the name is read at the editor edge.**

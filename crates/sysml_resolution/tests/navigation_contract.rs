@@ -606,7 +606,7 @@ fn state_transition_scene_owns_vertices_and_composed_transitions() {
     assert!(!scene
         .vertices
         .iter()
-        .any(|vertex| vertex.label.as_ref() == "start"));
+        .any(|vertex| published.symbol_name(vertex.semantic_id) == Some("start")));
 }
 
 #[test]

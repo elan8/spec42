@@ -240,10 +240,14 @@ pub struct DiagramStateTransitionScene {
     pub transitions: Box<[DiagramStateTransition]>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// One vertex of a state-transition scene.
+///
+/// The label is not carried: it is the element's authored name, which the publication already
+/// stores. A consumer that renders one reads it with [`PublishedResolution::symbol_name`], which
+/// borrows from the settled symbol blob, rather than being handed a copy per vertex.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagramStateVertex {
     pub semantic_id: SymbolId,
-    pub label: Box<str>,
     pub kind: DiagramStateVertexKind,
     pub source: SourceLocation,
 }
@@ -977,7 +981,6 @@ fn diagram_scene(
                     };
                     Some(DiagramStateVertex {
                         semantic_id: element.semantic_id,
-                        label: element.name.clone().unwrap_or_default(),
                         kind,
                         source: element.source,
                     })

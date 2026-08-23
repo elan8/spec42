@@ -968,7 +968,11 @@ impl GeneratorModelView {
                     .iter()
                     .map(|vertex| StateTransitionNode {
                         semantic_id: self.token(vertex.semantic_id),
-                        label: vertex.label.to_string(),
+                        label: self
+                            .model
+                            .symbol_name(vertex.semantic_id)
+                            .unwrap_or_default()
+                            .to_owned(),
                         kind: match vertex.kind {
                             sysml_query::resolved_slice::DiagramStateVertexKind::Initial => {
                                 StateTransitionNodeKind::Initial
