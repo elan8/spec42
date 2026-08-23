@@ -214,8 +214,8 @@ pub(crate) fn library_full_scan_enabled() -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, normalize_file_uri,
-        parse_diagnose_library_paths_from_value, untyped_part_usage_diagnostics,
+        apply_incremental_change, normalize_file_uri, parse_diagnose_library_paths_from_value,
+        untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -248,7 +248,6 @@ mod tests {
         let updated = apply_incremental_change(text, &range, "").expect("edit applies");
         assert_eq!(updated, "package Demo {\n  part def Engine\n}\n");
     }
-
 
     #[test]
     fn untyped_part_usage_diagnostics_detects_part_usage_without_type() {

@@ -136,6 +136,5 @@ fn import_range(document: &ParsedDocument, span: &sysml_v2_parser::Span) -> Synt
 /// The first segment of a qualified name, which is the namespace it is rooted in.
 pub(super) fn namespace_root(qualified_name: &str) -> Option<&str> {
     let root = qualified_name.split("::").next()?.trim();
-    (!root.is_empty() && root.chars().all(|ch| ch.is_alphanumeric() || ch == '_'))
-        .then_some(root)
+    (!root.is_empty() && root.chars().all(|ch| ch.is_alphanumeric() || ch == '_')).then_some(root)
 }

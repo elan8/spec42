@@ -93,7 +93,11 @@ fn covers(span: &SyntaxRange, line: u32, character: u32) -> bool {
         && (line < span.end_line || character < span.end_character)
 }
 
-pub(super) fn unit_literal_at(source: &str, line: u32, character: u32) -> Option<SyntaxUnitLiteral> {
+pub(super) fn unit_literal_at(
+    source: &str,
+    line: u32,
+    character: u32,
+) -> Option<SyntaxUnitLiteral> {
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
     let cursor = character as usize;
@@ -107,10 +111,12 @@ pub(super) fn unit_literal_at(source: &str, line: u32, character: u32) -> Option
             open_brackets.push(index);
         } else if ch == ']' {
             if let Some(open) = open_brackets.pop() {
-                if cursor >= open && cursor <= index && preceded_by_number(&chars, open) {
-                    if innermost.is_none_or(|(best, _)| open > best) {
-                        innermost = Some((open, index));
-                    }
+                if cursor >= open
+                    && cursor <= index
+                    && preceded_by_number(&chars, open)
+                    && innermost.is_none_or(|(best, _)| open > best)
+                {
+                    innermost = Some((open, index));
                 }
             }
         }
@@ -118,7 +124,11 @@ pub(super) fn unit_literal_at(source: &str, line: u32, character: u32) -> Option
     let (open, close) = innermost?;
     let inner: String = chars[open + 1..close].iter().collect();
     let leading = inner.chars().take_while(|ch| ch.is_whitespace()).count();
-    let trailing = inner.chars().rev().take_while(|ch| ch.is_whitespace()).count();
+    let trailing = inner
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
     let unit = inner.trim();
     if unit.is_empty() {
         return None;
@@ -138,7 +148,7 @@ pub(super) fn unit_literal_at(source: &str, line: u32, character: u32) -> Option
 /// bracket a unit suffix rather than a multiplicity.
 fn preceded_by_number(chars: &[char], open: usize) -> bool {
     let before: String = chars[..open].iter().collect();
-    let Some(last) = before.trim_end().split_whitespace().last() else {
+    let Some(last) = before.split_whitespace().next_back() else {
         return false;
     };
     let mut token = last.chars();
@@ -215,7 +225,10 @@ pub(super) fn occurrences_of(source: &str, name: &str) -> Vec<SyntaxRange> {
                     .and_then(|before| chars.get(before))
                     .copied()
                     .is_some_and(is_word_char)
-                && !chars.get(at + needle.len()).copied().is_some_and(is_word_char)
+                && !chars
+                    .get(at + needle.len())
+                    .copied()
+                    .is_some_and(is_word_char)
             {
                 out.push(SyntaxRange {
                     start_line: line_number as u32,
@@ -249,7 +262,10 @@ mod tests {
         let parsed = parse("package P { part foo : Bar; }");
         let token = parsed.token_at(0, 18).expect("token");
         assert_eq!(token.text, "foo");
-        assert_eq!((token.range.start_character, token.range.end_character), (17, 20));
+        assert_eq!(
+            (token.range.start_character, token.range.end_character),
+            (17, 20)
+        );
         assert!(!token.is_keyword);
         assert!(parsed.token_at(0, 13).expect("keyword token").is_keyword);
     }
@@ -273,7 +289,9 @@ mod tests {
     fn a_unit_suffix_is_a_unit_literal_and_a_multiplicity_is_not() {
         let parsed = parse("package P { attribute v = 10 [kV]; }");
         let bracket = "package P { attribute v = 10 ".len() as u32;
-        let literal = parsed.unit_literal_at(0, bracket + 1).expect("unit literal");
+        let literal = parsed
+            .unit_literal_at(0, bracket + 1)
+            .expect("unit literal");
         assert_eq!(literal.unit, "kV");
         assert_eq!(
             (literal.range.start_character, literal.range.end_character),

@@ -43,6 +43,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `syntax_authority.rs` guard that rejects retired helpers, shadowed service queries, caches and
   SysML file reads outside the authorities, and string probes for SysML syntax; the heuristics it
   still exempts are recorded with their retiring queries in `planning/SYNTAX_FOLLOW_UPS.md`.
+- **Editor answers about declarations, imports and the cursor now come from the syntax service,
+  with visible differences.** The outline publishes a typed `SyntaxOutlineKind` with the authored
+  keyword as an accessor, each declaration's short name, its typing, and — new — its true
+  multi-line extent, its header range and its body range; `ParsedSource` answers
+  `declaration_at`/`enclosing_declarations`, `imports`, `type_references`,
+  `referenced_namespace_roots`, `token_at`, `unit_literal_at` and `occurrences_of`. Consequences a
+  user sees: folding regions now cover multi-line declarations (outline ranges used to end on the
+  declaration's opening line, so almost nothing was foldable); workspace symbols and library
+  search are classified by their element kind instead of arriving uniformly as "variable"; linked
+  editing and the feature inspector no longer trigger from a keyword written in a comment or a
+  string, and renaming through linked editing no longer rewrites a name inside a comment or a
+  string literal; document links anchor to each import's own range rather than to any line
+  containing the word `import`; and whether a workspace uses the standard library is decided from
+  the namespaces its sources name rather than from a substring of its bytes. Signature help reads
+  the declaration the cursor is in rather than the leading keyword of its line.
 - **Library closure is resolved from parsed facts rather than text, with visible differences.**
   A `SysML::` mention in a comment no longer admits the `SysML` package (authored imports and
   typing references do); `import sysml::*` admits every package under a standard-library root by

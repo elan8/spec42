@@ -37,7 +37,10 @@ pub(crate) fn sysml_feature_inspector_result(
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
 
-    if let Some(literal) = entry.parsed.unit_literal_at(position.line, position.character) {
+    if let Some(literal) = entry
+        .parsed
+        .unit_literal_at(position.line, position.character)
+    {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
             kind: "unit".to_string(),
             text: Some(literal.unit),
@@ -180,9 +183,9 @@ pub(crate) fn sysml_library_search_result(
         .take(effective_limit)
         .map(|(score, entry)| language_service::LibrarySearchItem {
             name: entry.name.clone(),
-            kind: crate::language::symbol_kind_label(
-                crate::language::element_kind_label_to_lsp(entry.detail.as_deref()),
-            )
+            kind: crate::language::symbol_kind_label(crate::language::element_kind_label_to_lsp(
+                entry.detail.as_deref(),
+            ))
             .to_string(),
             container: entry.container_name.clone(),
             uri: entry.uri.to_string(),

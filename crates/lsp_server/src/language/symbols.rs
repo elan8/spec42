@@ -5,8 +5,8 @@ use crate::common::text_span::to_lsp_range;
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
-use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind};
 use sysml_query::resolved_slice::ElementKind;
+use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind};
 use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind};
 
 /// The one label a host prints for an LSP [`SymbolKind`], the inverse of the table above.

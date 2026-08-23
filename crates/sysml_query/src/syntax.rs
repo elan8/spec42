@@ -11,10 +11,9 @@ use std::sync::Arc;
 pub use sysml_resolution::source::ContentDigest;
 pub use sysml_resolution::syntax::{
     is_reserved_keyword, reserved_keywords, ImportScope, PackageTargets, ParsedSource,
-    SyntaxClosureFacts, SyntaxImport,
-    SyntaxDiagnostic, SyntaxDiagnosticCategory, SyntaxDiagnosticSeverity, SyntaxFoldingKind,
-    SyntaxFoldingRegion, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange, SyntaxRole,
-    SyntaxToken, SyntaxUnitLiteral, RESERVED_KEYWORDS,
+    SyntaxClosureFacts, SyntaxDiagnostic, SyntaxDiagnosticCategory, SyntaxDiagnosticSeverity,
+    SyntaxFoldingKind, SyntaxFoldingRegion, SyntaxImport, SyntaxOutlineKind, SyntaxOutlineNode,
+    SyntaxRange, SyntaxRole, SyntaxToken, SyntaxUnitLiteral, RESERVED_KEYWORDS,
 };
 
 use sysml_resolution::syntax::SyntaxAuthority;

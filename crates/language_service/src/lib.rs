@@ -39,24 +39,19 @@ pub use dto::{
     TextEditSuggestion, WorkspaceSymbolMatch,
 };
 pub use formatting::{format_document_text, FormatOptions};
+pub use keywords::{
+    is_reserved_keyword, keyword_doc, keyword_help, keyword_hover_markdown, sysml_keywords,
+    KeywordHelp, RESERVED_KEYWORDS,
+};
 pub use library_search::{
     build_library_tree, library_search_score, library_source_label,
     recover_short_name_search_symbols, LibrarySearchItem, LibrarySearchPackage,
     LibrarySearchSource, RecoverySearchSymbol,
 };
-pub use keywords::{
-    is_reserved_keyword, keyword_doc, keyword_help, keyword_hover_markdown, sysml_keywords,
-    KeywordHelp, RESERVED_KEYWORDS,
-};
 pub use navigation::{find_references, goto_definition, hover};
 pub use outline::{document_symbols, folding_ranges};
 pub use rename::{apply_rename, prepare_rename, rename_target, RenameTarget};
-pub use symbol::{
-    symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry,
-};
-pub use text::{
-    completion_prefix, line_prefix_at_position, position_to_byte_offset,
-    utf16_len,
-};
+pub use symbol::{symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry};
+pub use text::{completion_prefix, line_prefix_at_position, position_to_byte_offset, utf16_len};
 pub use workspace::{InMemoryWorkspace, WorkspaceSnapshot};
 pub use workspace_symbols::search_workspace_symbols;

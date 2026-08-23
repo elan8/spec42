@@ -287,7 +287,9 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PartDefBody::Brace { elements, .. } => outline_symbols_from_part_def_body(document, elements),
+                PartDefBody::Brace { elements, .. } => {
+                    outline_symbols_from_part_def_body(document, elements)
+                }
                 _ => vec![],
             };
             let (head_range, body_range) = split_body(document, &p.body, range);
@@ -295,13 +297,15 @@ fn outline_symbol_from_element(
                 name,
                 short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::PartDef,
-                typed_by: super::closure_targets::typing_target_display(document, p.specializes.as_deref()),
+                typed_by: super::closure_targets::typing_target_display(
+                    document,
+                    p.specializes.as_deref(),
+                ),
                 range,
                 selection_range: range,
                 head_range,
                 body_range,
                 children,
-                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::PartUsage(p) => {
@@ -316,13 +320,15 @@ fn outline_symbol_from_element(
                 name: p.name.clone(),
                 short_name: p.short_name.clone(),
                 kind: SyntaxOutlineKind::PartUsage,
-                typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
+                typed_by: super::closure_targets::typing_target_display(
+                    document,
+                    p.typing.as_deref(),
+                ),
                 range,
                 selection_range: range,
                 head_range,
                 body_range,
                 children,
-                ..SyntaxOutlineNode::bare(range)
             })
         }
         PBE::PortDef(p) => {
@@ -331,7 +337,9 @@ fn outline_symbol_from_element(
                 return None;
             }
             let children = match &p.body {
-                PortDefBody::Brace { elements, .. } => outline_symbols_from_port_def_body(document, elements),
+                PortDefBody::Brace { elements, .. } => {
+                    outline_symbols_from_port_def_body(document, elements)
+                }
                 _ => vec![],
             };
             let (head_range, body_range) = split_body(document, &p.body, range);

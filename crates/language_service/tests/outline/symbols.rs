@@ -1,6 +1,6 @@
-use sysml_query::syntax::SyntaxOutlineKind;
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
 use sysml_query::syntax::ParsedSource;
+use sysml_query::syntax::SyntaxOutlineKind;
 
 fn parse(text: &str) -> Result<ParsedSource, String> {
     let parsed = sysml_query::syntax::SyntaxService::new().parse_text(text);
@@ -89,10 +89,10 @@ fn document_symbols_feature_and_classifier_decls() {
     let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     let children = &symbols[0].children;
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "myFeature" && child.kind == SyntaxOutlineKind::FeatureDecl }));
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "VehicleClass" && child.kind == SyntaxOutlineKind::ClassifierDecl }));
+    assert!(children.iter().any(|child| {
+        child.name == "myFeature" && child.kind == SyntaxOutlineKind::FeatureDecl
+    }));
+    assert!(children.iter().any(|child| {
+        child.name == "VehicleClass" && child.kind == SyntaxOutlineKind::ClassifierDecl
+    }));
 }

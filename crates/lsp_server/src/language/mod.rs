@@ -46,8 +46,8 @@ mod position {
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
 #[cfg(test)]
 pub use symbols::collect_named_elements;
-pub(crate) use symbols::{element_kind_label_to_lsp, symbol_kind_label};
 pub use symbols::{collect_document_symbols, collect_folding_ranges};
+pub(crate) use symbols::{element_kind_label_to_lsp, symbol_kind_label};
 
 use language_service::{format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion};
 use tower_lsp::lsp_types::{
