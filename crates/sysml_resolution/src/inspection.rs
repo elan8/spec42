@@ -15,7 +15,7 @@ use crate::{ElementKind, MembershipRole, SourceLocation, SymbolIdentity, TextRan
 pub use sysml_contract::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
     FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound, MultiplicityFacts,
-    PortionKind, ValueKind, Visibility, VisibilityProvenance,
+    PortionKind, RelationshipProvenance, ValueKind, Visibility, VisibilityProvenance,
 };
 
 /// One documentation, comment or textual-representation annotation.
@@ -30,15 +30,6 @@ pub struct Documentation {
     /// The `rep` language; always `None` for the other two forms.
     pub language: Option<Box<str>>,
     pub text: Box<str>,
-}
-
-/// Whether a relationship was authored or derived by the resolver.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum RelationshipProvenance {
-    /// Written in the source.
-    Authored,
-    /// Synthesized by the resolver from a rule, such as an implied redefinition.
-    Implied,
 }
 
 /// The exact derived `Element::owner` value.

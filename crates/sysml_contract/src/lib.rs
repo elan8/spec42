@@ -15,6 +15,7 @@ mod diagnostic;
 mod element;
 mod element_kind;
 mod position;
+mod relationship;
 mod version;
 
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
@@ -27,4 +28,11 @@ pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
 pub use position::{OccurrenceRole, TextPosition, TextRange};
+pub use relationship::{
+    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, Conformance,
+    ConformanceObstacle, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
+    RelationshipOutcome, RelationshipProvenance, SatisfyPolarity, SpecializationCheckOutcome,
+    SpecializationCheckPrerequisite, SpecializationScope, SubsettingConformance,
+    TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+};
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};

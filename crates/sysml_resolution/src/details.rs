@@ -14,48 +14,7 @@ use crate::inspection::{ElementInspection, RelationshipProvenance, SymbolEntry};
 use crate::type_query::EffectiveTypeOrigin;
 use crate::SourceLocation;
 
-/// What resolution settled for one authored relationship family of an element.
-///
-/// A family is every authored reference of one kind group -- the typings, the specializations, the
-/// subsettings. Its outcome is the *least settled* outcome among them, so a family where one
-/// reference resolved and another did not is [`RelationshipOutcome::Partial`] rather than
-/// resolved. The precedence, applied in this order, is:
-///
-/// 1. no authored reference at all is [`RelationshipOutcome::NotApplicable`];
-/// 2. any ambiguous reference makes the family [`RelationshipOutcome::Ambiguous`];
-/// 3. otherwise any unsupported reference makes it [`RelationshipOutcome::Unsupported`];
-/// 4. otherwise a mix of settled and unsettled references is [`RelationshipOutcome::Partial`];
-/// 5. otherwise the family is wholly [`RelationshipOutcome::Resolved`] or wholly
-///    [`RelationshipOutcome::Unresolved`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum RelationshipOutcome {
-    /// The element authors no relationship of this family, so there is nothing to resolve.
-    NotApplicable,
-    /// Every authored reference in the family settled on a target.
-    Resolved,
-    /// Some authored references settled and others did not.
-    Partial,
-    /// The family is authored and no reference in it settled on a target.
-    Unresolved,
-    /// At least one reference has several candidates, and none of them was chosen.
-    Ambiguous,
-    /// At least one reference is written in a form outside the supported resolution slice.
-    Unsupported,
-}
-
-impl RelationshipOutcome {
-    /// A stable kebab-case name, for debug rendering and snapshot output.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::NotApplicable => "not-applicable",
-            Self::Resolved => "resolved",
-            Self::Partial => "partial",
-            Self::Unresolved => "unresolved",
-            Self::Ambiguous => "ambiguous",
-            Self::Unsupported => "unsupported",
-        }
-    }
-}
+pub use sysml_contract::RelationshipOutcome;
 
 /// One authored relationship family of an element.
 ///
