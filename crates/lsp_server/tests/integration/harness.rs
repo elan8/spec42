@@ -105,12 +105,19 @@ pub fn lsp_barrier(stdin: &mut std::process::ChildStdin, stdout: &mut std::proce
 
 /// Deterministic publication barrier: block until the server publishes diagnostics for `uri`.
 ///
-/// `didOpen`/`didChange` of a new or changed document schedules a relink, and the relink task
-/// owns diagnostic publication: it publishes only after the fully resolved graph has been
-/// committed to the session publication (the monotonic version hosts report to clients).
-/// Blocking on that `textDocument/publishDiagnostics` notification therefore observes the
+/// Every publisher of `textDocument/publishDiagnostics` diagnoses a document from a captured
+/// session publication and publishes only while that publication is still the live one — whether
+/// it is the relink task after a `didOpen`/`didChange` on a ready session, or the startup scan's
+/// sweep when the `didOpen` landed while the session was still `Indexing` and no relink token was
+/// available. Either way the notification for a URI means: the publication that currently answers
+/// requests has this document's admitted revision in it. Blocking on it therefore observes the
 /// publication barrier itself, instead of guessing at wall-clock indexing latency with a
 /// sleep/retry loop.
+///
+/// That equivalence is exactly what `rebuild_publication` guarantees by preparing its inputs and
+/// taking its build token in one actor turn (see `session/handle.rs`); before that, a document
+/// could be in the index — and so be diagnosed and published for — while a superseding build
+/// prepared from a staler index kept it out of the publication, and requests answered empty.
 ///
 /// Call this before any request whose `read_response` would otherwise discard the notification.
 pub fn wait_for_publication(stdout: &mut std::process::ChildStdout, uri: &str) {

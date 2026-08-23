@@ -69,6 +69,64 @@ mod publication_tests {
         ));
     }
 
+    /// A document the host has admitted must never be missing from the publication that answers
+    /// requests for it. The regression: `rebuild_publication` prepared its inputs off the actor
+    /// and only *then* took a build token, so a rebuild that had already read a stale index could
+    /// be handed a newer build generation than a concurrent rebuild carrying the new document —
+    /// superseding the fresher build and leaving the document in `index` but out of
+    /// `session.current()` forever. `textDocument/references` then answered empty for a document
+    /// the server had accepted and published diagnostics for.
+    ///
+    /// This races a bare rebuild against a document refresh and asserts the invariant the fix
+    /// establishes: however the two land, the document the host accepted is in the publication
+    /// that answers requests for it. It is a convergence guard rather than a deterministic
+    /// reproduction — reaching the inverted order requires the losing build to be prepared before
+    /// and tokened after the winner, which preparing under the `begin_build` mutation makes
+    /// unrepresentable but which no scheduling hint can force on demand.
+    #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+    async fn a_concurrent_rebuild_never_supersedes_the_build_that_carries_a_new_document() {
+        let uri = Url::parse("memory://workspace/late.sysml").unwrap();
+        for _ in 0..25 {
+            let mut state = ServerState::default();
+            state.session.complete_startup();
+            let handle = WorkspaceHandle::spawn(state);
+
+            let racer = handle.clone();
+            let bare = tokio::spawn(async move { racer.rebuild_publication().await });
+            let refresher = handle.clone();
+            let refresh_uri = uri.clone();
+            let refresh = tokio::spawn(async move {
+                refresher
+                    .refresh_document(refresh_uri, "package Late { part p; }".to_string())
+                    .await
+            });
+            bare.await.unwrap().expect("bare rebuild");
+            refresh.await.unwrap().expect("document refresh");
+
+            let snapshot = handle.snapshot();
+            assert!(
+                snapshot.index.contains_key(&uri),
+                "the host accepted the document"
+            );
+            let symbols = snapshot
+                .session
+                .current()
+                .inspection()
+                .document_symbols(uri.as_str());
+            assert!(
+                matches!(
+                    symbols,
+                    sysml_query::resolved_slice::QueryOutcome::Resolved(ref symbols)
+                        | sysml_query::resolved_slice::QueryOutcome::Recovered(ref symbols)
+                        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(ref symbols)
+                        if !symbols.is_empty()
+                ),
+                "an accepted document must be in the publication that answers requests for it, \
+                 got {symbols:?}"
+            );
+        }
+    }
+
     #[tokio::test]
     async fn a_superseded_build_keeps_the_live_last_good_model() {
         let mut state = ServerState::default();
@@ -163,42 +221,55 @@ impl WorkspaceHandle {
     /// Runs canonical semantic construction outside the ServerState actor and admits the result
     /// at the session's publication barrier, mirroring it into the reader snapshot atomically.
     ///
-    /// `prepare` never parses, so it runs here on the executor; `construct` parses whatever the
-    /// syntax memo does not hold and resolves the model on a blocking thread. After admission the
-    /// memo is swept to the revisions the index still holds.
+    /// Reading the inputs, preparing them, and taking the build token all happen inside **one**
+    /// actor turn, and that is a correctness requirement, not a tidiness one. The session admits
+    /// only the newest build generation (`Session::admit` supersedes every older token), so build
+    /// generation order must equal input order: if a build could be prepared from one revision of
+    /// the index and then be handed a *newer* generation than a concurrently running build that
+    /// saw more documents, the fresher build would be superseded by the staler one and its
+    /// documents would silently never enter the publication — a document present in `index` but
+    /// absent from `session.current()`, which is exactly what makes `textDocument/references`
+    /// answer empty for a document the host has already accepted. Preparing under the same
+    /// mutation that calls `begin_build` makes that inversion unrepresentable.
+    ///
+    /// `prepare` never parses, so it is cheap enough to run on the actor; `construct` parses
+    /// whatever the syntax memo does not hold and resolves the model on a blocking thread. A
+    /// `Superseded` outcome is therefore always benign: the superseding build was prepared from
+    /// inputs at least as new as this one's. After admission the memo is swept to the revisions
+    /// the index still holds.
     pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
-        let state = self.snapshot();
-        let expected_revision = state.semantic_revision;
-        let (documents, reported) = crate::session::state::publication_inputs(state.as_ref());
-        let publication = state.services.publication.clone();
-        let prepared = match publication.prepare(&documents, reported) {
-            Ok(prepared) => prepared,
+        let staged = self
+            .actor
+            .mutate(move |state| {
+                let (documents, reported) = crate::session::state::publication_inputs(state);
+                match state.services.publication.prepare(&documents, reported) {
+                    Ok(prepared) => {
+                        let token = state.session.begin_build(prepared.identity().clone());
+                        Ok(SemanticBuild::new(token, prepared))
+                    }
+                    Err(failure) => {
+                        let failure = Arc::new(failure);
+                        state.publication_failure = Some(Arc::clone(&failure));
+                        Err(failure)
+                    }
+                }
+            })
+            .await?;
+        let build = match staged {
+            Ok(build) => build,
             Err(failure) => {
-                let failure = Arc::new(failure);
                 tracing::error!(stage = ?failure.stage(), message = %failure.message(), "semantic publication preparation failed; retaining last good publication");
-                self.actor
-                    .mutate(move |state| state.publication_failure = Some(failure))
-                    .await?;
                 return Ok(false);
             }
         };
-        let identity = prepared.identity().clone();
-        let token = self
-            .actor
-            .mutate(move |state| state.session.begin_build(identity))
-            .await?;
-        let completion = tokio::task::spawn_blocking(move || {
-            publication.construct(SemanticBuild::new(token, prepared))
-        })
-        .await
-        .expect("semantic construction task panicked");
+        let publication = self.snapshot().services.publication.clone();
+        let completion = tokio::task::spawn_blocking(move || publication.construct(build))
+            .await
+            .expect("semantic construction task panicked");
         let failure = completion.failure().cloned().map(Arc::new);
         let mirrored = self
             .actor
             .mutate_if_changed(move |state| {
-                if state.semantic_revision != expected_revision {
-                    return Mutation::Unchanged(false);
-                }
                 let outcome = completion.admit(&mut state.session);
                 if let Some(failure) = failure.as_ref() {
                     tracing::error!(stage = ?failure.stage(), message = %failure.message(), ?outcome, "semantic publication failed; retaining last good publication");
