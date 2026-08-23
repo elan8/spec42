@@ -5,13 +5,13 @@ use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
+use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::model::SemanticModelBuilder;
 use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataBody, MetadataBodyElement,

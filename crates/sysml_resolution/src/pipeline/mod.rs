@@ -7,8 +7,8 @@ use source_identity::SourceRole;
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
 use crate::evaluation::EvaluationPolicy;
+use crate::lower::SemanticModelBuilder;
 use crate::model::resolver;
-use crate::model::SemanticModelBuilder;
 use crate::pipeline::schedule::{source_admission_rank, BuildPhaseDurations, BuildSchedule};
 
 pub(crate) mod schedule;
