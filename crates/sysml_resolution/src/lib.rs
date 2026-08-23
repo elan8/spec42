@@ -138,6 +138,17 @@ pub struct BuildMeasurements {
     pub parse: std::time::Duration,
     pub lowering: std::time::Duration,
     pub resolution: std::time::Duration,
+    /// How many admitted documents this build lowered itself: a memo miss, or no memo at all.
+    ///
+    /// `documents_lowered + documents_reused` is every admitted document, library and workspace
+    /// alike. A counted fact rather than a timing, so a caller can state that one edit lowered
+    /// exactly one document without reading a clock.
+    pub documents_lowered: usize,
+    /// How many admitted documents this build took from the lowering memo unchanged.
+    ///
+    /// Reuse is keyed by content digest at every provenance. It cannot change what is built: the
+    /// spliced product is the one this document's own walk produced, relocated.
+    pub documents_reused: usize,
     /// How many admitted sources this build parsed itself.
     ///
     /// Sources admitted as parsed handles are not counted: they enter the build as the trees the
@@ -694,6 +705,8 @@ fn build_parts(
             lowering: measurements.lowering,
             resolution: measurements.resolution,
             sources_parsed: measurements.sources_parsed,
+            documents_lowered: measurements.documents_lowered,
+            documents_reused: measurements.documents_reused,
         },
         sources,
     ))

@@ -69,14 +69,6 @@ pub(crate) struct LoweredDocument {
     pub(crate) paths: SymbolPathArena,
 }
 
-impl LoweredDocument {
-    /// How many declarations this document contributes. Used only by tests and measurements.
-    #[cfg(test)]
-    pub(crate) fn declaration_count(&self) -> usize {
-        self.declarations.len()
-    }
-}
-
 /// Lowers one parsed document on its own, yielding a relocatable product.
 ///
 /// The walk is the ordinary one: this admits the document to a fresh builder and calls the same

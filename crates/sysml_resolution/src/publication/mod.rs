@@ -16,7 +16,7 @@ use sysml_source::{SourceDocument, SourceKind};
 use crate::lower::memo::LoweringMemo;
 use crate::syntax::SyntaxAuthority;
 use crate::{
-    build, build_library_stratum_memoized, BuildRequest, ConstructionSchedule, LibraryStratum,
+    build_library_stratum_memoized, BuildRequest, ConstructionSchedule, LibraryStratum,
     PublicationIdentity, PublishedResolution, SourceInput,
 };
 
@@ -86,7 +86,18 @@ impl PreparedPublication {
     }
 
     pub fn build(self) -> Result<PublishedResolution, PublicationBuildFailure> {
-        build(self.request).map_err(|error| {
+        self.build_measured().map(|(publication, _)| publication)
+    }
+
+    /// [`Self::build`], plus the counted facts its phase owner measured -- among them how many
+    /// documents this build lowered and how many it took from the authority's memo.
+    ///
+    /// The memo itself stays behind the authority: this reports what happened, and there is no
+    /// handle on an entry to be had from it.
+    pub fn build_measured(
+        self,
+    ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
+        crate::build_measured(self.request).map_err(|error| {
             PublicationBuildFailure::at(PublicationFailureStage::ModelConstruction, error)
         })
     }
@@ -323,6 +334,48 @@ mod tests {
         authority.publish(&[workspace], []).unwrap();
         assert_eq!(authority.syntax().memo_len(), 1);
         drop(parsed);
+    }
+
+    #[test]
+    fn the_lowering_memo_holds_the_last_publication_and_no_history() {
+        let authority = authority();
+        let stable = document(
+            "memory://workspace/stable.sysml",
+            "package Stable { part def S; }",
+            SourceKind::Workspace,
+        );
+        let edited = |revision: usize| {
+            document(
+                "memory://workspace/edited.sysml",
+                &format!("package Edited {{ part def E; }} // revision {revision}"),
+                SourceKind::Workspace,
+            )
+        };
+        let (_, first) = authority
+            .prepare(&[stable.clone(), edited(0)], [])
+            .unwrap()
+            .build_measured()
+            .unwrap();
+        assert_eq!(first.documents_lowered, 2);
+        assert_eq!(first.documents_reused, 0);
+        assert_eq!(authority.lowering.len(), 2);
+
+        let (_, second) = authority
+            .prepare(&[stable.clone(), edited(1)], [])
+            .unwrap()
+            .build_measured()
+            .unwrap();
+        assert_eq!(second.documents_lowered, 1, "only the edited document");
+        assert_eq!(second.documents_reused, 1);
+        assert_eq!(
+            authority.lowering.len(),
+            2,
+            "the superseded revision is evicted rather than accumulated"
+        );
+
+        // Dropping a document from the source set drops its entry one build later.
+        authority.publish(&[stable], []).unwrap();
+        assert_eq!(authority.lowering.len(), 1);
     }
 
     #[test]

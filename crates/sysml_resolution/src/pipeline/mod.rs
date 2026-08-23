@@ -148,6 +148,10 @@ impl SemanticModelBuildCoordinator {
         // every dense identity exactly where an undivided lowering would have put it.
         let generation = memo.map(LoweringMemo::begin);
         let products = lower_documents(&documents, memo, generation, schedule)?;
+        // Counted facts, not timers: which documents this build lowered and which it took from
+        // the memo. A wall-clock threshold cannot state "this edit lowered exactly one document".
+        let documents_reused = products.iter().filter(|(_, reused)| *reused).count();
+        let documents_lowered = products.len() - documents_reused;
         for ((document, _, _), (lowered, _)) in documents.iter().zip(products.iter()) {
             builder
                 .splice(*document, lowered)
@@ -177,6 +181,8 @@ impl SemanticModelBuildCoordinator {
                 lowering,
                 resolution,
                 sources_parsed,
+                documents_lowered,
+                documents_reused,
             },
         ))
     }
