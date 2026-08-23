@@ -11,7 +11,7 @@ use tower_lsp::lsp_types::{Position, Url};
 
 use crate::common::util;
 use crate::views::dto::{
-    PositionDto, RangeDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
+    range_to_dto, PositionDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
     SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorEvaluationDto,
     SysmlFeatureInspectorInheritedFeatureDto, SysmlFeatureInspectorParamsDto,
     SysmlFeatureInspectorReferenceDto, SysmlFeatureInspectorRelationshipDto,
@@ -49,19 +49,6 @@ pub(crate) fn details_at(
     }
 }
 
-fn range_dto(range: TextRange) -> RangeDto {
-    RangeDto {
-        start: PositionDto {
-            line: range.start.line,
-            character: range.start.character,
-        },
-        end: PositionDto {
-            line: range.end.line,
-            character: range.end.character,
-        },
-    }
-}
-
 fn element_ref(entry: &SymbolEntry) -> SysmlFeatureInspectorElementRefDto {
     SysmlFeatureInspectorElementRefDto {
         id: entry.identity.as_str().to_string(),
@@ -69,7 +56,7 @@ fn element_ref(entry: &SymbolEntry) -> SysmlFeatureInspectorElementRefDto {
         qualified_name: entry.qualified_name.to_string(),
         element_type: entry.kind.as_str().to_string(),
         uri: entry.location.document.to_string(),
-        range: range_dto(entry.location.range),
+        range: range_to_dto(entry.location.range),
     }
 }
 
@@ -479,7 +466,7 @@ pub(crate) fn feature_inspector_element(
         role: semantic_role(inspection.kind).to_string(),
         declaration: declaration_text(details, source),
         uri: inspection.location.document.to_string(),
-        range: range_dto(inspection.declaration_range),
+        range: range_to_dto(inspection.declaration_range),
         parent: details.owner.as_ref().map(element_ref),
         documentation: documentation(details),
         multiplicity: multiplicity_text(inspection.multiplicity),

@@ -27,20 +27,6 @@ pub struct ResolvedSymbolTarget {
     pub identifier_range: TextRange,
 }
 
-fn query_position(position: TextPosition) -> sysml_query::resolved_slice::TextPosition {
-    sysml_query::resolved_slice::TextPosition {
-        line: position.line,
-        character: position.character,
-    }
-}
-
-fn core_range(range: sysml_query::resolved_slice::TextRange) -> TextRange {
-    TextRange::new(
-        TextPosition::new(range.start.line, range.start.character),
-        TextPosition::new(range.end.line, range.end.character),
-    )
-}
-
 fn location(
     workspace: &impl WorkspaceSnapshot,
     value: sysml_query::resolved_slice::SourceLocation,
@@ -51,7 +37,7 @@ fn location(
         .unwrap_or_else(|| value.document.to_string());
     SourceLocation {
         path,
-        range: core_range(value.range),
+        range: value.range,
     }
 }
 
@@ -70,9 +56,7 @@ pub fn goto_definition_at_position(
             locations: Vec::new(),
         };
     };
-    let outcome = model
-        .navigation()
-        .target_at(uri.as_str(), query_position(position));
+    let outcome = model.navigation().target_at(uri.as_str(), position);
     let targets: Vec<_> = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -96,7 +80,7 @@ pub fn resolve_symbol_target_at_position(
     let outcome = workspace
         .published_model()?
         .navigation()
-        .target_at(uri.as_str(), query_position(position));
+        .target_at(uri.as_str(), position);
     let target = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -106,7 +90,7 @@ pub fn resolve_symbol_target_at_position(
     Some(ResolvedSymbolTarget {
         name: target.name.to_string(),
         definition_location: location(workspace, target.location.clone()),
-        identifier_range: core_range(target.location.range),
+        identifier_range: target.location.range,
     })
 }
 
@@ -126,9 +110,7 @@ pub fn find_references_at_position(
             locations: Vec::new(),
         };
     };
-    let target_outcome = model
-        .navigation()
-        .target_at(uri.as_str(), query_position(position));
+    let target_outcome = model.navigation().target_at(uri.as_str(), position);
     let target = match target_outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)

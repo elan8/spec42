@@ -43,11 +43,7 @@ pub fn hover_at_position(
     }
 
     if let Some(model) = workspace.published_model() {
-        if let Some(at) = resolved(
-            model
-                .inspection()
-                .inspect_at(uri_norm.as_str(), probe(position)),
-        ) {
+        if let Some(at) = resolved(model.inspection().inspect_at(uri_norm.as_str(), position)) {
             let inspected = match at.referenced {
                 ReferenceAt::Resolved(target) => Some(*target),
                 ReferenceAt::Unresolved => {
@@ -216,7 +212,7 @@ fn element_evaluation_at(
     position: TextPosition,
 ) -> Option<ElementEvaluation> {
     let model = workspace.published_model()?;
-    let at = resolved(model.inspection().inspect_at(uri.as_str(), probe(position)))?;
+    let at = resolved(model.inspection().inspect_at(uri.as_str(), position))?;
     let symbol = match &at.referenced {
         ReferenceAt::Resolved(inspection) => Some(inspection.identity.clone()),
         _ => at
@@ -241,13 +237,6 @@ fn resolved<T>(outcome: QueryOutcome<T>) -> Option<T> {
         | QueryOutcome::Recovered(value)
         | QueryOutcome::UnsupportedWith(value) => Some(value),
         _ => None,
-    }
-}
-
-fn probe(position: TextPosition) -> sysml_query::resolved_slice::TextPosition {
-    sysml_query::resolved_slice::TextPosition {
-        line: position.line,
-        character: position.character,
     }
 }
 
