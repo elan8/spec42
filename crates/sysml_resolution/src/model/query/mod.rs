@@ -20,7 +20,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::namespace_query::NamespaceDerivedElementCollection;
@@ -124,6 +124,7 @@ use crate::TextRange;
 use source_identity::SourceRole;
 use spec42_constraint_manifest::ElementDerivedOwnerKind;
 use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
+use sysml_contract::{DocumentId, DocumentToken};
 
 impl<D> SemanticModel<D> {
     pub(crate) fn completeness(&self) -> PublicCompleteness {
@@ -144,7 +145,7 @@ impl<D> SemanticModel<D> {
             .documents
             .iter()
             .position(|document| document.identity.as_ref() == changed_document)
-            .map(|index| DocumentId(index as u32))
+            .map(|index| DocumentIdx(index as u32))
         else {
             return QueryOutcome::Unresolved;
         };
@@ -153,7 +154,7 @@ impl<D> SemanticModel<D> {
         // ambiguous candidate can affect the consumer if it changes. Unresolved/unsupported
         // dependency-shaping references remain explicit through the publication completeness or
         // the conservative result below; they are never guessed from authored text.
-        let mut reverse = vec![Vec::<DocumentId>::new(); self.storage.documents.len()];
+        let mut reverse = vec![Vec::<DocumentIdx>::new(); self.storage.documents.len()];
         let mut unsettled_dependency = false;
         for (ordinal, reference) in self.storage.references.iter().enumerate() {
             if !matches!(
@@ -319,6 +320,70 @@ impl<D> SemanticModel<D> {
             .map(SymbolToken::from_encoded)
     }
 
+    /// The public handle for one of this publication's stored documents.
+    pub(crate) fn document_handle(&self, document: DocumentIdx) -> Option<DocumentId> {
+        // The lookup proves the ordinal addresses a document of *this* publication, so a handle
+        // that leaves here always resolves back through `document_identity`.
+        self.storage.document(document)?;
+        DocumentId::from_index(document.index())
+    }
+
+    /// The normalised identity of one document, borrowed from the settled blob.
+    pub(crate) fn document_identity(&self, document: DocumentId) -> Option<&str> {
+        let id = DocumentIdx(u32::try_from(document.index()).ok()?);
+        Some(&self.storage.document(id)?.identity)
+    }
+
+    /// The document's identity, materialised for a boundary.
+    pub(crate) fn document_token(&self, document: DocumentId) -> Option<DocumentToken> {
+        self.document_identity(document)
+            .map(DocumentToken::from_encoded)
+    }
+
+    /// The handle an identity string names in this publication, if it names one.
+    pub(crate) fn document_of(&self, identity: &str) -> Option<DocumentId> {
+        let index = self
+            .storage
+            .documents
+            .iter()
+            .position(|document| &*document.identity == identity)?;
+        DocumentId::from_index(index)
+    }
+
+    /// The handle a document token names in this publication, if it still names one.
+    pub(crate) fn resolve_document_token(&self, token: &DocumentToken) -> Option<DocumentId> {
+        self.document_of(token.as_str())
+    }
+
+    /// Orders two locations by the identity string of their document, then their range.
+    ///
+    /// The comparison is on the identity, not the handle: a document ordinal is a storage slot
+    /// the authority is free to reassign, and contractually ordered output must not depend on it.
+    pub(crate) fn location_order(
+        &self,
+        left: &SourceLocation,
+        right: &SourceLocation,
+    ) -> std::cmp::Ordering {
+        self.document_order(left.document, right.document)
+            .then_with(|| left.range.cmp(&right.range))
+            .then_with(|| left.role.cmp(&right.role))
+    }
+
+    pub(crate) fn document_order(&self, left: DocumentId, right: DocumentId) -> std::cmp::Ordering {
+        self.document_identity(left)
+            .cmp(&self.document_identity(right))
+    }
+
+    pub(crate) fn target_order(
+        &self,
+        left: &NavigationTarget,
+        right: &NavigationTarget,
+    ) -> std::cmp::Ordering {
+        self.document_order(left.location.document, right.location.document)
+            .then_with(|| left.location.range.cmp(&right.location.range))
+            .then_with(|| left.name.cmp(&right.name))
+    }
+
     /// The handle a token names in this publication, if it still names one.
     pub(crate) fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
         self.identities
@@ -335,11 +400,7 @@ impl<D> SemanticModel<D> {
             symbol: self.symbol_id(id)?,
             name: name.into(),
             location: SourceLocation {
-                document: self
-                    .storage
-                    .document(declaration.document)?
-                    .identity
-                    .clone(),
+                document: self.document_handle(declaration.document)?,
                 range: self.documents.declaration_identifier(id)?,
                 role: OccurrenceRole::Declaration,
             },
@@ -372,7 +433,7 @@ impl<D> SemanticModel<D> {
                         .iter()
                         .filter_map(|id| self.declaration_target(*id))
                         .collect::<Vec<_>>();
-                    targets.sort_by(target_order);
+                    targets.sort_by(|left, right| self.target_order(left, right));
                     targets.dedup_by(|a, b| a.symbol == b.symbol);
                     return QueryOutcome::Ambiguous(targets.into_boxed_slice());
                 }
@@ -381,7 +442,7 @@ impl<D> SemanticModel<D> {
                 Some(ResolutionStatus::Unresolved) | None => return QueryOutcome::Unresolved,
             }
         }
-        reference_matches.sort_by(target_order);
+        reference_matches.sort_by(|left, right| self.target_order(left, right));
         reference_matches.dedup_by(|a, b| a.symbol == b.symbol);
         if reference_matches.len() == 1 {
             return self.resolved_outcome(reference_matches.remove(0));
@@ -392,7 +453,7 @@ impl<D> SemanticModel<D> {
         let mut declarations = leaf_ranges_containing(&positions.identifiers, position)
             .filter_map(|id| self.declaration_target(id))
             .collect::<Vec<_>>();
-        declarations.sort_by(target_order);
+        declarations.sort_by(|left, right| self.target_order(left, right));
         match declarations.len() {
             0 => QueryOutcome::Unresolved,
             1 => self.resolved_outcome(declarations.remove(0)),
@@ -453,16 +514,15 @@ impl<D> SemanticModel<D> {
                 },
             };
             locations.push(SourceLocation {
-                document: self
-                    .storage
-                    .document(source.document)
-                    .map(|d| d.identity.clone())
-                    .unwrap_or_default(),
+                document: match self.document_handle(source.document) {
+                    Some(document) => document,
+                    None => return QueryOutcome::Incomplete,
+                },
                 range,
                 role: OccurrenceRole::Reference,
             });
         }
-        locations.sort_by(location_order);
+        locations.sort_by(|left, right| self.location_order(left, right));
         locations.dedup();
         self.resolved_outcome(locations.into_boxed_slice())
     }
@@ -501,7 +561,7 @@ impl<D> SemanticModel<D> {
                     .filter(|candidate| **candidate != id)
                     .filter_map(|candidate| self.declaration_target(*candidate))
                     .collect::<Vec<_>>();
-                collisions.sort_by(target_order);
+                collisions.sort_by(|left, right| self.target_order(left, right));
                 if !collisions.is_empty() {
                     return RenameOutcome::Collision(collisions.into_boxed_slice());
                 }
@@ -514,7 +574,8 @@ impl<D> SemanticModel<D> {
         let range = occurrences
             .iter()
             .find(|location| {
-                location.document.as_ref() == document && range_contains(location.range, position)
+                self.document_identity(location.document) == Some(document)
+                    && range_contains(location.range, position)
             })
             .map(|location| location.range)
             .unwrap_or(target.location.range);
@@ -739,7 +800,10 @@ impl ResolvedSemanticModel {
     /// A document this publication did not admit has no diagnostics, which is a different answer
     /// from "no diagnostic was reported": the caller asked about a document that is not part of
     /// this model, and the empty slice says so alongside the publication's completeness.
-    pub(crate) fn published_document_diagnostics(&self, document: &str) -> PublishedDiagnostics<'_> {
+    pub(crate) fn published_document_diagnostics(
+        &self,
+        document: &str,
+    ) -> PublishedDiagnostics<'_> {
         let diagnostics = match self.documents.document(&self.storage, document) {
             Some(id) => match self.diagnostics.by_document.get(id.index()) {
                 Some((start, end)) => self
@@ -1871,9 +1935,7 @@ impl<D> SemanticModel<D> {
             })
             .collect::<Vec<_>>();
         values.sort_by(|left, right| {
-            left.location
-                .document
-                .cmp(&right.location.document)
+            self.document_order(left.location.document, right.location.document)
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
         });
@@ -1923,9 +1985,7 @@ impl<D> SemanticModel<D> {
             })
             .collect::<Vec<_>>();
         values.sort_by(|left, right| {
-            left.location
-                .document
-                .cmp(&right.location.document)
+            self.document_order(left.location.document, right.location.document)
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
         });
@@ -1977,7 +2037,7 @@ impl<D> SemanticModel<D> {
         // Workspace-scoped: the settled per-document declaration slices, so an authored-workspace
         // projection never walks the bundled standard library.
         let workspace = (0..self.storage.documents.len())
-            .filter_map(|index| DocumentId::from_index(index).ok())
+            .filter_map(|index| DocumentIdx::from_index(index).ok())
             .filter(|document| {
                 self.storage
                     .document(*document)
@@ -2045,9 +2105,7 @@ impl<D> SemanticModel<D> {
             });
         }
         values.sort_by(|left, right| {
-            left.location
-                .document
-                .cmp(&right.location.document)
+            self.document_order(left.location.document, right.location.document)
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
         });
@@ -2541,22 +2599,4 @@ pub(crate) fn internal_scope(scope: SpecializationScope) -> types::ScopeBits {
 
 pub(crate) fn range_contains(range: TextRange, position: TextPosition) -> bool {
     range.start <= position && position <= range.end
-}
-
-pub(crate) fn target_order(
-    left: &NavigationTarget,
-    right: &NavigationTarget,
-) -> std::cmp::Ordering {
-    left.location
-        .document
-        .cmp(&right.location.document)
-        .then_with(|| left.location.range.cmp(&right.location.range))
-        .then_with(|| left.name.cmp(&right.name))
-}
-
-pub(crate) fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Ordering {
-    left.document
-        .cmp(&right.document)
-        .then_with(|| left.range.cmp(&right.range))
-        .then_with(|| left.role.cmp(&right.role))
 }

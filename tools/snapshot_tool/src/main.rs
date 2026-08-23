@@ -6742,7 +6742,7 @@ fn generation_arguments(
             matches!(
                 &view.reference,
                 DiagramSemanticReference::Qualified { document, qualified_name, .. }
-                    if document == target.location.document.as_ref()
+                    if Some(document.as_ref()) == publication.document_identity(target.location.document)
                         && qualified_name == target.qualified_name.as_ref()
             ) && diagram_kind_id(view.kind) == selection.kind
         })

@@ -328,7 +328,12 @@ impl PublishedResolution {
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
                     semantic_id: entry.identity,
-                    reference: semantic_reference(&entry, &BTreeMap::new()),
+                    reference: semantic_reference(
+                        &entry,
+                        &BTreeMap::new(),
+                        self.document_identity(entry.location.document)
+                            .unwrap_or_default(),
+                    ),
                     name: entry
                         .name
                         .clone()
@@ -504,7 +509,12 @@ impl PublishedResolution {
             .map(|(occurrence_id, owner, entry)| DiagramElement {
                 occurrence_id: occurrence_id.clone(),
                 semantic_id: entry.identity,
-                reference: semantic_reference(entry, &all),
+                reference: semantic_reference(
+                    entry,
+                    &all,
+                    self.document_identity(entry.location.document)
+                        .unwrap_or_default(),
+                ),
                 kind: entry.kind,
                 name: entry.name.clone(),
                 typing: diagram_element_typing(self.element_details(entry.identity)),
@@ -817,18 +827,24 @@ fn relationship_is_required(view: DiagramViewKind, kind: &str) -> bool {
     }
 }
 
+/// The boundary form of one element reference.
+///
+/// `document` is the identity the caller materialised from `entry.location.document`: the
+/// generator protocol is a process boundary, so the URI is spelled out here rather than carried
+/// as a publication-scoped handle no other process could resolve.
 fn semantic_reference(
     entry: &SymbolEntry,
     entries: &BTreeMap<SymbolId, SymbolEntry>,
+    document: &str,
 ) -> DiagramSemanticReference {
     if entry.name.is_some() {
         DiagramSemanticReference::Qualified {
-            document: entry.location.document.clone(),
+            document: document.into(),
             qualified_name: entry.qualified_name.clone(),
         }
     } else {
         DiagramSemanticReference::SourceAnchor {
-            document: entry.location.document.clone(),
+            document: document.into(),
             owner_qualified_name: entry
                 .owner
                 .as_ref()

@@ -14,6 +14,7 @@
 mod derived;
 mod diagnostic;
 mod diagram;
+mod document;
 mod element;
 mod element_kind;
 mod position;
@@ -34,6 +35,7 @@ pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 pub use diagram::{
     DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
 };
+pub use document::{DocumentId, DocumentToken};
 pub use element::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
     ElementSearch, ElementSource, FeatureDirection, MembershipFacts, MembershipKind,

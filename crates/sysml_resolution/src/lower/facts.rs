@@ -15,7 +15,7 @@ use sysml_v2_parser::{
 };
 
 use crate::model::{
-    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, NameId,
+    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentIdx, MembershipKind, NameId,
     ReferenceKind, SymbolPathId, Visibility,
 };
 use crate::TextPosition;
@@ -446,7 +446,7 @@ pub(crate) fn direction_fact(direction: Option<&InOut>) -> Option<ParameterDirec
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct ParserReferenceId {
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) local: QualifiedReferenceId,
 }
 
@@ -538,14 +538,14 @@ pub(crate) enum UnsupportedFamily {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct UnsupportedRecord {
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) family: UnsupportedFamily,
     pub(crate) span: Span,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct RecoveryRecord {
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) span: Span,
 }
 
@@ -636,7 +636,7 @@ impl LineIndex {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Declaration {
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) owner: Option<DeclarationId>,
     pub(crate) name: Option<NameId>,
     pub(crate) anonymous_ordinal: Option<u32>,
@@ -667,7 +667,7 @@ pub(crate) struct AuthoredReference {
 pub(crate) struct PendingReference {
     pub(crate) source: DeclarationId,
     pub(crate) kind: ReferenceKind,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) local: QualifiedReferenceId,
     pub(crate) flags: RelationshipFlags,
     pub(crate) span: Span,
@@ -708,7 +708,7 @@ pub(crate) struct AuthoredExpression {
     /// The document whose parser arena the expression's source-backed nodes belong to. A quantity
     /// literal's unit is a qualified reference into that arena rather than copied text, so the
     /// arena is required to read the expression's value at all.
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) grammar: ExpressionGrammar,
     /// The ordinal the expression's first operand reference was lowered under.
     pub(crate) operand_start: u32,
@@ -739,7 +739,7 @@ pub(crate) struct PendingEvaluationFact {
 pub(crate) struct AuthoredUnitToken {
     /// The declaration whose expression the token was written in.
     pub(crate) declaration: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     /// Authored order within `declaration`, left to right, assigned in lockstep with lowering.
     pub(crate) ordinal: u32,
     /// The token exactly as the author wrote it, never normalized to a canonical unit identity.
@@ -774,7 +774,7 @@ pub(crate) enum FilterForm {
 pub(crate) struct AuthoredFilterCondition {
     /// The view, rendering or package the filter is written in.
     pub(crate) owner: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) form: FilterForm,
     /// The condition expression's own range.
     pub(crate) span: Span,
@@ -802,7 +802,7 @@ pub(crate) enum FilterPredicate {
 pub(crate) struct AuthoredInvocation {
     /// The declaration the invocation was written in.
     pub(crate) declaration: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     /// The `ReferenceKind::InvocationCallee` reference naming the callee, so the settled callee is
     /// read from that reference's resolution outcome rather than re-resolved here.
     pub(crate) callee: AuthoredReferenceId,

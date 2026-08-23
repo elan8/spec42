@@ -68,7 +68,10 @@ fn element_ref(model: &PublishedModel, entry: &SymbolEntry) -> SysmlFeatureInspe
         name: entry.name.as_deref().unwrap_or_default().to_string(),
         qualified_name: entry.qualified_name.to_string(),
         element_type: entry.kind.as_str().to_string(),
-        uri: entry.location.document.to_string(),
+        uri: model
+            .document_identity(entry.location.document)
+            .unwrap_or_default()
+            .to_string(),
         range: range_to_dto(entry.location.range),
     }
 }
@@ -505,7 +508,10 @@ pub(crate) fn feature_inspector_element(
         element_type: inspection.kind.as_str().to_string(),
         role: semantic_role(inspection.kind).to_string(),
         declaration: declaration_text(details, source),
-        uri: inspection.location.document.to_string(),
+        uri: model
+            .document_identity(inspection.location.document)
+            .unwrap_or_default()
+            .to_string(),
         range: range_to_dto(inspection.declaration_range),
         parent: details
             .owner

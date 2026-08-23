@@ -30,7 +30,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
@@ -1200,7 +1200,7 @@ pub(crate) fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Re
 /// consumer that wants library content projected admits it as a workspace source, exactly as the
 /// library snapshot corpus does. This is a rendering scope, never an admission or resolution
 /// filter -- library declarations, references and outcomes are all still fully published.
-pub(crate) fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentId) -> bool {
+pub(crate) fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentIdx) -> bool {
     model
         .storage
         .document(document)
@@ -1219,7 +1219,7 @@ pub(crate) fn is_projected_declaration(
 
 pub(crate) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.storage.documents.len())
-        .filter(|index| is_projected_document(model, DocumentId(*index as u32)))
+        .filter(|index| is_projected_document(model, DocumentIdx(*index as u32)))
         .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         model.storage.documents[*left]
@@ -1301,7 +1301,7 @@ pub(crate) fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt:
     )
 }
 
-pub(crate) fn document_identity<D>(model: &SemanticModel<D>, id: DocumentId) -> &str {
+pub(crate) fn document_identity<D>(model: &SemanticModel<D>, id: DocumentIdx) -> &str {
     model
         .storage
         .document(id)

@@ -34,7 +34,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::resolve::results::ResolutionError;
@@ -256,7 +256,7 @@ impl<D> SemanticModel<D> {
     /// Appends every host-reported conformance diagnostic authored in `document`.
     pub(crate) fn collect_host_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -936,7 +936,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn collect_behavior_structure(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -1157,7 +1157,7 @@ impl<D> SemanticModel<D> {
     /// The cardinality and completeness rules of each state definition in `document`.
     pub(crate) fn collect_state_machine_shape(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         initial_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
         final_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
@@ -1439,7 +1439,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn collect_view_structure(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -1564,7 +1564,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn collect_declaration_rules(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -1659,7 +1659,7 @@ impl<D> SemanticModel<D> {
     /// is ordinary, while binding a value to it silently overrides the inherited one.
     pub(crate) fn collect_inherited_value_rules(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {
@@ -1841,7 +1841,7 @@ impl<D> SemanticModel<D> {
     /// outcomes the earlier producers settled instead of re-deciding them.
     pub(crate) fn collect_library_context(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         already: usize,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {

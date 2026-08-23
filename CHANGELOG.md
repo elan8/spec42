@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A published location names its document by handle, not by a copy of the URI.**
+  `sysml_contract::DocumentId` is a `Copy`, publication-scoped ordinal with the same validity
+  story as `SymbolId`: valid for exactly the publication that minted it, and
+  `DocumentToken`/`PublishedModel::resolve_document_token` is what survives a rebuild or crosses a
+  process boundary. `SourceLocation::document` is now that handle, so `SourceLocation` is `Copy`
+  and every reference, rename occurrence, symbol entry and inspection stops carrying a per-result
+  `Box<str>` of a string the publication already holds once. Hosts materialise the identity where
+  they need text, through the borrowed `PublishedModel::document_identity`; `document_of` is the
+  inverse a host uses when an editor request names a document by URI. Contractually ordered
+  results still sort by identity, not by ordinal, so output is byte-identical. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank from 23 entries to 22.
+
 - **The keystroke-path facade products are borrowed views over the publication, not owned copies
   of it.** `visible_members` answers with `VisibleMembers<'m>`/`VisibleMemberRef<'m>`: handles plus
   `&'m str` accessors that slice the publication's settled symbol, qualified-name and document

@@ -33,7 +33,7 @@ use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
@@ -335,7 +335,7 @@ impl<D> SemanticModel<D> {
     /// range and code once every producer has contributed.
     pub(crate) fn collect_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -356,7 +356,7 @@ impl<D> SemanticModel<D> {
     /// consume the stored rule-keyed fact map and never re-identify a library element.
     pub(crate) fn collect_library_specialization_anchors(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -539,7 +539,7 @@ impl<D> SemanticModel<D> {
     /// author did not write would misattribute it.
     pub(crate) fn collect_implied_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {
@@ -597,7 +597,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn collect_reference_kind_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for (index, reference) in self.storage.references.iter().enumerate() {

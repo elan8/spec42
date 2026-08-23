@@ -14,7 +14,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::NameId;
 use crate::model::ReferenceKind;
@@ -40,7 +40,7 @@ impl SemanticModelBuilder {
     /// `lower_action_def_body`.
     pub(crate) fn lower_action_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ActionDef>,
     ) -> Result<(), ConstructionError> {
@@ -92,7 +92,7 @@ impl SemanticModelBuilder {
     /// behavioral/control-flow surface for this slice.
     pub(crate) fn lower_action_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &ActionDefBody,
     ) -> Result<(), ConstructionError> {
@@ -111,7 +111,7 @@ impl SemanticModelBuilder {
     /// recognized/unsupported shape.
     pub(crate) fn lower_action_def_body_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         element: &Node<ActionDefBodyElement>,
     ) -> Result<(), ConstructionError> {
@@ -339,7 +339,7 @@ impl SemanticModelBuilder {
     /// alternative, which is itself out of scope and so folds into the same unsupported family).
     pub(crate) fn lower_action_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserActionUsage>,
     ) -> Result<(), ConstructionError> {
@@ -416,7 +416,7 @@ impl SemanticModelBuilder {
     /// already has its own unique declaration to source these facts at.
     pub(crate) fn lower_accept_send_clauses(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<ParserActionUsage>,
     ) -> Result<(), ConstructionError> {
@@ -462,7 +462,7 @@ impl SemanticModelBuilder {
     /// annotation.
     pub(crate) fn lower_payload_clause_type(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         clause: &sysml_v2_parser::ast::PayloadClause,
     ) -> Result<(), ConstructionError> {
@@ -499,7 +499,7 @@ impl SemanticModelBuilder {
     /// own body is typed `ActionUsageBodyElement` too, not a distinct enum.
     pub(crate) fn lower_action_usage_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &ActionUsageBody,
     ) -> Result<(), ConstructionError> {
@@ -516,7 +516,7 @@ impl SemanticModelBuilder {
     /// this is a standalone per-element function rather than inlined into that loop).
     pub(crate) fn lower_action_usage_body_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         element: &Node<ActionUsageBodyElement>,
     ) -> Result<(), ConstructionError> {
@@ -735,7 +735,7 @@ impl SemanticModelBuilder {
     /// `succession` keyword prefix and any braced body content are out of scope.
     pub(crate) fn lower_first_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<FirstStmt>,
@@ -789,7 +789,7 @@ impl SemanticModelBuilder {
     /// multiplicity; its own body is not lowered, matching `lower_first_stmt`.
     pub(crate) fn lower_guarded_succession(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<GuardedSuccession>,
@@ -855,7 +855,7 @@ impl SemanticModelBuilder {
     /// diagnostic.
     pub(crate) fn lower_succession_end(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         kind: ReferenceKind,
@@ -901,7 +901,7 @@ impl SemanticModelBuilder {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn lower_first_merge_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         decl_kind: DeclarationKind,
@@ -947,7 +947,7 @@ impl SemanticModelBuilder {
     /// this lowering can honor, and returns `None` so the caller can report it explicitly.
     pub(crate) fn control_node_declared_name(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         expression: &Node<Expression>,
     ) -> Result<Option<NameId>, ConstructionError> {
         let Expression::FeatureRef(target) = &expression.value else {
@@ -975,7 +975,7 @@ impl SemanticModelBuilder {
     /// unsupported-member diagnostic, unchanged in kind from prior behavior.
     pub(crate) fn lower_first_merge_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         body: &FirstMergeBody,
@@ -1058,7 +1058,7 @@ impl SemanticModelBuilder {
     /// the existing unsupported-member diagnostic.
     pub(crate) fn lower_then_action(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<ThenAction>,
@@ -1160,7 +1160,7 @@ impl SemanticModelBuilder {
     /// an attribute default value.
     pub(crate) fn lower_assign_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         span: Span,
@@ -1208,7 +1208,7 @@ impl SemanticModelBuilder {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn lower_while_or_loop_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         decl_kind: DeclarationKind,
@@ -1249,7 +1249,7 @@ impl SemanticModelBuilder {
     /// braced body is a single undifferentiated scope.
     pub(crate) fn lower_if_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         span: Span,
@@ -1293,7 +1293,7 @@ impl SemanticModelBuilder {
     /// declaration scope of its own (see `lower_if_stmt`).
     pub(crate) fn lower_action_branch_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &ActionBranchBody,
     ) -> Result<(), ConstructionError> {
@@ -1320,7 +1320,7 @@ impl SemanticModelBuilder {
     /// reference-resolution scope only, not iteration-execution semantics.
     pub(crate) fn lower_for_loop(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         span: Span,
@@ -1389,7 +1389,7 @@ impl SemanticModelBuilder {
     /// as an `AcceptVia` reference through `lower_satisfy_operand`.
     pub(crate) fn lower_then_accept(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         accept: &Node<TransitionAccept>,
@@ -1402,7 +1402,7 @@ impl SemanticModelBuilder {
     /// the pin-valid `accept Type via port` shorthand and its `via` target are retained.
     pub(crate) fn lower_accept_trigger(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         accept: &TransitionAccept,
@@ -1457,7 +1457,7 @@ impl SemanticModelBuilder {
     /// "Typed upstream, not yet lowered here").
     pub(crate) fn lower_flow_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<FlowUsage>,
@@ -1542,7 +1542,7 @@ impl SemanticModelBuilder {
     /// legitimate no-op, not an unsupported construct.
     pub(crate) fn lower_terminate_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
@@ -1567,7 +1567,7 @@ impl SemanticModelBuilder {
     /// reference form (no declaration label) and other body content are out of scope.
     pub(crate) fn lower_perform(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserPerform>,
     ) -> Result<(), ConstructionError> {
@@ -1648,7 +1648,7 @@ impl SemanticModelBuilder {
     /// recognized.
     pub(crate) fn lower_perform_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &PerformBody,
     ) -> Result<(), ConstructionError> {
@@ -1706,7 +1706,7 @@ impl SemanticModelBuilder {
     /// ignored" precedent.
     pub(crate) fn lower_perform_inout_binding(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<PerformInOutBinding>,
     ) -> Result<(), ConstructionError> {
@@ -1765,7 +1765,7 @@ impl SemanticModelBuilder {
     /// `DeclarationKind::FlowDefinition`'s doc comment.
     pub(crate) fn lower_flow_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<FlowDef>,
     ) -> Result<(), ConstructionError> {

@@ -1191,7 +1191,9 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
         requirements
             .iter()
             .map(|entry| (
-                entry.location.document.as_ref(),
+                published
+                    .document_identity(entry.location.document)
+                    .unwrap_or_default(),
                 entry.qualified_name.as_ref()
             ))
             .collect::<Vec<_>>(),
@@ -1429,7 +1431,9 @@ fn element_details_resolve_a_cross_document_relationship_to_its_declaring_docume
     let check = details_of(&published, "memory://usage.sysml", "Usage::check");
     assert_eq!(check.typing.outcome, RelationshipOutcome::Resolved);
     assert_eq!(
-        check.typing.targets[0].location.document.as_ref(),
+        published
+            .document_identity(check.typing.targets[0].location.document)
+            .unwrap_or_default(),
         "memory://defs.sysml"
     );
 }

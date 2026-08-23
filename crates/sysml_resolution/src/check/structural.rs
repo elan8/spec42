@@ -25,7 +25,7 @@ use crate::lower::facts::ParameterDirection;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
@@ -159,7 +159,7 @@ impl<D> SemanticModel<D> {
     /// Appends every structural feature-conformance diagnostic authored in `document`.
     pub(crate) fn collect_structural_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -246,7 +246,7 @@ impl<D> SemanticModel<D> {
     /// The rules whose operands are an authored reference and its settled target.
     pub(crate) fn collect_structural_reference_rules(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for reference in self.storage.references.iter() {
@@ -344,7 +344,7 @@ impl<D> SemanticModel<D> {
     /// Reported at the redefining declaration, since an implied relationship has no authored range.
     pub(crate) fn collect_implied_structural_rules(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {

@@ -14,7 +14,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -38,7 +38,7 @@ impl SemanticModelBuilder {
     /// scope; unrecognized body elements fall through to `unsupported_port_definition_member`.
     pub(crate) fn lower_port_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<PortDef>,
     ) -> Result<(), ConstructionError> {
@@ -150,7 +150,7 @@ impl SemanticModelBuilder {
     /// attribute/nested-port members.
     pub(crate) fn lower_port_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserPortUsage>,
     ) -> Result<(), ConstructionError> {
@@ -274,7 +274,7 @@ impl SemanticModelBuilder {
     /// fall through to `unsupported_connection_definition_member`.
     pub(crate) fn lower_connection_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ConnectionDef>,
     ) -> Result<(), ConstructionError> {
@@ -329,7 +329,7 @@ impl SemanticModelBuilder {
     /// members via the same shared `lower_connection_body` as `connection def`.
     pub(crate) fn lower_connection_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserConnectionUsage>,
     ) -> Result<(), ConstructionError> {
@@ -404,7 +404,7 @@ impl SemanticModelBuilder {
     /// `unsupported_connection_definition_member`.
     pub(crate) fn lower_connection_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &ConnectionDefBody,
     ) -> Result<(), ConstructionError> {
@@ -488,7 +488,7 @@ impl SemanticModelBuilder {
     /// scope and left unlowered.
     pub(crate) fn lower_end_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<EndDecl>,
     ) -> Result<(), ConstructionError> {
@@ -550,7 +550,7 @@ impl SemanticModelBuilder {
     /// element to belong to and stay explicitly unsupported (see the body walk below).
     pub(crate) fn lower_connect_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ConnectStmt>,
     ) -> Result<(), ConstructionError> {
@@ -586,7 +586,7 @@ impl SemanticModelBuilder {
     /// diagnostic rather than a fabricated or partial resolution.
     pub(crate) fn lower_connector_end(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ConnectionEnd>,
     ) -> Result<(), ConstructionError> {
@@ -644,7 +644,7 @@ impl SemanticModelBuilder {
     /// `DeclarationKind::InterfaceDefinition`'s doc comment and planning/UPSTREAM_PARSER_GAPS.md #6.
     pub(crate) fn lower_interface_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<InterfaceDef>,
     ) -> Result<(), ConstructionError> {
@@ -697,7 +697,7 @@ impl SemanticModelBuilder {
     /// `unsupported_interface_definition_member`.
     pub(crate) fn lower_interface_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &InterfaceDefBody,
     ) -> Result<(), ConstructionError> {
@@ -774,7 +774,7 @@ impl SemanticModelBuilder {
     /// upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #6).
     pub(crate) fn lower_interface_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserInterfaceUsage>,
     ) -> Result<(), ConstructionError> {
@@ -914,7 +914,7 @@ impl SemanticModelBuilder {
     /// end list upstream now models -- as `ConnectorEnd` references, one per authored endpoint.
     pub(crate) fn lower_interface_part(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         part: &Node<InterfacePart>,
     ) -> Result<(), ConstructionError> {
@@ -938,7 +938,7 @@ impl SemanticModelBuilder {
     /// reference and is not lowered here.
     pub(crate) fn lower_interface_end(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         end: &Node<InterfaceEnd>,
     ) -> Result<(), ConstructionError> {
@@ -972,7 +972,7 @@ impl SemanticModelBuilder {
     #[allow(dead_code)]
     pub(crate) fn lower_interface_connector_expression(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
@@ -1030,7 +1030,7 @@ impl SemanticModelBuilder {
     /// `lower_part_usage_body_element` walker.
     pub(crate) fn lower_allocate(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<Allocate>,
@@ -1087,7 +1087,7 @@ impl SemanticModelBuilder {
     /// was factored out of `lower_part_usage`.
     pub(crate) fn lower_bind(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<Bind>,
@@ -1137,7 +1137,7 @@ impl SemanticModelBuilder {
     /// `Bind`'s own scope boundary.
     pub(crate) fn lower_binding_connector_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<BindingConnectorUsage>,
@@ -1184,7 +1184,7 @@ impl SemanticModelBuilder {
     /// `Expression`, unlike `Bind`'s).
     pub(crate) fn lower_binding_connector_operand(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         kind: ReferenceKind,
         target: QualifiedReferenceId,
@@ -1217,7 +1217,7 @@ impl SemanticModelBuilder {
     /// here -- see `DeclarationKind::AllocationDefinition`'s doc comment.
     pub(crate) fn lower_allocation_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AllocationDef>,
     ) -> Result<(), ConstructionError> {
@@ -1286,7 +1286,7 @@ impl SemanticModelBuilder {
     /// `lower_allocate`, but publishes the same directional endpoint kinds.
     pub(crate) fn lower_allocation_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserAllocationUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1382,7 +1382,7 @@ impl SemanticModelBuilder {
     /// `redefines` clause resolves through the shared `lower_subsetting_relationship` helper.
     pub(crate) fn lower_bare_connect(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<sysml_v2_parser::ast::Connect>,

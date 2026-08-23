@@ -28,7 +28,7 @@ macro_rules! semantic_id {
     };
 }
 
-semantic_id!(DocumentId);
+semantic_id!(DocumentIdx);
 semantic_id!(DeclarationId);
 semantic_id!(NameId);
 semantic_id!(SymbolPathId);
@@ -1390,7 +1390,7 @@ mod tests {
     #[test]
     fn foreign_typed_ids_are_rejected_before_mutation() {
         let mut builder = SemanticModelBuilder::default();
-        let invalid_document = DocumentId(0);
+        let invalid_document = DocumentIdx(0);
         let name = builder.intern_name("Vehicle").unwrap();
         let error = builder
             .push_declaration(invalid_document, None, Some(name))

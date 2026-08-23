@@ -34,7 +34,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
@@ -73,7 +73,7 @@ impl<D> SemanticModel<D> {
     /// range and code once every producer has contributed.
     pub(crate) fn collect_expression_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -102,7 +102,7 @@ impl<D> SemanticModel<D> {
     /// its magnitude would report every unit-bearing value in the model.
     pub(crate) fn collect_value_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for value in self.storage.feature_values.iter() {
@@ -211,7 +211,7 @@ impl<D> SemanticModel<D> {
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
     pub(crate) fn collect_unit_conformance(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for unit in self.expressions.all_units().iter() {
@@ -301,7 +301,7 @@ impl<D> SemanticModel<D> {
     /// would turn every limit of this evaluator into a fault in the model.
     pub(crate) fn collect_boolean_expressions(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
@@ -362,7 +362,7 @@ impl<D> SemanticModel<D> {
     /// Reports a calculation invocation that binds fewer arguments than the callee has parameters.
     pub(crate) fn collect_invocation_arity(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for invocation in self.expressions.invocations().iter() {

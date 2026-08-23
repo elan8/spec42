@@ -39,7 +39,7 @@ use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::NameId;
 use crate::model::ReferenceKind;
@@ -81,7 +81,7 @@ pub(crate) mod views;
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
     pub(crate) documents: Vec<AdmittedDocument>,
-    pub(crate) document_index: HashTable<DocumentId>,
+    pub(crate) document_index: HashTable<DocumentIdx>,
     pub(crate) document_hash_builder: RandomState,
     pub(crate) declarations: Vec<Declaration>,
     pub(crate) declaration_facts: Vec<DeclarationFacts>,
@@ -99,7 +99,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) paths: SymbolPathArenaBuilder,
     pub(crate) path_scratch: Vec<NameId>,
     pub(crate) next_anonymous_ordinals:
-        BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
+        BTreeMap<(DocumentIdx, Option<DeclarationId>, DeclarationKind), u32>,
     pub(crate) next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
     /// Counts each owner's authored `end` members so every positional connector end carries the
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
@@ -118,7 +118,7 @@ impl SemanticModelBuilder {
         digest: ContentDigest,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
-    ) -> Result<DocumentId, ConstructionError> {
+    ) -> Result<DocumentIdx, ConstructionError> {
         let identity = identity.into();
         let hash = self.document_hash_builder.hash_one(identity.as_ref());
         if self
@@ -130,7 +130,7 @@ impl SemanticModelBuilder {
         {
             return Err(ConstructionError::DuplicateDocumentIdentity);
         }
-        let id = DocumentId::from_index(self.documents.len())?;
+        let id = DocumentIdx::from_index(self.documents.len())?;
         self.documents
             .try_reserve(1)
             .map_err(|_| ConstructionError::Capacity)?;
@@ -172,7 +172,7 @@ impl SemanticModelBuilder {
     #[cfg(test)]
     pub(crate) fn push_declaration(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         name: Option<NameId>,
     ) -> Result<DeclarationId, ConstructionError> {
@@ -205,7 +205,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn push_typed_declaration(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         kind: DeclarationKind,
         name: Option<NameId>,
@@ -344,7 +344,7 @@ impl SemanticModelBuilder {
     /// as an explicit `family` unsupported member rather than dropped.
     pub(crate) fn lower_annotating_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         annotated: Option<DeclarationId>,
         family: UnsupportedFamily,
         member: &AnnotatingMember,
@@ -555,7 +555,7 @@ impl SemanticModelBuilder {
     pub(crate) fn push_member_access_reference(
         &mut self,
         source: DeclarationId,
-        document: DocumentId,
+        document: DocumentIdx,
         chain: &[QualifiedReferenceId],
         span: Span,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
@@ -571,7 +571,7 @@ impl SemanticModelBuilder {
     pub(crate) fn push_member_access_reference_with_kind(
         &mut self,
         source: DeclarationId,
-        document: DocumentId,
+        document: DocumentIdx,
         kind: ReferenceKind,
         chain: &[QualifiedReferenceId],
         span: Span,
@@ -650,7 +650,7 @@ impl SemanticModelBuilder {
     /// callee would be an argument count attributed to no callee at all.
     pub(crate) fn lower_invocation_callee(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         callee: &Node<Expression>,
         argument_count: usize,
@@ -683,7 +683,7 @@ impl SemanticModelBuilder {
     /// `type_name` directly).
     pub(crate) fn push_invocation_callee_reference(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
@@ -712,7 +712,7 @@ impl SemanticModelBuilder {
     /// directly (kept distinct purely for query-output clarity).
     pub(crate) fn push_meta_cast_target_reference(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
     ) -> Result<(), ConstructionError> {
@@ -741,7 +741,7 @@ impl SemanticModelBuilder {
     /// Type` fixed point rather than `InvocationCallee`'s `Any` domain.
     pub(crate) fn push_type_check_target_reference(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
     ) -> Result<(), ConstructionError> {
@@ -770,7 +770,7 @@ impl SemanticModelBuilder {
     /// 5's answer to give, over this record.
     pub(crate) fn constraint_expression_site(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         node: &Expression,
     ) -> AuthoredExpression {
         AuthoredExpression {
@@ -784,7 +784,7 @@ impl SemanticModelBuilder {
     /// The site of a calculation-body expression. See [`Self::constraint_expression_site`].
     pub(crate) fn calc_expression_site(
         &self,
-        document: DocumentId,
+        document: DocumentIdx,
         node: &Expression,
     ) -> AuthoredExpression {
         AuthoredExpression {
@@ -797,7 +797,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn push_unsupported(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         family: UnsupportedFamily,
         span: Span,
     ) {
@@ -808,7 +808,7 @@ impl SemanticModelBuilder {
         });
     }
 
-    pub(crate) fn push_recovery(&mut self, document: DocumentId, span: Span) {
+    pub(crate) fn push_recovery(&mut self, document: DocumentIdx, span: Span) {
         self.recovery.push(RecoveryRecord { document, span });
     }
 
@@ -834,7 +834,7 @@ impl SemanticModelBuilder {
     pub(crate) fn push_unit_token(
         &mut self,
         declaration: DeclarationId,
-        document: DocumentId,
+        document: DocumentIdx,
         text: &str,
         span: Span,
     ) -> Result<(), ConstructionError> {
@@ -859,7 +859,7 @@ impl SemanticModelBuilder {
     pub(crate) fn push_filter_condition(
         &mut self,
         owner: DeclarationId,
-        document: DocumentId,
+        document: DocumentIdx,
         form: FilterForm,
         span: Span,
         expression: AuthoredExpression,
@@ -880,7 +880,7 @@ impl SemanticModelBuilder {
     pub(crate) fn push_invocation(
         &mut self,
         declaration: DeclarationId,
-        document: DocumentId,
+        document: DocumentIdx,
         callee: AuthoredReferenceId,
         argument_count: usize,
         span: Span,
@@ -947,7 +947,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn canonicalize_document(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
     ) -> Result<(), ConstructionError> {
         let parsed = Arc::clone(
             &self
@@ -964,7 +964,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_root_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         element: &Node<RootElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
@@ -978,7 +978,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_package(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<Package>,
     ) -> Result<(), ConstructionError> {
@@ -1006,7 +1006,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_library_package(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<LibraryPackage>,
     ) -> Result<(), ConstructionError> {
@@ -1038,7 +1038,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_namespace(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<NamespaceDecl>,
     ) -> Result<(), ConstructionError> {
@@ -1077,7 +1077,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_package_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         body: &PackageBody,
     ) -> Result<(), ConstructionError> {
@@ -1091,7 +1091,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_package_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         element: &Node<PackageBodyElement>,
     ) -> Result<(), ConstructionError> {
@@ -1405,7 +1405,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_import(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<Import>,
     ) -> Result<(), ConstructionError> {
@@ -1484,7 +1484,7 @@ impl SemanticModelBuilder {
     /// a scope, so its target is an ordinary authored reference with no import conformance.
     pub(crate) fn lower_expose(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ExposeMember>,
     ) -> Result<(), ConstructionError> {
@@ -1534,7 +1534,7 @@ impl SemanticModelBuilder {
     /// enclosing type would misreport it.
     pub(crate) fn lower_relationship_body_elements(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         annotated: Option<DeclarationId>,
         elements: &[Node<RelationshipBodyElement>],
     ) -> Result<(), ConstructionError> {
@@ -1564,7 +1564,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_subsetting_relationship(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         source: DeclarationId,
         relationship: &Node<SubsettingRelationship>,
     ) -> Result<(), ConstructionError> {
@@ -1605,7 +1605,7 @@ impl SemanticModelBuilder {
     /// it resolves through the same lexical lookup fixed point as every other authored reference.
     pub(crate) fn lower_alias_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AliasDef>,
     ) -> Result<(), ConstructionError> {
@@ -1664,7 +1664,7 @@ impl SemanticModelBuilder {
     /// shape `ItemDef`/`ClassDef` use).
     pub(crate) fn lower_individual_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<sysml_v2_parser::ast::IndividualDef>,
     ) -> Result<(), ConstructionError> {
@@ -1718,7 +1718,7 @@ impl SemanticModelBuilder {
     /// out of scope; see `DeclarationKind::ExtendedDefinition`'s doc comment.
     pub(crate) fn lower_extended_definition(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ExtendedDefinition>,
     ) -> Result<(), ConstructionError> {
@@ -1772,7 +1772,7 @@ impl SemanticModelBuilder {
     /// `lower_relationship_body_elements` helper `AliasDef`/`Import` use.
     pub(crate) fn lower_dependency(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<Dependency>,
     ) -> Result<(), ConstructionError> {
@@ -1853,7 +1853,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_typing_relationship(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         source: DeclarationId,
         relationship: &Node<sysml_v2_parser::ast::TypingRelationship>,
     ) -> Result<(), ConstructionError> {
@@ -1871,7 +1871,7 @@ impl SemanticModelBuilder {
     /// through the `lower_typing_relationship` wrapper above.
     pub(crate) fn lower_typing_relationship_impl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         source: DeclarationId,
         relationship: &Node<sysml_v2_parser::ast::TypingRelationship>,
         variation: bool,
@@ -1934,7 +1934,7 @@ impl SemanticModelBuilder {
     /// is recorded in planning/UPSTREAM_PARSER_GAPS.md rather than widened into this change.
     pub(crate) fn lower_variant_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<VariantUsage>,

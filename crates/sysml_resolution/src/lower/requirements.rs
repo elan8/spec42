@@ -14,7 +14,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -40,7 +40,7 @@ impl SemanticModelBuilder {
     /// shorthand forms (`ast::SubjectRef`, handled separately) are out of scope.
     pub(crate) fn lower_subject_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<SubjectDecl>,
     ) -> Result<(), ConstructionError> {
@@ -90,7 +90,7 @@ impl SemanticModelBuilder {
     /// `SubjectUsage`'s own bare-form handling).
     pub(crate) fn lower_stakeholder_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<StakeholderMember>,
     ) -> Result<(), ConstructionError> {
@@ -161,7 +161,7 @@ impl SemanticModelBuilder {
     /// single-operand, no-nested-declaration shape.
     pub(crate) fn lower_purpose_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<PurposeMember>,
     ) -> Result<(), ConstructionError> {
@@ -190,7 +190,7 @@ impl SemanticModelBuilder {
     /// (never optional, unlike `SubjectDecl::type_name`).
     pub(crate) fn lower_requirement_actor_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<RequirementActorDecl>,
     ) -> Result<(), ConstructionError> {
@@ -242,7 +242,7 @@ impl SemanticModelBuilder {
     /// own out-of-scope multiplicity.
     pub(crate) fn lower_actor_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ActorUsage>,
     ) -> Result<(), ConstructionError> {
@@ -296,7 +296,7 @@ impl SemanticModelBuilder {
     /// diagnostic family as one outside it.
     pub(crate) fn lower_frame_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         unsupported: UnsupportedFamily,
         node: &Node<FrameMember>,
@@ -332,7 +332,7 @@ impl SemanticModelBuilder {
     /// one) is out of scope and reported as an explicit `family` unsupported diagnostic.
     pub(crate) fn lower_verify_requirement_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<VerifyRequirementMember>,
@@ -431,7 +431,7 @@ impl SemanticModelBuilder {
     /// `RequirementBody` the usage owns.
     pub(crate) fn lower_satisfy(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<SatisfyRequirementUsage>,
@@ -484,7 +484,7 @@ impl SemanticModelBuilder {
     /// keeps ordinary namespace lookup.
     pub(crate) fn push_satisfy_reference(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         kind: ReferenceKind,
         reference: QualifiedReferenceId,
@@ -542,7 +542,7 @@ impl SemanticModelBuilder {
     /// through to an explicit `family` unsupported diagnostic.
     pub(crate) fn lower_satisfy_operand(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         kind: ReferenceKind,
@@ -604,7 +604,7 @@ impl SemanticModelBuilder {
     /// nested-declaration scope shift), mirroring `lower_variant_usage`'s shape.
     pub(crate) fn lower_include_use_case(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<IncludeUseCase>,
     ) -> Result<(), ConstructionError> {
@@ -634,7 +634,7 @@ impl SemanticModelBuilder {
     /// through to `unsupported_requirement_definition_member`.
     pub(crate) fn lower_requirement_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<RequirementDef>,
     ) -> Result<(), ConstructionError> {
@@ -686,7 +686,7 @@ impl SemanticModelBuilder {
     /// attribute/requirement members.
     pub(crate) fn lower_requirement_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserRequirementUsage>,
     ) -> Result<(), ConstructionError> {
@@ -704,7 +704,7 @@ impl SemanticModelBuilder {
     /// one walker rather than a copy that could drift.
     pub(crate) fn lower_requirement_usage_as(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         kind: DeclarationKind,
         node: &Node<ParserRequirementUsage>,
@@ -779,7 +779,7 @@ impl SemanticModelBuilder {
     /// make here).
     pub(crate) fn lower_requirement_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &RequirementDefBody,
     ) -> Result<(), ConstructionError> {
@@ -797,7 +797,7 @@ impl SemanticModelBuilder {
     /// distinct even though the typed AST body shape is identical.
     pub(crate) fn lower_requirement_shaped_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &RequirementDefBody,
         unsupported: UnsupportedFamily,
@@ -932,7 +932,7 @@ impl SemanticModelBuilder {
     /// deferred -- see `DeclarationKind::ViewpointDefinition`'s doc comment.
     pub(crate) fn lower_viewpoint_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ViewpointDef>,
     ) -> Result<(), ConstructionError> {
@@ -983,7 +983,7 @@ impl SemanticModelBuilder {
     /// `lower_concern_usage` handles its own pair.
     pub(crate) fn lower_viewpoint_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserViewpointUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1055,7 +1055,7 @@ impl SemanticModelBuilder {
     /// `requirement def`/`viewpoint def`.
     pub(crate) fn lower_concern_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserConcernUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1137,7 +1137,7 @@ impl SemanticModelBuilder {
     /// silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`.
     pub(crate) fn lower_analysis_case_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AnalysisCaseDef>,
     ) -> Result<(), ConstructionError> {
@@ -1190,7 +1190,7 @@ impl SemanticModelBuilder {
     /// `unsupported_analysis_case_definition_member`.
     pub(crate) fn lower_analysis_case_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &UseCaseDefBody,
     ) -> Result<(), ConstructionError> {
@@ -1211,7 +1211,7 @@ impl SemanticModelBuilder {
     /// `:>`/`:>>` clauses, unlike `CaseDef`.
     pub(crate) fn lower_case_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<CaseDef>,
     ) -> Result<(), ConstructionError> {
@@ -1270,7 +1270,7 @@ impl SemanticModelBuilder {
     /// these relationships from.
     pub(crate) fn lower_analysis_case_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserAnalysisCaseUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1333,7 +1333,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` from.
     pub(crate) fn lower_case_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserCaseUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1401,7 +1401,7 @@ impl SemanticModelBuilder {
     /// `lower_case_family_def_body`.
     pub(crate) fn lower_use_case_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserUseCaseUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1466,7 +1466,7 @@ impl SemanticModelBuilder {
     /// shape/limitation: no `redefines` field on `ast::VerificationCaseUsage`).
     pub(crate) fn lower_verification_case_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserVerificationCaseUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1533,7 +1533,7 @@ impl SemanticModelBuilder {
     /// its own doc comment for the remaining `redefines` gap.
     pub(crate) fn lower_verification_case_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<VerificationCaseDef>,
     ) -> Result<(), ConstructionError> {
@@ -1591,7 +1591,7 @@ impl SemanticModelBuilder {
     /// parsed `:>`/`:>>` clauses, unlike `UseCaseDef`.
     pub(crate) fn lower_use_case_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<UseCaseDef>,
     ) -> Result<(), ConstructionError> {
@@ -1650,7 +1650,7 @@ impl SemanticModelBuilder {
     /// `unsupported` family so each def kind's diagnostics stay distinct.
     pub(crate) fn lower_case_family_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &UseCaseDefBody,
         unsupported: UnsupportedFamily,

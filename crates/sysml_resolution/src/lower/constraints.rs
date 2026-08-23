@@ -22,7 +22,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -59,7 +59,7 @@ impl SemanticModelBuilder {
     /// existing unsupported-member diagnostic, unchanged from prior behavior.
     pub(crate) fn lower_constraint_expression(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<Expression>,
@@ -225,7 +225,7 @@ impl SemanticModelBuilder {
     /// behavior.
     pub(crate) fn lower_calc_expression(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<Expression>,
@@ -387,7 +387,7 @@ impl SemanticModelBuilder {
     /// literal still publishes its value, and no unit fact claims a token that was not written.
     pub(crate) fn lower_unit_token(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         operands: &Node<SequenceExpressionList>,
     ) -> Result<(), ConstructionError> {
@@ -402,7 +402,7 @@ impl SemanticModelBuilder {
     /// lets the barrier settle what it evaluates to.
     pub(crate) fn lower_filter_condition(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         form: FilterForm,
         condition: &Node<Expression>,
@@ -432,7 +432,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_filter_expression(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
@@ -577,7 +577,7 @@ impl SemanticModelBuilder {
     /// scope for this slice and falls through to `UnsupportedFamily::ConstraintDefinitionMember`.
     pub(crate) fn lower_constraint_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ConstraintDef>,
     ) -> Result<(), ConstructionError> {
@@ -622,7 +622,7 @@ impl SemanticModelBuilder {
     /// content falls through to `unsupported_constraint_definition_member`.
     pub(crate) fn lower_constraint_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &ConstraintDefBody,
     ) -> Result<(), ConstructionError> {
@@ -717,7 +717,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` fields at all.
     pub(crate) fn lower_constraint_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserConstraintUsage>,
     ) -> Result<(), ConstructionError> {
@@ -788,7 +788,7 @@ impl SemanticModelBuilder {
     ///   slice, which targets the `constraint`-keyword forms only.
     pub(crate) fn lower_assert_constraint_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<AssertConstraintMember>,
@@ -867,7 +867,7 @@ impl SemanticModelBuilder {
     /// function in the first place.
     pub(crate) fn lower_require_constraint_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<RequireConstraint>,
@@ -915,7 +915,7 @@ impl SemanticModelBuilder {
     /// `UnsupportedFamily::CalcDefinitionMember`.
     pub(crate) fn lower_calc_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<CalcDef>,
     ) -> Result<(), ConstructionError> {
@@ -960,7 +960,7 @@ impl SemanticModelBuilder {
     /// nested calc structure fall through to `unsupported_calc_definition_member`.
     pub(crate) fn lower_calc_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &CalcDefBody,
     ) -> Result<(), ConstructionError> {
@@ -1105,7 +1105,7 @@ impl SemanticModelBuilder {
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
     pub(crate) fn lower_calc_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserCalcUsage>,
     ) -> Result<(), ConstructionError> {

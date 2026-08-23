@@ -790,7 +790,7 @@ impl<D> SemanticModel<D> {
         reference: &AuthoredReference,
     ) -> Option<SourceLocation> {
         let source = self.storage.declaration(reference.source)?;
-        let document = self.storage.document(source.document)?.identity.clone();
+        let document = self.document_handle(source.document)?;
         let range = document_range(&self.storage, source.document, &reference.span).ok()?;
         Some(SourceLocation {
             document,

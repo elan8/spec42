@@ -17,7 +17,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -34,7 +34,7 @@ use sysml_v2_parser::ast::{
 impl SemanticModelBuilder {
     pub(crate) fn lower_part_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<PartDef>,
     ) -> Result<(), ConstructionError> {
@@ -367,7 +367,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_part_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<PartUsage>,
     ) -> Result<(), ConstructionError> {
@@ -456,7 +456,7 @@ impl SemanticModelBuilder {
     /// body's unmodeled members stay distinguishable from a `part` usage body's.
     pub(crate) fn lower_part_usage_body_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         element: &Node<PartUsageBodyElement>,
@@ -637,7 +637,7 @@ impl SemanticModelBuilder {
     /// `UnsupportedFamily::ReferenceUsageMember`.
     pub(crate) fn lower_ref_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<RefDecl>,
     ) -> Result<(), ConstructionError> {
@@ -706,7 +706,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_attribute_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AttributeUsage>,
     ) -> Result<(), ConstructionError> {
@@ -790,7 +790,7 @@ impl SemanticModelBuilder {
     /// expression shape falls through to.
     pub(crate) fn lower_value_assignment(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         family: UnsupportedFamily,
         value: Option<&Node<FeatureValue>>,
@@ -809,7 +809,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_attribute_default_value(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         value: Option<&Node<FeatureValue>>,
     ) -> Result<(), ConstructionError> {
@@ -823,7 +823,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_attribute_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AttributeDef>,
     ) -> Result<(), ConstructionError> {
@@ -864,7 +864,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_attribute_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &AttributeBody,
     ) -> Result<(), ConstructionError> {
@@ -984,7 +984,7 @@ impl SemanticModelBuilder {
     /// declaration.
     pub(crate) fn lower_enum_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<EnumDef>,
     ) -> Result<(), ConstructionError> {
@@ -1053,7 +1053,7 @@ impl SemanticModelBuilder {
     /// `lower_part_usage_body_element`.
     pub(crate) fn lower_enumerated_value(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<sysml_v2_parser::ast::EnumeratedValue>,
     ) -> Result<(), ConstructionError> {
@@ -1104,7 +1104,7 @@ impl SemanticModelBuilder {
     /// is pushed directly rather than through `lower_typing_relationship`.
     pub(crate) fn lower_enum_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserEnumerationUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1161,7 +1161,7 @@ impl SemanticModelBuilder {
     /// dedicated item-specific body walker.
     pub(crate) fn lower_item_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ItemDef>,
     ) -> Result<(), ConstructionError> {
@@ -1217,7 +1217,7 @@ impl SemanticModelBuilder {
     /// `DeclarationKind::DefaultReferenceUsage`).
     pub(crate) fn lower_default_reference_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         family: UnsupportedFamily,
         node: &Node<DefaultReferenceUsage>,
@@ -1272,7 +1272,7 @@ impl SemanticModelBuilder {
     /// (see `lower_item_def`), so owned members are lowered through `lower_attribute_body`.
     pub(crate) fn lower_item_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserItemUsage>,
     ) -> Result<(), ConstructionError> {
@@ -1373,7 +1373,7 @@ impl SemanticModelBuilder {
     /// declaration kind in this codebase.
     pub(crate) fn lower_parameter_declaration(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         family: UnsupportedFamily,
         node: &Node<InOutDecl>,
@@ -1479,7 +1479,7 @@ impl SemanticModelBuilder {
     /// scope); both spellings still get the same `FeatureTyping` reference and evaluation fact.
     pub(crate) fn lower_return_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ReturnDecl>,
     ) -> Result<(), ConstructionError> {
@@ -1560,7 +1560,7 @@ impl SemanticModelBuilder {
     /// declaration`'s own out-of-scope fields.
     pub(crate) fn lower_case_return_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         family: UnsupportedFamily,
         node: &Node<CaseReturnDecl>,
@@ -1654,7 +1654,7 @@ impl SemanticModelBuilder {
     /// under one `UnsupportedFamily::OccurrenceDefinitionMember`.
     pub(crate) fn lower_occurrence_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<OccurrenceDef>,
     ) -> Result<(), ConstructionError> {
@@ -1731,7 +1731,7 @@ impl SemanticModelBuilder {
     /// `unsupported_occurrence_definition_member`.
     pub(crate) fn lower_occurrence_body_element(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         element: &Node<OccurrenceBodyElement>,
     ) -> Result<(), ConstructionError> {
@@ -1825,7 +1825,7 @@ impl SemanticModelBuilder {
     /// `OccurrenceBodyElement`).
     pub(crate) fn lower_occurrence_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserOccurrenceUsage>,
     ) -> Result<(), ConstructionError> {

@@ -17,7 +17,7 @@ use crate::lower::facts::UnsupportedRecord;
 use crate::lower::intern::SymbolPathArena;
 use crate::lower::intern::SymbolTable;
 use crate::model::DeclarationId;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::NameId;
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
@@ -60,11 +60,11 @@ impl ParsedSources {
         }
     }
 
-    pub(crate) fn parsed(&self, id: DocumentId) -> Option<&ParsedDocument> {
+    pub(crate) fn parsed(&self, id: DocumentIdx) -> Option<&ParsedDocument> {
         self.documents.get(id.index()).map(|d| d.parsed.as_ref())
     }
 
-    pub(crate) fn parse_errors(&self, id: DocumentId) -> &[ParseError] {
+    pub(crate) fn parse_errors(&self, id: DocumentIdx) -> &[ParseError] {
         self.documents
             .get(id.index())
             .map(|d| d.parse_errors.as_ref())
@@ -83,7 +83,7 @@ impl ParsedSources {
 }
 
 impl SemanticModelStorage {
-    pub(crate) fn document(&self, id: DocumentId) -> Option<&CanonicalDocument> {
+    pub(crate) fn document(&self, id: DocumentIdx) -> Option<&CanonicalDocument> {
         self.documents.get(id.index())
     }
 

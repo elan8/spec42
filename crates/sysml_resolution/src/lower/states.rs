@@ -12,7 +12,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -31,7 +31,7 @@ impl SemanticModelBuilder {
     /// through to `unsupported_state_definition_member` via `lower_state_def_body`.
     pub(crate) fn lower_state_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<StateDef>,
     ) -> Result<(), ConstructionError> {
@@ -82,7 +82,7 @@ impl SemanticModelBuilder {
     /// a `succession` member stays on `unsupported_state_definition_member`.
     pub(crate) fn lower_state_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &StateDefBody,
     ) -> Result<(), ConstructionError> {
@@ -192,7 +192,7 @@ impl SemanticModelBuilder {
     /// and stays an explicit unsupported diagnostic.
     pub(crate) fn lower_state_entry_action(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<EntryAction>,
     ) -> Result<(), ConstructionError> {
@@ -233,7 +233,7 @@ impl SemanticModelBuilder {
     /// (`DoAction.action_reference`).
     pub(crate) fn lower_state_do_action(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<DoAction>,
     ) -> Result<(), ConstructionError> {
@@ -274,7 +274,7 @@ impl SemanticModelBuilder {
     /// (`ExitAction.action_reference`).
     pub(crate) fn lower_state_exit_action(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ExitAction>,
     ) -> Result<(), ConstructionError> {
@@ -319,7 +319,7 @@ impl SemanticModelBuilder {
     /// `QualifiedReferenceId`, so it always resolves through the same shared lexical lookup.
     pub(crate) fn lower_state_then_stmt(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ThenStmt>,
     ) -> Result<(), ConstructionError> {
@@ -355,7 +355,7 @@ impl SemanticModelBuilder {
     /// is no target reference to resolve.
     pub(crate) fn lower_final_state(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<FinalState>,
     ) -> Result<(), ConstructionError> {
@@ -384,7 +384,7 @@ impl SemanticModelBuilder {
     /// `lower_alias_def`'s reference-push shape.
     pub(crate) fn push_action_binding_reference(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         kind: ReferenceKind,
         target: QualifiedReferenceId,
@@ -418,7 +418,7 @@ impl SemanticModelBuilder {
     /// boundary.
     pub(crate) fn lower_transition(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<Transition>,
     ) -> Result<(), ConstructionError> {
@@ -553,7 +553,7 @@ impl SemanticModelBuilder {
     /// transition's syntax downstream.
     pub(crate) fn lower_transition_trigger_action(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         transition: DeclarationId,
         span: Span,
     ) -> Result<DeclarationId, ConstructionError> {
@@ -589,7 +589,7 @@ impl SemanticModelBuilder {
     /// member diagnostic, mirroring `lower_succession_end`'s scope boundary.
     pub(crate) fn lower_transition_end(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         kind: ReferenceKind,
         node: &Node<Expression>,
@@ -642,7 +642,7 @@ impl SemanticModelBuilder {
     /// `StateDefBody`/`StateDefBodyElement`).
     pub(crate) fn lower_state_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserStateUsage>,
     ) -> Result<(), ConstructionError> {
@@ -693,7 +693,7 @@ impl SemanticModelBuilder {
     /// unsupported rather than being misrepresented as feature typing.
     pub(crate) fn lower_exhibit_state(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         unsupported_family: UnsupportedFamily,
         node: &Node<ParserExhibitState>,

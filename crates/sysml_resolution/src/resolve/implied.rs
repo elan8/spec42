@@ -8,7 +8,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::namespace_query::NamespaceDerivedElementCollection;
@@ -557,7 +557,7 @@ impl LibrarySpecializationAnchorFacts {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct LibrarySpecializationDiagnosticKey {
     pub(crate) anchor: &'static str,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
 }
 
 /// Synthesizes implied same-name inherited-member redefinition facts.

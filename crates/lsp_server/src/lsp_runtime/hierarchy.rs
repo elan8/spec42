@@ -7,8 +7,11 @@ use tower_lsp::lsp_types::{SymbolKind, TypeHierarchyItem, Url};
 /// `selection_range` is the element's declaration range rather than its name range, because the
 /// client sends the item back for `typeHierarchy/supertypes`, and the position it is resolved from
 /// must land inside the declaration whether or not the element is named.
-pub(crate) fn type_hierarchy_item(inspection: &ElementInspection) -> Option<TypeHierarchyItem> {
-    let uri = Url::parse(&inspection.location.document).ok()?;
+pub(crate) fn type_hierarchy_item(
+    model: &sysml_query::resolved_slice::PublishedModel,
+    inspection: &ElementInspection,
+) -> Option<TypeHierarchyItem> {
+    let uri = Url::parse(model.document_identity(inspection.location.document)?).ok()?;
     let range = to_lsp_range(inspection.declaration_range);
     Some(TypeHierarchyItem {
         name: inspection.name.as_deref().unwrap_or_default().to_string(),

@@ -12,7 +12,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use sysml_v2_parser::ast::{
@@ -30,7 +30,7 @@ impl SemanticModelBuilder {
     /// doc comment and planning/UPSTREAM_PARSER_GAPS.md #8.
     pub(crate) fn lower_view_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ViewDef>,
     ) -> Result<(), ConstructionError> {
@@ -81,7 +81,7 @@ impl SemanticModelBuilder {
     /// `unsupported_view_definition_member`.
     pub(crate) fn lower_view_def_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &ViewDefBody,
     ) -> Result<(), ConstructionError> {
@@ -165,7 +165,7 @@ impl SemanticModelBuilder {
     /// and view-specific body members (`render`/`filter`) are out of scope for this slice.
     pub(crate) fn lower_view_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserViewUsage>,
     ) -> Result<(), ConstructionError> {
@@ -229,7 +229,7 @@ impl SemanticModelBuilder {
     /// through to `unsupported_view_definition_member`.
     pub(crate) fn lower_view_usage_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &ViewBody,
     ) -> Result<(), ConstructionError> {
@@ -304,7 +304,7 @@ impl SemanticModelBuilder {
     /// distinct facts here (see `DeclarationKind::RenderingUsage`).
     pub(crate) fn lower_rendering_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserRenderingUsage>,
     ) -> Result<(), ConstructionError> {
@@ -376,7 +376,7 @@ impl SemanticModelBuilder {
     /// itself lowered from.
     pub(crate) fn lower_rendering_usage_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         declaration: DeclarationId,
         body: &RenderingUsageBody,
     ) -> Result<(), ConstructionError> {
@@ -408,7 +408,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_rendering_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<RenderingDef>,
     ) -> Result<(), ConstructionError> {

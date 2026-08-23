@@ -46,7 +46,7 @@ pub fn symbol_entries_for_uri(model: &PublishedModel, uri: &Url) -> Vec<SymbolEn
                 description: Some(format!("{detail} '{name}'")),
                 signature: None,
                 name,
-                uri: Url::parse(&symbol.location.document).ok()?,
+                uri: Url::parse(model.document_identity(symbol.location.document)?).ok()?,
                 range,
                 container_name,
                 detail: Some(detail),

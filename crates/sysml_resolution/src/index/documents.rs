@@ -8,7 +8,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::query::range_contains;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
 use crate::TextPosition;
@@ -124,7 +124,7 @@ impl SpanTree {
 /// Document lookup by identity, plus each document's position tables.
 #[derive(Debug)]
 pub(crate) struct DocumentIndex {
-    pub(crate) by_identity: HashTable<DocumentId>,
+    pub(crate) by_identity: HashTable<DocumentIdx>,
     pub(crate) hash_builder: RandomState,
     pub(crate) positions: Box<[DocumentPositions]>,
     /// Per-document ranges into [`Self::declaration_order`]: the declarations each document
@@ -159,12 +159,12 @@ impl DocumentIndex {
         sources: &ParsedSources,
     ) -> Result<Self, ResolutionError> {
         let hash_builder = RandomState::default();
-        let mut by_identity: HashTable<DocumentId> = HashTable::new();
+        let mut by_identity: HashTable<DocumentIdx> = HashTable::new();
         for index in 0..storage.documents.len() {
-            let id = DocumentId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let id = DocumentIdx::from_index(index).map_err(|_| ResolutionError::Capacity)?;
             let identity = storage.documents[index].identity.as_ref();
             let hash = hash_builder.hash_one(identity);
-            let rehash = |candidate: &DocumentId| {
+            let rehash = |candidate: &DocumentIdx| {
                 hash_builder.hash_one(storage.documents[candidate.index()].identity.as_ref())
             };
             by_identity
@@ -341,7 +341,7 @@ impl DocumentIndex {
     }
 
     /// The declarations one document authored, as the settled slice rather than a corpus scan.
-    pub(crate) fn document_declarations(&self, document: DocumentId) -> &[DeclarationId] {
+    pub(crate) fn document_declarations(&self, document: DocumentIdx) -> &[DeclarationId] {
         match self.declarations.get(document.index()) {
             Some((start, end)) => &self.declaration_order[*start as usize..*end as usize],
             None => &[],
@@ -352,7 +352,7 @@ impl DocumentIndex {
         &self,
         storage: &SemanticModelStorage,
         identity: &str,
-    ) -> Option<DocumentId> {
+    ) -> Option<DocumentIdx> {
         let hash = self.hash_builder.hash_one(identity);
         self.by_identity
             .find(hash, |candidate| {
@@ -361,7 +361,7 @@ impl DocumentIndex {
             .copied()
     }
 
-    pub(crate) fn positions(&self, document: DocumentId) -> Option<&DocumentPositions> {
+    pub(crate) fn positions(&self, document: DocumentIdx) -> Option<&DocumentPositions> {
         self.positions.get(document.index())
     }
 }

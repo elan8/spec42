@@ -9,7 +9,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -25,7 +25,7 @@ impl SemanticModelBuilder {
     /// lowered through the existing `lower_attribute_body`.
     pub(crate) fn lower_metadata_def(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<MetadataDef>,
     ) -> Result<(), ConstructionError> {
@@ -78,7 +78,7 @@ impl SemanticModelBuilder {
     /// scope for this slice.
     pub(crate) fn lower_metadata_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<ParserMetadataUsage>,
     ) -> Result<(), ConstructionError> {
@@ -129,7 +129,7 @@ impl SemanticModelBuilder {
     /// nested metadata body of its own.
     pub(crate) fn lower_metadata_body(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         body: &MetadataBody,
     ) -> Result<(), ConstructionError> {
@@ -162,7 +162,7 @@ impl SemanticModelBuilder {
     /// spelling, and owns any nested metadata body.
     pub(crate) fn lower_metadata_body_usage(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<MetadataBodyUsage>,
     ) -> Result<(), ConstructionError> {
@@ -214,7 +214,7 @@ impl SemanticModelBuilder {
     /// declaration below when the annotation body mints one.
     pub(crate) fn lower_metadata_annotation(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<MetadataAnnotation>,
     ) -> Result<(), ConstructionError> {

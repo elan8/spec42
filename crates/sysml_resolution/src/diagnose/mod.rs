@@ -8,7 +8,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
@@ -48,7 +48,7 @@ impl<D> SemanticModel<D> {
         let declarations_by_document = self.declarations_by_document()?;
         for document_index in self.reported_document_indices(reported) {
             let document = &self.storage.documents[document_index];
-            let document_id = DocumentId(document_index as u32);
+            let document_id = DocumentIdx(document_index as u32);
             let first = diagnostics.len();
 
             for error in sources.parse_errors(document_id) {
@@ -186,7 +186,7 @@ pub(crate) type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
 
 pub(crate) fn document_range(
     storage: &SemanticModelStorage,
-    document: DocumentId,
+    document: DocumentIdx,
     span: &Span,
 ) -> Result<TextRange, ResolutionError> {
     // From the settled line index, not from the parse tree: a sealed publication answers a
@@ -357,7 +357,7 @@ pub(crate) fn reference_diagnostic(
 pub(crate) fn declaration_identifier_range(
     storage: &SemanticModelStorage,
     sources: &ParsedSources,
-    document: DocumentId,
+    document: DocumentIdx,
     span: &Span,
     identifier: &str,
 ) -> Result<TextRange, ResolutionError> {
@@ -407,7 +407,7 @@ pub(crate) fn word_boundary_matches<'a>(
 pub(crate) fn identifier_range(
     storage: &SemanticModelStorage,
     sources: &ParsedSources,
-    document: DocumentId,
+    document: DocumentIdx,
     span: &Span,
     identifier: &str,
 ) -> Result<TextRange, ResolutionError> {
@@ -460,4 +460,3 @@ pub(crate) fn valid_identifier(value: &str) -> bool {
         .is_some_and(|first| first.is_alphabetic() || first == '_')
         && characters.all(identifier_character)
 }
-

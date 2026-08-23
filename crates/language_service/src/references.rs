@@ -27,14 +27,20 @@ pub struct ResolvedSymbolTarget {
     pub identifier_range: TextRange,
 }
 
+/// A published location, projected onto the host's path vocabulary.
+///
+/// The location names its document by handle, so the identity is materialised here from the
+/// model that answered the query -- once per location a host is about to show a person.
 fn location(
     workspace: &impl WorkspaceSnapshot,
+    model: &sysml_query::resolved_slice::PublishedModel,
     value: sysml_query::resolved_slice::SourceLocation,
 ) -> SourceLocation {
+    let identity = model.document_identity(value.document).unwrap_or_default();
     let path = workspace
-        .resolve_uri_for_path(&value.document)
+        .resolve_uri_for_path(identity)
         .map(|uri| workspace.path_for_uri(&uri))
-        .unwrap_or_else(|| value.document.to_string());
+        .unwrap_or_else(|| identity.to_owned());
     SourceLocation {
         path,
         range: value.range,
@@ -67,7 +73,7 @@ pub fn goto_definition_at_position(
     DefinitionResult {
         locations: targets
             .into_iter()
-            .map(|target| location(workspace, target.location))
+            .map(|target| location(workspace, model, target.location))
             .collect(),
     }
 }
@@ -77,10 +83,8 @@ pub fn resolve_symbol_target_at_position(
     uri: &url::Url,
     position: TextPosition,
 ) -> Option<ResolvedSymbolTarget> {
-    let outcome = workspace
-        .published_model()?
-        .navigation()
-        .target_at(uri.as_str(), position);
+    let model = workspace.published_model()?;
+    let outcome = model.navigation().target_at(uri.as_str(), position);
     let target = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -89,7 +93,7 @@ pub fn resolve_symbol_target_at_position(
     };
     Some(ResolvedSymbolTarget {
         name: target.name.to_string(),
-        definition_location: location(workspace, target.location.clone()),
+        definition_location: location(workspace, &model, target.location),
         identifier_range: target.location.range,
     })
 }
@@ -138,7 +142,7 @@ pub fn find_references_at_position(
         locations: locations
             .into_vec()
             .into_iter()
-            .map(|value| location(workspace, value))
+            .map(|value| location(workspace, model, value))
             .collect(),
     }
 }

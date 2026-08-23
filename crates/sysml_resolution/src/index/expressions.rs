@@ -46,11 +46,10 @@ use crate::index::types::TypeIndex;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -220,7 +219,7 @@ pub(crate) enum UnitOutcome {
 #[derive(Debug, Clone)]
 pub(crate) struct SettledUnit {
     pub(crate) declaration: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) ordinal: u32,
     pub(crate) text: NameId,
     pub(crate) span: Span,
@@ -242,7 +241,7 @@ pub(crate) enum RequiredMeasurement {
 #[derive(Debug, Clone)]
 pub(crate) struct SettledFilter {
     pub(crate) owner: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) form: FilterForm,
     pub(crate) span: Span,
     pub(crate) state: EvaluationState,
@@ -253,7 +252,7 @@ pub(crate) struct SettledFilter {
 #[derive(Debug, Clone)]
 pub(crate) struct SettledInvocation {
     pub(crate) declaration: DeclarationId,
-    pub(crate) document: DocumentId,
+    pub(crate) document: DocumentIdx,
     pub(crate) span: Span,
     pub(crate) callee: DeclarationId,
     /// How many arguments the author wrote at the call site.
@@ -856,7 +855,7 @@ impl<D> SemanticModel<D> {
             .expressions
             .units(declaration)
             .iter()
-            .map(|unit| self.published_unit(unit))
+            .filter_map(|unit| self.published_unit(unit))
             .collect::<Vec<_>>();
         Some(ElementEvaluation {
             element: self.symbol_id(declaration)?,
@@ -866,11 +865,11 @@ impl<D> SemanticModel<D> {
         })
     }
 
-    pub(crate) fn published_unit(&self, unit: &SettledUnit) -> AuthoredUnit {
-        AuthoredUnit {
+    pub(crate) fn published_unit(&self, unit: &SettledUnit) -> Option<AuthoredUnit> {
+        Some(AuthoredUnit {
             authored: self.storage.symbol(unit.text).unwrap_or_default().into(),
             location: SourceLocation {
-                document: writer::document_identity(self, unit.document).into(),
+                document: self.document_handle(unit.document)?,
                 range: document_range(&self.storage, unit.document, &unit.span).unwrap_or(
                     TextRange {
                         start: TextPosition {
@@ -902,7 +901,7 @@ impl<D> SemanticModel<D> {
                 UnitOutcome::UnsupportedExpression => UnitResolution::UnsupportedExpression,
                 UnitOutcome::CatalogUnavailable => UnitResolution::CatalogUnavailable,
             },
-        }
+        })
     }
 
     /// What one declaration's type requires of its values, as the published contract states it.

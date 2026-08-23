@@ -16,7 +16,7 @@ use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::resolve::names::EffectiveVisibility;
@@ -276,11 +276,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
         let declaration = self.storage.declaration(id)?;
-        let document = self
-            .storage
-            .document(declaration.document)?
-            .identity
-            .clone();
+        let document = self.document_handle(declaration.document)?;
         // The settled identifier range, not a text scan: the publication no longer owns the source
         // this used to re-read. A named declaration whose identifier the barrier could not settle
         // has no location, exactly as the failed search had none; only an unnamed one falls back to
@@ -448,7 +444,7 @@ impl<D> SemanticModel<D> {
                 self.storage
                     .declaration(reference.source)
                     .map(|source| source.document)
-                    .unwrap_or(DocumentId(0)),
+                    .unwrap_or(DocumentIdx(0)),
                 &reference.span,
             ) else {
                 continue;
@@ -456,8 +452,7 @@ impl<D> SemanticModel<D> {
             let Some(document) = self
                 .storage
                 .declaration(reference.source)
-                .and_then(|source| self.storage.document(source.document))
-                .map(|document| document.identity.clone())
+                .and_then(|source| self.document_handle(source.document))
             else {
                 continue;
             };
@@ -746,9 +741,7 @@ impl<D> SemanticModel<D> {
             })
             .collect::<Vec<_>>();
         entries.sort_by(|left, right| {
-            left.location
-                .document
-                .cmp(&right.location.document)
+            self.document_order(left.location.document, right.location.document)
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
         });

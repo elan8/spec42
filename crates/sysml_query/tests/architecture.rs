@@ -640,7 +640,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "NavigationTarget::name",
     "PackageTargets::qualified_name",
     "QualifiedReferenceTarget::qualified_name",
-    "SourceLocation::document",
     "SymbolEntry::qualified_name",
     "SyntaxDiagnostic::message",
     "SyntaxImport::target",

@@ -11,7 +11,7 @@ use crate::lower::document::LoweredDocument;
 use crate::lower::memo::LoweringMemo;
 use crate::lower::SemanticModelBuilder;
 use crate::model::resolver;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::pipeline::schedule::{source_admission_rank, BuildPhaseDurations, BuildSchedule};
 use crate::resolve::library_seed::SettledLibrary;
 
@@ -224,12 +224,12 @@ impl SemanticModelBuildCoordinator {
 /// A parallel schedule lowers the misses concurrently: each document's walk touches only its own
 /// arenas, so the products are independent, and they are spliced afterwards in admission order.
 fn lower_documents(
-    documents: &[(DocumentId, ContentDigest, Arc<ParsedDocument>)],
+    documents: &[(DocumentIdx, ContentDigest, Arc<ParsedDocument>)],
     memo: Option<&LoweringMemo>,
     generation: Option<crate::lower::memo::MemoGeneration>,
     schedule: BuildSchedule,
 ) -> Result<Vec<(Arc<LoweredDocument>, bool)>, CoordinatorError> {
-    let lower_one = |(_, digest, parsed): &(DocumentId, ContentDigest, Arc<ParsedDocument>)| {
+    let lower_one = |(_, digest, parsed): &(DocumentIdx, ContentDigest, Arc<ParsedDocument>)| {
         match (memo, generation) {
             (Some(memo), Some(generation)) => memo.lower(*digest, generation, parsed),
             _ => crate::lower::document::lower_document(Arc::clone(parsed))

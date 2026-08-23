@@ -39,13 +39,13 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::model::SymbolPathId;
 
 /// One document's lowering product, in a document-local identity space.
 ///
-/// Every `DocumentId` inside is [`DocumentId::from_index(0)`]; every `DeclarationId`,
+/// Every `DocumentIdx` inside is [`DocumentIdx::from_index(0)`]; every `DeclarationId`,
 /// `AuthoredReferenceId`, `NameId` and `SymbolPathId` indexes this value's own arenas. The value
 /// is immutable and shareable: a publication authority holds it behind an `Arc` and splices the
 /// same value into every later build whose document has the same content.
@@ -108,7 +108,7 @@ pub(crate) fn lower_document(
 
 /// The identity translation from one document's local space into the whole build's arenas.
 struct Relocation {
-    document: DocumentId,
+    document: DocumentIdx,
     declaration_base: usize,
     reference_base: usize,
     symbols: Vec<NameId>,
@@ -144,10 +144,7 @@ impl Relocation {
             .ok_or(ConstructionError::InvalidIdentity)
     }
 
-    fn optional_symbol(
-        &self,
-        local: Option<NameId>,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    fn optional_symbol(&self, local: Option<NameId>) -> Result<Option<NameId>, ConstructionError> {
         local.map(|id| self.symbol(id)).transpose()
     }
 
@@ -176,7 +173,7 @@ impl SemanticModelBuilder {
     /// content digest is what makes it hold.
     pub(crate) fn splice(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         lowered: &LoweredDocument,
     ) -> Result<(), ConstructionError> {
         let mut relocation = Relocation {

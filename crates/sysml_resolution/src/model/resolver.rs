@@ -55,7 +55,7 @@ use crate::model::DeclarationId;
 #[cfg(test)]
 use crate::model::DeclarationKind;
 #[cfg(test)]
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 #[cfg(test)]
 #[cfg(test)]
 use crate::model::MembershipKind;
@@ -150,7 +150,7 @@ pub(crate) struct NotYetDiagnosed;
 #[derive(Debug, Default)]
 pub(crate) struct SettledDiagnostics {
     pub(crate) diagnostics: Box<[Diagnostic]>,
-    /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentId`.
+    /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentIdx`.
     ///
     /// The derivation groups one document's diagnostics contiguously, so a document-scoped query
     /// is a slice of the settled sequence rather than a scan of it. Built at the same barrier so
@@ -632,10 +632,10 @@ mod tests {
         let storage = SemanticModelStorage {
             documents: Box::new([]),
             declarations: vec![
-                declaration(DocumentId(0), None, None, DeclarationKind::Package),
-                declaration(DocumentId(0), Some(id(0)), None, DeclarationKind::If),
-                declaration(DocumentId(0), Some(id(0)), None, DeclarationKind::If),
-                declaration(DocumentId(0), Some(id(0)), None, DeclarationKind::If),
+                declaration(DocumentIdx(0), None, None, DeclarationKind::Package),
+                declaration(DocumentIdx(0), Some(id(0)), None, DeclarationKind::If),
+                declaration(DocumentIdx(0), Some(id(0)), None, DeclarationKind::If),
+                declaration(DocumentIdx(0), Some(id(0)), None, DeclarationKind::If),
             ]
             .into_boxed_slice(),
             declaration_facts: vec![
@@ -700,39 +700,39 @@ mod tests {
         let storage = SemanticModelStorage {
             documents: Box::new([]),
             declarations: vec![
-                declaration(DocumentId(0), None, None, DeclarationKind::Package),
+                declaration(DocumentIdx(0), None, None, DeclarationKind::Package),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::FlowDefinition,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::ConnectionUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::ConnectionUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::FlowDefinition,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(4)),
                     None,
                     DeclarationKind::ConnectionUsage,
                 ),
-                declaration(DocumentId(0), Some(id(0)), None, DeclarationKind::Flow),
-                declaration(DocumentId(0), Some(id(0)), None, DeclarationKind::Flow),
+                declaration(DocumentIdx(0), Some(id(0)), None, DeclarationKind::Flow),
+                declaration(DocumentIdx(0), Some(id(0)), None, DeclarationKind::Flow),
             ]
             .into_boxed_slice(),
             declaration_facts: vec![
@@ -862,7 +862,7 @@ mod tests {
     }
 
     fn declaration(
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         name: Option<NameId>,
         kind: DeclarationKind,
@@ -929,11 +929,11 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([AuthoredFilterCondition {
                 owner: DeclarationId(0),
-                document: DocumentId(0),
+                document: DocumentIdx(0),
                 form: FilterForm::View,
                 span: Span::dummy(),
                 expression: AuthoredExpression {
-                    document: DocumentId(0),
+                    document: DocumentIdx(0),
                     grammar: ExpressionGrammar::Constraint,
                     operand_start: 0,
                     node: Expression::LiteralInteger(5),
@@ -952,48 +952,58 @@ mod tests {
         SemanticModelStorage {
             documents: Box::new([]),
             declarations: vec![
-                declaration(DocumentId(0), None, None, DeclarationKind::Package),
+                declaration(DocumentIdx(0), None, None, DeclarationKind::Package),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::RequirementDefinition,
                 ),
-                declaration(DocumentId(0), Some(id(1)), None, DeclarationKind::Frame),
+                declaration(DocumentIdx(0), Some(id(1)), None, DeclarationKind::Frame),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::AssumeConstraintUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::RequireConstraintUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::RequirementActor,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::CaseDefinition,
                 ),
-                declaration(DocumentId(0), Some(id(6)), None, DeclarationKind::CaseActor),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
+                    Some(id(6)),
+                    None,
+                    DeclarationKind::CaseActor,
+                ),
+                declaration(
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::StakeholderUsage,
                 ),
-                declaration(DocumentId(0), Some(id(1)), None, DeclarationKind::PartUsage),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
+                    Some(id(1)),
+                    None,
+                    DeclarationKind::PartUsage,
+                ),
+                declaration(
+                    DocumentIdx(0),
                     Some(id(1)),
                     None,
                     DeclarationKind::VerifyRequirement,
@@ -1032,33 +1042,33 @@ mod tests {
         SemanticModelStorage {
             documents: Box::new([]),
             declarations: vec![
-                declaration(DocumentId(0), None, None, DeclarationKind::Package),
+                declaration(DocumentIdx(0), None, None, DeclarationKind::Package),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::AcceptActionUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::ActionDefinition,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(2)),
                     None,
                     DeclarationKind::AcceptActionUsage,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(0)),
                     None,
                     DeclarationKind::Transition,
                 ),
                 declaration(
-                    DocumentId(0),
+                    DocumentIdx(0),
                     Some(id(4)),
                     None,
                     DeclarationKind::AcceptActionUsage,
@@ -1213,8 +1223,8 @@ mod tests {
         let definitions_path = paths.push(&[definitions_name], false).unwrap();
         let vehicle_path = paths.push(&[vehicle_name], false).unwrap();
 
-        let definition_document = DocumentId(0);
-        let usage_document = DocumentId(1);
+        let definition_document = DocumentIdx(0);
+        let usage_document = DocumentIdx(1);
         let definitions = DeclarationId(0);
         let usage = DeclarationId(2);
         let import = DeclarationId(3);
@@ -1302,41 +1312,41 @@ mod tests {
         let thing_path = paths.push(&[thing_name], false).unwrap();
 
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(a_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(thing_name),
                 DeclarationKind::PartDefinition,
             ),
-            declaration(DocumentId(1), None, Some(b_name), DeclarationKind::Package),
+            declaration(DocumentIdx(1), None, Some(b_name), DeclarationKind::Package),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(2)),
                 None,
                 DeclarationKind::Import,
             ),
-            declaration(DocumentId(2), None, Some(c_name), DeclarationKind::Package),
+            declaration(DocumentIdx(2), None, Some(c_name), DeclarationKind::Package),
             declaration(
-                DocumentId(2),
+                DocumentIdx(2),
                 Some(DeclarationId(4)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(3),
+                DocumentIdx(3),
                 None,
                 Some(use_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(3),
+                DocumentIdx(3),
                 Some(DeclarationId(6)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(3),
+                DocumentIdx(3),
                 Some(DeclarationId(6)),
                 Some(v_name),
                 DeclarationKind::PartUsage,
@@ -1391,34 +1401,34 @@ mod tests {
         let thing_path = paths.push(&[thing_name], false).unwrap();
 
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(a_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(nested_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(1)),
                 Some(thing_name),
                 DeclarationKind::PartDefinition,
             ),
-            declaration(DocumentId(1), None, Some(b_name), DeclarationKind::Package),
+            declaration(DocumentIdx(1), None, Some(b_name), DeclarationKind::Package),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(3)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(3)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(3)),
                 Some(v_name),
                 DeclarationKind::PartUsage,
@@ -1467,34 +1477,34 @@ mod tests {
         let type_b_path = paths.push(&[type_b_name], false).unwrap();
 
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(a_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(type_a_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(usage_name),
                 DeclarationKind::PartUsage,
             ),
-            declaration(DocumentId(1), None, Some(b_name), DeclarationKind::Package),
+            declaration(DocumentIdx(1), None, Some(b_name), DeclarationKind::Package),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(4)),
                 Some(type_b_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(4)),
                 None,
                 DeclarationKind::Import,
@@ -1544,40 +1554,40 @@ mod tests {
         let thing_path = paths.push(&[thing_name], false).unwrap();
 
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(a_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(nested_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(1)),
                 Some(thing_name),
                 DeclarationKind::PartDefinition,
             ),
-            declaration(DocumentId(1), None, Some(b_name), DeclarationKind::Package),
+            declaration(DocumentIdx(1), None, Some(b_name), DeclarationKind::Package),
             declaration(
-                DocumentId(1),
+                DocumentIdx(1),
                 Some(DeclarationId(3)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(2),
+                DocumentIdx(2),
                 None,
                 Some(use_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(2),
+                DocumentIdx(2),
                 Some(DeclarationId(5)),
                 None,
                 DeclarationKind::Import,
             ),
             declaration(
-                DocumentId(2),
+                DocumentIdx(2),
                 Some(DeclarationId(5)),
                 Some(v_name),
                 DeclarationKind::PartUsage,
@@ -1626,27 +1636,27 @@ mod tests {
         let base = DeclarationId(1);
         let child = DeclarationId(3);
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(p_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(p_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(base_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(base),
                 Some(mass_name),
                 DeclarationKind::AttributeUsage,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(child_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(child),
                 Some(mass_name),
                 DeclarationKind::AttributeUsage,
@@ -1726,7 +1736,7 @@ mod tests {
         // A second directly owned `mass` feature on Base makes the immediate-parent same-name
         // lookup ambiguous; the synthesis must not guess a target.
         declarations.push(declaration(
-            DocumentId(0),
+            DocumentIdx(0),
             Some(DeclarationId(1)),
             Some(declarations[2].name.unwrap()),
             DeclarationKind::AttributeUsage,
@@ -1766,27 +1776,27 @@ mod tests {
         let base = DeclarationId(1);
         let child = DeclarationId(3);
         let declarations = vec![
-            declaration(DocumentId(0), None, Some(p_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(p_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(base_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(base),
                 Some(mass_name),
                 DeclarationKind::AttributeUsage,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(child_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(child),
                 None,
                 DeclarationKind::AttributeUsage,
@@ -1911,43 +1921,43 @@ mod tests {
         let need_usage = DeclarationId(5);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(managed_requirement_name),
                 DeclarationKind::RequirementDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(managed_requirement),
                 Some(status_name),
                 DeclarationKind::AttributeUsage,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(user_requirement_name),
                 DeclarationKind::RequirementDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(need_def_name),
                 DeclarationKind::RequirementDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(need_usage_name),
                 DeclarationKind::RequirementUsage,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(need_usage),
                 None,
                 DeclarationKind::AttributeUsage,
@@ -2042,25 +2052,25 @@ mod tests {
         let alias = DeclarationId(3);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(status_kind_name),
                 DeclarationKind::EnumerationDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(status_kind),
                 Some(approved_name),
                 DeclarationKind::EnumerationLiteral,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(alias_name),
                 DeclarationKind::Alias,
@@ -2135,19 +2145,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::PortDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::PortDefinition,
@@ -2198,19 +2208,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::OccurrenceDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::OccurrenceDefinition,
@@ -2258,19 +2268,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::AnalysisCaseDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::AnalysisCaseDefinition,
@@ -2319,13 +2329,13 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
-            declaration(DocumentId(0), Some(demo), Some(base_name), kind),
-            declaration(DocumentId(0), Some(demo), Some(derived_name), kind),
+            declaration(DocumentIdx(0), Some(demo), Some(base_name), kind),
+            declaration(DocumentIdx(0), Some(demo), Some(derived_name), kind),
         ];
         let memberships = memberships_for(&declarations, &[]);
         let references = vec![TestReference {
@@ -2416,19 +2426,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::ItemDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::ItemDefinition,
@@ -2477,19 +2487,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::ClassDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::ClassDefinition,
@@ -2538,19 +2548,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::ActionDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::ActionDefinition,
@@ -2599,19 +2609,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::StateDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::StateDefinition,
@@ -2660,19 +2670,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::MetadataDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::MetadataDefinition,
@@ -2723,19 +2733,19 @@ mod tests {
         let seat_belt = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(safety_name),
                 DeclarationKind::MetadataDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(seat_belt_name),
                 DeclarationKind::PartUsage,
@@ -2795,19 +2805,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::ConnectionDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::ConnectionDefinition,
@@ -2852,19 +2862,19 @@ mod tests {
         let derived = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(base_name),
                 DeclarationKind::InterfaceDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(derived_name),
                 DeclarationKind::InterfaceDefinition,
@@ -2914,19 +2924,19 @@ mod tests {
         let bus = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(demo_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(d1_name),
                 DeclarationKind::PartUsage,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(demo),
                 Some(bus_name),
                 DeclarationKind::ConnectionUsage,
@@ -2991,25 +3001,25 @@ mod tests {
     fn default_visibility_is_settled_once_from_membership_context() {
         let declarations = [
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(NameId(0)),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 Some(NameId(1)),
                 DeclarationKind::Namespace,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(1)),
                 Some(NameId(2)),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(DeclarationId(0)),
                 None,
                 DeclarationKind::Import,
@@ -3194,43 +3204,43 @@ mod tests {
         let diamond = DeclarationId(5);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(diamond_pkg),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(base_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(base),
                 Some(member_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(left_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(right_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(diamond_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(diamond),
                 Some(feature),
                 DeclarationKind::PartUsage,
@@ -3316,43 +3326,43 @@ mod tests {
         let diamond = DeclarationId(5);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(package_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(left_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(left),
                 Some(special_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(right_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(right),
                 Some(special_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(diamond_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(diamond),
                 Some(q_name),
                 DeclarationKind::PartUsage,
@@ -3411,25 +3421,25 @@ mod tests {
         let b = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(package_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(a_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(b_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(a),
                 Some(f_name),
                 DeclarationKind::PartUsage,
@@ -3488,25 +3498,25 @@ mod tests {
         let device_usage = DeclarationId(3);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(package_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(device_name),
                 DeclarationKind::PartDefinition,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(alias_name),
                 DeclarationKind::Alias,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(device_usage_name),
                 DeclarationKind::PartUsage,
@@ -3585,19 +3595,19 @@ mod tests {
         let b = DeclarationId(2);
         let declarations = vec![
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 None,
                 Some(package_name),
                 DeclarationKind::Package,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(a_name),
                 DeclarationKind::Alias,
             ),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(package),
                 Some(b_name),
                 DeclarationKind::Alias,
@@ -3655,17 +3665,17 @@ mod tests {
         let a = DeclarationId(0);
         let c = DeclarationId(2);
         let mut declarations = vec![
-            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), None, Some(a_name), DeclarationKind::Package),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(a),
                 Some(t_name),
                 DeclarationKind::PartDefinition,
             ),
-            declaration(DocumentId(0), None, Some(c_name), DeclarationKind::Package),
-            declaration(DocumentId(0), Some(c), None, DeclarationKind::Import),
+            declaration(DocumentIdx(0), None, Some(c_name), DeclarationKind::Package),
+            declaration(DocumentIdx(0), Some(c), None, DeclarationKind::Import),
             declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(c),
                 Some(t_name),
                 DeclarationKind::PartUsage,
@@ -3674,7 +3684,7 @@ mod tests {
         let p_owner = if nested {
             let inner = DeclarationId(u32::try_from(declarations.len()).unwrap());
             declarations.push(declaration(
-                DocumentId(0),
+                DocumentIdx(0),
                 Some(c),
                 Some(inner_name),
                 DeclarationKind::Namespace,
@@ -3684,7 +3694,7 @@ mod tests {
             c
         };
         declarations.push(declaration(
-            DocumentId(0),
+            DocumentIdx(0),
             Some(p_owner),
             Some(p_name),
             DeclarationKind::PartUsage,

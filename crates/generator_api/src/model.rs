@@ -345,7 +345,11 @@ impl GeneratorModelView {
             // Absence is honest; copying the authored name here would turn it into competing
             // semantic truth for aliases and other normalized names.
             effective_name: None,
-            source_uri: inspection.location.document.to_string(),
+            source_uri: self
+                .model
+                .document_identity(inspection.location.document)
+                .unwrap_or_default()
+                .to_owned(),
             source_range: source_range(inspection.declaration_range),
             definition: inspection.kind.as_str().ends_with("Definition"),
             documentation: inspection
@@ -666,7 +670,12 @@ impl GeneratorModelView {
                     kind: diagram_kind(entry.kind),
                     reference: self.diagram_reference(entry.semantic_id)?,
                     name: entry.name.to_string(),
-                    source: source_reference(&entry.source),
+                    source: source_reference(
+                        &entry.source,
+                        self.model
+                            .document_identity(entry.source.document)
+                            .unwrap_or_default(),
+                    ),
                 })
             })
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
@@ -687,7 +696,12 @@ impl GeneratorModelView {
             reference: self.diagram_reference(projection.view.semantic_id)?,
             kind: diagram_kind(projection.view.kind),
             name: projection.view.name.to_string(),
-            source: source_reference(&projection.view.source),
+            source: source_reference(
+                &projection.view.source,
+                self.model
+                    .document_identity(projection.view.source.document)
+                    .unwrap_or_default(),
+            ),
         };
         let elements = projection
             .elements
@@ -721,7 +735,7 @@ impl GeneratorModelView {
                     .as_ref()
                     .map(|owner| self.diagram_occurrence(owner))
                     .transpose()?,
-                source: source_reference(&element.source),
+                source: source_reference(&element.source, self.model.document_identity(element.source.document).unwrap_or_default()),
                 compartments: element.compartments.iter().map(|compartment| {
                     Ok(DiagramCompartment {
                         kind: match compartment.kind {
@@ -786,7 +800,14 @@ impl GeneratorModelView {
                         }
                     },
                     provenance: relationship_provenance(relationship.provenance),
-                    source: relationship.source_location.as_ref().map(source_reference),
+                    source: relationship.source_location.as_ref().map(|location| {
+                        source_reference(
+                            location,
+                            self.model
+                                .document_identity(location.document)
+                                .unwrap_or_default(),
+                        )
+                    }),
                 })
             })
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
@@ -849,7 +870,14 @@ impl GeneratorModelView {
                     target_occurrence: self.diagram_occurrence(&edge.target)?,
                     kind,
                     provenance: relationship_provenance(edge.provenance),
-                    source: edge.source_location.as_ref().map(source_reference),
+                    source: edge.source_location.as_ref().map(|location| {
+                        source_reference(
+                            location,
+                            self.model
+                                .document_identity(location.document)
+                                .unwrap_or_default(),
+                        )
+                    }),
                 })
             })
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
@@ -884,7 +912,12 @@ impl GeneratorModelView {
                     ..
                 } => ProjectionFeature::Supported {
                     label: label.to_string(),
-                    source: source_reference(source),
+                    source: source_reference(
+                        source,
+                        self.model
+                            .document_identity(source.document)
+                            .unwrap_or_default(),
+                    ),
                 },
                 sysml_query::resolved_slice::DiagramTransitionFeature::Unresolved => {
                     ProjectionFeature::Unresolved
@@ -921,7 +954,12 @@ impl GeneratorModelView {
                         Ok(StateMachineSummary {
                             semantic_id: self.token(identity),
                             label: display_label(&entry.entry),
-                            source: source_reference(&entry.entry.location),
+                            source: source_reference(
+                                &entry.entry.location,
+                                self.model
+                                    .document_identity(entry.entry.location.document)
+                                    .unwrap_or_default(),
+                            ),
                         })
                     })
                     .transpose()?;
@@ -942,7 +980,12 @@ impl GeneratorModelView {
                                 StateTransitionNodeKind::Final
                             }
                         },
-                        source: source_reference(&vertex.source),
+                        source: source_reference(
+                            &vertex.source,
+                            self.model
+                                .document_identity(vertex.source.document)
+                                .unwrap_or_default(),
+                        ),
                     })
                     .collect();
                 let transitions = state
@@ -967,7 +1010,12 @@ impl GeneratorModelView {
                                     semantic_id: self.token(target),
                                     label: label.to_string(),
                                 }),
-                                source: source_reference(source),
+                                source: source_reference(
+                                    source,
+                                    self.model
+                                        .document_identity(source.document)
+                                        .unwrap_or_default(),
+                                ),
                             },
                             sysml_query::resolved_slice::DiagramTransitionFeature::Unresolved => {
                                 TransitionTrigger::Unresolved
@@ -987,7 +1035,12 @@ impl GeneratorModelView {
                         guard: scene_feature(&transition.guard),
                         effect: scene_feature(&transition.effect),
                         provenance: relationship_provenance(transition.provenance),
-                        source_reference: source_reference(&transition.source_location),
+                        source_reference: source_reference(
+                            &transition.source_location,
+                            self.model
+                                .document_identity(transition.source_location.document)
+                                .unwrap_or_default(),
+                        ),
                     })
                     .collect();
                 DiagramScene::StateTransition(StateTransitionScene {
@@ -1093,7 +1146,12 @@ impl GeneratorModelView {
         let machine = StateMachineSummary {
             semantic_id: self.token(machine_id),
             label: display_label(&machine_entry.entry),
-            source: inspection_source(&machine_inspection),
+            source: inspection_source(
+                &machine_inspection,
+                self.model
+                    .document_identity(machine_inspection.location.document)
+                    .unwrap_or_default(),
+            ),
         };
         let children = self
             .by_identity
@@ -1114,7 +1172,12 @@ impl GeneratorModelView {
                         } else {
                             StateTransitionNodeKind::State
                         },
-                        source: inspection_source(&inspection),
+                        source: inspection_source(
+                            &inspection,
+                            self.model
+                                .document_identity(inspection.location.document)
+                                .unwrap_or_default(),
+                        ),
                     })
                 }
                 ElementKind::SuccessionAsUsage => {
@@ -1124,7 +1187,12 @@ impl GeneratorModelView {
                             semantic_id: initial_id.clone(),
                             label: String::new(),
                             kind: StateTransitionNodeKind::Initial,
-                            source: inspection_source(&inspection),
+                            source: inspection_source(
+                                &inspection,
+                                self.model
+                                    .document_identity(inspection.location.document)
+                                    .unwrap_or_default(),
+                            ),
                         });
                         transitions.push(StateTransitionEdge {
                             semantic_id: format!("{}#edge", self.token(child.entry.identity)),
@@ -1135,7 +1203,12 @@ impl GeneratorModelView {
                             guard: ProjectionFeature::Absent,
                             effect: ProjectionFeature::Absent,
                             provenance: spec42_generator_protocol::RelationshipProvenance::Authored,
-                            source_reference: inspection_source(&inspection),
+                            source_reference: inspection_source(
+                                &inspection,
+                                self.model
+                                    .document_identity(inspection.location.document)
+                                    .unwrap_or_default(),
+                            ),
                         });
                     }
                 }
@@ -1156,7 +1229,12 @@ impl GeneratorModelView {
                                     semantic_id: self.token(trigger),
                                     label: display_label(&target_entry.entry),
                                 }),
-                                source: inspection_source(&inspection),
+                                source: inspection_source(
+                                    &inspection,
+                                    self.model
+                                        .document_identity(inspection.location.document)
+                                        .unwrap_or_default(),
+                                ),
                             }
                         }
                     };
@@ -1195,7 +1273,12 @@ impl GeneratorModelView {
                             ProjectionFeature::Absent
                         },
                         provenance: spec42_generator_protocol::RelationshipProvenance::Authored,
-                        source_reference: inspection_source(&inspection),
+                        source_reference: inspection_source(
+                            &inspection,
+                            self.model
+                                .document_identity(inspection.location.document)
+                                .unwrap_or_default(),
+                        ),
                     });
                 }
                 _ => {}
@@ -1292,7 +1375,12 @@ impl GeneratorModelView {
                 semantic_id: self.token(machine),
                 label: display_label(&machine_entry.entry),
             },
-            source: inspection_source(&inspection),
+            source: inspection_source(
+                &inspection,
+                self.model
+                    .document_identity(inspection.location.document)
+                    .unwrap_or_default(),
+            ),
         })
     }
 
@@ -1309,13 +1397,21 @@ impl GeneratorModelView {
         let source_domain = diagram_source_domain(registered.source);
         if registered.entry.name.is_some() {
             Ok(DiagramSemanticReference::Qualified {
-                document: registered.entry.location.document.to_string(),
+                document: self
+                    .model
+                    .document_identity(registered.entry.location.document)
+                    .unwrap_or_default()
+                    .to_owned(),
                 qualified_name: registered.entry.qualified_name.to_string(),
                 source_domain,
             })
         } else {
             Ok(DiagramSemanticReference::SourceAnchor {
-                document: registered.entry.location.document.to_string(),
+                document: self
+                    .model
+                    .document_identity(registered.entry.location.document)
+                    .unwrap_or_default()
+                    .to_owned(),
                 owner_qualified_name: registered
                     .entry
                     .owner
@@ -1377,7 +1473,11 @@ impl GeneratorModelView {
             ModelQueryError::Unresolved("diagram relationship source is absent".into())
         })?;
         Ok(DiagramSemanticReference::Relationship {
-            document: registered.entry.location.document.to_string(),
+            document: self
+                .model
+                .document_identity(registered.entry.location.document)
+                .unwrap_or_default()
+                .to_owned(),
             source_qualified_name: registered.entry.qualified_name.to_string(),
             relationship_kind,
             ordinal: u32::try_from(ordinal).map_err(|_| ModelQueryError::ResultLimit {
@@ -1510,12 +1610,18 @@ fn display_label(entry: &SymbolEntry) -> String {
     entry.display_label().to_owned()
 }
 
+/// The boundary form of an inspection's source position.
+///
+/// `document` is the identity the caller materialised from the location's [`DocumentId`]: the
+/// generator protocol leaves this process, so the URI is spelled out rather than carried as a
+/// publication-scoped handle.
 fn inspection_source(
     inspection: &sysml_query::resolved_slice::ElementInspection,
+    document: &str,
 ) -> SourceReference {
     let range = source_range(inspection.declaration_range);
     SourceReference {
-        uri: inspection.location.document.to_string(),
+        uri: document.to_owned(),
         range: spec42_generator_protocol::SourceRange {
             start_line: range.start_line,
             start_character: range.start_character,
@@ -1525,10 +1631,14 @@ fn inspection_source(
     }
 }
 
-fn source_reference(location: &sysml_query::resolved_slice::SourceLocation) -> SourceReference {
+/// The boundary form of one source location; see [`inspection_source`] for `document`.
+fn source_reference(
+    location: &sysml_query::resolved_slice::SourceLocation,
+    document: &str,
+) -> SourceReference {
     let range = source_range(location.range);
     SourceReference {
-        uri: location.document.to_string(),
+        uri: document.to_owned(),
         range: spec42_generator_protocol::SourceRange {
             start_line: range.start_line,
             start_character: range.start_character,

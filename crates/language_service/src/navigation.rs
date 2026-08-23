@@ -59,7 +59,8 @@ pub fn hover_at_position(
                     contents: inspection_hover_markdown(
                         model,
                         &element,
-                        element.location.document.as_ref() != uri_norm.as_str(),
+                        model.document_identity(element.location.document)
+                            != Some(uri_norm.as_str()),
                     ),
                     range,
                 });
@@ -130,7 +131,12 @@ fn inspection_hover_markdown(
         markdown.push_str("\n\n");
     }
     if show_location {
-        markdown.push_str(&format!("*Defined in:* {}", element.location.document));
+        markdown.push_str(&format!(
+            "*Defined in:* {}",
+            model
+                .document_identity(element.location.document)
+                .unwrap_or_default()
+        ));
     }
     markdown
 }

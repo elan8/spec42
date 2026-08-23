@@ -18,13 +18,14 @@ pub use sysml_resolution::{
     DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
     DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
     DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
-    DiagramViewProjection, Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin,
-    EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt,
-    ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind, ElementModifier,
-    ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection,
-    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind,
-    MembershipRole, MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
+    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
+    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
+    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
+    ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
     PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
     QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, RedefinitionCheckKind,
@@ -290,6 +291,37 @@ impl PublishedModel {
     /// The handle a token names in this publication, if it still names one.
     pub fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
         self.inner.resolve_token(token)
+    }
+
+    /// The normalised identity -- the URI -- of one document, borrowed from this publication.
+    ///
+    /// Every published location names its document by [`DocumentId`], not by string. This is the
+    /// one place that turns a handle back into text, and it borrows: a host that groups a
+    /// thousand references by document pays for one lookup per group, not one copy per result.
+    pub fn document_identity(&self, document: DocumentId) -> Option<&str> {
+        self.inner.document_identity(document)
+    }
+
+    /// The stable, serialisable form of one document handle.
+    ///
+    /// A [`DocumentId`] addresses a document of *this* publication and must not outlive it. Take
+    /// a [`DocumentToken`] for anything that crosses a process or protocol boundary or has to
+    /// survive a rebuild; its text is byte-for-byte what [`Self::document_identity`] borrows.
+    pub fn document_token(&self, document: DocumentId) -> Option<DocumentToken> {
+        self.inner.document_token(document)
+    }
+
+    /// The handle a document token names in this publication, if it still names one.
+    pub fn resolve_document_token(&self, token: &DocumentToken) -> Option<DocumentId> {
+        self.inner.resolve_document_token(token)
+    }
+
+    /// The handle for a document identity a host already holds as text.
+    ///
+    /// The boundary an editor request crosses: it names a document by URI once, and every
+    /// answer after that is handles.
+    pub fn document_of(&self, identity: &str) -> Option<DocumentId> {
+        self.inner.document_of(identity)
     }
 
     pub fn publication(&self) -> PublicationQueries<'_> {
@@ -968,6 +1000,7 @@ impl DebugQueries<'_> {
         probes: &[EditorProbe],
         output: &mut dyn fmt::Write,
     ) -> fmt::Result {
+        let model = &self.model;
         writeln!(output, "(editor-queries")?;
         for probe in probes {
             writeln!(
@@ -976,18 +1009,20 @@ impl DebugQueries<'_> {
                 probe.document, probe.position.line, probe.position.character
             )?;
             let target = self.model.target_at(&probe.document, probe.position);
-            write_target_outcome(output, "target", &target)?;
+            write_target_outcome(model, output, "target", &target)?;
             if let QueryOutcome::Resolved(target)
             | QueryOutcome::Recovered(target)
             | QueryOutcome::UnsupportedWith(target) = &target
             {
                 write_locations_outcome(
+                    model,
                     output,
                     "references",
                     &self.model.references(target.symbol, true),
                 )?;
             }
             write_rename_outcome(
+                model,
                 output,
                 &self.model.prepare_rename(
                     &probe.document,
@@ -1004,6 +1039,7 @@ impl DebugQueries<'_> {
                 ),
             )?;
             write_details_at_outcome(
+                model,
                 output,
                 &self
                     .model
@@ -1021,6 +1057,7 @@ impl DebugQueries<'_> {
             }
             written.push(probe.document.clone());
             write_document_symbols(
+                model,
                 output,
                 &probe.document,
                 &self.model.document_symbols(&probe.document),
@@ -1079,7 +1116,7 @@ fn write_qualified_reference_target(
         target.kind.as_str(),
         target.qualified_name
     )?;
-    write_location(output, &target.location)?;
+    write_location(model, output, &target.location)?;
     write!(output, ")")
 }
 
@@ -1125,6 +1162,7 @@ fn write_qualified_reference_outcome(
 }
 
 fn write_document_symbols(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     document: &str,
     outcome: &QueryOutcome<Box<[SymbolEntry]>>,
@@ -1141,7 +1179,7 @@ fn write_document_symbols(
                     write!(output, " (name {name:?})")?;
                 }
                 write!(output, " (qualified-name {:?}) ", entry.qualified_name)?;
-                write_location(output, &entry.location)?;
+                write_location(model, output, &entry.location)?;
                 write!(output, " (declaration ")?;
                 write_range(output, entry.declaration_range)?;
                 writeln!(output, "))")?;
@@ -1160,19 +1198,39 @@ fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     )
 }
 
-fn write_location(output: &mut dyn fmt::Write, location: &SourceLocation) -> fmt::Result {
-    write!(output, "(location (document {:?}) ", location.document)?;
+/// A location, rendered with its document identity spelled out.
+///
+/// The published location names its document by handle; a baseline artefact records the URI, so
+/// the identity is materialised here -- at the boundary that writes the file -- and nowhere in
+/// the result itself.
+fn write_location(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    location: &SourceLocation,
+) -> fmt::Result {
+    write!(
+        output,
+        "(location (document {:?}) ",
+        model
+            .document_identity(location.document)
+            .unwrap_or_default()
+    )?;
     write_range(output, location.range)?;
     write!(output, " (role {:?}))", location.role)
 }
 
-fn write_target(output: &mut dyn fmt::Write, target: &NavigationTarget) -> fmt::Result {
+fn write_target(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    target: &NavigationTarget,
+) -> fmt::Result {
     write!(output, "(candidate (name {:?}) ", target.name)?;
-    write_location(output, &target.location)?;
+    write_location(model, output, &target.location)?;
     write!(output, ")")
 }
 
 fn write_target_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     label: &str,
     outcome: &QueryOutcome<NavigationTarget>,
@@ -1181,21 +1239,21 @@ fn write_target_outcome(
     match outcome {
         QueryOutcome::Resolved(target) => {
             write!(output, "(status resolved) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::Recovered(target) => {
             write!(output, "(status recovery) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::UnsupportedWith(target) => {
             write!(output, "(status unsupported) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::Ambiguous(targets) => {
             write!(output, "(status ambiguous) (candidates")?;
             for target in targets {
                 write!(output, " ")?;
-                write_target(output, target)?;
+                write_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1208,6 +1266,7 @@ fn write_target_outcome(
 }
 
 fn write_locations_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     label: &str,
     outcome: &QueryOutcome<Box<[SourceLocation]>>,
@@ -1220,7 +1279,7 @@ fn write_locations_outcome(
             write!(output, "(locations")?;
             for value in values.iter() {
                 write!(output, " ")?;
-                write_location(output, value)?;
+                write_location(model, output, value)?;
             }
             write!(output, ")")?;
         }
@@ -1229,7 +1288,11 @@ fn write_locations_outcome(
     writeln!(output, ")")
 }
 
-fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) -> fmt::Result {
+fn write_rename_outcome(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    outcome: &RenameOutcome,
+) -> fmt::Result {
     write!(output, "    (rename ")?;
     match outcome {
         RenameOutcome::Ready {
@@ -1246,7 +1309,7 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
             write!(output, "(status collision) (candidates")?;
             for target in targets.iter() {
                 write!(output, " ")?;
-                write_target(output, target)?;
+                write_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1294,6 +1357,7 @@ fn write_members_outcome(
 }
 
 fn write_details_at_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     outcome: &QueryOutcome<ElementDetailsAt>,
 ) -> fmt::Result {
@@ -1306,12 +1370,12 @@ fn write_details_at_outcome(
             match &at.containing {
                 Some(containing) => {
                     writeln!(output, "      (containing")?;
-                    write_element(output, "        ", containing)?;
+                    write_element(model, output, "        ", containing)?;
                     writeln!(output, "      )")?;
                 }
                 None => writeln!(output, "      (containing (status none))")?,
             }
-            write_referenced_details(output, &at.referenced)?;
+            write_referenced_details(model, output, &at.referenced)?;
         }
         _ => writeln!(output, "      (status {})", outcome_status(outcome))?,
     }
@@ -1330,6 +1394,7 @@ fn outcome_status<T>(outcome: &QueryOutcome<T>) -> &'static str {
 }
 
 fn write_referenced_details(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     referenced: &ReferencedDetails,
 ) -> fmt::Result {
@@ -1346,13 +1411,13 @@ fn write_referenced_details(
         }
         ReferencedDetails::Resolved(details) => {
             writeln!(output, "      (referenced (status resolved)")?;
-            write_element(output, "        ", details)?;
+            write_element(model, output, "        ", details)?;
             writeln!(output, "      )")
         }
         ReferencedDetails::Ambiguous(candidates) => {
             writeln!(output, "      (referenced (status ambiguous)")?;
             for candidate in candidates.iter() {
-                write_element(output, "        ", candidate)?;
+                write_element(model, output, "        ", candidate)?;
             }
             writeln!(output, "      )")
         }
@@ -1364,6 +1429,7 @@ fn write_referenced_details(
 /// Absent facts are omitted rather than rendered as an empty form, so a snapshot diff that gains a
 /// line is a fact that started being published, not a formatting change.
 fn write_element(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     indent: &str,
     details: &ElementDetails,
@@ -1389,7 +1455,7 @@ fn write_element(
         inspection.qualified_name
     )?;
     write!(output, "{indent}  ")?;
-    write_location(output, &inspection.location)?;
+    write_location(model, output, &inspection.location)?;
     writeln!(output)?;
     write!(output, "{indent}  (declaration ")?;
     write_range(output, inspection.declaration_range)?;

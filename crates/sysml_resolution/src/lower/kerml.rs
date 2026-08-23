@@ -15,7 +15,7 @@ use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
-use crate::model::DocumentId;
+use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
@@ -59,7 +59,7 @@ impl SemanticModelBuilder {
     /// `inverse of` remains explicitly unsupported because it needs a separate inverse-fact owner.
     pub(crate) fn lower_kerml_feature_relationship_parts(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         source: DeclarationId,
         family: UnsupportedFamily,
         parts: &[Node<FeatureRelationshipPart>],
@@ -121,7 +121,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_kerml_type_relationships(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         source: DeclarationId,
         relationships: &[Node<KermlTypeRelationship>],
     ) -> Result<(), ConstructionError> {
@@ -156,7 +156,7 @@ impl SemanticModelBuilder {
 
     pub(crate) fn lower_kerml_classifier_decl(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<KermlClassifierDecl>,
     ) -> Result<(), ConstructionError> {
@@ -220,7 +220,7 @@ impl SemanticModelBuilder {
     /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
     pub(crate) fn lower_kerml_feature_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         family: UnsupportedFamily,
         node: &Node<KermlFeature>,
@@ -309,7 +309,7 @@ impl SemanticModelBuilder {
     /// facts here.
     pub(crate) fn lower_kerml_connector_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<KermlConnectorMember>,
     ) -> Result<(), ConstructionError> {
@@ -382,7 +382,7 @@ impl SemanticModelBuilder {
     /// scope here, same as `KermlConnectorMember`'s ends).
     pub(crate) fn lower_kerml_binding_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<KermlBindingMember>,
     ) -> Result<(), ConstructionError> {
@@ -428,7 +428,7 @@ impl SemanticModelBuilder {
     /// `multiplicity` and `references` chain are not modeled as distinct facts here.
     pub(crate) fn lower_kerml_connector_end(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         kind: ReferenceKind,
         end: &Node<KermlConnectorEnd>,
@@ -471,7 +471,7 @@ impl SemanticModelBuilder {
     /// end-level `multiplicity`/`references`.
     pub(crate) fn lower_kerml_succession_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<KermlSuccessionMember>,
     ) -> Result<(), ConstructionError> {
@@ -523,7 +523,7 @@ impl SemanticModelBuilder {
     /// evaluator may still report an unrelated unsupported expression shape explicitly.
     pub(crate) fn lower_kerml_invariant_member(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<KermlInvariantMember>,
     ) -> Result<(), ConstructionError> {
@@ -562,7 +562,7 @@ impl SemanticModelBuilder {
     /// walk here.
     pub(crate) fn lower_kerml_owned_cross_feature(
         &mut self,
-        document: DocumentId,
+        document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<OwnedCrossFeature>,
     ) -> Result<(), ConstructionError> {

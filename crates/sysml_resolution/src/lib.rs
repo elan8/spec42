@@ -49,9 +49,9 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
 pub use sysml_contract::{
-    ElementKind, ElementSearch, ElementSource, LibrarySpecializationAnchorBranch, MembershipRole,
-    OccurrenceRole, PublicationCompleteness, RequirementConstraintKind, StateSubactionKind,
-    SymbolId, SymbolToken, TextPosition, TextRange,
+    DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
+    LibrarySpecializationAnchorBranch, MembershipRole, OccurrenceRole, PublicationCompleteness,
+    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -89,8 +89,6 @@ pub use evaluation::{
     EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
-pub use model::query::VisibleMemberRef;
-pub use model::query::VisibleMembers;
 pub use inspection::{
     AnnotationForm, AuthoredValue, DerivedElementOwner, Documentation,
     ElementDerivedDocumentationCollection, ElementInspection, ElementInspectionAt, ElementModifier,
@@ -98,6 +96,8 @@ pub use inspection::{
     MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance, RelationshipTarget,
     SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
+pub use model::query::VisibleMemberRef;
+pub use model::query::VisibleMembers;
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use qualified_reference::{
     QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
@@ -247,9 +247,17 @@ impl SourceInput {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SourceLocation {
-    pub document: Box<str>,
+    /// The document this fact was found in, as a handle into *this* publication.
+    ///
+    /// Not a URI: the identity string is materialised on demand by
+    /// [`PublishedResolution::document_identity`] (borrowed) or
+    /// [`PublishedResolution::document_token`] (owned, boundary-crossing). A location is one of
+    /// the densest results the facade returns -- every reference, every rename occurrence -- and
+    /// a copy of the URI per occurrence is an allocation per keystroke that most consumers group
+    /// away again immediately.
+    pub document: DocumentId,
     pub range: TextRange,
     pub role: OccurrenceRole,
 }
@@ -811,6 +819,38 @@ impl PublishedResolution {
     /// describes is not in this publication.
     pub fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
         self.model.resolve_token(token)
+    }
+
+    /// The normalised identity of one document, borrowed from the publication.
+    ///
+    /// The identity is settled at the barrier, so this costs a slice, not an allocation;
+    /// [`PublishedResolution::document_token`] is what a consumer takes when it needs to keep
+    /// one. `None` when the handle is not one of this publication's.
+    pub fn document_identity(&self, document: DocumentId) -> Option<&str> {
+        self.model.document_identity(document)
+    }
+
+    /// The stable, serialisable form of one document handle.
+    ///
+    /// A [`DocumentId`] addresses a slot in *this* publication; a [`DocumentToken`] carries the
+    /// normalised identity itself -- byte-for-byte what `document_identity` borrows -- so it is
+    /// equal across builds and is what crosses a process or protocol boundary. It allocates: a
+    /// consumer that only wants to display or compare takes `document_identity`.
+    pub fn document_token(&self, document: DocumentId) -> Option<DocumentToken> {
+        self.model.document_token(document)
+    }
+
+    /// The handle a document token names in this publication, if it still names one.
+    pub fn resolve_document_token(&self, token: &DocumentToken) -> Option<DocumentId> {
+        self.model.resolve_document_token(token)
+    }
+
+    /// The handle for a document identity a consumer already holds as text.
+    ///
+    /// The boundary a host crosses when it starts from a URI -- an editor request names a
+    /// document by string, and everything after the lookup is handles.
+    pub fn document_of(&self, identity: &str) -> Option<DocumentId> {
+        self.model.document_of(identity)
     }
 
     /// The exact derived `Element::owner` fact from the canonical ownership structure.
