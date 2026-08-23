@@ -641,7 +641,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "QualifiedReferenceTarget::qualified_name",
     "SymbolEntry::qualified_name",
     "SyntaxDiagnostic::message",
-    "SyntaxImport::target",
     "SyntaxOutlineNode::name",
 ];
 /// The count is asserted separately from the membership so a swap -- one field drained and another

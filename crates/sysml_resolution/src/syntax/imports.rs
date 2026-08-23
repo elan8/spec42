@@ -11,7 +11,7 @@ use sysml_v2_parser::{Node, ParsedDocument};
 use super::token_util::{qualified_identification_name, span_to_source_range};
 use super::{ImportScope, SyntaxImport, SyntaxRange};
 
-pub(super) fn imports(document: &ParsedDocument) -> Vec<SyntaxImport> {
+pub(super) fn imports(document: &ParsedDocument) -> Vec<SyntaxImport<'_>> {
     let mut out = Vec::new();
     for element in &document.elements {
         match &element.value {
@@ -42,11 +42,11 @@ fn package_owner(
     (!name.is_empty()).then_some(name)
 }
 
-fn walk_body(
-    document: &ParsedDocument,
+fn walk_body<'p>(
+    document: &'p ParsedDocument,
     body: &PackageBody,
     owner: Option<&str>,
-    out: &mut Vec<SyntaxImport>,
+    out: &mut Vec<SyntaxImport<'p>>,
 ) {
     let PackageBody::Brace { elements, .. } = body else {
         return;
@@ -79,16 +79,16 @@ fn qualified_owner(
     })
 }
 
-fn push_import(
-    document: &ParsedDocument,
+fn push_import<'p>(
+    document: &'p ParsedDocument,
     import: &Node<sysml_v2_parser::ast::Import>,
     owner: Option<&str>,
-    out: &mut Vec<SyntaxImport>,
+    out: &mut Vec<SyntaxImport<'p>>,
 ) {
     let Some(view) = document.qualified_reference(import.value.target.reference) else {
         return;
     };
-    let target = view.authored_text().trim().to_string();
+    let target = view.authored_text().trim();
     if target.is_empty() {
         return;
     }

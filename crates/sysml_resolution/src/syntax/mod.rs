@@ -165,7 +165,7 @@ impl ParsedSource {
     }
 
     /// Every `import` the source writes, in source order, with its range and owning package.
-    pub fn imports(&self) -> Vec<SyntaxImport> {
+    pub fn imports(&self) -> Vec<SyntaxImport<'_>> {
         imports::imports(self.inner())
     }
 
@@ -183,9 +183,12 @@ impl ParsedSource {
     pub fn referenced_namespace_roots(&self) -> std::collections::BTreeSet<String> {
         self.imports()
             .into_iter()
-            .map(|import| import.target)
-            .chain(self.type_references())
-            .filter_map(|name| imports::namespace_root(&name).map(str::to_string))
+            .filter_map(|import| imports::namespace_root(import.target).map(str::to_string))
+            .chain(
+                self.type_references()
+                    .iter()
+                    .filter_map(|name| imports::namespace_root(name).map(str::to_string)),
+            )
             .collect()
     }
 
@@ -346,16 +349,17 @@ pub use sysml_contract::{ImportScope, SyntaxOutlineKind};
 /// The range covers the whole statement, so a host that wants to link or fold an import never has
 /// to find it by looking for the keyword in the line.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SyntaxImport {
-    /// The qualified name the import targets, without the shape suffix.
-    pub target: String,
+pub struct SyntaxImport<'p> {
+    /// The qualified name the import targets, without the shape suffix: a slice of the parsed
+    /// source, not a copy.
+    pub target: &'p str,
     pub scope: ImportScope,
     pub range: SyntaxRange,
     /// The qualified name of the package the import is written in, if any.
     pub owner_package: Option<String>,
 }
 
-impl SyntaxImport {
+impl SyntaxImport<'_> {
     /// The import as authored, target and shape suffix together.
     pub fn authored_target(&self) -> String {
         format!("{}{}", self.target, self.scope.suffix())
