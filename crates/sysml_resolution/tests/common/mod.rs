@@ -595,3 +595,23 @@ pub fn type_featuring_relationships(
         .filter(|relationship| relationship.kind == "typeFeaturing")
         .collect()
 }
+
+/// A workspace exercising ownership, metadata, multiplicity, redefinition and an
+/// unresolvable reference in one model.
+pub const VEHICLE_MODEL: &str = concat!(
+    "package P {\n",
+    "  metadata def Safety;\n",
+    "  part def Wheel;\n",
+    "  part def Vehicle {\n",
+    "    @Safety;\n",
+    "    part wheel[4] : Wheel;\n",
+    "    part spare[0..*] : Wheel;\n",
+    "  }\n",
+    "  part def Rover :> Vehicle {\n",
+    "    part :>> wheel[4];\n",
+    "  }\n",
+    "  part rover : Rover;\n",
+    "  part broken : Missing;\n",
+    "  part selected subsets rover;\n",
+    "}\n",
+);
