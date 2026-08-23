@@ -32,7 +32,7 @@ use super::*;
 /// family are the definition and usage halves of one concept (`part def` / `part`), which is what
 /// makes a family the right key for every rule below.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Family {
+pub(crate) enum Family {
     Part,
     Attribute,
     Enumeration,
@@ -61,7 +61,7 @@ pub(super) enum Family {
 
 /// Which half of its family a declaration is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Role {
+pub(crate) enum Role {
     Definition,
     Usage,
 }
@@ -70,7 +70,7 @@ pub(super) enum Role {
 ///
 /// Exhaustive by construction: a new `DeclarationKind` fails to compile until it is classified, so
 /// a kind cannot silently acquire "no conformance rule applies" by omission.
-pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
+pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
     use DeclarationKind as K;
     use Family as F;
     use Role::{Definition, Usage};
@@ -213,7 +213,7 @@ pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
 /// A flat per-family allowlist could not express it. `action substates : StateAction[0..*];` types
 /// an action usage with a state definition, which is well-formed precisely because a state *is* an
 /// action; a list that did not happen to name `State` under `Action` reported it as a violation.
-fn parent(family: Family) -> Option<Family> {
+pub(crate) fn parent(family: Family) -> Option<Family> {
     use Family as F;
     Some(match family {
         F::Occurrence
@@ -248,12 +248,12 @@ fn parent(family: Family) -> Option<Family> {
 /// SysML's flow payload rule is about occurrences, and the occurrence families are exactly those
 /// under `Occurrence` in the hierarchy above -- part, item, action, state, connection and the rest.
 /// Asking the hierarchy keeps the rule from naming a library type.
-pub(super) fn descends_from_occurrence(family: Family) -> bool {
+pub(crate) fn descends_from_occurrence(family: Family) -> bool {
     descends_from(family, Family::Occurrence)
 }
 
 /// Whether `descendant` is `ancestor` or specialises it, transitively.
-fn descends_from(descendant: Family, ancestor: Family) -> bool {
+pub(crate) fn descends_from(descendant: Family, ancestor: Family) -> bool {
     let mut cursor = Some(descendant);
     while let Some(current) = cursor {
         if current == ancestor {
@@ -279,7 +279,7 @@ fn descends_from(descendant: Family, ancestor: Family) -> bool {
 /// an `action def`, `port out1 : DataPort;` where `DataPort` is a `part def`, or `enum color :
 /// Color;` where `Color` is one. Those are the violations the rule exists to find, and they are
 /// exactly the pairs with no path between them.
-pub(super) fn families_are_comparable(source: Family, target: Family) -> bool {
+pub(crate) fn families_are_comparable(source: Family, target: Family) -> bool {
     descends_from(target, source) || descends_from(source, target)
 }
 
@@ -292,7 +292,7 @@ impl ResolvedSemanticModel {
     /// a structural placeholder, not the end's metaclass, and judging `end drivePwrPort :
     /// DrivePwrPort;` against the connection family's typing rule would report the lowering rather
     /// than the model. The end's own type is whatever it connects.
-    pub(super) fn declaration_family(&self, declaration: DeclarationId) -> Option<(Family, Role)> {
+    pub(crate) fn declaration_family(&self, declaration: DeclarationId) -> Option<(Family, Role)> {
         if self
             .storage
             .declaration_facts(declaration)
@@ -307,7 +307,7 @@ impl ResolvedSemanticModel {
     ///
     /// Ordering is the caller's: [`Self::derive_diagnostics`] sorts each document's diagnostics by
     /// range and code once every producer has contributed.
-    pub(super) fn collect_conformance(
+    pub(crate) fn collect_conformance(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -328,7 +328,7 @@ impl ResolvedSemanticModel {
     /// rather than one diagnostic for every declaration or every rule that depends on it. The
     /// implication itself was already synthesized at the resolution barrier; diagnostics only
     /// consume the stored rule-keyed fact map and never re-identify a library element.
-    fn collect_library_specialization_anchors(
+    pub(crate) fn collect_library_specialization_anchors(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -466,7 +466,7 @@ impl ResolvedSemanticModel {
     ///
     /// `disjoint from` is deliberately absent: disjointness is a pairwise statement about the
     /// owner and each target, so one target is meaningful.
-    fn collect_type_relationship_cardinality(
+    pub(crate) fn collect_type_relationship_cardinality(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -511,7 +511,7 @@ impl ResolvedSemanticModel {
     /// Reported at the redefining declaration rather than at a reference span, because there is no
     /// authored reference: the relationship's provenance is `Implied`, and pointing at a range the
     /// author did not write would misattribute it.
-    fn collect_implied_conformance(
+    pub(crate) fn collect_implied_conformance(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -569,7 +569,7 @@ impl ResolvedSemanticModel {
         Ok(())
     }
 
-    fn collect_reference_kind_conformance(
+    pub(crate) fn collect_reference_kind_conformance(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -596,7 +596,7 @@ impl ResolvedSemanticModel {
         Ok(())
     }
 
-    fn check_reference_kind(
+    pub(crate) fn check_reference_kind(
         &self,
         reference: &AuthoredReference,
         target: DeclarationId,
@@ -666,7 +666,7 @@ impl ResolvedSemanticModel {
 
     /// KerML §7.4.12 and §8.4.3.4: a specializing feature's types and multiplicity must not admit
     /// what the feature it specializes excludes.
-    fn check_reference_conformance(
+    pub(crate) fn check_reference_conformance(
         &self,
         reference: &AuthoredReference,
         target: DeclarationId,
@@ -715,7 +715,11 @@ impl ResolvedSemanticModel {
     /// an expression is published as exactly that, and comparing it would require evaluating an
     /// operand this fact family deliberately does not resolve; an absent multiplicity is absent,
     /// not `[1..1]`. Either case leaves the question unanswered rather than answered as "narrows".
-    fn multiplicity_widens(&self, specific: DeclarationId, general: DeclarationId) -> bool {
+    pub(crate) fn multiplicity_widens(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+    ) -> bool {
         let (Some(specific), Some(general)) = (
             self.literal_multiplicity(specific),
             self.literal_multiplicity(general),
@@ -734,7 +738,10 @@ impl ResolvedSemanticModel {
 
     /// The authored `[lower..upper]` of one declaration when both bounds fold to literals, with
     /// `None` as the upper bound standing for unbounded.
-    fn literal_multiplicity(&self, declaration: DeclarationId) -> Option<(i64, Option<i64>)> {
+    pub(crate) fn literal_multiplicity(
+        &self,
+        declaration: DeclarationId,
+    ) -> Option<(i64, Option<i64>)> {
         let multiplicity = self
             .storage
             .declaration_facts(declaration)?
@@ -763,7 +770,7 @@ impl ResolvedSemanticModel {
     ///
     /// The closure already computed this while it saturated; the legacy check rediscovered it with
     /// a depth-first search per node over the whole graph.
-    fn collect_specialization_cycles(
+    pub(crate) fn collect_specialization_cycles(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -782,7 +789,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The authored-reference identity of one stored reference.
-    pub(super) fn reference_index(
+    pub(crate) fn reference_index(
         &self,
         reference: &AuthoredReference,
     ) -> Result<AuthoredReferenceId, ResolutionError> {
@@ -796,7 +803,7 @@ impl ResolvedSemanticModel {
     }
 
     /// One diagnostic reported at a declaration's own range.
-    pub(super) fn declaration_diagnostic(
+    pub(crate) fn declaration_diagnostic(
         &self,
         declaration: DeclarationId,
         code: DiagnosticCode,
@@ -806,7 +813,7 @@ impl ResolvedSemanticModel {
     }
 
     /// A declaration diagnostic whose text names something the reported range does not show.
-    pub(super) fn declaration_message_diagnostic(
+    pub(crate) fn declaration_message_diagnostic(
         &self,
         declaration: DeclarationId,
         code: DiagnosticCode,
@@ -829,7 +836,7 @@ impl ResolvedSemanticModel {
 
     /// One diagnostic reported at an authored reference, optionally pointing at what it resolved
     /// to.
-    pub(super) fn reference_diagnostic(
+    pub(crate) fn reference_diagnostic(
         &self,
         reference: &AuthoredReference,
         code: DiagnosticCode,
@@ -858,7 +865,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The declaration site one diagnostic points at as related information.
-    pub(super) fn declaration_location(
+    pub(crate) fn declaration_location(
         &self,
         declaration: DeclarationId,
     ) -> Result<DiagnosticLocation, ResolutionError> {
@@ -873,7 +880,7 @@ impl ResolvedSemanticModel {
     }
 
     /// One related site pointing at a declaration, with the owner's note about why it is related.
-    pub(super) fn related_declaration(
+    pub(crate) fn related_declaration(
         &self,
         declaration: DeclarationId,
         message: &str,
@@ -886,4 +893,4 @@ impl ResolvedSemanticModel {
 }
 
 /// The note a diagnostic attaches to the declaration its subject named.
-pub(super) const RELATED_DECLARED: &str = "Declared here.";
+pub(crate) const RELATED_DECLARED: &str = "Declared here.";

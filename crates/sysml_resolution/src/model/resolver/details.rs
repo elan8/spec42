@@ -23,14 +23,14 @@ use crate::ElementKind;
 /// `Subsetting`, and reporting them apart would make an inspector show three families where the
 /// specification has one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Family {
+pub(crate) enum Family {
     Typing,
     Specialization,
     Subsetting,
     Redefinition,
 }
 
-enum PredicateTruth {
+pub(crate) enum PredicateTruth {
     True,
     False,
     Indeterminate(Vec<ViewSelectionObstacle>),
@@ -47,7 +47,7 @@ impl From<bool> for PredicateTruth {
 }
 
 impl PredicateTruth {
-    fn and(left: Self, right: Self) -> Self {
+    pub(crate) fn and(left: Self, right: Self) -> Self {
         match (left, right) {
             (Self::False, _) | (_, Self::False) => Self::False,
             (Self::True, Self::True) => Self::True,
@@ -61,7 +61,7 @@ impl PredicateTruth {
         }
     }
 
-    fn or(left: Self, right: Self) -> Self {
+    pub(crate) fn or(left: Self, right: Self) -> Self {
         match (left, right) {
             (Self::True, _) | (_, Self::True) => Self::True,
             (Self::False, Self::False) => Self::False,
@@ -77,7 +77,7 @@ impl PredicateTruth {
 }
 
 impl Family {
-    fn accepts(self, kind: ReferenceKind) -> bool {
+    pub(crate) fn accepts(self, kind: ReferenceKind) -> bool {
         match self {
             Self::Typing => kind == ReferenceKind::FeatureTyping,
             Self::Specialization => kind == ReferenceKind::Subclassification,
@@ -91,7 +91,7 @@ impl Family {
 }
 
 /// What one authored reference settled to, reduced to what a family summary needs.
-enum ReferenceOutcome {
+pub(crate) enum ReferenceOutcome {
     Resolved(DeclarationId),
     Ambiguous(Vec<DeclarationId>),
     Unresolved,
@@ -103,7 +103,7 @@ enum ReferenceOutcome {
 /// A closed set rather than a shape test. `constraint def` and `calc def` are excluded on purpose:
 /// a definition states what would be evaluated, and publishing a verdict for it would report the
 /// definition as passing or failing rather than its usages.
-fn is_verdict_bearing(kind: ElementKind) -> bool {
+pub(crate) fn is_verdict_bearing(kind: ElementKind) -> bool {
     matches!(
         kind,
         ElementKind::AnalysisCaseDefinition
@@ -212,7 +212,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn evaluate_view_predicate(
+    pub(crate) fn evaluate_view_predicate(
         &self,
         owner: DeclarationId,
         predicate: &FilterPredicate,
@@ -273,7 +273,10 @@ impl ResolvedSemanticModel {
     /// than KerML `metaclass` declarations), so ordinary metadata-annotation lookup alone cannot
     /// answer `@SysML::PartUsage`. Restricting the mapping to admitted standard-library sources
     /// prevents a workspace declaration with the same short name from impersonating the contract.
-    fn standard_element_classification(&self, target: DeclarationId) -> Option<ElementKind> {
+    pub(crate) fn standard_element_classification(
+        &self,
+        target: DeclarationId,
+    ) -> Option<ElementKind> {
         let declaration = self.storage.declaration(target)?;
         if self.storage.documents[declaration.document.index()].role
             != source_identity::SourceRole::StandardLibrary
@@ -358,7 +361,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn details(&self, id: DeclarationId) -> Option<ElementDetails> {
+    pub(crate) fn details(&self, id: DeclarationId) -> Option<ElementDetails> {
         let inspection = self.inspection(id)?;
         let declaration = self.storage.declaration(id)?;
         let typing = self.family(id, Family::Typing);
@@ -390,7 +393,7 @@ impl ResolvedSemanticModel {
     /// synthesized redefinition would otherwise make every usage report a redefinition nobody
     /// wrote. The implied ones remain visible through
     /// [`crate::details::ElementDetails::outgoing`], with their provenance intact.
-    fn family(&self, id: DeclarationId, family: Family) -> RelationshipFamily {
+    pub(crate) fn family(&self, id: DeclarationId, family: Family) -> RelationshipFamily {
         let mut targets = Vec::new();
         let mut candidates = Vec::new();
         let mut authored = 0usize;
@@ -444,7 +447,7 @@ impl ResolvedSemanticModel {
     /// settled nothing, the answer is the least settled of the declared typing and the feature
     /// specializations it would have inherited along -- so "declares nothing" and "declared a
     /// typing that did not resolve" stay apart.
-    fn effective_typing(
+    pub(crate) fn effective_typing(
         &self,
         id: DeclarationId,
         typing: &RelationshipFamily,
@@ -545,7 +548,7 @@ impl ResolvedSemanticModel {
     /// specialization edges of each owner. A name the element declares itself, or that a nearer
     /// owner already contributed, shadows the further one -- so a redefinition suppresses the
     /// feature it redefines rather than listing both.
-    fn inherited_features(&self, id: DeclarationId) -> Box<[InheritedFeature]> {
+    pub(crate) fn inherited_features(&self, id: DeclarationId) -> Box<[InheritedFeature]> {
         let mut queue = std::collections::VecDeque::new();
         let mut seed = self
             .types
@@ -636,7 +639,7 @@ impl ResolvedSemanticModel {
     /// definition, so this is an outgoing binding. Only settled targets appear; an annotation whose
     /// name did not resolve stays visible as an unresolved relationship on the inspection rather
     /// than as a metadata entry that would claim the element carries something it does not.
-    fn metadata_annotations(&self, id: DeclarationId) -> Box<[SymbolEntry]> {
+    pub(crate) fn metadata_annotations(&self, id: DeclarationId) -> Box<[SymbolEntry]> {
         let targets = self
             .outgoing_reference_ids(id)
             .iter()
@@ -652,7 +655,7 @@ impl ResolvedSemanticModel {
         self.entries(targets)
     }
 
-    fn incoming_relationships(&self, id: DeclarationId) -> Box<[ConnectedElement]> {
+    pub(crate) fn incoming_relationships(&self, id: DeclarationId) -> Box<[ConnectedElement]> {
         let mut connected = Vec::new();
         for reference_id in self.reverse_references.references(id) {
             let reference = &self.storage.references[reference_id.index()];
@@ -691,7 +694,7 @@ impl ResolvedSemanticModel {
         canonicalize(connected)
     }
 
-    fn outgoing_relationships(&self, id: DeclarationId) -> Box<[ConnectedElement]> {
+    pub(crate) fn outgoing_relationships(&self, id: DeclarationId) -> Box<[ConnectedElement]> {
         let mut connected = Vec::new();
         for reference_id in self.outgoing_reference_ids(id) {
             let reference = &self.storage.references[reference_id.index()];
@@ -735,7 +738,7 @@ impl ResolvedSemanticModel {
 
     /// The verdict channel of one element, read from the same settled state its value channel
     /// publishes, so the two can never disagree.
-    fn analysis_evaluation(
+    pub(crate) fn analysis_evaluation(
         &self,
         id: DeclarationId,
         state: &EvaluationState,
@@ -758,7 +761,7 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn reference_outcome(&self, reference_id: AuthoredReferenceId) -> ReferenceOutcome {
+    pub(crate) fn reference_outcome(&self, reference_id: AuthoredReferenceId) -> ReferenceOutcome {
         match self.resolution.outcome(reference_id) {
             Some(ResolutionStatus::Resolved(target)) => ReferenceOutcome::Resolved(target),
             Some(ResolutionStatus::Ambiguous(candidates)) => ReferenceOutcome::Ambiguous(
@@ -771,7 +774,10 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn reference_location(&self, reference: &AuthoredReference) -> Option<SourceLocation> {
+    pub(crate) fn reference_location(
+        &self,
+        reference: &AuthoredReference,
+    ) -> Option<SourceLocation> {
         let source = self.storage.declaration(reference.source)?;
         let document = self.storage.document(source.document)?.identity.clone();
         let range = document_range(&self.storage, source.document, &reference.span).ok()?;
@@ -782,7 +788,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn declaration_name(&self, id: DeclarationId) -> Option<Box<str>> {
+    pub(crate) fn declaration_name(&self, id: DeclarationId) -> Option<Box<str>> {
         self.storage
             .declaration(id)
             .and_then(|declaration| declaration.name)
@@ -792,7 +798,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Distinct symbol entries in canonical identity order.
-    fn entries(&self, declarations: Vec<DeclarationId>) -> Box<[SymbolEntry]> {
+    pub(crate) fn entries(&self, declarations: Vec<DeclarationId>) -> Box<[SymbolEntry]> {
         let mut entries = declarations
             .into_iter()
             .filter_map(|id| self.symbol_entry(id))
@@ -804,7 +810,7 @@ impl ResolvedSemanticModel {
 }
 
 /// One canonical order for a relationship list, independent of the order the tables were built in.
-fn canonicalize(mut connected: Vec<ConnectedElement>) -> Box<[ConnectedElement]> {
+pub(crate) fn canonicalize(mut connected: Vec<ConnectedElement>) -> Box<[ConnectedElement]> {
     connected.sort_by(|left, right| {
         left.kind
             .cmp(right.kind)

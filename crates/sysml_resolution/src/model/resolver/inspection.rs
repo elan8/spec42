@@ -17,47 +17,47 @@ use crate::inspection::{
 /// Each table is sorted by declaration at publication time, and the ranges are the contiguous run
 /// belonging to each declaration -- the same shape the sibling compiler's CSR edge index uses.
 #[derive(Debug, Default)]
-pub(super) struct ElementFactIndex {
+pub(crate) struct ElementFactIndex {
     /// Per-declaration ranges into `documentation_order`, not into the storage table directly:
     /// the ranges are computed for the *ordered* view, so slicing anything else would rest on the
     /// lowering happening to emit records already grouped by declaration.
-    documentation: Box<[(u32, u32)]>,
-    documentation_order: Box<[u32]>,
-    feature_values: Box<[(u32, u32)]>,
-    feature_value_order: Box<[u32]>,
-    references: Box<[(u32, u32)]>,
+    pub(crate) documentation: Box<[(u32, u32)]>,
+    pub(crate) documentation_order: Box<[u32]>,
+    pub(crate) feature_values: Box<[(u32, u32)]>,
+    pub(crate) feature_value_order: Box<[u32]>,
+    pub(crate) references: Box<[(u32, u32)]>,
     /// Reference ids ordered by source declaration, then by canonical reference order.
-    reference_order: Box<[AuthoredReferenceId]>,
+    pub(crate) reference_order: Box<[AuthoredReferenceId]>,
     /// Implied relationships ordered by source declaration.
-    implied: Box<[(u32, u32)]>,
-    implied_order: Box<[u32]>,
+    pub(crate) implied: Box<[(u32, u32)]>,
+    pub(crate) implied_order: Box<[u32]>,
     /// Implied relationships ordered by *target* declaration.
     ///
     /// The authored direction already has [`super::ReverseReferenceIndex`]; without this one, the
     /// relationships the resolver synthesized would be visible only from their source, so an
     /// element would be told nothing points at it when something does.
-    incoming_implied: Box<[(u32, u32)]>,
-    incoming_implied_order: Box<[u32]>,
+    pub(crate) incoming_implied: Box<[(u32, u32)]>,
+    pub(crate) incoming_implied_order: Box<[u32]>,
     /// Per-declaration ranges into `child_order`: the declarations each one owns.
     ///
     /// Prebuilt because the alternative is a scan of every declaration in the publication per
     /// element, which makes one element's inherited-feature answer cost the size of the model.
-    children: Box<[(u32, u32)]>,
+    pub(crate) children: Box<[(u32, u32)]>,
     /// Child declaration ids, ordered by owner and then by source position within the owner.
-    child_order: Box<[DeclarationId]>,
+    pub(crate) child_order: Box<[DeclarationId]>,
     /// Each declaration's evaluation fact, as an index into the publication's evaluation table.
     ///
     /// Dense rather than a range, because a declaration has at most one evaluation outcome; the
     /// alternative was a linear search of the evaluation table per inspected element, which made
     /// inspecting one element cost the size of the model.
-    evaluation: Box<[Option<u32>]>,
+    pub(crate) evaluation: Box<[Option<u32>]>,
 }
 
 /// Builds the contiguous per-declaration ranges of an ordered view of a record table.
 ///
 /// `owners` must be the owning declaration of each entry **in the order the view will be sliced**;
 /// the returned ranges index that view, not the underlying table.
-fn ranges_by_declaration(
+pub(crate) fn ranges_by_declaration(
     declarations: usize,
     owners: impl Iterator<Item = DeclarationId>,
 ) -> Box<[(u32, u32)]> {
@@ -77,7 +77,7 @@ fn ranges_by_declaration(
 }
 
 impl ElementFactIndex {
-    pub(super) fn build(
+    pub(crate) fn build(
         storage: &SemanticModelStorage,
         resolution: &ResolutionResults,
         evaluation: &[EvaluationFact],
@@ -206,7 +206,7 @@ impl ElementFactIndex {
     }
 }
 
-fn slice_range<'a, T>(
+pub(crate) fn slice_range<'a, T>(
     entries: &'a [T],
     ranges: &[(u32, u32)],
     declaration: DeclarationId,
@@ -231,7 +231,7 @@ impl ResolvedSemanticModel {
     ///
     /// A display convenience, not an identity: an anonymous ancestor contributes no segment, so
     /// two elements can share a qualified name. `symbol_identity` is the identity.
-    fn qualified_name(&self, id: DeclarationId) -> String {
+    pub(crate) fn qualified_name(&self, id: DeclarationId) -> String {
         let mut chain = vec![id];
         let mut cursor = self.storage.declaration(id).and_then(|node| node.owner);
         while let Some(current) = cursor {
@@ -257,7 +257,7 @@ impl ResolvedSemanticModel {
         segments.join("::")
     }
 
-    pub(super) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
+    pub(crate) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
         let declaration = self.storage.declaration(id)?;
         let document = self
             .storage
@@ -281,7 +281,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn membership_facts(&self, id: DeclarationId) -> Option<MembershipFacts> {
+    pub(crate) fn membership_facts(&self, id: DeclarationId) -> Option<MembershipFacts> {
         let membership = self.memberships.get(id)?;
         Some(MembershipFacts {
             kind: match membership.kind {
@@ -303,7 +303,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    pub(super) fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
+    pub(crate) fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
         slice_range(
             &self.facts.documentation_order,
             &self.facts.documentation,
@@ -332,7 +332,7 @@ impl ResolvedSemanticModel {
         .collect()
     }
 
-    fn authored_value(&self, id: DeclarationId) -> Option<AuthoredValue> {
+    pub(crate) fn authored_value(&self, id: DeclarationId) -> Option<AuthoredValue> {
         slice_range(
             &self.facts.feature_value_order,
             &self.facts.feature_values,
@@ -350,7 +350,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn multiplicity(&self, id: DeclarationId) -> MultiplicityFacts {
+    pub(crate) fn multiplicity(&self, id: DeclarationId) -> MultiplicityFacts {
         let Some(facts) = self.storage.declaration_facts(id) else {
             return MultiplicityFacts::Absent;
         };
@@ -370,7 +370,7 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn modifiers(&self, id: DeclarationId) -> Box<[ElementModifier]> {
+    pub(crate) fn modifiers(&self, id: DeclarationId) -> Box<[ElementModifier]> {
         let Some(facts) = self.storage.declaration_facts(id) else {
             return Box::default();
         };
@@ -398,7 +398,7 @@ impl ResolvedSemanticModel {
         .collect()
     }
 
-    pub(super) fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
+    pub(crate) fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
         self.relationships_matching(id, |_| true)
     }
 
@@ -407,7 +407,7 @@ impl ResolvedSemanticModel {
     /// The predicate is evaluated against the private `ReferenceKind`, before presentation turns
     /// it into a rendered name. Derived-property consumers therefore cannot reclassify a
     /// relationship from text or accidentally omit an unresolved target.
-    pub(super) fn relationships_of_kinds(
+    pub(crate) fn relationships_of_kinds(
         &self,
         id: DeclarationId,
         kinds: &[ReferenceKind],
@@ -415,7 +415,7 @@ impl ResolvedSemanticModel {
         self.relationships_matching(id, |kind| kinds.contains(&kind))
     }
 
-    fn relationships_matching(
+    pub(crate) fn relationships_matching(
         &self,
         id: DeclarationId,
         accepts: impl Fn(ReferenceKind) -> bool,
@@ -500,7 +500,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The authored path text of a reference, as written.
-    fn authored_path(&self, path: SymbolPathId) -> String {
+    pub(crate) fn authored_path(&self, path: SymbolPathId) -> String {
         let Some((segments, rooted)) = self.storage.paths.get(path) else {
             return String::new();
         };
@@ -521,7 +521,7 @@ impl ResolvedSemanticModel {
     ///
     /// One indexed lookup, not a search of the evaluation table: an inspector renders many
     /// elements, and a scan here would make each one cost the size of the model.
-    pub(super) fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
+    pub(crate) fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
         record_visited_index_entries(2);
         self.facts
             .evaluation
@@ -534,17 +534,17 @@ impl ResolvedSemanticModel {
     }
 
     /// The authored and implied references this declaration is the source of, in canonical order.
-    pub(super) fn outgoing_reference_ids(&self, id: DeclarationId) -> &[AuthoredReferenceId] {
+    pub(crate) fn outgoing_reference_ids(&self, id: DeclarationId) -> &[AuthoredReferenceId] {
         slice_range(&self.facts.reference_order, &self.facts.references, id)
     }
 
     /// Indices into the publication's implied relationships that this declaration is the source of.
-    pub(super) fn outgoing_implied_indices(&self, id: DeclarationId) -> &[u32] {
+    pub(crate) fn outgoing_implied_indices(&self, id: DeclarationId) -> &[u32] {
         slice_range(&self.facts.implied_order, &self.facts.implied, id)
     }
 
     /// Indices into the publication's implied relationships that target this declaration.
-    pub(super) fn incoming_implied_indices(&self, id: DeclarationId) -> &[u32] {
+    pub(crate) fn incoming_implied_indices(&self, id: DeclarationId) -> &[u32] {
         slice_range(
             &self.facts.incoming_implied_order,
             &self.facts.incoming_implied,
@@ -553,12 +553,12 @@ impl ResolvedSemanticModel {
     }
 
     /// The declarations this one owns, in source order.
-    pub(super) fn child_declarations(&self, id: DeclarationId) -> &[DeclarationId] {
+    pub(crate) fn child_declarations(&self, id: DeclarationId) -> &[DeclarationId] {
         slice_range(&self.facts.child_order, &self.facts.children, id)
     }
 
     /// The full inspection answer for one declaration.
-    pub(super) fn inspection(&self, id: DeclarationId) -> Option<ElementInspection> {
+    pub(crate) fn inspection(&self, id: DeclarationId) -> Option<ElementInspection> {
         let declaration = self.storage.declaration(id)?;
         let facts = self.storage.declaration_facts(id)?;
         Some(ElementInspection {
@@ -825,7 +825,7 @@ impl ResolvedSemanticModel {
         self.resolved_outcome(result.into_boxed_slice())
     }
 
-    pub(super) fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {
+    pub(crate) fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {
         let declaration = self.storage.declaration(id)?;
         let location = self.source_location(id)?;
         Some(SymbolEntry {

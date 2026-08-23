@@ -27,11 +27,12 @@ use super::*;
 use crate::evaluation::EvaluatedScalar;
 
 /// The note attached to each admitted unit an ambiguous token could have named.
-const RELATED_UNIT_CANDIDATE: &str = "Admitted unit with this symbol.";
+pub(crate) const RELATED_UNIT_CANDIDATE: &str = "Admitted unit with this symbol.";
 /// The note attached to each measurement reference the feature's type admits.
-const RELATED_EXPECTED_DIMENSION: &str = "Measurement reference the feature's type admits.";
+pub(crate) const RELATED_EXPECTED_DIMENSION: &str =
+    "Measurement reference the feature's type admits.";
 /// The note attached to the calculation an incomplete invocation calls.
-const RELATED_CALLEE: &str = "Calculation invoked here.";
+pub(crate) const RELATED_CALLEE: &str = "Calculation invoked here.";
 
 /// Whether two types are comparable: one is the other, or one specialises the other.
 ///
@@ -41,7 +42,11 @@ const RELATED_CALLEE: &str = "Calculation invoked here.";
 /// authored natural number. What is genuinely wrong is a value from an unrelated branch of the
 /// type hierarchy -- a string where a number belongs, a boolean where a mass does -- and those are
 /// exactly the pairs with no path between them.
-fn comparable(model: &ResolvedSemanticModel, left: DeclarationId, right: DeclarationId) -> bool {
+pub(crate) fn comparable(
+    model: &ResolvedSemanticModel,
+    left: DeclarationId,
+    right: DeclarationId,
+) -> bool {
     conforms(model, left, right) || conforms(model, right, left)
 }
 
@@ -50,7 +55,7 @@ impl ResolvedSemanticModel {
     ///
     /// Ordering is the caller's: [`Self::derive_diagnostics`] sorts each document's diagnostics by
     /// range and code once every producer has contributed.
-    pub(super) fn collect_expression_conformance(
+    pub(crate) fn collect_expression_conformance(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -64,7 +69,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The evaluated value one declaration settled to, if it settled to one at all.
-    fn evaluated_value(&self, declaration: DeclarationId) -> Option<EvaluatedScalar> {
+    pub(crate) fn evaluated_value(&self, declaration: DeclarationId) -> Option<EvaluatedScalar> {
         self.evaluation_for(declaration).value().cloned()
     }
 
@@ -79,7 +84,7 @@ impl ResolvedSemanticModel {
     /// A quantity-valued feature is deliberately excluded: its values are checked by dimension,
     /// which is what a measurement reference means, and comparing a mass against the datatype of
     /// its magnitude would report every unit-bearing value in the model.
-    fn collect_value_conformance(
+    pub(crate) fn collect_value_conformance(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -158,7 +163,11 @@ impl ResolvedSemanticModel {
     /// admitted libraries do not declare, and for a receiver with no effective type: each of those
     /// is a question this publication cannot answer, and answering it as "incompatible" would
     /// report the absence of an input as a fault in the model.
-    fn value_type_conflicts(&self, expression: DeclarationId, receiver: DeclarationId) -> bool {
+    pub(crate) fn value_type_conflicts(
+        &self,
+        expression: DeclarationId,
+        receiver: DeclarationId,
+    ) -> bool {
         if !matches!(
             self.expressions.required_measurement(receiver),
             RequiredMeasurement::NotApplicable
@@ -184,7 +193,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
-    fn collect_unit_conformance(
+    pub(crate) fn collect_unit_conformance(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -274,7 +283,7 @@ impl ResolvedSemanticModel {
     /// carries a value can be judged: an expression that is not constant, could not be folded, or
     /// is outside the evaluated slice has no Boolean-ness to report, and calling it non-Boolean
     /// would turn every limit of this evaluator into a fault in the model.
-    fn collect_boolean_expressions(
+    pub(crate) fn collect_boolean_expressions(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -335,7 +344,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Reports a calculation invocation that binds fewer arguments than the callee has parameters.
-    fn collect_invocation_arity(
+    pub(crate) fn collect_invocation_arity(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -381,7 +390,7 @@ impl ResolvedSemanticModel {
 /// The definition and usage of a constraint, and the three ways a usage is asserted. A requirement
 /// is deliberately absent even though it specialises a constraint: its body states subject,
 /// stakeholders and nested requirements rather than one Boolean expression.
-fn states_a_constraint(kind: DeclarationKind) -> bool {
+pub(crate) fn states_a_constraint(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ConstraintDefinition

@@ -48,35 +48,36 @@ use crate::evaluation::EvaluatedScalar;
 /// silent pass: every reader turns it into an explicit published outcome -- an unresolvable unit
 /// catalog, or a measurement requirement that does not apply -- so a workspace built without the
 /// measurement libraries reports that it has none, not that its units are wrong.
-type Anchor = Option<DeclarationId>;
+pub(crate) type Anchor = Option<DeclarationId>;
 
 /// `MeasurementReferences::MeasurementUnit`: the root every measurement unit's type conforms to.
-const MEASUREMENT_UNIT_PATH: &[&str] = &["MeasurementReferences", "MeasurementUnit"];
+pub(crate) const MEASUREMENT_UNIT_PATH: &[&str] = &["MeasurementReferences", "MeasurementUnit"];
 /// `Quantities::TensorQuantityValue`: the root every quantity value's type conforms to.
-const QUANTITY_VALUE_PATH: &[&str] = &["Quantities", "TensorQuantityValue"];
+pub(crate) const QUANTITY_VALUE_PATH: &[&str] = &["Quantities", "TensorQuantityValue"];
 /// `Quantities::TensorQuantityValue::mRef`: the feature every quantity value redefines to state
 /// which measurement reference its values are expressed in.
-const MEASUREMENT_REFERENCE_PATH: &[&str] = &["Quantities", "TensorQuantityValue", "mRef"];
+pub(crate) const MEASUREMENT_REFERENCE_PATH: &[&str] =
+    &["Quantities", "TensorQuantityValue", "mRef"];
 /// The KerML scalar datatypes a literal value has.
-const BOOLEAN_PATH: &[&str] = &["ScalarValues", "Boolean"];
-const STRING_PATH: &[&str] = &["ScalarValues", "String"];
-const INTEGER_PATH: &[&str] = &["ScalarValues", "Integer"];
-const REAL_PATH: &[&str] = &["ScalarValues", "Real"];
+pub(crate) const BOOLEAN_PATH: &[&str] = &["ScalarValues", "Boolean"];
+pub(crate) const STRING_PATH: &[&str] = &["ScalarValues", "String"];
+pub(crate) const INTEGER_PATH: &[&str] = &["ScalarValues", "Integer"];
+pub(crate) const REAL_PATH: &[&str] = &["ScalarValues", "Real"];
 
 /// The standard-library declarations the unit and value rules are rooted in.
 #[derive(Debug, Default)]
-pub(super) struct LibraryAnchors {
-    measurement_unit: Anchor,
-    quantity_value: Anchor,
-    measurement_reference: Anchor,
-    boolean: Anchor,
-    string: Anchor,
-    integer: Anchor,
-    real: Anchor,
+pub(crate) struct LibraryAnchors {
+    pub(crate) measurement_unit: Anchor,
+    pub(crate) quantity_value: Anchor,
+    pub(crate) measurement_reference: Anchor,
+    pub(crate) boolean: Anchor,
+    pub(crate) string: Anchor,
+    pub(crate) integer: Anchor,
+    pub(crate) real: Anchor,
 }
 
 impl LibraryAnchors {
-    fn build(storage: &SemanticModelStorage) -> Self {
+    pub(crate) fn build(storage: &SemanticModelStorage) -> Self {
         Self {
             measurement_unit: find_anchor(storage, MEASUREMENT_UNIT_PATH),
             quantity_value: find_anchor(storage, QUANTITY_VALUE_PATH),
@@ -94,7 +95,7 @@ impl LibraryAnchors {
     /// A quantity deliberately has none: its type is the quantity value definition its unit
     /// belongs to, not the datatype of its magnitude, and answering `Integer` for `10 [kg]` would
     /// make every mass look like a mistyped integer.
-    fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
+    pub(crate) fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
         match value {
             EvaluatedScalar::Boolean(_) => self.boolean,
             EvaluatedScalar::String(_) => self.string,
@@ -111,7 +112,7 @@ impl LibraryAnchors {
 /// workspace package that happens to be called `Quantities` must not become the root of the unit
 /// system. Several matches leave the anchor absent for the same reason an ambiguous reference
 /// resolves to nothing -- choosing one would be a guess.
-fn find_anchor(storage: &SemanticModelStorage, path: &[&str]) -> Anchor {
+pub(crate) fn find_anchor(storage: &SemanticModelStorage, path: &[&str]) -> Anchor {
     let (last, owners) = path.split_last()?;
     let mut found = None;
     for index in 0..storage.declarations.len() {
@@ -144,7 +145,7 @@ fn find_anchor(storage: &SemanticModelStorage, path: &[&str]) -> Anchor {
 }
 
 /// Whether `owner`'s chain of named ancestors spells `expected`, outermost first, and stops there.
-fn owner_path_matches(
+pub(crate) fn owner_path_matches(
     storage: &SemanticModelStorage,
     owner: Option<DeclarationId>,
     expected: &[&str],
@@ -173,7 +174,7 @@ fn owner_path_matches(
 /// The internal mirror of [`crate::UnitResolution`], carrying declarations where the published
 /// contract carries identities.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) enum UnitOutcome {
+pub(crate) enum UnitOutcome {
     Resolved {
         unit: DeclarationId,
         /// The measurement-reference types the unit is an instance of, in canonical order.
@@ -187,18 +188,18 @@ pub(super) enum UnitOutcome {
 
 /// One authored unit token with the outcome the barrier settled for it.
 #[derive(Debug, Clone)]
-pub(super) struct SettledUnit {
-    pub(super) declaration: DeclarationId,
-    pub(super) document: DocumentId,
-    pub(super) ordinal: u32,
-    pub(super) text: SymbolId,
-    pub(super) span: Span,
-    pub(super) outcome: UnitOutcome,
+pub(crate) struct SettledUnit {
+    pub(crate) declaration: DeclarationId,
+    pub(crate) document: DocumentId,
+    pub(crate) ordinal: u32,
+    pub(crate) text: SymbolId,
+    pub(crate) span: Span,
+    pub(crate) outcome: UnitOutcome,
 }
 
 /// The measurement reference a declaration's type requires of its values.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(super) enum RequiredMeasurement {
+pub(crate) enum RequiredMeasurement {
     /// The declaration is not typed by a quantity value.
     NotApplicable,
     /// It is typed by a quantity value whose measurement-reference feature has no settled type.
@@ -209,42 +210,42 @@ pub(super) enum RequiredMeasurement {
 
 /// One authored `filter` condition and what its expression settled to.
 #[derive(Debug, Clone)]
-pub(super) struct SettledFilter {
-    pub(super) owner: DeclarationId,
-    pub(super) document: DocumentId,
-    pub(super) form: FilterForm,
-    pub(super) span: Span,
-    pub(super) state: EvaluationState,
-    pub(super) predicate: super::super::FilterPredicate,
+pub(crate) struct SettledFilter {
+    pub(crate) owner: DeclarationId,
+    pub(crate) document: DocumentId,
+    pub(crate) form: FilterForm,
+    pub(crate) span: Span,
+    pub(crate) state: EvaluationState,
+    pub(crate) predicate: super::super::FilterPredicate,
 }
 
 /// One authored invocation whose callee settled, with both argument counts.
 #[derive(Debug, Clone)]
-pub(super) struct SettledInvocation {
-    pub(super) declaration: DeclarationId,
-    pub(super) document: DocumentId,
-    pub(super) span: Span,
-    pub(super) callee: DeclarationId,
+pub(crate) struct SettledInvocation {
+    pub(crate) declaration: DeclarationId,
+    pub(crate) document: DocumentId,
+    pub(crate) span: Span,
+    pub(crate) callee: DeclarationId,
     /// How many arguments the author wrote at the call site.
-    pub(super) supplied: u32,
+    pub(crate) supplied: u32,
     /// How many bindable parameters the callee declares: `in`/`inout` parameters with no default
     /// value of their own.
-    pub(super) required: u32,
+    pub(crate) required: u32,
 }
 
 /// Every settled expression fact of one publication.
 #[derive(Debug, Default)]
 pub(crate) struct ExpressionIndex {
-    anchors: LibraryAnchors,
+    pub(crate) anchors: LibraryAnchors,
     /// Settled unit tokens, sorted by `(declaration, ordinal)`.
-    units: Box<[SettledUnit]>,
+    pub(crate) units: Box<[SettledUnit]>,
     /// Contiguous range into `units` per declaration, indexed by declaration ordinal.
-    unit_ranges: Box<[(u32, u32)]>,
+    pub(crate) unit_ranges: Box<[(u32, u32)]>,
     /// Each declaration's required measurement reference, indexed by declaration ordinal.
-    required: Box<[RequiredMeasurement]>,
-    filters: Box<[SettledFilter]>,
-    filter_ranges: Box<[(u32, u32)]>,
-    invocations: Box<[SettledInvocation]>,
+    pub(crate) required: Box<[RequiredMeasurement]>,
+    pub(crate) filters: Box<[SettledFilter]>,
+    pub(crate) filter_ranges: Box<[(u32, u32)]>,
+    pub(crate) invocations: Box<[SettledInvocation]>,
 }
 
 impl ExpressionIndex {
@@ -253,7 +254,7 @@ impl ExpressionIndex {
     /// `filters` is `None` when resolution did not converge: nothing was evaluated, so no filter
     /// condition has an outcome to publish. The authored conditions are still in storage; what is
     /// absent is any claim about what they evaluate to.
-    pub(super) fn build(
+    pub(crate) fn build(
         model: &ResolvedSemanticModel,
         filters: Option<Box<[SettledFilter]>>,
     ) -> Result<Self, ResolutionError> {
@@ -338,7 +339,7 @@ impl ExpressionIndex {
     ///
     /// One range lookup and the row it names: the cost is the tokens returned, not the number of
     /// unit tokens the publication holds.
-    pub(super) fn units(&self, declaration: DeclarationId) -> &[SettledUnit] {
+    pub(crate) fn units(&self, declaration: DeclarationId) -> &[SettledUnit] {
         let Some(&(start, end)) = self.unit_ranges.get(declaration.index()) else {
             return &[];
         };
@@ -355,11 +356,11 @@ impl ExpressionIndex {
     /// Without it, [`ExpressionIndex::required_measurement`] answers `NotApplicable` for every
     /// declaration because it has nothing to compare a type against -- which is the absence of an
     /// input, not a decision about the model, and the published contract says so separately.
-    pub(super) fn admits_quantity_values(&self) -> bool {
+    pub(crate) fn admits_quantity_values(&self) -> bool {
         self.anchors.quantity_value.is_some()
     }
 
-    pub(super) fn required_measurement(&self, declaration: DeclarationId) -> &RequiredMeasurement {
+    pub(crate) fn required_measurement(&self, declaration: DeclarationId) -> &RequiredMeasurement {
         record_visited_index_entries(1);
         self.required
             .get(declaration.index())
@@ -367,20 +368,20 @@ impl ExpressionIndex {
     }
 
     /// Every settled unit token in the publication, sorted by `(declaration, ordinal)`.
-    pub(super) fn all_units(&self) -> &[SettledUnit] {
+    pub(crate) fn all_units(&self) -> &[SettledUnit] {
         &self.units
     }
 
     /// The scalar datatype a settled literal value has, when the library declaring it is admitted.
-    pub(super) fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
+    pub(crate) fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
         self.anchors.scalar_type(value)
     }
 
-    pub(super) fn filters(&self) -> &[SettledFilter] {
+    pub(crate) fn filters(&self) -> &[SettledFilter] {
         &self.filters
     }
 
-    pub(super) fn filters_for(&self, owner: DeclarationId) -> &[SettledFilter] {
+    pub(crate) fn filters_for(&self, owner: DeclarationId) -> &[SettledFilter] {
         let Some(&(start, end)) = self.filter_ranges.get(owner.index()) else {
             return &[];
         };
@@ -389,12 +390,12 @@ impl ExpressionIndex {
             .unwrap_or_default()
     }
 
-    pub(super) fn invocations(&self) -> &[SettledInvocation] {
+    pub(crate) fn invocations(&self) -> &[SettledInvocation] {
         &self.invocations
     }
 }
 
-fn ranges_for_sorted_owners(
+pub(crate) fn ranges_for_sorted_owners(
     count: usize,
     owners: impl Iterator<Item = DeclarationId>,
 ) -> Result<Box<[(u32, u32)]>, ResolutionError> {
@@ -423,7 +424,7 @@ fn ranges_for_sorted_owners(
 ///
 /// Counted once for every declaration rather than per invocation: a model with many call sites
 /// would otherwise pay a scan of the whole declaration table for each one.
-fn bindable_parameter_counts(
+pub(crate) fn bindable_parameter_counts(
     storage: &SemanticModelStorage,
 ) -> Result<Box<[u32]>, ResolutionError> {
     let mut counts = vec![0u32; storage.declarations.len()];
@@ -463,18 +464,18 @@ fn bindable_parameter_counts(
 
 /// Every unit declaration this publication admits, keyed by the symbols it was declared with.
 #[derive(Debug, Default)]
-struct UnitCatalog {
+pub(crate) struct UnitCatalog {
     /// `(symbol, unit)` sorted by symbol, so a token is a binary search rather than a scan.
-    by_symbol: Box<[(SymbolId, DeclarationId)]>,
+    pub(crate) by_symbol: Box<[(SymbolId, DeclarationId)]>,
     /// The measurement-reference types of each admitted unit.
-    dimensions: std::collections::BTreeMap<DeclarationId, Box<[DeclarationId]>>,
+    pub(crate) dimensions: std::collections::BTreeMap<DeclarationId, Box<[DeclarationId]>>,
     /// Whether a catalog exists at all: false when the library declaring `MeasurementUnit` is not
     /// admitted, which is a different answer from "the catalog is empty".
-    admitted: bool,
+    pub(crate) admitted: bool,
 }
 
 impl UnitCatalog {
-    fn build(
+    pub(crate) fn build(
         model: &ResolvedSemanticModel,
         anchors: &LibraryAnchors,
     ) -> Result<Self, ResolutionError> {
@@ -527,7 +528,7 @@ impl UnitCatalog {
     }
 
     /// What one authored token names.
-    fn resolve(&self, storage: &SemanticModelStorage, text: SymbolId) -> UnitOutcome {
+    pub(crate) fn resolve(&self, storage: &SemanticModelStorage, text: SymbolId) -> UnitOutcome {
         if !self.admitted {
             return UnitOutcome::CatalogUnavailable;
         }
@@ -563,7 +564,7 @@ impl UnitCatalog {
         }
     }
 
-    fn lookup<'a>(
+    pub(crate) fn lookup<'a>(
         &'a self,
         storage: &'a SemanticModelStorage,
         symbol: &'a str,
@@ -579,7 +580,7 @@ impl UnitCatalog {
 ///
 /// A qualified unit token names a path, not necessarily a rooted one: `SI::s` is written from
 /// wherever the author is, so its segments qualify the unit rather than address it absolutely.
-fn owner_path_matches_suffix(
+pub(crate) fn owner_path_matches_suffix(
     storage: &SemanticModelStorage,
     owner: Option<DeclarationId>,
     expected: &[&str],
@@ -615,7 +616,7 @@ fn owner_path_matches_suffix(
 /// and treating the whole token as quoted would accept `m/s` as an ordinary name and then report
 /// it as an unknown *symbol* -- a claim about the catalog, when the truth is that this layer
 /// cannot decode the token.
-fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
+pub(crate) fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
     let text = text.trim();
     if text.is_empty() {
         return None;
@@ -648,7 +649,7 @@ fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
 }
 
 /// Whether `specific` is `general` or specializes it, in any specialization scope.
-pub(super) fn conforms(
+pub(crate) fn conforms(
     model: &ResolvedSemanticModel,
     specific: DeclarationId,
     general: DeclarationId,
@@ -669,15 +670,15 @@ pub(super) fn conforms(
 /// -- so the requirement of a type is the type of the most specific such redefinition it or its
 /// supertypes declare.
 #[derive(Debug, Default)]
-struct MeasurementReferences {
+pub(crate) struct MeasurementReferences {
     /// The root every quantity value's type conforms to, absent when its library is not admitted.
-    quantity_value: Anchor,
+    pub(crate) quantity_value: Anchor,
     /// The measurement-reference feature each type declares, if it declares one.
-    declared: std::collections::BTreeMap<DeclarationId, DeclarationId>,
+    pub(crate) declared: std::collections::BTreeMap<DeclarationId, DeclarationId>,
 }
 
 impl MeasurementReferences {
-    fn build(
+    pub(crate) fn build(
         model: &ResolvedSemanticModel,
         anchors: &LibraryAnchors,
     ) -> Result<Self, ResolutionError> {
@@ -712,7 +713,7 @@ impl MeasurementReferences {
     }
 
     /// What one declaration's own type requires of its values.
-    fn required_for(
+    pub(crate) fn required_for(
         &self,
         model: &ResolvedSemanticModel,
         declaration: DeclarationId,
@@ -772,7 +773,7 @@ impl MeasurementReferences {
     }
 
     /// The `(type, measurement-reference feature)` statements `type_id` and its supertypes make.
-    fn statements_for(
+    pub(crate) fn statements_for(
         &self,
         model: &ResolvedSemanticModel,
         type_id: DeclarationId,
@@ -813,7 +814,7 @@ impl ResolvedSemanticModel {
     /// The cohesive element-details answer already holds the declaration, and routing back through
     /// the identity would make it unanswerable for the one case where two declarations share
     /// one -- which is exactly the case details reports as ambiguous rather than as absent.
-    pub(super) fn element_evaluation(
+    pub(crate) fn element_evaluation(
         &self,
         declaration: DeclarationId,
     ) -> Option<ElementEvaluation> {
@@ -831,7 +832,7 @@ impl ResolvedSemanticModel {
         })
     }
 
-    fn published_unit(&self, unit: &SettledUnit) -> AuthoredUnit {
+    pub(crate) fn published_unit(&self, unit: &SettledUnit) -> AuthoredUnit {
         AuthoredUnit {
             authored: self.storage.symbol(unit.text).unwrap_or_default().into(),
             location: SourceLocation {
@@ -876,7 +877,7 @@ impl ResolvedSemanticModel {
     /// what a quantity value is. That is a property of the publication, not of the element, so it
     /// is applied here rather than stored once per declaration: with the anchor missing every
     /// element's answer is the same, and it is "unknown", not "no".
-    fn published_measurement(&self, declaration: DeclarationId) -> ExpectedMeasurement {
+    pub(crate) fn published_measurement(&self, declaration: DeclarationId) -> ExpectedMeasurement {
         if !self.expressions.admits_quantity_values() {
             return ExpectedMeasurement::Unavailable;
         }

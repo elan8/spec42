@@ -39,7 +39,7 @@ impl SpecializationScope {
         Self::FeatureSpecialization,
     ];
 
-    fn bit(self) -> u8 {
+    pub(crate) fn bit(self) -> u8 {
         match self {
             Self::AnySpecialization => 1 << 0,
             Self::Subclassification => 1 << 1,
@@ -54,7 +54,7 @@ impl SpecializationScope {
 /// the narrower scope. A path's scopes are the intersection of its edges' scopes, which is what
 /// makes one tagged closure answer both readings: a path through a `Subsetting` edge stops being
 /// a subclassification path at that edge and never regains it.
-fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
+pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
     match kind {
         ReferenceKind::Subclassification => Some(
             SpecializationScope::AnySpecialization.bit()
@@ -90,9 +90,9 @@ pub(crate) enum EffectiveTypeSource {
 /// The same shape the element-fact index uses: a per-declaration question reads one slice instead
 /// of scanning a whole table.
 #[derive(Debug)]
-struct Rows<T> {
-    ranges: Box<[(u32, u32)]>,
-    entries: Box<[T]>,
+pub(crate) struct Rows<T> {
+    pub(crate) ranges: Box<[(u32, u32)]>,
+    pub(crate) entries: Box<[T]>,
 }
 
 impl<T> Default for Rows<T> {
@@ -155,13 +155,13 @@ impl<T: Ord> Rows<T> {
 #[derive(Debug, Default)]
 pub(crate) struct SpecializationClosure {
     /// Contiguous range into `ancestors` per declaration, indexed by declaration ordinal.
-    ranges: Box<[(u32, u32)]>,
+    pub(crate) ranges: Box<[(u32, u32)]>,
     /// `(ancestor, scopes)` sorted by ancestor within each declaration's range, so a conformance
     /// question is a binary search rather than a scan.
-    ancestors: Box<[(DeclarationId, u8)]>,
+    pub(crate) ancestors: Box<[(DeclarationId, u8)]>,
     /// Declarations that reach themselves through specialization. Their ancestor sets are still
     /// published; the flag is what lets a query report the cycle rather than answer from it.
-    cyclic: Box<[bool]>,
+    pub(crate) cyclic: Box<[bool]>,
 }
 
 impl SpecializationClosure {
@@ -267,7 +267,7 @@ impl SpecializationClosure {
             .unwrap_or(false)
     }
 
-    fn entries(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
+    pub(crate) fn entries(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
         let Some(&(start, end)) = self.ranges.get(declaration.index()) else {
             return &[];
         };
@@ -280,30 +280,30 @@ impl SpecializationClosure {
 /// Every published type fact of one publication.
 #[derive(Debug, Default)]
 pub(crate) struct TypeIndex {
-    specialization: SpecializationClosure,
+    pub(crate) specialization: SpecializationClosure,
     /// Resolved `FeatureTyping` targets per feature, with provenance.
-    direct_types: Rows<(DeclarationId, FactProvenance)>,
+    pub(crate) direct_types: Rows<(DeclarationId, FactProvenance)>,
     /// Direct supertypes per declaration: the specialization edges it declares, tagged with the
     /// scopes each edge belongs to. The transitive answer lives in the closure; this is the one
     /// hop a type hierarchy view expands at a time.
-    supertypes: Rows<(DeclarationId, u8)>,
+    pub(crate) supertypes: Rows<(DeclarationId, u8)>,
     /// Direct specializers per declaration: the reverse of the direct specialization edges, tagged
     /// with the scopes each edge belongs to.
     ///
     /// Reverse rather than derived on demand: without it, "what specializes this?" is a scan of
     /// every reference in the model, which is the shape of query a publication is supposed to
     /// index away.
-    subtypes: Rows<(DeclarationId, u8)>,
+    pub(crate) subtypes: Rows<(DeclarationId, u8)>,
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
-    effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
+    pub(crate) effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
     /// Effective featuring types, derived solely from settled TypeFeaturing and FeatureChaining
     /// relationships. This replaces the former ownership-only shortcut so authored and implied
     /// facts have one canonical representation.
-    featuring: Rows<(DeclarationId, FactProvenance)>,
+    pub(crate) featuring: Rows<(DeclarationId, FactProvenance)>,
     /// A `var` FeatureMembership requires the owner's canonical `snapshots` feature. Lowering
     /// does not publish that prerequisite yet, so callers receive an explicit incomplete outcome
     /// instead of the ordinary non-variable owning-type implication.
-    variable_featuring_requires_snapshots: Box<[bool]>,
+    pub(crate) variable_featuring_requires_snapshots: Box<[bool]>,
     /// The KerML type-relationship operands each type owns, in authored order.
     ///
     /// Deliberately outside [`SpecializationClosure`]. `Unioning`, `Intersecting`, `Differencing`
@@ -311,9 +311,9 @@ pub(crate) struct TypeIndex {
     /// their targets into the closure would put a union's operands into its `supertypes` and make
     /// a set-membership statement answer a generalization question. The set semantics they do
     /// entail are derived by the conformance query from this table, with their own provenance.
-    set_operands: Rows<(u32, SetOperator, DeclarationId)>,
+    pub(crate) set_operands: Rows<(u32, SetOperator, DeclarationId)>,
     /// How many positional connector ends each declaration authors, indexed by ordinal.
-    authored_ends: Box<[u32]>,
+    pub(crate) authored_ends: Box<[u32]>,
     /// How many positional ends each declaration effectively has.
     ///
     /// A connection-like declaration that specializes another inherits its ends, and ends it
@@ -326,7 +326,7 @@ pub(crate) struct TypeIndex {
     /// one end" and a rule that asks "does this declaration have two ends" are different questions,
     /// and the legacy check could only answer the first, which is why it fell silent whenever an
     /// ancestor declared any end at all.
-    effective_ends: Box<[u32]>,
+    pub(crate) effective_ends: Box<[u32]>,
 }
 
 /// A KerML type-relationship operator, as a set operation over what its operands classify.
@@ -683,7 +683,7 @@ pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = SpecializationScope> {
 /// rather than copying the previous one forward. Carrying a per-declaration map across passes cost
 /// a deep clone of every ancestor set on every pass -- for the standard library that was the
 /// single most expensive step of the whole publication barrier.
-fn saturate(
+pub(crate) fn saturate(
     direct: &[Vec<(DeclarationId, u8)>],
     count: usize,
 ) -> Result<Vec<Vec<(DeclarationId, u8)>>, ResolutionError> {
@@ -719,7 +719,7 @@ fn saturate(
 
 /// Sorts one row and folds repeated ancestors into a single entry carrying every scope that
 /// reaches it.
-fn merge_scopes(row: &mut Vec<(DeclarationId, u8)>) {
+pub(crate) fn merge_scopes(row: &mut Vec<(DeclarationId, u8)>) {
     row.sort_unstable();
     let mut written = 0usize;
     for read in 0..row.len() {

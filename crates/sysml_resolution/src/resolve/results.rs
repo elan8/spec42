@@ -1,0 +1,81 @@
+//! Phase 3: the settled outcome of name resolution.
+
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::ReferenceKind;
+use crate::resolve::implied::LibrarySpecializationAnchor;
+use crate::resolve::implied::LibrarySpecializationAnchorFacts;
+use crate::resolve::names::CandidateRange;
+use crate::resolve::names::NameIndex;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ResolutionError {
+    Capacity,
+    InvalidStorage,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ResolutionStatus {
+    Resolved(DeclarationId),
+    Unresolved,
+    Ambiguous(CandidateRange),
+    Unsupported,
+    NonConverged,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum SolverStatus {
+    Converged,
+    NonConverged,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) struct ResolutionWork {
+    pub(crate) passes: u32,
+    pub(crate) import_evaluations: u64,
+    pub(crate) downstream_evaluations: u64,
+    pub(crate) indexed_name_lookups: u64,
+    pub(crate) direct_index_entries: u64,
+    pub(crate) effective_index_entries: u64,
+}
+
+/// A resolver-synthesized relationship fact that has no authored reference site. The narrow slice
+/// currently covered here is same-name inherited-member redefinition against an immediate
+/// (directly specialized) parent's own directly owned feature. Multi-level/diamond inherited
+/// redefinition is intentionally out of scope: an ambiguous or absent immediate-parent match is
+/// left unresolved rather than guessed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ImpliedRelationship {
+    pub(crate) kind: ReferenceKind,
+    pub(crate) source: DeclarationId,
+    pub(crate) target: DeclarationId,
+}
+
+#[derive(Debug)]
+pub(crate) struct ResolutionResults {
+    pub(crate) outcomes: Box<[ResolutionStatus]>,
+    pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
+    pub(crate) inherited_names: NameIndex,
+    pub(crate) solver_status: SolverStatus,
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) library_specialization_anchors: LibrarySpecializationAnchorFacts,
+    #[cfg(test)]
+    pub(crate) work: ResolutionWork,
+}
+
+impl ResolutionResults {
+    pub(crate) fn outcome(&self, id: AuthoredReferenceId) -> Option<ResolutionStatus> {
+        self.outcomes.get(id.index()).copied()
+    }
+
+    pub(crate) fn ambiguous_candidates(&self, range: CandidateRange) -> &[DeclarationId] {
+        range.slice(&self.ambiguous_candidates).unwrap_or_default()
+    }
+
+    pub(crate) fn library_specialization_anchor(
+        &self,
+        rule_id: &str,
+    ) -> Option<&LibrarySpecializationAnchor> {
+        self.library_specialization_anchors.outcome(rule_id)
+    }
+}

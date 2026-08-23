@@ -29,23 +29,23 @@ pub(crate) struct BindingConnectorFact {
 
 #[derive(Debug, Default)]
 pub(crate) struct BindingConnectorIndex {
-    facts: Box<[BindingConnectorFact]>,
+    pub(crate) facts: Box<[BindingConnectorFact]>,
 }
 
 #[derive(Debug, Default)]
-struct EndpointReferences {
-    reference: Option<AuthoredReferenceId>,
-    duplicate: bool,
+pub(crate) struct EndpointReferences {
+    pub(crate) reference: Option<AuthoredReferenceId>,
+    pub(crate) duplicate: bool,
 }
 
 impl EndpointReferences {
-    fn record(&mut self, reference: AuthoredReferenceId) {
+    pub(crate) fn record(&mut self, reference: AuthoredReferenceId) {
         if self.reference.replace(reference).is_some() {
             self.duplicate = true;
         }
     }
 
-    fn settled(&self, resolution: &ResolutionResults) -> BindingEndpointFact {
+    pub(crate) fn settled(&self, resolution: &ResolutionResults) -> BindingEndpointFact {
         if self.duplicate {
             return BindingEndpointFact::Unsupported;
         }

@@ -10,6 +10,7 @@ use crate::evaluation::EvaluationPolicy;
 use crate::lower::SemanticModelBuilder;
 use crate::model::resolver;
 use crate::pipeline::schedule::{source_admission_rank, BuildPhaseDurations, BuildSchedule};
+use crate::resolve::library_seed::SettledLibrary;
 
 pub(crate) mod schedule;
 
@@ -35,7 +36,7 @@ pub(crate) enum CoordinatorError {
 #[derive(Debug)]
 pub(crate) struct PreparedLibrary {
     pub(crate) documents: Vec<PreparedDocument>,
-    pub(crate) settled: resolver::SettledLibrary,
+    pub(crate) settled: SettledLibrary,
 }
 
 #[derive(Debug)]

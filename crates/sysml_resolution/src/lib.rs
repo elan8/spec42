@@ -31,6 +31,7 @@ pub mod publication;
 mod qualified_reference;
 mod redefinition_query;
 mod requirement_query;
+mod resolve;
 mod specialization_query;
 pub mod syntax;
 

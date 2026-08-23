@@ -18,6 +18,7 @@ use crate::evaluate::fold::*;
 use crate::lower::facts::*;
 use crate::lower::storage::SemanticModelStorage;
 
+#[cfg(test)]
 use crate::lower::intern::SymbolPathArena;
 #[cfg(test)]
 use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
@@ -1396,7 +1397,7 @@ pub(crate) enum EvaluatedValue {
     TypeMismatch,
 }
 
-mod element_kind;
+pub(crate) mod element_kind;
 mod evaluation;
 pub(crate) mod resolver;
 

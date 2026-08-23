@@ -32,13 +32,13 @@ use super::*;
 use crate::evaluation::{EvaluatedScalar, EvaluationState};
 
 /// The note attached to the earlier member a duplicate name collides with.
-const RELATED_FIRST_DECLARATION: &str = "First declared here.";
+pub(crate) const RELATED_FIRST_DECLARATION: &str = "First declared here.";
 /// The note attached to the element a relationship names.
-const RELATED_TARGET: &str = "Target resolved here.";
+pub(crate) const RELATED_TARGET: &str = "Target resolved here.";
 /// The note attached to the member a feature implicitly redefines.
-const RELATED_INHERITED: &str = "Inherited member this feature overrides.";
+pub(crate) const RELATED_INHERITED: &str = "Inherited member this feature overrides.";
 /// The note attached to the other end of a connection-like relationship.
-const RELATED_OTHER_END: &str = "Other end declared here.";
+pub(crate) const RELATED_OTHER_END: &str = "Other end declared here.";
 
 /// The SysML v2 standard view definitions (§9.2.20 Table 34).
 ///
@@ -46,7 +46,7 @@ const RELATED_OTHER_END: &str = "Other end declared here.";
 /// a view usage's typing settled to -- not against the text the author wrote. A workspace's own
 /// `view def` is never in this list and is never reported: the rule is about reaching for a library
 /// view definition the specification does not define.
-const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
+pub(crate) const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
     "ActionFlowView",
     "BrowserView",
     "GeneralView",
@@ -61,7 +61,7 @@ const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
 ///
 /// The narrow sense: what a qualified name addresses as a scope of its own. Used by the
 /// name-collision rule, where a package's definitions share one identity domain.
-fn is_namespace_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_namespace_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::Namespace | DeclarationKind::Package | DeclarationKind::LibraryPackage
@@ -72,7 +72,7 @@ fn is_namespace_kind(kind: DeclarationKind) -> bool {
 ///
 /// The two authored halves only. A final pseudo-state is a state a transition may name but not a
 /// context that owns one, which is why the endpoint rules use [`is_state_endpoint_kind`] instead.
-fn is_state_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_state_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::StateDefinition | DeclarationKind::StateUsage
@@ -83,7 +83,7 @@ fn is_state_kind(kind: DeclarationKind) -> bool {
 ///
 /// A `final <name>;` declares a final pseudo-state, so a transition into it is the authored way to
 /// terminate a machine.
-fn is_state_endpoint_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_state_endpoint_kind(kind: DeclarationKind) -> bool {
     is_state_kind(kind) || kind == DeclarationKind::FinalState
 }
 
@@ -91,7 +91,7 @@ fn is_state_endpoint_kind(kind: DeclarationKind) -> bool {
 ///
 /// The control nodes are included because a succession legitimately sequences them: `first decide
 /// d then merge m;` relates two nodes that are steps, not action usages.
-fn is_action_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_action_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ActionDefinition
@@ -112,7 +112,7 @@ fn is_action_kind(kind: DeclarationKind) -> bool {
 }
 
 /// Whether a declaration kind states a requirement a `satisfy` or a `verify` can name.
-fn is_requirement_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_requirement_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::RequirementDefinition
@@ -121,21 +121,21 @@ fn is_requirement_kind(kind: DeclarationKind) -> bool {
     )
 }
 
-fn is_viewpoint_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_viewpoint_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ViewpointDefinition | DeclarationKind::ViewpointUsage
     )
 }
 
-fn is_view_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_view_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ViewDefinition | DeclarationKind::ViewUsage
     )
 }
 
-fn is_use_case_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_use_case_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::UseCaseDefinition | DeclarationKind::UseCaseUsage
@@ -143,7 +143,7 @@ fn is_use_case_kind(kind: DeclarationKind) -> bool {
 }
 
 /// Whether a declaration kind carries a subject and other input role members.
-fn supports_subject_role(kind: DeclarationKind) -> bool {
+pub(crate) fn supports_subject_role(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::RequirementDefinition
@@ -164,7 +164,7 @@ fn supports_subject_role(kind: DeclarationKind) -> bool {
 }
 
 /// Whether a declaration kind is an input role member of the declaration that owns it.
-fn is_input_role_member(kind: DeclarationKind) -> bool {
+pub(crate) fn is_input_role_member(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::SubjectUsage
@@ -179,7 +179,7 @@ fn is_input_role_member(kind: DeclarationKind) -> bool {
 /// `connect a to b;` names each end directly; `connect a.fill to b.fill;` names it through a
 /// member access, which the resolver settles to the same declaration. Reading only the first would
 /// leave every dotted connection unchecked, which is the form real models are written in.
-const CONNECTOR_END_KINDS: &[ReferenceKind] = &[
+pub(crate) const CONNECTOR_END_KINDS: &[ReferenceKind] = &[
     ReferenceKind::ConnectorEnd,
     ReferenceKind::MemberAccessOperand,
 ];
@@ -189,7 +189,7 @@ const CONNECTOR_END_KINDS: &[ReferenceKind] = &[
 /// `KermlConnector` is deliberately absent. KerML relates any two features -- the Kernel library's
 /// own `connector c1 from a to b;` relates two plain features -- so the SysML rule that a
 /// connection joins ports or structural parts states nothing about it.
-fn is_connector_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_connector_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ConnectionUsage
@@ -203,7 +203,7 @@ fn is_connector_kind(kind: DeclarationKind) -> bool {
 /// A succession written anywhere else -- a KerML `behavior`, whose `succession [1] ifTest then
 /// [0..1] thenClause;` sequences occurrences -- states a different relationship, and the SysML
 /// action rule says nothing about it.
-fn is_action_body_kind(kind: DeclarationKind) -> bool {
+pub(crate) fn is_action_body_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ActionDefinition
@@ -221,7 +221,7 @@ fn is_action_body_kind(kind: DeclarationKind) -> bool {
 /// the parser keeps apart -- a `doc`, an anonymous transition, a synthesized binding -- that never
 /// competed for a name. Two members of the same kind always collide; two definitions collide inside
 /// a package, where a definition is the thing a qualified name addresses.
-fn names_must_be_distinguishable(
+pub(crate) fn names_must_be_distinguishable(
     owner: DeclarationKind,
     left: (Family, Role),
     right: (Family, Role),
@@ -232,7 +232,7 @@ fn names_must_be_distinguishable(
 
 impl ResolvedSemanticModel {
     /// Appends every host-reported conformance diagnostic authored in `document`.
-    pub(super) fn collect_host_conformance(
+    pub(crate) fn collect_host_conformance(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -250,14 +250,14 @@ impl ResolvedSemanticModel {
     }
 
     /// The declaration kind of one declaration, or `None` when storage does not hold it.
-    fn kind_of(&self, id: DeclarationId) -> Option<DeclarationKind> {
+    pub(crate) fn kind_of(&self, id: DeclarationId) -> Option<DeclarationKind> {
         self.storage.declaration(id).map(|value| value.kind)
     }
 
     /// The authored name of one declaration, or `<anonymous>` when it has none.
     ///
     /// Only for message text. No rule branches on it.
-    fn display_name(&self, id: DeclarationId) -> &str {
+    pub(crate) fn display_name(&self, id: DeclarationId) -> &str {
         self.storage
             .declaration(id)
             .and_then(|declaration| declaration.name)
@@ -269,13 +269,13 @@ impl ResolvedSemanticModel {
     ///
     /// `None` sorts first and means the range could not be mapped, which is a storage fault the
     /// caller's own range mapping reports; it is never a claim about authored order.
-    fn declaration_range(&self, id: DeclarationId) -> Option<TextRange> {
+    pub(crate) fn declaration_range(&self, id: DeclarationId) -> Option<TextRange> {
         let declaration = self.storage.declaration(id)?;
         document_range(&self.storage, declaration.document, &declaration.span).ok()
     }
 
     /// The single settled target of one authored reference, if it settled to one.
-    fn settled_target(&self, reference: AuthoredReferenceId) -> Option<DeclarationId> {
+    pub(crate) fn settled_target(&self, reference: AuthoredReferenceId) -> Option<DeclarationId> {
         match self.resolution.outcome(reference) {
             Some(ResolutionStatus::Resolved(target)) => Some(target),
             _ => None,
@@ -285,7 +285,7 @@ impl ResolvedSemanticModel {
     /// The authored references of one declaration in a given family, with their identities.
     ///
     /// Implied references are excluded: every rule here judges what the author wrote.
-    fn authored_references(
+    pub(crate) fn authored_references(
         &self,
         id: DeclarationId,
         kinds: &[ReferenceKind],
@@ -303,7 +303,11 @@ impl ResolvedSemanticModel {
     }
 
     /// The settled targets of one declaration's authored references in a given family.
-    fn settled_targets(&self, id: DeclarationId, kinds: &[ReferenceKind]) -> Vec<DeclarationId> {
+    pub(crate) fn settled_targets(
+        &self,
+        id: DeclarationId,
+        kinds: &[ReferenceKind],
+    ) -> Vec<DeclarationId> {
         self.authored_references(id, kinds)
             .into_iter()
             .filter_map(|(reference_id, _)| self.settled_target(reference_id))
@@ -311,7 +315,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The nearest enclosing declaration of a given kind, following ownership.
-    fn enclosing(
+    pub(crate) fn enclosing(
         &self,
         id: DeclarationId,
         accepts: impl Fn(DeclarationKind) -> bool,
@@ -328,7 +332,7 @@ impl ResolvedSemanticModel {
     }
 
     /// One diagnostic reported at an authored reference, with the owner's own sentence.
-    fn reference_message_diagnostic(
+    pub(crate) fn reference_message_diagnostic(
         &self,
         reference: &AuthoredReference,
         code: DiagnosticCode,
@@ -366,7 +370,7 @@ impl ResolvedSemanticModel {
     /// Reported at the later member, with the first as related information, so the diagnostic
     /// points at the declaration that introduced the collision. Both the authored name and the
     /// authored short name are identities resolution addresses a member by, so both collide.
-    fn collect_namespace_identity(
+    pub(crate) fn collect_namespace_identity(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -440,7 +444,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The first pair of same-named members whose kinds must be distinguishable.
-    fn first_collision(
+    pub(crate) fn first_collision(
         &self,
         owner: DeclarationKind,
         members: &[DeclarationId],
@@ -464,7 +468,7 @@ impl ResolvedSemanticModel {
     // ------------------------------------------------------------------------------------------
 
     /// Reports connectors whose ends are not connectable, and ports that connect to nothing.
-    fn collect_connection_structure(
+    pub(crate) fn collect_connection_structure(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -619,7 +623,7 @@ impl ResolvedSemanticModel {
     /// A port that redefines or subsets another states a refinement of a connected feature rather
     /// than a new endpoint, so it is not reported: the feature it specializes carries the
     /// connection.
-    fn collect_unconnected_ports(
+    pub(crate) fn collect_unconnected_ports(
         &self,
         declared: &[DeclarationId],
         connected: &BTreeSet<DeclarationId>,
@@ -676,7 +680,7 @@ impl ResolvedSemanticModel {
     ///
     /// An end that references another feature (`end e ::> p;`) inherits its type from what it
     /// references, so it is not required to declare one.
-    fn collect_interface_ends(
+    pub(crate) fn collect_interface_ends(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -718,7 +722,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Reports a binding connector whose two ends have unrelated effective types.
-    fn collect_binding_connectors(
+    pub(crate) fn collect_binding_connectors(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -765,7 +769,11 @@ impl ResolvedSemanticModel {
     /// compares the feature sets rather than the definitions.
     ///
     /// A port with no features has nothing to match, so the question falls back to the definitions.
-    fn ports_are_feature_compatible(&self, left: DeclarationId, right: DeclarationId) -> bool {
+    pub(crate) fn ports_are_feature_compatible(
+        &self,
+        left: DeclarationId,
+        right: DeclarationId,
+    ) -> bool {
         let left_features = self.port_features(left);
         let right_features = self.port_features(right);
         if left_features.is_empty() || right_features.is_empty() {
@@ -797,7 +805,10 @@ impl ResolvedSemanticModel {
     ///
     /// Read through the port's effective types and their specializations, so a port typed by a
     /// definition that inherits its features offers them too.
-    fn port_features(&self, port: DeclarationId) -> BTreeMap<Box<str>, Vec<DeclarationId>> {
+    pub(crate) fn port_features(
+        &self,
+        port: DeclarationId,
+    ) -> BTreeMap<Box<str>, Vec<DeclarationId>> {
         let mut features: BTreeMap<Box<str>, Vec<DeclarationId>> = BTreeMap::new();
         let mut owners = self
             .types
@@ -846,7 +857,7 @@ impl ResolvedSemanticModel {
     /// declares, both settled facts. A type that declares no directed feature carries no direction
     /// to mirror, so the question does not arise; the legacy check answered it from the spelling of
     /// the authored type reference instead.
-    fn ports_mirror_direction(&self, left: DeclarationId, right: DeclarationId) -> bool {
+    pub(crate) fn ports_mirror_direction(&self, left: DeclarationId, right: DeclarationId) -> bool {
         if self.types_are_unrelated(left, right) {
             return false;
         }
@@ -860,14 +871,14 @@ impl ResolvedSemanticModel {
     }
 
     /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
-    fn port_is_conjugated(&self, port: DeclarationId) -> bool {
+    pub(crate) fn port_is_conjugated(&self, port: DeclarationId) -> bool {
         self.authored_references(port, &[ReferenceKind::FeatureTyping])
             .iter()
             .any(|(_, reference)| reference.flags.conjugated)
     }
 
     /// Whether a type declares at least one member with an authored direction.
-    fn declares_a_directed_feature(&self, type_id: DeclarationId) -> bool {
+    pub(crate) fn declares_a_directed_feature(&self, type_id: DeclarationId) -> bool {
         self.child_declarations(type_id).iter().any(|child| {
             self.storage
                 .declaration_facts(*child)
@@ -881,7 +892,7 @@ impl ResolvedSemanticModel {
     /// cannot answer, and answering it as "unrelated" would report the absence of a type as a
     /// mismatch. Comparability rather than conformance in one direction, for the same reason the
     /// value rules use it: either side may legitimately be the narrower one.
-    fn types_are_unrelated(&self, left: DeclarationId, right: DeclarationId) -> bool {
+    pub(crate) fn types_are_unrelated(&self, left: DeclarationId, right: DeclarationId) -> bool {
         let left_types = self.types.effective_types(left);
         let right_types = self.types.effective_types(right);
         if left_types.is_empty() || right_types.is_empty() {
@@ -901,7 +912,7 @@ impl ResolvedSemanticModel {
     // Behavior conformance
     // ------------------------------------------------------------------------------------------
 
-    fn collect_behavior_structure(
+    pub(crate) fn collect_behavior_structure(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -1055,7 +1066,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The two endpoint rules and the guard rule of one transition.
-    fn collect_transition(
+    pub(crate) fn collect_transition(
         &self,
         id: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -1122,7 +1133,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The cardinality and completeness rules of each state definition in `document`.
-    fn collect_state_machine_shape(
+    pub(crate) fn collect_state_machine_shape(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -1202,7 +1213,7 @@ impl ResolvedSemanticModel {
     ///
     /// Over settled endpoints, not authored expressions: a transition whose ends did not resolve
     /// contributes no edge, which is the same answer as having no transition at all.
-    fn state_transitions_are_cyclic(&self, state_definition: DeclarationId) -> bool {
+    pub(crate) fn state_transitions_are_cyclic(&self, state_definition: DeclarationId) -> bool {
         let mut edges: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
         for child in self.child_declarations(state_definition) {
             if self.kind_of(*child) != Some(DeclarationKind::Transition) {
@@ -1225,7 +1236,7 @@ impl ResolvedSemanticModel {
     // Requirement and case conformance
     // ------------------------------------------------------------------------------------------
 
-    fn collect_requirement_case_structure(
+    pub(crate) fn collect_requirement_case_structure(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -1264,7 +1275,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Reports a reference family whose settled target is of the wrong kind.
-    fn collect_target_kind(
+    pub(crate) fn collect_target_kind(
         &self,
         id: DeclarationId,
         kinds: &[ReferenceKind],
@@ -1298,7 +1309,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The subject-cardinality and subject-order rules of one declaration.
-    fn collect_subject_roles(
+    pub(crate) fn collect_subject_roles(
         &self,
         id: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -1355,7 +1366,7 @@ impl ResolvedSemanticModel {
     /// A view satisfies a viewpoint and everything else satisfies a requirement; those are two
     /// different rules with two different codes, decided by what owns the relationship rather than
     /// by what it named.
-    fn collect_satisfy(
+    pub(crate) fn collect_satisfy(
         &self,
         id: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -1404,7 +1415,7 @@ impl ResolvedSemanticModel {
     // View conformance
     // ------------------------------------------------------------------------------------------
 
-    fn collect_view_structure(
+    pub(crate) fn collect_view_structure(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -1502,7 +1513,10 @@ impl ResolvedSemanticModel {
     ///
     /// A workspace's own `view def` is its author's to define, so only a definition admitted from a
     /// library is judged against the specification's table.
-    fn is_non_standard_library_view(&self, target: DeclarationId) -> Result<bool, ResolutionError> {
+    pub(crate) fn is_non_standard_library_view(
+        &self,
+        target: DeclarationId,
+    ) -> Result<bool, ResolutionError> {
         let declaration = self
             .storage
             .declaration(target)
@@ -1526,7 +1540,7 @@ impl ResolvedSemanticModel {
     // Declaration-local rules
     // ------------------------------------------------------------------------------------------
 
-    fn collect_declaration_rules(
+    pub(crate) fn collect_declaration_rules(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -1621,7 +1635,7 @@ impl ResolvedSemanticModel {
     /// rule reads that relationship rather than re-walking the type hierarchy per diagnostic. Only
     /// a feature that authored a value is reported: redeclaring an inherited name to add structure
     /// is ordinary, while binding a value to it silently overrides the inherited one.
-    fn collect_inherited_value_rules(
+    pub(crate) fn collect_inherited_value_rules(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -1754,7 +1768,7 @@ impl ResolvedSemanticModel {
     /// correctly not constant, one whose shape this evaluator does not fold, one that depends on
     /// itself, and one that was never run are each their own published state and none of them is a
     /// fault in the model.
-    fn collect_analysis_status(
+    pub(crate) fn collect_analysis_status(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -1803,7 +1817,7 @@ impl ResolvedSemanticModel {
     ///
     /// `already` is where this document's diagnostics start, so the rule reads the unresolved
     /// outcomes the earlier producers settled instead of re-deciding them.
-    pub(super) fn collect_library_context(
+    pub(crate) fn collect_library_context(
         &self,
         document: DocumentId,
         already: usize,
@@ -1872,7 +1886,7 @@ impl ResolvedSemanticModel {
     /// and reporting a verdict for one would report the template as passing or failing rather than
     /// its usages. A usage that inherits its expression is excluded too -- it authored no analysis,
     /// and the declaration that did is reported once, where it was written.
-    fn authors_an_analysis(&self, id: DeclarationId) -> bool {
+    pub(crate) fn authors_an_analysis(&self, id: DeclarationId) -> bool {
         self.kind_of(id).is_some_and(|kind| {
             matches!(
                 kind,
@@ -1891,7 +1905,7 @@ impl ResolvedSemanticModel {
 }
 
 /// Whether a directed graph reaches a cycle from `node`.
-fn reaches_cycle(
+pub(crate) fn reaches_cycle(
     node: DeclarationId,
     edges: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
     visited: &mut BTreeSet<DeclarationId>,

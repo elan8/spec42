@@ -10,11 +10,15 @@ use super::element_kind;
 use super::evaluation;
 use super::*;
 use crate::diagnostics::UNCODED_PARSE_ERROR;
-use crate::element_kind::{MembershipRole, RequirementConstraintKind};
 use crate::evaluation::{
     AuthoredUnit, ElementEvaluation, EvaluationPolicy, EvaluationState, ExpectedMeasurement,
     ResolvedUnit, UnitResolution,
 };
+use crate::resolve::implied::*;
+use crate::resolve::library_seed::*;
+use crate::resolve::names::*;
+use crate::resolve::results::*;
+use crate::resolve::*;
 use crate::{
     ActionDerivedFactCollection, ActionDerivedFactOutcome, ActionDerivedFactPrerequisite,
     AnnotationForm as InspectionAnnotationForm, BindingConnector, BindingConnectorCheckKind,
@@ -38,41 +42,29 @@ use crate::{
     TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite, TypeReference, VerificationOutcome,
     VerificationRequirement, VisibleMember,
 };
-use spec42_constraint_manifest::{
-    ElementDerivedOwnerKind, LibrarySpecializationPredicate, NamespaceImportDerivedElementKind,
-};
+#[cfg(test)]
+use spec42_constraint_manifest::LibrarySpecializationPredicate;
+use spec42_constraint_manifest::{ElementDerivedOwnerKind, NamespaceImportDerivedElementKind};
 
-mod binding;
-mod conformance;
-mod details;
-mod expression;
-mod expression_conformance;
-mod host_conformance;
-mod inspection;
-mod structural;
-mod types;
+pub(crate) mod binding;
+pub(crate) mod conformance;
+pub(crate) mod details;
+pub(crate) mod expression;
+pub(crate) mod expression_conformance;
+pub(crate) mod host_conformance;
+pub(crate) mod inspection;
+pub(crate) mod structural;
+pub(crate) mod types;
 pub(crate) mod writer;
 
 /// The note attached to each declaration an ambiguous reference could have named.
-const RELATED_AMBIGUOUS_CANDIDATE: &str = "Candidate this reference could name.";
+pub(crate) const RELATED_AMBIGUOUS_CANDIDATE: &str = "Candidate this reference could name.";
 
 /// The settled diagnostics of one publication with the per-document ranges that index them.
 ///
 /// The two are derived together and are only correct together, so they are returned together
 /// rather than as two calls a caller could interleave.
-type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ResolutionError {
-    Capacity,
-    InvalidStorage,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct NameKey {
-    owner: Option<DeclarationId>,
-    name: SymbolId,
-}
+pub(crate) type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
 
 /// Position-addressable lookup tables for one document, built once at the publication barrier.
 ///
@@ -87,13 +79,13 @@ struct NameKey {
 /// property that matters here; a genuine interval tree would only help a single very large
 /// document.
 #[derive(Debug, Default)]
-struct DocumentPositions {
+pub(crate) struct DocumentPositions {
     /// Authored reference ranges, ordered by start.
-    references: Box<[(TextRange, AuthoredReferenceId)]>,
+    pub(crate) references: Box<[(TextRange, AuthoredReferenceId)]>,
     /// Declaration identifier ranges, ordered by start. Only named declarations appear.
-    identifiers: Box<[(TextRange, DeclarationId)]>,
+    pub(crate) identifiers: Box<[(TextRange, DeclarationId)]>,
     /// Every declaration's full span, as a containment tree.
-    spans: SpanTree,
+    pub(crate) spans: SpanTree,
 }
 
 /// Declaration spans arranged so containment can be answered without reading the whole document.
@@ -108,13 +100,13 @@ struct DocumentPositions {
 /// bounded by the declarations that *begin before the position at each enclosing level* -- not by
 /// the document's declaration count, which is what a filter over the flat table costs.
 #[derive(Debug, Default)]
-struct SpanTree {
-    entries: Box<[(TextRange, DeclarationId)]>,
-    subtree_end: Box<[u32]>,
+pub(crate) struct SpanTree {
+    pub(crate) entries: Box<[(TextRange, DeclarationId)]>,
+    pub(crate) subtree_end: Box<[u32]>,
 }
 
 impl SpanTree {
-    fn build(mut entries: Vec<(TextRange, DeclarationId)>) -> Self {
+    pub(crate) fn build(mut entries: Vec<(TextRange, DeclarationId)>) -> Self {
         // Start ascending, then end *descending*, so an enclosing declaration precedes the members
         // it shares a start with rather than sorting after them.
         entries.sort_by(|left, right| {
@@ -149,7 +141,7 @@ impl SpanTree {
     }
 
     /// The innermost declaration whose span contains `position`.
-    fn innermost_containing(&self, position: TextPosition) -> Option<DeclarationId> {
+    pub(crate) fn innermost_containing(&self, position: TextPosition) -> Option<DeclarationId> {
         let mut innermost = None;
         let mut index = 0usize;
         let mut level_end = self.entries.len();
@@ -173,21 +165,21 @@ impl SpanTree {
     }
 
     /// Every span, in source order.
-    fn iter(&self) -> impl Iterator<Item = &(TextRange, DeclarationId)> {
+    pub(crate) fn iter(&self) -> impl Iterator<Item = &(TextRange, DeclarationId)> {
         self.entries.iter()
     }
 }
 
 /// Document lookup by identity, plus each document's position tables.
 #[derive(Debug)]
-struct DocumentIndex {
-    by_identity: HashTable<DocumentId>,
-    hash_builder: RandomState,
-    positions: Box<[DocumentPositions]>,
+pub(crate) struct DocumentIndex {
+    pub(crate) by_identity: HashTable<DocumentId>,
+    pub(crate) hash_builder: RandomState,
+    pub(crate) positions: Box<[DocumentPositions]>,
 }
 
 impl DocumentIndex {
-    fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+    pub(crate) fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let hash_builder = RandomState::default();
         let mut by_identity: HashTable<DocumentId> = HashTable::new();
         for index in 0..storage.documents.len() {
@@ -264,7 +256,11 @@ impl DocumentIndex {
         })
     }
 
-    fn document(&self, storage: &SemanticModelStorage, identity: &str) -> Option<DocumentId> {
+    pub(crate) fn document(
+        &self,
+        storage: &SemanticModelStorage,
+        identity: &str,
+    ) -> Option<DocumentId> {
         let hash = self.hash_builder.hash_one(identity);
         self.by_identity
             .find(hash, |candidate| {
@@ -273,7 +269,7 @@ impl DocumentIndex {
             .copied()
     }
 
-    fn positions(&self, document: DocumentId) -> Option<&DocumentPositions> {
+    pub(crate) fn positions(&self, document: DocumentId) -> Option<&DocumentPositions> {
         self.positions.get(document.index())
     }
 }
@@ -290,7 +286,7 @@ thread_local! {
 /// and a passing query cannot demonstrate: a scan and an index return the same answer. The
 /// measurement is what makes a regression to a scan a test failure rather than a slowdown.
 #[inline]
-fn record_visited_index_entries(entries: usize) {
+pub(crate) fn record_visited_index_entries(entries: usize) {
     #[cfg(test)]
     VISITED_INDEX_ENTRIES.with(|counter| {
         counter.set(counter.get().saturating_add(entries as u64));
@@ -311,7 +307,7 @@ pub(crate) fn measure_visited_index_entries<T>(query: impl FnOnce() -> T) -> (T,
 ///
 /// The ranges cannot nest, so a binary search to the first candidate and a short forward walk
 /// visits only entries that actually start at or before the position and are still open.
-fn leaf_ranges_containing<T: Copy>(
+pub(crate) fn leaf_ranges_containing<T: Copy>(
     entries: &[(TextRange, T)],
     position: TextPosition,
 ) -> impl Iterator<Item = T> + '_ {
@@ -356,23 +352,23 @@ pub(crate) const IDENTITY_ENCODING_VERSION: &str = "element/v1";
 ///
 /// The spec calls for exactly this much and no more -- `Element::elementId` is "set by tooling",
 /// and `Element::path()` is "a unique location description in containment structure".
-struct IdentityIndex {
+pub(crate) struct IdentityIndex {
     /// One canonical identity string per `DeclarationId`, parallel to `storage.declarations`.
-    text: Box<[Box<str>]>,
+    pub(crate) text: Box<[Box<str>]>,
     /// Each declaration's ordinal among its identically named, same-kind siblings.
-    occurrences: Box<[u32]>,
+    pub(crate) occurrences: Box<[u32]>,
     /// Whether this declaration's identity is recoverable from its qualified name alone, so the
     /// writer may use the readable shorthand: every segment named, every occurrence ordinal zero,
     /// and no other declaration in the publication sharing the same document and name path.
-    shorthand: Box<[bool]>,
+    pub(crate) shorthand: Box<[bool]>,
     /// Head of each distinct identity's declaration chain.
     ///
     /// Retained even though the identity is total, so a storage invariant broken elsewhere
     /// surfaces as an explicit ambiguous outcome rather than an arbitrary pick.
-    heads: HashTable<DeclarationId>,
-    hash_builder: RandomState,
+    pub(crate) heads: HashTable<DeclarationId>,
+    pub(crate) hash_builder: RandomState,
     /// Next declaration sharing this one's identity, in ascending `DeclarationId` order.
-    next: Box<[Option<DeclarationId>]>,
+    pub(crate) next: Box<[Option<DeclarationId>]>,
 }
 
 impl std::fmt::Debug for IdentityIndex {
@@ -387,7 +383,7 @@ impl std::fmt::Debug for IdentityIndex {
 }
 
 impl IdentityIndex {
-    fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+    pub(crate) fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let occurrences = name_occurrences(storage)?;
         let mut text: Vec<Box<str>> = Vec::with_capacity(storage.declarations.len());
         let mut name_paths: Vec<Option<usize>> = Vec::with_capacity(storage.declarations.len());
@@ -486,21 +482,21 @@ impl IdentityIndex {
     }
 
     /// Whether the writer may identify this declaration by qualified name alone.
-    fn allows_qualified_name_shorthand(&self, id: DeclarationId) -> bool {
+    pub(crate) fn allows_qualified_name_shorthand(&self, id: DeclarationId) -> bool {
         self.shorthand.get(id.index()).copied().unwrap_or(false)
     }
 
     /// This declaration's ordinal among its identically named, same-kind siblings.
-    fn name_occurrence(&self, id: DeclarationId) -> Option<u32> {
+    pub(crate) fn name_occurrence(&self, id: DeclarationId) -> Option<u32> {
         self.occurrences.get(id.index()).copied()
     }
 
-    fn identity(&self, id: DeclarationId) -> Option<&str> {
+    pub(crate) fn identity(&self, id: DeclarationId) -> Option<&str> {
         self.text.get(id.index()).map(AsRef::as_ref)
     }
 
     /// Every declaration carrying `identity`, in ascending `DeclarationId` order.
-    fn declarations(&self, identity: &str) -> Vec<DeclarationId> {
+    pub(crate) fn declarations(&self, identity: &str) -> Vec<DeclarationId> {
         let hash = self.hash_builder.hash_one(identity);
         let Some(head) = self
             .heads
@@ -523,7 +519,7 @@ impl IdentityIndex {
 
 /// Appends one length-prefixed field, so a document identity or an authored name containing any
 /// byte sequence -- including the encoding's own punctuation -- cannot forge a segment boundary.
-fn push_identity_field(output: &mut String, value: &str) {
+pub(crate) fn push_identity_field(output: &mut String, value: &str) {
     output.push_str(&value.len().to_string());
     output.push(':');
     output.push_str(value);
@@ -537,7 +533,9 @@ fn push_identity_field(output: &mut String, value: &str) {
 /// duplicate never disturbs the identity of the declaration that was already there. This mirrors
 /// the Pilot, whose `qualifiedName` stays valid for the first same-named member and falls through
 /// to a positional path for the rest.
-fn name_occurrences(storage: &SemanticModelStorage) -> Result<Box<[u32]>, ResolutionError> {
+pub(crate) fn name_occurrences(
+    storage: &SemanticModelStorage,
+) -> Result<Box<[u32]>, ResolutionError> {
     let mut seen: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind, SymbolId), u32> =
         BTreeMap::new();
     let mut occurrences = Vec::with_capacity(storage.declarations.len());
@@ -563,7 +561,7 @@ fn name_occurrences(storage: &SemanticModelStorage) -> Result<Box<[u32]>, Resolu
     Ok(occurrences.into_boxed_slice())
 }
 
-fn push_identity_segment(
+pub(crate) fn push_identity_segment(
     storage: &SemanticModelStorage,
     id: DeclarationId,
     occurrences: &[u32],
@@ -604,50 +602,22 @@ fn push_identity_segment(
     Ok(())
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct CandidateRange {
-    start: u32,
-    len: u32,
-}
-
-impl CandidateRange {
-    fn from_bounds(start: usize, end: usize) -> Result<Self, ResolutionError> {
-        let start = u32::try_from(start).map_err(|_| ResolutionError::Capacity)?;
-        let len = u32::try_from(
-            end.checked_sub(start as usize)
-                .ok_or(ResolutionError::InvalidStorage)?,
-        )
-        .map_err(|_| ResolutionError::Capacity)?;
-        start.checked_add(len).ok_or(ResolutionError::Capacity)?;
-        Ok(Self { start, len })
-    }
-
-    fn slice<'a, T>(&self, values: &'a [T]) -> Option<&'a [T]> {
-        let end = self.start.checked_add(self.len)?;
-        values.get(self.start as usize..end as usize)
-    }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-struct NameIndex {
-    keys: Box<[NameKey]>,
-    ranges: Box<[CandidateRange]>,
-    candidates: Box<[DeclarationId]>,
-}
-
 /// Publication-owned reverse edges from a resolved target to its authored reference sites.
 ///
 /// The declaration occurrence is deliberately not stored here: it has different provenance and
 /// remains an explicit `include_declaration` policy in the query API. Reference ids within each
 /// target range stay in authored canonical order because the CSR is filled in ascending id order.
 #[derive(Debug)]
-struct ReverseReferenceIndex {
-    ranges: Box<[(u32, u32)]>,
-    references: Box<[AuthoredReferenceId]>,
+pub(crate) struct ReverseReferenceIndex {
+    pub(crate) ranges: Box<[(u32, u32)]>,
+    pub(crate) references: Box<[AuthoredReferenceId]>,
 }
 
 impl ReverseReferenceIndex {
-    fn build(declarations: usize, resolution: &ResolutionResults) -> Result<Self, ResolutionError> {
+    pub(crate) fn build(
+        declarations: usize,
+        resolution: &ResolutionResults,
+    ) -> Result<Self, ResolutionError> {
         let mut counts = vec![0u32; declarations];
         for outcome in resolution.outcomes.iter().copied() {
             if let ResolutionStatus::Resolved(target) = outcome {
@@ -689,816 +659,13 @@ impl ReverseReferenceIndex {
         })
     }
 
-    fn references(&self, target: DeclarationId) -> &[AuthoredReferenceId] {
+    pub(crate) fn references(&self, target: DeclarationId) -> &[AuthoredReferenceId] {
         let Some(&(start, end)) = self.ranges.get(target.index()) else {
             return &[];
         };
         self.references
             .get(start as usize..end as usize)
             .unwrap_or_default()
-    }
-}
-
-/// Effective member enumeration for every lexical scope, including the root scope.
-///
-/// This is the persistent, frequently-enumerated scope-map family: owned, imported and inherited
-/// candidates are merged once at publication. Lookup by a particular name continues to use the
-/// canonical origin-specific indexes so shadowing and ambiguity retain their semantic meaning.
-#[derive(Debug)]
-struct EffectiveScopeIndex {
-    ranges: Box<[(u32, u32)]>,
-    members: Box<[DeclarationId]>,
-}
-
-impl EffectiveScopeIndex {
-    fn build(
-        declarations: usize,
-        direct: &NameIndex,
-        imported: &NameIndex,
-        inherited: &NameIndex,
-    ) -> Result<Self, ResolutionError> {
-        let mut ranges = Vec::with_capacity(declarations.saturating_add(1));
-        let mut members = Vec::new();
-        for slot in 0..=declarations {
-            let owner = if slot == 0 {
-                None
-            } else {
-                Some(DeclarationId::from_index(slot - 1).map_err(|_| ResolutionError::Capacity)?)
-            };
-            let mut scope_members = Vec::new();
-            for index in [direct, imported, inherited] {
-                for (_, candidates) in index.entries_for_owner(owner) {
-                    scope_members.extend_from_slice(candidates);
-                }
-            }
-            scope_members.sort_unstable();
-            scope_members.dedup();
-            let start = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
-            members.extend(scope_members);
-            let end = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
-            ranges.push((start, end));
-        }
-        Ok(Self {
-            ranges: ranges.into_boxed_slice(),
-            members: members.into_boxed_slice(),
-        })
-    }
-
-    fn members(&self, owner: Option<DeclarationId>) -> &[DeclarationId] {
-        let slot = owner.map_or(0usize, |owner| owner.index().saturating_add(1));
-        let Some(&(start, end)) = self.ranges.get(slot) else {
-            return &[];
-        };
-        let members = self
-            .members
-            .get(start as usize..end as usize)
-            .unwrap_or_default();
-        record_visited_index_entries(members.len());
-        members
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum EffectiveVisibility {
-    Public,
-    Private,
-    Protected,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct EffectiveMembership {
-    visibility: EffectiveVisibility,
-    /// The authored membership kind, retained so inspection need not rescan the record table.
-    kind: MembershipKind,
-    /// Whether the visibility above was written or defaulted.
-    authored: bool,
-}
-
-/// Dense, declaration-aligned membership facts used by resolution. Authored `Default` is settled
-/// once here, with its owning declaration context, rather than being reinterpreted by each lookup.
-#[derive(Debug)]
-struct MembershipIndex {
-    by_declaration: Box<[EffectiveMembership]>,
-}
-
-impl MembershipIndex {
-    fn build(
-        declarations: &[Declaration],
-        memberships: &[MembershipRecord],
-    ) -> Result<Self, ResolutionError> {
-        let mut by_declaration = vec![None; declarations.len()];
-        for membership in memberships {
-            let declaration = declarations
-                .get(membership.member.index())
-                .ok_or(ResolutionError::InvalidStorage)?;
-            let slot = by_declaration
-                .get_mut(membership.member.index())
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if slot.is_some()
-                || matches!(declaration.kind, DeclarationKind::Import)
-                    != matches!(membership.kind, MembershipKind::Import)
-            {
-                return Err(ResolutionError::InvalidStorage);
-            }
-            let visibility = match membership.visibility {
-                Visibility::Public => EffectiveVisibility::Public,
-                Visibility::Private => EffectiveVisibility::Private,
-                Visibility::Protected => EffectiveVisibility::Protected,
-                Visibility::Default if membership.kind == MembershipKind::Import => {
-                    EffectiveVisibility::Private
-                }
-                Visibility::Default => match declaration.owner {
-                    None => EffectiveVisibility::Public,
-                    Some(owner)
-                        if declarations.get(owner.index()).is_some_and(|owner| {
-                            matches!(
-                                owner.kind,
-                                DeclarationKind::Package | DeclarationKind::LibraryPackage
-                            )
-                        }) =>
-                    {
-                        EffectiveVisibility::Public
-                    }
-                    Some(_) => EffectiveVisibility::Private,
-                },
-            };
-            *slot = Some(EffectiveMembership {
-                visibility,
-                kind: membership.kind,
-                authored: membership.visibility != Visibility::Default,
-            });
-        }
-        let by_declaration = by_declaration
-            .into_iter()
-            .collect::<Option<Vec<_>>>()
-            .ok_or(ResolutionError::InvalidStorage)?;
-        Ok(Self {
-            by_declaration: by_declaration.into_boxed_slice(),
-        })
-    }
-
-    fn get(&self, declaration: DeclarationId) -> Option<EffectiveMembership> {
-        self.by_declaration.get(declaration.index()).copied()
-    }
-
-    fn is_public(&self, declaration: DeclarationId) -> bool {
-        self.get(declaration)
-            .is_some_and(|membership| membership.visibility == EffectiveVisibility::Public)
-    }
-}
-
-impl NameIndex {
-    fn build(mut entries: Vec<(NameKey, DeclarationId)>) -> Result<Self, ResolutionError> {
-        entries.sort_unstable_by_key(name_entry_sort_key);
-        entries.dedup();
-
-        let mut keys = Vec::new();
-        let mut ranges = Vec::new();
-        let mut candidates = Vec::new();
-        keys.try_reserve(entries.len())
-            .map_err(|_| ResolutionError::Capacity)?;
-        ranges
-            .try_reserve(entries.len())
-            .map_err(|_| ResolutionError::Capacity)?;
-        candidates
-            .try_reserve(entries.len())
-            .map_err(|_| ResolutionError::Capacity)?;
-
-        let mut cursor = 0;
-        while cursor < entries.len() {
-            let key = entries[cursor].0;
-            let start = candidates.len();
-            while cursor < entries.len() && entries[cursor].0 == key {
-                candidates.push(entries[cursor].1);
-                cursor += 1;
-            }
-            keys.push(key);
-            ranges.push(CandidateRange::from_bounds(start, candidates.len())?);
-        }
-
-        Ok(Self {
-            keys: keys.into_boxed_slice(),
-            ranges: ranges.into_boxed_slice(),
-            candidates: candidates.into_boxed_slice(),
-        })
-    }
-
-    fn candidates(&self, owner: Option<DeclarationId>, name: SymbolId) -> &[DeclarationId] {
-        let key = NameKey { owner, name };
-        let Ok(index) = self.keys.binary_search(&key) else {
-            return &[];
-        };
-        let candidates = self.ranges[index]
-            .slice(&self.candidates)
-            .unwrap_or_default();
-        record_visited_index_entries(candidates.len());
-        candidates
-    }
-
-    fn entries_for_owner(
-        &self,
-        owner: Option<DeclarationId>,
-    ) -> impl Iterator<Item = (SymbolId, &[DeclarationId])> {
-        let start = self.keys.partition_point(|key| key.owner < owner);
-        let end = self.keys.partition_point(|key| key.owner <= owner);
-        self.keys[start..end]
-            .iter()
-            .zip(&self.ranges[start..end])
-            .filter_map(|(key, range)| {
-                range
-                    .slice(&self.candidates)
-                    .map(|candidates| (key.name, candidates))
-            })
-    }
-}
-
-/// The tuple's canonical `Ord` encoded as one integer comparison.
-///
-/// `None` sorts before every owner and `Some(u32::MAX)` still fits because the owner occupies 33
-/// bits above the two complete 32-bit name/candidate fields. The encoding is injective, so this is
-/// purely a cheaper sorting representation rather than a hash or a competing identity policy.
-fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -> u128 {
-    let owner = key.owner.map_or(0, |owner| u128::from(owner.0) + 1);
-    (owner << 64) | (u128::from(key.name.0) << 32) | u128::from(candidate.0)
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ResolutionStatus {
-    Resolved(DeclarationId),
-    Unresolved,
-    Ambiguous(CandidateRange),
-    Unsupported,
-    NonConverged,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum SolverStatus {
-    Converged,
-    NonConverged,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-struct ResolutionWork {
-    passes: u32,
-    import_evaluations: u64,
-    downstream_evaluations: u64,
-    indexed_name_lookups: u64,
-    direct_index_entries: u64,
-    effective_index_entries: u64,
-}
-
-/// A resolver-synthesized relationship fact that has no authored reference site. The narrow slice
-/// currently covered here is same-name inherited-member redefinition against an immediate
-/// (directly specialized) parent's own directly owned feature. Multi-level/diamond inherited
-/// redefinition is intentionally out of scope: an ambiguous or absent immediate-parent match is
-/// left unresolved rather than guessed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ImpliedRelationship {
-    kind: ReferenceKind,
-    source: DeclarationId,
-    target: DeclarationId,
-}
-
-/// One exact unconditional `specializesFromLibrary` check extracted from the pinned XMI through
-/// `specifications/constraint_manifest.toml`. Conditional OCL bodies never enter this table.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct LibrarySpecializationRuleKey(&'static str);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct LibrarySpecializationAnchorKey {
-    rule: LibrarySpecializationRuleKey,
-    branch: LibrarySpecializationAnchorBranch,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct LibrarySpecializationRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    anchor: &'static str,
-}
-
-include!(concat!(env!("OUT_DIR"), "/library_specialization_rules.rs"));
-
-/// One exact conditional `specializesFromLibrary` check whose predicate is a closed manifest
-/// contract. The resolver evaluates the predicate from its owned declaration facts; it never
-/// reparses OCL or infers applicability from a rule name.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ConditionalLibrarySpecializationRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    predicate: LibrarySpecializationPredicate,
-    owner_metaclasses: &'static [&'static str],
-    true_anchor: Option<&'static str>,
-    anchor: &'static str,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/conditional_library_specialization_rules.rs"
-));
-
-/// One exact unconditional `redefinesFromLibrary` check extracted from the pinned XMI. Rules are
-/// generated separately from specializations: the function name is a distinct normative contract
-/// and a consumer must not reinterpret one as the other.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct LibraryRedefinitionRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    anchor: &'static str,
-}
-
-include!(concat!(env!("OUT_DIR"), "/library_redefinition_rules.rs"));
-
-/// One closed exact Feature relationship-collection derivation emitted from the pinned manifest.
-/// The generated table, rather than a query-side rule-name convention, decides which collection
-/// exists and which source metaclass owns it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct FeatureDerivedRelationshipRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: FeatureDerivedRelationshipCollection,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/feature_derived_relationship_rules.rs"
-));
-
-/// One closed Type relationship derivation emitted from the pinned manifest. The exact rule ID
-/// determines the query collection; consumers never infer it from a display name.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TypeDerivedRelationshipRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: TypeDerivedRelationshipCollection,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/type_derived_relationship_rules.rs"
-));
-
-/// One exact final element-valued Type derivation emitted from the pinned manifest. Intermediate
-/// Membership relationship identities remain private; this table therefore admits only element
-/// projections that canonical owner and membership facts can answer losslessly.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TypeDerivedElementRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: TypeDerivedElementCollection,
-}
-
-include!(concat!(env!("OUT_DIR"), "/type_derived_element_rules.rs"));
-
-/// One exact Type derivation that cannot yet return values because its canonical fact owner is
-/// intentionally absent. The generated table preserves rule identity and result category.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TypeDerivedFactRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: TypeDerivedFactCollection,
-}
-
-include!(concat!(env!("OUT_DIR"), "/type_derived_fact_rules.rs"));
-
-/// A complete Definition/Usage derivation selected only by the generated manifest projection.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct DefinitionUsageDerivedRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: DefinitionUsageDerivedKind,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/definition_usage_derived_rules.rs"
-));
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ActionDerivedFactRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: ActionDerivedFactCollection,
-}
-
-include!(concat!(env!("OUT_DIR"), "/action_derived_fact_rules.rs"));
-
-/// One exact Systems::Requirements derivation emitted by the manifest. The query collection is
-/// closed and rule-keyed; it is not an interpretation of arbitrary membership names.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct RequirementDerivedFactRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: RequirementDerivedFactCollection,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/requirement_derived_fact_rules.rs"
-));
-
-/// One exact TypeFeaturing check emitted from the manifest. The table owns the normative rule
-/// identity and metaclass; the resolver consumes only canonical FeatureMembership and effective
-/// TypeFeaturing facts to decide it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TypeFeaturingCheckRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: TypeFeaturingCheckKind,
-}
-
-include!(concat!(env!("OUT_DIR"), "/type_featuring_check_rules.rs"));
-
-/// One exact redefinition check body emitted from the manifest. This only identifies a normative
-/// predicate; it never acts as a second relationship store or an OCL interpreter.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct RedefinitionCheckRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: RedefinitionCheckKind,
-}
-
-include!(concat!(env!("OUT_DIR"), "/redefinition_check_rules.rs"));
-
-/// One exact specialization predicate emitted from the manifest.  This generated table is the
-/// sole rule-to-kind binding; it never contains semantic relationship values.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct SpecializationCheckRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: SpecializationCheckKind,
-}
-
-include!(concat!(env!("OUT_DIR"), "/specialization_check_rules.rs"));
-
-/// The closed exact `Element::owner` derivation emitted from the pinned manifest.
-///
-/// The table is deliberately separate from relationship collections: `owner` is a derived
-/// scalar over canonical declaration structure, not a synthetic relationship or a path lookup.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ElementDerivedOwnerRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: ElementDerivedOwnerKind,
-}
-
-include!(concat!(env!("OUT_DIR"), "/element_derived_owner_rules.rs"));
-
-/// One exact Element documentation-form derivation emitted from the pinned manifest.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct ElementDerivedDocumentationRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: ElementDerivedDocumentationCollection,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/element_derived_documentation_rules.rs"
-));
-
-/// One exact Namespace element-valued derivation emitted from the pinned manifest. The table
-/// selects which direct canonical structural projection is available; query callers do not map
-/// rule names to declaration filters.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct NamespaceDerivedElementRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    collection: NamespaceDerivedElementCollection,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/namespace_derived_element_rules.rs"
-));
-
-/// The closed exact `NamespaceImport::importedElement` projection emitted from the pinned
-/// manifest. It is deliberately separate from Namespace collections because its source is one
-/// anonymous import declaration and its target retains the canonical reference outcome.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct NamespaceImportDerivedElementRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: NamespaceImportDerivedElementKind,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/namespace_import_derived_element_rules.rs"
-));
-
-/// One exact BindingConnector validation body emitted from the pinned manifest.
-///
-/// The generated contract proves that a caller-selected rule kind has a single normative rule
-/// and metaclass. The binding index remains the sole owner of connector facts and validation
-/// prerequisites.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct BindingConnectorCheckRule {
-    rule_id: &'static str,
-    metaclass: &'static str,
-    kind: BindingConnectorCheckKind,
-}
-
-include!(concat!(
-    env!("OUT_DIR"),
-    "/binding_connector_check_rules.rs"
-));
-
-fn feature_derived_relationship_rule(
-    collection: FeatureDerivedRelationshipCollection,
-) -> Option<&'static FeatureDerivedRelationshipRule> {
-    GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn namespace_derived_element_rule(
-    collection: NamespaceDerivedElementCollection,
-) -> Option<&'static NamespaceDerivedElementRule> {
-    GENERATED_NAMESPACE_DERIVED_ELEMENT_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn namespace_import_derived_element_rule() -> Option<&'static NamespaceImportDerivedElementRule> {
-    match GENERATED_NAMESPACE_IMPORT_DERIVED_ELEMENT_RULES {
-        [rule] => Some(rule),
-        _ => None,
-    }
-}
-
-fn binding_connector_check_rule(
-    kind: BindingConnectorCheckKind,
-) -> Option<&'static BindingConnectorCheckRule> {
-    GENERATED_BINDING_CONNECTOR_CHECK_RULES
-        .iter()
-        .find(|rule| rule.kind == kind)
-}
-
-fn feature_derived_relationship_kinds(
-    collection: FeatureDerivedRelationshipCollection,
-) -> &'static [ReferenceKind] {
-    match collection {
-        FeatureDerivedRelationshipCollection::OwnedFeatureChaining => {
-            &[ReferenceKind::FeatureChaining]
-        }
-        FeatureDerivedRelationshipCollection::OwnedRedefinition => &[ReferenceKind::Redefinition],
-        // KerML `Redefinition` is a subtype of `Subsetting`, so its owned relationship belongs in
-        // `ownedSubsetting` as well. The storage preserves its more specific reference kind.
-        FeatureDerivedRelationshipCollection::OwnedSubsetting => {
-            &[ReferenceKind::Subsetting, ReferenceKind::Redefinition]
-        }
-        FeatureDerivedRelationshipCollection::OwnedTyping => &[ReferenceKind::FeatureTyping],
-        FeatureDerivedRelationshipCollection::OwnedTypeFeaturing => &[ReferenceKind::TypeFeaturing],
-    }
-}
-
-fn type_derived_relationship_rule(
-    collection: TypeDerivedRelationshipCollection,
-) -> Option<&'static TypeDerivedRelationshipRule> {
-    GENERATED_TYPE_DERIVED_RELATIONSHIP_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn type_derived_element_rule(
-    collection: TypeDerivedElementCollection,
-) -> Option<&'static TypeDerivedElementRule> {
-    GENERATED_TYPE_DERIVED_ELEMENT_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn type_derived_fact_rule(
-    collection: TypeDerivedFactCollection,
-) -> Option<&'static TypeDerivedFactRule> {
-    GENERATED_TYPE_DERIVED_FACT_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn definition_usage_derived_rule(
-    kind: DefinitionUsageDerivedKind,
-) -> Option<&'static DefinitionUsageDerivedRule> {
-    GENERATED_DEFINITION_USAGE_DERIVED_RULES
-        .iter()
-        .find(|rule| rule.kind == kind)
-}
-
-fn action_derived_fact_rule(
-    collection: ActionDerivedFactCollection,
-) -> Option<&'static ActionDerivedFactRule> {
-    GENERATED_ACTION_DERIVED_FACT_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn requirement_derived_fact_rule(
-    collection: RequirementDerivedFactCollection,
-) -> Option<&'static RequirementDerivedFactRule> {
-    GENERATED_REQUIREMENT_DERIVED_FACT_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn type_featuring_check_rule(
-    kind: TypeFeaturingCheckKind,
-) -> Option<&'static TypeFeaturingCheckRule> {
-    GENERATED_TYPE_FEATURING_CHECK_RULES
-        .iter()
-        .find(|rule| rule.kind == kind)
-}
-
-fn redefinition_check_rule(kind: RedefinitionCheckKind) -> Option<&'static RedefinitionCheckRule> {
-    GENERATED_REDEFINITION_CHECK_RULES
-        .iter()
-        .find(|rule| rule.kind == kind)
-}
-
-fn specialization_check_rule(
-    kind: SpecializationCheckKind,
-) -> Option<&'static SpecializationCheckRule> {
-    GENERATED_SPECIALIZATION_CHECK_RULES
-        .iter()
-        .find(|rule| rule.kind == kind)
-}
-
-fn element_derived_owner_rule() -> Option<&'static ElementDerivedOwnerRule> {
-    GENERATED_ELEMENT_DERIVED_OWNER_RULES.first()
-}
-
-fn element_derived_documentation_rule(
-    collection: ElementDerivedDocumentationCollection,
-) -> Option<&'static ElementDerivedDocumentationRule> {
-    GENERATED_ELEMENT_DERIVED_DOCUMENTATION_RULES
-        .iter()
-        .find(|rule| rule.collection == collection)
-}
-
-fn type_derived_relationship_kinds(
-    collection: TypeDerivedRelationshipCollection,
-) -> &'static [ReferenceKind] {
-    match collection {
-        TypeDerivedRelationshipCollection::OwnedSpecialization => &[
-            ReferenceKind::Subclassification,
-            ReferenceKind::Subsetting,
-            ReferenceKind::Redefinition,
-            ReferenceKind::FeatureTyping,
-        ],
-        TypeDerivedRelationshipCollection::OwnedUnioning
-        | TypeDerivedRelationshipCollection::UnioningType => &[ReferenceKind::Unioning],
-        TypeDerivedRelationshipCollection::OwnedIntersecting
-        | TypeDerivedRelationshipCollection::IntersectingType => &[ReferenceKind::Intersecting],
-        TypeDerivedRelationshipCollection::OwnedDifferencing
-        | TypeDerivedRelationshipCollection::DifferencingType => &[ReferenceKind::Differencing],
-        TypeDerivedRelationshipCollection::OwnedDisjoining => &[ReferenceKind::Disjoining],
-    }
-}
-
-fn library_specialization_rules(
-    metaclass: &str,
-) -> impl Iterator<Item = &'static LibrarySpecializationRule> + '_ {
-    GENERATED_LIBRARY_SPECIALIZATION_RULES
-        .iter()
-        .filter(move |rule| rule.metaclass == metaclass)
-}
-
-fn conditional_library_specialization_rules(
-    metaclass: &str,
-) -> impl Iterator<Item = &'static ConditionalLibrarySpecializationRule> + '_ {
-    GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
-        .iter()
-        .filter(move |rule| rule.metaclass == metaclass)
-}
-
-fn library_redefinition_rules(
-    metaclass: &str,
-) -> impl Iterator<Item = &'static LibraryRedefinitionRule> + '_ {
-    GENERATED_LIBRARY_REDEFINITION_RULES
-        .iter()
-        .filter(move |rule| rule.metaclass == metaclass)
-}
-
-/// The root standard-library packages every generated library rule anchors into, deduplicated
-/// and sorted. The library-closure authority seeds these so that a publication always admits
-/// the documents its implied specializations and redefinitions resolve against.
-pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
-    let mut packages = GENERATED_LIBRARY_SPECIALIZATION_RULES
-        .iter()
-        .map(|rule| rule.anchor)
-        .chain(
-            GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
-                .iter()
-                .flat_map(|rule| [Some(rule.anchor), rule.true_anchor].into_iter().flatten()),
-        )
-        .chain(
-            GENERATED_LIBRARY_REDEFINITION_RULES
-                .iter()
-                .map(|rule| rule.anchor),
-        )
-        .filter_map(|anchor| anchor.split("::").next())
-        .collect::<Vec<_>>();
-    packages.sort_unstable();
-    packages.dedup();
-    packages
-}
-
-/// Maps an exact XMI source metaclass to the parser's owned declaration projection.
-///
-/// `PayloadFeature` is currently not a lowered declaration kind. Keeping that absence explicit
-/// is intentional: a same-named feature, a generic `Feature`, or an enclosing declaration must
-/// never be substituted as the source of a normative implied redefinition. Extend this adapter
-/// only when lowering publishes an exact `PayloadFeature` projection.
-fn lowered_redefinition_source_kind(metaclass: &str) -> Option<DeclarationKind> {
-    match metaclass {
-        "PayloadFeature" => None,
-        _ => None,
-    }
-}
-
-#[cfg(test)]
-fn generated_library_specialization_rule_count() -> usize {
-    GENERATED_LIBRARY_SPECIALIZATION_RULES.len()
-}
-
-#[cfg(test)]
-fn generated_conditional_library_specialization_rule_count() -> usize {
-    GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES.len()
-}
-
-#[cfg(test)]
-fn generated_library_redefinition_rule_count() -> usize {
-    GENERATED_LIBRARY_REDEFINITION_RULES.len()
-}
-
-/// The canonical standard-library target named by one `specializesFromLibrary` check.
-///
-/// Anchor outcomes are an owned semantic fact. A workspace declaration with matching spelling can
-/// never substitute for a language anchor, and several standard-library candidates remain an
-/// explicit ambiguity rather than an accidental traversal choice.
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum LibrarySpecializationAnchor {
-    Resolved(DeclarationId),
-    Missing,
-    Ambiguous(Box<[DeclarationId]>),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
-struct LibrarySpecializationAnchorFacts {
-    /// Every generated rule branch receives exactly one outcome at the semantic publication
-    /// barrier. The typed `(rule, branch)` identity, rather than rendered anchor or metaclass,
-    /// owns identity: an anchor can be deliberately shared by independent normative rules.
-    by_rule:
-        std::collections::BTreeMap<LibrarySpecializationAnchorKey, LibrarySpecializationAnchor>,
-}
-
-impl LibrarySpecializationAnchorFacts {
-    /// Compatibility projection for legacy single-anchor rules and the `else` branch of exact
-    /// polarity contracts.
-    fn outcome(&self, rule_id: &str) -> Option<&LibrarySpecializationAnchor> {
-        self.outcome_for(rule_id, LibrarySpecializationAnchorBranch::Default)
-    }
-
-    fn outcome_for(
-        &self,
-        rule_id: &str,
-        branch: LibrarySpecializationAnchorBranch,
-    ) -> Option<&LibrarySpecializationAnchor> {
-        self.by_rule.iter().find_map(|(key, outcome)| {
-            (key.rule.0 == rule_id && key.branch == branch).then_some(outcome)
-        })
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-struct LibrarySpecializationDiagnosticKey {
-    anchor: &'static str,
-    document: DocumentId,
-}
-
-#[derive(Debug)]
-struct ResolutionResults {
-    outcomes: Box<[ResolutionStatus]>,
-    ambiguous_candidates: Box<[DeclarationId]>,
-    inherited_names: NameIndex,
-    solver_status: SolverStatus,
-    implied_relationships: Box<[ImpliedRelationship]>,
-    library_specialization_anchors: LibrarySpecializationAnchorFacts,
-    #[cfg(test)]
-    work: ResolutionWork,
-}
-
-impl ResolutionResults {
-    fn outcome(&self, id: AuthoredReferenceId) -> Option<ResolutionStatus> {
-        self.outcomes.get(id.index()).copied()
-    }
-
-    fn ambiguous_candidates(&self, range: CandidateRange) -> &[DeclarationId] {
-        range.slice(&self.ambiguous_candidates).unwrap_or_default()
-    }
-
-    fn library_specialization_anchor(&self, rule_id: &str) -> Option<&LibrarySpecializationAnchor> {
-        self.library_specialization_anchors.outcome(rule_id)
     }
 }
 
@@ -1510,9 +677,9 @@ impl ResolutionResults {
 /// where there is one -- keeping both would make two representations of one answer, with nothing
 /// stopping them from disagreeing.
 #[derive(Debug, Clone, PartialEq)]
-struct EvaluationFact {
-    declaration: DeclarationId,
-    state: EvaluationState,
+pub(crate) struct EvaluationFact {
+    pub(crate) declaration: DeclarationId,
+    pub(crate) state: EvaluationState,
 }
 
 /// Slice 2 of the constraint/calc expression fact family (see `4ca42166` for slice 1). Runs
@@ -1539,7 +706,7 @@ struct EvaluationFact {
 /// unsettled after the bound is exhausted is a genuine cross-declaration dependency cycle and
 /// publishes the explicit `EvaluatedValue::NonConverged` outcome, never a fabricated value, an
 /// infinite loop, or a panic.
-fn compute_evaluation(
+pub(crate) fn compute_evaluation(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
     policy: EvaluationPolicy,
@@ -1703,7 +870,7 @@ fn compute_evaluation(
 /// The authored half is copied here rather than left to a later join: a state array parallel to
 /// `SemanticModelStorage::filter_conditions` was a second invariant to keep, and the one branch
 /// that could not produce a state for every condition broke it by publishing none.
-fn settled_filters(
+pub(crate) fn settled_filters(
     storage: &SemanticModelStorage,
     mut state_of: impl FnMut(&AuthoredFilterCondition) -> EvaluationState,
 ) -> Box<[expression::SettledFilter]> {
@@ -1728,7 +895,7 @@ fn settled_filters(
 /// fact from settling that nothing has a value, and the completeness the publication carries is
 /// where a consumer reads it.
 #[derive(Debug)]
-enum SettledEvaluation {
+pub(crate) enum SettledEvaluation {
     /// One outcome per classified declaration expression, and one per authored filter condition.
     Settled {
         facts: Box<[EvaluationFact]>,
@@ -1745,7 +912,7 @@ enum SettledEvaluation {
 /// it never contributes a constant and never participates in the fixed point. It is folded once,
 /// afterwards, against the same settled operand targets and constants, which is exactly the
 /// "consume settled facts, publish nothing back" shape the barrier requires.
-fn fold_settled_expression(
+pub(crate) fn fold_settled_expression(
     shape: &ExpressionEvalShape,
     owner: DeclarationId,
     operand_targets: &std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>>,
@@ -1777,41 +944,41 @@ fn fold_settled_expression(
 
 #[derive(Debug)]
 pub(crate) struct ResolvedSemanticModel {
-    storage: SemanticModelStorage,
-    direct_names: NameIndex,
-    effective_imports: NameIndex,
-    identities: IdentityIndex,
-    documents: DocumentIndex,
-    memberships: MembershipIndex,
-    reverse_references: ReverseReferenceIndex,
-    effective_scopes: EffectiveScopeIndex,
-    facts: inspection::ElementFactIndex,
+    pub(crate) storage: SemanticModelStorage,
+    pub(crate) direct_names: NameIndex,
+    pub(crate) effective_imports: NameIndex,
+    pub(crate) identities: IdentityIndex,
+    pub(crate) documents: DocumentIndex,
+    pub(crate) memberships: MembershipIndex,
+    pub(crate) reverse_references: ReverseReferenceIndex,
+    pub(crate) effective_scopes: EffectiveScopeIndex,
+    pub(crate) facts: inspection::ElementFactIndex,
     /// Canonical paired binding-connector endpoints, assembled once after resolution.
-    bindings: binding::BindingConnectorIndex,
-    types: types::TypeIndex,
-    resolution: ResolutionResults,
-    evaluation: Box<[EvaluationFact]>,
+    pub(crate) bindings: binding::BindingConnectorIndex,
+    pub(crate) types: types::TypeIndex,
+    pub(crate) resolution: ResolutionResults,
+    pub(crate) evaluation: Box<[EvaluationFact]>,
     /// Settled unit, measurement and filter facts over the expressions this publication admitted.
-    expressions: expression::ExpressionIndex,
+    pub(crate) expressions: expression::ExpressionIndex,
     /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
     /// a broken storage invariant fails the build instead of a later query.
-    diagnostics: Box<[Diagnostic]>,
+    pub(crate) diagnostics: Box<[Diagnostic]>,
     /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentId`.
     ///
     /// The derivation groups one document's diagnostics contiguously, so a document-scoped query
     /// is a slice of the settled sequence rather than a scan of it. Built at the same barrier so
     /// the two can never disagree.
-    diagnostics_by_document: Box<[(u32, u32)]>,
-    metadata: PublicationMetadata,
+    pub(crate) diagnostics_by_document: Box<[(u32, u32)]>,
+    pub(crate) metadata: PublicationMetadata,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum PublicationPhase {
+pub(crate) enum PublicationPhase {
     Resolved,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum PublicationCompleteness {
+pub(crate) enum PublicationCompleteness {
     Complete,
     ParseRecovery,
     UnsupportedSyntax,
@@ -1819,10 +986,10 @@ enum PublicationCompleteness {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct PublicationMetadata {
-    phase: PublicationPhase,
-    completeness: PublicationCompleteness,
-    has_evaluation: bool,
+pub(crate) struct PublicationMetadata {
+    pub(crate) phase: PublicationPhase,
+    pub(crate) completeness: PublicationCompleteness,
+    pub(crate) has_evaluation: bool,
 }
 
 impl ResolvedSemanticModel {
@@ -1945,7 +1112,7 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn resolved_outcome<T>(&self, value: T) -> QueryOutcome<T> {
+    pub(crate) fn resolved_outcome<T>(&self, value: T) -> QueryOutcome<T> {
         match self.metadata.completeness {
             PublicationCompleteness::Complete => QueryOutcome::Resolved(value),
             PublicationCompleteness::ParseRecovery => QueryOutcome::Recovered(value),
@@ -1958,7 +1125,7 @@ impl ResolvedSemanticModel {
     ///
     /// Stable across builds of the same sources, unlike the dense storage ordinal, so a consumer
     /// may hold one across a rebuild; see `IdentityIndex`.
-    fn symbol_identity(&self, id: DeclarationId) -> Option<SymbolIdentity> {
+    pub(crate) fn symbol_identity(&self, id: DeclarationId) -> Option<SymbolIdentity> {
         self.identities
             .identity(id)
             .map(|text| SymbolIdentity(text.into()))
@@ -1968,11 +1135,11 @@ impl ResolvedSemanticModel {
     ///
     /// More than one only when the source authors identically named siblings; callers publish that
     /// as an explicit ambiguous outcome rather than choosing between them.
-    fn identity_declarations(&self, identity: &SymbolIdentity) -> Vec<DeclarationId> {
+    pub(crate) fn identity_declarations(&self, identity: &SymbolIdentity) -> Vec<DeclarationId> {
         self.identities.declarations(&identity.0)
     }
 
-    fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
+    pub(crate) fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
         let declaration = self.storage.declaration(id)?;
         let name = self.storage.symbol(declaration.name?)?;
         Some(NavigationTarget {
@@ -2085,7 +1252,7 @@ impl ResolvedSemanticModel {
         self.references_for(target, include_declaration)
     }
 
-    fn references_for(
+    pub(crate) fn references_for(
         &self,
         target: DeclarationId,
         include_declaration: bool,
@@ -2270,7 +1437,7 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn resolve_qualifier_scopes(
+    pub(crate) fn resolve_qualifier_scopes(
         &self,
         owner: Option<DeclarationId>,
         qualifier: &str,
@@ -2327,7 +1494,7 @@ impl ResolvedSemanticModel {
         Ok(candidates)
     }
 
-    fn visible_member_records(&self, ids: &[DeclarationId]) -> Box<[VisibleMember]> {
+    pub(crate) fn visible_member_records(&self, ids: &[DeclarationId]) -> Box<[VisibleMember]> {
         let mut ids = ids.to_vec();
         ids.sort_unstable();
         ids.dedup();
@@ -2372,7 +1539,7 @@ impl ResolvedSemanticModel {
     /// Only workspace-authored documents contribute. Library sources take part in the same
     /// semantic system, but their own diagnostics are not the authoring surface, and this also
     /// keeps the barrier's cost proportional to the workspace rather than to the library.
-    fn derive_diagnostics(
+    pub(crate) fn derive_diagnostics(
         &self,
         reported: &[Box<str>],
     ) -> Result<DerivedDiagnostics, ResolutionError> {
@@ -2521,7 +1688,7 @@ impl ResolvedSemanticModel {
     /// library file open is authoring it, and only the host knows that. Naming the document is how
     /// it says so, and it is a build input rather than a query option because a diagnostic must be
     /// settled before the publication is visible.
-    fn reported_document_indices(&self, reported: &[Box<str>]) -> Vec<usize> {
+    pub(crate) fn reported_document_indices(&self, reported: &[Box<str>]) -> Vec<usize> {
         let mut indices = (0..self.storage.documents.len())
             .filter(|index| {
                 let document = &self.storage.documents[*index];
@@ -2544,7 +1711,9 @@ impl ResolvedSemanticModel {
     ///
     /// One pass over storage, so the diagnostic barrier costs the corpus once rather than once per
     /// document per rule.
-    fn declarations_by_document(&self) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
+    pub(crate) fn declarations_by_document(
+        &self,
+    ) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
         let mut by_document = vec![Vec::new(); self.storage.documents.len()];
         for index in 0..self.storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
@@ -2622,7 +1791,7 @@ impl ResolvedSemanticModel {
     /// Every type query needs this, and every one of them owes the caller the same three explicit
     /// answers: the publication did not converge, the identity names nothing, or it names several
     /// identically authored siblings and choosing between them would be a guess.
-    fn single_declaration<T>(
+    pub(crate) fn single_declaration<T>(
         &self,
         symbol: &SymbolIdentity,
     ) -> Result<DeclarationId, QueryOutcome<T>> {
@@ -2639,7 +1808,10 @@ impl ResolvedSemanticModel {
         candidates.pop().ok_or(QueryOutcome::Unresolved)
     }
 
-    fn symbols(&self, declarations: impl Iterator<Item = DeclarationId>) -> Box<[SymbolIdentity]> {
+    pub(crate) fn symbols(
+        &self,
+        declarations: impl Iterator<Item = DeclarationId>,
+    ) -> Box<[SymbolIdentity]> {
         let mut symbols = declarations
             .filter_map(|id| self.symbol_identity(id))
             .collect::<Vec<_>>();
@@ -2795,7 +1967,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Every feature membership one Type owns directly, in canonical declaration order.
-    fn owned_feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
+    pub(crate) fn owned_feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
         self.storage
             .declarations
             .iter()
@@ -2818,7 +1990,7 @@ impl ResolvedSemanticModel {
     /// Authored and implied redefinitions are read alike: an implied redefinition is a canonical
     /// relationship of the publication, and a member it replaces is inherited no more than one a
     /// written `:>>` replaces.
-    fn collect_redefined_members(
+    pub(crate) fn collect_redefined_members(
         &self,
         member: DeclarationId,
         into: &mut std::collections::BTreeSet<DeclarationId>,
@@ -2846,7 +2018,10 @@ impl ResolvedSemanticModel {
     /// through specialization, minus the ones a nearer member redefines. The closure itself is the
     /// specialization index this resolver already owns, so a member reached through two paths is
     /// inherited once and a cyclic hierarchy -- which has no closure -- inherits nothing.
-    fn inherited_feature_members(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+    pub(crate) fn inherited_feature_members(
+        &self,
+        declaration: DeclarationId,
+    ) -> Vec<DeclarationId> {
         let ancestors = self
             .types
             .specialization()
@@ -2870,7 +2045,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Whether one member of a Type belongs to the selected derived collection.
-    fn type_derived_fact_selects(
+    pub(crate) fn type_derived_fact_selects(
         &self,
         collection: TypeDerivedFactCollection,
         member: DeclarationId,
@@ -3933,7 +3108,7 @@ impl ResolvedSemanticModel {
         self.library_anchor_outcome(self.resolution.library_specialization_anchor(rule_id))
     }
 
-    fn library_anchor_outcome(
+    pub(crate) fn library_anchor_outcome(
         &self,
         outcome: Option<&LibrarySpecializationAnchor>,
     ) -> QueryOutcome<SymbolIdentity> {
@@ -4118,7 +3293,7 @@ impl ResolvedSemanticModel {
         self.resolved_outcome(self.conformance(specific, general, scope))
     }
 
-    fn conformance(
+    pub(crate) fn conformance(
         &self,
         specific: DeclarationId,
         general: DeclarationId,
@@ -4169,7 +3344,7 @@ impl ResolvedSemanticModel {
     /// `visiting` bounds the recursion. A malformed model can make these relationships mutually
     /// recursive, and the answer for a type currently being decided is "not established by this
     /// path" rather than a second attempt.
-    fn set_inclusion(
+    pub(crate) fn set_inclusion(
         &self,
         specific: DeclarationId,
         general: DeclarationId,
@@ -4195,7 +3370,7 @@ impl ResolvedSemanticModel {
         included
     }
 
-    fn set_inclusion_uncached(
+    pub(crate) fn set_inclusion_uncached(
         &self,
         specific: DeclarationId,
         general: DeclarationId,
@@ -4253,7 +3428,11 @@ impl ResolvedSemanticModel {
         self.resolved_outcome(self.typing_conformance(specific, general))
     }
 
-    fn typing_conformance(&self, specific: DeclarationId, general: DeclarationId) -> Conformance {
+    pub(crate) fn typing_conformance(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+    ) -> Conformance {
         // The specific side contributes only the typings it does not owe to the general side.
         // Counting an inherited typing would make the rule vacuous: every redefining feature
         // inherits the redefined feature's type, so that type would always be there to satisfy
@@ -4352,7 +3531,7 @@ impl ResolvedSemanticModel {
     }
 }
 
-fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
+pub(crate) fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
     match scope {
         SpecializationScope::AnySpecialization => types::SpecializationScope::AnySpecialization,
         SpecializationScope::Subclassification => types::SpecializationScope::Subclassification,
@@ -4362,7 +3541,7 @@ fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
     }
 }
 
-fn document_range(
+pub(crate) fn document_range(
     storage: &SemanticModelStorage,
     document: DocumentId,
     span: &Span,
@@ -4386,7 +3565,7 @@ fn document_range(
     })
 }
 
-fn parser_diagnostic_category(
+pub(crate) fn parser_diagnostic_category(
     category: Option<sysml_v2_parser::DiagnosticCategory>,
 ) -> DiagnosticCategory {
     match category {
@@ -4403,7 +3582,10 @@ fn parser_diagnostic_category(
     }
 }
 
-fn parse_error_range(document: &ParsedDocument, error: &ParseError) -> Option<TextRange> {
+pub(crate) fn parse_error_range(
+    document: &ParsedDocument,
+    error: &ParseError,
+) -> Option<TextRange> {
     let start_offset = error.offset?;
     let end_offset = start_offset.checked_add(error.length.unwrap_or(1))?;
     let start = document.source.position_at(start_offset)?;
@@ -4423,7 +3605,7 @@ fn parse_error_range(document: &ParsedDocument, error: &ParseError) -> Option<Te
 /// The public code for a construct this publication does not model.
 ///
 /// Exhaustive by construction: a new lowering family cannot be added without deciding its code.
-fn unsupported_construct_code(family: UnsupportedFamily) -> DiagnosticCode {
+pub(crate) fn unsupported_construct_code(family: UnsupportedFamily) -> DiagnosticCode {
     match family {
         UnsupportedFamily::PackageMember => DiagnosticCode::UnsupportedPackageMember,
         UnsupportedFamily::PartDefinitionMember => DiagnosticCode::UnsupportedPartDefinitionMember,
@@ -4480,7 +3662,7 @@ fn unsupported_construct_code(family: UnsupportedFamily) -> DiagnosticCode {
 ///
 /// A resolved reference has nothing to report; that is not the same answer as any of the failure
 /// states below, and the three failure classes stay distinct all the way to the consumer.
-fn reference_diagnostic(
+pub(crate) fn reference_diagnostic(
     kind: ReferenceKind,
     status: ResolutionStatus,
 ) -> Option<(DiagnosticSeverity, DiagnosticCode)> {
@@ -4538,7 +3720,7 @@ fn reference_diagnostic(
 /// the search is bounded to the text before the body opener and skips the short-name group. A
 /// declaration whose header is unrecoverable -- a parse recovery that lost its `{` or `;` -- falls
 /// back to the whole-span search rather than losing its location entirely.
-fn declaration_identifier_range(
+pub(crate) fn declaration_identifier_range(
     storage: &SemanticModelStorage,
     document: DocumentId,
     span: &Span,
@@ -4564,7 +3746,7 @@ fn declaration_identifier_range(
 }
 
 /// Whether `start` falls inside an unclosed `<`...`>` short-name group.
-fn inside_short_name(header: &str, start: usize) -> bool {
+pub(crate) fn inside_short_name(header: &str, start: usize) -> bool {
     let before = &header[..start];
     before
         .rfind('<')
@@ -4572,7 +3754,7 @@ fn inside_short_name(header: &str, start: usize) -> bool {
 }
 
 /// Every occurrence of `identifier` in `text` that is not part of a longer identifier.
-fn word_boundary_matches<'a>(
+pub(crate) fn word_boundary_matches<'a>(
     text: &'a str,
     identifier: &'a str,
 ) -> impl Iterator<Item = usize> + 'a {
@@ -4585,7 +3767,7 @@ fn word_boundary_matches<'a>(
         .map(|(start, _)| start)
 }
 
-fn identifier_range(
+pub(crate) fn identifier_range(
     storage: &SemanticModelStorage,
     document: DocumentId,
     span: &Span,
@@ -4605,7 +3787,7 @@ fn identifier_range(
     identifier_text_range(parsed, span, relative, identifier.len())
 }
 
-fn identifier_text_range(
+pub(crate) fn identifier_text_range(
     parsed: &ParsedDocument,
     span: &Span,
     relative: usize,
@@ -4640,11 +3822,11 @@ fn identifier_text_range(
     })
 }
 
-fn identifier_character(character: char) -> bool {
+pub(crate) fn identifier_character(character: char) -> bool {
     character.is_alphanumeric() || matches!(character, '_' | '-')
 }
 
-fn valid_identifier(value: &str) -> bool {
+pub(crate) fn valid_identifier(value: &str) -> bool {
     let mut characters = value.chars();
     characters
         .next()
@@ -4652,11 +3834,14 @@ fn valid_identifier(value: &str) -> bool {
         && characters.all(identifier_character)
 }
 
-fn range_contains(range: TextRange, position: TextPosition) -> bool {
+pub(crate) fn range_contains(range: TextRange, position: TextPosition) -> bool {
     range.start <= position && position <= range.end
 }
 
-fn target_order(left: &NavigationTarget, right: &NavigationTarget) -> std::cmp::Ordering {
+pub(crate) fn target_order(
+    left: &NavigationTarget,
+    right: &NavigationTarget,
+) -> std::cmp::Ordering {
     left.location
         .document
         .cmp(&right.location.document)
@@ -4664,14 +3849,14 @@ fn target_order(left: &NavigationTarget, right: &NavigationTarget) -> std::cmp::
         .then_with(|| left.name.cmp(&right.name))
 }
 
-fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Ordering {
+pub(crate) fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Ordering {
     left.document
         .cmp(&right.document)
         .then_with(|| left.range.cmp(&right.range))
         .then_with(|| left.role.cmp(&right.role))
 }
 
-fn declaration_qualified_name(
+pub(crate) fn declaration_qualified_name(
     storage: &SemanticModelStorage,
     mut declaration: DeclarationId,
 ) -> Option<String> {
@@ -4688,74 +3873,6 @@ fn declaration_qualified_name(
     }
     names.reverse();
     Some(names.join("::"))
-}
-
-/// What a settled library build hands to the publications that follow it.
-///
-/// The outcomes are indexed by authored-reference ordinal. That is only meaningful because sources
-/// are admitted library-first and lowering is per-document: the library's declarations and
-/// references occupy exactly the same dense prefix in a workspace build as they did in the build
-/// that settled them.
-///
-/// The two name sets are the evidence for whether reusing those outcomes is sound at all. See
-/// [`SettledLibrary::admits`].
-#[derive(Debug)]
-pub(crate) struct SettledLibrary {
-    outcomes: Box<[ResolutionStatus]>,
-    /// Names declared at the library's own root, which a workspace declaration must not shadow or
-    /// duplicate.
-    root_names: std::collections::BTreeSet<Box<str>>,
-    /// First path segments of every library reference the library-only build left unresolved or
-    /// ambiguous. A workspace root with one of these names could newly satisfy -- or newly make
-    /// ambiguous -- a reference whose outcome is about to be reused.
-    unsettled_roots: std::collections::BTreeSet<Box<str>>,
-}
-
-impl SettledLibrary {
-    /// Whether these outcomes may be reused for a publication containing `storage`.
-    ///
-    /// Global-root lookup is the one channel through which a workspace declaration can change what
-    /// a library reference resolves to, and it is reachable in exactly two ways: a workspace root
-    /// sharing a library root's name, or a workspace root answering a lookup the library itself
-    /// left unsettled. Both are name comparisons over the roots, so the check costs a walk of the
-    /// workspace's top-level declarations rather than a re-solve.
-    fn admits(&self, storage: &SemanticModelStorage) -> bool {
-        if self.outcomes.len() > storage.references.len() {
-            return false;
-        }
-        // The prefix must still be the library's. If lowering ever stopped putting library
-        // documents first, seeding would silently answer for the wrong references.
-        for reference in storage.references.iter().take(self.outcomes.len()) {
-            let Some(declaration) = storage.declaration(reference.source) else {
-                return false;
-            };
-            let Some(document) = storage.document(declaration.document) else {
-                return false;
-            };
-            if document.role == SourceRole::Workspace {
-                return false;
-            }
-        }
-        for (index, declaration) in storage.declarations.iter().enumerate() {
-            if declaration.owner.is_some() {
-                continue;
-            }
-            let Some(document) = storage.document(declaration.document) else {
-                return false;
-            };
-            if document.role != SourceRole::Workspace {
-                continue;
-            }
-            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
-                continue;
-            };
-            if self.root_names.contains(name) || self.unsettled_roots.contains(name) {
-                let _ = index;
-                return false;
-            }
-        }
-        true
-    }
 }
 
 impl ResolvedSemanticModel {
@@ -4786,7 +3903,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The reusable settled state of a library-only publication.
-    pub(super) fn settled_library(&self) -> Result<SettledLibrary, ResolutionError> {
+    pub(crate) fn settled_library(&self) -> Result<SettledLibrary, ResolutionError> {
         let mut root_names = std::collections::BTreeSet::new();
         for declaration in self.storage.declarations.iter() {
             if declaration.owner.is_some() {
@@ -4948,2677 +4065,6 @@ impl SemanticModelStorage {
         model.diagnostics = diagnostics;
         model.diagnostics_by_document = diagnostics_by_document;
         Ok(model)
-    }
-}
-
-trait ResolutionReferenceFact {
-    fn source(&self) -> DeclarationId;
-    fn kind(&self) -> ReferenceKind;
-    fn path(&self) -> SymbolPathId;
-    fn flags(&self) -> RelationshipFlags;
-}
-
-impl ResolutionReferenceFact for AuthoredReference {
-    fn source(&self) -> DeclarationId {
-        self.source
-    }
-
-    fn kind(&self) -> ReferenceKind {
-        self.kind
-    }
-
-    fn path(&self) -> SymbolPathId {
-        self.path
-    }
-
-    fn flags(&self) -> RelationshipFlags {
-        self.flags
-    }
-}
-
-fn resolve_dense<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    memberships: &[MembershipRecord],
-    paths: &SymbolPathArena,
-    references: &[R],
-    seed: Option<&[ResolutionStatus]>,
-) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
-    let supported_import_count = references
-        .iter()
-        .filter(|reference| supported_import_domain(*reference).is_some())
-        .count();
-    // Each effective edge is drawn from a finite declaration/import product. The deliberately
-    // conservative bound makes failure explicit without assuming acyclic imports or relying on a
-    // machine-dependent timeout.
-    let pass_limit = declarations
-        .len()
-        .checked_mul(supported_import_count.saturating_add(1))
-        .and_then(|limit| limit.checked_add(1))
-        .ok_or(ResolutionError::Capacity)?
-        .max(1);
-    resolve_dense_with_limit(
-        declarations,
-        memberships,
-        paths,
-        references,
-        pass_limit,
-        seed,
-    )
-}
-
-fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    memberships: &[MembershipRecord],
-    paths: &SymbolPathArena,
-    references: &[R],
-    pass_limit: usize,
-    seed: Option<&[ResolutionStatus]>,
-) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
-    let membership_records = memberships;
-    let memberships = MembershipIndex::build(declarations, memberships)?;
-    let direct_names = build_direct_name_index(declarations, None)?;
-    let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
-    let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
-    // A settled library's outcomes are installed before the first pass and its references are then
-    // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
-    // by the name, import and inheritance indexes each pass rebuilds -- which is what makes the
-    // workspace resolve against a library that is already settled rather than against nothing.
-    let settled = seed.map_or(0, <[ResolutionStatus]>::len);
-    if let Some(seed) = seed {
-        outcomes[..settled].copy_from_slice(seed);
-    }
-    let all_import_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
-        .collect();
-    let import_slots: Vec<usize> = all_import_slots
-        .iter()
-        .copied()
-        .filter(|index| *index >= settled)
-        .collect();
-    // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
-    // by FeatureTyping is built directly from settled Subclassification outcomes; splitting the two
-    // kinds avoids depending on source order between an owned specialization and an owned typing
-    // reference within the same document.
-    let subclass_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            // The four KerML type-relationship kinds join this pass rather than getting their own:
-            // each names a `Type` through the same lexical lookup a `specializes` clause uses, and
-            // none of them reads inherited scope. They stay distinct `ReferenceKind`s so the
-            // published relationship never collapses into a specialization.
-            matches!(
-                reference.kind(),
-                ReferenceKind::Subclassification
-                    | ReferenceKind::Unioning
-                    | ReferenceKind::Intersecting
-                    | ReferenceKind::Differencing
-                    | ReferenceKind::Disjoining
-            )
-            .then_some(index)
-        })
-        .collect();
-    let typing_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            matches!(
-                reference.kind(),
-                ReferenceKind::FeatureTyping | ReferenceKind::TypeFeaturing
-            )
-            .then_some(index)
-        })
-        .collect();
-    // A metadata annotation's target (`@Safety{...}`'s `Safety`) must be a type -- specifically a
-    // metadata def -- exactly like `FeatureTyping`, so `MetadataAnnotation` joins the same
-    // `DeclarationDomain::Type`/ancestor-scoped lexical lookup as `typing_slots` below, kept as its
-    // own slot list (and its own `ReferenceKind`) purely so the annotation relationship stays
-    // distinct from ordinary typing/specialization in query output.
-    // A filter condition's `@Name` metadata-classification test (`ReferenceKind::
-    // FilterMetadataTest`, e.g. `filter @Safety;`'s `Safety`) names a metadata def exactly like a
-    // `MetadataAnnotation` target, so it joins the same `DeclarationDomain::Type` slot list rather
-    // than a separate one -- both resolve through the identical lexical lookup fixed point, kept
-    // as a distinct `ReferenceKind` purely so filter and annotation relationships stay distinct in
-    // query output.
-    let metadata_annotation_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            matches!(
-                reference.kind(),
-                ReferenceKind::MetadataAnnotation
-                    | ReferenceKind::FilterMetadataTest
-                    | ReferenceKind::AcceptPayloadType
-                    | ReferenceKind::TypeCheckTarget
-                    | ReferenceKind::MetaCastTarget
-                    | ReferenceKind::FlowPayloadType
-            )
-            .then_some(index)
-        })
-        .collect();
-    // `Subsetting` (`:>`) and `Redefinition` (`:>>`) targets are always features, never types, so
-    // they resolve against `DeclarationDomain::Any` -- like `AliasBinding`/`ConnectorEnd` -- rather
-    // than joining the Subclassification/FeatureTyping `Type` domain pass. They do read the same
-    // ancestor-scoped `inherited_names` index as `FeatureTyping` (built from settled
-    // Subclassification outcomes below), because both explicit redefinition (`:>> status = ...;`)
-    // and subsetting of an inherited feature must be able to reach a same-named or differently-named
-    // feature owned by an ancestor, not just a directly owned member.
-    let subsetting_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Subsetting).then_some(index)
-        })
-        .collect();
-    let redefinition_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Redefinition).then_some(index)
-        })
-        .collect();
-    // An alias target can be any element (not just a Type), so `AliasBinding` resolves against
-    // `DeclarationDomain::Any` rather than joining the Subclassification/FeatureTyping `Type`
-    // domain passes; it does not read inherited scope either, so it can settle alongside
-    // Subclassification, independently of the ancestor closures built below.
-    let alias_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::AliasBinding).then_some(index)
-        })
-        .collect();
-    // A connector end can reference any feature (not just a Type), exactly like an alias target,
-    // so `ConnectorEnd` resolves against `DeclarationDomain::Any` alongside `AliasBinding` rather
-    // than joining the Subclassification/FeatureTyping `Type` domain passes; it does not read
-    // inherited scope either.
-    let connector_end_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::ConnectorEnd).then_some(index)
-        })
-        .collect();
-    // A succession end (`first`/`then` in a `FirstStmt`) can reference any owned action feature
-    // (not just a Type), exactly like a connector end, so `Succession` resolves against
-    // `DeclarationDomain::Any` alongside `ConnectorEnd` rather than joining the Subclassification/
-    // FeatureTyping `Type` domain passes; it does not read inherited scope either.
-    let succession_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Succession).then_some(index)
-        })
-        .collect();
-    // Entry/do/exit action bindings, a state's initial-state (`then`) target, and a constraint/
-    // calc expression's feature-reference operands (`ExpressionOperand`) can each reference any
-    // owned feature (not just a Type), exactly like `Succession`, so they resolve against
-    // `DeclarationDomain::Any` alongside it rather than joining the Subclassification/FeatureTyping
-    // `Type` domain passes; none of them read inherited scope either.
-    // A `satisfy <requirement> by <element>;` statement's source/target operands can each
-    // reference any owned feature (not just a Type), exactly like `Succession`/`TransitionSource`,
-    // so they join `state_binding_slots`'s `DeclarationDomain::Any` pass rather than the
-    // Subclassification/FeatureTyping `Type` domain passes.
-    // An `Expression::Invocation`/`Constructor` callee (`InvocationCallee`) can likewise name any
-    // owned feature (a calc/function) or a type (a constructor), not just a Type, so it joins this
-    // same `DeclarationDomain::Any` pass.
-    let state_binding_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            matches!(
-                reference.kind(),
-                ReferenceKind::EntryActionBinding
-                    | ReferenceKind::DoActionBinding
-                    | ReferenceKind::ExitActionBinding
-                    | ReferenceKind::InitialState
-                    | ReferenceKind::ExpressionOperand
-                    | ReferenceKind::TransitionSource
-                    | ReferenceKind::TransitionTarget
-                    | ReferenceKind::TransitionTrigger
-                    | ReferenceKind::TransitionEffect
-                    | ReferenceKind::SatisfySource
-                    | ReferenceKind::SatisfyTarget
-                    | ReferenceKind::BindSource
-                    | ReferenceKind::BindTarget
-                    | ReferenceKind::Variant
-                    | ReferenceKind::IncludeUseCase
-                    | ReferenceKind::ViewExpose
-                    | ReferenceKind::InvocationCallee
-                    | ReferenceKind::ThenTarget
-                    | ReferenceKind::AcceptVia
-                    | ReferenceKind::SendTarget
-                    | ReferenceKind::TerminateTarget
-                    | ReferenceKind::FlowSource
-                    | ReferenceKind::FlowTarget
-                    | ReferenceKind::StakeholderTarget
-                    | ReferenceKind::PurposeTarget
-                    | ReferenceKind::VerifyRequirementTarget
-                    | ReferenceKind::AssignTarget
-                    | ReferenceKind::DependencyClient
-                    | ReferenceKind::DependencySupplier
-                    | ReferenceKind::PerformParameterTarget
-                    | ReferenceKind::FeatureChaining
-            )
-            .then_some(index)
-        })
-        .collect();
-    // `MemberAccessOperand` (a dotted feature-chain access, e.g. `t.bead`, `f.a`) must run after
-    // `typing_slots` has resolved and `inherited_names` has been extended with usage-typing entries
-    // below (`extend_inherited_names_with_usage_typing`), because its interior segments are looked
-    // up as members of each hop's resolved *type*, not the hop's own declaration -- exactly the
-    // index that extension builds. It cannot join `state_binding_slots` above, which runs before
-    // that extension exists.
-    let member_access_slots: Vec<usize> = references
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| *index >= settled)
-        .filter_map(|(index, reference)| {
-            matches!(
-                reference.kind(),
-                ReferenceKind::MemberAccessOperand
-                    | ReferenceKind::AllocateSource
-                    | ReferenceKind::AllocateTarget
-            )
-            .then_some(index)
-        })
-        .collect();
-    let mut work = ResolutionWork {
-        direct_index_entries: u64::try_from(direct_names.candidates.len())
-            .map_err(|_| ResolutionError::Capacity)?,
-        ..ResolutionWork::default()
-    };
-    let mut effective_imports = NameIndex::build(Vec::new())?;
-    let mut exported_imports = NameIndex::build(Vec::new())?;
-    let mut ambiguous_candidates = Vec::new();
-    let mut candidates = Vec::new();
-    let mut next_candidates = Vec::new();
-    let mut converged = false;
-
-    for _ in 0..pass_limit {
-        work.passes = work
-            .passes
-            .checked_add(1)
-            .ok_or(ResolutionError::Capacity)?;
-        ambiguous_candidates.clear();
-        for index in import_slots.iter().copied() {
-            work.import_evaluations = work
-                .import_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                supported_import_domain(reference).ok_or(ResolutionError::InvalidStorage)?,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-        let (next_effective_imports, next_exported_imports) = build_effective_import_indexes(
-            declarations,
-            &memberships,
-            references,
-            &all_import_slots,
-            &exported_names,
-            &exported_imports,
-            &outcomes,
-        )?;
-        if next_effective_imports == effective_imports && next_exported_imports == exported_imports
-        {
-            effective_imports = next_effective_imports;
-            exported_imports = next_exported_imports;
-            converged = true;
-            break;
-        }
-        effective_imports = next_effective_imports;
-        exported_imports = next_exported_imports;
-    }
-
-    let solver_status = if converged {
-        SolverStatus::Converged
-    } else {
-        for index in import_slots
-            .iter()
-            .chain(&subclass_slots)
-            .chain(&typing_slots)
-            .chain(&state_binding_slots)
-            .chain(&subsetting_slots)
-            .chain(&redefinition_slots)
-            .chain(&alias_slots)
-            .chain(&connector_end_slots)
-            .chain(&succession_slots)
-            .chain(&metadata_annotation_slots)
-            .chain(&member_access_slots)
-            .copied()
-        {
-            outcomes[index] = ResolutionStatus::NonConverged;
-        }
-        ambiguous_candidates.clear();
-        SolverStatus::NonConverged
-    };
-
-    let mut inherited_names = NameIndex::build(Vec::new())?;
-    if converged {
-        for index in subclass_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Type,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in alias_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in connector_end_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in succession_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in state_binding_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        // Alias bindings form a functional graph (each alias has at most one outgoing edge, its
-        // own resolved target). A cycle (`alias A for B; alias B for A;`) is detected explicitly,
-        // bounded by declaration count, and published as a typed `NonConverged` outcome on each
-        // implicated alias's own `AliasBinding` reference -- mirroring the Subclassification
-        // ancestor-closure cycle handling above -- rather than looping or panicking.
-        let cyclic_alias_sources =
-            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
-        for index in alias_slots.iter().copied() {
-            if cyclic_alias_sources.contains(&references[index].source()) {
-                outcomes[index] = ResolutionStatus::NonConverged;
-            }
-        }
-
-        // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
-        // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
-        // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
-        // set, and a specialization cycle is detected explicitly rather than looped forever.
-        let (ancestor_closures, cyclic_ancestry) =
-            build_ancestor_closures(declarations, references, &outcomes)?;
-        inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
-
-        for index in typing_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Type,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in metadata_annotation_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Type,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
-        // target through the usage's own ancestor closure -- a plain usage has no Subclassification
-        // ancestors of its own. Instead, the target must be reached
-        // by first following the usage's own settled `FeatureTyping` reference to its type, then
-        // searching that type's directly-owned members and its already-computed ancestor closure
-        // (built above from Subclassification, independently of this step). This is why it runs
-        // only now, after `typing_slots` has converged -- unlike the Subclassification-based
-        // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
-        // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
-        // reached only via `Need -> UserRequirement -> ManagedRequirement`.
-        inherited_names = extend_inherited_names_with_usage_typing(
-            &direct_names,
-            inherited_names,
-            references,
-            &outcomes,
-            &typing_slots,
-        )?;
-
-        // `MemberAccessOperand` (dotted feature-chain access, e.g. `t.bead`) resolves its root
-        // segment through the same `DeclarationDomain::Any` lexical lookup every other operand
-        // kind uses, then chases each subsequent segment as a member owned (directly or through
-        // inheritance) by the *type* of the previously resolved segment, via the just-extended
-        // `inherited_names` index -- see `resolve_member_access_reference`'s own doc comment.
-        for index in member_access_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_member_access_reference(
-                declarations,
-                paths,
-                &references[index],
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in subsetting_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in redefinition_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-    }
-    #[cfg(test)]
-    {
-        work.effective_index_entries = u64::try_from(effective_imports.candidates.len())
-            .map_err(|_| ResolutionError::Capacity)?;
-    }
-
-    // The implied-redefinition family reads only settled Subclassification outcomes and the
-    // already-built owner-scoped direct-name index above; it is not mutually recursive with the
-    // import/typing fixed point above and therefore runs once, after that fixed point settles,
-    // rather than joining it as another per-pass family.
-    let implied_relationships = if converged {
-        let mut implied = synthesize_implied_redefinitions(
-            declarations,
-            membership_records,
-            references,
-            &direct_names,
-            &outcomes,
-        )?
-        .into_vec();
-        let cyclic_alias_sources =
-            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
-        implied.extend(
-            synthesize_implied_alias_bindings(
-                declarations,
-                references,
-                &outcomes,
-                &cyclic_alias_sources,
-            )?
-            .into_vec(),
-        );
-        implied.into_boxed_slice()
-    } else {
-        Box::default()
-    };
-
-    Ok((
-        direct_names,
-        effective_imports,
-        memberships,
-        ResolutionResults {
-            outcomes: outcomes.into_boxed_slice(),
-            ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
-            inherited_names,
-            solver_status,
-            implied_relationships,
-            library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
-            #[cfg(test)]
-            work,
-        },
-    ))
-}
-
-/// Synthesizes implied same-name inherited-member redefinition facts.
-///
-/// Scope: a feature member `f` directly owned by a type `Child`, where `Child` has a resolved
-/// `Subclassification` reference to `Parent`, and `Parent` directly (not transitively) owns
-/// exactly one feature member also named `f`. This deliberately does not chase multi-level or
-/// diamond ancestry: if the immediate parent has zero or more than one directly owned same-name
-/// feature candidate, no implied fact is synthesized for that pair rather than guessing. A member
-/// that already carries an explicit `:>>` redefinition to any target is left to that authored fact
-/// and is never also given an implied one.
-fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    memberships: &[MembershipRecord],
-    references: &[R],
-    direct_names: &NameIndex,
-    outcomes: &[ResolutionStatus],
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let mut membership_kind: Vec<Option<MembershipKind>> = vec![None; declarations.len()];
-    for membership in memberships {
-        if let Some(slot) = membership_kind.get_mut(membership.member.index()) {
-            *slot = Some(membership.kind);
-        }
-    }
-    let is_feature = |id: DeclarationId| {
-        membership_kind.get(id.index()).copied().flatten() == Some(MembershipKind::Feature)
-    };
-
-    let mut explicitly_redefines: std::collections::BTreeSet<DeclarationId> = Default::default();
-    for reference in references {
-        if reference.kind() == ReferenceKind::Redefinition {
-            explicitly_redefines.insert(reference.source());
-        }
-    }
-
-    let mut implied = Vec::new();
-    for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::Subclassification {
-            continue;
-        }
-        let ResolutionStatus::Resolved(parent) = outcomes[index] else {
-            continue;
-        };
-        let child = reference.source();
-        for (name, member_candidates) in direct_names.entries_for_owner(Some(child)) {
-            for &member in member_candidates {
-                if !is_feature(member) || explicitly_redefines.contains(&member) {
-                    continue;
-                }
-                let parent_candidates = direct_names.candidates(Some(parent), name);
-                let mut matches = parent_candidates.iter().copied().filter(|c| is_feature(*c));
-                let Some(single_match) = matches.next() else {
-                    continue;
-                };
-                if matches.next().is_some() {
-                    // Ambiguous immediate-parent candidates: leave unresolved rather than guess.
-                    continue;
-                }
-                implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Redefinition,
-                    source: member,
-                    target: single_match,
-                });
-            }
-        }
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
-/// Detects `alias` targets that eventually cycle back to their own starting alias declaration
-/// (`alias A for B; alias B for A;`). Alias bindings form a functional graph -- each alias
-/// declaration has at most one outgoing edge, its own resolved `AliasBinding` target -- so a walk
-/// from any alias source bounded by `declarations.len() + 1` hops either terminates at a non-alias
-/// target, runs off an unresolved edge, or revisits its own start, which is the only case flagged
-/// here. Only alias declarations that themselves author a resolved `AliasBinding` reference are
-/// candidates, so the returned set is always a subset of alias declarations.
-fn detect_cyclic_alias_bindings<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-) -> Result<std::collections::BTreeSet<DeclarationId>, ResolutionError> {
-    let mut direct_target: Vec<Option<DeclarationId>> = vec![None; declarations.len()];
-    for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::AliasBinding {
-            continue;
-        }
-        if let ResolutionStatus::Resolved(target) = outcomes[index] {
-            if let Some(slot) = direct_target.get_mut(reference.source().index()) {
-                *slot = Some(target);
-            }
-        }
-    }
-    let pass_limit = declarations
-        .len()
-        .checked_add(1)
-        .ok_or(ResolutionError::Capacity)?;
-    let mut cyclic = std::collections::BTreeSet::new();
-    for index in 0..declarations.len() {
-        let Some(mut current) = direct_target[index] else {
-            continue;
-        };
-        let start = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        let mut steps = 0usize;
-        loop {
-            if current == start {
-                cyclic.insert(start);
-                break;
-            }
-            let Some(next) = direct_target.get(current.index()).copied().flatten() else {
-                break;
-            };
-            current = next;
-            steps = steps.checked_add(1).ok_or(ResolutionError::Capacity)?;
-            if steps > pass_limit {
-                // Defensive only: a functional graph over a bounded declaration count cannot
-                // require more hops than there are declarations without having already revisited
-                // `start` above.
-                cyclic.insert(start);
-                break;
-            }
-        }
-    }
-    Ok(cyclic)
-}
-
-/// Synthesizes implied "typing/specialization/... through an alias" relationship facts: when an
-/// authored reference (for example a `FeatureTyping` on `device : DeviceAlias`) resolves to an
-/// alias declaration, this follows that alias's own resolved `AliasBinding` chain -- transitively,
-/// through alias-of-alias -- to the ultimate non-alias target and publishes an `implied` (per
-/// provenance) relationship of the *same* reference kind
-/// straight from the original source to that ultimate target. This makes aliasing "transparent"
-/// for downstream typing without weakening or replacing the alias's own authored `AliasBinding`
-/// fact, which remains published as its own (authored-provenance) reference/relationship. A cycle
-/// in the alias chain (already reported via `detect_cyclic_alias_bindings`) or an unresolved link
-/// simply yields no implied fact for that source, rather than guessing.
-fn synthesize_implied_alias_bindings<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-    cyclic_alias_sources: &std::collections::BTreeSet<DeclarationId>,
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let mut alias_target: std::collections::BTreeMap<DeclarationId, DeclarationId> =
-        Default::default();
-    for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::AliasBinding {
-            continue;
-        }
-        if cyclic_alias_sources.contains(&reference.source()) {
-            continue;
-        }
-        if let ResolutionStatus::Resolved(target) = outcomes[index] {
-            alias_target.insert(reference.source(), target);
-        }
-    }
-    let is_alias = |id: DeclarationId| {
-        declarations
-            .get(id.index())
-            .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
-    };
-
-    let mut implied = Vec::new();
-    for (index, reference) in references.iter().enumerate() {
-        if reference.kind() == ReferenceKind::AliasBinding {
-            continue;
-        }
-        let ResolutionStatus::Resolved(mut current) = outcomes[index] else {
-            continue;
-        };
-        if !is_alias(current) {
-            continue;
-        }
-        let mut visited = std::collections::BTreeSet::new();
-        let mut ultimate = None;
-        loop {
-            if !visited.insert(current) {
-                // Cyclic alias chain: leave unresolved rather than guess.
-                ultimate = None;
-                break;
-            }
-            match alias_target.get(&current) {
-                Some(&next) if is_alias(next) => current = next,
-                Some(&next) => {
-                    ultimate = Some(next);
-                    break;
-                }
-                None => break,
-            }
-        }
-        if let Some(target) = ultimate {
-            implied.push(ImpliedRelationship {
-                kind: reference.kind(),
-                source: reference.source(),
-                target,
-            });
-        }
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
-fn library_specialization_anchors(
-    storage: &SemanticModelStorage,
-) -> LibrarySpecializationAnchorFacts {
-    let anchors = GENERATED_LIBRARY_SPECIALIZATION_RULES
-        .iter()
-        .map(|rule| {
-            (
-                rule.rule_id,
-                LibrarySpecializationAnchorBranch::Default,
-                rule.anchor,
-            )
-        })
-        .chain(
-            GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
-                .iter()
-                .flat_map(|rule| {
-                    std::iter::once((
-                        rule.rule_id,
-                        LibrarySpecializationAnchorBranch::Default,
-                        rule.anchor,
-                    ))
-                    .chain(rule.true_anchor.map(|anchor| {
-                        (
-                            rule.rule_id,
-                            LibrarySpecializationAnchorBranch::PredicateTrue,
-                            anchor,
-                        )
-                    }))
-                }),
-        )
-        .chain(GENERATED_LIBRARY_REDEFINITION_RULES.iter().map(|rule| {
-            (
-                rule.rule_id,
-                LibrarySpecializationAnchorBranch::Default,
-                rule.anchor,
-            )
-        }))
-        .map(|(rule_id, branch, anchor)| {
-            (
-                LibrarySpecializationAnchorKey {
-                    rule: LibrarySpecializationRuleKey(rule_id),
-                    branch,
-                },
-                resolve_library_specialization_anchor(storage, anchor),
-            )
-        })
-        .collect();
-    LibrarySpecializationAnchorFacts { by_rule: anchors }
-}
-
-fn resolve_library_specialization_anchor(
-    storage: &SemanticModelStorage,
-    anchor: &'static str,
-) -> LibrarySpecializationAnchor {
-    let parts = anchor.split("::").collect::<Vec<_>>();
-    let Some((&last, owners)) = parts.split_last() else {
-        return LibrarySpecializationAnchor::Missing;
-    };
-    let mut candidates = storage
-        .declarations
-        .iter()
-        .enumerate()
-        .filter_map(|(index, declaration)| {
-            (storage
-                .document(declaration.document)
-                .is_some_and(|document| document.role == SourceRole::StandardLibrary)
-                && declaration
-                    .name
-                    .is_some_and(|name| storage.symbol(name) == Some(last))
-                && anchor_owner_path_matches(storage, declaration.owner, owners))
-            .then(|| DeclarationId::from_index(index).ok())
-            .flatten()
-        })
-        .collect::<Vec<_>>();
-    candidates.sort_unstable();
-    candidates.dedup();
-    match candidates.len() {
-        0 => LibrarySpecializationAnchor::Missing,
-        1 => LibrarySpecializationAnchor::Resolved(candidates[0]),
-        _ => LibrarySpecializationAnchor::Ambiguous(candidates.into_boxed_slice()),
-    }
-}
-
-/// Checks the structural containment path of a normative anchor, outermost first.
-///
-/// This deliberately stops at the source root and therefore cannot treat an arbitrary nested
-/// package named `Parts` as the language-owned library namespace.
-fn anchor_owner_path_matches(
-    storage: &SemanticModelStorage,
-    owner: Option<DeclarationId>,
-    expected: &[&str],
-) -> bool {
-    let mut cursor = owner;
-    for name in expected.iter().rev() {
-        let Some(current) = cursor else {
-            return false;
-        };
-        let Some(declaration) = storage.declaration(current) else {
-            return false;
-        };
-        if !declaration
-            .name
-            .is_some_and(|id| storage.symbol(id) == Some(*name))
-        {
-            return false;
-        }
-        cursor = declaration.owner;
-    }
-    cursor.is_none()
-}
-
-/// Applies every exact unconditional manifest rule through the typed declaration-kind projection.
-/// The generated table is the authority for both applicability metaclass and library anchor.
-fn synthesize_generated_library_specializations(
-    storage: &SemanticModelStorage,
-    references: &[AuthoredReference],
-    outcomes: &[ResolutionStatus],
-    anchor_facts: &LibrarySpecializationAnchorFacts,
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let (ancestors, cyclic) = build_ancestor_closures(&storage.declarations, references, outcomes)?;
-    let mut implied = Vec::new();
-    for (index, declaration) in storage.declarations.iter().enumerate() {
-        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
-            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
-        {
-            for rule in library_specialization_rules(metaclass) {
-                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
-                else {
-                    continue;
-                };
-                if source == *anchor
-                    || cyclic.contains(&source)
-                    || ancestors
-                        .get(source.index())
-                        .is_some_and(|set| set.contains(anchor))
-                {
-                    continue;
-                }
-                implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
-                    source,
-                    target: *anchor,
-                });
-            }
-            for rule in conditional_library_specialization_rules(metaclass) {
-                if !conditional_library_specialization_predicate_holds_with_resolution(
-                    storage, source, rule, references, outcomes,
-                ) {
-                    continue;
-                }
-                let branch =
-                    conditional_library_specialization_anchor_branch(storage, source, rule);
-                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome_for(rule.rule_id, branch)
-                else {
-                    continue;
-                };
-                if source == *anchor
-                    || cyclic.contains(&source)
-                    || ancestors
-                        .get(source.index())
-                        .is_some_and(|set| set.contains(anchor))
-                {
-                    continue;
-                }
-                implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
-                    source,
-                    target: *anchor,
-                });
-            }
-        }
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
-/// Evaluates only the exact predicate vocabulary emitted by the pinned-manifest extractor.
-/// The predicate is the manifest's closed enum, so adding a contract requires an exhaustive
-/// resolver decision rather than falling through a similarly spelled string label.
-fn conditional_library_specialization_predicate_holds(
-    storage: &SemanticModelStorage,
-    source: DeclarationId,
-    rule: &ConditionalLibrarySpecializationRule,
-) -> bool {
-    let Some(declaration) = storage.declaration(source) else {
-        return false;
-    };
-    let Some(facts) = storage.declaration_facts(source) else {
-        return false;
-    };
-    match rule.predicate {
-        LibrarySpecializationPredicate::IsIndividual => {
-            declaration.kind == DeclarationKind::OccurrenceDefinition && facts.modifiers.individual
-        }
-        LibrarySpecializationPredicate::PortionKindSnapshot => {
-            declaration.kind == DeclarationKind::OccurrenceUsage
-                && facts.portion_kind == Some(PortionKind::Snapshot)
-        }
-        LibrarySpecializationPredicate::PortionKindTimeslice => {
-            declaration.kind == DeclarationKind::OccurrenceUsage
-                && facts.portion_kind == Some(PortionKind::Timeslice)
-        }
-        LibrarySpecializationPredicate::CompositeOwnedBy => {
-            facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        rule.owner_metaclasses
-                            .contains(&library_rule_metaclass(owner.kind))
-                    })
-                })
-        }
-        LibrarySpecializationPredicate::OwnedBy => declaration.owner.is_some_and(|owner| {
-            storage.declaration(owner).is_some_and(|owner| {
-                rule.owner_metaclasses
-                    .contains(&library_rule_metaclass(owner.kind))
-            })
-        }),
-        LibrarySpecializationPredicate::IsSubactionUsage => {
-            facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                        )
-                    })
-                })
-        }
-        LibrarySpecializationPredicate::IsNotTriggerAction => {
-            declaration.kind == DeclarationKind::AcceptActionUsage
-                && facts.is_trigger_action == Some(false)
-        }
-        LibrarySpecializationPredicate::IsSubactionUsageAndNotTriggerAction => {
-            declaration.kind == DeclarationKind::AcceptActionUsage
-                && facts.is_trigger_action == Some(false)
-                && facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                        )
-                    })
-                })
-        }
-        LibrarySpecializationPredicate::IsTriggerAction => {
-            declaration.kind == DeclarationKind::AcceptActionUsage
-                && facts.is_trigger_action == Some(true)
-        }
-        LibrarySpecializationPredicate::HasElseActionBranch => {
-            declaration.kind == DeclarationKind::If && facts.has_else_action.is_some()
-        }
-        LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo
-        | LibrarySpecializationPredicate::ConnectorEndCountIsTwo
-        | LibrarySpecializationPredicate::AssociationEndCountIsTwo
-        | LibrarySpecializationPredicate::EndFeatureCountIsTwo => {
-            positional_end_count(storage, source) == 2
-        }
-        LibrarySpecializationPredicate::FlowEndCountIsTwo => {
-            declaration.kind == DeclarationKind::FlowDefinition
-                && positional_end_count(storage, source) == 2
-        }
-        LibrarySpecializationPredicate::OwnedEndFeaturesNotEmpty => {
-            declaration.kind == DeclarationKind::Flow
-                && facts.owned_end_feature_count.is_some_and(|count| count > 0)
-        }
-        LibrarySpecializationPredicate::OwnedTypingDataType
-        | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
-        | LibrarySpecializationPredicate::ConnectorAssociationStructure => false,
-        LibrarySpecializationPredicate::PolarityBranch => facts.negated.is_some(),
-        LibrarySpecializationPredicate::FramedConcernMembership => {
-            element_kind::membership_role(declaration.kind) == Some(MembershipRole::FramedConcern)
-        }
-        LibrarySpecializationPredicate::RequirementConstraintMembershipKind => matches!(
-            element_kind::membership_role(declaration.kind),
-            Some(MembershipRole::RequirementConstraint(
-                RequirementConstraintKind::Assumption | RequirementConstraintKind::Requirement
-            ))
-        ),
-        LibrarySpecializationPredicate::ActorMembershipOwningRequirement => {
-            element_kind::membership_role(declaration.kind) == Some(MembershipRole::Actor)
-        }
-        LibrarySpecializationPredicate::StakeholderMembership => {
-            element_kind::membership_role(declaration.kind) == Some(MembershipRole::Stakeholder)
-        }
-        LibrarySpecializationPredicate::RequirementVerificationMembership => {
-            element_kind::membership_role(declaration.kind)
-                == Some(MembershipRole::RequirementVerification)
-        }
-    }
-}
-
-/// Evaluates the exact predicates whose prerequisite is a direct, already-settled
-/// `FeatureTyping` relationship. The relationship and its target are canonical authored and
-/// resolved facts; this owner never rereads syntax or derives a type from a display name.
-fn conditional_library_specialization_predicate_holds_with_resolution(
-    storage: &SemanticModelStorage,
-    source: DeclarationId,
-    rule: &ConditionalLibrarySpecializationRule,
-    references: &[AuthoredReference],
-    outcomes: &[ResolutionStatus],
-) -> bool {
-    match rule.predicate {
-        LibrarySpecializationPredicate::OwnedTypingDataType => {
-            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
-                storage
-                    .declaration(target)
-                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlDataType)
-            })
-        }
-        LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector => storage
-            .declaration(source)
-            .zip(storage.declaration_facts(source))
-            .is_some_and(|(declaration, facts)| {
-                facts.modifiers.end
-                    && declaration.owner.is_some_and(|owner| {
-                        storage.declaration(owner).is_some_and(|owner| {
-                            matches!(
-                                owner.kind,
-                                DeclarationKind::KermlAssociation | DeclarationKind::KermlConnector
-                            )
-                        })
-                    })
-            }),
-        LibrarySpecializationPredicate::ConnectorAssociationStructure => {
-            declaration_has_direct_association_structure_typing(
-                storage, source, references, outcomes,
-            )
-        }
-        _ => conditional_library_specialization_predicate_holds(storage, source, rule),
-    }
-}
-
-/// `Connector::association` is a derived subset of the connector's `type` collection constrained
-/// to `Association`. The canonical direct `FeatureTyping` relationship already owns that source
-/// collection; filtering its settled target by the exact `AssociationStructure` metaclass here
-/// gives the two closed Connector predicates their sole semantic input without inspecting syntax.
-fn declaration_has_direct_association_structure_typing(
-    storage: &SemanticModelStorage,
-    source: DeclarationId,
-    references: &[AuthoredReference],
-    outcomes: &[ResolutionStatus],
-) -> bool {
-    storage
-        .declaration(source)
-        .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlConnector)
-        && direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
-            storage.declaration(target).is_some_and(|declaration| {
-                declaration.kind == DeclarationKind::KermlAssociationStructure
-            })
-        })
-}
-
-fn direct_owned_typing_targets<'a>(
-    storage: &'a SemanticModelStorage,
-    source: DeclarationId,
-    references: &'a [AuthoredReference],
-    outcomes: &'a [ResolutionStatus],
-) -> impl Iterator<Item = DeclarationId> + 'a {
-    references
-        .iter()
-        .enumerate()
-        .filter(move |(_, reference)| {
-            reference.source == source && reference.kind == ReferenceKind::FeatureTyping
-        })
-        .filter_map(move |(index, _)| match outcomes.get(index) {
-            Some(ResolutionStatus::Resolved(target)) => Some(*target),
-            _ => None,
-        })
-        .filter(move |target| storage.declaration(*target).is_some())
-}
-
-/// Selects the already-published branch of a closed conditional contract. The `then` branch is a
-/// typed key shared by exact polarity and membership-role contracts; every other predicate retains
-/// the compatibility default anchor. A missing canonical fact was rejected by predicate
-/// evaluation above, rather than silently selecting a branch.
-fn conditional_library_specialization_anchor_branch(
-    storage: &SemanticModelStorage,
-    source: DeclarationId,
-    rule: &ConditionalLibrarySpecializationRule,
-) -> LibrarySpecializationAnchorBranch {
-    let predicate_true = match rule.predicate {
-        LibrarySpecializationPredicate::PolarityBranch => storage
-            .declaration_facts(source)
-            .is_some_and(|facts| facts.negated == Some(true)),
-        LibrarySpecializationPredicate::HasElseActionBranch => storage
-            .declaration_facts(source)
-            .is_some_and(|facts| facts.has_else_action == Some(true)),
-        LibrarySpecializationPredicate::RequirementConstraintMembershipKind => {
-            storage.declaration(source).is_some_and(|declaration| {
-                element_kind::membership_role(declaration.kind)
-                    == Some(MembershipRole::RequirementConstraint(
-                        RequirementConstraintKind::Assumption,
-                    ))
-            })
-        }
-        LibrarySpecializationPredicate::ActorMembershipOwningRequirement => storage
-            .declaration(source)
-            .and_then(|declaration| declaration.owner)
-            .and_then(|owner| storage.declaration(owner))
-            .is_some_and(|owner| {
-                matches!(
-                    owner.kind,
-                    DeclarationKind::RequirementDefinition | DeclarationKind::RequirementUsage
-                )
-            }),
-        LibrarySpecializationPredicate::IsIndividual
-        | LibrarySpecializationPredicate::PortionKindSnapshot
-        | LibrarySpecializationPredicate::PortionKindTimeslice
-        | LibrarySpecializationPredicate::CompositeOwnedBy
-        | LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo
-        | LibrarySpecializationPredicate::ConnectorEndCountIsTwo
-        | LibrarySpecializationPredicate::AssociationEndCountIsTwo
-        | LibrarySpecializationPredicate::EndFeatureCountIsTwo
-        | LibrarySpecializationPredicate::FlowEndCountIsTwo
-        | LibrarySpecializationPredicate::OwnedEndFeaturesNotEmpty
-        | LibrarySpecializationPredicate::OwnedTypingDataType
-        | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
-        | LibrarySpecializationPredicate::ConnectorAssociationStructure
-        | LibrarySpecializationPredicate::OwnedBy
-        | LibrarySpecializationPredicate::IsSubactionUsage
-        | LibrarySpecializationPredicate::IsNotTriggerAction
-        | LibrarySpecializationPredicate::IsSubactionUsageAndNotTriggerAction
-        | LibrarySpecializationPredicate::IsTriggerAction
-        | LibrarySpecializationPredicate::FramedConcernMembership
-        | LibrarySpecializationPredicate::StakeholderMembership
-        | LibrarySpecializationPredicate::RequirementVerificationMembership => false,
-    };
-    if predicate_true {
-        LibrarySpecializationAnchorBranch::PredicateTrue
-    } else {
-        LibrarySpecializationAnchorBranch::Default
-    }
-}
-
-/// The canonical structural representation for the exact XMI end collections is each child
-/// declaration's owned positional-end fact. The generated rule's metaclass and closed predicate
-/// still distinguish `connectorEnd`, `associationEnd`, `endFeature`, and `ownedEndFeature`; this
-/// helper only owns their shared storage projection.
-fn positional_end_count(storage: &SemanticModelStorage, owner: DeclarationId) -> usize {
-    storage
-        .declarations
-        .iter()
-        .enumerate()
-        .filter(|(index, declaration)| {
-            declaration.owner == Some(owner)
-                && DeclarationId::from_index(*index)
-                    .ok()
-                    .and_then(|member| storage.declaration_facts(member))
-                    .is_some_and(|facts| facts.positional_end.is_some())
-        })
-        .count()
-}
-
-/// Applies exact unconditional `redefinesFromLibrary` rules after authored references have
-/// settled. An authored redefinition always suppresses the generated edge for that source, so an
-/// implied fact never disguises or competes with source intent. Rules whose metaclass has no
-/// lowered declaration projection produce no edge; their canonical anchor remains queryable by
-/// stable rule ID rather than being guessed from a similarly named declaration.
-fn synthesize_generated_library_redefinitions(
-    storage: &SemanticModelStorage,
-    references: &[AuthoredReference],
-    anchor_facts: &LibrarySpecializationAnchorFacts,
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let authored_sources: std::collections::BTreeSet<_> = references
-        .iter()
-        .filter(|reference| reference.kind == ReferenceKind::Redefinition)
-        .map(|reference| reference.source)
-        .collect();
-    let mut implied = Vec::new();
-    for (index, declaration) in storage.declarations.iter().enumerate() {
-        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        if authored_sources.contains(&source) {
-            continue;
-        }
-        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
-            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
-        {
-            for rule in library_redefinition_rules(metaclass) {
-                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
-                else {
-                    continue;
-                };
-                if source != *anchor {
-                    implied.push(ImpliedRelationship {
-                        kind: ReferenceKind::Redefinition,
-                        source,
-                        target: *anchor,
-                    });
-                }
-            }
-        }
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
-/// Materializes KerML's `checkFeatureFeatureMembershipTypeFeaturing` semantic consequence.
-///
-/// A non-`var` Feature owned through a FeatureMembership is featured by that membership's owning
-/// Type. This runs after reference convergence and writes the same canonical relationship store as
-/// authored `featured by` clauses. Any authored TypeFeaturing for the source suppresses the
-/// boilerplate edge, preserving explicit source intent and avoiding a second competing fact.
-///
-/// `var` Features have a different normative target (the owning type's `snapshots` feature). That
-/// prerequisite is not lowered yet, so this function publishes no guessed edge; the type-featuring
-/// query reports the corresponding explicit unsupported outcome.
-fn synthesize_feature_membership_type_featurings(
-    storage: &SemanticModelStorage,
-    references: &[AuthoredReference],
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let authored_sources = references
-        .iter()
-        .filter(|reference| reference.kind == ReferenceKind::TypeFeaturing)
-        .map(|reference| reference.source)
-        .collect::<std::collections::BTreeSet<_>>();
-    let mut implied = Vec::new();
-    for membership in storage.memberships.iter() {
-        if membership.kind != MembershipKind::Feature
-            || authored_sources.contains(&membership.member)
-        {
-            continue;
-        }
-        let Some(feature) = storage.declaration(membership.member) else {
-            return Err(ResolutionError::InvalidStorage);
-        };
-        if storage
-            .declaration_facts(membership.member)
-            .is_some_and(|facts| facts.modifiers.var)
-        {
-            continue;
-        }
-        let Some(owner) = feature.owner else {
-            continue;
-        };
-        let Some(owner_declaration) = storage.declaration(owner) else {
-            return Err(ResolutionError::InvalidStorage);
-        };
-        if matches!(
-            owner_declaration.kind,
-            DeclarationKind::Namespace
-                | DeclarationKind::Package
-                | DeclarationKind::LibraryPackage
-                | DeclarationKind::Import
-                | DeclarationKind::Alias
-        ) {
-            continue;
-        }
-        implied.push(ImpliedRelationship {
-            kind: ReferenceKind::TypeFeaturing,
-            source: membership.member,
-            target: owner,
-        });
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
-/// The generated schema-v3 metaclass spelling for a lowered declaration.
-///
-/// The public kind is the canonical projection for ordinary declarations. Two source forms retain
-/// a more descriptive public spelling (`FlowConnection*` and `Calculation*`) while the XMI uses
-/// the shorter abstract-syntax names; normalize those at this semantic boundary once rather than
-/// letting generated-rule consumers maintain aliases.
-fn library_rule_metaclass(kind: DeclarationKind) -> &'static str {
-    match kind {
-        DeclarationKind::FlowDefinition => "FlowDefinition",
-        DeclarationKind::Flow => "FlowUsage",
-        DeclarationKind::CalcDefinition => "CalculationDefinition",
-        DeclarationKind::CalcUsage => "CalculationUsage",
-        _ => element_kind::element_kind(kind).as_str(),
-    }
-}
-
-/// Compatibility spelling for specialization-only consumers. New generated-rule owners use
-/// `library_rule_metaclass`, which is the single normalization boundary for both exact families.
-fn library_specialization_metaclass(kind: DeclarationKind) -> &'static str {
-    library_rule_metaclass(kind)
-}
-
-/// Computes, for every declaration, the transitive set of Subclassification ancestors reached
-/// through resolved Subclassification outcomes, as a bounded fixed point over the immutable
-/// previous-pass state (mirroring the effective-import fixed point above): each pass reads the
-/// prior complete closure array and writes a fresh next array, swapped only at the pass barrier.
-///
-/// A diamond (`Diamond :> Left, Right` where both specialize `Base`) naturally dedups to a single
-/// `Base` entry because each declaration's closure is a set. A specialization cycle is detected
-/// explicitly: if a declaration's own closure would come to include itself, that declaration is
-/// reported as cyclic instead of being handed an ever-growing or self-referential ancestor list.
-/// Because each pass only ever unions in previously-discovered ancestors, the closure array is
-/// bounded by the total declaration count and this loop is guaranteed to reach a fixed point well
-/// inside `declarations.len() + 1` passes even in the presence of a cycle; it never spins forever.
-type AncestorClosures = (
-    Vec<Box<[DeclarationId]>>,
-    std::collections::BTreeSet<DeclarationId>,
-);
-
-fn build_ancestor_closures<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-) -> Result<AncestorClosures, ResolutionError> {
-    let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
-        vec![Default::default(); declarations.len()];
-    for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::Subclassification {
-            continue;
-        }
-        if let ResolutionStatus::Resolved(target) = outcomes[index] {
-            let slot = direct_parents
-                .get_mut(reference.source().index())
-                .ok_or(ResolutionError::InvalidStorage)?;
-            slot.insert(target);
-        }
-    }
-
-    let mut closure = direct_parents.clone();
-    let pass_limit = declarations
-        .len()
-        .checked_add(1)
-        .ok_or(ResolutionError::Capacity)?;
-    for _ in 0..pass_limit {
-        let mut next = closure.clone();
-        let mut changed = false;
-        for (index, parents) in direct_parents.iter().enumerate() {
-            for parent in parents {
-                for ancestor in
-                    std::iter::once(*parent).chain(closure[parent.index()].iter().copied())
-                {
-                    if next[index].insert(ancestor) {
-                        changed = true;
-                    }
-                }
-            }
-        }
-        closure = next;
-        if !changed {
-            break;
-        }
-    }
-
-    let mut cyclic = std::collections::BTreeSet::new();
-    let mut closures = Vec::with_capacity(declarations.len());
-    for (index, ancestors) in closure.into_iter().enumerate() {
-        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        if ancestors.contains(&id) {
-            cyclic.insert(id);
-            closures.push(Box::default());
-        } else {
-            closures.push(ancestors.into_iter().collect::<Vec<_>>().into_boxed_slice());
-        }
-    }
-    Ok((closures, cyclic))
-}
-
-/// Builds the ancestor-scoped inherited-member lookup index: for each non-cyclic declaration with
-/// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
-/// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
-/// member reached through two different ancestor paths to the same target (the diamond case)
-/// collapses to one candidate, while two different ancestors that directly own two different
-/// same-named members remain two distinct candidates and therefore resolve as ambiguous.
-fn build_inherited_name_index(
-    direct_names: &NameIndex,
-    ancestor_closures: &[Box<[DeclarationId]>],
-) -> Result<NameIndex, ResolutionError> {
-    let mut entries = Vec::new();
-    for (index, ancestors) in ancestor_closures.iter().enumerate() {
-        if ancestors.is_empty() {
-            continue;
-        }
-        let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        for &ancestor in ancestors.iter() {
-            for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
-                for &candidate in candidates {
-                    entries.push((
-                        NameKey {
-                            owner: Some(child),
-                            name,
-                        },
-                        candidate,
-                    ));
-                }
-            }
-        }
-    }
-    NameIndex::build(entries)
-}
-
-/// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)
-/// with entries reachable only by first following a usage's own settled `FeatureTyping` reference
-/// to its type: for every declaration `usage` whose `FeatureTyping` reference resolved to `target`,
-/// every name directly owned by `target` and every name already reachable in `target`'s own
-/// ancestor-scoped `inherited_names` entry becomes a candidate for `(usage, name)` here too. This
-/// lets an explicit `:>>`/`:>` reference owned by a plain usage (which has no Subclassification
-/// ancestors of its own) reach a member owned by an ancestor of the usage's *type* -- for example
-/// `need : Need { attribute :>> status = ...; }` reaching `ManagedRequirement::status` through
-/// `Need`'s own ancestor closure. Must run after `typing_slots` has resolved, since it reads their
-/// settled outcomes; the original entries are preserved unchanged, so plain type-owned
-/// Subclassification lookups (Subsetting/Redefinition owned directly by a def) are unaffected.
-fn extend_inherited_names_with_usage_typing<R: ResolutionReferenceFact>(
-    direct_names: &NameIndex,
-    inherited_names: NameIndex,
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-    typing_slots: &[usize],
-) -> Result<NameIndex, ResolutionError> {
-    let mut entries: Vec<(NameKey, DeclarationId)> = Vec::new();
-    for &index in typing_slots {
-        let ResolutionStatus::Resolved(target) = outcomes[index] else {
-            continue;
-        };
-        let usage = references[index].source();
-        for (name, candidates) in direct_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
-            }
-        }
-        for (name, candidates) in inherited_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
-            }
-        }
-    }
-    if entries.is_empty() {
-        return Ok(inherited_names);
-    }
-    for (index, keys) in inherited_names.keys.iter().enumerate() {
-        for &candidate in inherited_names.ranges[index]
-            .slice(&inherited_names.candidates)
-            .unwrap_or_default()
-        {
-            entries.push((*keys, candidate));
-        }
-    }
-    NameIndex::build(entries)
-}
-
-/// True when `source`'s owning namespace chain passes through a declaration whose Subclassification
-/// ancestry was found to be cyclic. A FeatureTyping reference owned (directly or via an enclosing
-/// scope) by such a declaration cannot have its inherited scope computed and is published as an
-/// explicit `NonConverged` outcome rather than silently falling back to local/import-only lookup or
-/// looping.
-fn owner_chain_is_cyclic(
-    declarations: &[Declaration],
-    source: DeclarationId,
-    cyclic_ancestry: &std::collections::BTreeSet<DeclarationId>,
-) -> Result<bool, ResolutionError> {
-    let mut owner = declarations
-        .get(source.index())
-        .ok_or(ResolutionError::InvalidStorage)?
-        .owner;
-    while let Some(current) = owner {
-        if cyclic_ancestry.contains(&current) {
-            return Ok(true);
-        }
-        owner = declarations
-            .get(current.index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .owner;
-    }
-    Ok(false)
-}
-
-fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<DeclarationDomain> {
-    match reference.kind() {
-        // A view's `expose` names any member, so it resolves through the same lookup an ordinary
-        // reference does rather than the import domains.
-        ReferenceKind::ViewExpose => Some(DeclarationDomain::Any),
-        ReferenceKind::NamespaceImport
-            if reference.flags().wildcard && !reference.flags().recursive =>
-        {
-            Some(DeclarationDomain::Namespace)
-        }
-        ReferenceKind::MembershipImport
-            if !reference.flags().wildcard && !reference.flags().recursive =>
-        {
-            Some(DeclarationDomain::Any)
-        }
-        ReferenceKind::NamespaceImport
-        | ReferenceKind::MembershipImport
-        | ReferenceKind::FilterImport
-        | ReferenceKind::FeatureTyping
-        | ReferenceKind::TypeFeaturing
-        | ReferenceKind::FeatureChaining
-        | ReferenceKind::Subclassification
-        | ReferenceKind::Subsetting
-        | ReferenceKind::Redefinition
-        | ReferenceKind::References
-        | ReferenceKind::Crosses
-        | ReferenceKind::Intersects
-        | ReferenceKind::Unioning
-        | ReferenceKind::Intersecting
-        | ReferenceKind::Differencing
-        | ReferenceKind::Disjoining
-        | ReferenceKind::AliasBinding
-        | ReferenceKind::ConnectorEnd
-        | ReferenceKind::Succession
-        | ReferenceKind::EntryActionBinding
-        | ReferenceKind::DoActionBinding
-        | ReferenceKind::ExitActionBinding
-        | ReferenceKind::InitialState
-        | ReferenceKind::ExpressionOperand
-        | ReferenceKind::TransitionSource
-        | ReferenceKind::TransitionTarget
-        | ReferenceKind::TransitionTrigger
-        | ReferenceKind::TransitionEffect
-        | ReferenceKind::MetadataAnnotation
-        | ReferenceKind::FilterMetadataTest
-        | ReferenceKind::SatisfySource
-        | ReferenceKind::SatisfyTarget
-        | ReferenceKind::AllocateSource
-        | ReferenceKind::AllocateTarget
-        | ReferenceKind::BindSource
-        | ReferenceKind::BindTarget
-        | ReferenceKind::Variant
-        | ReferenceKind::IncludeUseCase
-        | ReferenceKind::MemberAccessOperand
-        | ReferenceKind::InvocationCallee
-        | ReferenceKind::ThenTarget
-        | ReferenceKind::AcceptVia
-        | ReferenceKind::SendTarget
-        | ReferenceKind::AcceptPayloadType
-        | ReferenceKind::TerminateTarget
-        | ReferenceKind::FlowSource
-        | ReferenceKind::FlowTarget
-        | ReferenceKind::TypeCheckTarget
-        | ReferenceKind::MetaCastTarget
-        | ReferenceKind::StakeholderTarget
-        | ReferenceKind::PurposeTarget
-        | ReferenceKind::VerifyRequirementTarget
-        | ReferenceKind::AssignTarget
-        | ReferenceKind::DependencyClient
-        | ReferenceKind::DependencySupplier
-        | ReferenceKind::PerformParameterTarget
-        | ReferenceKind::FlowPayloadType => None,
-    }
-}
-
-/// Exact Definition/Usage metaclass applicability over the lowering's canonical kind fact.
-///
-/// These are deliberately not display-name checks. A new lowered declaration kind makes this
-/// policy reviewable here rather than silently appearing in a broad derived collection.
-fn definition_usage_source_matches(metaclass: &str, kind: DeclarationKind) -> bool {
-    match metaclass {
-        "Definition" => matches!(
-            kind,
-            DeclarationKind::PartDefinition
-                | DeclarationKind::AttributeDefinition
-                | DeclarationKind::EnumerationDefinition
-                | DeclarationKind::RequirementDefinition
-                | DeclarationKind::PortDefinition
-                | DeclarationKind::ItemDefinition
-                | DeclarationKind::ActionDefinition
-                | DeclarationKind::StateDefinition
-                | DeclarationKind::MetadataDefinition
-                | DeclarationKind::ConnectionDefinition
-                | DeclarationKind::OccurrenceDefinition
-                | DeclarationKind::AnalysisCaseDefinition
-                | DeclarationKind::InterfaceDefinition
-                | DeclarationKind::ViewDefinition
-                | DeclarationKind::CaseDefinition
-                | DeclarationKind::VerificationCaseDefinition
-                | DeclarationKind::UseCaseDefinition
-                | DeclarationKind::ViewpointDefinition
-                | DeclarationKind::RenderingDefinition
-                | DeclarationKind::AllocationDefinition
-                | DeclarationKind::FlowDefinition
-                | DeclarationKind::ConstraintDefinition
-                | DeclarationKind::ConcernDefinition
-                | DeclarationKind::CalcDefinition
-                | DeclarationKind::ClassDefinition
-                | DeclarationKind::ExtendedDefinition
-                | DeclarationKind::IndividualDefinition
-        ),
-        "Usage" => is_usage_declaration(kind),
-        _ => false,
-    }
-}
-
-fn requirement_derived_source_matches(metaclass: &str, kind: DeclarationKind) -> bool {
-    matches!(
-        (metaclass, kind),
-        (
-            "RequirementDefinition",
-            DeclarationKind::RequirementDefinition
-        ) | ("RequirementUsage", DeclarationKind::RequirementUsage)
-    )
-}
-
-fn requirement_derived_membership_role(
-    collection: RequirementDerivedFactCollection,
-) -> Option<MembershipRole> {
-    use RequirementDerivedFactCollection as Collection;
-    match collection {
-        Collection::DefinitionActorParameter | Collection::UsageActorParameter => {
-            Some(MembershipRole::Actor)
-        }
-        Collection::DefinitionSubjectParameter | Collection::UsageSubjectParameter => {
-            Some(MembershipRole::Subject)
-        }
-        Collection::DefinitionRequiredConstraint | Collection::UsageRequiredConstraint => Some(
-            MembershipRole::RequirementConstraint(RequirementConstraintKind::Requirement),
-        ),
-        Collection::DefinitionAssumedConstraint | Collection::UsageAssumedConstraint => Some(
-            MembershipRole::RequirementConstraint(RequirementConstraintKind::Assumption),
-        ),
-        Collection::DefinitionFramedConcern | Collection::UsageFramedConcern => {
-            Some(MembershipRole::FramedConcern)
-        }
-        Collection::DefinitionText | Collection::UsageText => None,
-    }
-}
-
-/// The currently lowered SysML `Usage` subtypes. This is a semantic applicability table, not a
-/// fallback: the private declaration kind is the canonical lowering fact and the match remains
-/// exhaustive enough to force review when a new usage form is admitted.
-fn is_usage_declaration(kind: DeclarationKind) -> bool {
-    matches!(
-        kind,
-        DeclarationKind::PartUsage
-            | DeclarationKind::AttributeUsage
-            | DeclarationKind::EnumerationUsage
-            | DeclarationKind::EnumerationLiteral
-            | DeclarationKind::RequirementUsage
-            | DeclarationKind::PortUsage
-            | DeclarationKind::ItemUsage
-            | DeclarationKind::ActionUsage
-            | DeclarationKind::AcceptActionUsage
-            | DeclarationKind::StateUsage
-            | DeclarationKind::MetadataUsage
-            | DeclarationKind::ConnectionUsage
-            | DeclarationKind::OccurrenceUsage
-            | DeclarationKind::AnalysisCaseUsage
-            | DeclarationKind::ViewUsage
-            | DeclarationKind::CaseUsage
-            | DeclarationKind::VerificationCaseUsage
-            | DeclarationKind::UseCaseUsage
-            | DeclarationKind::ViewpointUsage
-            | DeclarationKind::RenderingUsage
-            | DeclarationKind::InterfaceUsage
-            | DeclarationKind::ConstraintUsage
-            | DeclarationKind::AssertConstraintUsage
-            | DeclarationKind::AssumeConstraintUsage
-            | DeclarationKind::RequireConstraintUsage
-            | DeclarationKind::ConcernUsage
-            | DeclarationKind::CalcUsage
-            | DeclarationKind::ReferenceUsage
-            | DeclarationKind::DefaultReferenceUsage
-            | DeclarationKind::ParameterUsage
-            | DeclarationKind::SubjectUsage
-            | DeclarationKind::PerformActionUsage
-            | DeclarationKind::Transition
-            | DeclarationKind::Satisfy
-            | DeclarationKind::Allocate
-            | DeclarationKind::Bind
-            | DeclarationKind::Assign
-            | DeclarationKind::While
-            | DeclarationKind::Loop
-            | DeclarationKind::If
-            | DeclarationKind::ForLoop
-            | DeclarationKind::ForLoopVariable
-            | DeclarationKind::Decide
-            | DeclarationKind::Merge
-            | DeclarationKind::Fork
-            | DeclarationKind::Join
-            | DeclarationKind::ThenContinuation
-            | DeclarationKind::Flow
-            | DeclarationKind::StakeholderUsage
-            | DeclarationKind::RequirementActor
-            | DeclarationKind::CaseActor
-            | DeclarationKind::Frame
-            | DeclarationKind::VerifyRequirement
-            | DeclarationKind::BareConnect
-            | DeclarationKind::EntryActionBinding
-            | DeclarationKind::DoActionBinding
-            | DeclarationKind::ExitActionBinding
-            | DeclarationKind::InitialState
-            | DeclarationKind::FinalState
-            | DeclarationKind::PerformParameterBinding
-    )
-}
-
-/// Whether a direct canonical member satisfies the exact selected `selectByKind` result.
-fn definition_usage_candidate_matches(
-    collection: DefinitionUsageDerivedKind,
-    kind: DeclarationKind,
-) -> bool {
-    use DefinitionUsageDerivedKind as Collection;
-    match collection {
-        Collection::DefinitionOwnedAction | Collection::UsageNestedAction => matches!(
-            kind,
-            DeclarationKind::ActionUsage
-                | DeclarationKind::AcceptActionUsage
-                | DeclarationKind::PerformActionUsage
-                | DeclarationKind::EntryActionBinding
-                | DeclarationKind::DoActionBinding
-                | DeclarationKind::ExitActionBinding
-        ),
-        Collection::DefinitionOwnedAllocation | Collection::UsageNestedAllocation => {
-            matches!(kind, DeclarationKind::Allocate)
-        }
-        Collection::DefinitionOwnedAnalysisCase | Collection::UsageNestedAnalysisCase => {
-            matches!(kind, DeclarationKind::AnalysisCaseUsage)
-        }
-        Collection::DefinitionOwnedAttribute | Collection::UsageNestedAttribute => {
-            matches!(kind, DeclarationKind::AttributeUsage)
-        }
-        Collection::DefinitionOwnedCalculation | Collection::UsageNestedCalculation => {
-            matches!(kind, DeclarationKind::CalcUsage)
-        }
-        Collection::DefinitionOwnedCase | Collection::UsageNestedCase => {
-            matches!(kind, DeclarationKind::CaseUsage)
-        }
-        Collection::DefinitionOwnedConcern | Collection::UsageNestedConcern => {
-            matches!(kind, DeclarationKind::ConcernUsage | DeclarationKind::Frame)
-        }
-        Collection::DefinitionOwnedConnection | Collection::UsageNestedConnection => matches!(
-            kind,
-            DeclarationKind::ConnectionUsage | DeclarationKind::BareConnect | DeclarationKind::Bind
-        ),
-        Collection::DefinitionOwnedConstraint | Collection::UsageNestedConstraint => matches!(
-            kind,
-            DeclarationKind::ConstraintUsage
-                | DeclarationKind::AssertConstraintUsage
-                | DeclarationKind::AssumeConstraintUsage
-                | DeclarationKind::RequireConstraintUsage
-        ),
-        Collection::DefinitionOwnedEnumeration | Collection::UsageNestedEnumeration => matches!(
-            kind,
-            DeclarationKind::EnumerationUsage | DeclarationKind::EnumerationLiteral
-        ),
-        Collection::DefinitionOwnedFlow | Collection::UsageNestedFlow => {
-            matches!(kind, DeclarationKind::Flow)
-        }
-        // The pinned XMI body selects ReferenceUsage for both `ownedInterface` and
-        // `nestedInterface`; the exact body, not the property suffix, is authoritative.
-        Collection::DefinitionOwnedInterface
-        | Collection::UsageNestedInterface
-        | Collection::DefinitionOwnedReference
-        | Collection::UsageNestedReference => matches!(
-            kind,
-            DeclarationKind::ReferenceUsage
-                | DeclarationKind::DefaultReferenceUsage
-                | DeclarationKind::ParameterUsage
-                | DeclarationKind::SubjectUsage
-                | DeclarationKind::PerformParameterBinding
-        ),
-        Collection::DefinitionOwnedItem | Collection::UsageNestedItem => {
-            matches!(kind, DeclarationKind::ItemUsage)
-        }
-        Collection::DefinitionOwnedMetadata | Collection::UsageNestedMetadata => {
-            matches!(kind, DeclarationKind::MetadataUsage)
-        }
-        Collection::DefinitionOwnedOccurrence | Collection::UsageNestedOccurrence => {
-            matches!(kind, DeclarationKind::OccurrenceUsage)
-        }
-        Collection::DefinitionOwnedPart | Collection::UsageNestedPart => matches!(
-            kind,
-            DeclarationKind::PartUsage
-                | DeclarationKind::StakeholderUsage
-                | DeclarationKind::RequirementActor
-                | DeclarationKind::CaseActor
-        ),
-        Collection::DefinitionOwnedPort | Collection::UsageNestedPort => {
-            matches!(kind, DeclarationKind::PortUsage)
-        }
-        Collection::DefinitionOwnedRendering | Collection::UsageNestedRendering => {
-            matches!(kind, DeclarationKind::RenderingUsage)
-        }
-        Collection::DefinitionOwnedRequirement | Collection::UsageNestedRequirement => matches!(
-            kind,
-            DeclarationKind::RequirementUsage | DeclarationKind::VerifyRequirement
-        ),
-        Collection::DefinitionOwnedState | Collection::UsageNestedState => {
-            matches!(
-                kind,
-                DeclarationKind::StateUsage | DeclarationKind::FinalState
-            )
-        }
-        Collection::DefinitionOwnedTransition | Collection::UsageNestedTransition => {
-            matches!(kind, DeclarationKind::Transition)
-        }
-        Collection::DefinitionOwnedUsage | Collection::UsageNestedUsage => {
-            is_usage_declaration(kind)
-        }
-        Collection::DefinitionOwnedUseCase | Collection::UsageNestedUseCase => {
-            matches!(kind, DeclarationKind::UseCaseUsage)
-        }
-        Collection::DefinitionOwnedVerificationCase | Collection::UsageNestedVerificationCase => {
-            matches!(kind, DeclarationKind::VerificationCaseUsage)
-        }
-        Collection::DefinitionOwnedView | Collection::UsageNestedView => {
-            matches!(kind, DeclarationKind::ViewUsage)
-        }
-        Collection::DefinitionOwnedViewpoint | Collection::UsageNestedViewpoint => {
-            matches!(kind, DeclarationKind::ViewpointUsage)
-        }
-        // These variants are returned before candidate selection by the rule-scoped method.
-        Collection::DefinitionDirectedUsage
-        | Collection::DefinitionUsage
-        | Collection::DefinitionVariant
-        | Collection::DefinitionVariantMembership
-        | Collection::UsageDirectedUsage
-        | Collection::UsageIsReference
-        | Collection::UsageMayTimeVary
-        | Collection::UsageUsage
-        | Collection::UsageVariant
-        | Collection::UsageVariantMembership => false,
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-enum DeclarationDomain {
-    Any,
-    Namespace,
-    Type,
-}
-
-impl DeclarationDomain {
-    fn accepts(self, kind: DeclarationKind) -> bool {
-        match self {
-            Self::Any => true,
-            Self::Namespace => matches!(
-                kind,
-                DeclarationKind::Namespace
-                    | DeclarationKind::Package
-                    | DeclarationKind::LibraryPackage
-            ),
-            // An alias is a transparent proxy: whether it is Type-domain-compatible is a property
-            // of its (possibly not-yet-resolved) ultimate target, not of the alias declaration
-            // itself, so it is provisionally accepted here. `synthesize_implied_alias_bindings`
-            // below chases the alias's own resolved `AliasBinding` reference to publish the real
-            // (implied) typing/specialization fact against the ultimate non-alias target.
-            Self::Type => matches!(
-                kind,
-                DeclarationKind::PartDefinition
-                    | DeclarationKind::AttributeDefinition
-                    | DeclarationKind::EnumerationDefinition
-                    | DeclarationKind::RequirementDefinition
-                    | DeclarationKind::PortDefinition
-                    | DeclarationKind::ItemDefinition
-                    | DeclarationKind::ActionDefinition
-                    | DeclarationKind::StateDefinition
-                    | DeclarationKind::MetadataDefinition
-                    | DeclarationKind::ConnectionDefinition
-                    | DeclarationKind::InterfaceDefinition
-                    | DeclarationKind::OccurrenceDefinition
-                    | DeclarationKind::AnalysisCaseDefinition
-                    | DeclarationKind::ViewDefinition
-                    | DeclarationKind::CaseDefinition
-                    | DeclarationKind::VerificationCaseDefinition
-                    | DeclarationKind::UseCaseDefinition
-                    | DeclarationKind::ViewpointDefinition
-                    | DeclarationKind::RenderingDefinition
-                    | DeclarationKind::AllocationDefinition
-                    | DeclarationKind::FlowDefinition
-                    | DeclarationKind::ConstraintDefinition
-                    | DeclarationKind::ConcernDefinition
-                    | DeclarationKind::CalcDefinition
-                    | DeclarationKind::ClassDefinition
-                    // The KerML type metaclasses. Every one of these is a `Type` in the
-                    // metamodel, so each is a legitimate FeatureTyping/Subclassification target;
-                    // without them no reference into the KerML kernel libraries can resolve, and
-                    // `attribute mass : ScalarValues::Real` fails against a `datatype` that is
-                    // right there in the admitted standard library. `KermlMultiplicity` is
-                    // deliberately absent: `Multiplicity <: Feature`, and this domain admits
-                    // definition-like types only, exactly as it already excludes SysML usages.
-                    | DeclarationKind::KermlClassifier
-                    | DeclarationKind::KermlStructure
-                    | DeclarationKind::KermlAssociation
-                    | DeclarationKind::KermlAssociationStructure
-                    | DeclarationKind::KermlDataType
-                    | DeclarationKind::KermlMetaclass
-                    | DeclarationKind::KermlBehavior
-                    | DeclarationKind::KermlFunction
-                    | DeclarationKind::KermlPredicate
-                    | DeclarationKind::KermlInteraction
-                    | DeclarationKind::KermlType
-                    | DeclarationKind::Alias
-            ),
-        }
-    }
-}
-
-fn build_direct_name_index(
-    declarations: &[Declaration],
-    public_only: Option<&MembershipIndex>,
-) -> Result<NameIndex, ResolutionError> {
-    let mut entries = Vec::new();
-    entries
-        .try_reserve(declarations.len())
-        .map_err(|_| ResolutionError::Capacity)?;
-    for (index, declaration) in declarations.iter().enumerate() {
-        let declaration_id =
-            DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        if public_only.is_some_and(|memberships| !memberships.is_public(declaration_id)) {
-            continue;
-        }
-        if let Some(name) = declaration.name {
-            entries.push((
-                NameKey {
-                    owner: declaration.owner,
-                    name,
-                },
-                declaration_id,
-            ));
-        }
-    }
-    NameIndex::build(entries)
-}
-
-fn build_effective_import_indexes<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    memberships: &MembershipIndex,
-    references: &[R],
-    import_slots: &[usize],
-    exported_names: &NameIndex,
-    previous_exported_imports: &NameIndex,
-    outcomes: &[ResolutionStatus],
-) -> Result<(NameIndex, NameIndex), ResolutionError> {
-    let mut entries = Vec::new();
-    let mut exported_entries = Vec::new();
-    for index in import_slots.iter().copied() {
-        let reference = references
-            .get(index)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        let ResolutionStatus::Resolved(target) = outcomes[index] else {
-            continue;
-        };
-        let import_owner = declarations
-            .get(reference.source().index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .owner;
-        let import_is_public = memberships.is_public(reference.source());
-        match reference.kind() {
-            ReferenceKind::NamespaceImport => {
-                for (name, candidates) in exported_names.entries_for_owner(Some(target)) {
-                    extend_import_entries(
-                        &mut entries,
-                        &mut exported_entries,
-                        import_owner,
-                        name,
-                        candidates,
-                        import_is_public,
-                    );
-                }
-                for (name, candidates) in previous_exported_imports.entries_for_owner(Some(target))
-                {
-                    extend_import_entries(
-                        &mut entries,
-                        &mut exported_entries,
-                        import_owner,
-                        name,
-                        candidates,
-                        import_is_public,
-                    );
-                }
-            }
-            ReferenceKind::MembershipImport => {
-                let declaration = declarations
-                    .get(target.index())
-                    .ok_or(ResolutionError::InvalidStorage)?;
-                if memberships.is_public(target) {
-                    if let Some(name) = declaration.name {
-                        extend_import_entries(
-                            &mut entries,
-                            &mut exported_entries,
-                            import_owner,
-                            name,
-                            std::slice::from_ref(&target),
-                            import_is_public,
-                        );
-                    }
-                }
-            }
-            ReferenceKind::FilterImport
-            | ReferenceKind::FeatureTyping
-            | ReferenceKind::TypeFeaturing
-            | ReferenceKind::FeatureChaining
-            | ReferenceKind::Subclassification
-            | ReferenceKind::Subsetting
-            | ReferenceKind::Redefinition
-            | ReferenceKind::References
-            | ReferenceKind::Crosses
-            | ReferenceKind::Intersects
-            | ReferenceKind::Unioning
-            | ReferenceKind::Intersecting
-            | ReferenceKind::Differencing
-            | ReferenceKind::Disjoining
-            | ReferenceKind::AliasBinding
-            | ReferenceKind::ConnectorEnd
-            | ReferenceKind::Succession
-            | ReferenceKind::EntryActionBinding
-            | ReferenceKind::DoActionBinding
-            | ReferenceKind::ExitActionBinding
-            | ReferenceKind::InitialState
-            | ReferenceKind::ExpressionOperand
-            | ReferenceKind::TransitionSource
-            | ReferenceKind::TransitionTarget
-            | ReferenceKind::TransitionTrigger
-            | ReferenceKind::TransitionEffect
-            | ReferenceKind::MetadataAnnotation
-            | ReferenceKind::FilterMetadataTest
-            | ReferenceKind::SatisfySource
-            | ReferenceKind::SatisfyTarget
-            | ReferenceKind::AllocateSource
-            | ReferenceKind::AllocateTarget
-            | ReferenceKind::BindSource
-            | ReferenceKind::BindTarget
-            | ReferenceKind::Variant
-            | ReferenceKind::IncludeUseCase
-            | ReferenceKind::ViewExpose
-            | ReferenceKind::MemberAccessOperand
-            | ReferenceKind::InvocationCallee
-            | ReferenceKind::ThenTarget
-            | ReferenceKind::AcceptVia
-            | ReferenceKind::SendTarget
-            | ReferenceKind::AcceptPayloadType
-            | ReferenceKind::TerminateTarget
-            | ReferenceKind::FlowSource
-            | ReferenceKind::FlowTarget
-            | ReferenceKind::TypeCheckTarget
-            | ReferenceKind::MetaCastTarget
-            | ReferenceKind::StakeholderTarget
-            | ReferenceKind::PurposeTarget
-            | ReferenceKind::VerifyRequirementTarget
-            | ReferenceKind::AssignTarget
-            | ReferenceKind::DependencyClient
-            | ReferenceKind::DependencySupplier
-            | ReferenceKind::PerformParameterTarget
-            | ReferenceKind::FlowPayloadType => {}
-        }
-    }
-    Ok((
-        NameIndex::build(entries)?,
-        NameIndex::build(exported_entries)?,
-    ))
-}
-
-fn extend_import_entries(
-    local: &mut Vec<(NameKey, DeclarationId)>,
-    exported: &mut Vec<(NameKey, DeclarationId)>,
-    owner: Option<DeclarationId>,
-    name: SymbolId,
-    candidates: &[DeclarationId],
-    import_is_public: bool,
-) {
-    let key = NameKey { owner, name };
-    local.extend(candidates.iter().copied().map(|candidate| (key, candidate)));
-    if import_is_public {
-        exported.extend(candidates.iter().copied().map(|candidate| (key, candidate)));
-    }
-}
-
-struct ResolutionIndexes<'a> {
-    direct_names: &'a NameIndex,
-    exported_names: &'a NameIndex,
-    effective_imports: Option<&'a NameIndex>,
-    exported_imports: Option<&'a NameIndex>,
-    /// Ancestor-scoped inherited-member lookup, keyed by `(child type declaration, name)`. Absent
-    /// for the Subclassification pass itself (it is built from Subclassification's own settled
-    /// outcomes) and present for reference kinds resolved afterward, such as FeatureTyping.
-    inherited_names: Option<&'a NameIndex>,
-}
-
-struct ResolutionScratch<'a> {
-    ambiguous_candidates: &'a mut Vec<DeclarationId>,
-    candidates: &'a mut Vec<DeclarationId>,
-    next_candidates: &'a mut Vec<DeclarationId>,
-    work: &'a mut ResolutionWork,
-}
-
-fn resolve_reference<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    paths: &SymbolPathArena,
-    reference: &R,
-    domain: DeclarationDomain,
-    indexes: ResolutionIndexes<'_>,
-    scratch: ResolutionScratch<'_>,
-) -> Result<ResolutionStatus, ResolutionError> {
-    let (segments, rooted) = paths
-        .get(reference.path())
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let source = declarations
-        .get(reference.source().index())
-        .ok_or(ResolutionError::InvalidStorage)?;
-    // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
-    // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
-    // Redefinition excludes owned
-    // first-scope candidates".
-    //
-    // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
-    // shape the KerML abstract-syntax library uses throughout to narrow an inherited feature --
-    // finds itself in its owner's owned tier, and that tier shadows the inherited one the author
-    // meant. The feature then specializes itself, which makes its whole conformance hierarchy
-    // cyclic and every conformance question about it unanswerable.
-    //
-    // Deliberately Redefinition alone. The anonymous subsetting shorthand `:> annotatedElement :
-    // T;` has the same shape, but a metadata definition commonly authors several of them, and the
-    // lowering gives each the subsetted feature's name as its *declared* name. Excluding only the
-    // reference's own source there does not reach the inherited feature; it reaches the sibling
-    // shorthand, so two of them resolve to each other and the self-loop becomes a two-cycle. That
-    // is a lowering defect -- an unnamed member must not acquire a declared name -- and it is
-    // recorded in planning/UPSTREAM_PARSER_GAPS.md rather than compensated for here.
-    let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
-    scratch.candidates.clear();
-    scratch.next_candidates.clear();
-    if rooted {
-        record_lookup(scratch.work)?;
-        scratch
-            .candidates
-            .extend_from_slice(indexes.exported_names.candidates(None, segments[0]));
-    } else {
-        // When the first segment is also the last (a plain unqualified reference), the winning
-        // precedence tier's candidates *are* the final resolution target, so domain compatibility
-        // is applied per tier below (an incompatible-domain local binding still shadows a
-        // compatible outer/imported one. When more
-        // segments follow, this first segment denotes an intermediate namespace/type owner, not
-        // the reference's final target, so no domain filtering applies here: `Any` accepts
-        // everything and the tier logic degrades to plain name-presence shadowing.
-        let first_segment_domain = if segments.len() == 1 {
-            domain
-        } else {
-            DeclarationDomain::Any
-        };
-        let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
-            Some(reference.source())
-        } else {
-            source.owner
-        };
-        lookup_lexical_into(
-            declarations,
-            &indexes,
-            lexical_scope,
-            segments[0],
-            LookupTarget {
-                domain: first_segment_domain,
-                excluded,
-            },
-            scratch.candidates,
-            scratch.work,
-        )?;
-    }
-
-    for segment in &segments[1..] {
-        scratch.next_candidates.clear();
-        for candidate in scratch.candidates.iter().copied() {
-            record_lookup(scratch.work)?;
-            // A qualified name's later segments name a member OWNED by the previous segment's
-            // resolved declaration, exactly as if that member were being looked up from within
-            // its owner's own scope (KerML's "public by default unless owned by a non-Package
-            // namespace" visibility rule governs whether a *wildcard* import/general lookup can
-            // reach a name, not whether an explicit qualified reference that already names the
-            // owner can reach its direct member). `direct_names` is therefore the right index
-            // here -- the same one `extend_inherited_names_with_usage_typing`'s inherited-member
-            // traversal reads from for redefinition targets like `ManagedRequirement::status`
-            // (owned by a Type, not a Package, yet still reachable). `exported_names` is reserved
-            // for cross-file import propagation (`NamespaceImport`/`MembershipImport`), which is
-            // a different visibility question -- whether a *different* file can pull the name in
-            // via `import`, not whether this file's own qualified reference can name it directly.
-            // Import fallback still applies when the owner itself was reached only through an
-            // import (the member is not locally owned at all), so cross-package traversal through
-            // imported namespaces keeps working.
-            let direct = indexes.direct_names.candidates(Some(candidate), *segment);
-            if !direct.is_empty() {
-                scratch.next_candidates.extend_from_slice(direct);
-            } else if let Some(imports) = indexes.exported_imports {
-                record_lookup(scratch.work)?;
-                scratch
-                    .next_candidates
-                    .extend_from_slice(imports.candidates(Some(candidate), *segment));
-            }
-        }
-        scratch.next_candidates.sort_unstable();
-        scratch.next_candidates.dedup();
-        std::mem::swap(scratch.candidates, scratch.next_candidates);
-    }
-    // The non-rooted, single-segment case already applied domain-aware tier selection inside
-    // `lookup_lexical_into` above (including the incompatible-domain shadow rule), so re-filtering
-    // here would silently discard a shadowed candidate and regress it to `Unresolved`. Every other
-    // case (rooted lookups, and the final segment of a multi-segment qualified name) still needs
-    // this domain check applied to its result.
-    if rooted || segments.len() > 1 {
-        scratch.candidates.retain(|candidate| {
-            declarations
-                .get(candidate.index())
-                .is_some_and(|declaration| domain.accepts(declaration.kind))
-        });
-    }
-    // A qualified or absolute path can name the specializing feature just as an unqualified one
-    // can, and it is no more well-formed for having been spelled out.
-    if let Some(excluded) = excluded {
-        scratch
-            .candidates
-            .retain(|candidate| *candidate != excluded);
-    }
-    status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
-}
-
-/// Walks the enclosing-namespace chain from `owner` outward. At each level, owned members take
-/// precedence over inherited (ancestor-scoped) members, which take precedence over imports, per
-/// the canonical scope-origin precedence ("owned members, then
-/// inherited/general members, then imports"). `inherited_names` is `None` for reference kinds that
-/// do not read inherited scope (for example Subclassification itself).
-///
-/// `domain` is the broad metamodel-domain filter for the reference's final target (section 6 step
-/// 8). Per section 11.1 ("an incompatible inner `Type` still shadows a compatible outer type,
-/// followed by validation"), domain compatibility never changes *which* precedence tier wins: at
-/// each tier, a domain-compatible candidate is preferred when one exists, but a tier that has any
-/// same-name binding still shadows lower-precedence tiers even if every candidate at that tier is
-/// domain-incompatible. Passing `DeclarationDomain::Any` disables this preference entirely (every
-/// candidate matches), which is what callers use when this lookup does not produce the reference's
-/// final target (an interior segment of a qualified name).
-/// What a lexical lookup is looking for, as opposed to where it looks.
-#[derive(Debug, Clone, Copy)]
-struct LookupTarget {
-    /// The broad metamodel-domain filter for the reference's final target.
-    domain: DeclarationDomain,
-    /// A declaration that is not in its own scope for this reference, if any.
-    excluded: Option<DeclarationId>,
-}
-
-fn lookup_lexical_into(
-    declarations: &[Declaration],
-    indexes: &ResolutionIndexes<'_>,
-    mut owner: Option<DeclarationId>,
-    name: SymbolId,
-    target: LookupTarget,
-    candidates: &mut Vec<DeclarationId>,
-    work: &mut ResolutionWork,
-) -> Result<(), ResolutionError> {
-    let LookupTarget { domain, excluded } = target;
-    let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
-        let compatible = raw
-            .iter()
-            .copied()
-            .filter(|candidate| {
-                declarations
-                    .get(candidate.index())
-                    .is_some_and(|declaration| domain.accepts(declaration.kind))
-            })
-            .collect::<Vec<_>>();
-        if compatible.is_empty() {
-            out.extend_from_slice(raw);
-        } else {
-            out.extend(compatible);
-        }
-    };
-    // Applied before the tier is tested for emptiness, so a tier whose only binding is the
-    // excluded declaration does not shadow the tiers below it.
-    let visible = |raw: &[DeclarationId], scratch: &mut Vec<DeclarationId>| -> bool {
-        let Some(excluded) = excluded else {
-            return false;
-        };
-        if !raw.contains(&excluded) {
-            return false;
-        }
-        scratch.clear();
-        scratch.extend(raw.iter().copied().filter(|entry| *entry != excluded));
-        true
-    };
-    let mut filtered = Vec::new();
-    loop {
-        record_lookup(work)?;
-        let mut direct = indexes.direct_names.candidates(owner, name);
-        if visible(direct, &mut filtered) {
-            direct = &filtered;
-        }
-        if !direct.is_empty() {
-            select_tier(direct, candidates);
-            return Ok(());
-        }
-        if let Some(inherited) = indexes.inherited_names {
-            record_lookup(work)?;
-            let inherited = inherited.candidates(owner, name);
-            if !inherited.is_empty() {
-                select_tier(inherited, candidates);
-                return Ok(());
-            }
-        }
-        if let Some(imports) = indexes.effective_imports {
-            record_lookup(work)?;
-            let imported = imports.candidates(owner, name);
-            if !imported.is_empty() {
-                select_tier(imported, candidates);
-                return Ok(());
-            }
-        }
-        let Some(current) = owner else {
-            return Ok(());
-        };
-        owner = declarations
-            .get(current.index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .owner;
-    }
-}
-
-/// Resolves a `ReferenceKind::MemberAccessOperand` reference (a dotted feature-chain access, e.g.
-/// `t.bead`, `f.a`, chained `a.b.c`): the reference's `path()` is the flattened chain built by
-/// `SemanticModelBuilder::push_member_access_reference` -- the root segment(s) followed by each
-/// subsequent dotted member segment, all in one `SymbolPathId`.
-///
-/// The root segment resolves through `DeclarationDomain::Any` lexical lookup, beginning in the
-/// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
-/// constraint/calc expression reach its own parameters without changing the enclosing-scope result
-/// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
-/// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
-/// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
-/// time this runs has already been extended with usage-typing entries
-/// (`extend_inherited_names_with_usage_typing`): for a declaration `usage` whose own `FeatureTyping`
-/// reference resolved to `target`, `inherited_names.candidates(Some(usage), name)` already contains
-/// every name owned (directly or by inheritance) by `target`. This is exactly "member of the
-/// previously resolved segment's type."
-///
-/// If the root segment does not resolve to exactly one candidate, or any subsequent segment finds
-/// no owned-by-type member, the whole chain publishes `Unresolved`; if an intermediate or final
-/// segment is ambiguous, the whole chain publishes `Ambiguous`. The chain never partially resolves
-/// -- there is no way to publish "the first two segments resolved but the third didn't."
-fn resolve_member_access_reference<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    paths: &SymbolPathArena,
-    reference: &R,
-    indexes: ResolutionIndexes<'_>,
-    scratch: ResolutionScratch<'_>,
-) -> Result<ResolutionStatus, ResolutionError> {
-    let (segments, rooted) = paths
-        .get(reference.path())
-        .ok_or(ResolutionError::InvalidStorage)?;
-    if rooted {
-        // A dotted member-access chain is never `::`-absolute; defensive, not reachable from the
-        // lowering side today.
-        return Ok(ResolutionStatus::Unsupported);
-    }
-    let _source = declarations
-        .get(reference.source().index())
-        .ok_or(ResolutionError::InvalidStorage)?;
-    scratch.candidates.clear();
-    scratch.next_candidates.clear();
-    lookup_lexical_into(
-        declarations,
-        &indexes,
-        Some(reference.source()),
-        segments[0],
-        // A member-access chain is never a Redefinition reference.
-        LookupTarget {
-            domain: DeclarationDomain::Any,
-            excluded: None,
-        },
-        scratch.candidates,
-        scratch.work,
-    )?;
-    for segment in &segments[1..] {
-        if scratch.candidates.len() != 1 {
-            // Zero candidates (Unresolved) or more than one (Ambiguous) -- either way the chain
-            // cannot continue past this hop; publish that outcome directly rather than silently
-            // dropping the remaining segments.
-            return status_from_candidates(scratch.candidates, scratch.ambiguous_candidates);
-        }
-        let candidate = scratch.candidates[0];
-        scratch.next_candidates.clear();
-        record_lookup(scratch.work)?;
-        if let Some(inherited) = indexes.inherited_names {
-            scratch
-                .next_candidates
-                .extend_from_slice(inherited.candidates(Some(candidate), *segment));
-        }
-        scratch.next_candidates.sort_unstable();
-        scratch.next_candidates.dedup();
-        std::mem::swap(scratch.candidates, scratch.next_candidates);
-    }
-    status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
-}
-
-fn record_lookup(work: &mut ResolutionWork) -> Result<(), ResolutionError> {
-    work.indexed_name_lookups = work
-        .indexed_name_lookups
-        .checked_add(1)
-        .ok_or(ResolutionError::Capacity)?;
-    Ok(())
-}
-
-fn status_from_candidates(
-    candidates: &[DeclarationId],
-    ambiguous_candidates: &mut Vec<DeclarationId>,
-) -> Result<ResolutionStatus, ResolutionError> {
-    match candidates {
-        [] => Ok(ResolutionStatus::Unresolved),
-        [candidate] => Ok(ResolutionStatus::Resolved(*candidate)),
-        _ => {
-            let start = ambiguous_candidates.len();
-            ambiguous_candidates.extend_from_slice(candidates);
-            Ok(ResolutionStatus::Ambiguous(CandidateRange::from_bounds(
-                start,
-                ambiguous_candidates.len(),
-            )?))
-        }
     }
 }
 

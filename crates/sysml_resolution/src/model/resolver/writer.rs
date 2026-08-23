@@ -8,7 +8,7 @@ use std::fmt;
 use super::*;
 use crate::evaluation::EvaluatedScalar;
 
-pub(super) fn write_semantic(
+pub(crate) fn write_semantic(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
     semantic_contract_version: &str,
@@ -23,14 +23,14 @@ pub(super) fn write_semantic(
     write!(output, ")")
 }
 
-pub(super) fn write_navigation_only(
+pub(crate) fn write_navigation_only(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     write_navigation(model, output)
 }
 
-pub(super) fn write_types_only(
+pub(crate) fn write_types_only(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
@@ -43,7 +43,10 @@ pub(super) fn write_types_only(
 /// stays proportional to the type structure a fixture actually authors rather than to its
 /// declaration count. Each supertype carries the scopes whose paths reach it, which is what makes
 /// one closure answer both the Pilot's all-subkinds reading and the narrower classifier-only one.
-fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_types(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "(types")?;
     for index in canonical_declaration_indices(model) {
         let declaration = DeclarationId(index as u32);
@@ -144,7 +147,7 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
 
 /// Orders target-carrying entries by document identity then declaration path, the same key every
 /// other owned projection sorts by, so rendering never exposes storage order.
-fn canonical_targets<T>(
+pub(crate) fn canonical_targets<T>(
     model: &ResolvedSemanticModel,
     mut entries: Vec<(DeclarationId, T)>,
 ) -> Vec<(DeclarationId, T)> {
@@ -161,7 +164,7 @@ fn canonical_targets<T>(
     entries
 }
 
-fn write_scopes(
+pub(crate) fn write_scopes(
     output: &mut dyn fmt::Write,
     scopes: impl Iterator<Item = types::SpecializationScope>,
 ) -> fmt::Result {
@@ -172,14 +175,14 @@ fn write_scopes(
     output.write_char(')')
 }
 
-fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
+pub(crate) fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
     match provenance {
         types::FactProvenance::Authored => "authored",
         types::FactProvenance::Implied => "implied",
     }
 }
 
-fn set_operator_name(operator: types::SetOperator) -> &'static str {
+pub(crate) fn set_operator_name(operator: types::SetOperator) -> &'static str {
     match operator {
         types::SetOperator::Union => "union",
         types::SetOperator::Intersection => "intersection",
@@ -188,7 +191,7 @@ fn set_operator_name(operator: types::SetOperator) -> &'static str {
     }
 }
 
-fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
+pub(crate) fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
     match scope {
         types::SpecializationScope::AnySpecialization => "any",
         types::SpecializationScope::Subclassification => "subclassification",
@@ -201,7 +204,7 @@ fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
 /// It decides layout and nothing else: every code, severity, origin, range, and related location
 /// below is read from [`crate::Diagnostic`]. Categories stay available on that typed contract but
 /// are deliberately absent from this compatibility S-expression.
-pub(super) fn write_diagnostics(
+pub(crate) fn write_diagnostics(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
@@ -227,7 +230,10 @@ pub(super) fn write_diagnostics(
     write!(output, ")")
 }
 
-fn write_diagnostic(diagnostic: &Diagnostic, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_diagnostic(
+    diagnostic: &Diagnostic,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     let range = diagnostic.location.range;
     writeln!(output, "      (diagnostic")?;
     writeln!(
@@ -264,7 +270,7 @@ fn write_diagnostic(diagnostic: &Diagnostic, output: &mut dyn fmt::Write) -> fmt
     writeln!(output, "      )")
 }
 
-fn write_metadata(
+pub(crate) fn write_metadata(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
     semantic_contract_version: &str,
@@ -298,7 +304,7 @@ fn write_metadata(
 /// did before libraries could be admitted. Without it, admission would be visible only through an
 /// opaque source digest, and a projection scoped to workspace documents would look identical
 /// whether or not a library took part in resolution.
-fn write_admitted_sources(
+pub(crate) fn write_admitted_sources(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
@@ -329,7 +335,10 @@ fn write_admitted_sources(
     output.write_char(')')
 }
 
-fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_declarations(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "  (declarations")?;
     for index in canonical_declaration_indices(model) {
         let declaration = &model.storage.declarations[index];
@@ -363,7 +372,7 @@ fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
 ///
 /// Only facts that are actually present are emitted, so a declaration whose parser node carries
 /// none of them renders exactly as it did before this fact family existed.
-fn write_declaration_facts(
+pub(crate) fn write_declaration_facts(
     model: &ResolvedSemanticModel,
     declaration: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -412,7 +421,10 @@ fn write_declaration_facts(
     output.write_char(')')
 }
 
-fn write_multiplicity_bound(bound: MultiplicityBound, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_multiplicity_bound(
+    bound: MultiplicityBound,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     match bound {
         MultiplicityBound::Unbounded => output.write_str("unbounded"),
         MultiplicityBound::Literal(value) => write!(output, "{value}"),
@@ -422,7 +434,7 @@ fn write_multiplicity_bound(bound: MultiplicityBound, output: &mut dyn fmt::Writ
 
 /// The present modifier names in a fixed canonical order, so snapshot output never depends on
 /// field or hash ordering.
-fn declaration_modifier_names(modifiers: &DeclarationModifiers) -> Vec<&'static str> {
+pub(crate) fn declaration_modifier_names(modifiers: &DeclarationModifiers) -> Vec<&'static str> {
     let candidates = [
         (modifiers.is_abstract, "abstract"),
         (modifiers.variation, "variation"),
@@ -447,14 +459,14 @@ fn declaration_modifier_names(modifiers: &DeclarationModifiers) -> Vec<&'static 
         .collect()
 }
 
-fn portion_kind_name(kind: PortionKind) -> &'static str {
+pub(crate) fn portion_kind_name(kind: PortionKind) -> &'static str {
     match kind {
         PortionKind::Snapshot => "snapshot",
         PortionKind::Timeslice => "timeslice",
     }
 }
 
-fn annotation_form_name(form: AnnotationForm) -> &'static str {
+pub(crate) fn annotation_form_name(form: AnnotationForm) -> &'static str {
     match form {
         AnnotationForm::Documentation => "doc",
         AnnotationForm::Comment => "comment",
@@ -463,7 +475,7 @@ fn annotation_form_name(form: AnnotationForm) -> &'static str {
 }
 
 /// Renders the `doc`/`comment`/`rep` annotations bound to one declaration, in authored order.
-fn write_documentation(
+pub(crate) fn write_documentation(
     model: &ResolvedSemanticModel,
     declaration: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -498,7 +510,7 @@ fn write_documentation(
 }
 
 /// Renders the authored feature-value spelling(s) of one declaration.
-fn write_feature_values(
+pub(crate) fn write_feature_values(
     model: &ResolvedSemanticModel,
     declaration: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -527,7 +539,10 @@ fn write_feature_values(
     Ok(())
 }
 
-fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_references(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "  (references")?;
     for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
@@ -550,7 +565,10 @@ fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
     writeln!(output, "  )")
 }
 
-fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_relationships(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "  (relationships")?;
     for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
@@ -612,7 +630,10 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
     writeln!(output, "  )")
 }
 
-fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_evaluation(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "  (evaluation")?;
     for index in canonical_evaluation_indices(model) {
         let fact = &model.evaluation[index];
@@ -635,7 +656,10 @@ fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
 }
 
 /// Every authored unit token, with the spelling the author used and what it resolved to.
-fn write_units(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_units(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     for index in canonical_declaration_indices(model) {
         let declaration = DeclarationId(index as u32);
         for unit in model.expressions.units(declaration) {
@@ -689,7 +713,10 @@ fn write_units(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
 ///
 /// Only declarations that require one are rendered: "this is not a quantity" is the common case,
 /// and printing it for every declaration would bury the ones that are.
-fn write_measurements(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_measurements(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     for index in canonical_declaration_indices(model) {
         let declaration = DeclarationId(index as u32);
         match model.expressions.required_measurement(declaration) {
@@ -715,7 +742,10 @@ fn write_measurements(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
     Ok(())
 }
 
-fn write_filters(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_filters(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     let mut filters = model
         .expressions
         .filters()
@@ -750,7 +780,7 @@ fn write_filters(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> 
     Ok(())
 }
 
-fn filter_form_name(form: FilterForm) -> &'static str {
+pub(crate) fn filter_form_name(form: FilterForm) -> &'static str {
     match form {
         FilterForm::View => "view",
         FilterForm::Rendering => "rendering",
@@ -758,7 +788,10 @@ fn filter_form_name(form: FilterForm) -> &'static str {
     }
 }
 
-fn write_invocations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_invocations(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     let mut invocations = model
         .expressions
         .invocations()
@@ -790,7 +823,10 @@ fn write_invocations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write)
     Ok(())
 }
 
-fn write_evaluated_scalar(value: &EvaluatedScalar, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_evaluated_scalar(
+    value: &EvaluatedScalar,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     match value {
         EvaluatedScalar::Boolean(value) => {
             write!(output, "(value (kind boolean) (boolean {value}))")
@@ -810,7 +846,7 @@ fn write_evaluated_scalar(value: &EvaluatedScalar, output: &mut dyn fmt::Write) 
     }
 }
 
-fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+pub(crate) fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.evaluation.len())
         .filter(|index| is_projected_declaration(model, model.evaluation[*index].declaration))
         .collect::<Vec<_>>();
@@ -838,7 +874,10 @@ fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     indices
 }
 
-fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_navigation(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     writeln!(output, "(navigation")?;
     for index in canonical_reference_indices(model) {
         let reference = &model.storage.references[index];
@@ -875,7 +914,7 @@ fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
     write!(output, ")")
 }
 
-fn write_outcome(
+pub(crate) fn write_outcome(
     model: &ResolvedSemanticModel,
     id: AuthoredReferenceId,
     output: &mut dyn fmt::Write,
@@ -900,7 +939,7 @@ fn write_outcome(
     }
 }
 
-fn write_authored(
+pub(crate) fn write_authored(
     model: &ResolvedSemanticModel,
     source: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -954,7 +993,10 @@ fn write_authored(
     output.write_str("))")
 }
 
-fn write_import(import: AuthoredImportFacts, output: &mut dyn fmt::Write) -> fmt::Result {
+pub(crate) fn write_import(
+    import: AuthoredImportFacts,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     write!(
         output,
         " (import (shape {}) (recursive {}))",
@@ -963,7 +1005,7 @@ fn write_import(import: AuthoredImportFacts, output: &mut dyn fmt::Write) -> fmt
     )
 }
 
-fn import_shape(shape: AuthoredImportShape) -> &'static str {
+pub(crate) fn import_shape(shape: AuthoredImportShape) -> &'static str {
     match shape {
         AuthoredImportShape::Membership => "membership",
         AuthoredImportShape::Namespace => "namespace",
@@ -971,7 +1013,7 @@ fn import_shape(shape: AuthoredImportShape) -> &'static str {
     }
 }
 
-fn write_declaration_name(
+pub(crate) fn write_declaration_name(
     model: &ResolvedSemanticModel,
     id: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -981,7 +1023,7 @@ fn write_declaration_name(
     output.write_char('"')
 }
 
-fn write_node_identity(
+pub(crate) fn write_node_identity(
     model: &ResolvedSemanticModel,
     id: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -1011,7 +1053,7 @@ fn write_node_identity(
 /// Every segment carries its kind, matching the identity encoding: a `metadata def X` and the
 /// `metadata X about ...` annotating it are distinct elements sharing one name, and only the kind
 /// separates them.
-fn write_declaration_path(
+pub(crate) fn write_declaration_path(
     model: &ResolvedSemanticModel,
     id: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -1059,7 +1101,7 @@ fn write_declaration_path(
     output.write_char(')')
 }
 
-fn write_declaration_name_body(
+pub(crate) fn write_declaration_name_body(
     model: &ResolvedSemanticModel,
     id: DeclarationId,
     output: &mut dyn fmt::Write,
@@ -1075,7 +1117,7 @@ fn write_declaration_name_body(
     Ok(())
 }
 
-fn write_reference_path(
+pub(crate) fn write_reference_path(
     model: &ResolvedSemanticModel,
     id: SymbolPathId,
     output: &mut dyn fmt::Write,
@@ -1094,13 +1136,13 @@ fn write_reference_path(
     output.write_char('"')
 }
 
-fn write_quoted(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
+pub(crate) fn write_quoted(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
     output.write_char('"')?;
     write_escaped(output, value)?;
     output.write_char('"')
 }
 
-fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
+pub(crate) fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
     for character in value.chars() {
         match character {
             '\\' => output.write_str("\\\\")?,
@@ -1121,21 +1163,24 @@ fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
 /// consumer that wants library content projected admits it as a workspace source, exactly as the
 /// library snapshot corpus does. This is a rendering scope, never an admission or resolution
 /// filter -- library declarations, references and outcomes are all still fully published.
-fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentId) -> bool {
+pub(crate) fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentId) -> bool {
     model
         .storage
         .document(document)
         .is_some_and(|document| document.role == SourceRole::Workspace)
 }
 
-fn is_projected_declaration(model: &ResolvedSemanticModel, declaration: DeclarationId) -> bool {
+pub(crate) fn is_projected_declaration(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+) -> bool {
     model
         .storage
         .declaration(declaration)
         .is_some_and(|declaration| is_projected_document(model, declaration.document))
 }
 
-pub(super) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+pub(crate) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.storage.documents.len())
         .filter(|index| is_projected_document(model, DocumentId(*index as u32)))
         .collect::<Vec<_>>();
@@ -1148,7 +1193,7 @@ pub(super) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<u
     indices
 }
 
-fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+pub(crate) fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.storage.declarations.len())
         .filter(|index| is_projected_declaration(model, DeclarationId(*index as u32)))
         .collect::<Vec<_>>();
@@ -1166,7 +1211,7 @@ fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     indices
 }
 
-fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+pub(crate) fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.storage.references.len())
         .filter(|index| is_projected_declaration(model, model.storage.references[*index].source))
         .collect::<Vec<_>>();
@@ -1194,7 +1239,7 @@ fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     indices
 }
 
-fn declaration_path_key(model: &ResolvedSemanticModel, id: DeclarationId) -> String {
+pub(crate) fn declaration_path_key(model: &ResolvedSemanticModel, id: DeclarationId) -> String {
     let mut path = String::new();
     if write_declaration_name_body(model, id, &mut path).is_err() {
         path.push('\u{fffd}');
@@ -1211,7 +1256,7 @@ fn declaration_path_key(model: &ResolvedSemanticModel, id: DeclarationId) -> Str
     path
 }
 
-fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
+pub(crate) fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     write!(
         output,
         "(start {} {}) (end {} {})",
@@ -1219,14 +1264,14 @@ fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     )
 }
 
-pub(super) fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
+pub(crate) fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
     model
         .storage
         .document(id)
         .map_or("<invalid-document>", |document| document.identity.as_ref())
 }
 
-fn parameter_direction(direction: ParameterDirection) -> &'static str {
+pub(crate) fn parameter_direction(direction: ParameterDirection) -> &'static str {
     match direction {
         ParameterDirection::In => "in",
         ParameterDirection::Out => "out",
@@ -1356,7 +1401,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
     }
 }
 
-fn membership_kind(kind: MembershipKind) -> &'static str {
+pub(crate) fn membership_kind(kind: MembershipKind) -> &'static str {
     match kind {
         MembershipKind::Owning => "owning",
         MembershipKind::Feature => "feature",
@@ -1365,7 +1410,7 @@ fn membership_kind(kind: MembershipKind) -> &'static str {
     }
 }
 
-fn visibility(value: Visibility) -> &'static str {
+pub(crate) fn visibility(value: Visibility) -> &'static str {
     match value {
         Visibility::Default => "default",
         Visibility::Public => "public",

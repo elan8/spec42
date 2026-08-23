@@ -305,7 +305,7 @@ fn resolve_closure(
     // specialization resolves against them, so they are admitted whenever a standard-library
     // root provides them — including when a workspace package shares the name, because the
     // resolver looks anchors up by standard-library role, never by bare name.
-    let anchor_packages: HashSet<PackageKey> = crate::model::resolver::library_anchor_packages()
+    let anchor_packages: HashSet<PackageKey> = crate::resolve::implied::library_anchor_packages()
         .into_iter()
         .map(|package| PackageKey(package.to_string()))
         .filter(|package| index.standard_packages.contains(package))

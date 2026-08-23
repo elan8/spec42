@@ -23,7 +23,7 @@ use super::*;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.
-fn is_connection_like(kind: DeclarationKind) -> bool {
+pub(crate) fn is_connection_like(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::ConnectionDefinition
@@ -37,7 +37,7 @@ fn is_connection_like(kind: DeclarationKind) -> bool {
 ///
 /// SysML flow and allocation definitions relate exactly two ends. A connection or interface
 /// definition may be n-ary, so only the incomplete-pair rule constrains it.
-fn requires_exactly_two_ends(kind: DeclarationKind) -> bool {
+pub(crate) fn requires_exactly_two_ends(kind: DeclarationKind) -> bool {
     matches!(
         kind,
         DeclarationKind::FlowDefinition | DeclarationKind::AllocationDefinition
@@ -51,7 +51,7 @@ fn requires_exactly_two_ends(kind: DeclarationKind) -> bool {
 /// `out` removes one rather than contradicting it. The Kernel Semantic Library relies on exactly
 /// that -- `out feature afterValues redefines values;` narrows an `inout` parameter -- and an
 /// equality test, which is what the legacy check used, reported it as a mismatch.
-fn direction_conforms(actual: ParameterDirection, expected: ParameterDirection) -> bool {
+pub(crate) fn direction_conforms(actual: ParameterDirection, expected: ParameterDirection) -> bool {
     match expected {
         // Already the widest, so any direction narrows it.
         ParameterDirection::InOut => true,
@@ -68,7 +68,7 @@ fn direction_conforms(actual: ParameterDirection, expected: ParameterDirection) 
 /// is non-unique exactly when `nonunique` was authored, and unique otherwise by KerML's default.
 /// The provenance is published so the two are never confused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Uniqueness {
+pub(crate) enum Uniqueness {
     /// `nonunique` was written.
     NonUniqueAuthored,
     /// Nothing was written, so KerML's default applies.
@@ -76,7 +76,7 @@ pub(super) enum Uniqueness {
 }
 
 impl ResolvedSemanticModel {
-    fn uniqueness(&self, declaration: DeclarationId) -> Uniqueness {
+    pub(crate) fn uniqueness(&self, declaration: DeclarationId) -> Uniqueness {
         match self
             .storage
             .declaration_facts(declaration)
@@ -91,7 +91,10 @@ impl ResolvedSemanticModel {
     ///
     /// Recovery is a published fact, so a rule whose operands could have been swallowed by it can
     /// ask. This is barrier work over one document's recovery records, not a query-time scan.
-    fn contains_recovery(&self, declaration: DeclarationId) -> Result<bool, ResolutionError> {
+    pub(crate) fn contains_recovery(
+        &self,
+        declaration: DeclarationId,
+    ) -> Result<bool, ResolutionError> {
         let record = self
             .storage
             .declaration(declaration)
@@ -113,7 +116,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Whether a declaration is a feature of its owner rather than an owned type.
-    fn is_feature_member(&self, declaration: DeclarationId) -> bool {
+    pub(crate) fn is_feature_member(&self, declaration: DeclarationId) -> bool {
         self.storage
             .memberships
             .iter()
@@ -126,7 +129,7 @@ impl ResolvedSemanticModel {
     /// Three authored forms mean it, and all three count: the `end` modifier prefix on a feature,
     /// an `end` member of a connection-like body (which carries a positional-end fact rather than
     /// the prefix), and a KerML `end` association member.
-    fn is_end_feature(&self, declaration: DeclarationId) -> bool {
+    pub(crate) fn is_end_feature(&self, declaration: DeclarationId) -> bool {
         let Some(facts) = self.storage.declaration_facts(declaration) else {
             return false;
         };
@@ -139,7 +142,7 @@ impl ResolvedSemanticModel {
     }
 
     /// Appends every structural feature-conformance diagnostic authored in `document`.
-    pub(super) fn collect_structural_conformance(
+    pub(crate) fn collect_structural_conformance(
         &self,
         document: DocumentId,
         declared: &[DeclarationId],
@@ -152,7 +155,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The rules whose whole operand set is one declaration's own facts.
-    fn collect_declaration_structure(
+    pub(crate) fn collect_declaration_structure(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
@@ -226,7 +229,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The rules whose operands are an authored reference and its settled target.
-    fn collect_structural_reference_rules(
+    pub(crate) fn collect_structural_reference_rules(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -324,7 +327,7 @@ impl ResolvedSemanticModel {
     /// The redefinition rules, over the redefinitions the resolver derived.
     ///
     /// Reported at the redefining declaration, since an implied relationship has no authored range.
-    fn collect_implied_structural_rules(
+    pub(crate) fn collect_implied_structural_rules(
         &self,
         document: DocumentId,
         diagnostics: &mut Vec<Diagnostic>,
@@ -361,7 +364,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The end and direction rules of one redefinition.
-    fn redefinition_structure(
+    pub(crate) fn redefinition_structure(
         &self,
         source: DeclarationId,
         target: DeclarationId,
@@ -400,7 +403,7 @@ impl ResolvedSemanticModel {
     /// publication does not own. Comparing the enclosing feature against a type instead would fail
     /// for every such declaration; the corpus authors 33 of them across the KerML time-varying
     /// fixtures alone, none of them a modelling error.
-    fn featuring_structure(
+    pub(crate) fn featuring_structure(
         &self,
         source: DeclarationId,
         target: DeclarationId,
