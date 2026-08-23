@@ -18,7 +18,7 @@ parallel worktrees; a wave waits for the previous one to merge.
 | `hardening/consumer-dedup` | C commits 4, 4b, 4c, 4d: one SymbolKind table; severity label fix (`information` vs `info`, CHANGELOG); one SysML file predicate; one digest/display-name. | C §5 groups B, E |
 | `hardening/bench` | D item 6: divan bench set (cold stdlib build, warm relink, completion/navigation/diagnostics queries) + allocations-per-element assertion; baseline numbers recorded. | D §4, §6.6 |
 
-## Wave 2 (after wave 1 merges)
+## Wave 2 — landed on `hardening/wave2` (21 commits, linear)
 
 Carried over from wave 1 reports:
 - lowering still calls `classify_constraint_expression`/`classify_calc_expression` via
@@ -36,6 +36,21 @@ Carried over from wave 1 reports:
 - A: move leaf enums to `sysml_contract` in domain batches; flip facade `pub use`; introduce `SymbolId` (replaces `SymbolIdentity(Box<str>)`).
 - D items 1, 3, 4: drop `Arc<ParsedDocument>` from the sealed model (settle ranges at the barrier); arena the `IdentityIndex`; index-backed member queries replacing the five full scans.
 - C commits 5–7c: `diagnostics_postprocess` → `sysml_diagnostics`; `library_search` → `language_service`; `import_graph`/`library_closure` → typed queries.
+
+Carried over from wave 2 reports:
+- `AuthoredExpression` clones the parser subtree per authored expression (+5% allocations on cold
+  build, +0.8% time). Fix is a stable node id from the parser so the site can hold a reference;
+  needs an upstream parser change (`planning/UPSTREAM_PARSER_GAPS.md`).
+- 74 facade names still carry `SymbolIdentity` / `Box<str>` / `Box<[T]>`; they become movable to
+  `sysml_contract` as a side effect of wave 3's `SymbolId` and view conversions. 9 never move
+  (8 `spec42_constraint_manifest` *Kind re-exports, `DiagnosticCode`).
+- `index/types.rs::SpecializationScope` is a distinct internal bitset enum sharing the contract
+  enum's name; rename it (`ScopeBits`) when the index is next touched.
+- Library-search item `kind` stays in the host until per-root source kinds reach the LSP (C D13).
+- Flaky under load: `parsed_and_text_admission_publish_the_same_identity_over_the_examples` (5 ms
+  wall clock), `lsp_same_file_homonym_references_are_disambiguated_by_position` (50 ms retry loop),
+  `lsp_rename`. Replace wall-clock assertions with deterministic ones.
+- `planning/BENCH_BASELINE.md` was recorded on a loaded machine; re-record on an idle one.
 
 ## Wave 3
 
