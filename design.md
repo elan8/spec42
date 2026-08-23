@@ -96,8 +96,8 @@ share one set of authorities per host process.
 | `publication::PublicationService` and `PublicationSession` | `PublishedModel`, `RelinkToken`, `BuildToken`, `SessionLifecycle` | partitioning admitted documents by provenance, library-stratum reuse, constructing the immutable publication; the publication lifecycle (startup, relink, reindex, reset), its tokens, and the barrier that admits a finished build |
 | `PublishedModel` queries | `navigation()`, `types()`, `diagnostics()`, … | typed, opaque semantic queries over one immutable publication |
 
-A host obtains every handle from one `Services` value. `Services::new(config)` is for host
-processes; `Services::in_memory()` is the stateless form for WebAssembly, fuzzing, conformance, and
+A host obtains every handle from one `Services` value (`Services::new()`); sources come from the
+filesystem provider or `SourceService::admit_memory` for WebAssembly, fuzzing, conformance, and
 benchmarks. There is exactly one `Services` per host process.
 
 New capability lands in this order: implementation in the owning authority, a typed contract in
