@@ -967,3 +967,303 @@ fn the_editor_host_declares_no_validation_module() {
         "the batch validation path lives in `workspace::validation`"
     );
 }
+
+// -- Host boundary guards ------------------------------------------------------------------
+
+/// The host crates. Everything they know about a model comes from the facade's typed answers.
+const HOST_CRATES: &[&str] = &["lsp_server", "server"];
+
+/// Every host function that still takes SysML text as a parameter.
+///
+/// A host may carry a document's text — that is what an editor session does — but deriving a
+/// fact from it is the syntax authority's job. Each entry is a `(path, fn name)` pair that
+/// exists today; the list only ever shrinks. Adding a new text-taking function to a host fails
+/// this test, which is the point: the next `parse this line` helper has to justify itself.
+const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
+    // Document lifecycle: text arriving from the client on its way to `SourceService::admit`.
+    ("crates/lsp_server/src/common/util.rs", "apply_incremental_change"),
+    ("crates/lsp_server/src/common/util.rs", "parse_for_editor"),
+    ("crates/lsp_server/src/session/handle.rs", "admit_text"),
+    ("crates/lsp_server/src/session/handle.rs", "store_document_text_fast"),
+    ("crates/lsp_server/src/session/handle.rs", "refresh_document"),
+    ("crates/lsp_server/src/session/services.rs", "parse_scanned_entry"),
+    ("crates/lsp_server/src/session/services.rs", "store_document_text"),
+    ("crates/lsp_server/src/session/services.rs", "store_document_text_fast"),
+    ("crates/lsp_server/src/session/services.rs", "refresh_document"),
+    (
+        "crates/lsp_server/src/lsp_runtime/documents/sync.rs",
+        "watched_file_content_already_current",
+    ),
+    // Text projection: slicing a range the authority settled out of the text it settled it over.
+    ("crates/lsp_server/src/views/feature_inspector.rs", "slice_range"),
+    ("crates/lsp_server/src/language/mod.rs", "format_document"),
+    // Known debt: code actions and probes that read SysML text rather than asking the syntax
+    // service. These are the D10 entries Proposal C names; the list only ever shrinks.
+    ("crates/lsp_server/src/common/util.rs", "untyped_part_usage_diagnostics"),
+    ("crates/lsp_server/src/common/util.rs", "import_statement_ranges"),
+    ("crates/lsp_server/src/language/mod.rs", "suggest_wrap_in_package"),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_create_definition_for_unresolved_type_quick_fix",
+    ),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_create_matching_part_def_quick_fix",
+    ),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_explicit_redefinition_quick_fix",
+    ),
+    ("crates/lsp_server/src/language/mod.rs", "suggest_create_verification_case"),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_create_usage_from_definition",
+    ),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_qualify_ambiguous_name_quick_fixes",
+    ),
+    ("crates/lsp_server/src/language/mod.rs", "suggest_add_import_quick_fixes"),
+    ("crates/lsp_server/src/language/symbols.rs", "find_reference_ranges"),
+    ("crates/lsp_server/src/lsp_runtime/navigation.rs", "collect_document_links"),
+    (
+        "crates/lsp_server/src/lsp_runtime/navigation.rs",
+        "selection_ranges_for_positions",
+    ),
+    ("crates/lsp_server/src/semantic_tokens/mod.rs", "semantic_tokens_full"),
+    ("crates/lsp_server/src/semantic_tokens/mod.rs", "semantic_tokens_range"),
+];
+
+/// Document-keyed maps a host declares as a field.
+///
+/// A map from `Url`/`PathBuf` to derived data is a cache of something the authority already
+/// owns, and a second place for it to go stale. The session's index is the one legitimate
+/// document-keyed map in a host; everything else reads the publication.
+const HOST_DOCUMENT_KEYED_FIELD_ALLOWLIST: &[(&str, &str)] = &[
+    // The editor session's document index: the one document-keyed map a host may own, because a
+    // session's open documents are its own state and not a derivation of the publication.
+    ("crates/lsp_server/src/session/state.rs", "ServerState"),
+];
+
+#[test]
+fn no_sysml_text_entry_points_in_hosts() {
+    let root = repository_root();
+    let mut violations = Vec::new();
+    for crate_name in HOST_CRATES {
+        for file in host_sources(&root, crate_name) {
+            let rel = relative(&root, &file);
+            let allowed = HOST_TEXT_ENTRY_POINT_ALLOWLIST
+                .iter()
+                .filter(|(path, _)| *path == rel)
+                .map(|(_, name)| *name)
+                .collect::<Vec<_>>();
+            let mut visitor = TextEntryPointVisitor {
+                file: rel,
+                allowed,
+                violations: &mut violations,
+            };
+            visitor.visit_file(&parse_host_file(&file));
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these host functions take SysML text as a parameter; ask the syntax service instead:\n{}",
+        violations.join("\n")
+    );
+}
+
+#[test]
+fn hosts_declare_no_document_keyed_maps_outside_the_session_allow_list() {
+    let root = repository_root();
+    let mut violations = Vec::new();
+    for crate_name in HOST_CRATES {
+        for file in host_sources(&root, crate_name) {
+            let rel = relative(&root, &file);
+            let allowed = HOST_DOCUMENT_KEYED_FIELD_ALLOWLIST
+                .iter()
+                .filter(|(path, _)| *path == rel)
+                .map(|(_, name)| *name)
+                .collect::<Vec<_>>();
+            let mut visitor = DocumentKeyedFieldVisitor {
+                file: rel,
+                allowed,
+                violations: &mut violations,
+            };
+            visitor.visit_file(&parse_host_file(&file));
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these host fields key derived data by document; the publication is the owner:\n{}",
+        violations.join("\n")
+    );
+}
+
+/// Production sources of one host crate: `src/**`, with `#[cfg(test)]` modules excluded by the
+/// visitors below rather than by text slicing, so a test fixture never trips a guard.
+fn host_sources(root: &Path, crate_name: &str) -> Vec<PathBuf> {
+    let mut files = Vec::new();
+    rust_sources(&root.join("crates").join(crate_name).join("src"), &mut files);
+    files
+}
+
+fn relative(root: &Path, file: &Path) -> String {
+    file.strip_prefix(root)
+        .unwrap_or(file)
+        .to_string_lossy()
+        .replace('\\', "/")
+}
+
+fn parse_host_file(file: &Path) -> syn::File {
+    let source = fs::read_to_string(file).expect("read host source");
+    syn::parse_file(&source).unwrap_or_else(|error| panic!("parse {}: {error}", file.display()))
+}
+
+fn is_test_gated(attributes: &[syn::Attribute]) -> bool {
+    attributes.iter().any(|attribute| {
+        attribute.path().is_ident("cfg")
+            && attribute
+                .parse_args::<syn::Meta>()
+                .is_ok_and(|meta| meta.path().is_ident("test"))
+    })
+}
+
+/// A parameter named for SysML source text, typed as text.
+fn is_text_parameter(argument: &syn::FnArg) -> Option<String> {
+    let syn::FnArg::Typed(typed) = argument else {
+        return None;
+    };
+    let syn::Pat::Ident(ident) = typed.pat.as_ref() else {
+        return None;
+    };
+    let name = ident.ident.to_string();
+    if !matches!(name.as_str(), "source" | "text" | "content" | "line") {
+        return None;
+    }
+    is_text_type(&typed.ty).then_some(name)
+}
+
+fn is_text_type(ty: &Type) -> bool {
+    match ty {
+        Type::Reference(reference) => is_text_type(&reference.elem),
+        Type::Path(path) => path
+            .path
+            .segments
+            .last()
+            .is_some_and(|segment| segment.ident == "str" || segment.ident == "String"),
+        _ => false,
+    }
+}
+
+struct TextEntryPointVisitor<'a> {
+    file: String,
+    allowed: Vec<&'a str>,
+    violations: &'a mut Vec<String>,
+}
+
+impl TextEntryPointVisitor<'_> {
+    fn check(&mut self, signature: &Signature) {
+        let name = signature.ident.to_string();
+        if self.allowed.contains(&name.as_str()) {
+            return;
+        }
+        for argument in &signature.inputs {
+            if let Some(parameter) = is_text_parameter(argument) {
+                self.violations
+                    .push(format!("{}: fn {name}({parameter}: text)", self.file));
+                return;
+            }
+        }
+    }
+}
+
+impl<'ast> Visit<'ast> for TextEntryPointVisitor<'_> {
+    fn visit_item_mod(&mut self, item: &'ast syn::ItemMod) {
+        if is_test_gated(&item.attrs) {
+            return;
+        }
+        visit::visit_item_mod(self, item);
+    }
+
+    fn visit_item_fn(&mut self, item: &'ast syn::ItemFn) {
+        if is_test_gated(&item.attrs) {
+            return;
+        }
+        self.check(&item.sig);
+        visit::visit_item_fn(self, item);
+    }
+
+    fn visit_impl_item_fn(&mut self, item: &'ast syn::ImplItemFn) {
+        if is_test_gated(&item.attrs) {
+            return;
+        }
+        self.check(&item.sig);
+        visit::visit_impl_item_fn(self, item);
+    }
+
+    fn visit_trait_item_fn(&mut self, item: &'ast syn::TraitItemFn) {
+        self.check(&item.sig);
+        visit::visit_trait_item_fn(self, item);
+    }
+}
+
+struct DocumentKeyedFieldVisitor<'a> {
+    file: String,
+    allowed: Vec<&'a str>,
+    violations: &'a mut Vec<String>,
+}
+
+/// `HashMap<Url, _>`, `BTreeMap<Url, _>`, or the same keyed by `PathBuf`.
+fn document_keyed_map(ty: &Type) -> bool {
+    let Type::Path(path) = ty else {
+        return false;
+    };
+    let Some(segment) = path.path.segments.last() else {
+        return false;
+    };
+    if segment.ident != "HashMap" && segment.ident != "BTreeMap" {
+        return false;
+    }
+    let syn::PathArguments::AngleBracketed(arguments) = &segment.arguments else {
+        return false;
+    };
+    let Some(syn::GenericArgument::Type(Type::Path(key))) = arguments.args.first() else {
+        return false;
+    };
+    key.path
+        .segments
+        .last()
+        .is_some_and(|key| key.ident == "Url" || key.ident == "PathBuf")
+}
+
+impl<'ast> Visit<'ast> for DocumentKeyedFieldVisitor<'_> {
+    fn visit_item_mod(&mut self, item: &'ast syn::ItemMod) {
+        if is_test_gated(&item.attrs) {
+            return;
+        }
+        visit::visit_item_mod(self, item);
+    }
+
+    fn visit_item_struct(&mut self, item: &'ast syn::ItemStruct) {
+        if is_test_gated(&item.attrs) {
+            return;
+        }
+        let name = item.ident.to_string();
+        if self.allowed.contains(&name.as_str()) {
+            return;
+        }
+        if let Fields::Named(fields) = &item.fields {
+            for field in &fields.named {
+                if document_keyed_map(&field.ty) {
+                    let field_name = field
+                        .ident
+                        .as_ref()
+                        .map(ToString::to_string)
+                        .unwrap_or_default();
+                    self.violations
+                        .push(format!("{}: {name}.{field_name}", self.file));
+                }
+            }
+        }
+    }
+}

@@ -2,7 +2,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 const MAX_IGNORE_ATTRIBUTES: usize = 6;
-const MAX_ALLOW_ATTRIBUTES_IN_SRC: usize = 38;
+/// Ratcheted as the validation pipeline, library search, diagnostics post-processing and the
+/// import graph left the crate. Three remain: two `deprecated` LSP protocol fields and one
+/// argument-count allowance in the session's rebuild path.
+const MAX_ALLOW_ATTRIBUTES_IN_SRC: usize = 3;
 const MAX_FRONTEND_SKIPPED_TESTS: usize = 0;
 
 #[test]
