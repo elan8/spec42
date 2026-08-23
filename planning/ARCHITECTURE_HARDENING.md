@@ -1,9 +1,9 @@
 # Architecture hardening
 
 Tracker for the boundary/representation refactor decided in `design.md` (contract crate, phases
-inside the authority, sibling hosts, borrowed facade views, benchmarks). Proposals with the full
-evidence: `A_contract_types.md`, `B_resolution_phases.md`, `C_host_boundaries.md`,
-`D_performance.md` in this directory. Delete each proposal when its items land.
+inside the authority, sibling hosts, borrowed facade views, benchmarks). The four analysis proposals that produced this plan landed and were deleted; their evidence
+lives in git history (`planning/{A_contract_types,B_resolution_phases,C_host_boundaries,D_performance}.md`
+before this commit).
 
 Every item is a green commit; no guard is loosened. Items in one wave are conflict-free and run in
 parallel worktrees; a wave waits for the previous one to merge.
@@ -50,11 +50,33 @@ Carried over from wave 2 reports:
   `lsp_rename`. Replace wall-clock assertions with deterministic ones.
 - `planning/BENCH_BASELINE.md` was recorded on a loaded machine; re-record on an idle one.
 
-## Wave 3
+## Wave 3 — landed on `hardening/wave3` (35 commits, linear)
 
-- D items 5, 7: borrowed accessors and `impl Iterator` on facade products (touches every host once).
-- C commits 8–12: validation path → `workspace`; `server` via `workspace`; `lsp_server` drops `workspace`; dependency sets pinned in `architecture.rs`.
-- D item 8: per-document incremental reuse for workspace documents (needs cold/warm parity tests).
+| Item | Result |
+|---|---|
+| C 8–12 sibling hosts | validation path in `workspace`; `server` reaches it there; `lsp_server` has no `workspace` dependency; both host dependency sets pinned; host text-entry allow-list 38 → 3 |
+| Syntax follow-ups A–C | 8 typed syntax queries; 11 consumer heuristics deleted; 7 `syntax_authority` exemptions removed (5 items remain, see `SYNTAX_FOLLOW_UPS.md`) |
+| D 1 parse tree | sealed model holds `LineIndex` only; `phase_order.rs` rule 4 bans tree/text fields |
+| D 3, 4 | identity derived from owner chain; member queries index-backed; `ScopeBits` rename |
+| D 8 incremental reuse | per-document lowering memo keyed by digest, generational eviction, cold/warm parity proven by construction; warm relink −4.6% |
+| A 3 `SymbolId` / `DocumentId` | `Copy` handles with `qualified_name`/`document_identity` accessors; strings only at protocol edges; retired `SymbolIdentity` |
+| D 5, 7 borrowed views | `VisibleMembers` (completion 487 → 4 allocs), `PublishedDiagnostics` (no clone per query), `NavigationTarget` |
+| Flaky tests | timer → `sources_parsed` counted fact; 9 sleep loops → publication barrier |
+| Host bug | `rebuild_publication` prepared off-actor and took its build token in a later turn, so a stale-input build could out-rank a newer one and a just-opened document could be missing from the live publication forever — now one actor mutation |
+
+Measured on the bundled standard library (9,116 elements), original baseline → wave 3:
+cold build 255 → ~134 ms · warm relink 83 → ~55 ms · completion 42 µs / 601 allocs → ~19 µs / 4 allocs ·
+document symbols 235 µs / 4,554 allocs → ~170 µs / 1,596 allocs · peak allocations −23%.
+
+### Remaining under the facade rule (guard-protected, shrink-only)
+
+`FACADE_OWNED_STRING_PRODUCT_FIELDS` in `crates/sysml_query/tests/architecture.rs` lists 17 product
+fields that still own strings. Convert one family per change, copying the `VisibleMembers` /
+`NavigationTarget` shape: `SymbolEntry` (document symbols — largest remaining allocation site),
+`ElementInspection`, `Documentation`, `AuthoredUnit`, `QualifiedReferenceTarget`, `PackageTargets`,
+the six `Diagram*` scene types, and the five syntax-service products (`SyntaxOutlineNode`,
+`SyntaxImport`, `SyntaxToken`, `SyntaxUnitLiteral`, `SyntaxDiagnostic`) added by the follow-ups
+work. Types that become field-free move to `sysml_contract`.
 
 ## After wave 3 — measured, not yet scheduled
 
