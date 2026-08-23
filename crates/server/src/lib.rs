@@ -38,11 +38,14 @@ use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
+///
+/// The report — including its advice — is `workspace::validate_paths`'s answer. This crate adds
+/// nothing to it: a workspace that needs library roots says so through the diagnostics the
+/// publication settled, which is what the advice is derived from.
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport, String> {
-    let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
     let engine = build_engine(cli)?;
-    let mut report = validate_paths(
+    validate_paths(
         &engine,
         &[],
         ValidationRequest {
@@ -52,21 +55,7 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport
             parallel_enabled: true,
             strict_diagnostics: args.strict_diagnostics,
         },
-    )?;
-    if references_stdlib
-        && environment.stdlib_path.is_none()
-        && !cli.no_stdlib
-        && !report
-            .advice
-            .iter()
-            .any(|line| line.contains("standard library"))
-    {
-        report.advice.push(
-            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
-                .to_string(),
-        );
-    }
-    Ok(report)
+    )
 }
 
 /// Environment report (same as `spec42 doctor`).
