@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The keystroke-path facade products are borrowed views over the publication, not owned copies
+  of it.** `visible_members` answers with `VisibleMembers<'m>`/`VisibleMemberRef<'m>`: handles plus
+  `&'m str` accessors that slice the publication's settled symbol, qualified-name and document
+  blobs, so a completion request over the standard library allocates 4 times instead of 487. The
+  qualified name comes from the barrier-settled `QualifiedNameIndex` that every other query reads,
+  retiring a second owner-chain derivation. `PublishedDiagnostics<'m>` borrows the settled
+  diagnostic sequence rather than cloning it per query, and `Diagnostic`, `DiagnosticLocation` and
+  `RelatedLocation` publish their storage through `&str` accessors. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank from 29 entries to 23.
+
 - **The editor host and the batch host are siblings again: `lsp_server` no longer depends on
   `workspace`.** Batch validation — walk a directory, publish once, collect the diagnostics the
   publication settled — moved from `lsp_server::validation` to `workspace::validation`, where the
