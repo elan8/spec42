@@ -629,7 +629,6 @@ const FACADE_OWNED_STRING_INPUT_FIELDS: &[&str] = &[
 /// only ever meant to shrink.
 const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "DiagramEdge::semantic_id",
-    "DiagramRelationship::kind",
     "DiagramRelationship::semantic_id",
     "DiagramStateTransition::semantic_id",
     "Documentation::text",

@@ -34,7 +34,8 @@ pub use derived::{
 };
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 pub use diagram::{
-    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramRelationshipKind,
+    DiagramStateVertexKind, DiagramViewKind,
 };
 pub use document::{DocumentId, DocumentToken};
 pub use element::{

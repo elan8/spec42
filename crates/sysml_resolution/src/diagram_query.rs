@@ -7,7 +7,8 @@ use crate::{
 };
 
 pub use sysml_contract::{
-    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramRelationshipKind,
+    DiagramStateVertexKind, DiagramViewKind,
 };
 
 /// The standard library declaration name each view kind is defined by.
@@ -62,12 +63,24 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: SymbolId },
-    ExposureAmbiguous { exposure: SymbolId },
-    ExposureUnsupported { exposure: SymbolId },
-    RelationshipUnresolved { relationship: Box<str> },
-    RelationshipAmbiguous { relationship: Box<str> },
-    RelationshipUnsupported { relationship: Box<str> },
+    ExposureUnresolved {
+        exposure: SymbolId,
+    },
+    ExposureAmbiguous {
+        exposure: SymbolId,
+    },
+    ExposureUnsupported {
+        exposure: SymbolId,
+    },
+    RelationshipUnresolved {
+        relationship: DiagramRelationshipKind,
+    },
+    RelationshipAmbiguous {
+        relationship: DiagramRelationshipKind,
+    },
+    RelationshipUnsupported {
+        relationship: DiagramRelationshipKind,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
@@ -198,7 +211,7 @@ pub struct DiagramRelationship {
     pub semantic_id: Box<str>,
     pub source: DiagramOccurrenceIdentity,
     pub source_semantic_id: SymbolId,
-    pub kind: Box<str>,
+    pub kind: DiagramRelationshipKind,
     pub target: DiagramRelationshipTarget,
     pub provenance: RelationshipProvenance,
     pub source_location: Option<SourceLocation>,
@@ -583,6 +596,11 @@ impl PublishedResolution {
         for element in &elements {
             if let Some(inspection) = usable_value(self.inspect(element.semantic_id)) {
                 for (index, relationship) in inspection.relationships.iter().enumerate() {
+                    // Every name the authority publishes is one of the canonical reference
+                    // kinds, which is exactly the enum's variant set.
+                    let kind = relationship_kind_from_name(relationship.kind).expect(
+                        "a published relationship names one of the canonical reference kinds",
+                    );
                     let target = match &relationship.target {
                         RelationshipTarget::Resolved(target) => {
                             DiagramRelationshipTarget::Resolved(contextual_endpoint(
@@ -592,9 +610,9 @@ impl PublishedResolution {
                             ))
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipAmbiguous {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Ambiguous(
@@ -612,17 +630,17 @@ impl PublishedResolution {
                             )
                         }
                         RelationshipTarget::Unresolved => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Unresolved
                         }
                         RelationshipTarget::Unsupported => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipUnsupported {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Unsupported
@@ -632,12 +650,12 @@ impl PublishedResolution {
                         semantic_id: format!(
                             "{}#{}:{index}",
                             element.occurrence_id.stable_key(),
-                            relationship.kind
+                            kind.name()
                         )
                         .into(),
                         source: element.occurrence_id.clone(),
                         source_semantic_id: element.semantic_id,
-                        kind: relationship.kind.into(),
+                        kind,
                         target,
                         provenance: relationship.provenance,
                         source_location: relationship.location,
@@ -676,8 +694,8 @@ impl PublishedResolution {
             if let Some(edge) = composed_edge(
                 element,
                 &outgoing,
-                "transitionSource",
-                "transitionTarget",
+                DiagramRelationshipKind::TransitionSource,
+                DiagramRelationshipKind::TransitionTarget,
                 DiagramEdgeKind::Transition,
             ) {
                 edges.push(edge);
@@ -686,20 +704,26 @@ impl PublishedResolution {
             if let Some(edge) = composed_edge(
                 element,
                 &outgoing,
-                "flowSource",
-                "flowTarget",
+                DiagramRelationshipKind::FlowSource,
+                DiagramRelationshipKind::FlowTarget,
                 DiagramEdgeKind::Flow,
             ) {
                 edges.push(edge);
                 continue;
             }
             for (relationship_kind, edge_kind) in [
-                ("connectorEnd", DiagramEdgeKind::Connector),
-                ("succession", DiagramEdgeKind::Succession),
+                (
+                    DiagramRelationshipKind::ConnectorEnd,
+                    DiagramEdgeKind::Connector,
+                ),
+                (
+                    DiagramRelationshipKind::Succession,
+                    DiagramEdgeKind::Succession,
+                ),
             ] {
                 let endpoints = outgoing
                     .iter()
-                    .filter(|relationship| relationship.kind.as_ref() == relationship_kind)
+                    .filter(|relationship| relationship.kind == relationship_kind)
                     .filter_map(|relationship| resolved_target(&relationship.target))
                     .collect::<Vec<_>>();
                 if let [source, target] = endpoints.as_slice() {
@@ -710,7 +734,7 @@ impl PublishedResolution {
             }
             if let Some(initial) = outgoing
                 .iter()
-                .find(|relationship| relationship.kind.as_ref() == "initialState")
+                .find(|relationship| relationship.kind == DiagramRelationshipKind::InitialState)
             {
                 if let Some(target) = resolved_target(&initial.target) {
                     edges.push(DiagramEdge {
@@ -821,20 +845,26 @@ impl PublishedResolution {
     }
 }
 
-fn relationship_is_required(view: DiagramViewKind, kind: &str) -> bool {
+fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind) -> bool {
     match view {
-        DiagramViewKind::Interconnection => kind == "connectorEnd",
-        DiagramViewKind::ActionFlow => matches!(kind, "flowSource" | "flowTarget" | "succession"),
+        DiagramViewKind::Interconnection => kind == DiagramRelationshipKind::ConnectorEnd,
+        DiagramViewKind::ActionFlow => matches!(
+            kind,
+            DiagramRelationshipKind::FlowSource
+                | DiagramRelationshipKind::FlowTarget
+                | DiagramRelationshipKind::Succession
+        ),
         DiagramViewKind::StateTransition => matches!(
             kind,
-            "initialState"
-                | "transitionSource"
-                | "transitionTarget"
-                | "transitionTrigger"
-                | "transitionGuard"
-                | "transitionEffect"
+            DiagramRelationshipKind::InitialState
+                | DiagramRelationshipKind::TransitionSource
+                | DiagramRelationshipKind::TransitionTarget
+                | DiagramRelationshipKind::TransitionTrigger
+                | DiagramRelationshipKind::TransitionEffect
         ),
-        DiagramViewKind::Sequence => matches!(kind, "messageSource" | "messageTarget"),
+        // No reference kind publishes a sequence message end, so nothing is required of a
+        // sequence view yet; the enum says so where a string comparison could not.
+        DiagramViewKind::Sequence => false,
         DiagramViewKind::General
         | DiagramViewKind::Browser
         | DiagramViewKind::Grid
@@ -1012,7 +1042,7 @@ fn diagram_scene(
                             || edge.semantic_id.as_ref()
                                 == format!("{}#initial", element.occurrence_id.stable_key())
                     })?;
-                    let feature = |relationship_kind: &str| {
+                    let feature = |relationship_kind| {
                         transition_feature(origin, relationship_kind, relationships, entries)
                     };
                     Some(DiagramStateTransition {
@@ -1023,10 +1053,13 @@ fn diagram_scene(
                         trigger: if edge.kind == DiagramEdgeKind::InitialState {
                             DiagramTransitionFeature::Absent
                         } else {
-                            feature("transitionTrigger")
+                            feature(DiagramRelationshipKind::TransitionTrigger)
                         },
-                        guard: feature("transitionGuard"),
-                        effect: feature("transitionEffect"),
+                        // No reference kind publishes a transition guard, so the guard slot is
+                        // always absent. The enum makes that explicit; the string form silently
+                        // looked for a name the authority never emits.
+                        guard: DiagramTransitionFeature::Absent,
+                        effect: feature(DiagramRelationshipKind::TransitionEffect),
                         provenance: edge.provenance,
                         source_location: edge.source_location.unwrap_or(origin.source),
                     })
@@ -1043,12 +1076,12 @@ fn diagram_scene(
 
 fn transition_feature(
     origin: &DiagramElement,
-    kind: &str,
+    kind: DiagramRelationshipKind,
     relationships: &[DiagramRelationship],
     entries: &BTreeMap<SymbolId, SymbolEntry>,
 ) -> DiagramTransitionFeature {
     let Some(relationship) = relationships.iter().find(|relationship| {
-        relationship.source == origin.occurrence_id && relationship.kind.as_ref() == kind
+        relationship.source == origin.occurrence_id && relationship.kind == kind
     }) else {
         return DiagramTransitionFeature::Absent;
     };
@@ -1070,16 +1103,16 @@ fn transition_feature(
 fn composed_edge(
     element: &DiagramElement,
     relationships: &[&DiagramRelationship],
-    source_kind: &str,
-    target_kind: &str,
+    source_kind: DiagramRelationshipKind,
+    target_kind: DiagramRelationshipKind,
     kind: DiagramEdgeKind,
 ) -> Option<DiagramEdge> {
     let source_relationship = relationships
         .iter()
-        .find(|relationship| relationship.kind.as_ref() == source_kind)?;
+        .find(|relationship| relationship.kind == source_kind)?;
     let target_relationship = relationships
         .iter()
-        .find(|relationship| relationship.kind.as_ref() == target_kind)?;
+        .find(|relationship| relationship.kind == target_kind)?;
     let source = resolved_target(&source_relationship.target)?;
     let target = resolved_target(&target_relationship.target)?;
     Some(edge_from_relationships(
@@ -1175,6 +1208,72 @@ fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
         | QueryOutcome::Unsupported
         | QueryOutcome::Recovery
         | QueryOutcome::Incomplete => None,
+    }
+}
+
+/// The canonical reference-kind name the inspection publishes, as the diagram vocabulary variant.
+/// The kind one canonical name states, or `None` where the name is not one of them.
+fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
+    match name {
+        "namespaceImport" => Some(DiagramRelationshipKind::NamespaceImport),
+        "membershipImport" => Some(DiagramRelationshipKind::MembershipImport),
+        "filterImport" => Some(DiagramRelationshipKind::FilterImport),
+        "featureTyping" => Some(DiagramRelationshipKind::FeatureTyping),
+        "typeFeaturing" => Some(DiagramRelationshipKind::TypeFeaturing),
+        "featureChaining" => Some(DiagramRelationshipKind::FeatureChaining),
+        "specialization" => Some(DiagramRelationshipKind::Specialization),
+        "subsetting" => Some(DiagramRelationshipKind::Subsetting),
+        "redefinition" => Some(DiagramRelationshipKind::Redefinition),
+        "referenceSubsetting" => Some(DiagramRelationshipKind::ReferenceSubsetting),
+        "crossSubsetting" => Some(DiagramRelationshipKind::CrossSubsetting),
+        "intersects" => Some(DiagramRelationshipKind::Intersects),
+        "unioning" => Some(DiagramRelationshipKind::Unioning),
+        "intersecting" => Some(DiagramRelationshipKind::Intersecting),
+        "differencing" => Some(DiagramRelationshipKind::Differencing),
+        "disjoining" => Some(DiagramRelationshipKind::Disjoining),
+        "aliasBinding" => Some(DiagramRelationshipKind::AliasBinding),
+        "connectorEnd" => Some(DiagramRelationshipKind::ConnectorEnd),
+        "succession" => Some(DiagramRelationshipKind::Succession),
+        "entryActionBinding" => Some(DiagramRelationshipKind::EntryActionBinding),
+        "doActionBinding" => Some(DiagramRelationshipKind::DoActionBinding),
+        "exitActionBinding" => Some(DiagramRelationshipKind::ExitActionBinding),
+        "initialState" => Some(DiagramRelationshipKind::InitialState),
+        "expressionOperand" => Some(DiagramRelationshipKind::ExpressionOperand),
+        "transitionSource" => Some(DiagramRelationshipKind::TransitionSource),
+        "transitionTarget" => Some(DiagramRelationshipKind::TransitionTarget),
+        "transitionTrigger" => Some(DiagramRelationshipKind::TransitionTrigger),
+        "transitionEffect" => Some(DiagramRelationshipKind::TransitionEffect),
+        "metadataAnnotation" => Some(DiagramRelationshipKind::MetadataAnnotation),
+        "filterMetadataTest" => Some(DiagramRelationshipKind::FilterMetadataTest),
+        "satisfySource" => Some(DiagramRelationshipKind::SatisfySource),
+        "satisfyTarget" => Some(DiagramRelationshipKind::SatisfyTarget),
+        "allocateSource" => Some(DiagramRelationshipKind::AllocateSource),
+        "allocateTarget" => Some(DiagramRelationshipKind::AllocateTarget),
+        "bindSource" => Some(DiagramRelationshipKind::BindSource),
+        "bindTarget" => Some(DiagramRelationshipKind::BindTarget),
+        "variant" => Some(DiagramRelationshipKind::Variant),
+        "includeUseCase" => Some(DiagramRelationshipKind::IncludeUseCase),
+        "viewExpose" => Some(DiagramRelationshipKind::ViewExpose),
+        "memberAccessOperand" => Some(DiagramRelationshipKind::MemberAccessOperand),
+        "invocationCallee" => Some(DiagramRelationshipKind::InvocationCallee),
+        "thenTarget" => Some(DiagramRelationshipKind::ThenTarget),
+        "acceptVia" => Some(DiagramRelationshipKind::AcceptVia),
+        "sendTarget" => Some(DiagramRelationshipKind::SendTarget),
+        "acceptPayloadType" => Some(DiagramRelationshipKind::AcceptPayloadType),
+        "terminateTarget" => Some(DiagramRelationshipKind::TerminateTarget),
+        "flowSource" => Some(DiagramRelationshipKind::FlowSource),
+        "flowTarget" => Some(DiagramRelationshipKind::FlowTarget),
+        "typeCheckTarget" => Some(DiagramRelationshipKind::TypeCheckTarget),
+        "metaCastTarget" => Some(DiagramRelationshipKind::MetaCastTarget),
+        "stakeholderTarget" => Some(DiagramRelationshipKind::StakeholderTarget),
+        "purposeTarget" => Some(DiagramRelationshipKind::PurposeTarget),
+        "verifyRequirementTarget" => Some(DiagramRelationshipKind::VerifyRequirementTarget),
+        "assignTarget" => Some(DiagramRelationshipKind::AssignTarget),
+        "dependencyClient" => Some(DiagramRelationshipKind::DependencyClient),
+        "dependencySupplier" => Some(DiagramRelationshipKind::DependencySupplier),
+        "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
+        "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
+        _ => None,
     }
 }
 

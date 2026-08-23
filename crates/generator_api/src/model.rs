@@ -777,7 +777,7 @@ impl GeneratorModelView {
             .enumerate()
             .map(|(ordinal, relationship)| {
                 let kind = spec42_generator_protocol::RelationshipKind::parse(
-                    generator_relationship_kind(&relationship.kind),
+                    generator_relationship_kind(relationship.kind.name()),
                 );
                 Ok(DiagramRelationship {
                     reference: self.diagram_relationship_reference(
@@ -1524,17 +1524,17 @@ impl GeneratorModelView {
             }
             Owned::RelationshipUnresolved { relationship } => {
                 DiagramIncompleteReason::RelationshipUnresolved {
-                    relationship_kind: relationship.to_string(),
+                    relationship_kind: relationship.name().to_owned(),
                 }
             }
             Owned::RelationshipAmbiguous { relationship } => {
                 DiagramIncompleteReason::RelationshipAmbiguous {
-                    relationship_kind: relationship.to_string(),
+                    relationship_kind: relationship.name().to_owned(),
                 }
             }
             Owned::RelationshipUnsupported { relationship } => {
                 DiagramIncompleteReason::RelationshipUnsupported {
-                    relationship_kind: relationship.to_string(),
+                    relationship_kind: relationship.name().to_owned(),
                 }
             }
             Owned::ViewFilterUnresolved => DiagramIncompleteReason::ViewFilterUnresolved,

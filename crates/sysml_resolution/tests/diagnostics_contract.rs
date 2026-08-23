@@ -542,7 +542,7 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
     assert!(projection.relationships.iter().any(|relationship| {
         relationship.source == root.occurrence_id
             && relationship.source_semantic_id == root.semantic_id
-            && relationship.kind.as_ref() == "featureTyping"
+            && relationship.kind == DiagramRelationshipKind::FeatureTyping
     }));
 
     let behavior = catalog

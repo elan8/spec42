@@ -34,6 +34,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
   Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
   entries to 16.
+- **A projected diagram relationship states its kind as an enum, not as text.**
+  `DiagramRelationship::kind` was a `Box<str>` of the canonical reference name, so every consumer
+  that dispatched on it -- the edge composer, the transition-feature lookup, the generator
+  boundary -- was a string comparison no compiler checks, where a typo silently produces a
+  missing edge instead of an error. `sysml_contract::DiagramRelationshipKind` has one variant per
+  reference kind the resolution authority publishes (58 of them), and `name()` returns the same
+  canonical text, so the published product and the scene keys derived from it are byte-identical.
+  `DiagramIncompleteReason`'s three relationship arms carry the enum too.
+
+  Making the set exhaustive surfaced two comparisons that could never match: the state-transition
+  scene looked up a `transitionGuard` relationship and the completeness rule required
+  `messageSource`/`messageTarget` for a sequence view, none of which any reference kind emits.
+  Both are now written as what they always evaluated to -- an absent guard, and nothing required
+  of a sequence view -- rather than as a lookup that quietly fails. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank from 15 entries to 14.
+
 - **A diagram catalog entry names its view by handle; the display name is read at the edge.**
   `DiagramViewCatalogEntry` no longer carries a `Box<str>` of the view usage's name. The catalog
   lists every authored standard view in a workspace, so it was allocating one copy per entry --
