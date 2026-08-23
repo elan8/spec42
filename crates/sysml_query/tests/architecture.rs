@@ -357,6 +357,9 @@ fn migrated_validation_paths_cannot_return_to_the_graph() {
     let root = repository_root();
     let migrated = [
         "crates/workspace/src/snapshot/validation.rs",
+        "crates/workspace/src/validation/mod.rs",
+        "crates/workspace/src/validation/built_workspace.rs",
+        "crates/workspace/src/validation/report.rs",
         "crates/lsp_server/src/analysis/diagnostics_core.rs",
         "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
         "crates/lsp_server/src/lsp_runtime/diagnostics.rs",
@@ -882,5 +885,85 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "url",
         ]),
         "workspace is a batch host over the facade"
+    );
+    assert_eq!(
+        normal_dependencies("lsp_server"),
+        set(&[
+            "base64",
+            "clap",
+            "generator_api",
+            "generator_host",
+            "glob",
+            "language_service",
+            "petgraph",
+            "rayon",
+            "serde",
+            "serde_json",
+            "session_actor",
+            "sha2",
+            "spec42-generator-protocol",
+            "sysml_diagnostics",
+            "sysml_query",
+            "sysml_tokens",
+            "tempfile",
+            "thiserror",
+            "tokio",
+            "toml",
+            "tower-lsp",
+            "tracing",
+            "tracing-subscriber",
+        ]),
+        "lsp_server is the editor host and owns no batch path: it must not depend on `workspace`"
+    );
+    assert!(
+        !normal_dependencies("lsp_server").contains("workspace"),
+        "the editor host and the batch host are siblings; validation lives in `workspace`"
+    );
+    assert_eq!(
+        normal_dependencies("server"),
+        set(&[
+            "clap",
+            "directories",
+            "generator_api",
+            "generator_host",
+            "kpar",
+            "library_catalog",
+            "lsp_server",
+            "rquickjs",
+            "serde",
+            "serde_json",
+            "sha2",
+            "sysml_diagnostics",
+            "sysml_query",
+            "tempfile",
+            "tokio",
+            "toml",
+            "tower-lsp",
+            "workspace",
+            "zip",
+        ]),
+        "server reaches validation through `workspace`; `lsp_server` is the launch-only edge"
+    );
+}
+
+/// `lsp_server` owns no validation pipeline and no batch entry point.
+///
+/// The dependency-set assertion above proves the crate cannot call into `workspace`; this proves
+/// the pipeline did not simply get rewritten in place under the old module name.
+#[test]
+fn the_editor_host_declares_no_validation_module() {
+    let root = repository_root();
+    for path in [
+        "crates/lsp_server/src/validation",
+        "crates/lsp_server/src/validation.rs",
+    ] {
+        assert!(
+            !root.join(path).exists(),
+            "{path} came back; batch validation belongs to `workspace::validation`"
+        );
+    }
+    assert!(
+        root.join("crates/workspace/src/validation/mod.rs").exists(),
+        "the batch validation path lives in `workspace::validation`"
     );
 }
