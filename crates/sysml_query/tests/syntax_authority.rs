@@ -80,7 +80,7 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/language_service/src/code_actions.rs",
-        reason: "declaration-header text scans awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
+        reason: "declaration-header text scans and same-file definition lookup awaiting migration to declaration_at/body_range (planning/SYNTAX_FOLLOW_UPS.md)",
         must_contain: None,
     },
     Exemption {
@@ -115,7 +115,7 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/sysml_tokens/src/ast_ranges.rs",
-        reason: "declaration-name narrowing awaiting name-only token roles (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
+        reason: "declaration-name narrowing awaiting name-only token roles (planning/SYNTAX_FOLLOW_UPS.md)",
         must_contain: None,
     },
     Exemption {
