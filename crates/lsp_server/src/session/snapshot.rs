@@ -54,6 +54,13 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
             .map(|entry| entry.content())
     }
 
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        self.state
+            .index
+            .get(&util::normalize_file_uri(uri))
+            .map(|entry| entry.parsed.clone())
+    }
+
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
         self.published_model.as_deref()
     }

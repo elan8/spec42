@@ -4,7 +4,6 @@ use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
-use crate::language::word_at_position;
 use crate::session::{snapshot::ServerStateSnapshot, ServerState};
 
 use crate::lsp_runtime::navigation;
@@ -107,14 +106,14 @@ pub(crate) fn selection_range(
     positions: Vec<Position>,
 ) -> Result<Option<Vec<SelectionRange>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
     Ok(Some(navigation::selection_ranges_for_positions(
-        text,
+        entry.content(),
+        &entry.parsed,
         &positions,
-        word_at_position,
     )))
 }
 

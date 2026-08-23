@@ -14,7 +14,7 @@ pub use sysml_resolution::syntax::{
     SyntaxClosureFacts, SyntaxImport,
     SyntaxDiagnostic, SyntaxDiagnosticCategory, SyntaxDiagnosticSeverity, SyntaxFoldingKind,
     SyntaxFoldingRegion, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange, SyntaxRole,
-    RESERVED_KEYWORDS,
+    SyntaxToken, SyntaxUnitLiteral, RESERVED_KEYWORDS,
 };
 
 use sysml_resolution::syntax::SyntaxAuthority;

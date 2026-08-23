@@ -6,7 +6,7 @@ mod symbols;
 pub use language_service::{
     completion_prefix, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
     line_prefix_at_position, position_to_byte_offset, symbol_entries_for_uri, sysml_keywords,
-    unit_value_suffix_at_position, word_at_position, SymbolEntry, RESERVED_KEYWORDS,
+    SymbolEntry, RESERVED_KEYWORDS,
 };
 
 #[cfg(test)]
@@ -47,7 +47,7 @@ pub use position::{source_position_to_range, source_range_to_range, SourcePositi
 #[cfg(test)]
 pub use symbols::collect_named_elements;
 pub(crate) use symbols::{element_kind_label_to_lsp, symbol_kind_label};
-pub use symbols::{collect_document_symbols, collect_folding_ranges, find_reference_ranges};
+pub use symbols::{collect_document_symbols, collect_folding_ranges};
 
 use language_service::{format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion};
 use tower_lsp::lsp_types::{
@@ -400,54 +400,6 @@ mod tests {
     }
 
     #[test]
-    fn test_unit_value_suffix_at_position() {
-        let text = "package P { attribute v = 10 [kV]; }";
-        let bracket_start = text.find("[kV]").expect("unit suffix") as u32;
-        assert_eq!(
-            unit_value_suffix_at_position(text, 0, bracket_start + 1),
-            Some("kV".to_string())
-        );
-        assert_eq!(
-            unit_value_suffix_at_position(text, 0, bracket_start + 2),
-            Some("kV".to_string())
-        );
-        assert!(unit_value_suffix_at_position("multiplicity [0..1]", 0, 12).is_none());
-    }
-
-    #[test]
-    fn test_word_at_position() {
-        let text = "  part foo : Bar  ";
-        let (line, start, end, word) = word_at_position(text, 0, 5).unwrap();
-        assert_eq!(line, 0);
-        assert_eq!(start, 2);
-        assert_eq!(end, 6);
-        assert_eq!(word, "part");
-
-        let (_, _, _, w) = word_at_position(text, 0, 8).unwrap();
-        assert_eq!(w, "foo");
-        let (_, _, _, w) = word_at_position(text, 0, 13).unwrap();
-        assert_eq!(w, "Bar");
-    }
-
-    #[test]
-    fn test_word_at_position_non_ascii() {
-        let text = "part caf\u{00E9} : String";
-        let (_, _, _, w) = word_at_position(text, 0, 6).unwrap();
-        assert_eq!(w, "caf\u{00E9}");
-        let text2 = "part \u{54C1}\u{8A5E} : Type";
-        let (_, _, _, w2) = word_at_position(text2, 0, 6).unwrap();
-        assert_eq!(w2, "\u{54C1}\u{8A5E}");
-    }
-
-    #[test]
-    fn test_word_at_position_empty_line() {
-        let text = "abc";
-        assert!(word_at_position(text, 0, 0).is_some());
-        let (_, _, _, w) = word_at_position(text, 0, 0).unwrap();
-        assert_eq!(w, "abc");
-    }
-
-    #[test]
     fn test_line_prefix_at_position() {
         let text = "  part foo";
         let prefix = line_prefix_at_position(text, 0, 7);
@@ -542,36 +494,6 @@ mod tests {
         assert_eq!(range.start.character, 2);
         assert_eq!(range.end.line, 0);
         assert_eq!(range.end.character, 7);
-    }
-
-    #[test]
-    fn test_find_reference_ranges_empty() {
-        let ranges = find_reference_ranges("hello world", "foo");
-        assert!(ranges.is_empty());
-    }
-
-    #[test]
-    fn test_find_reference_ranges_once() {
-        let ranges = find_reference_ranges("hello foo world", "foo");
-        assert_eq!(ranges.len(), 1);
-        assert_eq!(ranges[0].start.character, 6);
-        assert_eq!(ranges[0].end.character, 9);
-    }
-
-    #[test]
-    fn test_find_reference_ranges_multiple() {
-        let ranges = find_reference_ranges("foo bar foo baz foo", "foo");
-        assert_eq!(ranges.len(), 3);
-    }
-
-    #[test]
-    fn test_find_reference_ranges_word_boundary() {
-        // "foo" in "foobar" must not match
-        let ranges = find_reference_ranges("foobar", "foo");
-        assert!(ranges.is_empty());
-        // "foo" in "foo bar" must match
-        let ranges = find_reference_ranges("foo bar", "foo");
-        assert_eq!(ranges.len(), 1);
     }
 
     #[test]

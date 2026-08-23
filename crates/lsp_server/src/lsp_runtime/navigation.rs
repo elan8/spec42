@@ -61,16 +61,17 @@ pub(crate) fn collect_document_links(
 
 pub(crate) fn selection_ranges_for_positions(
     text: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
     positions: &[Position],
-    word_at: impl Fn(&str, u32, u32) -> Option<(u32, u32, u32, String)>,
 ) -> Vec<tower_lsp::lsp_types::SelectionRange> {
     let mut out = Vec::new();
     for pos in positions {
         let mut ranges = Vec::<Range>::new();
-        if let Some((line, start, end, _)) = word_at(text, pos.line, pos.character) {
+        // The innermost selection is the token the syntax service finds under the cursor.
+        if let Some(token) = parsed.token_at(pos.line, pos.character) {
             ranges.push(Range::new(
-                Position::new(line, start),
-                Position::new(line, end),
+                Position::new(token.range.start_line, token.range.start_character),
+                Position::new(token.range.end_line, token.range.end_character),
             ));
         }
         let line_len = text

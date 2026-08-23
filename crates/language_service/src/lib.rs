@@ -52,12 +52,11 @@ pub use navigation::{find_references, goto_definition, hover};
 pub use outline::{document_symbols, folding_ranges};
 pub use rename::{apply_rename, prepare_rename, rename_target, RenameTarget};
 pub use symbol::{
-    find_reference_ranges, symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry,
+    symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry,
 };
 pub use text::{
     completion_prefix, line_prefix_at_position, position_to_byte_offset,
-    unit_value_suffix_at_position, unit_value_suffix_selection_at_position, utf16_len,
-    word_at_position,
+    utf16_len,
 };
 pub use workspace::{InMemoryWorkspace, WorkspaceSnapshot};
 pub use workspace_symbols::search_workspace_symbols;

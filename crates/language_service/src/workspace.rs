@@ -12,6 +12,9 @@ use crate::uri::normalize_uri;
 struct DocumentEntry {
     path: String,
     content: String,
+    /// The admitted document, kept so the syntax service can be asked for its tree. A document
+    /// handle, not a tree: the tree stays in the service's memo.
+    document: SourceDocument,
 }
 
 /// In-memory indexed workspace for headless language-service queries.
@@ -19,6 +22,7 @@ struct DocumentEntry {
 pub struct InMemoryWorkspace {
     documents: HashMap<Url, DocumentEntry>,
     path_to_uri: HashMap<String, Url>,
+    syntax: sysml_query::syntax::SyntaxService,
     published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
     symbol_table: Vec<SymbolEntry>,
 }
@@ -28,6 +32,11 @@ pub trait WorkspaceSnapshot {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url>;
     fn path_for_uri(&self, uri: &Url) -> String;
     fn document_text(&self, uri: &Url) -> Option<&str>;
+    /// The tree the syntax service parsed for this document.
+    ///
+    /// A handle into the service's memo, so asking is a lookup rather than a parse. Services that
+    /// need a syntax answer ask the tree for it instead of re-deriving one from the text.
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource>;
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
     fn symbol_table(&self) -> &[SymbolEntry];
     fn index_uris(&self) -> Vec<Url>;
@@ -81,6 +90,7 @@ impl InMemoryWorkspace {
                 DocumentEntry {
                     path,
                     content: document.content().to_owned(),
+                    document: document.clone(),
                 },
             );
         }
@@ -93,6 +103,7 @@ impl InMemoryWorkspace {
         Ok(Self {
             documents: documents_map,
             path_to_uri,
+            syntax: sysml_query::syntax::SyntaxService::new(),
             published_model,
             symbol_table,
         })
@@ -132,6 +143,12 @@ impl WorkspaceSnapshot for InMemoryWorkspace {
             .map(|entry| entry.content.as_str())
     }
 
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        self.documents
+            .get(&normalize_uri(uri))
+            .map(|entry| self.syntax.parse(&entry.document))
+    }
+
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
         Some(&self.published_model)
     }
@@ -156,6 +173,10 @@ impl WorkspaceSnapshot for &InMemoryWorkspace {
 
     fn document_text(&self, uri: &Url) -> Option<&str> {
         (*self).document_text(uri)
+    }
+
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        (*self).parsed(uri)
     }
 
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {

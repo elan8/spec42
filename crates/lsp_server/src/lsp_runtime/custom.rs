@@ -37,38 +37,42 @@ pub(crate) fn sysml_feature_inspector_result(
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
 
-    if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
-        &text,
-        position.line,
-        position.character,
-    ) {
+    if let Some(literal) = entry.parsed.unit_literal_at(position.line, position.character) {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
             kind: "unit".to_string(),
-            text: Some(unit),
-            range: Some(range_to_dto(range)),
+            text: Some(literal.unit),
+            range: Some(range_to_dto(TextRange {
+                start: TextPosition {
+                    line: literal.range.start_line,
+                    character: literal.range.start_character,
+                },
+                end: TextPosition {
+                    line: literal.range.end_line,
+                    character: literal.range.end_character,
+                },
+            })),
         };
         return Ok(response);
     }
 
-    let Some((line, start, end, word)) =
-        language_service::word_at_position(&text, position.line, position.character)
-    else {
+    let Some(token) = entry.parsed.token_at(position.line, position.character) else {
         return Ok(response);
     };
+    let word = token.text.clone();
     let selection_range = TextRange {
         start: TextPosition {
-            line,
-            character: start,
+            line: token.range.start_line,
+            character: token.range.start_character,
         },
         end: TextPosition {
-            line,
-            character: end,
+            line: token.range.end_line,
+            character: token.range.end_character,
         },
     };
     response.selection.text = Some(word.clone());
     response.selection.range = Some(range_to_dto(selection_range));
 
-    if language_service::is_reserved_keyword(&word) {
+    if token.is_keyword {
         response.selection.kind = "keyword".to_string();
         response.language_help = language_service::keyword_help(&word).map(|help| {
             dto::SysmlFeatureInspectorLanguageHelpDto {

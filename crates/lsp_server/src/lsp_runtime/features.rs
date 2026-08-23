@@ -10,7 +10,6 @@ use tower_lsp::lsp_types::*;
 use tracing::info;
 
 use crate::common::util;
-use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
 use crate::session::ServerState;
 
@@ -152,14 +151,13 @@ pub(crate) fn linked_editing_range(
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let text = entry.content();
-    let (line, _, _, word) = match word_at_position(text, pos.line, pos.character) {
-        Some(parts) => parts,
-        None => return Ok(None),
+    let Some(token) = entry.parsed.token_at(pos.line, pos.character) else {
+        return Ok(None);
     };
-    if is_reserved_keyword(&word) {
+    if token.is_keyword {
         return Ok(None);
     }
+    let line = token.range.start_line;
     // Linked editing only applies on a declaration's own header line. The syntax service says
     // which line that is; this used to guess from the line's leading keyword, which both missed
     // declaration forms it had not enumerated and fired inside comments and strings.
@@ -170,9 +168,19 @@ pub(crate) fn linked_editing_range(
     if !on_declaration_header {
         return Ok(None);
     }
-    let ranges: Vec<_> = crate::language::find_reference_ranges(text, &word)
+    // Occurrences the syntax service found in code. The substring scan this replaced also
+    // matched inside comments and string literals, so editing a name could rewrite prose.
+    let ranges: Vec<_> = entry
+        .parsed
+        .occurrences_of(&token.text)
         .into_iter()
-        .filter(|range| range.start.line == line)
+        .filter(|range| range.start_line == line)
+        .map(|range| {
+            Range::new(
+                Position::new(range.start_line, range.start_character),
+                Position::new(range.end_line, range.end_character),
+            )
+        })
         .collect();
     if ranges.is_empty() {
         return Ok(None);

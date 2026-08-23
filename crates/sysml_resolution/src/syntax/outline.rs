@@ -354,6 +354,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::InterfaceDef,
                 range,
                 selection_range: range,
@@ -392,6 +393,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.value.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::ClassifierDecl,
                 range,
                 selection_range: range,
@@ -434,6 +436,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::ActionDef,
                 range,
                 selection_range: range,
@@ -456,6 +459,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::ViewDef,
                 range,
                 selection_range: range,
@@ -470,6 +474,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::ViewpointDef,
                 range,
                 selection_range: range,
@@ -484,6 +489,7 @@ fn outline_symbol_from_element(
             }
             Some(SyntaxOutlineNode {
                 name,
+                short_name: p.identification.short_name.clone(),
                 kind: SyntaxOutlineKind::RenderingDef,
                 range,
                 selection_range: range,

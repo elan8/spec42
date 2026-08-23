@@ -142,6 +142,28 @@ impl ParsedSource {
         declares_single_anonymous_package_in(self.inner())
     }
 
+    /// The token under a cursor position, with the role the grammar gives it.
+    ///
+    /// One rule for what continues an identifier, and one place that knows `::` is part of a
+    /// qualified name — rather than a copy per host, each slightly different.
+    pub fn token_at(&self, line: u32, character: u32) -> Option<SyntaxToken> {
+        cursor::token_at(self.source(), &self.token_roles(), line, character)
+    }
+
+    /// The value-with-unit literal the cursor is inside, such as `10 [kg]`.
+    ///
+    /// The pinned grammar keeps no node for the unit suffix, so this is a lexical answer — but a
+    /// lexical answer the authority owns, next to the fact that a source uses unit literals at
+    /// all.
+    pub fn unit_literal_at(&self, line: u32, character: u32) -> Option<SyntaxUnitLiteral> {
+        cursor::unit_literal_at(self.source(), line, character)
+    }
+
+    /// Every whole-word occurrence of `name` in code, comments and string literals excluded.
+    pub fn occurrences_of(&self, name: &str) -> Vec<SyntaxRange> {
+        cursor::occurrences_of(self.source(), name)
+    }
+
     /// Every `import` the source writes, in source order, with its range and owning package.
     pub fn imports(&self) -> Vec<SyntaxImport> {
         imports::imports(self.inner())
@@ -310,10 +332,12 @@ pub enum SyntaxRole {
 }
 
 mod closure_targets;
+mod cursor;
 mod imports;
 mod outline;
 
 pub use closure_targets::PackageTargets;
+pub use cursor::{SyntaxToken, SyntaxUnitLiteral};
 pub use sysml_contract::{ImportScope, SyntaxOutlineKind};
 
 /// One `import` as authored: what it names, what it admits, where it is written, and which

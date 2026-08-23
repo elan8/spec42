@@ -79,44 +79,6 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
     md
 }
 
-/// Returns all ranges in `source` where `name` appears as a whole word.
-pub fn find_reference_ranges(source: &str, name: &str) -> Vec<TextRange> {
-    fn is_ident_char(c: char) -> bool {
-        c.is_alphanumeric() || c == '_' || c == '-'
-    }
-    if name.is_empty() {
-        return Vec::new();
-    }
-    let mut ranges = Vec::new();
-    for (line_no, line) in source.lines().enumerate() {
-        let mut search_start = 0;
-        while let Some(off) = line[search_start..].find(name) {
-            let start = search_start + off;
-            let end = start + name.len();
-            let before_ok =
-                start == 0 || !line[..start].chars().next_back().is_some_and(is_ident_char);
-            let after_ok =
-                end >= line.len() || !line[end..].chars().next().is_some_and(is_ident_char);
-            if before_ok && after_ok {
-                let start_char = line[..start].chars().count() as u32;
-                let end_char = start_char + name.chars().count() as u32;
-                ranges.push(TextRange {
-                    start: TextPosition {
-                        line: line_no as u32,
-                        character: start_char,
-                    },
-                    end: TextPosition {
-                        line: line_no as u32,
-                        character: end_char,
-                    },
-                });
-            }
-            search_start = end;
-        }
-    }
-    ranges
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,12 +86,6 @@ mod tests {
         AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
     };
     use url::Url;
-
-    #[test]
-    fn find_reference_ranges_finds_multiple_occurrences() {
-        let ranges = find_reference_ranges("foo bar foo baz foo", "foo");
-        assert_eq!(ranges.len(), 3);
-    }
 
     #[test]
     fn symbol_entries_for_uri_includes_definitions() {

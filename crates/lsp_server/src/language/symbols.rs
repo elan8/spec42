@@ -7,17 +7,7 @@ use language_service::{
 };
 use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind};
 use sysml_query::resolved_slice::ElementKind;
-use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind};
-
-/// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
-pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
-    use crate::common::text_span::to_lsp_range;
-
-    language_service::find_reference_ranges(source, name)
-        .into_iter()
-        .map(to_lsp_range)
-        .collect()
-}
+use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind};
 
 /// The one label a host prints for an LSP [`SymbolKind`], the inverse of the table above.
 ///

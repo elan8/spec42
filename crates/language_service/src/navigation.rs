@@ -6,7 +6,6 @@ use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::dto::HoverResult;
 use crate::keywords::keyword_hover_markdown;
-use crate::text::word_at_position;
 use crate::workspace::WorkspaceSnapshot;
 
 pub fn hover_at_position(
@@ -16,22 +15,21 @@ pub fn hover_at_position(
 ) -> Option<HoverResult> {
     let uri = workspace.resolve_uri_for_path(path)?;
     let uri_norm = workspace.normalize_uri(&uri);
-    let text = workspace.document_text(&uri_norm)?.to_string();
-    let (line, char_start, char_end, word) =
-        word_at_position(&text, position.line, position.character)?;
-    let lookup_name = word
-        .rsplit("::")
-        .next()
-        .map(str::to_string)
-        .unwrap_or_else(|| word.clone());
+    // The token under the cursor, and its simple name, from the syntax service: which characters
+    // continue an identifier and where a qualified name divides are the grammar's rules, not a
+    // rule each service restates.
+    let token = workspace
+        .parsed(&uri_norm)?
+        .token_at(position.line, position.character)?;
+    let lookup_name = token.simple_name().to_string();
     let range = Some(TextRange {
         start: TextPosition {
-            line,
-            character: char_start,
+            line: token.range.start_line,
+            character: token.range.start_character,
         },
         end: TextPosition {
-            line,
-            character: char_end,
+            line: token.range.end_line,
+            character: token.range.end_character,
         },
     });
 
