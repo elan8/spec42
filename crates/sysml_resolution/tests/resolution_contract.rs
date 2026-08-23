@@ -2772,7 +2772,7 @@ fn case_return_decl_resolves_redefinition_and_type() {
 
 /// A bare `return <name> = <expr>;` (no type, no `part`/`attribute` keyword, no `:>>`) is the
 /// anonymous-declared-name shape of `CaseReturnDecl`; its value expression should be lowered
-/// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
+/// through the same `classify_expression`/`lower_calc_expression` pipeline `lower_return_
 /// decl` (a calc's own `return`) uses.
 #[test]
 fn case_return_decl_value_expression_resolves() {

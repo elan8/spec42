@@ -139,7 +139,7 @@ fn constraint_string_equality_comparison_evaluates_to_boolean_false() {
 #[test]
 fn assert_constraint_literal_comparison_evaluates_to_boolean_true() {
     // `assert constraint { <boolExpr> }` is semantically an anonymous constraint usage --
-    // reuses the exact same `lower_constraint_expression`/`classify_constraint_expression`
+    // reuses the exact same `lower_constraint_expression`/`classify_expression`
     // evaluation machinery as `constraint def`/`constraint` (Slice 1, `4ca42166`).
     let output = build_semantic_sexpr(
         "package Demo {\n\
@@ -484,7 +484,7 @@ fn calc_anonymous_return_decl_arithmetic_evaluates_to_integer() {
     // Slice 5: most real-corpus calc arithmetic lives inside a `return : Type = expr;`
     // declaration, a distinct `CalcDefBodyElement::ReturnDecl` shape bd50fccd (slice 4)
     // deferred. This wires the return declaration's own expression through the exact same
-    // classify_calc_expression/lower_calc_expression pipeline slices 1-4 already built.
+    // classify_expression/lower_calc_expression pipeline slices 1-4 already built.
     let output = build_semantic_sexpr(
         "package Demo {\n\
          \tcalc def Calc { return : ScalarValues::Integer = 2 + 3; }\n\
@@ -521,7 +521,7 @@ fn attribute_literal_default_value_publishes_its_own_evaluation_fact() {
 fn attribute_arithmetic_default_value_resolves_operands_and_evaluates() {
     // Widened value-assignment handling: `length * width` (arithmetic, not a bare literal)
     // now resolves both operand references and, since both are themselves constant-valued,
-    // evaluates via the same classify_constraint_expression/EvalNode::Arithmetic machinery
+    // evaluates via the same classify_expression/EvalNode::Arithmetic machinery
     // slice 4/6ce84b06 built for constraint/calc bodies.
     let output = build_semantic_sexpr(
         "package Demo {\n\
@@ -679,7 +679,7 @@ fn value_assignment_tuple_of_literals_evaluates_to_non_constant() {
 }
 
 /// A transition `if <guard>;` boolean expression with literal comparison operands must
-/// evaluate to a constant `Boolean` through the exact same `classify_constraint_expression`/
+/// evaluate to a constant `Boolean` through the exact same `classify_expression`/
 /// `EvalNode` machinery a `constraint`/`calc` body uses (see `9f63c5a4` and earlier
 /// expression/evaluation slices), not a separate transition-specific evaluator.
 #[test]
