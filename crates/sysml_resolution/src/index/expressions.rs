@@ -921,7 +921,7 @@ impl ResolvedSemanticModel {
 
 #[cfg(test)]
 mod tests {
-    use crate::model::resolver::expression::unit_symbol_path;
+    use super::unit_symbol_path;
 
     /// A plain identifier and a qualified path are names; both reach the catalog.
     #[test]

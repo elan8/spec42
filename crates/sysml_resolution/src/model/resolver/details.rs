@@ -6,16 +6,35 @@
 //! effective types and inherited features read the type index, and both evaluation channels read
 //! the same evaluation fact `inspect` reads.
 
-use super::*;
 use crate::details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
     InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
     ViewSelectionObstacle, ViewSelectionOutcome,
 };
+use crate::diagnose::document_range;
 use crate::evaluation::{AnalysisEvaluation, EvaluatedScalar, EvaluationState};
+use crate::index::documents::leaf_ranges_containing;
+use crate::index::types;
 use crate::inspection::SymbolEntry;
+use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::FilterForm;
+use crate::lower::facts::FilterPredicate;
+use crate::model::element_kind;
+use crate::model::render as writer;
+use crate::model::resolver::PublicationCompleteness;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ResolutionStatus;
 use crate::type_query::EffectiveTypeOrigin;
 use crate::ElementKind;
+use crate::OccurrenceRole;
+use crate::QueryOutcome;
+use crate::RelationshipProvenance;
+use crate::SourceLocation;
+use crate::SymbolIdentity;
+use crate::TextPosition;
 
 /// The relationship families an element-details answer reports separately.
 ///

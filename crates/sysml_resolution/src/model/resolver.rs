@@ -6,32 +6,23 @@
 //! an individual lookup. Downstream reference families read the frozen effective index after the
 //! import barrier converges.
 
-use super::element_kind;
-use super::*;
-#[cfg(test)]
-use crate::build;
-#[cfg(test)]
-use crate::check::conformance::parent;
 #[cfg(test)]
 use crate::diagnose::parser_diagnostic_category;
-use crate::diagnose::*;
 #[cfg(test)]
 use crate::evaluate::classify::ExpressionEvalShape;
-#[cfg(test)]
 use crate::evaluate::compute_evaluation;
-#[cfg(test)]
+use crate::evaluate::EvaluationFact;
 use crate::evaluate::SettledEvaluation;
-use crate::evaluate::*;
 use crate::evaluation::EvaluationPolicy;
 #[cfg(test)]
 use crate::evaluation::EvaluationState;
-pub(crate) use crate::index::bindings as binding;
-use crate::index::documents::*;
-pub(crate) use crate::index::elements as inspection;
-pub(crate) use crate::index::expressions as expression;
-use crate::index::identity::*;
-use crate::index::reverse_references::*;
-pub(crate) use crate::index::types;
+use crate::index::bindings as binding;
+use crate::index::documents::DocumentIndex;
+use crate::index::elements as inspection;
+use crate::index::expressions as expression;
+use crate::index::identity::IdentityIndex;
+use crate::index::reverse_references::ReverseReferenceIndex;
+use crate::index::types;
 #[cfg(test)]
 use crate::lower::facts::AuthoredFilterCondition;
 #[cfg(test)]
@@ -54,12 +45,7 @@ use crate::lower::intern::SymbolPathArena;
 use crate::lower::intern::SymbolPathArenaBuilder;
 #[cfg(test)]
 use crate::lower::intern::SymbolTableBuilder;
-#[cfg(test)]
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::render as writer;
-#[cfg(test)]
-use crate::model::render::visibility;
-#[cfg(test)]
 use crate::model::AuthoredReferenceId;
 #[cfg(test)]
 use crate::model::DeclarationId;
@@ -84,78 +70,66 @@ use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 #[cfg(test)]
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
 #[cfg(test)]
-use crate::resolve::implied::detect_cyclic_alias_bindings;
-#[cfg(test)]
 use crate::resolve::implied::generated_conditional_library_specialization_rule_count;
 #[cfg(test)]
 use crate::resolve::implied::generated_library_redefinition_rule_count;
 #[cfg(test)]
 use crate::resolve::implied::generated_library_specialization_rule_count;
-#[cfg(test)]
 use crate::resolve::implied::library_specialization_anchors;
 #[cfg(test)]
 use crate::resolve::implied::library_specialization_rules;
+use crate::resolve::implied::synthesize_feature_membership_type_featurings;
+use crate::resolve::implied::synthesize_generated_library_redefinitions;
+use crate::resolve::implied::synthesize_generated_library_specializations;
 #[cfg(test)]
 use crate::resolve::implied::LibraryRedefinitionRule;
 #[cfg(test)]
 use crate::resolve::implied::LibrarySpecializationAnchor;
 #[cfg(test)]
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
-use crate::resolve::implied::*;
-use crate::resolve::library_seed::*;
 #[cfg(test)]
-use crate::resolve::names::build_direct_name_index;
+use crate::resolve::implied::GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES;
 #[cfg(test)]
-use crate::resolve::names::build_effective_import_indexes;
+use crate::resolve::implied::GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES;
+#[cfg(test)]
+use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
+#[cfg(test)]
+use crate::resolve::implied::GENERATED_LIBRARY_SPECIALIZATION_RULES;
+#[cfg(test)]
+use crate::resolve::implied::GENERATED_TYPE_DERIVED_FACT_RULES;
+use crate::resolve::library_seed::SettledLibrary;
 #[cfg(test)]
 use crate::resolve::names::name_entry_sort_key;
-#[cfg(test)]
+use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
-#[cfg(test)]
 use crate::resolve::names::NameIndex;
 #[cfg(test)]
 use crate::resolve::names::NameKey;
-use crate::resolve::names::*;
-#[cfg(test)]
 use crate::resolve::resolve_dense;
 #[cfg(test)]
 use crate::resolve::resolve_dense_with_limit;
 #[cfg(test)]
 use crate::resolve::results::ImpliedRelationship;
-#[cfg(test)]
+use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
-#[cfg(test)]
 use crate::resolve::results::ResolutionStatus;
 #[cfg(test)]
 use crate::resolve::results::ResolutionWork;
-#[cfg(test)]
 use crate::resolve::results::SolverStatus;
-use crate::resolve::results::*;
-#[cfg(test)]
-use crate::resolve::DeclarationDomain;
 #[cfg(test)]
 use crate::resolve::ResolutionReferenceFact;
-use crate::resolve::*;
-#[cfg(test)]
-use crate::source;
+use crate::Diagnostic;
 #[cfg(test)]
 use crate::DiagnosticCategory;
-#[cfg(test)]
-use crate::EvaluatedScalar;
 #[cfg(test)]
 use crate::FeatureDerivedRelationshipCollection;
 #[cfg(test)]
 use crate::LibrarySpecializationAnchorBranch;
-use crate::{
-    Diagnostic, OccurrenceRole, QueryOutcome, RelationshipProvenance, SourceLocation,
-    SymbolIdentity, TextPosition,
-};
 #[cfg(test)]
 use spec42_constraint_manifest::LibrarySpecializationPredicate;
+use std::sync::Arc;
 #[cfg(test)]
 use sysml_v2_parser::ast::Span;
-#[cfg(test)]
-use sysml_v2_parser::ParseError;
 
 pub(crate) mod details;
 

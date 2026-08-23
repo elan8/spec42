@@ -3,8 +3,6 @@
 //! The writer accepts only the resolved owner and a caller-provided `fmt::Write`. It does not
 //! expose storage collections or return projections that could become a second semantic model.
 
-#[cfg(test)]
-use crate::build;
 use crate::diagnose::document_range;
 #[cfg(test)]
 use crate::evaluate::compute_evaluation;
@@ -17,23 +15,15 @@ use crate::evaluation::EvaluationPolicy;
 #[cfg(test)]
 use crate::index::bindings as binding;
 #[cfg(test)]
-use crate::index::bindings::BindingConnectorIndex;
-#[cfg(test)]
 use crate::index::documents::DocumentIndex;
 #[cfg(test)]
 use crate::index::elements as inspection;
-#[cfg(test)]
-use crate::index::elements::ElementFactIndex;
 use crate::index::expressions as expression;
-#[cfg(test)]
-use crate::index::expressions::ExpressionIndex;
 #[cfg(test)]
 use crate::index::identity::IdentityIndex;
 #[cfg(test)]
 use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types;
-#[cfg(test)]
-use crate::index::types::TypeIndex;
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredImportFacts;
 use crate::lower::facts::AuthoredImportShape;

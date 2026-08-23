@@ -5,20 +5,8 @@
 //! This module deliberately exposes no storage, graph adapter, or independently publishable
 //! authored model. The publication owner consumes the typed coordinator outcome below.
 
-use std::sync::Arc;
-
-use crate::evaluate::classify::*;
-use crate::lower::facts::*;
-use crate::lower::storage::SemanticModelStorage;
-
-#[cfg(test)]
-use crate::lower::intern::SymbolPathArena;
-#[cfg(test)]
-use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
 #[cfg(test)]
 use crate::lower::SemanticModelBuilder;
-#[cfg(test)]
-use sysml_v2_parser::ParsedDocument;
 
 macro_rules! semantic_id {
     ($name:ident) => {
@@ -1398,18 +1386,6 @@ pub(crate) mod resolver;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_v2_parser::ast::{QualifiedReferenceArena, RootNamespace, SourceStorage};
-
-    fn empty_document() -> Arc<ParsedDocument> {
-        Arc::new(ParsedDocument {
-            source: SourceStorage::default(),
-            qualified_references: QualifiedReferenceArena::default(),
-            root: RootNamespace {
-                elements: Vec::new(),
-            },
-        })
-    }
-
     fn build_semantic_sexpr(source: &str) -> String {
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
