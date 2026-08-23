@@ -24,6 +24,7 @@ mod inspection;
 pub mod library;
 mod model;
 mod namespace_query;
+mod pipeline;
 pub mod publication;
 mod qualified_reference;
 mod redefinition_query;
@@ -117,7 +118,8 @@ pub use type_query::{
 pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
 
 use model::resolver::ResolvedSemanticModel;
-use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
+use pipeline::schedule::BuildSchedule;
+use pipeline::{CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
 
 /// Owner-measured elapsed times for the stable publication barriers.
 ///
@@ -446,7 +448,7 @@ fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
 /// solves everything from scratch. The result is identical either way; only the cost differs.
 #[derive(Debug)]
 pub struct LibraryStratum {
-    prepared: model::PreparedLibrary,
+    prepared: pipeline::PreparedLibrary,
     manifest_entries: Vec<SourceManifestEntry>,
     identities: std::collections::BTreeSet<Box<str>>,
 }

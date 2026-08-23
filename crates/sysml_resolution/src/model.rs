@@ -9,12 +9,10 @@ use std::{
     collections::{hash_map::RandomState, BTreeMap},
     hash::BuildHasher,
     sync::Arc,
-    time::{Duration, Instant},
 };
 
 use hashbrown::HashTable;
 
-use crate::evaluation::EvaluationPolicy;
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
@@ -75,16 +73,16 @@ macro_rules! semantic_id {
     ($name:ident) => {
         #[repr(transparent)]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-        struct $name(u32);
+        pub(crate) struct $name(u32);
 
         impl $name {
-            fn from_index(index: usize) -> Result<Self, ConstructionError> {
+            pub(crate) fn from_index(index: usize) -> Result<Self, ConstructionError> {
                 Ok(Self(
                     u32::try_from(index).map_err(|_| ConstructionError::Capacity)?,
                 ))
             }
 
-            fn index(self) -> usize {
+            pub(crate) fn index(self) -> usize {
                 self.0 as usize
             }
         }
@@ -98,7 +96,7 @@ semantic_id!(SymbolPathId);
 semantic_id!(AuthoredReferenceId);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ConstructionError {
+pub(crate) enum ConstructionError {
     Capacity,
     InvalidIdentity,
     DuplicateDocumentIdentity,
@@ -2974,7 +2972,7 @@ struct AuthoredInvocation {
 }
 
 #[derive(Debug)]
-struct SemanticModelStorage {
+pub(crate) struct SemanticModelStorage {
     documents: Box<[CanonicalDocument]>,
     declarations: Box<[Declaration]>,
     /// Parallel to `declarations`, one entry per `DeclarationId`.
@@ -3012,7 +3010,7 @@ impl SemanticModelStorage {
 }
 
 #[derive(Debug, Default)]
-struct SemanticModelBuilder {
+pub(crate) struct SemanticModelBuilder {
     documents: Vec<CanonicalDocument>,
     document_index: HashTable<DocumentId>,
     document_hash_builder: RandomState,
@@ -3043,7 +3041,7 @@ struct SemanticModelBuilder {
 }
 
 impl SemanticModelBuilder {
-    fn admit_document(
+    pub(crate) fn admit_document(
         &mut self,
         identity: impl Into<Box<str>>,
         role: SourceRole,
@@ -3817,7 +3815,7 @@ impl SemanticModelBuilder {
             .unwrap_or(0)
     }
 
-    fn freeze(self) -> SemanticModelStorage {
+    pub(crate) fn freeze(self) -> SemanticModelStorage {
         SemanticModelStorage {
             documents: self.documents.into_boxed_slice(),
             declarations: self.declarations.into_boxed_slice(),
@@ -3837,7 +3835,10 @@ impl SemanticModelBuilder {
         }
     }
 
-    fn canonicalize_document(&mut self, document: DocumentId) -> Result<(), ConstructionError> {
+    pub(crate) fn canonicalize_document(
+        &mut self,
+        document: DocumentId,
+    ) -> Result<(), ConstructionError> {
         let parsed = Arc::clone(
             &self
                 .documents
@@ -15086,186 +15087,6 @@ impl SymbolTableBuilder {
             bytes: self.bytes.into_boxed_str(),
             spans: self.spans.into_boxed_slice(),
         }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct OwnedSourceRecord {
-    pub(crate) identity: Box<str>,
-    pub(crate) role: SourceRole,
-    pub(crate) payload: crate::SourcePayload,
-    pub(crate) syntax: Option<Arc<crate::syntax::SyntaxAuthority>>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum BuildSchedule {
-    Sequential,
-    Parallel,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum CoordinatorError {
-    DuplicateSourceIdentity,
-    ConstructionFailed,
-}
-
-/// A library that has already been parsed and solved, ready to be reused by later publications.
-///
-/// Holds the parsed documents rather than their text, so a workspace build pays neither the
-/// library's parse nor its solve. Lowering still runs: it is per-document and cheap, and rerunning
-/// it keeps every dense identity assigned by exactly the same code path as an unseeded build.
-#[derive(Debug)]
-pub(crate) struct PreparedLibrary {
-    pub(crate) documents: Vec<PreparedDocument>,
-    pub(crate) settled: resolver::SettledLibrary,
-}
-
-#[derive(Debug)]
-pub(crate) struct PreparedDocument {
-    pub(crate) identity: Box<str>,
-    pub(crate) role: SourceRole,
-    pub(crate) parsed: Arc<ParsedDocument>,
-    pub(crate) parse_errors: Vec<ParseError>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct SemanticModelBuildCoordinator;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct BuildPhaseDurations {
-    pub(crate) parse: Duration,
-    pub(crate) lowering: Duration,
-    pub(crate) resolution: Duration,
-}
-
-impl SemanticModelBuildCoordinator {
-    pub(crate) fn build_measured_with_library(
-        mut sources: Vec<OwnedSourceRecord>,
-        schedule: BuildSchedule,
-        policy: EvaluationPolicy,
-        library: Option<&PreparedLibrary>,
-        reported: &[Box<str>],
-    ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
-        // Library sources are ordered ahead of workspace sources so that the dense declaration
-        // domain assigns them a contiguous prefix. Rendered output is sorted independently by
-        // document identity, so this affects storage order only. Duplicate detection therefore
-        // compares identities across the whole set, not within one role.
-        sources.sort_unstable_by(|left, right| {
-            source_admission_rank(left.role)
-                .cmp(&source_admission_rank(right.role))
-                .then_with(|| left.identity.cmp(&right.identity))
-        });
-        let mut identities = sources
-            .iter()
-            .map(|source| source.identity.as_ref())
-            .chain(
-                library
-                    .into_iter()
-                    .flat_map(|library| library.documents.iter())
-                    .map(|document| document.identity.as_ref()),
-            )
-            .collect::<Vec<_>>();
-        identities.sort_unstable();
-        if identities.windows(2).any(|pair| pair[0] == pair[1]) {
-            return Err(CoordinatorError::DuplicateSourceIdentity);
-        }
-
-        let parse_started = Instant::now();
-        let parsed: Vec<AdmittedSource> = match schedule {
-            BuildSchedule::Sequential => sources
-                .into_iter()
-                .map(Self::parse_source)
-                .collect::<Result<Vec<_>, _>>()?,
-            BuildSchedule::Parallel => {
-                use rayon::prelude::*;
-                sources
-                    .into_par_iter()
-                    .map(Self::parse_source)
-                    .collect::<Result<Vec<_>, _>>()?
-            }
-        };
-        let parse = parse_started.elapsed();
-
-        let lowering_started = Instant::now();
-        let mut builder = SemanticModelBuilder::default();
-        let mut documents = Vec::with_capacity(parsed.len());
-        // The prepared library is admitted first and in its own recorded order, so its
-        // declarations and references land on exactly the dense prefix its settled outcomes were
-        // recorded against.
-        for document in library.into_iter().flat_map(|library| &library.documents) {
-            let admitted = builder
-                .admit_document(
-                    document.identity.clone(),
-                    document.role,
-                    Arc::clone(&document.parsed),
-                    document.parse_errors.clone(),
-                )
-                .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
-            documents.push(admitted);
-        }
-        for (identity, role, tree, errors) in parsed {
-            let document = builder
-                .admit_document(identity, role, tree, errors)
-                .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
-            documents.push(document);
-        }
-        for document in documents {
-            builder
-                .canonicalize_document(document)
-                .map_err(|_| CoordinatorError::ConstructionFailed)?;
-        }
-        let storage = builder.freeze();
-        let lowering = lowering_started.elapsed();
-        let resolution_started = Instant::now();
-        let model = storage
-            .resolve(policy, library.map(|library| &library.settled), reported)
-            .map_err(|_| CoordinatorError::ConstructionFailed)?;
-        let resolution = resolution_started.elapsed();
-        Ok((
-            model,
-            BuildPhaseDurations {
-                parse,
-                lowering,
-                resolution,
-            },
-        ))
-    }
-
-    /// A parsed handle is admitted as it is (two reference-count bumps); text is parsed here,
-    /// the cold path for stateless callers.
-    fn parse_source(source: OwnedSourceRecord) -> Result<AdmittedSource, CoordinatorError> {
-        let (tree, errors) = match source.payload {
-            crate::SourcePayload::Parsed(parsed) => parsed.admission_parts(),
-            crate::SourcePayload::Pending(document) => match source.syntax {
-                Some(syntax) => syntax.parse(&document).admission_parts(),
-                None => crate::syntax::ParsedSource::parse_text(
-                    document.content().to_owned(),
-                    document.digest(),
-                )
-                .admission_parts(),
-            },
-            crate::SourcePayload::Text(content) => {
-                let result = sysml_v2_parser::parse_for_editor_owned(content);
-                (Arc::new(result.document), result.errors)
-            }
-        };
-        Ok((source.identity, source.role, tree, errors))
-    }
-}
-
-type AdmittedSource = (Box<str>, SourceRole, Arc<ParsedDocument>, Vec<ParseError>);
-
-/// Storage order for admitted sources: every library role precedes workspace sources.
-///
-/// This is a construction-order policy, not a semantic one. It exists so a library-only build and
-/// a workspace-plus-library build assign the same declaration ids to the same library
-/// declarations, which is the precondition for reusing a solved library stratum.
-fn source_admission_rank(role: SourceRole) -> u8 {
-    match role {
-        SourceRole::StandardLibrary => 0,
-        SourceRole::Library => 1,
-        SourceRole::External => 2,
-        SourceRole::Workspace => 3,
     }
 }
 

@@ -63,7 +63,7 @@ const RELATED_AMBIGUOUS_CANDIDATE: &str = "Candidate this reference could name."
 type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum ResolutionError {
+pub(crate) enum ResolutionError {
     Capacity,
     InvalidStorage,
 }
@@ -4765,23 +4765,23 @@ impl ResolvedSemanticModel {
     /// shares one parse of the library across every publication built against it.
     pub(crate) fn prepared_library(
         &self,
-    ) -> Result<super::PreparedLibrary, super::CoordinatorError> {
+    ) -> Result<crate::pipeline::PreparedLibrary, crate::pipeline::CoordinatorError> {
         let documents = self
             .storage
             .documents
             .iter()
-            .map(|document| super::PreparedDocument {
+            .map(|document| crate::pipeline::PreparedDocument {
                 identity: document.identity.clone(),
                 role: document.role,
                 parsed: Arc::clone(&document.parsed),
                 parse_errors: document.parse_errors.to_vec(),
             })
             .collect();
-        Ok(super::PreparedLibrary {
+        Ok(crate::pipeline::PreparedLibrary {
             documents,
             settled: self
                 .settled_library()
-                .map_err(|_| super::CoordinatorError::ConstructionFailed)?,
+                .map_err(|_| crate::pipeline::CoordinatorError::ConstructionFailed)?,
         })
     }
 
@@ -4824,7 +4824,7 @@ impl ResolvedSemanticModel {
 }
 
 impl SemanticModelStorage {
-    pub(super) fn resolve(
+    pub(crate) fn resolve(
         self,
         policy: EvaluationPolicy,
         library: Option<&SettledLibrary>,
