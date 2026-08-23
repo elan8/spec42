@@ -5,9 +5,9 @@ use std::fmt;
 use crate::source::Url;
 
 pub use sysml_resolution::{
-    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
-    ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation, AnnotationForm,
-    AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
+    requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
+    ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation,
+    AnnotationForm, AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, BuildMeasurements,
     Conformance, ConformanceObstacle, ConnectedElement, DefinitionUsageDerivedKind,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,

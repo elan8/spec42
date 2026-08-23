@@ -6,14 +6,7 @@
 
 use crate::{ElementRelationship, SymbolIdentity};
 
-/// One element-valued Namespace derivation admitted by the pinned manifest.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum NamespaceDerivedElementCollection {
-    /// `ownedMembership->selectByKind(OwningMembership).ownedMemberElement`.
-    OwnedMember,
-    /// `ownedRelationship->selectByKind(Import)`.
-    OwnedImport,
-}
+pub use sysml_contract::NamespaceDerivedElementCollection;
 
 /// The exact `importedElement` projection of one canonical NamespaceImport reference.
 ///

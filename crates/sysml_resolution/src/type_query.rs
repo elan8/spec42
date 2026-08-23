@@ -10,51 +10,9 @@ pub use spec42_constraint_manifest::TypeDerivedFactKind;
 pub use spec42_constraint_manifest::TypeFeaturingCheckKind;
 pub use sysml_contract::{
     Conformance, ConformanceObstacle, SpecializationScope, SubsettingConformance,
-    TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactPrerequisite,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
-
-/// One exact derived relationship collection or operand projection defined on KerML `Type`.
-///
-/// The returned values remain canonical relationship facts. In particular, operand projections
-/// preserve authored/implied provenance and unresolved targets rather than reducing to names.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TypeDerivedRelationshipCollection {
-    OwnedSpecialization,
-    OwnedUnioning,
-    OwnedIntersecting,
-    OwnedDifferencing,
-    OwnedDisjoining,
-    UnioningType,
-    IntersectingType,
-    DifferencingType,
-}
-
-/// One exact element-valued derivation defined on KerML `Type`.
-///
-/// This intentionally exposes final member elements only. `FeatureMembership` remains compact
-/// declaration-aligned storage, rather than a fabricated public relationship identity.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TypeDerivedElementCollection {
-    OwnedFeature,
-    OwnedEndFeature,
-}
-
-/// One exact Type derivation whose normative result shape is known, but whose fact owner is not
-/// yet published by the canonical model.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TypeDerivedFactCollection {
-    OwnedFeatureMembership,
-    FeatureMembership,
-    Feature,
-    EndFeature,
-    DirectedFeature,
-    InheritedMembership,
-    InheritedFeature,
-    Input,
-    Output,
-    Multiplicity,
-    OwnedConjugator,
-}
 
 /// A future canonical value of one exact Type derived-fact query.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -63,17 +21,6 @@ pub enum TypeDerivedFactValue {
     FeatureMembership { member: SymbolIdentity },
     Multiplicity(MultiplicityFacts),
     Conjugator { original_type: SymbolIdentity },
-}
-
-/// The first canonical fact owner an exact Type derivation needs before it can publish values.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TypeDerivedFactPrerequisite {
-    FeatureMembershipIdentity,
-    FeatureMembershipIdentityAndInheritedClosure,
-    InheritedMembershipClosure,
-    MultiplicityIdentity,
-    ConjugationRelationshipIdentity,
-    RuleNotPublished,
 }
 
 /// A typed result for exact Type derivations that are not yet executable.

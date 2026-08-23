@@ -1,16 +1,12 @@
 use crate::{RelationshipProvenance, SourceLocation, SymbolIdentity};
 
+pub use sysml_contract::VerificationOutcome;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VerificationRequirement {
     Resolved(SymbolIdentity),
     Ambiguous(Box<[SymbolIdentity]>),
     Unresolved,
-    Unsupported,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum VerificationOutcome {
-    /// Execution/evaluation of verification cases is not owned by the immutable model yet.
     Unsupported,
 }
 

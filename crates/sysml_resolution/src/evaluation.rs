@@ -16,6 +16,8 @@ use std::fmt;
 
 use crate::{SourceLocation, SymbolIdentity};
 
+pub use sysml_contract::EvaluationFailure;
+
 /// A computed constant value.
 ///
 /// `PartialEq` but not `Eq`, because [`EvaluatedScalar::Real`] carries an `f64`.
@@ -34,38 +36,6 @@ pub enum EvaluatedScalar {
         magnitude: Box<EvaluatedScalar>,
         unit: Box<str>,
     },
-}
-
-/// Why an attempted evaluation produced no value.
-///
-/// Distinct from [`EvaluationState::NonConstant`] and [`EvaluationState::Cyclic`], which are
-/// answers rather than failures: an expression over a feature with no constant value is correctly
-/// not constant, and a value cycle is a property of the model. These three are cases where the
-/// expression could not be folded at all.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum EvaluationFailure {
-    /// A constant `/` or `%` whose divisor folded to zero.
-    ///
-    /// Intercepted before the operation runs: integer division would panic and float division
-    /// would silently yield an infinity, and neither is an honest published value.
-    DivisionByZero,
-    /// An operand folded to a type the operator cannot take, such as a boolean in an arithmetic
-    /// position.
-    TypeMismatch,
-    /// An operand reference that resolution left unresolved, ambiguous, unsupported or
-    /// non-converged, so what it would evaluate to is unknown.
-    UnresolvedOperand,
-}
-
-impl EvaluationFailure {
-    /// A stable kebab-case name for this failure, for diagnostic text and snapshot output.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::DivisionByZero => "division-by-zero",
-            Self::TypeMismatch => "type-mismatch",
-            Self::UnresolvedOperand => "unresolved-operand",
-        }
-    }
 }
 
 /// What evaluation produced for one element.

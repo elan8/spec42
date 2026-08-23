@@ -49,8 +49,9 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 /// The source authority, re-exported so the facade reaches it through this crate and the
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
 pub use sysml_contract::{
-    ElementKind, ElementSearch, ElementSource, MembershipRole, OccurrenceRole,
-    RequirementConstraintKind, StateSubactionKind, TextPosition, TextRange,
+    ElementKind, ElementSearch, ElementSource, LibrarySpecializationAnchorBranch, MembershipRole,
+    OccurrenceRole, PublicationCompleteness, RequirementConstraintKind, StateSubactionKind,
+    TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -103,8 +104,8 @@ pub use redefinition_query::{
     RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
 };
 pub use requirement_query::{
-    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite,
+    requirement_collection_from_kind, RequirementDerivedFactCollection, RequirementDerivedFactKind,
+    RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
 };
 pub use specialization_query::{
     SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
@@ -263,17 +264,6 @@ pub enum QueryOutcome<T> {
     Incomplete,
 }
 
-/// Which canonical anchor branch a generated conditional library-specialization rule selects.
-///
-/// Most rules own only [`Self::Default`]. Exact XMI `if … then … else … endif` contracts publish
-/// both branches atomically, and consumers select the predicate-true branch without encoding a
-/// stringly anchor convention.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum LibrarySpecializationAnchorBranch {
-    Default,
-    PredicateTrue,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RenameOutcome {
     Ready {
@@ -303,14 +293,6 @@ pub struct VisibleMember {
     pub container_name: Option<Box<str>>,
     pub declaring_document: Box<str>,
     pub declaration_range: TextRange,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PublicationCompleteness {
-    Complete,
-    ParseRecovery,
-    UnsupportedSyntax,
-    NonConverged,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -11,14 +11,23 @@
 
 #![forbid(unsafe_code)]
 
+mod derived;
 mod diagnostic;
 mod diagram;
 mod element;
 mod element_kind;
 mod position;
+mod publication;
 mod relationship;
 mod version;
 
+pub use derived::{
+    ActionDerivedFactCollection, ActionDerivedFactPrerequisite, DefinitionUsageDerivedPrerequisite,
+    FeatureDerivedRelationshipCollection, NamespaceDerivedElementCollection,
+    RequirementDerivedFactCollection, RequirementDerivedFactPrerequisite,
+    TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactPrerequisite,
+    TypeDerivedRelationshipCollection,
+};
 pub use diagnostic::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 pub use diagram::{
     DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramStateVertexKind, DiagramViewKind,
@@ -32,6 +41,10 @@ pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
 pub use position::{OccurrenceRole, TextPosition, TextRange};
+pub use publication::{
+    EvaluationFailure, LibrarySpecializationAnchorBranch, PublicationCompleteness,
+    VerificationOutcome,
+};
 pub use relationship::{
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, Conformance,
     ConformanceObstacle, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,

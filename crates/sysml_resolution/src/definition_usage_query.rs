@@ -7,6 +7,7 @@
 use crate::SymbolIdentity;
 
 pub use spec42_constraint_manifest::DefinitionUsageDerivedKind;
+pub use sysml_contract::DefinitionUsageDerivedPrerequisite;
 
 /// The published value shape of one exact Definition/Usage derivation.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,20 +21,4 @@ pub enum DefinitionUsageDerivedOutcome {
     Unsupported {
         prerequisite: DefinitionUsageDerivedPrerequisite,
     },
-}
-
-/// The first canonical fact owner still needed by an exact Definition/Usage derivation.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DefinitionUsageDerivedPrerequisite {
-    /// The selected generated rule was not published by the loaded manifest.
-    RuleNotPublished,
-    /// `feature`/`directedFeature` requires the effective inherited FeatureMembership closure;
-    /// direct owner membership alone is deliberately not substituted.
-    EffectiveFeatureMembershipClosure,
-    /// `variantMembership` is an OMG relationship identity, which compact declaration-aligned
-    /// storage does not currently publish as a queryable fact.
-    VariantMembershipIdentity,
-    /// `mayTimeVary` needs the effective library-specialization and portion predicates as one
-    /// canonical fact family; direct modifiers or graph edges alone do not decide it.
-    EffectiveOccurrenceTimeVariationFacts,
 }
