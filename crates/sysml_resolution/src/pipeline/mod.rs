@@ -84,7 +84,7 @@ impl SemanticModelBuildCoordinator {
         }
 
         let parse_started = Instant::now();
-        let parsed: Vec<AdmittedSource> = match schedule {
+        let parsed: Vec<(AdmittedSource, bool)> = match schedule {
             BuildSchedule::Sequential => sources
                 .into_iter()
                 .map(Self::parse_source)
@@ -98,6 +98,12 @@ impl SemanticModelBuildCoordinator {
             }
         };
         let parse = parse_started.elapsed();
+        // A typed fact, not a timer: how many sources this build had to parse itself.
+        let sources_parsed = parsed
+            .iter()
+            .filter(|(_, parsed_here)| *parsed_here)
+            .count();
+        let parsed: Vec<AdmittedSource> = parsed.into_iter().map(|(source, _)| source).collect();
 
         let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
@@ -144,15 +150,23 @@ impl SemanticModelBuildCoordinator {
                 parse,
                 lowering,
                 resolution,
+                sources_parsed,
             },
         ))
     }
 
     /// A parsed handle is admitted as it is (two reference-count bumps); text is parsed here,
     /// the cold path for stateless callers.
-    fn parse_source(source: OwnedSourceRecord) -> Result<AdmittedSource, CoordinatorError> {
+    ///
+    /// The returned flag reports whether this source was parsed by the build itself, so a
+    /// caller can observe that pre-parsed handles are admitted without a second parse.
+    fn parse_source(source: OwnedSourceRecord) -> Result<(AdmittedSource, bool), CoordinatorError> {
+        let mut parsed_here = true;
         let (tree, errors) = match source.payload {
-            crate::SourcePayload::Parsed(parsed) => parsed.admission_parts(),
+            crate::SourcePayload::Parsed(parsed) => {
+                parsed_here = false;
+                parsed.admission_parts()
+            }
             crate::SourcePayload::Pending(document) => match source.syntax {
                 Some(syntax) => syntax.parse(&document).admission_parts(),
                 None => crate::syntax::ParsedSource::parse_text(
@@ -166,7 +180,7 @@ impl SemanticModelBuildCoordinator {
                 (Arc::new(result.document), result.errors)
             }
         };
-        Ok((source.identity, source.role, tree, errors))
+        Ok(((source.identity, source.role, tree, errors), parsed_here))
     }
 }
 

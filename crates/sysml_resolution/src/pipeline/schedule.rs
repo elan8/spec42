@@ -15,6 +15,9 @@ pub(crate) struct BuildPhaseDurations {
     pub(crate) parse: Duration,
     pub(crate) lowering: Duration,
     pub(crate) resolution: Duration,
+    /// How many admitted sources the build parsed itself. A source admitted as a parsed handle
+    /// is not counted: it enters the build as the tree the syntax authority already produced.
+    pub(crate) sources_parsed: usize,
 }
 
 /// Storage order for admitted sources: every library role precedes workspace sources.

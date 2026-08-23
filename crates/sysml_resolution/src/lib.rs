@@ -138,6 +138,12 @@ pub struct BuildMeasurements {
     pub parse: std::time::Duration,
     pub lowering: std::time::Duration,
     pub resolution: std::time::Duration,
+    /// How many admitted sources this build parsed itself.
+    ///
+    /// Sources admitted as parsed handles are not counted: they enter the build as the trees the
+    /// syntax authority already produced. This is the typed fact that a pre-parsed admission did
+    /// not re-parse — the durations above cannot state it without a wall-clock threshold.
+    pub sources_parsed: usize,
 }
 
 /// Provenance of an admitted source. Defined by the source authority; one enum everywhere.
@@ -640,6 +646,7 @@ pub fn build_measured(
             parse: measurements.parse,
             lowering: measurements.lowering,
             resolution: measurements.resolution,
+            sources_parsed: measurements.sources_parsed,
         },
     ))
 }
@@ -1676,13 +1683,19 @@ mod parsed_admission_tests {
             BuildRequest::new(parsed, ConstructionSchedule::Parallel, "test").unwrap();
         assert_eq!(from_text.identity(), from_parsed.identity());
 
-        let (text_model, _) = build_measured(from_text).unwrap();
-        let (parsed_model, parsed_timing) = build_measured(from_parsed).unwrap();
+        let (text_model, text_measurements) = build_measured(from_text).unwrap();
+        let (parsed_model, parsed_measurements) = build_measured(from_parsed).unwrap();
         assert_eq!(text_model.identity(), parsed_model.identity());
-        assert!(
-            parsed_timing.parse < std::time::Duration::from_millis(5),
-            "handles are admitted without a parse: {:?}",
-            parsed_timing.parse
+        // The text admission parses every document; the handle admission parses none. A counted
+        // fact, not a wall-clock budget: it cannot be met by a machine that happens to be idle.
+        assert_eq!(
+            text_measurements.sources_parsed,
+            documents.len(),
+            "text admission parses every admitted document"
+        );
+        assert_eq!(
+            parsed_measurements.sources_parsed, 0,
+            "handles are admitted without a parse"
         );
     }
 }
