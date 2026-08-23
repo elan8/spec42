@@ -632,7 +632,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "DiagramRelationship::kind",
     "DiagramRelationship::semantic_id",
     "DiagramStateTransition::semantic_id",
-    "DiagramViewCatalogEntry::name",
     "Documentation::text",
     "PackageTargets::qualified_name",
     "SymbolEntry::qualified_name",

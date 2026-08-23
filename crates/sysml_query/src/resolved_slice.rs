@@ -484,6 +484,14 @@ impl DiagramQueries<'_> {
         self.model.diagram_view(identity)
     }
 
+    /// The display name of one catalogued view, borrowed from the publication.
+    ///
+    /// The authored name, falling back to the `::`-joined display path for an anonymous view
+    /// usage. A catalog entry carries the handle rather than a copy of this text.
+    pub fn view_name(&self, view: SymbolId) -> Option<&str> {
+        self.model.diagram_view_name(view)
+    }
+
     /// The occurrence identity the projection uses for one exposed root.
     ///
     /// An occurrence carries the scene key generators and reports publish, which is derived from

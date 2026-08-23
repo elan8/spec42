@@ -33,6 +33,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   which slices the settled blob, and the LSP and generator edges materialise an owned string only
   where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
   Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank from 17
+  entries to 16.
+- **A diagram catalog entry names its view by handle; the display name is read at the edge.**
+  `DiagramViewCatalogEntry` no longer carries a `Box<str>` of the view usage's name. The catalog
+  lists every authored standard view in a workspace, so it was allocating one copy per entry --
+  and a second for the entry the projection echoes back -- for text only a view picker renders.
+  The authored-name-else-qualified-name fallback stays the authority's rule rather than moving to
+  each consumer: `PublishedResolution::diagram_view_name` (facade: `diagrams().view_name`)
+  applies it and borrows the result. Catalog order was already the handle's canonical identity
+  order, so nothing about ordering or output changes. Enforcement: the owned-string inventory's
+  product list in `architecture.rs` shrank from 16 entries to 15.
+
 - **A state-transition vertex names its element by handle; the label is read at the edge.**
   `DiagramStateVertex` is now `Copy` -- a `SymbolId`, a vertex kind and a `SourceLocation`. The
   label it used to carry was a copy of the element's authored name, which the publication already

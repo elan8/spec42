@@ -669,7 +669,12 @@ impl GeneratorModelView {
                     handle,
                     kind: diagram_kind(entry.kind),
                     reference: self.diagram_reference(entry.semantic_id)?,
-                    name: entry.name.to_string(),
+                    name: self
+                        .model
+                        .diagrams()
+                        .view_name(entry.semantic_id)
+                        .unwrap_or_default()
+                        .to_owned(),
                     source: source_reference(
                         &entry.source,
                         self.model
@@ -695,7 +700,12 @@ impl GeneratorModelView {
             handle: handle.to_owned(),
             reference: self.diagram_reference(projection.view.semantic_id)?,
             kind: diagram_kind(projection.view.kind),
-            name: projection.view.name.to_string(),
+            name: self
+                .model
+                .diagrams()
+                .view_name(projection.view.semantic_id)
+                .unwrap_or_default()
+                .to_owned(),
             source: source_reference(
                 &projection.view.source,
                 self.model

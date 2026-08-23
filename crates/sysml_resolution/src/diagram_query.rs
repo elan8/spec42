@@ -28,12 +28,18 @@ const fn definition_name(kind: DiagramViewKind) -> &'static str {
     }
 }
 
+/// One authored standard view usage, as the catalog publishes it.
+///
+/// The display name is not carried. It is the view usage's authored name -- or, where the usage
+/// is anonymous, its `::`-joined display path -- both of which the publication already stores.
+/// A catalog of every authored view would allocate one copy per entry for text only a picker
+/// renders; a consumer reads it with [`PublishedResolution::diagram_view_name`] instead, which
+/// borrows and applies the same fallback.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramViewCatalogEntry {
     pub kind: DiagramViewKind,
     pub semantic_id: SymbolId,
     pub reference: DiagramSemanticReference,
-    pub name: Box<str>,
     pub source: SourceLocation,
 }
 
@@ -300,6 +306,15 @@ impl PublishedResolution {
         Some(DiagramOccurrenceIdentity::root(root, token.as_str()))
     }
 
+    /// The display name of one catalogued diagram view, borrowed from this publication.
+    ///
+    /// The authored name where the view usage has one, and its `::`-joined display path where it
+    /// is anonymous. The fallback is the authority's rule, not a consumer's, so it lives here
+    /// rather than being re-decided at each edge that renders a view picker.
+    pub fn diagram_view_name(&self, view: SymbolId) -> Option<&str> {
+        self.symbol_name(view).or_else(|| self.qualified_name(view))
+    }
+
     pub fn diagram_view_catalog(&self) -> QueryOutcome<Box<[DiagramViewCatalogEntry]>> {
         let mut definitions = BTreeMap::new();
         for kind in DiagramViewKind::ALL {
@@ -338,10 +353,6 @@ impl PublishedResolution {
                         self.document_identity(entry.location.document)
                             .unwrap_or_default(),
                     ),
-                    name: entry
-                        .name
-                        .clone()
-                        .unwrap_or_else(|| entry.qualified_name.clone()),
                     source: entry.location,
                 });
             }
