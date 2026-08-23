@@ -14,7 +14,7 @@
 
 use std::fmt;
 
-use crate::{SourceLocation, SymbolId};
+use crate::{SourceLocation, SymbolId, TextId};
 
 pub use sysml_contract::EvaluationFailure;
 
@@ -159,7 +159,12 @@ pub enum UnitResolution {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AuthoredUnit {
     /// The token as written between the brackets, never normalized to the unit's declared name.
-    pub authored: Box<str>,
+    ///
+    /// A handle, not a copy: the token is text this publication interned once, and an element
+    /// with several unit literals would otherwise allocate one `Box<str>` per token for text a
+    /// consumer renders only at a hover or a diagnostic. Read it with
+    /// [`PublishedResolution::text`](crate::PublishedResolution::text).
+    pub authored: TextId,
     /// The token's own range: the text inside the brackets, so a diagnostic about the unit points
     /// at the unit rather than at the literal that carries it.
     pub location: SourceLocation,

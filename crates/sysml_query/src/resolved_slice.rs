@@ -36,8 +36,8 @@ pub use sysml_resolution::{
     RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
     SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
     SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextPosition,
-    TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
     TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
     TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
@@ -284,6 +284,15 @@ impl PublishedModel {
     /// one. Borrowed, so showing a name costs no allocation.
     pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         self.inner.qualified_name(symbol)
+    }
+
+    /// One run of authored text, borrowed from this publication.
+    ///
+    /// Published facts carry a [`TextId`] rather than a copy of text the publication already
+    /// interned; this is where a host that has to render one reads it. `None` for a handle this
+    /// publication never minted.
+    pub fn text(&self, id: TextId) -> Option<&str> {
+        self.inner.text(id)
     }
 
     /// The stable, serialisable form of one element handle.

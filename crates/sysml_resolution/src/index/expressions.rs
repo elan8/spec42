@@ -867,7 +867,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn published_unit(&self, unit: &SettledUnit) -> Option<AuthoredUnit> {
         Some(AuthoredUnit {
-            authored: self.storage.symbol(unit.text).unwrap_or_default().into(),
+            authored: crate::TextId::from_index(unit.text.index())?,
             location: SourceLocation {
                 document: self.document_handle(unit.document)?,
                 range: document_range(&self.storage, unit.document, &unit.span).unwrap_or(

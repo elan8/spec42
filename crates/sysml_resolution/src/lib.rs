@@ -51,7 +51,7 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 pub use sysml_contract::{
     DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
     LibrarySpecializationAnchorBranch, MembershipRole, OccurrenceRole, PublicationCompleteness,
-    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextPosition, TextRange,
+    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -814,6 +814,15 @@ impl PublishedResolution {
     /// consumer takes when it needs to keep something.
     pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         self.model.symbol_qualified_name(symbol)
+    }
+
+    /// One run of authored text, borrowed from this publication.
+    ///
+    /// Published facts carry a [`TextId`] rather than a copy of the text the publication already
+    /// interned; this is where a consumer that has to render one reads it, at the cost of a
+    /// slice. `None` for a handle this publication never minted.
+    pub fn text(&self, id: TextId) -> Option<&str> {
+        self.model.text(id)
     }
 
     /// The stable, serialisable form of one element handle.

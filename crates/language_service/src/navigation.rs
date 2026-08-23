@@ -180,7 +180,12 @@ fn unit_hover_markdown(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> S
             .unwrap_or_default()
     };
     let mut lines = vec![
-        format!("**Unit literal** `[{}]`", unit.authored),
+        format!(
+            "**Unit literal** `[{}]`",
+            model
+                .and_then(|model| model.text(unit.authored))
+                .unwrap_or_default()
+        ),
         String::new(),
     ];
     match &unit.resolution {

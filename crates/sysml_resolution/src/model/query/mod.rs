@@ -303,6 +303,12 @@ impl<D> SemanticModel<D> {
         self.identities.at_rank(symbol.index())
     }
 
+    /// One interned run of authored text, borrowed from the symbol blob.
+    pub(crate) fn text(&self, id: crate::TextId) -> Option<&str> {
+        self.storage
+            .symbol(crate::model::NameId(u32::try_from(id.index()).ok()?))
+    }
+
     /// The authored name behind one handle, borrowed from the symbol blob.
     pub(crate) fn symbol_name(&self, symbol: SymbolId) -> Option<&str> {
         self.authored_name(self.declaration_of(symbol)?)

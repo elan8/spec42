@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Authored text is a handle too: `sysml_contract::TextId`.** A published fact that quoted text
+  the publication had already interned was allocating a second copy of it per result.
+  `TextId` is the publication-scoped slot of one interned run, with the same validity story as
+  `SymbolId`, and `PublishedModel::text` / `PublishedResolution::text` borrows the run back.
+  `AuthoredUnit::authored` -- the unit token as written between the brackets -- is the first fact
+  to carry the handle instead of a `Box<str>`; the hover edge reads the text through the
+  publication. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the
+  owned-string inventory's *product* list in `architecture.rs` shrank from 15 entries to 14.
+
 - **A qualified-reference candidate names its element by handle.**
   `QualifiedReferenceTarget::qualified_name` is gone. The caller supplied that name in the
   `QualifiedElementReference` it asked with, so handing a `Box<str>` copy back -- once per

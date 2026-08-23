@@ -22,6 +22,7 @@ mod publication;
 mod relationship;
 mod symbol;
 mod syntax;
+mod text;
 mod version;
 
 pub use derived::{
@@ -58,4 +59,5 @@ pub use relationship::{
 };
 pub use symbol::{SymbolId, SymbolToken};
 pub use syntax::{ImportScope, SyntaxOutlineKind};
+pub use text::TextId;
 pub use version::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
