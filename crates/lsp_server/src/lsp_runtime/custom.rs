@@ -78,7 +78,7 @@ pub(crate) fn sysml_feature_inspector_result(
 
     if token.is_keyword {
         response.selection.kind = "keyword".to_string();
-        response.language_help = language_service::keyword_help(&word).map(|help| {
+        response.language_help = language_service::keyword_help(word).map(|help| {
             dto::SysmlFeatureInspectorLanguageHelpDto {
                 keyword: word.to_string(),
                 description: help.description.to_string(),

@@ -172,7 +172,7 @@ pub(crate) fn linked_editing_range(
     // matched inside comments and string literals, so editing a name could rewrite prose.
     let ranges: Vec<_> = entry
         .parsed
-        .occurrences_of(&token.text)
+        .occurrences_of(token.text)
         .into_iter()
         .filter(|range| range.start_line == line)
         .map(|range| {

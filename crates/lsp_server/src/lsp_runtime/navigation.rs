@@ -47,7 +47,7 @@ pub(crate) fn collect_document_links(
                 continue;
             }
         }
-        if let Some(uri) = symbol_uri_for_import_name(&import.target) {
+        if let Some(uri) = symbol_uri_for_import_name(import.target) {
             links.push(DocumentLink {
                 range,
                 target: Some(uri),
