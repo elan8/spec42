@@ -21,6 +21,7 @@ embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
 workspace = { path = "../workspace" }
 library_catalog = { path = "../library_catalog", default-features = false }
 lsp_server = { path = "../lsp_server" }
+sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }

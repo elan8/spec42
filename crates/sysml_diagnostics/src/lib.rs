@@ -13,5 +13,5 @@
 mod reporting;
 pub mod types;
 
-pub use reporting::{document_diagnostics, ReportingPolicy};
+pub use reporting::{document_diagnostics, severity_label, ReportingPolicy};
 pub use types::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};

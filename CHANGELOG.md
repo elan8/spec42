@@ -47,6 +47,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   editor already sent LF text; batch snapshots of CRLF files now carry the same digests the
   editor would, so `document_digests` in persisted artifact metadata change for CRLF files.
 
+- **`spec42 check` and the workspace comparison harness agree on severity labels.** Both surfaces
+  now render a severity through `sysml_diagnostics::severity_label`, the single owner. The
+  comparison harness previously emitted `"information"` where the CLI emitted `"info"` for the same
+  published diagnostic; the CLI's spelling wins, so comparison snapshots that recorded
+  `"information"` now record `"info"`. The CLI text, JUnit, JSON, and SARIF outputs are unchanged.
+
 - **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
   effective feature membership.** The four SysML collections read the specialization closure that
   `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*

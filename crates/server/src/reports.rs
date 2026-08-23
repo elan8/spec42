@@ -2,6 +2,7 @@
 use std::path::Path;
 
 use lsp_server::{ValidatedDocument, ValidationReport, ValidationSummary};
+use sysml_diagnostics::DiagnosticSeverity as NeutralSeverity;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
 
 use crate::{cli::OutputFormat, diagnostic_catalog};
@@ -181,7 +182,11 @@ fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
 fn print_text_report(report: &ValidationReport) {
     for document in &report.documents {
         for diagnostic in &document.diagnostics {
-            let severity = diagnostic.severity.map(severity_label).unwrap_or("error");
+            let severity = diagnostic
+                .severity
+                .map(reported_severity)
+                .map(sysml_diagnostics::severity_label)
+                .unwrap_or("error");
             let code = diagnostic
                 .code
                 .as_ref()
@@ -317,7 +322,11 @@ fn junit_report(report: &ValidationReport) -> String {
                 diagnostic.range.start.line + 1,
                 diagnostic.range.start.character + 1
             );
-            let severity = diagnostic.severity.map(severity_label).unwrap_or("error");
+            let severity = diagnostic
+                .severity
+                .map(reported_severity)
+                .map(sysml_diagnostics::severity_label)
+                .unwrap_or("error");
             out.push_str(&format!(
                 r#"<testcase classname="spec42" name="{}"><failure type="{}" message="{}">{}</failure></testcase>"#,
                 xml_escape(&name),
@@ -346,13 +355,16 @@ fn sarif_level(severity: Option<DiagnosticSeverity>) -> &'static str {
     }
 }
 
-fn severity_label(severity: DiagnosticSeverity) -> &'static str {
+/// The neutral severity a transport severity reports as.
+///
+/// `sysml_diagnostics` settles three severities, and nothing in the pipeline produces `HINT`; the
+/// report reaches this crate through the LSP diagnostic type, so the transport spelling is mapped
+/// back to the owned one here rather than given a second label table.
+fn reported_severity(severity: DiagnosticSeverity) -> NeutralSeverity {
     match severity {
-        DiagnosticSeverity::ERROR => "error",
-        DiagnosticSeverity::WARNING => "warning",
-        DiagnosticSeverity::INFORMATION => "info",
-        DiagnosticSeverity::HINT => "hint",
-        _ => "unknown",
+        DiagnosticSeverity::WARNING => NeutralSeverity::Warning,
+        DiagnosticSeverity::INFORMATION | DiagnosticSeverity::HINT => NeutralSeverity::Information,
+        _ => NeutralSeverity::Error,
     }
 }
 

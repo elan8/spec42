@@ -1887,6 +1887,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "sysml_diagnostics",
  "sysml_query",
  "tempfile",
  "tokio",

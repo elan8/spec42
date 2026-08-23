@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use sysml_diagnostics::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{DiagnosticRelatedInfo, SemanticDiagnostic};
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
@@ -126,7 +126,7 @@ fn diagnostic_identity(diagnostic: &SemanticDiagnostic) -> HostDiagnosticIdentit
     HostDiagnosticIdentity {
         uri: diagnostic.uri.to_string(),
         code: diagnostic.code.clone(),
-        severity: severity_label(diagnostic.severity).to_string(),
+        severity: sysml_diagnostics::severity_label(diagnostic.severity).to_string(),
         message: diagnostic.message.clone(),
         range: Some(comparison_range(diagnostic.range)),
         source: diagnostic.source.clone(),
@@ -211,17 +211,10 @@ fn compare_related_lists(
     left.len().cmp(&right.len())
 }
 
-fn severity_label(severity: DiagnosticSeverity) -> &'static str {
-    match severity {
-        DiagnosticSeverity::Error => "error",
-        DiagnosticSeverity::Warning => "warning",
-        DiagnosticSeverity::Information => "information",
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sysml_diagnostics::DiagnosticSeverity;
     use crate::snapshot::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
     use sysml_query::resolved_slice::{TextPosition, TextRange};
     use url::Url;

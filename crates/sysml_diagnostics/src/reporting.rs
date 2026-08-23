@@ -98,3 +98,15 @@ fn severity(severity: PublishedSeverity) -> DiagnosticSeverity {
         PublishedSeverity::Information => DiagnosticSeverity::Information,
     }
 }
+
+/// The one label a host prints for a severity.
+///
+/// Reporting policy, and therefore this crate's to decide: the CLI text report, the JUnit report,
+/// and the comparison harness all name the same three severities and must name them identically.
+pub fn severity_label(severity: DiagnosticSeverity) -> &'static str {
+    match severity {
+        DiagnosticSeverity::Error => "error",
+        DiagnosticSeverity::Warning => "warning",
+        DiagnosticSeverity::Information => "info",
+    }
+}
