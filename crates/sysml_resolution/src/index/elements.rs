@@ -601,9 +601,7 @@ impl<D> SemanticModel<D> {
                 &declaration.span,
             )
             .ok()?,
-            owner: declaration
-                .owner
-                .and_then(|owner| self.symbol_id(owner)),
+            owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
             membership: self.membership_facts(id)?,
             documentation: self.documentation(id),
             multiplicity: self.multiplicity(id),
@@ -700,9 +698,7 @@ impl<D> SemanticModel<D> {
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
                     qualified_name: self.qualified_name(*id).into(),
-                    owner: declaration
-                        .owner
-                        .and_then(|owner| self.symbol_id(owner)),
+                    owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
                     location: self.source_location(*id)?,
                     declaration_range: *range,
                 })
@@ -743,9 +739,7 @@ impl<D> SemanticModel<D> {
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
                     qualified_name: self.qualified_name(id).into(),
-                    owner: declaration
-                        .owner
-                        .and_then(|owner| self.symbol_id(owner)),
+                    owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
                     declaration_range: location.range,
                     location,
                 })
@@ -761,10 +755,7 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(entries.into_boxed_slice())
     }
 
-    pub(crate) fn effective_features(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<Box<[SymbolEntry]>> {
+    pub(crate) fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -847,9 +838,7 @@ impl<D> SemanticModel<D> {
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
             qualified_name: self.qualified_name(id).into(),
-            owner: declaration
-                .owner
-                .and_then(|owner| self.symbol_id(owner)),
+            owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
             declaration_range: location.range,
             location,
         })

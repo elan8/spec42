@@ -1067,4 +1067,3 @@ fn private_import_chain_keeps_unresolved_type_diagnostic() {
 
 // Removed: `did_change_watched_files_delete_clears_diagnostics`.
 // Classification: flaky harness timing around watched-file delete notifications.
-

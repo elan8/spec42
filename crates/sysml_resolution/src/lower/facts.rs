@@ -15,8 +15,8 @@ use sysml_v2_parser::{
 };
 
 use crate::model::{
-    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, ReferenceKind,
-    NameId, SymbolPathId, Visibility,
+    AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentId, MembershipKind, NameId,
+    ReferenceKind, SymbolPathId, Visibility,
 };
 use crate::TextPosition;
 use crate::TextRange;

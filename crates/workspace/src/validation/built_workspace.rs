@@ -41,7 +41,9 @@ pub struct BuiltWorkspaceInput {
 
 /// Converts an already-built [`HostWorkspaceSnapshot`] into the shape
 /// [`report_from_built_workspace`] consumes.
-pub fn built_workspace_input_from_snapshot(snapshot: &HostWorkspaceSnapshot) -> BuiltWorkspaceInput {
+pub fn built_workspace_input_from_snapshot(
+    snapshot: &HostWorkspaceSnapshot,
+) -> BuiltWorkspaceInput {
     BuiltWorkspaceInput {
         published_model: snapshot.published_model_arc(),
         workspace_root: Some(snapshot.workspace_root().to_path_buf()),
@@ -197,8 +199,11 @@ fn collect_diagnostics_for_document(
     uri: &Url,
     strict_diagnostics: bool,
 ) -> Vec<SemanticDiagnostic> {
-    let diagnostics =
-        sysml_diagnostics::document_diagnostics(model, uri, ReportingPolicy::strict(strict_diagnostics));
+    let diagnostics = sysml_diagnostics::document_diagnostics(
+        model,
+        uri,
+        ReportingPolicy::strict(strict_diagnostics),
+    );
     postprocess_document_diagnostics(
         diagnostics,
         PostprocessPolicy {

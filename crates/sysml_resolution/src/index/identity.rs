@@ -208,9 +208,8 @@ impl IdentityIndex {
         for index in 0..declarations {
             order.push(DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?);
         }
-        order.sort_unstable_by(|left, right| {
-            encodings[left.index()].cmp(&encodings[right.index()])
-        });
+        order
+            .sort_unstable_by(|left, right| encodings[left.index()].cmp(&encodings[right.index()]));
         drop(encodings);
         let mut rank = vec![0u32; declarations];
         for (position, id) in order.iter().enumerate() {

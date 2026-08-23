@@ -650,7 +650,7 @@ fn collect_symbol_candidates(
             _ => {}
         }
     }
-    members.sort_by(|a, b| a.symbol.cmp(&b.symbol));
+    members.sort_by_key(|a| a.symbol);
     members.dedup_by(|a, b| a.symbol == b.symbol);
     for member in members {
         let name = member.name.to_string();

@@ -30,12 +30,10 @@ use cli::{
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
-use workspace::{
-    validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest,
-};
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
+use workspace::{validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
 ///
@@ -80,7 +78,10 @@ pub struct ModelSummaryResponse {
 }
 
 /// Narrow summary while a typed model-summary projection is defined.
-pub fn build_model_summary(report: HostValidationReport, _max_nodes: usize) -> ModelSummaryResponse {
+pub fn build_model_summary(
+    report: HostValidationReport,
+    _max_nodes: usize,
+) -> ModelSummaryResponse {
     // TODO(follow-up): expose a bounded typed summary from PublishedModel. Do not recreate the
     // retired graph DTO here; until that owner exists, diagnostics are the complete supported
     // result and semantic nodes/relationships are explicitly absent.

@@ -223,13 +223,7 @@ mod tests {
                 .unwrap();
         }
 
-        assert_eq!(
-            paths.push(&[NameId(1), NameId(2)], false).unwrap(),
-            vehicle
-        );
-        assert_ne!(
-            paths.push(&[NameId(1), NameId(2)], true).unwrap(),
-            vehicle
-        );
+        assert_eq!(paths.push(&[NameId(1), NameId(2)], false).unwrap(), vehicle);
+        assert_ne!(paths.push(&[NameId(1), NameId(2)], true).unwrap(), vehicle);
     }
 }

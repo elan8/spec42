@@ -242,8 +242,7 @@ impl GeneratorModelView {
                     .search_elements(ElementSearch { kind, source })
                 {
                     for entry in entries {
-                        by_identity
-                            .insert(entry.identity.clone(), RegisteredElement { entry, source });
+                        by_identity.insert(entry.identity, RegisteredElement { entry, source });
                     }
                 }
             }
@@ -661,7 +660,7 @@ impl GeneratorModelView {
                 self.handles
                     .lock()
                     .expect("generator handle index poisoned")
-                    .insert(handle.clone(), entry.semantic_id.clone());
+                    .insert(handle.clone(), entry.semantic_id);
                 Ok(DiagramViewSummary {
                     handle,
                     kind: diagram_kind(entry.kind),
@@ -704,11 +703,11 @@ impl GeneratorModelView {
                 typing: match &element.typing {
                     sysml_query::resolved_slice::DiagramElementTyping::Absent => spec42_generator_protocol::DiagramElementTyping::Absent,
                     sysml_query::resolved_slice::DiagramElementTyping::Resolved(targets) => spec42_generator_protocol::DiagramElementTyping::Resolved(targets.iter().map(|target| {
-                        let target_entry = self.by_identity.get(&target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
                         Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Partial(targets) => spec42_generator_protocol::DiagramElementTyping::Partial(targets.iter().map(|target| {
-                        let target_entry = self.by_identity.get(&target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
                         Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(*target)?, label: display_label(&target_entry.entry) })
                     }).collect::<Result<Vec<_>, ModelQueryError>>()?),
                     sysml_query::resolved_slice::DiagramElementTyping::Ambiguous(targets) => spec42_generator_protocol::DiagramElementTyping::Ambiguous(targets.iter().map(|target| self.diagram_reference(*target)).collect::<Result<Vec<_>, _>>()?),
@@ -914,7 +913,7 @@ impl GeneratorModelView {
                     .machine
                     .as_ref()
                     .map(|identity| {
-                        let entry = self.by_identity.get(&identity).ok_or_else(|| {
+                        let entry = self.by_identity.get(identity).ok_or_else(|| {
                             ModelQueryError::Unresolved(
                                 "state-machine scene frame is absent from publication".into(),
                             )
@@ -1055,10 +1054,10 @@ impl GeneratorModelView {
                     && entry.entry.kind == ElementKind::ViewDefinition
                     && entry.entry.name.as_deref() == Some("StateTransitionView")
             })
-            .map(|entry| entry.entry.identity.clone())
+            .map(|entry| entry.entry.identity)
             .collect::<Vec<_>>();
         match matches.as_slice() {
-            [identity] => Ok(identity.clone()),
+            [identity] => Ok(*identity),
             [] => Err(ModelQueryError::Incomplete),
             _ => Err(ModelQueryError::Ambiguous(
                 "standard library contains multiple StateTransitionView definitions".into(),
@@ -1259,7 +1258,7 @@ impl GeneratorModelView {
             }
         }
         match targets.as_slice() {
-            [one] => Ok(one.clone()),
+            [one] => Ok(*one),
             [] => Err(ModelQueryError::Unsupported(
                 "state-transition view exposes no state machine".into(),
             )),
@@ -1284,7 +1283,7 @@ impl GeneratorModelView {
         self.handles
             .lock()
             .expect("generator handle index poisoned")
-            .insert(handle.clone(), view.clone());
+            .insert(handle.clone(), view);
         Ok(StateTransitionViewSummary {
             handle,
             semantic_id: self.token(view),
@@ -1473,7 +1472,7 @@ impl GeneratorModelView {
         self.handles
             .lock()
             .expect("generator handle index poisoned")
-            .insert(handle.clone(), identity.clone());
+            .insert(handle.clone(), identity);
         Ok(ElementSummary {
             handle,
             semantic_id,
@@ -1483,7 +1482,8 @@ impl GeneratorModelView {
             library_element: registered.source != ElementSource::Workspace,
         })
     }
-    fn summaries<'a>(
+
+    fn summaries(
         &self,
         identities: impl Iterator<Item = SymbolId>,
     ) -> Result<Vec<ElementSummary>, ModelQueryError> {
@@ -1685,7 +1685,7 @@ fn resolved_relationship(
     }
     match values.first().map(|value| &value.target) {
         None => Ok(None),
-        Some(RelationshipTarget::Resolved(target)) => Ok(Some(target.clone())),
+        Some(RelationshipTarget::Resolved(target)) => Ok(Some(*target)),
         Some(RelationshipTarget::Ambiguous(_)) => Err(ModelQueryError::Ambiguous(kind.into())),
         Some(RelationshipTarget::Unresolved) => Err(ModelQueryError::Unresolved(kind.into())),
         Some(RelationshipTarget::Unsupported) => Err(ModelQueryError::Unsupported(kind.into())),

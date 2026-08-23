@@ -252,9 +252,7 @@ pub(crate) async fn initialized(
             }
 
             let snap = handle.snapshot();
-            if !crate::common::util::library_full_scan_enabled()
-                && !snap.library_paths.is_empty()
-            {
+            if !crate::common::util::library_full_scan_enabled() && !snap.library_paths.is_empty() {
                 let library_paths_for_search = snap.library_paths.clone();
                 drop(snap);
                 let search_indexed = handle

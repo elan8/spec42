@@ -2,10 +2,13 @@
 
 use std::path::PathBuf;
 
-use workspace::{validate_paths, ValidationRequest};
 use sysml_diagnostics::SemanticDiagnostic;
+use workspace::{validate_paths, ValidationRequest};
 
-fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+fn test_engine(
+    cache: &tempfile::TempDir,
+    library_paths: Vec<std::path::PathBuf>,
+) -> workspace::Spec42Engine {
     workspace::EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
         .no_stdlib(true)

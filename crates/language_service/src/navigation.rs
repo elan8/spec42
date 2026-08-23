@@ -222,19 +222,13 @@ fn element_evaluation_at(
     let model = workspace.published_model()?;
     let at = resolved(model.inspection().inspect_at(uri.as_str(), position))?;
     let symbol = match &at.referenced {
-        ReferenceAt::Resolved(inspection) => Some(inspection.identity.clone()),
-        _ => at
-            .containing
-            .as_ref()
-            .map(|containing| containing.identity.clone()),
+        ReferenceAt::Resolved(inspection) => Some(inspection.identity),
+        _ => at.containing.as_ref().map(|containing| containing.identity),
     }?;
     element_evaluation(model, symbol)
 }
 
-fn element_evaluation(
-    model: &PublishedModel,
-    symbol: SymbolId,
-) -> Option<ElementEvaluation> {
+fn element_evaluation(model: &PublishedModel, symbol: SymbolId) -> Option<ElementEvaluation> {
     resolved(model.evaluation().evaluate(symbol))
 }
 

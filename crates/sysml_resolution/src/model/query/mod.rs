@@ -800,10 +800,7 @@ impl<D> SemanticModel<D> {
         symbols.into_boxed_slice()
     }
 
-    pub(crate) fn direct_types(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<Box<[TypeReference]>> {
+    pub(crate) fn direct_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -822,7 +819,7 @@ impl<D> SemanticModel<D> {
                 })
             })
             .collect::<Vec<_>>();
-        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        types.sort_by_key(|left| left.symbol);
         self.resolved_outcome(types.into_boxed_slice())
     }
 
@@ -1724,7 +1721,7 @@ impl<D> SemanticModel<D> {
                 relationship: relationship.clone(),
             });
         }
-        values.sort_by(|left, right| left.import.cmp(&right.import));
+        values.sort_by_key(|left| left.import);
         self.resolved_outcome(values.into_boxed_slice())
     }
 
@@ -1768,7 +1765,7 @@ impl<D> SemanticModel<D> {
                         });
                     if target_is_requirement_definition {
                         RequirementUsageTyping::Resolved(TypeReference {
-                            symbol: target.clone(),
+                            symbol: *target,
                             provenance: relationship.provenance,
                         })
                     } else {
@@ -2037,10 +2034,7 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(values.into_boxed_slice())
     }
 
-    pub(crate) fn effective_types(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<Box<[EffectiveType]>> {
+    pub(crate) fn effective_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[EffectiveType]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2061,7 +2055,7 @@ impl<D> SemanticModel<D> {
                 })
             })
             .collect::<Vec<_>>();
-        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        types.sort_by_key(|left| left.symbol);
         self.resolved_outcome(types.into_boxed_slice())
     }
 
@@ -2074,10 +2068,7 @@ impl<D> SemanticModel<D> {
         self.library_specialization_anchor("sysml-2.0:8.3.11.2:checkPartDefinitionSpecialization")
     }
 
-    pub(crate) fn library_specialization_anchor(
-        &self,
-        rule_id: &str,
-    ) -> QueryOutcome<SymbolId> {
+    pub(crate) fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.library_rule_anchor(rule_id)
     }
 
@@ -2211,10 +2202,7 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(symbols)
     }
 
-    pub(crate) fn featuring_type(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<Option<SymbolId>> {
+    pub(crate) fn featuring_type(&self, symbol: SymbolId) -> QueryOutcome<Option<SymbolId>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
@@ -2230,17 +2218,14 @@ impl<D> SemanticModel<D> {
             .collect::<Vec<_>>();
         match featuring.as_slice() {
             [] => self.resolved_outcome(None),
-            [owner] => self.resolved_outcome(Some(owner.clone())),
+            [owner] => self.resolved_outcome(Some(*owner)),
             _ => QueryOutcome::Ambiguous(featuring.into_iter().map(Some).collect()),
         }
     }
 
     /// Every effective featuring type produced by the canonical TypeFeaturing/FeatureChaining
     /// fact family, retaining authored versus implied provenance.
-    pub(crate) fn featuring_types(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<Box<[TypeReference]>> {
+    pub(crate) fn featuring_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,

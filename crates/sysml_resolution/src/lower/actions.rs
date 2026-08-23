@@ -16,8 +16,8 @@ use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::MembershipKind;
-use crate::model::ReferenceKind;
 use crate::model::NameId;
+use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{

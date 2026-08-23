@@ -269,14 +269,8 @@ mod tests {
 
     fn range(line: u32) -> TextRange {
         TextRange {
-            start: TextPosition {
-                line,
-                character: 0,
-            },
-            end: TextPosition {
-                line,
-                character: 1,
-            },
+            start: TextPosition { line, character: 0 },
+            end: TextPosition { line, character: 1 },
         }
     }
 
@@ -318,7 +312,11 @@ mod tests {
         higher_priority.message = "bad requirement id".to_string();
 
         let out = postprocess_document_diagnostics(
-            vec![sample_parse_error(5), sample_parse_error(6), higher_priority],
+            vec![
+                sample_parse_error(5),
+                sample_parse_error(6),
+                higher_priority,
+            ],
             PostprocessPolicy {
                 suppress_semantic_after_parse_error: false,
             },

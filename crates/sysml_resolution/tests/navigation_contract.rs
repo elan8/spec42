@@ -1149,10 +1149,7 @@ fn document_symbols_lists_every_declaration_with_its_identity() {
         .expect("Wheel");
     assert_eq!(wheel.kind, ElementKind::PartDefinition);
     assert!(
-        matches!(
-            published.inspect(wheel.identity),
-            QueryOutcome::Resolved(_)
-        ),
+        matches!(published.inspect(wheel.identity), QueryOutcome::Resolved(_)),
         "an outline entry's identity must address the same element"
     );
 }
@@ -1328,11 +1325,11 @@ fn element_details_agrees_with_the_services_it_is_assembled_from() {
             .effective_typing
             .types
             .iter()
-            .map(|entry| entry.element.identity.clone())
+            .map(|entry| entry.element.identity)
             .collect::<Vec<_>>(),
         effective
             .iter()
-            .map(|entry| entry.symbol.clone())
+            .map(|entry| entry.symbol)
             .collect::<Vec<_>>()
     );
 }

@@ -276,9 +276,8 @@ mod tests {
 
     #[test]
     fn library_source_label_reads_the_configured_standard_library_roots() {
-        let root =
-            Url::parse("file:///tmp/data/standard-library/versions/2026-04/sysml.library/")
-                .expect("url");
+        let root = Url::parse("file:///tmp/data/standard-library/versions/2026-04/sysml.library/")
+            .expect("url");
         let stdlib = Url::parse(
             "file:///tmp/data/standard-library/versions/2026-04/sysml.library/ScalarValues.sysml",
         )
@@ -303,5 +302,4 @@ mod tests {
         );
         assert_eq!(library_source_label(&document, &[]), "custom");
     }
-
 }

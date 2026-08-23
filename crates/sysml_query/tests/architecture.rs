@@ -714,7 +714,8 @@ fn facade_reexported_names(facade_root: &Path) -> BTreeSet<String> {
                 continue;
             }
             let root = use_root(&item_use.tree);
-            if root.as_deref() != Some("sysml_resolution") && root.as_deref() != Some("sysml_contract")
+            if root.as_deref() != Some("sysml_resolution")
+                && root.as_deref() != Some("sysml_contract")
             {
                 continue;
             }
@@ -1168,27 +1169,60 @@ const HOST_CRATES: &[&str] = &["lsp_server", "server"];
 /// this test, which is the point: the next `parse this line` helper has to justify itself.
 const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
     // Document lifecycle: text arriving from the client on its way to `SourceService::admit`.
-    ("crates/lsp_server/src/common/util.rs", "apply_incremental_change"),
+    (
+        "crates/lsp_server/src/common/util.rs",
+        "apply_incremental_change",
+    ),
     ("crates/lsp_server/src/common/util.rs", "parse_for_editor"),
     ("crates/lsp_server/src/session/handle.rs", "admit_text"),
-    ("crates/lsp_server/src/session/handle.rs", "store_document_text_fast"),
-    ("crates/lsp_server/src/session/handle.rs", "refresh_document"),
-    ("crates/lsp_server/src/session/services.rs", "parse_scanned_entry"),
-    ("crates/lsp_server/src/session/services.rs", "store_document_text"),
-    ("crates/lsp_server/src/session/services.rs", "store_document_text_fast"),
-    ("crates/lsp_server/src/session/services.rs", "refresh_document"),
+    (
+        "crates/lsp_server/src/session/handle.rs",
+        "store_document_text_fast",
+    ),
+    (
+        "crates/lsp_server/src/session/handle.rs",
+        "refresh_document",
+    ),
+    (
+        "crates/lsp_server/src/session/services.rs",
+        "parse_scanned_entry",
+    ),
+    (
+        "crates/lsp_server/src/session/services.rs",
+        "store_document_text",
+    ),
+    (
+        "crates/lsp_server/src/session/services.rs",
+        "store_document_text_fast",
+    ),
+    (
+        "crates/lsp_server/src/session/services.rs",
+        "refresh_document",
+    ),
     (
         "crates/lsp_server/src/lsp_runtime/documents/sync.rs",
         "watched_file_content_already_current",
     ),
     // Text projection: slicing a range the authority settled out of the text it settled it over.
-    ("crates/lsp_server/src/views/feature_inspector.rs", "slice_range"),
+    (
+        "crates/lsp_server/src/views/feature_inspector.rs",
+        "slice_range",
+    ),
     ("crates/lsp_server/src/language/mod.rs", "format_document"),
     // Known debt: code actions and probes that read SysML text rather than asking the syntax
     // service. These are the D10 entries Proposal C names; the list only ever shrinks.
-    ("crates/lsp_server/src/common/util.rs", "untyped_part_usage_diagnostics"),
-    ("crates/lsp_server/src/common/util.rs", "import_statement_ranges"),
-    ("crates/lsp_server/src/language/mod.rs", "suggest_wrap_in_package"),
+    (
+        "crates/lsp_server/src/common/util.rs",
+        "untyped_part_usage_diagnostics",
+    ),
+    (
+        "crates/lsp_server/src/common/util.rs",
+        "import_statement_ranges",
+    ),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_wrap_in_package",
+    ),
     (
         "crates/lsp_server/src/language/mod.rs",
         "suggest_create_definition_for_unresolved_type_quick_fix",
@@ -1201,7 +1235,10 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
         "crates/lsp_server/src/language/mod.rs",
         "suggest_explicit_redefinition_quick_fix",
     ),
-    ("crates/lsp_server/src/language/mod.rs", "suggest_create_verification_case"),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_create_verification_case",
+    ),
     (
         "crates/lsp_server/src/language/mod.rs",
         "suggest_create_usage_from_definition",
@@ -1210,15 +1247,30 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
         "crates/lsp_server/src/language/mod.rs",
         "suggest_qualify_ambiguous_name_quick_fixes",
     ),
-    ("crates/lsp_server/src/language/mod.rs", "suggest_add_import_quick_fixes"),
-    ("crates/lsp_server/src/language/symbols.rs", "find_reference_ranges"),
-    ("crates/lsp_server/src/lsp_runtime/navigation.rs", "collect_document_links"),
+    (
+        "crates/lsp_server/src/language/mod.rs",
+        "suggest_add_import_quick_fixes",
+    ),
+    (
+        "crates/lsp_server/src/language/symbols.rs",
+        "find_reference_ranges",
+    ),
+    (
+        "crates/lsp_server/src/lsp_runtime/navigation.rs",
+        "collect_document_links",
+    ),
     (
         "crates/lsp_server/src/lsp_runtime/navigation.rs",
         "selection_ranges_for_positions",
     ),
-    ("crates/lsp_server/src/semantic_tokens/mod.rs", "semantic_tokens_full"),
-    ("crates/lsp_server/src/semantic_tokens/mod.rs", "semantic_tokens_range"),
+    (
+        "crates/lsp_server/src/semantic_tokens/mod.rs",
+        "semantic_tokens_full",
+    ),
+    (
+        "crates/lsp_server/src/semantic_tokens/mod.rs",
+        "semantic_tokens_range",
+    ),
 ];
 
 /// Document-keyed maps a host declares as a field.
@@ -1290,7 +1342,10 @@ fn hosts_declare_no_document_keyed_maps_outside_the_session_allow_list() {
 /// visitors below rather than by text slicing, so a test fixture never trips a guard.
 fn host_sources(root: &Path, crate_name: &str) -> Vec<PathBuf> {
     let mut files = Vec::new();
-    rust_sources(&root.join("crates").join(crate_name).join("src"), &mut files);
+    rust_sources(
+        &root.join("crates").join(crate_name).join("src"),
+        &mut files,
+    );
     files
 }
 

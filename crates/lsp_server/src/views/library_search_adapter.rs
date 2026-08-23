@@ -1,8 +1,8 @@
-use language_service::{LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource};
 use crate::views::dto::{
     range_to_dto, SysmlLibrarySearchItemDto, SysmlLibrarySearchPackageDto,
     SysmlLibrarySearchSourceDto,
 };
+use language_service::{LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource};
 
 fn to_dto_item(item: LibrarySearchItem) -> SysmlLibrarySearchItemDto {
     SysmlLibrarySearchItemDto {

@@ -826,10 +826,7 @@ impl PublishedResolution {
     }
 
     /// The exact derived `Element::owner` fact from the canonical ownership structure.
-    pub fn derived_element_owner(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<DerivedElementOwner> {
+    pub fn derived_element_owner(&self, symbol: SymbolId) -> QueryOutcome<DerivedElementOwner> {
         self.model.derived_element_owner(symbol)
     }
 
@@ -1581,20 +1578,17 @@ mod tests {
     // cannot show is the rules layered over them: reflexivity, scope selection, what a cycle does
     // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
 
-    fn symbol_named(
-        published: &PublishedResolution,
-        document: &str,
-        qualified: &str,
-    ) -> SymbolId {
+    fn symbol_named(published: &PublishedResolution, document: &str, qualified: &str) -> SymbolId {
         match published.document_symbols(document) {
             QueryOutcome::Resolved(entries)
             | QueryOutcome::Recovered(entries)
-            | QueryOutcome::UnsupportedWith(entries) => entries
-                .iter()
-                .find(|entry| entry.qualified_name.as_ref() == qualified)
-                .unwrap_or_else(|| panic!("no declaration named {qualified}"))
-                .identity
-                .clone(),
+            | QueryOutcome::UnsupportedWith(entries) => {
+                entries
+                    .iter()
+                    .find(|entry| entry.qualified_name.as_ref() == qualified)
+                    .unwrap_or_else(|| panic!("no declaration named {qualified}"))
+                    .identity
+            }
             other => panic!("expected document symbols, got: {other:?}"),
         }
     }
@@ -1649,7 +1643,8 @@ mod tests {
         // A handle ranking past the end of the publication: the only stale handle the authority
         // can tell apart from a live one. `SymbolId` documents why the token form exists for the
         // rest.
-        let missing = SymbolId::from_index(u32::MAX as usize - 1).expect("a handle beyond any publication");
+        let missing =
+            SymbolId::from_index(u32::MAX as usize - 1).expect("a handle beyond any publication");
 
         assert!(
             matches!(
@@ -1686,7 +1681,6 @@ mod tests {
             .find(|entry| entry.qualified_name.as_ref() == qualified_name)
             .unwrap_or_else(|| panic!("no declaration named {qualified_name} in {document}"))
             .identity
-            .clone()
     }
 
     /// The whole point of the publication-time child, reverse-reference and implied indexes: an

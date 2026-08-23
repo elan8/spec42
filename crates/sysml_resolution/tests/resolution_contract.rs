@@ -3568,20 +3568,12 @@ fn set_entailment_answers_do_not_grow_with_the_model() {
         let base = symbol_named(published, "memory://sets.kerml", "P::Base");
         let left = symbol_named(published, "memory://sets.kerml", "P::L");
         assert_eq!(
-            conformance(published.conforms_to(
-                union,
-                base,
-                SpecializationScope::AnySpecialization
-            )),
+            conformance(published.conforms_to(union, base, SpecializationScope::AnySpecialization)),
             Conformance::Conforms,
             "{label}: every operand of U is a Base, so U is one"
         );
         assert_eq!(
-            conformance(published.conforms_to(
-                left,
-                union,
-                SpecializationScope::AnySpecialization
-            )),
+            conformance(published.conforms_to(left, union, SpecializationScope::AnySpecialization)),
             Conformance::Conforms,
             "{label}: each operand is included in the union it belongs to"
         );
@@ -3619,11 +3611,7 @@ fn a_model_without_specialization_publishes_no_supertypes() {
         let symbol = symbol_named(&published, "memory://types.sysml", name);
         let supertypes =
             symbols(published.all_supertypes(symbol, SpecializationScope::AnySpecialization));
-        assert_eq!(
-            supertypes,
-            vec![symbol.clone()],
-            "{name} should report only itself"
-        );
+        assert_eq!(supertypes, vec![symbol], "{name} should report only itself");
     }
 }
 
@@ -3745,8 +3733,7 @@ fn a_workspace_root_answering_an_unsettled_library_reference_falls_back() {
     // Its outcome is observable through the reverse type edge instead: if the stratum's
     // unresolved outcome had been reused, nothing would specialize `Missing`.
     let missing = symbol_named(&seeded, "memory://workspace.sysml", "Missing");
-    let subtypes =
-        symbols(seeded.direct_subtypes(missing, SpecializationScope::Subclassification));
+    let subtypes = symbols(seeded.direct_subtypes(missing, SpecializationScope::Subclassification));
     assert_eq!(
         subtypes.len(),
         1,
@@ -3786,7 +3773,7 @@ fn derived_element_owner_projects_the_canonical_ownership_fact() {
 
     assert_eq!(
         settled(published.derived_element_owner(mass)),
-        DerivedElementOwner::Owner(vehicle.clone())
+        DerivedElementOwner::Owner(vehicle)
     );
     assert_eq!(
         settled(published.derived_element_owner(package)),
@@ -3890,13 +3877,11 @@ fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
     let owned = identity_of(&published, "memory://model.sysml", "Model::Owned");
 
     let members = settled(
-        published
-            .namespace_derived_elements(model, NamespaceDerivedElementCollection::OwnedMember),
+        published.namespace_derived_elements(model, NamespaceDerivedElementCollection::OwnedMember),
     );
     assert_eq!(members.as_ref(), std::slice::from_ref(&owned));
     let imports = settled(
-        published
-            .namespace_derived_elements(model, NamespaceDerivedElementCollection::OwnedImport),
+        published.namespace_derived_elements(model, NamespaceDerivedElementCollection::OwnedImport),
     );
     assert_eq!(imports.len(), 1);
     assert_eq!(
@@ -4286,7 +4271,7 @@ fn feature_membership_publishes_an_implied_type_featuring_fact() {
             kind: "typeFeaturing",
             provenance: RelationshipProvenance::Implied,
             authored: None,
-            target: RelationshipTarget::Resolved(vehicle.clone()),
+            target: RelationshipTarget::Resolved(vehicle),
             location: None,
         }]
     );
@@ -4296,7 +4281,7 @@ fn feature_membership_publishes_an_implied_type_featuring_fact() {
             .into_iter()
             .map(|value| (value.symbol, value.provenance))
             .collect::<Vec<_>>(),
-        vec![(vehicle.clone(), RelationshipProvenance::Implied)]
+        vec![(vehicle, RelationshipProvenance::Implied)]
     );
     assert_eq!(settled(published.featuring_type(mass)), Some(vehicle));
 }
@@ -4322,7 +4307,7 @@ fn authored_type_featuring_suppresses_the_membership_implication() {
     assert_eq!(relationships[0].authored.as_deref(), Some("Vehicle"));
     assert_eq!(
         relationships[0].target,
-        RelationshipTarget::Resolved(vehicle.clone())
+        RelationshipTarget::Resolved(vehicle)
     );
     assert_eq!(
         settled(published.featuring_types(mass))[0].provenance,
@@ -4400,8 +4385,7 @@ fn feature_membership_type_featuring_check_uses_the_manifest_scoped_canonical_ou
     );
     assert_eq!(
         settled(
-            published
-                .type_featuring_check(mass, TypeFeaturingCheckKind::FeatureFeatureMembership,)
+            published.type_featuring_check(mass, TypeFeaturingCheckKind::FeatureFeatureMembership,)
         ),
         TypeFeaturingCheckOutcome::Satisfied,
     );
@@ -4656,8 +4640,7 @@ fn type_owned_feature_projects_canonical_direct_feature_members() {
     let empty = identity_of(&published, "memory://model.sysml", "Model::Empty");
     assert_eq!(
         settled(
-            published
-                .type_derived_elements(container, TypeDerivedElementCollection::OwnedFeature,)
+            published.type_derived_elements(container, TypeDerivedElementCollection::OwnedFeature,)
         )
         .as_ref(),
         std::slice::from_ref(&owned)
@@ -4772,7 +4755,7 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
             DefinitionUsageDerivedKind::DefinitionOwnedPart,
         ),
         QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
-            if values.as_ref() == [wheel.clone()]
+            if values.as_ref() == [wheel]
     ));
     assert!(matches!(
         sequential.definition_usage_derived(
@@ -4780,7 +4763,7 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
             DefinitionUsageDerivedKind::DefinitionOwnedAction,
         ),
         QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
-            if values.as_ref() == [service.clone()]
+            if values.as_ref() == [service]
     ));
     // `usage` selects every usage in the effective feature membership, so both direct members
     // appear; `directedUsage` selects none of them, because neither is directed.
@@ -4813,8 +4796,7 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
             "memory://definition-usage.sysml",
             "Model::Vehicle",
         );
-        published
-            .definition_usage_derived(vehicle, DefinitionUsageDerivedKind::DefinitionOwnedPart)
+        published.definition_usage_derived(vehicle, DefinitionUsageDerivedKind::DefinitionOwnedPart)
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));
@@ -4838,15 +4820,12 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
                 if actual == prerequisite
         ));
     };
-    let values = |symbol: SymbolId, collection| match published
-        .type_derived_fact(symbol, collection)
-    {
-        QueryOutcome::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
-        other => panic!("expected published values, got {other:?}"),
-    };
-    let member = |symbol: SymbolId| TypeDerivedFactValue::FeatureMembership {
-        member: symbol.clone(),
-    };
+    let values =
+        |symbol: SymbolId, collection| match published.type_derived_fact(symbol, collection) {
+            QueryOutcome::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
+            other => panic!("expected published values, got {other:?}"),
+        };
+    let member = |symbol: SymbolId| TypeDerivedFactValue::FeatureMembership { member: symbol };
     let inherited = identity_of(
         &published,
         "memory://model.sysml",
@@ -4881,7 +4860,7 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::InheritedFeature).into_vec(),
-        vec![TypeDerivedFactValue::Feature(inherited.clone())]
+        vec![TypeDerivedFactValue::Feature(inherited)]
     );
     for collection in [
         TypeDerivedFactCollection::FeatureMembership,
@@ -4905,11 +4884,11 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::Input).into_vec(),
-        vec![TypeDerivedFactValue::Feature(input.clone())]
+        vec![TypeDerivedFactValue::Feature(input)]
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::Output).into_vec(),
-        vec![TypeDerivedFactValue::Feature(output.clone())]
+        vec![TypeDerivedFactValue::Feature(output)]
     );
     let directed = values(child, TypeDerivedFactCollection::DirectedFeature).into_vec();
     assert!(directed.contains(&TypeDerivedFactValue::Feature(input)));
@@ -4944,10 +4923,7 @@ fn part_definition_specialization_is_implied_from_the_canonical_standard_library
     assert_eq!(relationships[0].provenance, RelationshipProvenance::Implied);
     assert_eq!(relationships[0].authored, None);
     assert_eq!(relationships[0].location, None);
-    assert_eq!(
-        relationships[0].target,
-        RelationshipTarget::Resolved(part.clone())
-    );
+    assert_eq!(relationships[0].target, RelationshipTarget::Resolved(part));
     assert_eq!(
         settled(published.direct_supertypes(component, SpecializationScope::Subclassification,))
             .as_ref(),
@@ -5051,7 +5027,7 @@ fn flow_specializations_publish_implied_edges_from_canonical_end_facts() {
             .iter()
             .any(|relationship| {
                 relationship.provenance == RelationshipProvenance::Implied
-                    && relationship.target == RelationshipTarget::Resolved(message.clone())
+                    && relationship.target == RelationshipTarget::Resolved(message)
             })
     );
     let symbols = settled(published.document_symbols("memory://model.sysml"));
@@ -5063,12 +5039,12 @@ fn flow_specializations_publish_implied_edges_from_canonical_end_facts() {
     assert!(relationships.iter().any(|relationship| {
         relationship.kind == "specialization"
             && relationship.provenance == RelationshipProvenance::Implied
-            && relationship.target == RelationshipTarget::Resolved(flows.clone())
+            && relationship.target == RelationshipTarget::Resolved(flows)
     }));
     assert!(relationships.iter().any(|relationship| {
         relationship.kind == "specialization"
             && relationship.provenance == RelationshipProvenance::Implied
-            && relationship.target == RelationshipTarget::Resolved(transfers.clone())
+            && relationship.target == RelationshipTarget::Resolved(transfers)
     }));
 }
 
@@ -5133,7 +5109,7 @@ fn feature_data_value_and_end_specializations_use_canonical_typing_and_owner_fac
         "memory://model.kerml",
         "Model::Association::endFeature",
     )
-    .contains(&implied(participant.clone())));
+    .contains(&implied(participant)));
     assert!(specialization_relationships(
         &published,
         "memory://model.kerml",
@@ -5187,7 +5163,7 @@ fn connector_object_specialization_uses_direct_association_structure_typing() {
         kind: "specialization",
         provenance: RelationshipProvenance::Implied,
         authored: None,
-        target: RelationshipTarget::Resolved(anchor.clone()),
+        target: RelationshipTarget::Resolved(anchor),
         location: None,
     };
     assert_eq!(
@@ -5247,7 +5223,7 @@ fn step_subperformance_specialization_uses_composite_behavior_ownership() {
         kind: "specialization",
         provenance: RelationshipProvenance::Implied,
         authored: None,
-        target: RelationshipTarget::Resolved(anchor.clone()),
+        target: RelationshipTarget::Resolved(anchor),
         location: None,
     };
     assert_eq!(
@@ -5520,7 +5496,7 @@ fn accept_action_specializations_use_canonical_trigger_and_subaction_facts() {
     assert_eq!(
         targets,
         vec![
-            vec![RelationshipTarget::Resolved(accept_actions.clone())],
+            vec![RelationshipTarget::Resolved(accept_actions)],
             vec![
                 RelationshipTarget::Resolved(accept_actions),
                 RelationshipTarget::Resolved(accept_subactions),
@@ -5874,9 +5850,7 @@ fn part_definition_specialization_has_sequential_parallel_and_warm_library_parit
         let component = identity_of(published, "memory://model.sysml", "Model::Component");
         (
             specialization_relationships(published, "memory://model.sysml", "Model::Component"),
-            settled(
-                published.direct_supertypes(component, SpecializationScope::Subclassification),
-            ),
+            settled(published.direct_supertypes(component, SpecializationScope::Subclassification)),
             published.diagnostics(),
         )
     };

@@ -571,7 +571,6 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
 }
 
-
 #[cfg(test)]
 mod tests {
     use std::sync::Mutex;

@@ -60,9 +60,9 @@ use crate::model::DocumentId;
 #[cfg(test)]
 use crate::model::MembershipKind;
 #[cfg(test)]
-use crate::model::ReferenceKind;
-#[cfg(test)]
 use crate::model::NameId;
+#[cfg(test)]
+use crate::model::ReferenceKind;
 #[cfg(test)]
 use crate::model::SymbolPathId;
 #[cfg(test)]

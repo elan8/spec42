@@ -125,9 +125,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let unconnected_count = semantic_diags
         .iter()
-        .filter(|diagnostic| {
-            diagnostic.code == "unconnected_port"
-        })
+        .filter(|diagnostic| diagnostic.code == "unconnected_port")
         .count();
     assert!(
         unconnected_count <= 25,
@@ -136,9 +134,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let duplicate_connection_count = semantic_diags
         .iter()
-        .filter(|diagnostic| {
-            diagnostic.code == "duplicate_connection"
-        })
+        .filter(|diagnostic| diagnostic.code == "duplicate_connection")
         .count();
     assert_eq!(
         duplicate_connection_count, 0,
@@ -147,9 +143,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let unresolved: Vec<_> = semantic_diags
         .iter()
-        .filter(|diagnostic| {
-            diagnostic.code == "unresolved_type_reference"
-        })
+        .filter(|diagnostic| diagnostic.code == "unresolved_type_reference")
         .collect();
 
     let unresolved_string = unresolved
@@ -361,8 +355,7 @@ fn unresolved_specializes_reference_is_emitted_for_imported_missing_bases() {
     "#;
     let diagnostics = validate_inline_sysml("missing_specializes_base.sysml", content);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
-        diagnostic.source == "semantic"
-            && diagnostic.code == "unresolved_specializes_reference"
+        diagnostic.source == "semantic" && diagnostic.code == "unresolved_specializes_reference"
     });
 
     assert!(
@@ -383,8 +376,7 @@ fn unresolved_specializes_reference_is_not_emitted_when_base_resolves() {
     "#;
     let diagnostics = validate_inline_sysml("resolved_specializes_base.sysml", content);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
-        diagnostic.source == "semantic"
-            && diagnostic.code == "unresolved_specializes_reference"
+        diagnostic.source == "semantic" && diagnostic.code == "unresolved_specializes_reference"
     });
 
     assert!(
@@ -438,8 +430,7 @@ fn unresolved_specializes_reference_is_not_emitted_for_sibling_analysis_def_spec
     "#;
     let diagnostics = validate_inline_sysml("resolved_analysis_specializes_base.sysml", content);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
-        diagnostic.source == "semantic"
-            && diagnostic.code == "unresolved_specializes_reference"
+        diagnostic.source == "semantic" && diagnostic.code == "unresolved_specializes_reference"
     });
 
     assert!(
@@ -481,8 +472,7 @@ fn implicit_redefinition_without_operator_emits_error_for_inherited_features() {
     assert!(
         implicit_redefine
             .iter()
-            .all(|diagnostic| diagnostic.severity
-                == sysml_diagnostics::DiagnosticSeverity::Error),
+            .all(|diagnostic| diagnostic.severity == sysml_diagnostics::DiagnosticSeverity::Error),
         "expected implicit redefinition diagnostics to be errors: {implicit_redefine:#?}"
     );
 }
@@ -673,8 +663,7 @@ fn missing_analysis_identifier_still_emits_unresolved_warning() {
     let unresolved: Vec<_> = diagnostics
         .iter()
         .filter(|diagnostic| {
-            diagnostic.source == "semantic"
-                && diagnostic.code == "analysis_evaluation_unresolved"
+            diagnostic.source == "semantic" && diagnostic.code == "analysis_evaluation_unresolved"
         })
         .collect();
     assert_eq!(
@@ -703,8 +692,7 @@ fn false_analysis_constraint_still_emits_failed_warning() {
     let failed: Vec<_> = diagnostics
         .iter()
         .filter(|diagnostic| {
-            diagnostic.source == "semantic"
-                && diagnostic.code == "analysis_constraint_failed"
+            diagnostic.source == "semantic" && diagnostic.code == "analysis_constraint_failed"
         })
         .collect();
     assert_eq!(
@@ -732,8 +720,7 @@ fn valid_analysis_constraint_emits_no_analysis_diagnostic() {
     let diagnostics = validate_inline_sysml("analysis_requirement_passing.sysml", content);
     assert!(
         !diagnostics.iter().any(|diagnostic| {
-            diagnostic.source == "semantic"
-                && diagnostic.code.starts_with("analysis_")
+            diagnostic.source == "semantic" && diagnostic.code.starts_with("analysis_")
         }),
         "expected no analysis diagnostic for passing constraint: {diagnostics:#?}"
     );
@@ -941,10 +928,7 @@ fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
     // inference this migration removed.
     let related = diagnostics
         .iter()
-        .find(|d| {
-            d.source == "semantic"
-                && d.code == "port_type_mismatch"
-        })
+        .find(|d| d.source == "semantic" && d.code == "port_type_mismatch")
         .map(|d| d.related_information.clone())
         .unwrap_or_default();
     assert_eq!(
@@ -1028,4 +1012,3 @@ fn nested_ref_part_assignments_have_no_parse_diagnostics() {
         "expected ref part assignment fixture to parse cleanly, got: {parse_diagnostics:#?}"
     );
 }
-

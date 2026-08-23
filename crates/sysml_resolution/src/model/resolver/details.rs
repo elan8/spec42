@@ -208,8 +208,8 @@ impl<D> SemanticModel<D> {
                 PredicateTruth::True => {}
                 PredicateTruth::False => {
                     return self.resolved_outcome(ViewSelection {
-                        view: view.clone(),
-                        candidate: candidate.clone(),
+                        view,
+                        candidate,
                         outcome: ViewSelectionOutcome::Excluded,
                     });
                 }
@@ -221,8 +221,8 @@ impl<D> SemanticModel<D> {
         obstacles.sort();
         obstacles.dedup();
         self.resolved_outcome(ViewSelection {
-            view: view.clone(),
-            candidate: candidate.clone(),
+            view,
+            candidate,
             outcome: if obstacles.is_empty() {
                 ViewSelectionOutcome::Included
             } else {
@@ -481,7 +481,7 @@ impl<D> SemanticModel<D> {
                 })
             })
             .collect::<Vec<_>>();
-        types.sort_by(|left, right| left.element.identity.cmp(&right.element.identity));
+        types.sort_by_key(|left| left.element.identity);
         types.dedup_by(|left, right| left.element.identity == right.element.identity);
 
         let mut candidates = typing
@@ -510,11 +510,11 @@ impl<D> SemanticModel<D> {
                 };
                 candidates.push(EffectiveTypeEntry {
                     element,
-                    origin: EffectiveTypeOrigin::Inherited(feature.identity.clone()),
+                    origin: EffectiveTypeOrigin::Inherited(feature.identity),
                 });
             }
         }
-        candidates.sort_by(|left, right| left.element.identity.cmp(&right.element.identity));
+        candidates.sort_by_key(|left| left.element.identity);
         candidates.dedup_by(|left, right| left.element.identity == right.element.identity);
 
         let contributors = [typing.outcome, subsetting.outcome, redefinition.outcome];
@@ -814,7 +814,7 @@ impl<D> SemanticModel<D> {
             .into_iter()
             .filter_map(|id| self.symbol_entry(id))
             .collect::<Vec<_>>();
-        entries.sort_by(|left, right| left.identity.cmp(&right.identity));
+        entries.sort_by_key(|left| left.identity);
         entries.dedup_by(|left, right| left.identity == right.identity);
         entries.into_boxed_slice()
     }

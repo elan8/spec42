@@ -202,20 +202,17 @@ pub fn probe_symbol(
 // cannot show is the rules layered over them: reflexivity, scope selection, what a cycle does
 // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
 
-pub fn symbol_named(
-    published: &PublishedResolution,
-    document: &str,
-    qualified: &str,
-) -> SymbolId {
+pub fn symbol_named(published: &PublishedResolution, document: &str, qualified: &str) -> SymbolId {
     match published.document_symbols(document) {
         QueryOutcome::Resolved(entries)
         | QueryOutcome::Recovered(entries)
-        | QueryOutcome::UnsupportedWith(entries) => entries
-            .iter()
-            .find(|entry| entry.qualified_name.as_ref() == qualified)
-            .unwrap_or_else(|| panic!("no declaration named {qualified}"))
-            .identity
-            .clone(),
+        | QueryOutcome::UnsupportedWith(entries) => {
+            entries
+                .iter()
+                .find(|entry| entry.qualified_name.as_ref() == qualified)
+                .unwrap_or_else(|| panic!("no declaration named {qualified}"))
+                .identity
+        }
         other => panic!("expected document symbols, got: {other:?}"),
     }
 }
@@ -450,7 +447,6 @@ pub fn identity_of(
         .find(|entry| entry.qualified_name.as_ref() == qualified_name)
         .unwrap_or_else(|| panic!("no declaration named {qualified_name} in {document}"))
         .identity
-        .clone()
 }
 
 pub fn details_of(

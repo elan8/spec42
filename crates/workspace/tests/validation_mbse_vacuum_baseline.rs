@@ -1,11 +1,14 @@
 //! Optional regression against the public MBSE vacuum-cleaner example.
 //! Set `MBSE_VACUUM_EXAMPLE_DIR` to the repository root to enable.
 
-use workspace::{validate_paths, ValidationRequest};
 use std::collections::HashMap;
 use std::path::PathBuf;
+use workspace::{validate_paths, ValidationRequest};
 
-fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+fn test_engine(
+    cache: &tempfile::TempDir,
+    library_paths: Vec<std::path::PathBuf>,
+) -> workspace::Spec42Engine {
     workspace::EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
         .no_stdlib(true)
@@ -67,7 +70,8 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         .iter()
         .flat_map(|document| document.diagnostics.iter())
         .filter(|diagnostic| {
-            (diagnostic.code == "duplicate_namespace_member") && diagnostic.message.contains("'def'")
+            (diagnostic.code == "duplicate_namespace_member")
+                && diagnostic.message.contains("'def'")
         })
         .count();
     assert_eq!(
@@ -95,7 +99,8 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         .iter()
         .flat_map(|document| document.diagnostics.iter())
         .filter(|diagnostic| {
-            (diagnostic.code == "duplicate_namespace_member") && diagnostic.message.contains("roboticVacuumCleaner")
+            (diagnostic.code == "duplicate_namespace_member")
+                && diagnostic.message.contains("roboticVacuumCleaner")
                 && !diagnostic.message.contains("(action)")
         })
         .count();

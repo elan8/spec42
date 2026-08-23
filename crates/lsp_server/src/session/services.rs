@@ -1,6 +1,6 @@
 use crate::common::util;
-use language_service::library_search;
 use crate::session::state::{DocumentStore, IndexEntry, ScanSummary};
+use language_service::library_search;
 use rayon::prelude::*;
 use std::time::Instant;
 use sysml_query::source::{SourceDocument, SourceKind};

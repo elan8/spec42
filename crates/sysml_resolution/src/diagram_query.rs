@@ -311,7 +311,7 @@ impl PublishedResolution {
                 return QueryOutcome::Ambiguous(Box::new([]));
             }
             if let Some(entry) = matches.first() {
-                definitions.insert(entry.identity.clone(), kind);
+                definitions.insert(entry.identity, kind);
             }
         }
 
@@ -327,7 +327,7 @@ impl PublishedResolution {
                 };
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
-                    semantic_id: entry.identity.clone(),
+                    semantic_id: entry.identity,
                     reference: semantic_reference(&entry, &BTreeMap::new()),
                     name: entry
                         .name
@@ -339,7 +339,7 @@ impl PublishedResolution {
         }
         // A handle sorts as its canonical identity does, so this is the identity order the
         // catalog has always published, without materialising either string.
-        catalog.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        catalog.sort_by_key(|a| a.semantic_id);
         QueryOutcome::Resolved(catalog.into_boxed_slice())
     }
 
@@ -384,21 +384,21 @@ impl PublishedResolution {
                     {
                         match &relationship.target {
                             RelationshipTarget::Resolved(target) => {
-                                roots.insert(target.clone());
+                                roots.insert(*target);
                             }
                             RelationshipTarget::Ambiguous(_) => {
                                 reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                             RelationshipTarget::Unresolved => {
                                 reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                             RelationshipTarget::Unsupported => {
                                 reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                         }
@@ -406,17 +406,17 @@ impl PublishedResolution {
                 }
                 QueryOutcome::Unresolved => {
                     reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
                 QueryOutcome::Ambiguous(_) => {
                     reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
                 _ => {
                     reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
             }
@@ -426,9 +426,9 @@ impl PublishedResolution {
         for entry in all.values() {
             if let Some(owner) = &entry.owner {
                 direct_children
-                    .entry(owner.clone())
+                    .entry(*owner)
                     .or_default()
-                    .push(entry.identity.clone());
+                    .push(entry.identity);
             }
         }
         for children in direct_children.values_mut() {
@@ -457,8 +457,7 @@ impl PublishedResolution {
             let owner = occurrences
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
-                .0
-                .clone();
+                .0;
             let mut children = resolved_values(self.effective_features(owner)).to_vec();
             children.extend(
                 direct_children
@@ -467,7 +466,7 @@ impl PublishedResolution {
                     .flatten()
                     .filter_map(|identity| all.get(identity).cloned()),
             );
-            children.sort_by(|left, right| left.identity.cmp(&right.identity));
+            children.sort_by_key(|left| left.identity);
             children.dedup_by(|left, right| left.identity == right.identity);
             for child in children {
                 if !workspace.contains(&child.identity) {
@@ -483,7 +482,7 @@ impl PublishedResolution {
                 let inserted = occurrences
                     .insert(
                         occurrence.clone(),
-                        (child.identity.clone(), Some(owner_occurrence.clone())),
+                        (child.identity, Some(owner_occurrence.clone())),
                     )
                     .is_none();
                 // Recursive types have an unbounded semantic instance tree. Present the cycle-closing
@@ -495,7 +494,7 @@ impl PublishedResolution {
         }
         let projected_roots = occurrences
             .iter()
-            .filter_map(|(_, (identity, owner))| owner.is_none().then_some(identity.clone()))
+            .filter_map(|(_, (identity, owner))| owner.is_none().then_some(*identity))
             .collect::<BTreeSet<_>>();
         let mut elements = occurrences
             .iter()
@@ -504,7 +503,7 @@ impl PublishedResolution {
             })
             .map(|(occurrence_id, owner, entry)| DiagramElement {
                 occurrence_id: occurrence_id.clone(),
-                semantic_id: entry.identity.clone(),
+                semantic_id: entry.identity,
                 reference: semantic_reference(entry, &all),
                 kind: entry.kind,
                 name: entry.name.clone(),
@@ -516,7 +515,7 @@ impl PublishedResolution {
             .collect::<Vec<_>>();
         let element_kinds = elements
             .iter()
-            .map(|element| (element.semantic_id.clone(), element.kind))
+            .map(|element| (element.semantic_id, element.kind))
             .collect::<BTreeMap<_, _>>();
         for owner in &mut elements {
             let mut grouped = BTreeMap::<
@@ -612,7 +611,7 @@ impl PublishedResolution {
                         )
                         .into(),
                         source: element.occurrence_id.clone(),
-                        source_semantic_id: element.semantic_id.clone(),
+                        source_semantic_id: element.semantic_id,
                         kind: relationship.kind.into(),
                         target,
                         provenance: relationship.provenance,
@@ -629,13 +628,11 @@ impl PublishedResolution {
                     semantic_id: format!("{}#containment", element.occurrence_id.stable_key(),)
                         .into(),
                     source: owner.clone(),
-                    source_semantic_id: owner.semantic_id().clone(),
+                    source_semantic_id: owner.semantic_id(),
                     target: element.occurrence_id.clone(),
-                    target_semantic_id: element.semantic_id.clone(),
+                    target_semantic_id: element.semantic_id,
                     kind: DiagramEdgeKind::Containment,
-                    provenance: if all
-                        .get(&element.semantic_id)
-                        .and_then(|entry| entry.owner)
+                    provenance: if all.get(&element.semantic_id).and_then(|entry| entry.owner)
                         == Some(owner.semantic_id())
                     {
                         RelationshipProvenance::Authored
@@ -695,9 +692,9 @@ impl PublishedResolution {
                         semantic_id: format!("{}#initial", element.occurrence_id.stable_key())
                             .into(),
                         source: element.occurrence_id.clone(),
-                        source_semantic_id: element.semantic_id.clone(),
+                        source_semantic_id: element.semantic_id,
                         target: target.clone(),
-                        target_semantic_id: target.semantic_id().clone(),
+                        target_semantic_id: target.semantic_id(),
                         kind: DiagramEdgeKind::InitialState,
                         provenance: initial.provenance,
                         source_location: initial.source_location.clone(),
@@ -792,7 +789,7 @@ impl PublishedResolution {
         let mut entries = BTreeMap::new();
         for &kind in ElementKind::ALL {
             for entry in resolved_values(self.search_elements(ElementSearch { kind, source })) {
-                entries.insert(entry.identity.clone(), entry);
+                entries.insert(entry.identity, entry);
             }
         }
         entries
@@ -877,7 +874,7 @@ fn contextual_endpoint(
         }
     };
     DiagramRelationshipEndpoint {
-        semantic_id: semantic_id.clone(),
+        semantic_id,
         occurrence,
     }
 }
@@ -948,7 +945,7 @@ fn diagram_scene(
             let initial_sources = edges
                 .iter()
                 .filter(|edge| edge.kind == DiagramEdgeKind::InitialState)
-                .map(|edge| edge.source_semantic_id.clone())
+                .map(|edge| edge.source_semantic_id)
                 .collect::<BTreeSet<_>>();
             let vertices = elements
                 .iter()
@@ -963,7 +960,7 @@ fn diagram_scene(
                         }
                     };
                     Some(DiagramStateVertex {
-                        semantic_id: element.semantic_id.clone(),
+                        semantic_id: element.semantic_id,
                         label: element.name.clone().unwrap_or_default(),
                         kind,
                         source: element.source.clone(),
@@ -991,8 +988,8 @@ fn diagram_scene(
                     Some(DiagramStateTransition {
                         semantic_id: edge.semantic_id.clone(),
                         label: origin.name.clone(),
-                        source: edge.source_semantic_id.clone(),
-                        target: edge.target_semantic_id.clone(),
+                        source: edge.source_semantic_id,
+                        target: edge.target_semantic_id,
                         trigger: if edge.kind == DiagramEdgeKind::InitialState {
                             DiagramTransitionFeature::Absent
                         } else {
@@ -1034,7 +1031,7 @@ fn transition_feature(
                 .get(&target.semantic_id)
                 .and_then(|entry| entry.name.clone())
                 .unwrap_or_default(),
-            target: target.semantic_id.clone(),
+            target: target.semantic_id,
             source: relationship
                 .source_location
                 .clone()
@@ -1080,9 +1077,9 @@ fn edge_from_relationships(
     DiagramEdge {
         semantic_id: format!("{}#edge", element.occurrence_id.stable_key()).into(),
         source: source.clone(),
-        source_semantic_id: source.semantic_id().clone(),
+        source_semantic_id: source.semantic_id(),
         target: target.clone(),
-        target_semantic_id: target.semantic_id().clone(),
+        target_semantic_id: target.semantic_id(),
         kind,
         provenance: if relationships
             .iter()
@@ -1116,7 +1113,7 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
                 .effective_typing
                 .types
                 .iter()
-                .map(|entry| entry.element.identity.clone())
+                .map(|entry| entry.element.identity)
                 .collect::<Vec<_>>()
                 .into_boxed_slice();
             match details.effective_typing.outcome {
@@ -1129,7 +1126,7 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
                         .effective_typing
                         .candidates
                         .iter()
-                        .map(|entry| entry.element.identity.clone())
+                        .map(|entry| entry.element.identity)
                         .collect::<Vec<_>>()
                         .into_boxed_slice(),
                 ),

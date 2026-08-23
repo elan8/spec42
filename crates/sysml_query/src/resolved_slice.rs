@@ -732,10 +732,7 @@ impl InspectionQueries<'_> {
     /// The exact derived `Element::owner` fact, from the publication's canonical ownership
     /// structure. A root element resolves to [`DerivedElementOwner::NoOwner`]; it is not an
     /// unresolved query.
-    pub fn derived_element_owner(
-        &self,
-        symbol: SymbolId,
-    ) -> QueryOutcome<DerivedElementOwner> {
+    pub fn derived_element_owner(&self, symbol: SymbolId) -> QueryOutcome<DerivedElementOwner> {
         self.model.derived_element_owner(symbol)
     }
 
@@ -1977,8 +1974,7 @@ mod tests {
             .iter()
             .find(|symbol| symbol.qualified_name.as_ref() == "Model::Vehicle::mass")
             .expect("mass declaration")
-            .identity
-            .clone();
+            .identity;
         assert!(matches!(
             publication.types().featuring_types(mass),
             QueryOutcome::Resolved(values)

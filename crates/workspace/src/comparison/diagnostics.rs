@@ -304,7 +304,7 @@ mod tests {
                     diagnostics: vec![duplicate.clone(), duplicate],
                 }],
                 summary: HostValidationSummary::default(),
-            advice: Vec::new(),
+                advice: Vec::new(),
             },
         )
         .expect_err("duplicate diagnostics must not be collapsed");

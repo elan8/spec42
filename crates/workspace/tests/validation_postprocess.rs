@@ -1,8 +1,11 @@
-use workspace::{validate_paths, ValidationRequest};
 use std::fs;
 use sysml_diagnostics::DiagnosticSeverity;
+use workspace::{validate_paths, ValidationRequest};
 
-fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<std::path::PathBuf>) -> workspace::Spec42Engine {
+fn test_engine(
+    cache: &tempfile::TempDir,
+    library_paths: Vec<std::path::PathBuf>,
+) -> workspace::Spec42Engine {
     workspace::EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
         .no_stdlib(true)
@@ -43,10 +46,7 @@ part def Carrier {
     let parse_errors = report.documents[0]
         .diagnostics
         .iter()
-        .filter(|d| {
-            d.source == "sysml"
-                && d.severity == DiagnosticSeverity::Error
-        })
+        .filter(|d| d.source == "sysml" && d.severity == DiagnosticSeverity::Error)
         .count();
     assert!(
         parse_errors <= 1,
@@ -54,9 +54,10 @@ part def Carrier {
         report.documents[0].diagnostics
     );
     assert!(
-        report.documents[0].diagnostics.iter().any(|d| {
-            d.code == "missing_semicolon" || d.code == "recovery_cascade_suppressed"
-        }),
+        report.documents[0]
+            .diagnostics
+            .iter()
+            .any(|d| { d.code == "missing_semicolon" || d.code == "recovery_cascade_suppressed" }),
         "expected a root parse diagnostic: {:?}",
         report.documents[0].diagnostics
     );
@@ -93,7 +94,10 @@ fn check_keeps_semantic_warnings_after_parse_error_by_default() {
     .expect("validation report");
 
     assert!(
-        report.documents[0].diagnostics.iter().any(|d| d.code == "unresolved_type_reference"),
+        report.documents[0]
+            .diagnostics
+            .iter()
+            .any(|d| d.code == "unresolved_type_reference"),
         "expected semantic unresolved_type_reference after parse error by default: {:?}",
         report.documents[0].diagnostics
     );
