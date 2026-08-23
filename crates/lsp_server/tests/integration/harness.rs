@@ -103,6 +103,45 @@ pub fn lsp_barrier(stdin: &mut std::process::ChildStdin, stdout: &mut std::proce
     let _ = read_response(stdout, id).expect("workspace barrier response");
 }
 
+/// Deterministic publication barrier: block until the server publishes diagnostics for `uri`.
+///
+/// `didOpen`/`didChange` of a new or changed document schedules a relink, and the relink task
+/// owns diagnostic publication: it publishes only after the fully resolved graph has been
+/// committed to the session publication (the monotonic version hosts report to clients).
+/// Blocking on that `textDocument/publishDiagnostics` notification therefore observes the
+/// publication barrier itself, instead of guessing at wall-clock indexing latency with a
+/// sleep/retry loop.
+///
+/// Call this before any request whose `read_response` would otherwise discard the notification.
+pub fn wait_for_publication(stdout: &mut std::process::ChildStdout, uri: &str) {
+    wait_for_publications(stdout, &[uri]);
+}
+
+/// [`wait_for_publication`] for several documents whose publications may arrive in any order.
+pub fn wait_for_publications(stdout: &mut std::process::ChildStdout, uris: &[&str]) {
+    let mut pending: Vec<String> = uris.iter().map(|uri| normalized_uri(uri)).collect();
+    while !pending.is_empty() {
+        let msg = read_message(stdout).unwrap_or_else(|| {
+            panic!("server closed before publishing diagnostics for {pending:?}")
+        });
+        let json: serde_json::Value = match serde_json::from_str(&msg) {
+            Ok(json) => json,
+            Err(_) => continue,
+        };
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        if let Some(published) = json["params"]["uri"].as_str().map(normalized_uri) {
+            pending.retain(|uri| *uri != published);
+        }
+    }
+}
+
+/// Compare URIs the way the server may re-serialize them when publishing.
+fn normalized_uri(uri: &str) -> String {
+    uri.trim_end_matches('/').to_ascii_lowercase()
+}
+
 pub struct TestSession {
     child: Child,
     stdin: std::process::ChildStdin,
