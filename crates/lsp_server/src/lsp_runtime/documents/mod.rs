@@ -65,12 +65,11 @@ async fn publish_semantic_change(
         })
         .cloned()
         .collect::<Vec<_>>();
-    let mut diagnostic_uris = crate::session::import_graph::affected_diagnostic_documents(
-        old.published_model(),
-        workspace_uris,
-        &changed_uri,
-    )
-    .into_uris();
+    let mut diagnostic_uris = old
+        .published_model()
+        .dependencies()
+        .workspace_documents_affected_by(workspace_uris, &changed_uri)
+        .into_uris();
     if !diagnostic_uris.contains(&changed_uri) {
         diagnostic_uris.push(changed_uri);
     }

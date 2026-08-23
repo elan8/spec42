@@ -82,7 +82,7 @@ pub(crate) async fn initialized(
             .log_message(MessageType::INFO, format!("{} initialized", server_name))
             .await;
     }
-    let scan_roots = if crate::session::library_closure::library_full_scan_enabled() {
+    let scan_roots = if crate::common::util::library_full_scan_enabled() {
         scan_roots(&workspace_roots, &library_paths)
     } else {
         workspace_roots.clone()
@@ -147,12 +147,15 @@ pub(crate) async fn initialized(
         let (_library_parsed_count, _library_total_count, parsed_entries) = {
             let closure_services = services.clone();
             let library_entries = match tokio::task::spawn_blocking(move || {
-                crate::session::library_closure::load_library_closure_documents(
-                    &workspace_parsed,
-                    &library_paths_for_closure,
-                    &standard_library_paths,
-                    &closure_services,
-                )
+                closure_services
+                    .library
+                    .resolve_for_roots(
+                        &workspace_parsed,
+                        &library_paths_for_closure,
+                        &standard_library_paths,
+                        &sysml_query::library::LibraryClosureOptions::default(),
+                    )
+                    .map_err(|error| error.to_string())
             })
             .await
             {
@@ -249,7 +252,7 @@ pub(crate) async fn initialized(
             }
 
             let snap = handle.snapshot();
-            if !crate::session::library_closure::library_full_scan_enabled()
+            if !crate::common::util::library_full_scan_enabled()
                 && !snap.library_paths.is_empty()
             {
                 let library_paths_for_search = snap.library_paths.clone();

@@ -239,6 +239,14 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
     language_service::symbol_hover_markdown(entry, show_location)
 }
 
+/// Whether the host was asked to admit whole library trees instead of the import closure.
+///
+/// Host configuration, read once here: the closure service decides what a workspace needs, and
+/// this only says whether the host asks it at all.
+pub(crate) fn library_full_scan_enabled() -> bool {
+    env_flag_enabled("SPEC42_LIBRARY_FULL_SCAN", false)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{

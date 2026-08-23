@@ -141,6 +141,18 @@ fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
         0,
         "LSP code must not reconstruct semantic dependencies by walking parser imports"
     );
+    // The selection itself is the facade's `workspace_documents_affected_by`; the host owns no
+    // second one, not even a wrapper that re-decides when to over-invalidate.
+    assert_eq!(
+        count_occurrences(&root, "fn affected_diagnostic_documents"),
+        0,
+        "republish scope is a typed facade query, not a host derivation"
+    );
+    assert_eq!(
+        count_occurrences(&root, "workspace_documents_affected_by"),
+        1,
+        "one call site decides what a relink republishes"
+    );
 }
 
 fn count_pattern(root: &Path, pattern: &str) -> usize {
@@ -218,13 +230,21 @@ fn library_closure_never_runs_on_the_edit_path() {
         "session/handle.rs",
     ] {
         let source = std::fs::read_to_string(src.join(file)).expect("read source");
-        for forbidden in [".library.resolve(", "load_library_closure_documents("] {
+        for forbidden in [".library.resolve(", ".library.resolve_for_roots("] {
             assert!(
                 !source.contains(forbidden),
                 "{file} resolves the library closure on the edit path: {forbidden}"
             );
         }
     }
+
+    // Closure loading is the facade's; the host names roots and asks. A host-side loader would be
+    // a second place for the edit path to reach it from.
+    assert_eq!(
+        count_occurrences(&src, "fn load_library_closure_documents"),
+        0,
+        "library closure loading is a typed facade query, not a host module"
+    );
 }
 
 /// No two functions in the editor-host crates may share a body.

@@ -2,6 +2,8 @@
 
 use std::fmt;
 
+use crate::source::Url;
+
 pub use sysml_resolution::{
     ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation, AnnotationForm,
@@ -319,6 +321,81 @@ impl DependencyQueries<'_> {
         changed_document: &str,
     ) -> QueryOutcome<Box<[AffectedDocument]>> {
         self.model.affected_documents(changed_document)
+    }
+
+    /// The workspace documents whose diagnostics may change when `provider` changes.
+    ///
+    /// The derivation a host needs to decide what to republish, answered once here rather than
+    /// per host: the publication's settled import and alias facts name the dependents, and the
+    /// answer is narrowed to workspace documents because library documents are not republished.
+    ///
+    /// `workspace` is the host's own set of workspace document identities. It is used only for
+    /// the conservative answer, which stays explicit in the result rather than being indexed:
+    /// only a publication that could not settle the dependency graph produces a conservative
+    /// answer, and a caller can always tell over-invalidation from an exact empty answer.
+    pub fn workspace_documents_affected_by(
+        &self,
+        workspace: impl IntoIterator<Item = Url>,
+        provider: &Url,
+    ) -> AffectedWorkspaceDocuments {
+        let mut all_workspace = workspace.into_iter().collect::<Vec<_>>();
+        all_workspace.sort();
+        all_workspace.dedup();
+        all_workspace.retain(|uri| uri != provider);
+
+        let documents = match self.affected_documents(provider.as_str()) {
+            QueryOutcome::Resolved(documents) => documents,
+            QueryOutcome::Recovered(_)
+            | QueryOutcome::UnsupportedWith(_)
+            | QueryOutcome::Unresolved
+            | QueryOutcome::Ambiguous(_)
+            | QueryOutcome::Unsupported
+            | QueryOutcome::Recovery
+            | QueryOutcome::Incomplete => {
+                return AffectedWorkspaceDocuments {
+                    uris: all_workspace,
+                    conservative: true,
+                }
+            }
+        };
+
+        let mut uris = documents
+            .iter()
+            .filter(|document| document.source == ElementSource::Workspace)
+            .filter_map(|document| Url::parse(&document.identity).ok())
+            .collect::<Vec<_>>();
+        uris.sort();
+        uris.dedup();
+        AffectedWorkspaceDocuments {
+            uris,
+            conservative: false,
+        }
+    }
+}
+
+/// Which workspace documents a host must republish after one document changed.
+///
+/// `is_conservative` is the explicit unsettled state: the publication could not settle the
+/// dependency graph, so every workspace document is named rather than a narrower set being
+/// guessed. It is never a resolved answer wearing an exact set's clothes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AffectedWorkspaceDocuments {
+    uris: Vec<Url>,
+    conservative: bool,
+}
+
+impl AffectedWorkspaceDocuments {
+    /// True when the dependency graph was not settled and the answer over-invalidates.
+    pub fn is_conservative(&self) -> bool {
+        self.conservative
+    }
+
+    pub fn uris(&self) -> &[Url] {
+        &self.uris
+    }
+
+    pub fn into_uris(self) -> Vec<Url> {
+        self.uris
     }
 }
 
