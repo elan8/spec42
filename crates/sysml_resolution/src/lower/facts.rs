@@ -619,7 +619,7 @@ pub(crate) enum ExpressionGrammar {
 ///
 /// This is an *authored* fact -- what the source says -- and deliberately not a classified one.
 /// Lowering used to call `classify_expression` here and
-/// store the resulting `ExpressionEvalShape`, which made phase 2 a writer of evaluation's own
+/// store the resulting evaluation shape, which made phase 2 a writer of evaluation's own
 /// vocabulary: two phases decided what an expression means, and only one of them was named
 /// evaluation. The classification now happens exactly once, in `evaluate/`, over this record.
 ///
