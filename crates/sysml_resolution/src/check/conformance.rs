@@ -28,7 +28,7 @@ use crate::diagnose::document_range;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
 use crate::model::render as writer;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -309,7 +309,7 @@ pub(crate) fn families_are_comparable(source: Family, target: Family) -> bool {
     descends_from(target, source) || descends_from(source, target)
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// The family and role of one declaration, as opposed to of one `DeclarationKind`.
     ///
     /// A positional connector end is deliberately unclassified. The lowering gives every `end`

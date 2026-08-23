@@ -14,7 +14,7 @@ use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
 use crate::model::render as writer;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentId;
@@ -255,7 +255,7 @@ pub(crate) fn slice_range<'a, T>(
     }
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// The `::`-joined owner path of a declaration.
     ///
     /// A display convenience, not an identity: an anonymous ancestor contributes no segment, so

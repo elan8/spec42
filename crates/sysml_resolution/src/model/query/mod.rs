@@ -14,6 +14,7 @@ use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::PublicationCompleteness;
 use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -122,7 +123,7 @@ use source_identity::SourceRole;
 use spec42_constraint_manifest::ElementDerivedOwnerKind;
 use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     pub(crate) fn completeness(&self) -> PublicCompleteness {
         match self.metadata.completeness {
             PublicationCompleteness::Complete => PublicCompleteness::Complete,
@@ -710,7 +711,9 @@ impl ResolvedSemanticModel {
         }
         Ok(by_document)
     }
+}
 
+impl ResolvedSemanticModel {
     /// The diagnostics one document owns, as the settled slice rather than a filtered scan.
     ///
     /// A document this publication did not admit has no diagnostics, which is a different answer
@@ -718,8 +721,10 @@ impl ResolvedSemanticModel {
     /// this model, and the empty slice says so alongside the publication's completeness.
     pub(crate) fn published_document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
         let diagnostics = match self.documents.document(&self.storage, document) {
-            Some(id) => match self.diagnostics_by_document.get(id.index()) {
-                Some((start, end)) => self.diagnostics[*start as usize..*end as usize].into(),
+            Some(id) => match self.diagnostics.by_document.get(id.index()) {
+                Some((start, end)) => {
+                    self.diagnostics.diagnostics[*start as usize..*end as usize].into()
+                }
                 None => Box::default(),
             },
             None => Box::default(),
@@ -733,14 +738,13 @@ impl ResolvedSemanticModel {
     pub(crate) fn published_diagnostics(&self) -> PublishedDiagnostics {
         PublishedDiagnostics {
             completeness: self.completeness(),
-            diagnostics: self.diagnostics.clone(),
+            diagnostics: self.diagnostics.diagnostics.clone(),
         }
     }
 
     pub(crate) fn diagnostics(&self) -> &[Diagnostic] {
-        &self.diagnostics
+        &self.diagnostics.diagnostics
     }
-
     pub(crate) fn write_semantic_sexpr(
         &self,
         source_digest: &source_identity::RootDigest,
@@ -767,7 +771,9 @@ impl ResolvedSemanticModel {
     pub(crate) fn write_types_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
         writer::write_types_only(self, output)
     }
+}
 
+impl<D> SemanticModel<D> {
     /// Resolves one published identity to the single declaration it names.
     ///
     /// Every type query needs this, and every one of them owes the caller the same three explicit

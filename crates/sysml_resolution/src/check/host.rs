@@ -30,7 +30,7 @@ use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
 use crate::model::render as writer;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -252,7 +252,7 @@ pub(crate) fn names_must_be_distinguishable(
         || (is_namespace_kind(owner) && left.1 == Role::Definition && right.1 == Role::Definition)
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// Appends every host-reported conformance diagnostic authored in `document`.
     pub(crate) fn collect_host_conformance(
         &self,

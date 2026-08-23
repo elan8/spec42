@@ -42,16 +42,18 @@
 use crate::diagnose::document_range;
 use crate::index::documents::record_visited_index_entries;
 use crate::index::types;
+use crate::index::types::TypeIndex;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::render as writer;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
 use crate::model::SymbolId;
 use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
 use crate::AuthoredUnit;
 use crate::ElementEvaluation;
@@ -276,6 +278,16 @@ pub(crate) struct ExpressionIndex {
     pub(crate) invocations: Box<[SettledInvocation]>,
 }
 
+/// The settled facts expression indexing reads, borrowed from the phase products that own them.
+///
+/// Phase 6 builds this index before any model value exists, so it names its inputs instead of
+/// taking a model whose remaining fields would not yet be settled.
+pub(crate) struct ExpressionInputs<'a> {
+    pub(crate) storage: &'a SemanticModelStorage,
+    pub(crate) resolution: &'a ResolutionResults,
+    pub(crate) types: &'a TypeIndex,
+}
+
 impl ExpressionIndex {
     /// Assembles the settled expression facts of one publication.
     ///
@@ -283,10 +295,10 @@ impl ExpressionIndex {
     /// condition has an outcome to publish. The authored conditions are still in storage; what is
     /// absent is any claim about what they evaluate to.
     pub(crate) fn build(
-        model: &ResolvedSemanticModel,
+        model: &ExpressionInputs<'_>,
         filters: Option<Box<[SettledFilter]>>,
     ) -> Result<Self, ResolutionError> {
-        let storage = &model.storage;
+        let storage = model.storage;
         let count = storage.declarations.len();
         let anchors = LibraryAnchors::build(storage);
         let catalog = UnitCatalog::build(model, &anchors)?;
@@ -504,13 +516,13 @@ pub(crate) struct UnitCatalog {
 
 impl UnitCatalog {
     pub(crate) fn build(
-        model: &ResolvedSemanticModel,
+        model: &ExpressionInputs<'_>,
         anchors: &LibraryAnchors,
     ) -> Result<Self, ResolutionError> {
         let Some(measurement_unit) = anchors.measurement_unit else {
             return Ok(Self::default());
         };
-        let storage = &model.storage;
+        let storage = model.storage;
         let mut by_symbol = Vec::new();
         let mut dimensions = std::collections::BTreeMap::new();
         for index in 0..storage.declarations.len() {
@@ -523,7 +535,7 @@ impl UnitCatalog {
                 .direct_types(id)
                 .iter()
                 .map(|(target, _)| *target)
-                .filter(|target| conforms(model, *target, measurement_unit))
+                .filter(|target| conforms(model.types, *target, measurement_unit))
                 .collect::<Vec<_>>();
             if unit_dimensions.is_empty() {
                 continue;
@@ -677,13 +689,9 @@ pub(crate) fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
 }
 
 /// Whether `specific` is `general` or specializes it, in any specialization scope.
-pub(crate) fn conforms(
-    model: &ResolvedSemanticModel,
-    specific: DeclarationId,
-    general: DeclarationId,
-) -> bool {
+pub(crate) fn conforms(types: &TypeIndex, specific: DeclarationId, general: DeclarationId) -> bool {
     specific == general
-        || model.types.specialization().reaches(
+        || types.specialization().reaches(
             specific,
             general,
             types::SpecializationScope::AnySpecialization,
@@ -707,14 +715,14 @@ pub(crate) struct MeasurementReferences {
 
 impl MeasurementReferences {
     pub(crate) fn build(
-        model: &ResolvedSemanticModel,
+        model: &ExpressionInputs<'_>,
         anchors: &LibraryAnchors,
     ) -> Result<Self, ResolutionError> {
         let Some(root) = anchors.measurement_reference else {
             return Ok(Self::default());
         };
         let quantity_value = anchors.quantity_value;
-        let storage = &model.storage;
+        let storage = model.storage;
         let mut declared = std::collections::BTreeMap::new();
         for index in 0..storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
@@ -743,7 +751,7 @@ impl MeasurementReferences {
     /// What one declaration's own type requires of its values.
     pub(crate) fn required_for(
         &self,
-        model: &ResolvedSemanticModel,
+        model: &ExpressionInputs<'_>,
         declaration: DeclarationId,
     ) -> RequiredMeasurement {
         let Some(quantity_value) = self.quantity_value else {
@@ -752,7 +760,7 @@ impl MeasurementReferences {
         let mut applicable = false;
         let mut candidates = Vec::new();
         for (type_id, _) in model.types.effective_types(declaration) {
-            if !conforms(model, *type_id, quantity_value) {
+            if !conforms(model.types, *type_id, quantity_value) {
                 continue;
             }
             applicable = true;
@@ -803,7 +811,7 @@ impl MeasurementReferences {
     /// The `(type, measurement-reference feature)` statements `type_id` and its supertypes make.
     pub(crate) fn statements_for(
         &self,
-        model: &ResolvedSemanticModel,
+        model: &ExpressionInputs<'_>,
         type_id: DeclarationId,
     ) -> Vec<(DeclarationId, DeclarationId)> {
         let mut found = Vec::new();
@@ -819,7 +827,7 @@ impl MeasurementReferences {
     }
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// The settled evaluation of one element: its state, its authored units, and what its type
     /// requires of them.
     ///

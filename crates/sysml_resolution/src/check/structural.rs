@@ -22,7 +22,7 @@
 use crate::check::conformance;
 use crate::diagnose::document_range;
 use crate::lower::facts::ParameterDirection;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentId;
@@ -90,7 +90,7 @@ pub(crate) enum Uniqueness {
     UniqueByDefault,
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     pub(crate) fn uniqueness(&self, declaration: DeclarationId) -> Uniqueness {
         match self
             .storage

@@ -3,7 +3,7 @@
 use crate::diagnostics::UNCODED_PARSE_ERROR;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -23,7 +23,7 @@ use sysml_v2_parser::ast::Span;
 use sysml_v2_parser::ParseError;
 use sysml_v2_parser::ParsedDocument;
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// Every diagnostic this publication settled, as facts rather than rendered text.
     ///
     /// Derived once while the model is sealed, for the same reason the other indexes are: a query

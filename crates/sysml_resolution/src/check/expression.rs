@@ -27,9 +27,10 @@ use crate::diagnose::document_range;
 use crate::index::expressions::conforms;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
+use crate::index::types::TypeIndex;
 use crate::lower::facts::FilterForm;
 use crate::model::render as writer;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -61,15 +62,11 @@ pub(crate) const RELATED_CALLEE: &str = "Calculation invoked here.";
 /// authored natural number. What is genuinely wrong is a value from an unrelated branch of the
 /// type hierarchy -- a string where a number belongs, a boolean where a mass does -- and those are
 /// exactly the pairs with no path between them.
-pub(crate) fn comparable(
-    model: &ResolvedSemanticModel,
-    left: DeclarationId,
-    right: DeclarationId,
-) -> bool {
-    conforms(model, left, right) || conforms(model, right, left)
+pub(crate) fn comparable(types: &TypeIndex, left: DeclarationId, right: DeclarationId) -> bool {
+    conforms(types, left, right) || conforms(types, right, left)
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// Appends every expression-conformance diagnostic authored in `document`.
     ///
     /// Ordering is the caller's: [`Self::derive_diagnostics`] sorts each document's diagnostics by
@@ -208,7 +205,7 @@ impl ResolvedSemanticModel {
         if declared.peek().is_none() {
             return false;
         }
-        !declared.any(|target| comparable(self, target, value_type))
+        !declared.any(|target| comparable(&self.types, target, value_type))
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
@@ -273,7 +270,7 @@ impl ResolvedSemanticModel {
                     if dimensions.iter().any(|dimension| {
                         expected
                             .iter()
-                            .any(|want| conforms(self, *dimension, *want))
+                            .any(|want| conforms(&self.types, *dimension, *want))
                     }) {
                         continue;
                     }

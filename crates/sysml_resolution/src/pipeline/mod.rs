@@ -12,6 +12,7 @@ use crate::model::resolver;
 use crate::pipeline::schedule::{source_admission_rank, BuildPhaseDurations, BuildSchedule};
 use crate::resolve::library_seed::SettledLibrary;
 
+pub(crate) mod phase;
 pub(crate) mod schedule;
 
 #[derive(Debug, Clone)]
@@ -129,9 +130,13 @@ impl SemanticModelBuildCoordinator {
         let storage = builder.freeze();
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
-        let model = storage
-            .resolve(policy, library.map(|library| &library.settled), reported)
-            .map_err(|_| CoordinatorError::ConstructionFailed)?;
+        let model = phase::build_model(
+            storage,
+            policy,
+            library.map(|library| &library.settled),
+            reported,
+        )
+        .map_err(|_| CoordinatorError::ConstructionFailed)?;
         let resolution = resolution_started.elapsed();
         Ok((
             model,

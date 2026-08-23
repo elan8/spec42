@@ -18,7 +18,9 @@ use crate::resolve::build_ancestor_closures;
 use crate::resolve::names::NameIndex;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::resolve::results::SolverStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -755,6 +757,48 @@ pub(crate) fn synthesize_implied_alias_bindings<R: ResolutionReferenceFact>(
         }
     }
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Every implied relationship this publication settles, as one value.
+///
+/// Phase 4 reads the frozen phase-3 product and returns a complete store; it never writes back
+/// into the value the solver returned, so no reader can observe a partially synthesized set.
+/// Synthesis only runs on a converged solve: an unconverged one has no settled outcome to derive
+/// an implied relationship from, and guessing one would publish a fact that is not resolved.
+pub(crate) fn synthesize_implied_relationships(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    anchors: &LibrarySpecializationAnchorFacts,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    if !matches!(resolution.solver_status, SolverStatus::Converged) {
+        return Ok(resolution.implied_relationships.clone());
+    }
+    let mut implied = resolution.implied_relationships.to_vec();
+    implied.extend(
+        synthesize_generated_library_specializations(
+            storage,
+            &storage.references,
+            &resolution.outcomes,
+            anchors,
+        )?
+        .into_vec(),
+    );
+    implied.extend(
+        synthesize_generated_library_redefinitions(storage, &storage.references, anchors)?
+            .into_vec(),
+    );
+    implied.extend(
+        synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
+    );
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
     implied.dedup();
     Ok(implied.into_boxed_slice())
 }

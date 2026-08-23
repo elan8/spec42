@@ -22,7 +22,7 @@ use crate::lower::facts::FilterPredicate;
 use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::PublicationCompleteness;
-use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::ReferenceKind;
@@ -136,7 +136,7 @@ pub(crate) fn is_verdict_bearing(kind: ElementKind) -> bool {
     )
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     pub(crate) fn view_selection(
         &self,
         view: &SymbolIdentity,

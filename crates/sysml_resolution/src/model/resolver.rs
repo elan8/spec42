@@ -10,9 +10,12 @@
 use crate::diagnose::parser_diagnostic_category;
 #[cfg(test)]
 use crate::evaluate::classify::ExpressionEvalShape;
+#[cfg(test)]
 use crate::evaluate::compute_evaluation;
 use crate::evaluate::EvaluationFact;
+#[cfg(test)]
 use crate::evaluate::SettledEvaluation;
+#[cfg(test)]
 use crate::evaluation::EvaluationPolicy;
 #[cfg(test)]
 use crate::evaluation::EvaluationState;
@@ -75,12 +78,10 @@ use crate::resolve::implied::generated_conditional_library_specialization_rule_c
 use crate::resolve::implied::generated_library_redefinition_rule_count;
 #[cfg(test)]
 use crate::resolve::implied::generated_library_specialization_rule_count;
+#[cfg(test)]
 use crate::resolve::implied::library_specialization_anchors;
 #[cfg(test)]
 use crate::resolve::implied::library_specialization_rules;
-use crate::resolve::implied::synthesize_feature_membership_type_featurings;
-use crate::resolve::implied::synthesize_generated_library_redefinitions;
-use crate::resolve::implied::synthesize_generated_library_specializations;
 #[cfg(test)]
 use crate::resolve::implied::LibraryRedefinitionRule;
 #[cfg(test)]
@@ -105,6 +106,7 @@ use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
 #[cfg(test)]
 use crate::resolve::names::NameKey;
+#[cfg(test)]
 use crate::resolve::resolve_dense;
 #[cfg(test)]
 use crate::resolve::resolve_dense_with_limit;
@@ -115,6 +117,7 @@ use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
 #[cfg(test)]
 use crate::resolve::results::ResolutionWork;
+#[cfg(test)]
 use crate::resolve::results::SolverStatus;
 #[cfg(test)]
 use crate::resolve::ResolutionReferenceFact;
@@ -136,8 +139,34 @@ pub(crate) mod details;
 /// The note attached to each declaration an ambiguous reference could have named.
 pub(crate) const RELATED_AMBIGUOUS_CANDIDATE: &str = "Candidate this reference could name.";
 
+/// The diagnostics of a publication that has not reached the diagnose barrier yet.
+///
+/// A distinct type rather than an empty store: an empty diagnostic sequence is a real answer
+/// ("this model reported nothing"), and a model that has not derived its diagnostics must not be
+/// able to give it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct NotYetDiagnosed;
+
+/// The settled phase-8 product, carried as one value so the sequence and its per-document ranges
+/// are published together or not at all.
+#[derive(Debug, Default)]
+pub(crate) struct SettledDiagnostics {
+    pub(crate) diagnostics: Box<[Diagnostic]>,
+    /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentId`.
+    ///
+    /// The derivation groups one document's diagnostics contiguously, so a document-scoped query
+    /// is a slice of the settled sequence rather than a scan of it. Built at the same barrier so
+    /// the two can never disagree.
+    pub(crate) by_document: Box<[(u32, u32)]>,
+}
+
+/// The assembled model, parameterised by how far the diagnose barrier has got.
+///
+/// `Indexed` is the phase-6 product; `ResolvedSemanticModel` is the phase-8 one. Every read-only
+/// method that does not consult diagnostics is available on both, and no code path can construct
+/// the latter without a settled `SettledDiagnostics` value to put in it.
 #[derive(Debug)]
-pub(crate) struct ResolvedSemanticModel {
+pub(crate) struct SemanticModel<D> {
     pub(crate) storage: SemanticModelStorage,
     pub(crate) direct_names: NameIndex,
     pub(crate) effective_imports: NameIndex,
@@ -156,15 +185,15 @@ pub(crate) struct ResolvedSemanticModel {
     pub(crate) expressions: expression::ExpressionIndex,
     /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
     /// a broken storage invariant fails the build instead of a later query.
-    pub(crate) diagnostics: Box<[Diagnostic]>,
-    /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentId`.
-    ///
-    /// The derivation groups one document's diagnostics contiguously, so a document-scoped query
-    /// is a slice of the settled sequence rather than a scan of it. Built at the same barrier so
-    /// the two can never disagree.
-    pub(crate) diagnostics_by_document: Box<[(u32, u32)]>,
+    pub(crate) diagnostics: D,
     pub(crate) metadata: PublicationMetadata,
 }
+
+/// The phase-6 product: every index settled, diagnostics not yet derived.
+pub(crate) type Indexed = SemanticModel<NotYetDiagnosed>;
+
+/// The phase-8 product: the only shape the query surface and the facade ever see.
+pub(crate) type ResolvedSemanticModel = SemanticModel<SettledDiagnostics>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PublicationPhase {
@@ -186,7 +215,7 @@ pub(crate) struct PublicationMetadata {
     pub(crate) has_evaluation: bool,
 }
 
-impl ResolvedSemanticModel {
+impl<D> SemanticModel<D> {
     /// Everything a later publication needs to reuse this one as a library.
     ///
     /// The parsed documents come out by reference-counted handle rather than by copy, so reuse
@@ -248,134 +277,6 @@ impl ResolvedSemanticModel {
             root_names,
             unsettled_roots,
         })
-    }
-}
-
-impl SemanticModelStorage {
-    pub(crate) fn resolve(
-        self,
-        policy: EvaluationPolicy,
-        library: Option<&SettledLibrary>,
-        reported: &[Box<str>],
-    ) -> Result<ResolvedSemanticModel, ResolutionError> {
-        let has_recovery = self
-            .documents
-            .iter()
-            .any(|document| !document.parse_errors.is_empty())
-            || !self.recovery.is_empty();
-        let has_unsupported = !self.unsupported.is_empty();
-        let seed = library
-            .filter(|library| library.admits(&self))
-            .map(|library| library.outcomes.as_ref());
-        let (direct_names, effective_imports, memberships, mut resolution) = resolve_dense(
-            &self.declarations,
-            &self.memberships,
-            &self.paths,
-            &self.references,
-            seed,
-        )?;
-        // `checkPartDefinitionSpecialization` is an implied semantic fact, so its anchor and
-        // relationships are settled here, before every index and diagnostic consumer below. The
-        // lookup is owned by semantic construction: neither a renderer nor a validation rule gets
-        // to rediscover `Parts::Part` from text or a display path.
-        let library_anchors = library_specialization_anchors(&self);
-        if matches!(resolution.solver_status, SolverStatus::Converged) {
-            let mut implied = resolution.implied_relationships.into_vec();
-            implied.extend(
-                synthesize_generated_library_specializations(
-                    &self,
-                    &self.references,
-                    &resolution.outcomes,
-                    &library_anchors,
-                )?
-                .into_vec(),
-            );
-            implied.extend(
-                synthesize_generated_library_redefinitions(
-                    &self,
-                    &self.references,
-                    &library_anchors,
-                )?
-                .into_vec(),
-            );
-            implied.extend(
-                synthesize_feature_membership_type_featurings(&self, &self.references)?.into_vec(),
-            );
-            implied.sort_by_key(|relationship| {
-                (
-                    relationship.kind,
-                    relationship.source.0,
-                    relationship.target.0,
-                )
-            });
-            implied.dedup();
-            resolution.implied_relationships = implied.into_boxed_slice();
-        }
-        resolution.library_specialization_anchors = library_anchors;
-        let completeness = if has_recovery {
-            PublicationCompleteness::ParseRecovery
-        } else if has_unsupported {
-            PublicationCompleteness::UnsupportedSyntax
-        } else if !matches!(resolution.solver_status, SolverStatus::Converged) {
-            PublicationCompleteness::NonConverged
-        } else {
-            PublicationCompleteness::Complete
-        };
-        let settled = compute_evaluation(&self, &resolution, policy);
-        let (evaluation, filter_conditions) = match settled {
-            SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
-            SettledEvaluation::Vacuous => (Box::default(), None),
-        };
-        let has_evaluation = !evaluation.is_empty();
-        let identities = IdentityIndex::build(&self)?;
-        let documents = DocumentIndex::build(&self)?;
-        let reverse_references =
-            ReverseReferenceIndex::build(self.declarations.len(), &resolution)?;
-        let effective_scopes = EffectiveScopeIndex::build(
-            self.declarations.len(),
-            &direct_names,
-            &effective_imports,
-            &resolution.inherited_names,
-        )?;
-        let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
-        let bindings = binding::BindingConnectorIndex::build(&self, &resolution)?;
-        // A barrier product, not a solver family: every type fact here is derived from settled
-        // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
-        // ancestor closure for inherited names stays separate and unchanged -- widening that one
-        // would silently change name resolution.
-        let type_facts = types::TypeIndex::build(&self, &resolution)?;
-        let mut model = ResolvedSemanticModel {
-            storage: self,
-            direct_names,
-            effective_imports,
-            identities,
-            documents,
-            memberships,
-            reverse_references,
-            effective_scopes,
-            facts,
-            bindings,
-            types: type_facts,
-            resolution,
-            evaluation,
-            expressions: expression::ExpressionIndex::default(),
-            diagnostics: Box::default(),
-            diagnostics_by_document: Box::default(),
-            metadata: PublicationMetadata {
-                phase: PublicationPhase::Resolved,
-                completeness,
-                has_evaluation,
-            },
-        };
-        // Expression facts read the type closure and the settled evaluation, so they are assembled
-        // once the model holds both, and before diagnostics, which report what they settled.
-        model.expressions = expression::ExpressionIndex::build(&model, filter_conditions)?;
-        // Last barrier product: diagnostics report what every earlier phase settled, so they are
-        // derived from the assembled model rather than from any one phase's intermediate state.
-        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics(reported)?;
-        model.diagnostics = diagnostics;
-        model.diagnostics_by_document = diagnostics_by_document;
-        Ok(model)
     }
 }
 

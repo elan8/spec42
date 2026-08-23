@@ -72,6 +72,21 @@ impl ResolutionResults {
         range.slice(&self.ambiguous_candidates).unwrap_or_default()
     }
 
+    /// The phase-4 settle: implied relationships and library anchors arrive together, by moving
+    /// the phase-3 value into a new one rather than writing back into the solver's product. No
+    /// reader can observe the pre-synthesis state, because it no longer exists once this returns.
+    pub(crate) fn settle(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        library_specialization_anchors: LibrarySpecializationAnchorFacts,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            library_specialization_anchors,
+            ..self
+        }
+    }
+
     pub(crate) fn library_specialization_anchor(
         &self,
         rule_id: &str,

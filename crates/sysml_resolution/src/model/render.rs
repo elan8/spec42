@@ -5,24 +5,10 @@
 
 use crate::diagnose::document_range;
 #[cfg(test)]
-use crate::evaluate::compute_evaluation;
-#[cfg(test)]
-use crate::evaluate::SettledEvaluation;
-#[cfg(test)]
 #[cfg(test)]
 #[cfg(test)]
 use crate::evaluation::EvaluationPolicy;
-#[cfg(test)]
-use crate::index::bindings as binding;
-#[cfg(test)]
-use crate::index::documents::DocumentIndex;
-#[cfg(test)]
-use crate::index::elements as inspection;
 use crate::index::expressions as expression;
-#[cfg(test)]
-use crate::index::identity::IdentityIndex;
-#[cfg(test)]
-use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types;
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredImportFacts;
@@ -38,10 +24,9 @@ use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
 #[cfg(test)]
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::PublicationCompleteness;
-#[cfg(test)]
-use crate::model::resolver::PublicationMetadata;
 use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -50,10 +35,6 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
-#[cfg(test)]
-use crate::resolve::names::EffectiveScopeIndex;
-#[cfg(test)]
-use crate::resolve::resolve_dense;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -1320,7 +1301,7 @@ pub(crate) fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt:
     )
 }
 
-pub(crate) fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
+pub(crate) fn document_identity<D>(model: &SemanticModel<D>, id: DocumentId) -> &str {
     model
         .storage
         .document(id)
@@ -1629,61 +1610,9 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
         };
-        let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
-            &storage.declarations,
-            &storage.memberships,
-            &storage.paths,
-            &storage.references,
-            None,
-        )
-        .unwrap();
-        let (evaluation, filter_conditions) =
-            match compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate) {
-                SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
-                SettledEvaluation::Vacuous => (Box::default(), None),
-            };
-        let identities = IdentityIndex::build(&storage).unwrap();
-        let documents = DocumentIndex::build(&storage).unwrap();
-        let reverse_references =
-            ReverseReferenceIndex::build(storage.declarations.len(), &resolution).unwrap();
-        let effective_scopes = EffectiveScopeIndex::build(
-            storage.declarations.len(),
-            &direct_names,
-            &effective_imports,
-            &resolution.inherited_names,
-        )
-        .unwrap();
-        let facts =
-            inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
-        let bindings = binding::BindingConnectorIndex::build(&storage, &resolution).unwrap();
-        let type_facts = types::TypeIndex::build(&storage, &resolution).unwrap();
-        let mut model = ResolvedSemanticModel {
-            storage,
-            direct_names,
-            effective_imports,
-            identities,
-            documents,
-            memberships,
-            reverse_references,
-            effective_scopes,
-            facts,
-            bindings,
-            types: type_facts,
-            resolution,
-            evaluation,
-            expressions: expression::ExpressionIndex::default(),
-            diagnostics: Box::default(),
-            diagnostics_by_document: Box::default(),
-            metadata: PublicationMetadata {
-                phase: PublicationPhase::Resolved,
-                completeness: PublicationCompleteness::Complete,
-                has_evaluation: false,
-            },
-        };
-        model.expressions = expression::ExpressionIndex::build(&model, filter_conditions).unwrap();
-        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics(&[]).unwrap();
-        model.diagnostics = diagnostics;
-        model.diagnostics_by_document = diagnostics_by_document;
+        let model =
+            crate::pipeline::phase::build_model(storage, EvaluationPolicy::Evaluate, None, &[])
+                .unwrap();
         let mut output = String::new();
         model
             .write_semantic_sexpr(
