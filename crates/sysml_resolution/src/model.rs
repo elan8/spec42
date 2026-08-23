@@ -24,54 +24,40 @@ use crate::lower::intern::{
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
-        ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
-        ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActorUsage,
-        AliasBody, AliasDef, Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage,
-        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember,
-        AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
-        AttributeUsage, Bind, BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
-        CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl, CaseUsage as ParserCaseUsage,
-        CommentAnnotation, ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef,
-        ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, ControlNodeDeclaration,
-        DefaultReferenceUsage, DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency,
-        DoAction, DocComment, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
-        EnumerationBodyElement, EnumerationUsage as ParserEnumerationUsage,
-        ExhibitState as ParserExhibitState, ExitAction, ExposeMember, Expression,
-        ExtendedDefinition, FeaturePrefixHead, FeatureRelationshipPart, FeatureValue,
-        FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
-        FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
-        FrameMember, GuardedSuccession, IfStmt, Import, ImportShape, InOut, InOutDecl,
+        ActorUsage, AliasBody, AliasDef, Allocate, AllocationDef,
+        AllocationUsage as ParserAllocationUsage, AnalysisCaseDef,
+        AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember, AssertConstraintMember,
+        Bind, BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
+        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, CommentAnnotation,
+        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
+        Dependency, DocComment, EndDecl, EndIdentity, ExposeMember, Expression, ExtendedDefinition,
+        FeaturePrefixHead, FeatureRelationshipPart, FeatureValue,
+        FeatureValueKind as ParserFeatureValueKind, FrameMember, Import, ImportShape,
         IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement, InterfaceEnd,
         InterfaceEndTarget, InterfacePart, InterfaceUsage as ParserInterfaceUsage,
-        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember,
-        KermlClassifierDecl, KermlConnectorEnd, KermlConnectorMember, KermlFeature,
-        KermlInvariantMember, KermlSuccessionMember, KermlTypeRelationship,
-        KermlTypeRelationshipKeyword, LibraryPackage, Membership,
+        InterfaceUsageBodyElement, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
+        KermlConnectorMember, KermlFeature, KermlInvariantMember, KermlSuccessionMember,
+        KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataBody,
         MetadataBodyElement, MetadataBodyUsage, MetadataDef, MetadataUsage as ParserMetadataUsage,
-        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
-        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OwnedCrossFeature, Package,
-        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformActionTarget,
-        PerformBody, PerformBodyElement, PerformInOutBinding, PortBody, PortBodyElement, PortDef,
-        PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
-        QualifiedIdentification, QualifiedReferenceId, RefDecl, ReferenceSeparator,
+        NamespaceDecl, Node, OwnedCrossFeature, Package, PackageBody, PackageBodyElement, PortBody,
+        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
+        PurposeMember, QualifiedIdentification, QualifiedReferenceId, ReferenceSeparator,
         RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
         RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
         RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload,
-        SequenceExpressionList, Span, StakeholderMember, StateDef, StateDefBody,
-        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
-        SubsettingRelationship, TerminateStmt, TextualRepresentation, ThenAction, ThenStmt,
-        ThenTarget, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage,
-        VariantUsageForm, VerificationCaseDef,
-        VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
-        ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
-        ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement,
+        SatisfiedRequirement, SatisfyRequirementUsage, SequenceExpressionList, Span,
+        StakeholderMember, SubjectDecl, SubsettingKind, SubsettingRelationship,
+        TextualRepresentation, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage, VariantUsageForm,
+        VerificationCaseDef, VerificationCaseUsage as ParserVerificationCaseUsage,
+        VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
+        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -1445,84 +1431,74 @@ pub(crate) enum EvaluatedValue {
     TypeMismatch,
 }
 
-/// True when a state def/usage's `entry`/`do`/`exit` action body (BNF `StateDefBody`, shared by
-/// `EntryAction`/`DoAction`/`ExitAction.body`) carries actual owned members, as opposed to a bare
-/// `;` terminator or an empty `{ }` -- both of which are legal no-op markers with nothing to
-/// represent when the action also has no bound `action_reference` (see
-/// `lower_state_entry_action`'s doc comment). Used to distinguish that genuinely-empty case from
-/// an inline `entry { <members> }` anonymous action body, which does carry content this typed AST
-/// shape has no field for and so stays an explicit unsupported diagnostic.
-fn state_action_body_has_content(body: &StateDefBody) -> bool {
-    matches!(body, StateDefBody::Brace { elements, .. } if !elements.is_empty())
-}
-
 #[derive(Debug)]
 pub(crate) struct SemanticModelStorage {
-    documents: Box<[CanonicalDocument]>,
-    declarations: Box<[Declaration]>,
+    pub(crate) documents: Box<[CanonicalDocument]>,
+    pub(crate) declarations: Box<[Declaration]>,
     /// Parallel to `declarations`, one entry per `DeclarationId`.
-    declaration_facts: Box<[DeclarationFacts]>,
-    memberships: Box<[MembershipRecord]>,
-    references: Box<[AuthoredReference]>,
-    documentation: Box<[DocumentationRecord]>,
-    feature_values: Box<[FeatureValueRecord]>,
-    unsupported: Box<[UnsupportedRecord]>,
-    recovery: Box<[RecoveryRecord]>,
-    symbols: SymbolTable,
-    paths: SymbolPathArena,
-    evaluation_facts: Box<[PendingEvaluationFact]>,
-    unit_tokens: Box<[AuthoredUnitToken]>,
-    filter_conditions: Box<[AuthoredFilterCondition]>,
-    invocations: Box<[AuthoredInvocation]>,
+    pub(crate) declaration_facts: Box<[DeclarationFacts]>,
+    pub(crate) memberships: Box<[MembershipRecord]>,
+    pub(crate) references: Box<[AuthoredReference]>,
+    pub(crate) documentation: Box<[DocumentationRecord]>,
+    pub(crate) feature_values: Box<[FeatureValueRecord]>,
+    pub(crate) unsupported: Box<[UnsupportedRecord]>,
+    pub(crate) recovery: Box<[RecoveryRecord]>,
+    pub(crate) symbols: SymbolTable,
+    pub(crate) paths: SymbolPathArena,
+    pub(crate) evaluation_facts: Box<[PendingEvaluationFact]>,
+    pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
+    pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
+    pub(crate) invocations: Box<[AuthoredInvocation]>,
 }
 
 impl SemanticModelStorage {
-    fn document(&self, id: DocumentId) -> Option<&CanonicalDocument> {
+    pub(crate) fn document(&self, id: DocumentId) -> Option<&CanonicalDocument> {
         self.documents.get(id.index())
     }
 
-    fn declaration(&self, id: DeclarationId) -> Option<&Declaration> {
+    pub(crate) fn declaration(&self, id: DeclarationId) -> Option<&Declaration> {
         self.declarations.get(id.index())
     }
 
-    fn declaration_facts(&self, id: DeclarationId) -> Option<&DeclarationFacts> {
+    pub(crate) fn declaration_facts(&self, id: DeclarationId) -> Option<&DeclarationFacts> {
         self.declaration_facts.get(id.index())
     }
 
-    fn symbol(&self, id: SymbolId) -> Option<&str> {
+    pub(crate) fn symbol(&self, id: SymbolId) -> Option<&str> {
         self.symbols.get(id)
     }
 }
 
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
-    documents: Vec<CanonicalDocument>,
-    document_index: HashTable<DocumentId>,
-    document_hash_builder: RandomState,
-    declarations: Vec<Declaration>,
-    declaration_facts: Vec<DeclarationFacts>,
-    memberships: Vec<MembershipRecord>,
-    references: Vec<AuthoredReference>,
-    documentation: Vec<DocumentationRecord>,
-    feature_values: Vec<FeatureValueRecord>,
-    unsupported: Vec<UnsupportedRecord>,
-    recovery: Vec<RecoveryRecord>,
-    evaluation_facts: Vec<PendingEvaluationFact>,
-    unit_tokens: Vec<AuthoredUnitToken>,
-    filter_conditions: Vec<AuthoredFilterCondition>,
-    invocations: Vec<AuthoredInvocation>,
-    symbols: SymbolTableBuilder,
-    paths: SymbolPathArenaBuilder,
-    path_scratch: Vec<SymbolId>,
-    next_anonymous_ordinals: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
-    next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
+    pub(crate) documents: Vec<CanonicalDocument>,
+    pub(crate) document_index: HashTable<DocumentId>,
+    pub(crate) document_hash_builder: RandomState,
+    pub(crate) declarations: Vec<Declaration>,
+    pub(crate) declaration_facts: Vec<DeclarationFacts>,
+    pub(crate) memberships: Vec<MembershipRecord>,
+    pub(crate) references: Vec<AuthoredReference>,
+    pub(crate) documentation: Vec<DocumentationRecord>,
+    pub(crate) feature_values: Vec<FeatureValueRecord>,
+    pub(crate) unsupported: Vec<UnsupportedRecord>,
+    pub(crate) recovery: Vec<RecoveryRecord>,
+    pub(crate) evaluation_facts: Vec<PendingEvaluationFact>,
+    pub(crate) unit_tokens: Vec<AuthoredUnitToken>,
+    pub(crate) filter_conditions: Vec<AuthoredFilterCondition>,
+    pub(crate) invocations: Vec<AuthoredInvocation>,
+    pub(crate) symbols: SymbolTableBuilder,
+    pub(crate) paths: SymbolPathArenaBuilder,
+    pub(crate) path_scratch: Vec<SymbolId>,
+    pub(crate) next_anonymous_ordinals:
+        BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
+    pub(crate) next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
     /// Counts each owner's authored `end` members so every positional connector end carries the
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
     /// by one walker, so the counter is the authored position.
-    next_positional_end_ordinals: BTreeMap<DeclarationId, u32>,
+    pub(crate) next_positional_end_ordinals: BTreeMap<DeclarationId, u32>,
     /// Counts each declaration's authored unit tokens, so each carries the order it was written
     /// in rather than the order the table happened to be filled.
-    next_unit_token_ordinals: BTreeMap<DeclarationId, u32>,
+    pub(crate) next_unit_token_ordinals: BTreeMap<DeclarationId, u32>,
 }
 
 impl SemanticModelBuilder {
@@ -1569,18 +1545,21 @@ impl SemanticModelBuilder {
         Ok(id)
     }
 
-    fn intern_name(&mut self, value: &str) -> Result<SymbolId, ConstructionError> {
+    pub(crate) fn intern_name(&mut self, value: &str) -> Result<SymbolId, ConstructionError> {
         self.symbols.intern(value)
     }
 
-    fn intern_declared_name(&mut self, value: &str) -> Result<Option<SymbolId>, ConstructionError> {
+    pub(crate) fn intern_declared_name(
+        &mut self,
+        value: &str,
+    ) -> Result<Option<SymbolId>, ConstructionError> {
         (!value.is_empty())
             .then(|| self.intern_name(value))
             .transpose()
     }
 
     #[cfg(test)]
-    fn push_declaration(
+    pub(crate) fn push_declaration(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -1603,7 +1582,7 @@ impl SemanticModelBuilder {
     /// multiplicity, direction, and short name. A site with nothing to record passes
     /// `DeclarationFacts::none()`; a site that simply forgets does not compile.
     /// The next authored position among `owner`'s connector ends.
-    fn next_positional_end_ordinal(
+    pub(crate) fn next_positional_end_ordinal(
         &mut self,
         owner: DeclarationId,
     ) -> Result<u32, ConstructionError> {
@@ -1613,7 +1592,7 @@ impl SemanticModelBuilder {
         Ok(value)
     }
 
-    fn push_typed_declaration(
+    pub(crate) fn push_typed_declaration(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -1660,7 +1639,7 @@ impl SemanticModelBuilder {
     ///
     /// The parser attaches these as sibling body elements with no parent link, so the binding is
     /// made by the lowering walk rather than read off the annotated node.
-    fn push_documentation(
+    pub(crate) fn push_documentation(
         &mut self,
         declaration: DeclarationId,
         form: AnnotationForm,
@@ -1688,7 +1667,7 @@ impl SemanticModelBuilder {
     }
 
     /// Interns an optional authored `<shortName>` prefix, treating an empty spelling as absent.
-    fn intern_short_name(
+    pub(crate) fn intern_short_name(
         &mut self,
         short_name: Option<&String>,
     ) -> Result<Option<SymbolId>, ConstructionError> {
@@ -1703,7 +1682,7 @@ impl SemanticModelBuilder {
     /// `declaration` is `None` only for a `doc` written at document-root scope, whose annotated
     /// element is the file root -- an element this model deliberately does not mint a declaration
     /// for -- so there is nothing to bind it to.
-    fn record_root_doc_comment(
+    pub(crate) fn record_root_doc_comment(
         &mut self,
         declaration: Option<DeclarationId>,
         node: &Node<DocComment>,
@@ -1715,7 +1694,7 @@ impl SemanticModelBuilder {
     }
 
     /// Root-scope counterpart of `record_comment_annotation`; see `record_root_doc_comment`.
-    fn record_root_comment_annotation(
+    pub(crate) fn record_root_comment_annotation(
         &mut self,
         declaration: Option<DeclarationId>,
         node: &Node<CommentAnnotation>,
@@ -1727,7 +1706,7 @@ impl SemanticModelBuilder {
     }
 
     /// Root-scope counterpart of `record_textual_representation`; see `record_root_doc_comment`.
-    fn record_root_textual_representation(
+    pub(crate) fn record_root_textual_representation(
         &mut self,
         declaration: Option<DeclarationId>,
         node: &Node<TextualRepresentation>,
@@ -1752,7 +1731,7 @@ impl SemanticModelBuilder {
     /// there (they are inert text with nowhere to hang); an `@Name` annotation is not, because it
     /// carries a reference whose source declaration is exactly what is missing, so it is reported
     /// as an explicit `family` unsupported member rather than dropped.
-    fn lower_annotating_member(
+    pub(crate) fn lower_annotating_member(
         &mut self,
         document: DocumentId,
         annotated: Option<DeclarationId>,
@@ -1776,7 +1755,7 @@ impl SemanticModelBuilder {
     }
 
     /// Records a `doc /* ... */` annotation against the declaration whose body it heads.
-    fn record_doc_comment(
+    pub(crate) fn record_doc_comment(
         &mut self,
         declaration: DeclarationId,
         node: &Node<DocComment>,
@@ -1794,7 +1773,7 @@ impl SemanticModelBuilder {
     }
 
     /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
-    fn record_comment_annotation(
+    pub(crate) fn record_comment_annotation(
         &mut self,
         declaration: DeclarationId,
         node: &Node<CommentAnnotation>,
@@ -1813,7 +1792,7 @@ impl SemanticModelBuilder {
 
     /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it
     /// heads.
-    fn record_textual_representation(
+    pub(crate) fn record_textual_representation(
         &mut self,
         declaration: DeclarationId,
         node: &Node<TextualRepresentation>,
@@ -1831,7 +1810,7 @@ impl SemanticModelBuilder {
     }
 
     /// Records the authored spelling of a `FeatureValue` clause.
-    fn record_feature_value(
+    pub(crate) fn record_feature_value(
         &mut self,
         declaration: DeclarationId,
         value: &Node<FeatureValue>,
@@ -1855,7 +1834,7 @@ impl SemanticModelBuilder {
     /// evaluation-classification path; this fact records only which of the five authored spellings
     /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written, which no other fact
     /// preserves.
-    fn push_feature_value(
+    pub(crate) fn push_feature_value(
         &mut self,
         declaration: DeclarationId,
         kind: FeatureValueKind,
@@ -1876,7 +1855,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn push_membership(
+    pub(crate) fn push_membership(
         &mut self,
         member: DeclarationId,
         kind: MembershipKind,
@@ -1895,7 +1874,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn push_reference(
+    pub(crate) fn push_reference(
         &mut self,
         pending: PendingReference,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
@@ -1962,7 +1941,7 @@ impl SemanticModelBuilder {
     /// path with a root-lookup first segment followed by type-directed member segments. Always
     /// non-rooted (`::`-absolute chains do not occur in dotted member-access position), matching
     /// `ConnectorEnd`/`ExpressionOperand`'s existing `DeclarationDomain::Any` shape.
-    fn push_member_access_reference(
+    pub(crate) fn push_member_access_reference(
         &mut self,
         source: DeclarationId,
         document: DocumentId,
@@ -1978,7 +1957,7 @@ impl SemanticModelBuilder {
         )
     }
 
-    fn push_member_access_reference_with_kind(
+    pub(crate) fn push_member_access_reference_with_kind(
         &mut self,
         source: DeclarationId,
         document: DocumentId,
@@ -2058,7 +2037,7 @@ impl SemanticModelBuilder {
     /// callee resolves through an `InvocationCallee` reference, because an invocation whose callee
     /// this helper cannot name has nothing to compare its arguments against, and a record without a
     /// callee would be an argument count attributed to no callee at all.
-    fn lower_invocation_callee(
+    pub(crate) fn lower_invocation_callee(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -2091,7 +2070,7 @@ impl SemanticModelBuilder {
     /// that is already a parser `QualifiedReferenceId` (an `Expression::Invocation`'s `FeatureRef`/
     /// `FeatureChainRef` callee via `lower_invocation_callee`, or an `Expression::Constructor`'s
     /// `type_name` directly).
-    fn push_invocation_callee_reference(
+    pub(crate) fn push_invocation_callee_reference(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -2120,7 +2099,7 @@ impl SemanticModelBuilder {
     /// `push_type_check_target_reference`'s shape but its own `ReferenceKind` since a meta-cast
     /// target joins the `DeclarationDomain::Type` fixed point rather than `TypeCheckTarget`
     /// directly (kept distinct purely for query-output clarity).
-    fn push_meta_cast_target_reference(
+    pub(crate) fn push_meta_cast_target_reference(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -2149,7 +2128,7 @@ impl SemanticModelBuilder {
     /// `type_name` (e.g. `Type` in `x istype Type`), mirroring `push_invocation_callee_reference`'s
     /// shape but its own `ReferenceKind` since a type-check target joins the `DeclarationDomain::
     /// Type` fixed point rather than `InvocationCallee`'s `Any` domain.
-    fn push_type_check_target_reference(
+    pub(crate) fn push_type_check_target_reference(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -2177,7 +2156,7 @@ impl SemanticModelBuilder {
     /// The evaluation shape of a constraint-body expression, classified against the owning
     /// document's parser arena. The arena is required because a quantity literal's unit is a
     /// source-backed qualified reference rather than copied text.
-    fn constraint_evaluation_shape(
+    pub(crate) fn constraint_evaluation_shape(
         &self,
         document: DocumentId,
         node: &Expression,
@@ -2188,7 +2167,7 @@ impl SemanticModelBuilder {
 
     /// The evaluation shape of a calculation-body expression. See
     /// [`Self::constraint_evaluation_shape`] for why the arena is threaded through.
-    fn calc_evaluation_shape(
+    pub(crate) fn calc_evaluation_shape(
         &self,
         document: DocumentId,
         node: &Expression,
@@ -2197,7 +2176,12 @@ impl SemanticModelBuilder {
         classify_calc_expression(&parsed, node)
     }
 
-    fn push_unsupported(&mut self, document: DocumentId, family: UnsupportedFamily, span: Span) {
+    pub(crate) fn push_unsupported(
+        &mut self,
+        document: DocumentId,
+        family: UnsupportedFamily,
+        span: Span,
+    ) {
         self.unsupported.push(UnsupportedRecord {
             document,
             family,
@@ -2205,7 +2189,7 @@ impl SemanticModelBuilder {
         });
     }
 
-    fn push_recovery(&mut self, document: DocumentId, span: Span) {
+    pub(crate) fn push_recovery(&mut self, document: DocumentId, span: Span) {
         self.recovery.push(RecoveryRecord { document, span });
     }
 
@@ -2217,13 +2201,17 @@ impl SemanticModelBuilder {
     /// "an expression is here and this engine does not evaluate its shape"; dropping the record
     /// would leave the declaration indistinguishable from one that authored no expression, which
     /// is a different fact about the model.
-    fn push_evaluation_fact(&mut self, declaration: DeclarationId, shape: ExpressionEvalShape) {
+    pub(crate) fn push_evaluation_fact(
+        &mut self,
+        declaration: DeclarationId,
+        shape: ExpressionEvalShape,
+    ) {
         self.evaluation_facts
             .push(PendingEvaluationFact { declaration, shape });
     }
 
     /// Records one authored unit token, in lockstep with the classifier that counts them.
-    fn push_unit_token(
+    pub(crate) fn push_unit_token(
         &mut self,
         declaration: DeclarationId,
         document: DocumentId,
@@ -2248,7 +2236,7 @@ impl SemanticModelBuilder {
     }
 
     /// Records one authored `filter` condition against the declaration it was written in.
-    fn push_filter_condition(
+    pub(crate) fn push_filter_condition(
         &mut self,
         owner: DeclarationId,
         document: DocumentId,
@@ -2269,7 +2257,7 @@ impl SemanticModelBuilder {
     }
 
     /// Records one authored invocation's argument count against the callee reference naming it.
-    fn push_invocation(
+    pub(crate) fn push_invocation(
         &mut self,
         declaration: DeclarationId,
         document: DocumentId,
@@ -2293,7 +2281,7 @@ impl SemanticModelBuilder {
     /// The classifier assigns each `EvalNode::Operand` leaf the ordinal the matching reference will
     /// receive, so an expression lowered after another one at the same declaration -- a view's
     /// second `filter`, say -- must start counting where the first left off.
-    fn expression_operand_offset(&self, declaration: DeclarationId) -> u32 {
+    pub(crate) fn expression_operand_offset(&self, declaration: DeclarationId) -> u32 {
         self.next_reference_ordinals
             .get(&(declaration, ReferenceKind::ExpressionOperand))
             .copied()
@@ -2337,7 +2325,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_root_element(
+    pub(crate) fn lower_root_element(
         &mut self,
         document: DocumentId,
         element: &Node<RootElement>,
@@ -2351,7 +2339,7 @@ impl SemanticModelBuilder {
         }
     }
 
-    fn lower_package(
+    pub(crate) fn lower_package(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2379,7 +2367,7 @@ impl SemanticModelBuilder {
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
 
-    fn lower_library_package(
+    pub(crate) fn lower_library_package(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2411,7 +2399,7 @@ impl SemanticModelBuilder {
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
 
-    fn lower_namespace(
+    pub(crate) fn lower_namespace(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2439,7 +2427,7 @@ impl SemanticModelBuilder {
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
 
-    fn simple_name(
+    pub(crate) fn simple_name(
         &mut self,
         identification: &QualifiedIdentification,
     ) -> Result<Option<SymbolId>, ConstructionError> {
@@ -2450,7 +2438,7 @@ impl SemanticModelBuilder {
             .transpose()
     }
 
-    fn lower_package_body(
+    pub(crate) fn lower_package_body(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2464,7 +2452,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_package_element(
+    pub(crate) fn lower_package_element(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2778,7 +2766,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_import(
+    pub(crate) fn lower_import(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -2857,7 +2845,7 @@ impl SemanticModelBuilder {
     /// Mirrors [`Self::lower_import`]'s shape -- the production carries the same `ImportTarget` --
     /// minus the import facts: an expose selects what a view shows rather than bringing names into
     /// a scope, so its target is an ordinary authored reference with no import conformance.
-    fn lower_expose(
+    pub(crate) fn lower_expose(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -2895,599 +2883,6 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_part_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<PartDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::PartDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let PartDefBody::Brace { elements, .. } = &node.value.body {
-            for element in elements {
-                match &element.value {
-                    PartDefBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span.clone());
-                    }
-                    PartDefBodyElement::Package(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span.clone(),
-                        );
-                    }
-                    PartDefBodyElement::LibraryPackage(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span.clone(),
-                        );
-                    }
-                    PartDefBodyElement::AttributeDef(attribute) => {
-                        self.lower_attribute_def(document, Some(declaration), attribute)?;
-                    }
-                    PartDefBodyElement::AttributeUsage(attribute) => {
-                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
-                    }
-                    PartDefBodyElement::PartUsage(part) => {
-                        self.lower_part_usage(document, Some(declaration), part)?;
-                    }
-                    PartDefBodyElement::PartDef(part) => {
-                        self.lower_part_def(document, Some(declaration), part)?;
-                    }
-                    PartDefBodyElement::Import(import) => {
-                        self.lower_import(document, Some(declaration), import)?;
-                    }
-                    PartDefBodyElement::EnumDef(enum_def) => {
-                        self.lower_enum_def(document, Some(declaration), enum_def)?;
-                    }
-                    PartDefBodyElement::EnumerationUsage(enum_usage) => {
-                        self.lower_enum_usage(document, Some(declaration), enum_usage)?;
-                    }
-                    PartDefBodyElement::RequirementDef(requirement_def) => {
-                        self.lower_requirement_def(document, Some(declaration), requirement_def)?;
-                    }
-                    PartDefBodyElement::AnalysisCaseDef(analysis_case_def) => {
-                        self.lower_analysis_case_def(
-                            document,
-                            Some(declaration),
-                            analysis_case_def,
-                        )?;
-                    }
-                    PartDefBodyElement::CaseDef(case_def) => {
-                        self.lower_case_def(document, Some(declaration), case_def)?;
-                    }
-                    PartDefBodyElement::CaseUsage(case_usage) => {
-                        self.lower_case_usage(document, Some(declaration), case_usage)?;
-                    }
-                    PartDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
-                        self.lower_analysis_case_usage(
-                            document,
-                            Some(declaration),
-                            analysis_case_usage,
-                        )?;
-                    }
-                    PartDefBodyElement::VerificationCaseDef(verification_case_def) => {
-                        self.lower_verification_case_def(
-                            document,
-                            Some(declaration),
-                            verification_case_def,
-                        )?;
-                    }
-                    PartDefBodyElement::UseCaseDef(use_case_def) => {
-                        self.lower_use_case_def(document, Some(declaration), use_case_def)?;
-                    }
-                    PartDefBodyElement::RequirementUsage(requirement_usage) => {
-                        self.lower_requirement_usage(
-                            document,
-                            Some(declaration),
-                            requirement_usage,
-                        )?;
-                    }
-                    PartDefBodyElement::PortDef(port_def) => {
-                        self.lower_port_def(document, Some(declaration), port_def)?;
-                    }
-                    PartDefBodyElement::PortUsage(port_usage) => {
-                        self.lower_port_usage(document, Some(declaration), port_usage)?;
-                    }
-                    PartDefBodyElement::ItemDef(item_def) => {
-                        self.lower_item_def(document, Some(declaration), item_def)?;
-                    }
-                    PartDefBodyElement::ItemUsage(item_usage) => {
-                        self.lower_item_usage(document, Some(declaration), item_usage)?;
-                    }
-                    PartDefBodyElement::MetadataDef(metadata_def) => {
-                        self.lower_metadata_def(document, Some(declaration), metadata_def)?;
-                    }
-                    PartDefBodyElement::MetadataUsage(metadata_usage) => {
-                        self.lower_metadata_usage(document, Some(declaration), metadata_usage)?;
-                    }
-                    PartDefBodyElement::ActionDef(action_def) => {
-                        self.lower_action_def(document, Some(declaration), action_def)?;
-                    }
-                    PartDefBodyElement::ActionUsage(action_usage) => {
-                        self.lower_action_usage(document, Some(declaration), action_usage)?;
-                    }
-                    PartDefBodyElement::StateDef(state_def) => {
-                        self.lower_state_def(document, Some(declaration), state_def)?;
-                    }
-                    PartDefBodyElement::StateUsage(state_usage) => {
-                        self.lower_state_usage(document, Some(declaration), state_usage)?;
-                    }
-                    PartDefBodyElement::ConnectionDef(connection_def) => {
-                        self.lower_connection_def(document, Some(declaration), connection_def)?;
-                    }
-                    PartDefBodyElement::InterfaceDef(interface_def) => {
-                        self.lower_interface_def(document, Some(declaration), interface_def)?;
-                    }
-                    PartDefBodyElement::ViewDef(view_def) => {
-                        self.lower_view_def(document, Some(declaration), view_def)?;
-                    }
-                    PartDefBodyElement::ViewpointDef(viewpoint_def) => {
-                        self.lower_viewpoint_def(document, Some(declaration), viewpoint_def)?;
-                    }
-                    PartDefBodyElement::RenderingDef(rendering_def) => {
-                        self.lower_rendering_def(document, Some(declaration), rendering_def)?;
-                    }
-                    PartDefBodyElement::AllocationDef(allocation_def) => {
-                        self.lower_allocation_def(document, Some(declaration), allocation_def)?;
-                    }
-                    PartDefBodyElement::FlowDef(flow_def) => {
-                        self.lower_flow_def(document, Some(declaration), flow_def)?;
-                    }
-                    PartDefBodyElement::Connection(connection_usage) => {
-                        self.lower_connection_usage(document, Some(declaration), connection_usage)?;
-                    }
-                    PartDefBodyElement::OccurrenceDef(occurrence_def) => {
-                        self.lower_occurrence_def(document, Some(declaration), occurrence_def)?;
-                    }
-                    PartDefBodyElement::OccurrenceUsage(occurrence_usage) => {
-                        self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
-                    }
-                    PartDefBodyElement::InterfaceUsage(interface_usage) => {
-                        self.lower_interface_usage(document, Some(declaration), interface_usage)?;
-                    }
-                    PartDefBodyElement::ViewUsage(view_usage) => {
-                        self.lower_view_usage(document, Some(declaration), view_usage)?;
-                    }
-                    PartDefBodyElement::RenderingUsage(node) => {
-                        self.lower_rendering_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::UseCaseUsage(node) => {
-                        self.lower_use_case_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::VerificationCaseUsage(node) => {
-                        self.lower_verification_case_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::ConstraintDef(constraint_def) => {
-                        self.lower_constraint_def(document, Some(declaration), constraint_def)?;
-                    }
-                    PartDefBodyElement::ConstraintUsage(constraint_usage) => {
-                        self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
-                    }
-                    PartDefBodyElement::CalcDef(calc_def) => {
-                        self.lower_calc_def(document, Some(declaration), calc_def)?;
-                    }
-                    PartDefBodyElement::CalcUsage(calc_usage) => {
-                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
-                    }
-                    PartDefBodyElement::AliasDef(alias_def) => {
-                        self.lower_alias_def(document, Some(declaration), alias_def)?;
-                    }
-                    PartDefBodyElement::Perform(perform) => {
-                        self.lower_perform(document, Some(declaration), perform)?;
-                    }
-                    PartDefBodyElement::Annotating(member) => {
-                        self.lower_annotating_member(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            member,
-                        )?;
-                    }
-                    PartDefBodyElement::Satisfy(node) => {
-                        self.lower_satisfy(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Allocate(node) => {
-                        self.lower_allocate(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Bind(node) => {
-                        self.lower_bind(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::FirstStmt(first_stmt) => {
-                        self.lower_first_stmt(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            first_stmt,
-                        )?;
-                    }
-                    PartDefBodyElement::VariantUsage(node) => {
-                        self.lower_variant_usage(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::AssertConstraint(node) => self
-                        .lower_assert_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?,
-                    PartDefBodyElement::Ref(node) => {
-                        self.lower_ref_decl(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::DefaultReferenceUsage(node) => {
-                        self.lower_default_reference_usage(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Dependency(node) => {
-                        self.lower_dependency(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::Connect(node) => {
-                        self.lower_bare_connect(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::ViewpointUsage(node) => {
-                        self.lower_viewpoint_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::KermlClassifier(node) => {
-                        self.lower_kerml_classifier_decl(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::ExhibitState(node) => {
-                        self.lower_exhibit_state(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::AllocationUsage(node) => {
-                        self.lower_allocation_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::MetadataKeywordUsage(_)
-                    | PartDefBodyElement::FlowUsage(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PartDefinitionMember,
-                        element.span.clone(),
-                    ),
-                    PartDefBodyElement::UnsupportedMember(node) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::ParserUnsupported,
-                        node.span.clone(),
-                    ),
-                }
-            }
-        }
-        Ok(())
-    }
-
-    fn lower_part_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<PartUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let facts = DeclarationFacts {
-            short_name,
-            modifiers: DeclarationModifiers {
-                ordered: node.value.multiplicity_modifiers.is_ordered(),
-                nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                ..occurrence_prefix_modifiers(&node.value.prefix)
-            },
-            direction: direction_node_fact(node.value.prefix.basic.ref_prefix.direction.as_ref()),
-            multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-            ..DeclarationFacts::none()
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::PartUsage,
-            name,
-            node.span.clone(),
-            facts,
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship_impl(
-                document,
-                declaration,
-                relationship,
-                matches!(
-                    node.value
-                        .prefix
-                        .basic
-                        .ref_prefix
-                        .variance
-                        .as_ref()
-                        .map(|prefix| prefix.value),
-                    Some(DefinitionPrefix::Variation)
-                ),
-                None,
-            )?;
-        }
-        if let Some((relationship, _)) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let PartUsageBody::Brace { elements, .. } = &node.value.body {
-            for element in elements {
-                self.lower_part_usage_body_element(
-                    document,
-                    declaration,
-                    UnsupportedFamily::PartUsageMember,
-                    element,
-                )?;
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers one `PartUsageBodyElement` found inside a `part` usage/def body, and reused
-    /// verbatim by every statement form whose body is `UsageBody = DefinitionBody` and which
-    /// mints an anonymous declaration to own it -- `bind`, `allocate`, a bare `connect`, and a
-    /// keyword-less binding connector all hold this same `PartUsageBody` member set -- and by
-    /// `ref { ... }` bodies, which hold this same member set upstream (`RefBody =
-    /// Body<PartUsageBodyElement>`). See `lower_part_usage`'s own doc comment for the per-arm
-    /// recognized/unsupported shape.
-    ///
-    /// `family` names the owning body in the unsupported facts this dispatch produces, so a `ref`
-    /// body's unmodeled members stay distinguishable from a `part` usage body's.
-    fn lower_part_usage_body_element(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        element: &Node<PartUsageBodyElement>,
-    ) -> Result<(), ConstructionError> {
-        match &element.value {
-            PartUsageBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
-            }
-            PartUsageBodyElement::AttributeUsage(attribute) => {
-                self.lower_attribute_usage(document, Some(owner), attribute)?;
-            }
-            PartUsageBodyElement::PartUsage(part) => {
-                self.lower_part_usage(document, Some(owner), part)?;
-            }
-            PartUsageBodyElement::Import(import) => {
-                self.lower_import(document, Some(owner), import)?;
-            }
-            PartUsageBodyElement::EnumDef(enum_def) => {
-                self.lower_enum_def(document, Some(owner), enum_def)?;
-            }
-            PartUsageBodyElement::EnumerationUsage(enum_usage) => {
-                self.lower_enum_usage(document, Some(owner), enum_usage)?;
-            }
-            PartUsageBodyElement::RequirementDef(requirement_def) => {
-                self.lower_requirement_def(document, Some(owner), requirement_def)?;
-            }
-            PartUsageBodyElement::AnalysisCaseDef(analysis_case_def) => {
-                self.lower_analysis_case_def(document, Some(owner), analysis_case_def)?;
-            }
-            PartUsageBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
-                self.lower_analysis_case_usage(document, Some(owner), analysis_case_usage)?;
-            }
-            PartUsageBodyElement::RequirementUsage(requirement_usage) => {
-                self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
-            }
-            PartUsageBodyElement::PortDef(port_def) => {
-                self.lower_port_def(document, Some(owner), port_def)?;
-            }
-            PartUsageBodyElement::PortUsage(port_usage) => {
-                self.lower_port_usage(document, Some(owner), port_usage)?;
-            }
-            PartUsageBodyElement::ItemDef(item_def) => {
-                self.lower_item_def(document, Some(owner), item_def)?;
-            }
-            PartUsageBodyElement::ItemUsage(item_usage) => {
-                self.lower_item_usage(document, Some(owner), item_usage)?;
-            }
-            PartUsageBodyElement::MetadataDef(metadata_def) => {
-                self.lower_metadata_def(document, Some(owner), metadata_def)?;
-            }
-            PartUsageBodyElement::MetadataUsage(metadata_usage) => {
-                self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
-            }
-            PartUsageBodyElement::ActionUsage(action_usage) => {
-                self.lower_action_usage(document, Some(owner), action_usage)?;
-            }
-            PartUsageBodyElement::StateDef(state_def) => {
-                self.lower_state_def(document, Some(owner), state_def)?;
-            }
-            PartUsageBodyElement::StateUsage(state_usage) => {
-                self.lower_state_usage(document, Some(owner), state_usage)?;
-            }
-            PartUsageBodyElement::ConnectionDef(connection_def) => {
-                self.lower_connection_def(document, Some(owner), connection_def)?;
-            }
-            PartUsageBodyElement::Connection(connection_usage) => {
-                self.lower_connection_usage(document, Some(owner), connection_usage)?;
-            }
-            PartUsageBodyElement::OccurrenceDef(occurrence_def) => {
-                self.lower_occurrence_def(document, Some(owner), occurrence_def)?;
-            }
-            PartUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
-                self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
-            }
-            PartUsageBodyElement::FlowDef(flow_def) => {
-                self.lower_flow_def(document, Some(owner), flow_def)?;
-            }
-            PartUsageBodyElement::InterfaceUsage(interface_usage) => {
-                self.lower_interface_usage(document, Some(owner), interface_usage)?;
-            }
-            PartUsageBodyElement::ConstraintDef(constraint_def) => {
-                self.lower_constraint_def(document, Some(owner), constraint_def)?;
-            }
-            PartUsageBodyElement::ConstraintUsage(constraint_usage) => {
-                self.lower_constraint_usage(document, Some(owner), constraint_usage)?;
-            }
-            PartUsageBodyElement::CalcDef(calc_def) => {
-                self.lower_calc_def(document, Some(owner), calc_def)?;
-            }
-            PartUsageBodyElement::CalcUsage(calc_usage) => {
-                self.lower_calc_usage(document, Some(owner), calc_usage)?;
-            }
-            PartUsageBodyElement::AliasDef(alias_def) => {
-                self.lower_alias_def(document, Some(owner), alias_def)?;
-            }
-            PartUsageBodyElement::Perform(perform) => {
-                self.lower_perform(document, Some(owner), perform)?;
-            }
-            PartUsageBodyElement::Annotating(member) => {
-                self.lower_annotating_member(document, Some(owner), family, member)?;
-            }
-            PartUsageBodyElement::KermlClassifier(node) => {
-                self.lower_kerml_classifier_decl(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::Satisfy(node) => {
-                self.lower_satisfy(document, owner, family, node)?;
-            }
-            PartUsageBodyElement::VariantUsage(node) => {
-                self.lower_variant_usage(document, owner, family, node)?;
-            }
-            PartUsageBodyElement::Allocate(node) => {
-                self.lower_allocate(document, owner, family, node)?;
-            }
-            PartUsageBodyElement::Bind(node) => {
-                self.lower_bind(document, owner, family, node)?;
-            }
-            PartUsageBodyElement::AssertConstraint(node) => {
-                self.lower_assert_constraint_member(document, owner, family, node)?
-            }
-            PartUsageBodyElement::Ref(node) => {
-                self.lower_ref_decl(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::EndDecl(node) => {
-                self.lower_end_decl(document, owner, node)?;
-            }
-            PartUsageBodyElement::InOutDecl(node) => {
-                self.lower_parameter_declaration(document, Some(owner), family, node)?;
-            }
-            PartUsageBodyElement::DefaultReferenceUsage(node) => {
-                self.lower_default_reference_usage(document, Some(owner), family, node)?;
-            }
-            PartUsageBodyElement::Connect(node) => {
-                self.lower_bare_connect(document, owner, family, node)?;
-            }
-            PartUsageBodyElement::UseCaseUsage(node) => {
-                self.lower_use_case_usage(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::VerificationCaseUsage(node) => {
-                self.lower_verification_case_usage(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::ViewDef(node) => {
-                self.lower_view_def(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::ViewUsage(node) => {
-                self.lower_view_usage(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::ViewpointDef(node) => {
-                self.lower_viewpoint_def(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::ViewpointUsage(node) => {
-                self.lower_viewpoint_usage(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::RenderingDef(node) => {
-                self.lower_rendering_def(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::RenderingUsage(node) => {
-                self.lower_rendering_usage(document, Some(owner), node)?;
-            }
-            PartUsageBodyElement::FlowUsage(_)
-            | PartUsageBodyElement::SuccessionUsage(_)
-            | PartUsageBodyElement::MetadataKeywordUsage(_)
-            | PartUsageBodyElement::IncludeUseCase(_) => {
-                self.push_unsupported(document, family, element.span.clone())
-            }
-        }
-        Ok(())
-    }
-
     /// Dispatches a shared KerML `RelationshipBody`-shaped element list (BNF `RelationshipBody :
     /// Relationship = ';' | '{' (ownedRelationship += OwnedAnnotation)* '}'`, `ast::
     /// RelationshipBodyElement`), used verbatim by `Import`/`Dependency`/plain `connect`
@@ -3500,7 +2895,7 @@ impl SemanticModelBuilder {
     /// own -- a `connect a to b { ... }` statement lowers its ends directly against the enclosing
     /// declaration -- so there is no element the annotation belongs to and attributing it to the
     /// enclosing type would misreport it.
-    fn lower_relationship_body_elements(
+    pub(crate) fn lower_relationship_body_elements(
         &mut self,
         document: DocumentId,
         annotated: Option<DeclarationId>,
@@ -3528,585 +2923,6 @@ impl SemanticModelBuilder {
             }
         }
         Ok(())
-    }
-
-    /// Lowers a `ref <name>: <Type>;` non-owning referential feature (BNF `ReferenceUsage`,
-    /// `ast::RefDecl`), reused verbatim across part/attribute/action/state/connection/interface/
-    /// package bodies. Mirrors `lower_part_usage`'s ownership/typing/redefines/subsets shape (`ref`
-    /// is a `FeatureMembership` like any other usage; see `ast::connector::ref_decl`'s
-    /// `Membership::feature` construction), since `RefDecl` carries the same structured
-    /// `typing`/`redefines`/`subsets` clauses as `PartUsage`/`AttributeUsage`. Its body is the
-    /// general usage-member set (`RefBody = Body<PartUsageBodyElement>`, `UsageBody =
-    /// DefinitionBody` per SysML 8.2.2.6.2) whatever declaration owns it, so it walks through the
-    /// shared `lower_part_usage_body_element` dispatcher under
-    /// `UnsupportedFamily::ReferenceUsageMember`.
-    fn lower_ref_decl(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<RefDecl>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ReferenceUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    derived: node.value.is_derived,
-                    constant: node.value.is_constant,
-                    ordered: node.value.multiplicity_modifiers.is_ordered(),
-                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    // The `ref` keyword is this declaration's own form, not a prefix modifier on
-                    // some other usage, so `reference` stays false here.
-                    ..DeclarationModifiers::default()
-                },
-                direction: direction_fact(node.value.direction.as_ref()),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        for element in node.value.body.members() {
-            self.lower_part_usage_body_element(
-                document,
-                declaration,
-                UnsupportedFamily::ReferenceUsageMember,
-                element,
-            )?;
-        }
-        Ok(())
-    }
-
-    fn lower_attribute_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<AttributeUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
-        let facts = DeclarationFacts {
-            short_name,
-            modifiers: DeclarationModifiers {
-                is_abstract,
-                variation,
-                derived: node.value.is_derived,
-                end: node.value.is_end,
-                reference: node.value.is_reference,
-                constant: node.value.is_constant,
-                ordered: node.value.multiplicity_modifiers.is_ordered(),
-                nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                ..DeclarationModifiers::default()
-            },
-            direction: direction_fact(node.value.direction.as_ref()),
-            multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-            ..DeclarationFacts::none()
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::AttributeUsage,
-            name,
-            node.span.clone(),
-            facts,
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.references {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.crosses {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.intersects {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        self.lower_attribute_default_value(document, declaration, node.value.value.as_ref())?;
-        self.lower_attribute_body(document, declaration, &node.value.body)?;
-        Ok(())
-    }
-
-    /// Value-assignment lowering for a `name = <Expression>;` shape, shared by every context that
-    /// carries one: an attribute def/usage default value AND explicit redefinition value
-    /// (`attribute mass = 5;` / `attribute :>> status = RequirementStatusKind::approved;`, both
-    /// typed as `FeatureValue` -- the parser does not distinguish "default" from "redefinition
-    /// value" syntactically, both are just an attribute's own optional `=` clause), a metadata
-    /// annotation body override (`@Safety{isMandatory = true;}`, also `FeatureValue` on a nested
-    /// `AttributeUsage`), and a parameter default value (`out v_out : SpeedValue = vel.v;`, also
-    /// `FeatureValue`). All four contexts share the exact same typed-AST shape (a name, an `=`,
-    /// and an `Expression`), so this one helper handles all of them: reuses the full
-    /// `classify_constraint_expression`/`lower_constraint_expression` machinery (literal,
-    /// feature-ref, member-access, arithmetic/comparison/logical `BinaryOp`, invocation) rather
-    /// than a bespoke literal-only walk, so `attribute mass = length * width;`, `attribute :>>
-    /// status = RequirementStatusKind::approved;`, and `attribute f = other.value;` all resolve
-    /// their operands and, where possible, evaluate to a genuine constant via `compute_evaluation`
-    /// -- a value that is resolved but not itself constant publishes `NonConstant`, never a
-    /// fabricated value (see `EvaluatedValue`). `family` selects which diagnostic an unsupported
-    /// expression shape falls through to.
-    fn lower_value_assignment(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        family: UnsupportedFamily,
-        value: Option<&Node<FeatureValue>>,
-    ) -> Result<(), ConstructionError> {
-        let Some(feature_value) = value else {
-            return Ok(());
-        };
-        self.record_feature_value(declaration, feature_value)?;
-        let expression = &feature_value.value.expression;
-        self.push_evaluation_fact(
-            declaration,
-            self.constraint_evaluation_shape(document, &expression.value),
-        );
-        self.lower_constraint_expression(document, declaration, family, expression)
-    }
-
-    fn lower_attribute_default_value(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        value: Option<&Node<FeatureValue>>,
-    ) -> Result<(), ConstructionError> {
-        self.lower_value_assignment(
-            document,
-            declaration,
-            UnsupportedFamily::AttributeMember,
-            value,
-        )
-    }
-
-    fn lower_attribute_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<AttributeDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::AttributeDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    ordered: node.value.multiplicity_modifiers.is_ordered(),
-                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..DeclarationModifiers::default()
-                },
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        self.lower_attribute_default_value(document, declaration, node.value.value.as_ref())?;
-        self.lower_attribute_body(document, declaration, &node.value.body)
-    }
-
-    fn lower_attribute_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &AttributeBody,
-    ) -> Result<(), ConstructionError> {
-        let AttributeBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                AttributeBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                AttributeBodyElement::DefaultReferenceUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::AttributeMember,
-                        node.span.clone(),
-                    );
-                }
-                AttributeBodyElement::VariantUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::AttributeMember,
-                        node.span.clone(),
-                    );
-                }
-                AttributeBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(
-                        document,
-                        Some(owner),
-                        UnsupportedFamily::AttributeMember,
-                        member,
-                    )?;
-                }
-                AttributeBodyElement::AttributeDef(attribute) => {
-                    self.lower_attribute_def(document, Some(owner), attribute)?;
-                }
-                AttributeBodyElement::AttributeUsage(attribute) => {
-                    self.lower_attribute_usage(document, Some(owner), attribute)?;
-                }
-                AttributeBodyElement::PartUsage(part) => {
-                    self.lower_part_usage(document, Some(owner), part)?;
-                }
-                AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
-                    self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
-                }
-                AttributeBodyElement::ItemUsage(item_usage) => {
-                    self.lower_item_usage(document, Some(owner), item_usage)?;
-                }
-                AttributeBodyElement::AssertConstraint(node) => self
-                    .lower_assert_constraint_member(
-                        document,
-                        owner,
-                        UnsupportedFamily::AttributeMember,
-                        node,
-                    )?,
-                AttributeBodyElement::RefDecl(node) => {
-                    self.lower_ref_decl(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::Connect(node) => {
-                    self.lower_bare_connect(
-                        document,
-                        owner,
-                        UnsupportedFamily::AttributeMember,
-                        node,
-                    )?;
-                }
-                AttributeBodyElement::Bind(node) => {
-                    self.lower_bind(document, owner, UnsupportedFamily::AttributeMember, node)?;
-                }
-                AttributeBodyElement::Connection(node) => {
-                    self.lower_connection_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::ConstraintUsage(node) => {
-                    self.lower_constraint_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::CalcDef(node) => {
-                    self.lower_calc_def(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::CalcUsage(node) => {
-                    self.lower_calc_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::KermlClassifier(node) => {
-                    self.lower_kerml_classifier_decl(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::KermlConnector(node) => {
-                    self.lower_kerml_connector_member(document, owner, node)?;
-                }
-                AttributeBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::AttributeMember,
-                    node,
-                )?,
-                AttributeBodyElement::Invariant(node) => {
-                    self.lower_kerml_invariant_member(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::Unsupported(node) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                ),
-                AttributeBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::AttributeMember,
-                    element.span.clone(),
-                ),
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers an `enum def` (BNF EnumerationDefinition), mirroring `lower_part_def`: ownership,
-    /// membership, an optional `:>`/`:` specialization relationship (an enum def may specialize
-    /// another enum def or an attribute def), and each owned enumeration literal as its own typed
-    /// declaration.
-    fn lower_enum_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<EnumDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::EnumerationDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let EnumerationBody::Brace { elements, .. } = &node.value.body {
-            for element in elements {
-                match &element.value {
-                    EnumerationBodyElement::Value(value) => {
-                        self.lower_enumerated_value(document, declaration, value)?;
-                    }
-                    // `EnumerationBody` names its own membership -- the annotating production plus
-                    // enumerated values, and nothing else -- so `enum def` shares the attribute
-                    // family it specializes rather than owning a family of its own.
-                    EnumerationBodyElement::Annotating(member) => {
-                        self.lower_annotating_member(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::AttributeMember,
-                            member,
-                        )?;
-                    }
-                    EnumerationBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span.clone());
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers one `enum <name>;` value owned by an `enum def` body (BNF EnumeratedValue) into its
-    /// own declaration. An enumerated value is a full SysML `Usage`, so it carries an
-    /// identification, an optional `= expr` initializer, and a `PartUsageBody` of its own -- the
-    /// same body shape `lower_part_usage` walks, so its owned members go through the same
-    /// `lower_part_usage_body_element`.
-    fn lower_enumerated_value(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<sysml_v2_parser::ast::EnumeratedValue>,
-    ) -> Result<(), ConstructionError> {
-        let name = match node.value.identification.name.as_deref() {
-            Some(name) => self.intern_declared_name(name)?,
-            None => None,
-        };
-        let short_name = self.intern_short_name(node.value.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::EnumerationLiteral,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                ..DeclarationFacts::none()
-            },
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let PartUsageBody::Brace { elements, .. } = &node.value.body {
-            for element in elements {
-                self.lower_part_usage_body_element(
-                    document,
-                    declaration,
-                    UnsupportedFamily::AttributeMember,
-                    element,
-                )?;
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers a package/definition/usage-level `enum` feature member (BNF EnumerationUsage), e.g.
-    /// `enum color : ColorKind;`, mirroring `lower_attribute_usage`. `type_name` is a bare
-    /// `QualifiedReferenceId` (not a `TypingRelationship` node), so its `FeatureTyping` reference
-    /// is pushed directly rather than through `lower_typing_relationship`.
-    fn lower_enum_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserEnumerationUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::EnumerationUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    end: node.value.is_end,
-                    ..DeclarationModifiers::default()
-                },
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
-        Ok(())
-    }
-
-    /// Lowers an `item def` (BNF ItemDefinition), mirroring `lower_part_def`: ownership,
-    /// membership, and an optional `:>` specialization relationship. `ItemDef`'s body is a plain
-    /// `AttributeBody` (shared with `AttributeDef`/`AttributeUsage`), not a `PartDefBody`, so its
-    /// owned members are lowered through the existing `lower_attribute_body` rather than a
-    /// dedicated item-specific body walker.
-    fn lower_item_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ItemDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ItemDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
     /// Lowers a bodied KerML classifier declaration (`KermlClassifierDecl`), mirroring
@@ -4139,7 +2955,7 @@ impl SemanticModelBuilder {
     /// `unions`/`intersects`/`disjoint from`/`differences` reuse the existing type-relationship
     /// lowering. `chains` and `featured by` lower to their own canonical relationship kinds;
     /// `inverse of` remains explicitly unsupported because it needs a separate inverse-fact owner.
-    fn lower_kerml_feature_relationship_parts(
+    pub(crate) fn lower_kerml_feature_relationship_parts(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
@@ -4201,7 +3017,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_kerml_type_relationships(
+    pub(crate) fn lower_kerml_type_relationships(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
@@ -4236,7 +3052,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_kerml_classifier_decl(
+    pub(crate) fn lower_kerml_classifier_decl(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -4300,7 +3116,7 @@ impl SemanticModelBuilder {
     /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
     /// alternative -- so it is lowered here as an owned child through
     /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
-    fn lower_kerml_feature_member(
+    pub(crate) fn lower_kerml_feature_member(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -4389,7 +3205,7 @@ impl SemanticModelBuilder {
     /// `ReferenceKind::ConnectorEnd` reference kind `connection def`/`interface def` use). `is_all`
     /// and body content beyond the shared `lower_calc_def_body` walk are not modeled as distinct
     /// facts here.
-    fn lower_kerml_connector_member(
+    pub(crate) fn lower_kerml_connector_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -4462,7 +3278,7 @@ impl SemanticModelBuilder {
     /// through `lower_kerml_connector_end`'s target rather than a bare `QualifiedReferenceId`
     /// (each end additionally carries an optional multiplicity/`references` chain, both out of
     /// scope here, same as `KermlConnectorMember`'s ends).
-    fn lower_kerml_binding_member(
+    pub(crate) fn lower_kerml_binding_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -4508,7 +3324,7 @@ impl SemanticModelBuilder {
     /// preserve their directional kind while dotted paths use the canonical type-directed member
     /// resolver; other KerML end kinds retain their established qualified lookup. The end's own
     /// `multiplicity` and `references` chain are not modeled as distinct facts here.
-    fn lower_kerml_connector_end(
+    pub(crate) fn lower_kerml_connector_end(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -4551,7 +3367,7 @@ impl SemanticModelBuilder {
     /// (`all` sufficiency) and the succession's own `multiplicity` are not modeled as distinct
     /// facts here, mirroring `KermlConnectorMember`/`KermlBindingMember`'s own unmodeled
     /// end-level `multiplicity`/`references`.
-    fn lower_kerml_succession_member(
+    pub(crate) fn lower_kerml_succession_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -4603,7 +3419,7 @@ impl SemanticModelBuilder {
     /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). Its typed
     /// `is_negated` parser field is published as the canonical declaration polarity fact; the
     /// evaluator may still report an unrelated unsupported expression shape explicitly.
-    fn lower_kerml_invariant_member(
+    pub(crate) fn lower_kerml_invariant_member(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -4642,7 +3458,7 @@ impl SemanticModelBuilder {
     /// `SubsettingKind`-dispatched machinery every sibling clause uses. `OwnedCrossFeature` carries
     /// only the slots the corpus authors in cross position, so there is no typing, value or body to
     /// walk here.
-    fn lower_kerml_owned_cross_feature(
+    pub(crate) fn lower_kerml_owned_cross_feature(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -4678,451 +3494,13 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding
-    /// (`ast::structure::DefaultReferenceUsage`, BNF §8.2.2.6 / Spec §7.6.4), e.g. `baseType =
-    /// Atom meta KerML::Classifier;` (KerML `metaclass` body member), mirroring
-    /// `lower_kerml_feature_member`/`lower_ref_decl`: ownership, membership, an optional `:`
-    /// typing target, `subsets`/`redefines` relationships, and an optional `=` value expression
-    /// resolved through the shared `classify_calc_expression`/`lower_calc_expression` pipeline
-    /// (the same machinery `lower_kerml_feature_member`'s `value` clause uses, which already
-    /// covers the `MetaCast` reflective-operator shape from `ea6eb632`). `family` selects which
-    /// diagnostic an unsupported value-expression shape falls through to; multiplicity and the
-    /// `has_feature_keyword`/`body` fields are intentionally left unmodeled (see
-    /// `DeclarationKind::DefaultReferenceUsage`).
-    fn lower_default_reference_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        family: UnsupportedFamily,
-        node: &Node<DefaultReferenceUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::DefaultReferenceUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-            let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(
-                declaration,
-                self.calc_evaluation_shape(document, &expression.value),
-            );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
-        }
-        Ok(())
-    }
-
-    /// Lowers a package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
-    /// `item i : SomeItem;`, mirroring `lower_part_usage`. `type_name` is a bare
-    /// `QualifiedReferenceId` (not a `TypingRelationship` node, like `ItemUsage::type_name`'s
-    /// `lower_enum_usage` counterpart), so its `FeatureTyping` reference is pushed directly rather
-    /// than through `lower_typing_relationship`. `ItemUsage`'s body is a plain `AttributeBody`
-    /// (see `lower_item_def`), so owned members are lowered through `lower_attribute_body`.
-    fn lower_item_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserItemUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ItemUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    ordered: node.value.multiplicity_modifiers.is_ordered(),
-                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..occurrence_prefix_modifiers(&node.value.prefix)
-                },
-                direction: direction_node_fact(
-                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
-                ),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags {
-                    variation: matches!(
-                        node.value
-                            .prefix
-                            .basic
-                            .ref_prefix
-                            .variance
-                            .as_ref()
-                            .map(|prefix| prefix.value),
-                        Some(DefinitionPrefix::Variation)
-                    ),
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        self.lower_attribute_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers a directed `in`/`out`/`inout` parameter declaration (BNF `InOutDecl`) found in a
-    /// `calc def`/`constraint def`/`action def` body, e.g. `in partMasses : MassValue[0..*];`,
-    /// mirroring `lower_item_usage`: ownership, membership, and (when a type is present) a
-    /// `FeatureTyping` reference to the declared type, carrying an explicit
-    /// `RelationshipFlags::direction` fact mirroring the `conjugated` flag precedent set by
-    /// `PortUsage`. Untyped parameters (`type_name` is `None`, e.g. a bare `in :>> target = expr;`
-    /// redefinition form, or `in seq[1..*] nonunique ordered;` with only a multiplicity/collection
-    /// modifiers) still get the declaration/membership shell lowered -- only the `FeatureTyping`
-    /// reference (and hence the direction fact) is skipped when there is no type to reference. The
-    /// `:>` subsets clause (`ast::InOutDecl::subsets`, e.g. `in value :> seq;`) and the `:>>`
-    /// redefinition clause (`ast::InOutDecl::redefines`) are each lowered via
-    /// `lower_subsetting_relationship` regardless of whether a type is present, reusing the exact
-    /// same helper `AttributeUsage`/`ItemUsage` already call. The two spellings are separate
-    /// authored clauses upstream -- `:>` was previously folded into `type_name`, which reported a
-    /// subsetting as a typing. The declared name
-    /// may be empty for the anonymous redefinition shape; `intern_declared_name` already treats an
-    /// empty name as anonymous (see its callers for `EnumerationLiteral` etc.). Multiplicity and
-    /// collection modifiers (`nonunique`/`ordered`) remain out of scope, matching every other
-    /// declaration kind in this codebase.
-    fn lower_parameter_declaration(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        family: UnsupportedFamily,
-        node: &Node<InOutDecl>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ParameterUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    reference: node.value.is_reference,
-                    var: node.value.is_var,
-                    ordered: node.value.multiplicity_modifiers.is_ordered(),
-                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..DeclarationModifiers::default()
-                },
-                direction: direction_fact(Some(&node.value.direction)),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            let direction = Some(match node.value.direction {
-                InOut::In => ParameterDirection::In,
-                InOut::Out => ParameterDirection::Out,
-                InOut::InOut => ParameterDirection::InOut,
-            });
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags {
-                    direction,
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        // Widened value-assignment handling (see `lower_value_assignment`/`lower_return_decl`'s
-        // own `= expr` handling, which this mirrors exactly): a parameter default value
-        // (`out v_out : SpeedValue = vel.v;`) is a bare `Node<Expression>` on `InOutDecl::value`
-        // -- the same shape `ReturnDecl::value` already has classify_calc_expression/
-        // lower_calc_expression wiring for, so this reuses that identical pipeline rather than
-        // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
-        // machinery existing at all.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-            let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(
-                declaration,
-                self.calc_evaluation_shape(document, &expression.value),
-            );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
-        }
-        Ok(())
-    }
-
-    /// Lowers a calc-body `return` declaration (BNF `ReturnDecl`, e.g. `return : Type = a + b;`
-    /// or `return result : Type = a + b;`), reusing `lower_parameter_declaration`'s shape
-    /// (ownership, membership, a `FeatureTyping` reference to the declared type) since a return
-    /// declaration is itself a parameter-like feature -- SysML models a calc's `result` as an
-    /// implicit output parameter. `name` is empty for the common anonymous `return : Type = expr;`
-    /// form (validation `10c`/`10d`); `intern_declared_name` folds that to `None`, exactly like
-    /// `lower_subject_decl`'s bare `subject;` form. Unlike `InOutDecl::type_name`, `ReturnDecl::
-    /// type_name` is never optional (the grammar requires a type), so the `FeatureTyping`
-    /// reference is unconditional here.
-    ///
-    /// When a `= expr` value is present, its expression is classified/lowered through the exact
-    /// same `classify_calc_expression`/`lower_calc_expression` machinery slices 1-4 already built
-    /// for a bare `CalcDefBodyElement::Expression` body -- this is the "distinct ReturnDecl shape"
-    /// `bd50fccd` deferred: most real-corpus calc arithmetic (e.g. `return : Type = a + b * c;`)
-    /// lives here, not in a bare `Expression` body-element, and it is the exact same `Expression`
-    /// enum/`BinaryOp`/`FeatureRef` leaf shapes slices 1-4 already handle, so this is pure wiring
-    /// into the same pipeline -- no new evaluation logic.
-    ///
-    /// `is_redefine` (`return :>> name = expr;`) and `is_subsetting` (`return name :> Type = expr;`)
-    /// spelling variants are not modeled as distinct relationship kinds here (mirrors
-    /// `lower_parameter_declaration`'s own `InOutDecl::redefines`-shaped field being out of
-    /// scope); both spellings still get the same `FeatureTyping` reference and evaluation fact.
-    fn lower_return_decl(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ReturnDecl>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ParameterUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    ordered: node.value.multiplicity_modifiers.is_ordered(),
-                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..DeclarationModifiers::default()
-                },
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-            let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(
-                declaration,
-                self.calc_evaluation_shape(document, &expression.value),
-            );
-            self.lower_calc_expression(
-                document,
-                declaration,
-                UnsupportedFamily::CalcDefinitionMember,
-                &expression,
-            )?;
-        }
-        Ok(())
-    }
-
-    /// Lowers a case-family `return` declaration (BNF `CaseReturnDecl`) found in an analysis/
-    /// verification/use-case/case def or usage body, e.g. `return calculatedFuelEconomy :
-    /// DistancePerVolumeValue;`, `return part :>> selectedAlternative : Engine;`, `return
-    /// simulatedRange = vehicle.vehicleBehavior.output.distance;`, or the bare shorthand `return
-    /// :>> target;`. Mirrors `lower_parameter_declaration`'s shape (reusing the same
-    /// `DeclarationKind::ParameterUsage` -- a case return is itself an output-parameter-like
-    /// feature, same as a calc's own `ReturnDecl`): ownership, membership, a `FeatureTyping` (`:`)
-    /// or `Subsetting` (`:>`, `is_subsetting`) reference to the declared type, an authored
-    /// `Redefinition` reference for the `:>>`-shorthand `target` (mirrors `VerifyRequirementMember::
-    /// redefines`'s identical bare-`QualifiedReferenceId` handling), and a bound `=`/`:=` value
-    /// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
-    /// decl` uses. `declaration_name` is empty for the common anonymous `return : Type = expr;`
-    /// form; `intern_declared_name` folds that to `None`. The `part`/`attribute` `feature_kind`
-    /// prefix and `multiplicity` are not modeled as distinct facts, mirroring `lower_parameter_
-    /// declaration`'s own out-of-scope fields.
-    fn lower_case_return_decl(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<CaseReturnDecl>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.declaration_name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::ParameterUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: if node.value.is_subsetting {
-                    ReferenceKind::Subsetting
-                } else {
-                    ReferenceKind::FeatureTyping
-                },
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(target) = node.value.target {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(target)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::Redefinition,
-                document,
-                local: target,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
-        // The trailing `:>>` clause on a *named* return declaration (`return verdict :
-        // VerdictKind :>> result;`). `target` above is the leading anonymous form, where the
-        // redefinition target stands in for the declaration name; both spellings lower to the
-        // same `Redefinition` relationship.
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-            let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(
-                declaration,
-                self.calc_evaluation_shape(document, &expression.value),
-            );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
-        }
-        Ok(())
-    }
-
     /// Lowers a `subject` declaration (BNF `SubjectDecl`) found in a requirement/concern/case-
     /// family def or usage body, e.g. `subject vehicle : Vehicle;`, mirroring
     /// `lower_parameter_declaration`'s shape: ownership, membership, and (when a type is present)
     /// a `FeatureTyping` reference to the declared type. No direction fact applies here.
     /// Multiplicity, the bound `= expr` value, and the bare `subject = expr;`/`subject;`
     /// shorthand forms (`ast::SubjectRef`, handled separately) are out of scope.
-    fn lower_subject_decl(
+    pub(crate) fn lower_subject_decl(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -5172,7 +3550,7 @@ impl SemanticModelBuilder {
     /// sourced at the same declaration. `declaration_name` may be empty for either reference form
     /// (`intern_declared_name` already folds that to an anonymous declaration, matching
     /// `SubjectUsage`'s own bare-form handling).
-    fn lower_stakeholder_member(
+    pub(crate) fn lower_stakeholder_member(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -5243,7 +3621,7 @@ impl SemanticModelBuilder {
     /// `StakeholderMember` has), resolved as an authored `ReferenceKind::PurposeTarget` reference
     /// sourced directly at the enclosing `owner` declaration, mirroring `Variant`'s
     /// single-operand, no-nested-declaration shape.
-    fn lower_purpose_member(
+    pub(crate) fn lower_purpose_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5272,7 +3650,7 @@ impl SemanticModelBuilder {
     /// `RequirementActorDecl`), mirroring `lower_subject_decl`'s shape (ownership, membership,
     /// a `FeatureTyping` reference to the declared type), except `type_name` is unconditional here
     /// (never optional, unlike `SubjectDecl::type_name`).
-    fn lower_requirement_actor_decl(
+    pub(crate) fn lower_requirement_actor_decl(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -5324,7 +3702,7 @@ impl SemanticModelBuilder {
     /// so it contributes the declaration and its membership and no typing reference. The optional
     /// trailing multiplicity is not modeled as a distinct fact, mirroring `lower_subject_decl`'s
     /// own out-of-scope multiplicity.
-    fn lower_actor_usage(
+    pub(crate) fn lower_actor_usage(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5378,7 +3756,7 @@ impl SemanticModelBuilder {
     /// by `requirement def`/`requirement` usage/`viewpoint def` bodies, sharing the caller-supplied
     /// `unsupported` family so a member unrecognized inside a frame reports under the same
     /// diagnostic family as one outside it.
-    fn lower_frame_member(
+    pub(crate) fn lower_frame_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5414,7 +3792,7 @@ impl SemanticModelBuilder {
     /// `verify requirement <name> : <Type> { ... }` form (`explicit_requirement_keyword == true`,
     /// which defines a new anonymous requirement usage inline rather than referencing an existing
     /// one) is out of scope and reported as an explicit `family` unsupported diagnostic.
-    fn lower_verify_requirement_member(
+    pub(crate) fn lower_verify_requirement_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5491,207 +3869,11 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers an explicit `perform action <name> : <Type>;` performance usage (BNF `Perform`)
-    /// found in a part def/usage or action def/usage body, mirroring `lower_action_usage`'s
-    /// shape: ownership, membership, an optional `FeatureTyping`/`Subclassification` reference to
-    /// the performed action type, and `subsets`/`redefines` specialization. Only nested `part`/
-    /// `item` usages inside the perform's own body are lowered; the shorthand `perform <path>;`
-    /// reference form (no declaration label) and other body content are out of scope.
-    fn lower_perform(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserPerform>,
-    ) -> Result<(), ConstructionError> {
-        let declared = match &node.value.target {
-            PerformActionTarget::Action(declaration) => Some(declaration.as_ref()),
-            PerformActionTarget::Reference { .. } => None,
-        };
-        let name_text = declared
-            .and_then(|declaration| {
-                declaration
-                    .value
-                    .identification
-                    .name
-                    .clone()
-                    .or_else(|| declaration.value.identification.short_name.clone())
-            })
-            .unwrap_or_default();
-        let name = self.intern_declared_name(&name_text)?;
-        let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::PerformActionUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    ..DeclarationModifiers::default()
-                },
-                multiplicity: multiplicity_facts(
-                    declared.and_then(|decl| decl.value.multiplicity.as_ref()),
-                ),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        match &node.value.target {
-            PerformActionTarget::Action(usage_declaration) => {
-                if let Some(relationship) = &usage_declaration.value.typing {
-                    self.lower_typing_relationship(document, declaration, relationship)?;
-                }
-                if let Some((relationship, _)) = &usage_declaration.value.subsets {
-                    self.lower_subsetting_relationship(document, declaration, relationship)?;
-                }
-                if let Some(relationship) = &usage_declaration.value.redefines {
-                    self.lower_subsetting_relationship(document, declaration, relationship)?;
-                }
-            }
-            PerformActionTarget::Reference { redefines, .. } => {
-                if let Some(relationship) = redefines {
-                    self.lower_subsetting_relationship(document, declaration, relationship)?;
-                }
-            }
-        }
-        self.lower_perform_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers the `PerformBody` owned by a `perform action` usage (BNF `PerformBodyElement`):
-    /// `part`/`item`/`attribute` usages, `in`/`out` parameter-argument bindings, nested
-    /// action-body content (an anonymous `perform action { ... }`'s own body, typed
-    /// `ActionUsageBodyElement`, delegated to `lower_action_usage_body_element` rather than
-    /// duplicating the control-flow dispatch here), and `variant` members (delegated to
-    /// `lower_variant_usage`, the same function `PartUsageBodyElement::VariantUsage` uses) are all
-    /// recognized.
-    fn lower_perform_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &PerformBody,
-    ) -> Result<(), ConstructionError> {
-        let PerformBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                PerformBodyElement::PartUsage(part_usage) => {
-                    self.lower_part_usage(document, Some(owner), part_usage)?;
-                }
-                PerformBodyElement::ItemUsage(item_usage) => {
-                    self.lower_item_usage(document, Some(owner), item_usage)?;
-                }
-                PerformBodyElement::AttributeUsage(attribute) => {
-                    self.lower_attribute_usage(document, Some(owner), attribute)?;
-                }
-                PerformBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(
-                        document,
-                        Some(owner),
-                        UnsupportedFamily::ActionUsageMember,
-                        member,
-                    )?;
-                }
-                PerformBodyElement::Action(element) => {
-                    self.lower_action_usage_body_element(document, owner, element)?;
-                }
-                PerformBodyElement::InOut(node) => {
-                    self.lower_perform_inout_binding(document, owner, node)?;
-                }
-                PerformBodyElement::Variant(node) => {
-                    self.lower_variant_usage(
-                        document,
-                        owner,
-                        UnsupportedFamily::ActionUsageMember,
-                        node,
-                    )?;
-                }
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers a `perform` usage's `in`/`out <target> = <value>;` parameter-argument binding (BNF
-    /// `PerformInOutBinding`, `ast::structure::PerformInOutBinding`, found only inside
-    /// `PerformBody`) as its own anonymous `DeclarationKind::PerformParameterBinding` feature
-    /// owned by `owner` (the enclosing `perform`'s own declaration), mirroring `lower_bind`'s
-    /// shape: `target` is an authored reference to the invoked action's own declared parameter
-    /// (not a new declared name, unlike `InOutDecl`'s own `in`/`out` shorthand), resolved directly
-    /// as a `PerformParameterTarget` reference since it is already a structured
-    /// `QualifiedReferenceId`; `value` is lowered through the ordinary
-    /// `lower_constraint_expression` machinery, exactly like `Assign`'s RHS. `direction`
-    /// (`in`/`out`/`inout`) is out of scope, matching `Bind`'s own "binding keyword prefix
-    /// ignored" precedent.
-    fn lower_perform_inout_binding(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<PerformInOutBinding>,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::PerformParameterBinding,
-            None,
-            node.span.clone(),
-            DeclarationFacts {
-                direction: direction_fact(Some(&node.value.direction)),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(node.value.target)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::PerformParameterTarget,
-            document,
-            local: node.value.target,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        self.push_evaluation_fact(
-            declaration,
-            self.constraint_evaluation_shape(document, &node.value.value.value),
-        );
-        self.lower_constraint_expression(
-            document,
-            declaration,
-            UnsupportedFamily::ActionUsageMember,
-            &node.value.value,
-        )
-    }
-
     /// Lowers a `metadata def` (BNF MetadataDefinition), mirroring `lower_item_def`: ownership,
     /// membership, and an optional `:>` specialization relationship. `MetadataDef`'s body is a
     /// plain `AttributeBody` (shared with `AttributeDef`/`ItemDef`), so its owned members are
     /// lowered through the existing `lower_attribute_body`.
-    fn lower_metadata_def(
+    pub(crate) fn lower_metadata_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -5744,7 +3926,7 @@ impl SemanticModelBuilder {
     /// `lower_attribute_body`. The `about` clause (annotation targets) is deliberately not
     /// lowered here -- it belongs to the separate annotation-application fact family, out of
     /// scope for this slice.
-    fn lower_metadata_usage(
+    pub(crate) fn lower_metadata_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -5795,7 +3977,7 @@ impl SemanticModelBuilder {
     /// redefinitions (`MetadataBodyUsage`), not attribute declarations: each one names an
     /// existing feature of the annotated metadata type, optionally binds a value, and may own a
     /// nested metadata body of its own.
-    fn lower_metadata_body(
+    pub(crate) fn lower_metadata_body(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5828,7 +4010,7 @@ impl SemanticModelBuilder {
     /// Lowers one `MetadataBodyUsage`: an anonymous feature owned by `owner` that redefines the
     /// named target (`totalRisk` in `@Risk { totalRisk = 0.3; }`), carries the authored value
     /// spelling, and owns any nested metadata body.
-    fn lower_metadata_body_usage(
+    pub(crate) fn lower_metadata_body_usage(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5880,7 +4062,7 @@ impl SemanticModelBuilder {
     /// declared name, not a reference: `@t : Safety;` declares `t` and is typed by `Safety`, and
     /// only the latter is the annotation target. The name is carried onto the annotation's own
     /// declaration below when the annotation body mints one.
-    fn lower_metadata_annotation(
+    pub(crate) fn lower_metadata_annotation(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -5952,1533 +4134,6 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers an `action def` (BNF ActionDefinition), mirroring `lower_part_def`: ownership,
-    /// membership, an optional `:>` specialization relationship, and owned declarations.
-    /// Behavioral/control-flow body elements (parameters, succession, decision/merge/fork/join,
-    /// accept/send, perform, assign, loops) are explicitly out of scope; unrecognized body
-    /// elements fall through to `unsupported_action_definition_member` via
-    /// `lower_action_def_body`.
-    fn lower_action_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ActionDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ActionDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        self.lower_action_def_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers the `ActionDefBody` shared by `action def` and by an `action` usage's own owned
-    /// members (BNF `ActionDefBodyElement`): recognized owned members are nested action usages
-    /// and `item` usages (BNF `StructureUsageMember` shape, see `crate::ast::ItemUsage`);
-    /// everything else -- in/out parameters, `first`/`then` succession, decision/merge/fork/join,
-    /// accept/send, perform, assign, loops -- falls through to
-    /// `unsupported_action_definition_member`. This is the genuinely out-of-scope
-    /// behavioral/control-flow surface for this slice.
-    fn lower_action_def_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &ActionDefBody,
-    ) -> Result<(), ConstructionError> {
-        let ActionDefBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            self.lower_action_def_body_element(document, owner, element)?;
-        }
-        Ok(())
-    }
-
-    /// Lowers one `ActionDefBodyElement`, wherever the grammar puts one: the members of an
-    /// `ActionDefBody`, and the single brace-less member an `if` branch may be written as
-    /// (`ActionBranchBody::Shorthand`). See `lower_action_def_body`'s doc comment for the per-arm
-    /// recognized/unsupported shape.
-    fn lower_action_def_body_element(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        element: &Node<ActionDefBodyElement>,
-    ) -> Result<(), ConstructionError> {
-        match &element.value {
-            ActionDefBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
-            }
-            ActionDefBodyElement::Import(node) => {
-                // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            ActionDefBodyElement::VariantUsage(node) => {
-                // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            ActionDefBodyElement::ActionUsage(action_usage) => {
-                self.lower_action_usage(document, Some(owner), action_usage)?;
-            }
-            ActionDefBodyElement::ItemUsage(item_usage) => {
-                self.lower_item_usage(document, Some(owner), item_usage)?;
-            }
-            ActionDefBodyElement::MetadataUsage(metadata_usage) => {
-                self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
-            }
-            ActionDefBodyElement::StateUsage(state_usage) => {
-                self.lower_state_usage(document, Some(owner), state_usage)?;
-            }
-            ActionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
-                self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
-            }
-            ActionDefBodyElement::PartUsage(part_usage) => {
-                self.lower_part_usage(document, Some(owner), part_usage)?;
-            }
-            ActionDefBodyElement::GuardedSuccession(guarded) => {
-                self.lower_guarded_succession(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    guarded,
-                )?;
-            }
-            ActionDefBodyElement::FirstStmt(first_stmt) => {
-                self.lower_first_stmt(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    first_stmt,
-                )?;
-            }
-            ActionDefBodyElement::InOutDecl(param) => {
-                self.lower_parameter_declaration(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionDefinitionMember,
-                    param,
-                )?;
-            }
-            ActionDefBodyElement::Perform(perform) => {
-                self.lower_perform(document, Some(owner), perform)?;
-            }
-            ActionDefBodyElement::Annotating(member) => {
-                self.lower_annotating_member(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionDefinitionMember,
-                    member,
-                )?;
-            }
-            ActionDefBodyElement::Bind(node) => {
-                self.lower_bind(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    node,
-                )?;
-            }
-            ActionDefBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
-            ActionDefBodyElement::RefDecl(node) => {
-                self.lower_ref_decl(document, Some(owner), node)?;
-            }
-            ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::Merge,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::Decide,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::Join,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::Fork,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionDefBodyElement::ThenAction(node) => {
-                self.lower_then_action(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    node,
-                )?;
-            }
-            ActionDefBodyElement::FlowUsage(node) => self.lower_flow_usage(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
-            ActionDefBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
-            ActionDefBodyElement::DefaultReferenceUsage(node) => {
-                self.lower_default_reference_usage(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionDefinitionMember,
-                    node,
-                )?;
-            }
-            ActionDefBodyElement::WhileStmt(node) => self.lower_while_or_loop_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::While,
-                node.span.clone(),
-                Some(&node.value.condition),
-                &node.value.body.body,
-            )?,
-            ActionDefBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                DeclarationKind::Loop,
-                node.span.clone(),
-                None,
-                &node.value.body.body,
-            )?,
-            ActionDefBodyElement::IfStmt(node) => self.lower_if_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionDefBodyElement::Assign(node) => self.lower_assign_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionDefBodyElement::ForLoop(node) => self.lower_for_loop(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionDefBodyElement::AttributeUsage(node) => {
-                self.lower_attribute_usage(document, Some(owner), node)?;
-            }
-            ActionDefBodyElement::CalcUsage(node) => {
-                self.lower_calc_usage(document, Some(owner), node)?;
-            }
-            ActionDefBodyElement::ActionDef(node) => {
-                self.lower_action_def(document, Some(owner), node)?;
-            }
-            ActionDefBodyElement::Dependency(node) => {
-                self.lower_dependency(document, Some(owner), node)?;
-            }
-            ActionDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                document,
-                UnsupportedFamily::ActionDefinitionMember,
-                element.span.clone(),
-            ),
-        }
-        Ok(())
-    }
-
-    /// Lowers a package/definition/usage-level `action` feature member (BNF ActionUsage), e.g.
-    /// `action validateRoute;` or `action a : SomeAction;`, mirroring `lower_part_usage`.
-    /// `ActionUsage`'s typing is a structured `TypingRelationship` (like `PartUsage.typing`), not
-    /// a bare `QualifiedReferenceId`. Its typed `accept` suffix is retained as an
-    /// `AcceptActionUsage` metaclass and its payload/via facts lower below; owned members lower
-    /// through the same `lower_action_def_body` as an `action def`'s body (BNF `ActionUsageBody`
-    /// is a structurally near-identical production, differing only in the extra `VariantUsage`
-    /// alternative, which is itself out of scope and so folds into the same unsupported family).
-    fn lower_action_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserActionUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let is_accept_action = node.value.accept.is_some();
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            if is_accept_action {
-                DeclarationKind::AcceptActionUsage
-            } else {
-                DeclarationKind::ActionUsage
-            },
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    variation: node.value.is_variation,
-                    individual: node.value.is_individual,
-                    reference: node.value.is_reference,
-                    // ActionUsage has no standalone `composite` token: its BNF's `ref action`
-                    // branch is the non-composite alternative, so the parser's explicit
-                    // reference fact is the authoritative source for the derived composite
-                    // state needed by the normative `isComposite` predicates.
-                    composite: !node.value.is_reference,
-                    ..DeclarationModifiers::default()
-                },
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                is_trigger_action: is_accept_action.then_some(false),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        self.lower_accept_send_clauses(document, declaration, node)?;
-        // An action usage is one of the two constructs whose body may not be written at all --
-        // `action a accept M via v;` ends at the statement after it -- so an absent body is a
-        // distinct upstream state from `;`, and neither owns members.
-        match &node.value.body {
-            Some(body) => self.lower_action_usage_body(document, declaration, body),
-            None => Ok(()),
-        }
-    }
-
-    /// Lowers the accept/send-suffix facts an `ActionUsage` may carry (BNF `AcceptParameterPart`/
-    /// `SenderReceiverPart`, GH-86): a standalone control-node statement's typed `accept name :
-    /// Type` payload (`ActionUsage.accept`), a `send`-suffixed usage's optional payload
-    /// (`ActionUsage.send`, either a typed-name clause like `accept`'s or a general expression
-    /// e.g. `send new Publish(...)`), and the optional trailing `via <port>`/`to <target>` clauses
-    /// shared by both forms. Only the payload TYPE reference (`AcceptPayloadType`) and the via/to
-    /// operand references (`AcceptVia`/`SendTarget`) are resolved; the payload's own declared NAME
-    /// is not a reference target (mirrors `InOutDecl`'s own scope boundary -- the name introduces a
-    /// binding, it does not reference one). Sourced directly at `declaration` (the `ActionUsage`'s
-    /// own declaration), not an anonymous nested one: unlike `Bind`/`Allocate`, each `ActionUsage`
-    /// already has its own unique declaration to source these facts at.
-    fn lower_accept_send_clauses(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        node: &Node<ParserActionUsage>,
-    ) -> Result<(), ConstructionError> {
-        let family = UnsupportedFamily::ActionUsageMember;
-        if let Some(accept) = &node.value.accept {
-            self.lower_accept_trigger(document, declaration, family, accept)?;
-        }
-        if let Some(send) = &node.value.send {
-            match send {
-                SendPayload::Typed(clause) => {
-                    self.lower_payload_clause_type(document, declaration, clause)?;
-                }
-                SendPayload::Expression(expr) => {
-                    self.lower_constraint_expression(document, declaration, family, expr)?;
-                }
-            }
-        }
-        if let Some(via) = &node.value.via {
-            self.lower_satisfy_operand(
-                document,
-                declaration,
-                family,
-                ReferenceKind::AcceptVia,
-                via,
-            )?;
-        }
-        if let Some(to) = &node.value.to {
-            self.lower_satisfy_operand(
-                document,
-                declaration,
-                family,
-                ReferenceKind::SendTarget,
-                to,
-            )?;
-        }
-        Ok(())
-    }
-
-    /// Resolves a `PayloadClause`'s optional `: Type` suffix (`accept name : Type`/`send name :
-    /// Type`) as an `AcceptPayloadType` reference, resolved through the same
-    /// Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point as
-    /// `FeatureTyping` -- the payload names a type, exactly like an ordinary parameter's type
-    /// annotation.
-    fn lower_payload_clause_type(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        clause: &sysml_v2_parser::ast::PayloadClause,
-    ) -> Result<(), ConstructionError> {
-        let Some(type_name) = clause.type_name else {
-            return Ok(());
-        };
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(type_name)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::AcceptPayloadType,
-            document,
-            local: type_name,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        Ok(())
-    }
-
-    /// Lowers the `ActionUsageBody` owned by an `action` usage (BNF `ActionUsageBodyElement`):
-    /// see `lower_action_def_body` for the shared recognized/unsupported shape. The one
-    /// additional alternative here, `VariantUsage`, wraps the same `ast::VariantUsage` node
-    /// `lower_variant_usage` already lowers for `PartUsageBodyElement::VariantUsage`/
-    /// `PerformBodyElement::Variant`, so it dispatches there rather than staying unconditionally
-    /// unsupported. Delegates each element to `lower_action_usage_body_element`, which
-    /// `PerformBodyElement::Action` (BNF `PerformBodyElement`, the identical body-element shape an
-    /// anonymous `perform action { ... }` owns) also calls directly, since a `perform action`'s
-    /// own body is typed `ActionUsageBodyElement` too, not a distinct enum.
-    fn lower_action_usage_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &ActionUsageBody,
-    ) -> Result<(), ConstructionError> {
-        let ActionUsageBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            self.lower_action_usage_body_element(document, owner, element)?;
-        }
-        Ok(())
-    }
-
-    /// Lowers one `ActionUsageBodyElement` (see `lower_action_usage_body`'s doc comment for why
-    /// this is a standalone per-element function rather than inlined into that loop).
-    fn lower_action_usage_body_element(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        element: &Node<ActionUsageBodyElement>,
-    ) -> Result<(), ConstructionError> {
-        match &element.value {
-            ActionUsageBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
-            }
-            ActionUsageBodyElement::Import(node) => {
-                // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ActionUsageMember,
-                    node.span.clone(),
-                );
-            }
-            ActionUsageBodyElement::ActionUsage(action_usage) => {
-                self.lower_action_usage(document, Some(owner), action_usage)?;
-            }
-            ActionUsageBodyElement::ItemUsage(item_usage) => {
-                self.lower_item_usage(document, Some(owner), item_usage)?;
-            }
-            ActionUsageBodyElement::MetadataUsage(metadata_usage) => {
-                self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
-            }
-            ActionUsageBodyElement::StateUsage(state_usage) => {
-                self.lower_state_usage(document, Some(owner), state_usage)?;
-            }
-            ActionUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
-                self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
-            }
-            ActionUsageBodyElement::PartUsage(part_usage) => {
-                self.lower_part_usage(document, Some(owner), part_usage)?;
-            }
-            ActionUsageBodyElement::GuardedSuccession(guarded) => {
-                self.lower_guarded_succession(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionUsageMember,
-                    guarded,
-                )?;
-            }
-            ActionUsageBodyElement::FirstStmt(first_stmt) => {
-                self.lower_first_stmt(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionUsageMember,
-                    first_stmt,
-                )?;
-            }
-            ActionUsageBodyElement::InOutDecl(param) => {
-                self.lower_parameter_declaration(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionUsageMember,
-                    param,
-                )?;
-            }
-            ActionUsageBodyElement::Annotating(member) => {
-                self.lower_annotating_member(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionUsageMember,
-                    member,
-                )?;
-            }
-            ActionUsageBodyElement::Bind(node) => {
-                self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
-            }
-            ActionUsageBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node,
-            )?,
-            ActionUsageBodyElement::RefDecl(node) => {
-                self.lower_ref_decl(document, Some(owner), node)?;
-            }
-            ActionUsageBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::Merge,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionUsageBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::Decide,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionUsageBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::Join,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionUsageBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::Fork,
-                node.span.clone(),
-                &node.value.declaration,
-                &node.value.body,
-            )?,
-            ActionUsageBodyElement::ThenAction(node) => {
-                self.lower_then_action(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionUsageMember,
-                    node,
-                )?;
-            }
-            ActionUsageBodyElement::FlowUsage(node) => {
-                self.lower_flow_usage(document, owner, UnsupportedFamily::ActionUsageMember, node)?
-            }
-            ActionUsageBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node,
-            )?,
-            ActionUsageBodyElement::DefaultReferenceUsage(node) => {
-                self.lower_default_reference_usage(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::ActionUsageMember,
-                    node,
-                )?;
-            }
-            ActionUsageBodyElement::WhileStmt(node) => self.lower_while_or_loop_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::While,
-                node.span.clone(),
-                Some(&node.value.condition),
-                &node.value.body.body,
-            )?,
-            ActionUsageBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                DeclarationKind::Loop,
-                node.span.clone(),
-                None,
-                &node.value.body.body,
-            )?,
-            ActionUsageBodyElement::IfStmt(node) => self.lower_if_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionUsageBodyElement::Assign(node) => self.lower_assign_stmt(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionUsageBodyElement::ForLoop(node) => self.lower_for_loop(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
-                &node.value,
-            )?,
-            ActionUsageBodyElement::VariantUsage(node) => {
-                self.lower_variant_usage(
-                    document,
-                    owner,
-                    UnsupportedFamily::ActionUsageMember,
-                    node,
-                )?;
-            }
-            ActionUsageBodyElement::AttributeUsage(node) => {
-                self.lower_attribute_usage(document, Some(owner), node)?;
-            }
-            ActionUsageBodyElement::CalcUsage(node) => {
-                self.lower_calc_usage(document, Some(owner), node)?;
-            }
-            ActionUsageBodyElement::ActionDef(node) => {
-                self.lower_action_def(document, Some(owner), node)?;
-            }
-            ActionUsageBodyElement::Dependency(node) => {
-                self.lower_dependency(document, Some(owner), node)?;
-            }
-            ActionUsageBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                document,
-                UnsupportedFamily::ActionUsageMember,
-                element.span.clone(),
-            ),
-        }
-        Ok(())
-    }
-
-    /// Lowers a `first X then Y;` control-flow succession statement (BNF `FirstStmt`) found
-    /// inside an action def/usage body as its own anonymous `DeclarationKind::Succession`
-    /// feature owned by the enclosing action def/usage `owner` declaration, mirroring
-    /// `lower_end_decl`'s nested-declaration shape: both ends are lowered as authored
-    /// `Succession` references sourced at this new anonymous declaration (not at `owner`
-    /// directly), so lexical lookup starts in `owner`'s own scope -- where `X`/`Y` are actually
-    /// declared as sibling actions -- rather than `owner`'s enclosing scope. The `first` end is
-    /// always lowered; the `then` end is `None` for the standalone initial-node marker
-    /// `first start;` (§6 G13), which is left as-is (no reference to lower). The named/typed
-    /// `succession` keyword prefix and any braced body content are out of scope.
-    fn lower_first_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<FirstStmt>,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::Succession,
-            None,
-            node.span.clone(),
-            DeclarationFacts {
-                // The succession feature's own multiplicity (`succession [n] first ... then ...`).
-                // The per-end `first_multiplicity`/`then_multiplicity` belong to the ends, which
-                // are lowered as references rather than declarations, so they are not facts here.
-                multiplicity: multiplicity_facts(node.value.succession_multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        self.lower_succession_end(
-            document,
-            declaration,
-            family,
-            ReferenceKind::Succession,
-            &node.value.first,
-        )?;
-        if let Some(then) = &node.value.then {
-            self.lower_succession_end(
-                document,
-                declaration,
-                family,
-                ReferenceKind::Succession,
-                then,
-            )?;
-        }
-        Ok(())
-    }
-
-    /// Lowers an action-only `GuardedSuccession` body element (`('succession' UsageDeclaration)?
-    /// 'first' <feature-chain> 'if' <guard> 'then' <connector-end>`), mirroring `lower_first_stmt`:
-    /// an anonymous `DeclarationKind::Succession` feature owned by `owner`, whose `first` source
-    /// and `then` target are lowered as `ReferenceKind::Succession` references (both are
-    /// grammar-owned member productions upstream, so neither is an expression), and whose guard
-    /// is lowered through the same constraint-expression dispatch a `Transition`'s guard uses.
-    /// The optional `succession` declaration contributes the succession feature's own
-    /// multiplicity; its own body is not lowered, matching `lower_first_stmt`.
-    fn lower_guarded_succession(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<GuardedSuccession>,
-    ) -> Result<(), ConstructionError> {
-        let succession = node.value.succession.as_ref();
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::Succession,
-            None,
-            node.span.clone(),
-            DeclarationFacts {
-                multiplicity: multiplicity_facts(
-                    succession.and_then(|decl| decl.declaration.value.multiplicity.as_ref()),
-                ),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(node.value.first)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::Succession,
-            document,
-            local: node.value.first,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        self.lower_constraint_expression(document, owner, family, &node.value.guard)?;
-        self.lower_kerml_connector_end(
-            document,
-            declaration,
-            ReferenceKind::Succession,
-            &node.value.target,
-        )
-    }
-
-    /// Lowers one succession end (the `first` or `then` operand of a `FirstStmt`, or -- reused
-    /// verbatim by `AssignTarget`/`Decide`/`Merge`/`Fork`/`Join` -- any other paired/single-operand
-    /// control-flow reference): its path expression is a structured `Expression` (not a flattened
-    /// string), so a simple/qualified name (`Expression::FeatureRef`) resolves as an authored
-    /// reference through the same shared lexical lookup as `ConnectorEnd`. A dotted feature-chain
-    /// path -- either nested `Expression::MemberAccess` nodes or a single `Expression::
-    /// FeatureChainRef` (the shape the parser actually produces for a dotted path with no
-    /// intervening non-name segments, e.g. `assign a.b := ...;`'s target, mirroring
-    /// `lower_satisfy_operand`'s identical `MemberAccess`/`FeatureChainRef` pairing) -- resolves as
-    /// a `MemberAccessOperand` reference through `flatten_member_access_chain`/
-    /// `push_member_access_reference`. The bare `start`/`done` pseudo-action markers parse as an
-    /// ordinary `FeatureRef` that legitimately fails to resolve because no such declaration is
-    /// synthesized; any other expression shape is left as an explicit unsupported-member
-    /// diagnostic.
-    fn lower_succession_end(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        kind: ReferenceKind,
-        node: &Node<Expression>,
-    ) -> Result<(), ConstructionError> {
-        match &node.value {
-            Expression::FeatureRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span
-                    .clone();
-                self.push_reference(PendingReference {
-                    source: owner,
-                    kind,
-                    document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-            }
-            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
-                } else {
-                    self.push_unsupported(document, family, node.span.clone());
-                }
-            }
-            _ => self.push_unsupported(document, family, node.span.clone()),
-        }
-        Ok(())
-    }
-
-    /// Lowers a `decide`/`merge`/`fork`/`join` control node (BNF `DecisionStmt`/`MergeStmt`/
-    /// `ForkStmt`/`JoinStmt`, which all share the identical `<keyword> <expr> <FirstMergeBody>`
-    /// shape) as its own anonymous nested-declaration feature owned by `owner`, mirroring
-    /// `lower_first_stmt`'s `Succession` shape: the required operand expression is lowered as a
-    /// `kind` reference through `lower_succession_end`'s exact `FeatureRef`/`MemberAccess`
-    /// dispatch, and a braced body's members recurse through `lower_first_merge_body`.
-    #[allow(clippy::too_many_arguments)]
-    fn lower_first_merge_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        decl_kind: DeclarationKind,
-        span: Span,
-        control_declaration: &ControlNodeDeclaration,
-        body: &FirstMergeBody,
-    ) -> Result<(), ConstructionError> {
-        // `ControlNodeDeclaration` is the node's own declaration, not a reference to another
-        // element: `merge continue;` declares a MergeNode named `continue`, while `merge;`
-        // declares an anonymous one. An unsupported declaration surface stays visible as an
-        // unsupported member rather than being lowered as though it named something.
-        let name = match control_declaration {
-            ControlNodeDeclaration::Anonymous => None,
-            ControlNodeDeclaration::Named(expression) => {
-                match self.control_node_declared_name(document, expression)? {
-                    Some(name) => Some(name),
-                    None => {
-                        self.push_unsupported(document, family, expression.span.clone());
-                        None
-                    }
-                }
-            }
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            decl_kind,
-            name,
-            span.clone(),
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        self.lower_first_merge_body(document, declaration, family, body)
-    }
-
-    /// The declared name of a control node, when its declaration is the simple identifier the
-    /// SysML control-node surface admits. A qualified or computed expression is not a declaration
-    /// this lowering can honor, and returns `None` so the caller can report it explicitly.
-    fn control_node_declared_name(
-        &mut self,
-        document: DocumentId,
-        expression: &Node<Expression>,
-    ) -> Result<Option<SymbolId>, ConstructionError> {
-        let Expression::FeatureRef(target) = &expression.value else {
-            return Ok(None);
-        };
-        let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        let reference = parsed
-            .qualified_reference(*target)
-            .ok_or(ConstructionError::InvalidParserReference)?;
-        if reference.segments.len() != 1 || reference.metadata.is_absolute {
-            return Ok(None);
-        }
-        let decoded = reference
-            .segment_decoded_text(0)
-            .ok_or(ConstructionError::InvalidParserReference)?;
-        self.intern_declared_name(decoded.as_ref())
-    }
-
-    /// Lowers a `decide`/`merge`/`fork`/`join` node's optional braced body (BNF
-    /// `FirstMergeBody::Brace`): each retained member is an ordinary `ActionDefBodyElement`, so
-    /// the common nested shapes actually authored -- `in`/`out` parameter declarations (a fork's
-    /// output flows, e.g. `fork F { in a; out b1; out b2; }`), nested action usages, and further
-    /// `then <target>;` continuations -- recurse through the same lowering functions an ordinary
-    /// action def/usage body uses. Anything else falls through to the existing
-    /// unsupported-member diagnostic, unchanged in kind from prior behavior.
-    fn lower_first_merge_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        body: &FirstMergeBody,
-    ) -> Result<(), ConstructionError> {
-        let FirstMergeBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                FirstMergeBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                FirstMergeBodyElement::Unsupported(_) => {
-                    self.push_unsupported(document, family, element.span.clone());
-                }
-                FirstMergeBodyElement::Member(member) => match &member.value {
-                    ActionDefBodyElement::ActionUsage(action_usage) => {
-                        self.lower_action_usage(document, Some(owner), action_usage)?;
-                    }
-                    ActionDefBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(owner), family, param)?;
-                    }
-                    ActionDefBodyElement::ThenAction(then_action) => {
-                        self.lower_then_action(document, owner, family, then_action)?;
-                    }
-                    ActionDefBodyElement::Annotating(member) => {
-                        self.lower_annotating_member(document, Some(owner), family, member)?;
-                    }
-                    ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
-                        document,
-                        owner,
-                        family,
-                        DeclarationKind::Merge,
-                        node.span.clone(),
-                        &node.value.declaration,
-                        &node.value.body,
-                    )?,
-                    ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
-                        document,
-                        owner,
-                        family,
-                        DeclarationKind::Decide,
-                        node.span.clone(),
-                        &node.value.declaration,
-                        &node.value.body,
-                    )?,
-                    ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
-                        document,
-                        owner,
-                        family,
-                        DeclarationKind::Join,
-                        node.span.clone(),
-                        &node.value.declaration,
-                        &node.value.body,
-                    )?,
-                    ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
-                        document,
-                        owner,
-                        family,
-                        DeclarationKind::Fork,
-                        node.span.clone(),
-                        &node.value.declaration,
-                        &node.value.body,
-                    )?,
-                    _ => self.push_unsupported(document, family, element.span.clone()),
-                },
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers a `then <target>;` continuation statement (BNF `ThenAction`) found either as a
-    /// direct action def/usage body element or nested inside a `decide`/`merge`/`fork`/`join`
-    /// node's braced body: dispatches on `ThenTarget` to whichever existing lowering function
-    /// already handles that target's own AST shape (an inline `action`/`perform` declaration, a
-    /// nested `merge`/`fork`/`decide` control node, or a bare feature reference to an
-    /// already-declared sibling node), so no new resolution machinery is written here. The
-    /// `Accept` shorthand-trigger target is deliberately out of scope for this slice (mirroring
-    /// `Transition`'s own `TransitionAccept::Payload`/`TimeTrigger` deferral) and falls through to
-    /// the existing unsupported-member diagnostic.
-    fn lower_then_action(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<ThenAction>,
-    ) -> Result<(), ConstructionError> {
-        match &node.value.target {
-            // `then action ...;` and `then send ... to ...;` are the same `ActionUsage` shape
-            // upstream -- the send form is the one carrying `send`/`via`/`to` clauses, which
-            // `lower_action_usage` already reads off the usage itself.
-            ThenTarget::Action(action_usage) | ThenTarget::Send(action_usage) => {
-                self.lower_action_usage(document, Some(owner), action_usage)?;
-            }
-            ThenTarget::Perform(perform) => {
-                self.lower_perform(document, Some(owner), perform)?;
-            }
-            ThenTarget::Merge(merge_stmt) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                family,
-                DeclarationKind::Merge,
-                merge_stmt.span.clone(),
-                &merge_stmt.value.declaration,
-                &merge_stmt.value.body,
-            )?,
-            ThenTarget::Fork(fork_stmt) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                family,
-                DeclarationKind::Fork,
-                fork_stmt.span.clone(),
-                &fork_stmt.value.declaration,
-                &fork_stmt.value.body,
-            )?,
-            ThenTarget::Join(join_stmt) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                family,
-                DeclarationKind::Join,
-                join_stmt.span.clone(),
-                &join_stmt.value.declaration,
-                &join_stmt.value.body,
-            )?,
-            ThenTarget::Decide(decision_stmt) => self.lower_first_merge_stmt(
-                document,
-                owner,
-                family,
-                DeclarationKind::Decide,
-                decision_stmt.span.clone(),
-                &decision_stmt.value.declaration,
-                &decision_stmt.value.body,
-            )?,
-            // `then if <condition> { ... }` -- an inline conditional action node, lowered
-            // through the same owner the standalone `if` body element uses.
-            ThenTarget::If(if_stmt) => self.lower_if_stmt(
-                document,
-                owner,
-                family,
-                if_stmt.span.clone(),
-                &if_stmt.value,
-            )?,
-            ThenTarget::Feature(expression) => {
-                let declaration = self.push_typed_declaration(
-                    document,
-                    Some(owner),
-                    DeclarationKind::ThenContinuation,
-                    None,
-                    node.span.clone(),
-                    // A synthesized scope for the `then <feature>` continuation target.
-                    DeclarationFacts::none(),
-                )?;
-                self.push_membership(
-                    declaration,
-                    MembershipKind::Feature,
-                    Visibility::Default,
-                    node.span.clone(),
-                )?;
-                self.lower_succession_end(
-                    document,
-                    declaration,
-                    family,
-                    ReferenceKind::ThenTarget,
-                    expression,
-                )?;
-            }
-            ThenTarget::Accept(accept) => {
-                self.lower_then_accept(document, owner, family, accept)?;
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers an `assign <target> := <value>;` reassignment statement (BNF `AssignStmt`, `ast::
-    /// AssignStmt`; `is_then` is not modeled as a distinct fact -- both the plain and `then assign
-    /// ...;` spellings resolve identically) as its own anonymous `DeclarationKind::Assign` feature
-    /// owned by `owner`, mirroring `lower_bind`'s "statement, not a new named usage" shape: `lhs`
-    /// is lowered as an `AssignTarget` reference through the exact `lower_succession_end` `FeatureRef`/
-    /// `MemberAccess` dispatch every other paired/single-operand control-flow reference kind uses,
-    /// and `rhs` is lowered through the shared value-assignment pipeline (`classify_constraint_
-    /// expression`/`lower_constraint_expression`), publishing its own evaluation fact exactly like
-    /// an attribute default value.
-    fn lower_assign_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        span: Span,
-        node: &AssignStmt,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::Assign,
-            None,
-            span.clone(),
-            // A synthesized scope for the assignment's target/value references.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        self.lower_succession_end(
-            document,
-            declaration,
-            family,
-            ReferenceKind::AssignTarget,
-            &node.lhs,
-        )?;
-        self.push_evaluation_fact(
-            declaration,
-            self.constraint_evaluation_shape(document, &node.rhs.value),
-        );
-        self.lower_constraint_expression(document, declaration, family, &node.rhs)
-    }
-
-    /// Lowers a `while <condition> { ... }` (BNF `WhileStmt`) or bare `loop { ... }` (BNF
-    /// `LoopStmt`, no condition) control node as its own anonymous nested-declaration feature
-    /// owned by `owner`, mirroring `lower_first_merge_stmt`'s shape: an optional boolean
-    /// `condition` is lowered through the same `classify_constraint_expression`/
-    /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
-    /// transition guards/filter conditions (a loop condition is a genuine boolean expression, not
-    /// a control-node reference, unlike `decide`/`merge`/`fork`/`join`'s own operand), and the
-    /// body's nested statements recurse through `lower_action_def_body` -- the same dispatch this
-    /// helper is itself reached from, since a nested body is always typed `ActionDefBody`
-    /// regardless of whether the enclosing action is a def or a usage.
-    #[allow(clippy::too_many_arguments)]
-    fn lower_while_or_loop_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        decl_kind: DeclarationKind,
-        span: Span,
-        condition: Option<&Node<Expression>>,
-        body: &ActionDefBody,
-    ) -> Result<(), ConstructionError> {
-        // A synthesized control-flow scope with no authored declaration syntax of its own.
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            decl_kind,
-            None,
-            span.clone(),
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        if let Some(condition) = condition {
-            self.push_evaluation_fact(
-                declaration,
-                self.constraint_evaluation_shape(document, &condition.value),
-            );
-            self.lower_constraint_expression(document, declaration, family, condition)?;
-        }
-        self.lower_action_def_body(document, declaration, body)
-    }
-
-    /// Lowers an `if <condition> { ... } (else { ... })?` control node (BNF `IfStmt`) as its own
-    /// anonymous nested-declaration feature owned by `owner`, same condition handling as
-    /// `lower_while_or_loop_stmt`. Both `then_body` and `else_body` (when present) recurse through
-    /// `lower_action_def_body`, owned by this one `If` declaration -- branch bodies are not
-    /// distinguished from one another as separate declaration scopes, mirroring how `decide`'s own
-    /// braced body is a single undifferentiated scope.
-    fn lower_if_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        span: Span,
-        node: &IfStmt,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::If,
-            None,
-            span.clone(),
-            // A synthesized scope for the conditional's guard and branches. `else_body` is a
-            // typed parser distinction, so publish its presence once at this lowering boundary.
-            DeclarationFacts {
-                has_else_action: Some(node.else_body.is_some()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        self.push_evaluation_fact(
-            declaration,
-            self.constraint_evaluation_shape(document, &node.condition.value),
-        );
-        self.lower_constraint_expression(document, declaration, family, &node.condition)?;
-        self.lower_action_branch_body(document, declaration, &node.then_body)?;
-        if let Some(else_body) = &node.else_body {
-            self.lower_action_branch_body(document, declaration, else_body)?;
-        }
-        Ok(())
-    }
-
-    /// Lowers one branch of an `if` control node (`ast::ActionBranchBody`). The grammar offers two
-    /// spellings -- a braced action body, or a single member written without braces (`if x then
-    /// y;`) -- which are different authored syntax and so different states upstream. They own the
-    /// same members either way, so both dispatch through the same walker; the branch keeps no
-    /// declaration scope of its own (see `lower_if_stmt`).
-    fn lower_action_branch_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &ActionBranchBody,
-    ) -> Result<(), ConstructionError> {
-        match body {
-            ActionBranchBody::Braced(body) => self.lower_action_def_body(document, owner, body),
-            ActionBranchBody::Shorthand(element) => {
-                self.lower_action_def_body_element(document, owner, element)
-            }
-        }
-    }
-
-    /// Lowers a `for <var> in <range> { ... }` loop control node (BNF `ForLoop`) as its own
-    /// anonymous `DeclarationKind::ForLoop` nested-declaration feature owned by `owner`, mirroring
-    /// `lower_while_or_loop_stmt`'s shape: the `range` collection expression is lowered through
-    /// the same `classify_constraint_expression`/`lower_constraint_expression` machinery as
-    /// `while`'s condition, sourced at this `ForLoop` declaration (the range is evaluated once per
-    /// loop, not once per iteration binding). `var` (a bare, untyped `String` -- the parser
-    /// records no type/multiplicity for it) is lowered as a named `DeclarationKind::
-    /// ForLoopVariable` feature owned by this same `ForLoop` declaration -- introducing a binding,
-    /// not a reference, mirroring `InOutDecl`'s own scope boundary -- so it is a visible sibling
-    /// through the shared `DeclarationDomain::Any` lexical lookup the body's own statements use.
-    /// The body then recurses through `lower_action_def_body`, owned by this `ForLoop`
-    /// declaration. No type inference from `range`'s element type is performed; this is
-    /// reference-resolution scope only, not iteration-execution semantics.
-    fn lower_for_loop(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        span: Span,
-        node: &ForLoop,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::ForLoop,
-            None,
-            span.clone(),
-            // A synthesized scope owning the loop variable and range expression.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span.clone(),
-        )?;
-        self.push_evaluation_fact(
-            declaration,
-            self.constraint_evaluation_shape(document, &node.in_parameter.expression.value),
-        );
-        self.lower_constraint_expression(
-            document,
-            declaration,
-            family,
-            &node.in_parameter.expression,
-        )?;
-        let var_name = match node.variable.value.identification.name.as_deref() {
-            Some(name) => self.intern_declared_name(name)?,
-            None => None,
-        };
-        let var_declaration = self.push_typed_declaration(
-            document,
-            Some(declaration),
-            DeclarationKind::ForLoopVariable,
-            var_name,
-            span.clone(),
-            // `ast::ForLoop::var` is a bare `String`; the parser records no type, multiplicity, or
-            // modifier for the loop variable.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            var_declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        self.lower_action_def_body(document, declaration, &node.body.body)
-    }
-
-    /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
-    /// TransitionAccept`) -- the inline accept-trigger form reused unchanged from `Transition`'s
-    /// own `accept` clause, deliberately deferred by `39bd06fc`. Sourced directly at `owner` (the
-    /// enclosing action def/usage declaration), not an anonymous nested declaration: an accept
-    /// trigger's operand is looked up in the action's own enclosing scope (e.g. `accept sig after
-    /// ...;`'s `sig`, `accept when b.f;`'s `b`), not among the action's own children the way a
-    /// `Succession`/`Decide`/`Merge` end is. Dispatches on the three `TransitionAccept` shapes:
-    /// `Shorthand`'s expression and `TimeTrigger`'s (`at`/`when`/`after`) expression both reuse
-    /// `lower_constraint_expression` directly (picking up its `FeatureRef`/`MemberAccess`/
-    /// `Invocation`/`Constructor` dispatch, e.g. `accept at new Time::Iso8601DateTime(...)`'s
-    /// constructor callee/argument); `Payload`'s typed `: Type` suffix reuses
-    /// `lower_payload_clause_type`. Either shape's optional trailing `via <port>` clause resolves
-    /// as an `AcceptVia` reference through `lower_satisfy_operand`.
-    fn lower_then_accept(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        accept: &Node<TransitionAccept>,
-    ) -> Result<(), ConstructionError> {
-        self.lower_accept_trigger(document, owner, family, &accept.value)
-    }
-
-    /// The `TransitionAccept` dispatch shared by `then accept ...;` (see `lower_then_accept`) and
-    /// an `ActionUsage`'s own `accept` clause, which upstream now types as the same production so
-    /// the pin-valid `accept Type via port` shorthand and its `via` target are retained.
-    fn lower_accept_trigger(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        accept: &TransitionAccept,
-    ) -> Result<(), ConstructionError> {
-        match accept {
-            TransitionAccept::Shorthand(expr, via) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
-                if let Some(via) = via {
-                    self.lower_satisfy_operand(
-                        document,
-                        owner,
-                        family,
-                        ReferenceKind::AcceptVia,
-                        via,
-                    )?;
-                }
-            }
-            TransitionAccept::TimeTrigger(_kind, expr) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
-            }
-            TransitionAccept::Payload(clause, via) => {
-                self.lower_payload_clause_type(document, owner, clause)?;
-                if let Some(via) = via {
-                    self.lower_satisfy_operand(
-                        document,
-                        owner,
-                        family,
-                        ReferenceKind::AcceptVia,
-                        via,
-                    )?;
-                }
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers a standalone, unnamed `flow (of <payload>)? <source> to <target>;` body element
-    /// (BNF `FlowUsage`'s bare from/to shorthand, `ast::FlowUsage`) found inside an action
-    /// def/usage body. Mirrors `lower_allocate`/`lower_bind`: an anonymous `DeclarationKind::Flow`
-    /// feature owned by `owner`, with `from`/`to` lowered as authored `FlowSource`/`FlowTarget`
-    /// references through `lower_kerml_connector_end` -- upstream types both ends as
-    /// `KermlConnectorEnd`, the same connector-end shape the KerML connector, binding and
-    /// succession members carry, so each end's `target` resolves through the shared
-    /// `DeclarationDomain::Any` lexical lookup directly -- and the optional `of
-    /// <payload>` clause's type resolved as a `FlowPayloadType` reference (mirroring
-    /// `AcceptPayloadType`). A `: Type` clause on the flow itself (`type_name`) is a structurally
-    /// distinct declaration form and stays unsupported, as does a *named* flow
-    /// (`node.value.name.is_some()`, e.g. `flow generateToAmplify from a to b;`). The upstream
-    /// misparse that made a name untrustworthy -- the canonical `flow from <a> to <b>;` shorthand
-    /// consuming its own `from` keyword as the declared name -- is fixed, so an authored name is
-    /// now a real one; lowering the named form is pending (planning/UPSTREAM_PARSER_GAPS.md,
-    /// "Typed upstream, not yet lowered here").
-    fn lower_flow_usage(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<FlowUsage>,
-    ) -> Result<(), ConstructionError> {
-        // Upstream now models `FlowDeclaration`'s two grammar alternatives: the endpoint-only
-        // shorthand this lowering supports, and the declaration-led form, whose named/typed
-        // shapes stay unsupported exactly as before.
-        let (payload, endpoints) = match &node.value.declaration {
-            FlowDeclaration::EndpointOnly { endpoints } => (None, endpoints),
-            FlowDeclaration::Declared {
-                declaration,
-                payload,
-                endpoints,
-                ..
-            } => {
-                let declared_label = declaration.value.identification.name.is_some()
-                    || declaration.value.identification.short_name.is_some();
-                let Some(endpoints) = endpoints.as_ref() else {
-                    self.push_unsupported(document, family, node.span.clone());
-                    return Ok(());
-                };
-                if declared_label || declaration.value.typing.is_some() {
-                    self.push_unsupported(document, family, node.span.clone());
-                    return Ok(());
-                }
-                (payload.as_ref(), endpoints)
-            }
-        };
-        let (from, to) = (&endpoints.from, &endpoints.to);
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::Flow,
-            None,
-            node.span.clone(),
-            // `ast::FlowUsage` carries no modifier, multiplicity, direction, or short name; its
-            // payload/from/to facts are lowered as references.
-            DeclarationFacts {
-                owned_end_feature_count: Some(2),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(payload) = payload {
-            if let Some(type_name) = payload.value.type_name {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(type_name)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span
-                    .clone();
-                self.push_reference(PendingReference {
-                    source: declaration,
-                    kind: ReferenceKind::FlowPayloadType,
-                    document,
-                    local: type_name,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-            }
-        }
-        self.lower_kerml_connector_end(document, declaration, ReferenceKind::FlowSource, from)?;
-        self.lower_kerml_connector_end(document, declaration, ReferenceKind::FlowTarget, to)?;
-        Ok(())
-    }
-
-    /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
-    /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
-    /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
-    /// `DeclarationDomain::Any` lexical lookup, sourced directly at `owner` (the enclosing action
-    /// def/usage declaration) -- unlike `Succession`/`Decide`, no anonymous nested-declaration
-    /// scope shift is needed because the terminated node/action is looked up in the terminate
-    /// statement's own enclosing scope, where sibling action names like `terminate c1;`'s `c1` are
-    /// actually declared. The bare `terminate;` form (no target) has nothing to resolve and is a
-    /// legitimate no-op, not an unsupported construct.
-    fn lower_terminate_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        family: UnsupportedFamily,
-        node: &Node<TerminateStmt>,
-    ) -> Result<(), ConstructionError> {
-        if let Some(target) = &node.value.target {
-            self.lower_satisfy_operand(
-                document,
-                owner,
-                family,
-                ReferenceKind::TerminateTarget,
-                target,
-            )?;
-        }
-        Ok(())
-    }
-
     /// Lowers a `constraint def`/`constraint` usage body's boolean expression (slice 1 of the
     /// constraint/calc expression fact family, widened by the arithmetic/logical-combinator slice
     /// to accept nested arithmetic and `and`/`or` combinators; see `ReferenceKind::
@@ -7501,7 +4156,7 @@ impl SemanticModelBuilder {
     /// evaluated (`EvalNode::Invocation` always folds to `NonConstant`). Any other expression shape
     /// -- tuples, type-check/classification expressions, unary ops, etc. -- falls through to the
     /// existing unsupported-member diagnostic, unchanged from prior behavior.
-    fn lower_constraint_expression(
+    pub(crate) fn lower_constraint_expression(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -7667,7 +4322,7 @@ impl SemanticModelBuilder {
     /// which branch is taken). Every other expression shape stays unsupported, falling through to
     /// the existing `unsupported_calc_definition_member` diagnostic, unchanged from prior
     /// behavior.
-    fn lower_calc_expression(
+    pub(crate) fn lower_calc_expression(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -7829,7 +4484,7 @@ impl SemanticModelBuilder {
     /// brackets, so a diagnostic about the unit points at the unit and not at the whole literal.
     /// A shape `quantity_unit_text` does not recognise records nothing rather than a guess: the
     /// literal still publishes its value, and no unit fact claims a token that was not written.
-    fn lower_unit_token(
+    pub(crate) fn lower_unit_token(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -7844,7 +4499,7 @@ impl SemanticModelBuilder {
 
     /// Lowers one authored `filter` condition: its references, and the classified expression that
     /// lets the barrier settle what it evaluates to.
-    fn lower_filter_condition(
+    pub(crate) fn lower_filter_condition(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -7874,7 +4529,7 @@ impl SemanticModelBuilder {
         self.lower_filter_expression(document, owner, condition)
     }
 
-    fn lower_filter_expression(
+    pub(crate) fn lower_filter_expression(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -8011,615 +4666,6 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Lowers a `state def` (BNF StateDefinition), mirroring `lower_action_def`: ownership,
-    /// membership, an optional `:>` specialization relationship, and owned declarations.
-    /// State-machine-specific semantics (entry/do/exit action bindings, transitions, exclusive/
-    /// parallel substates, history) are explicitly out of scope; unrecognized body elements fall
-    /// through to `unsupported_state_definition_member` via `lower_state_def_body`.
-    fn lower_state_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<StateDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::StateDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        self.lower_state_def_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers the `StateDefBody` shared by `state def` and by a `state` usage's own owned
-    /// members (BNF `StateDefBodyElement`): nested state/requirement usages, entry/do/exit action
-    /// bindings, `then`/`final` state markers, `ref` bindings, and transitions are all lowered.
-    /// `StateDefBodyElement` also carries `AttributeUsage`/`ActionUsage`/`AssertConstraint`/
-    /// `SuccessionUsage` variants; the first three dispatch to their existing lowerings here, and
-    /// a `succession` member stays on `unsupported_state_definition_member`.
-    fn lower_state_def_body(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        body: &StateDefBody,
-    ) -> Result<(), ConstructionError> {
-        let StateDefBody::Brace { elements, .. } = body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                StateDefBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                StateDefBodyElement::PartUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
-                    );
-                }
-                StateDefBodyElement::ConstraintUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
-                    );
-                }
-                StateDefBodyElement::StateUsage(state_usage) => {
-                    self.lower_state_usage(document, Some(owner), state_usage)?;
-                }
-                StateDefBodyElement::RequirementUsage(requirement_usage) => {
-                    self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
-                }
-                StateDefBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(
-                        document,
-                        Some(owner),
-                        UnsupportedFamily::StateDefinitionMember,
-                        member,
-                    )?;
-                }
-                StateDefBodyElement::Entry(entry) => {
-                    self.lower_state_entry_action(document, owner, entry)?;
-                }
-                StateDefBodyElement::Do(action) => {
-                    self.lower_state_do_action(document, owner, action)?;
-                }
-                StateDefBodyElement::Exit(exit) => {
-                    self.lower_state_exit_action(document, owner, exit)?;
-                }
-                StateDefBodyElement::Then(then) => {
-                    self.lower_state_then_stmt(document, owner, then)?;
-                }
-                StateDefBodyElement::Transition(transition) => {
-                    self.lower_transition(document, owner, transition)?;
-                }
-                StateDefBodyElement::InOutDecl(param) => {
-                    self.lower_parameter_declaration(
-                        document,
-                        Some(owner),
-                        UnsupportedFamily::StateDefinitionMember,
-                        param,
-                    )?;
-                }
-                StateDefBodyElement::Ref(node) => {
-                    self.lower_ref_decl(document, Some(owner), node)?;
-                }
-                StateDefBodyElement::FinalState(node) => {
-                    self.lower_final_state(document, owner, node)?;
-                }
-                StateDefBodyElement::AttributeUsage(node) => {
-                    self.lower_attribute_usage(document, Some(owner), node)?;
-                }
-                StateDefBodyElement::ActionUsage(node) => {
-                    self.lower_action_usage(document, Some(owner), node)?;
-                }
-                StateDefBodyElement::AssertConstraint(node) => self
-                    .lower_assert_constraint_member(
-                        document,
-                        owner,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node,
-                    )?,
-                StateDefBodyElement::SuccessionUsage(_)
-                | StateDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    element.span.clone(),
-                ),
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers a state def/usage's `entry action <path> ...;` body element (BNF `EntryAction`) as
-    /// an anonymous `DeclarationKind::EntryActionBinding` feature owned by the enclosing state
-    /// `owner` declaration, mirroring `lower_first_stmt`'s nested-declaration shape so the bound
-    /// action reference resolves against the state's own scope (where sibling actions are
-    /// declared), not the state's enclosing scope. `EntryAction.action_reference` is already a
-    /// structured `QualifiedReferenceId` (not a flattened string), so it resolves through the
-    /// same shared lexical lookup as `AliasBinding`/`Succession`. A plain `entry` with no bound
-    /// action (`action_reference: None`) has no reference to lower: a bare `entry;`/empty `entry
-    /// { }` (no owned members) is a legal no-op marker with genuinely nothing to represent, so it
-    /// is silently recognized rather than reported (pervasive in the training/validation corpus,
-    /// e.g. `24_state_actions.md`'s `entry; then off;`); an inline `entry { <members> }` body with
-    /// actual owned content has no representation in this typed AST shape (no field carries it)
-    /// and stays an explicit unsupported diagnostic.
-    fn lower_state_entry_action(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<EntryAction>,
-    ) -> Result<(), ConstructionError> {
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            return Ok(());
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::EntryActionBinding,
-            None,
-            node.span.clone(),
-            // A synthesized scope for the state's entry-action binding reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::EntryActionBinding,
-            target,
-        )
-    }
-
-    /// Same as `lower_state_entry_action`, for a `do action <path> ...;` body element
-    /// (`DoAction.action_reference`).
-    fn lower_state_do_action(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<DoAction>,
-    ) -> Result<(), ConstructionError> {
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            return Ok(());
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::DoActionBinding,
-            None,
-            node.span.clone(),
-            // A synthesized scope for the state's do-action binding reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::DoActionBinding,
-            target,
-        )
-    }
-
-    /// Same as `lower_state_entry_action`, for an `exit action <path> ...;` body element
-    /// (`ExitAction.action_reference`).
-    fn lower_state_exit_action(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<ExitAction>,
-    ) -> Result<(), ConstructionError> {
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            return Ok(());
-        };
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::ExitActionBinding,
-            None,
-            node.span.clone(),
-            // A synthesized scope for the state's exit-action binding reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::ExitActionBinding,
-            target,
-        )
-    }
-
-    /// Lowers a state def/usage's `then <target>;` initial-state body element (BNF `ThenStmt`,
-    /// the bare initial-state marker -- distinct from a full `transition ... then ...;`
-    /// construct, which stays out of scope) as an anonymous `DeclarationKind::InitialState`
-    /// feature owned by the enclosing state `owner` declaration, mirroring
-    /// `lower_state_entry_action`. `ThenStmt.state_reference` is already a structured
-    /// `QualifiedReferenceId`, so it always resolves through the same shared lexical lookup.
-    fn lower_state_then_stmt(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<ThenStmt>,
-    ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::InitialState,
-            None,
-            node.span.clone(),
-            // A synthesized scope for the `then <state>` initial-state reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::InitialState,
-            node.value.state_reference,
-        )
-    }
-
-    /// Lowers a state def/usage's `final <name>;`/`final state <name>;` body element (BNF
-    /// `FinalState`) as a named `DeclarationKind::FinalState` feature owned by the enclosing state
-    /// `owner` declaration, mirroring `lower_state_usage`'s plain named-declaration shape.
-    /// `FinalState.state_name` is always a non-empty declared name per the grammar (`final` is
-    /// always followed by a mandatory `name`), so this declares a genuine new nested state rather
-    /// than referencing an existing one -- unlike `lower_state_then_stmt`'s `InitialState`, there
-    /// is no target reference to resolve.
-    fn lower_final_state(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<FinalState>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.state_name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::FinalState,
-            name,
-            node.span.clone(),
-            // `ast::FinalState` carries only its state name.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        Ok(())
-    }
-
-    /// Shared helper for `lower_state_entry_action`/`lower_state_do_action`/
-    /// `lower_state_exit_action`/`lower_state_then_stmt`: pushes an authored reference of `kind`
-    /// sourced at `declaration` for an already-structured `QualifiedReferenceId` target, mirroring
-    /// `lower_alias_def`'s reference-push shape.
-    fn push_action_binding_reference(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        kind: ReferenceKind,
-        target: QualifiedReferenceId,
-    ) -> Result<(), ConstructionError> {
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(target)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind,
-            document,
-            local: target,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        Ok(())
-    }
-
-    /// Lowers a `transition ...;` body element (BNF `Transition`, `ast::Transition`) found inside
-    /// a state def/usage body as an anonymous `DeclarationKind::Transition` feature owned by the
-    /// enclosing state `owner` declaration, mirroring `lower_first_stmt`/`lower_state_entry_
-    /// action`'s nested-declaration shape so `source`/`target`/`guard`/`accept`/`effect` all
-    /// resolve against the state's own scope (where sibling states/actions are declared), not
-    /// the state's enclosing scope. Picks up the full construct explicitly deferred by
-    /// `4762b875`; see `DeclarationKind::Transition`'s doc comment for the exact sub-piece scope
-    /// boundary.
-    fn lower_transition(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<Transition>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::Transition,
-            name,
-            node.span.clone(),
-            // `ast::Transition` carries no modifier, multiplicity, direction, or short name; its
-            // source/target/trigger/guard/effect facts are lowered as references.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(source) = &node.value.source {
-            self.lower_transition_end(
-                document,
-                declaration,
-                ReferenceKind::TransitionSource,
-                source,
-            )?;
-        }
-        self.lower_transition_end(
-            document,
-            declaration,
-            ReferenceKind::TransitionTarget,
-            &node.value.target,
-        )?;
-        if let Some(guard) = &node.value.guard {
-            self.push_evaluation_fact(
-                declaration,
-                self.constraint_evaluation_shape(document, &guard.value),
-            );
-            self.lower_constraint_expression(
-                document,
-                declaration,
-                UnsupportedFamily::StateDefinitionMember,
-                guard,
-            )?;
-        }
-        if node.value.accept.is_some() {
-            self.lower_transition_trigger_action(document, declaration, node.span.clone())?;
-        }
-        match &node.value.accept {
-            None => {}
-            Some(TransitionAccept::Shorthand(expression, _via)) => {
-                self.lower_transition_end(
-                    document,
-                    declaration,
-                    ReferenceKind::TransitionTrigger,
-                    expression,
-                )?;
-            }
-            Some(TransitionAccept::TimeTrigger(_kind, expression)) => {
-                // Mirrors `lower_then_accept`'s `TimeTrigger` arm: the `at`/`when`/`after`
-                // trigger expression (e.g. `accept at vehicle.maintenanceTime`) is lowered
-                // through the general constraint-expression dispatch (`FeatureRef`/
-                // `MemberAccess`/`Invocation`/`Constructor`), the same as a `Transition`'s
-                // `guard` clause, rather than `lower_transition_end`'s narrower reference-only
-                // dispatch (which `Shorthand` above uses for a bare accepted-signal name). The
-                // `TriggerKind` (`at`/`when`/`after`) distinction is not yet represented.
-                self.lower_constraint_expression(
-                    document,
-                    declaration,
-                    UnsupportedFamily::StateDefinitionMember,
-                    expression,
-                )?;
-            }
-            Some(TransitionAccept::Payload(_, _)) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-        }
-        match &node.value.effect {
-            None => {}
-            Some(TransitionEffect::Perform {
-                type_name: Some(type_name),
-                ..
-            }) => {
-                self.push_action_binding_reference(
-                    document,
-                    declaration,
-                    ReferenceKind::TransitionEffect,
-                    *type_name,
-                )?;
-            }
-            Some(TransitionEffect::Expression(expression)) => {
-                self.lower_transition_end(
-                    document,
-                    declaration,
-                    ReferenceKind::TransitionEffect,
-                    expression,
-                )?;
-            }
-            Some(TransitionEffect::Perform {
-                type_name: None, ..
-            })
-            | Some(TransitionEffect::Accept { .. })
-            | Some(TransitionEffect::Send { .. })
-            | Some(TransitionEffect::Assign { .. }) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-        }
-        Ok(())
-    }
-
-    /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.
-    ///
-    /// The parser represents this grammar branch as `TransitionAccept` on the transition rather
-    /// than a standalone action-usage node, but the OMG metamodel gives it a distinct
-    /// `AcceptActionUsage` element. Keeping that distinction at lowering is what makes the exact
-    /// `isTriggerAction()` specialization contract consume a canonical fact rather than inspect a
-    /// transition's syntax downstream.
-    fn lower_transition_trigger_action(
-        &mut self,
-        document: DocumentId,
-        transition: DeclarationId,
-        span: Span,
-    ) -> Result<DeclarationId, ConstructionError> {
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(transition),
-            DeclarationKind::AcceptActionUsage,
-            None,
-            span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    composite: true,
-                    ..DeclarationModifiers::default()
-                },
-                is_trigger_action: Some(true),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
-        Ok(declaration)
-    }
-
-    /// Lowers one `Transition` operand (`source`/`target`/shorthand `accept`/`Expression`
-    /// effect): its path expression is a structured `Expression` (not a flattened string), so a
-    /// simple/qualified name (`Expression::FeatureRef`) resolves as an authored reference of
-    /// `kind` through the same shared `DeclarationDomain::Any` lexical lookup as
-    /// `lower_succession_end`. Any other expression shape is left as an explicit unsupported-
-    /// member diagnostic, mirroring `lower_succession_end`'s scope boundary.
-    fn lower_transition_end(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        kind: ReferenceKind,
-        node: &Node<Expression>,
-    ) -> Result<(), ConstructionError> {
-        match &node.value {
-            Expression::FeatureRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span
-                    .clone();
-                self.push_reference(PendingReference {
-                    source: owner,
-                    kind,
-                    document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-            }
-            Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
-                } else {
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
-                    );
-                }
-            }
-            _ => self.push_unsupported(
-                document,
-                UnsupportedFamily::StateDefinitionMember,
-                node.span.clone(),
-            ),
-        }
-        Ok(())
-    }
-
     /// Lowers a `SatisfyRequirementUsage` body element (`ast::SatisfyRequirementUsage`) as an
     /// anonymous `DeclarationKind::Satisfy` feature owned by the enclosing `owner` declaration,
     /// mirroring `lower_transition`'s nested-declaration shape.
@@ -8642,7 +4688,7 @@ impl SemanticModelBuilder {
     /// declares a new requirement inline rather than referencing an existing one -- a meaningfully
     /// different construct, not merely an unresolved reference) and the members of the
     /// `RequirementBody` the usage owns.
-    fn lower_satisfy(
+    pub(crate) fn lower_satisfy(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -8695,7 +4741,7 @@ impl SemanticModelBuilder {
     /// declaration. The parser preserves each segment separator: a dotted feature path is routed
     /// through the canonical type-directed member-access resolver, while a `::` qualified name
     /// keeps ordinary namespace lookup.
-    fn push_satisfy_reference(
+    pub(crate) fn push_satisfy_reference(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -8753,7 +4799,7 @@ impl SemanticModelBuilder {
     /// only, via `lower_invocation_callee`/`ReferenceKind::InvocationCallee`, recursing arguments
     /// back into this same function with `kind` unchanged). Any other expression shape falls
     /// through to an explicit `family` unsupported diagnostic.
-    fn lower_satisfy_operand(
+    pub(crate) fn lower_satisfy_operand(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -8823,7 +4869,7 @@ impl SemanticModelBuilder {
     /// body is `UsageBody = DefinitionBody`, the same part-usage member set `Bind`'s body uses, so
     /// members are lowered against the anonymous allocate declaration through the shared
     /// `lower_part_usage_body_element` walker.
-    fn lower_allocate(
+    pub(crate) fn lower_allocate(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -8880,7 +4926,7 @@ impl SemanticModelBuilder {
     /// shared `lower_part_usage_body_element`, owned by this `Bind`'s own anonymous declaration,
     /// rather than the blanket "every element unsupported" fallback used before that dispatcher
     /// was factored out of `lower_part_usage`.
-    fn lower_bind(
+    pub(crate) fn lower_bind(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -8930,7 +4976,7 @@ impl SemanticModelBuilder {
     /// (mirroring `lower_alias_def`'s single-reference shape, applied twice). The `all`/name/
     /// multiplicity prefix and any real content in the braced body are out of scope, matching
     /// `Bind`'s own scope boundary.
-    fn lower_binding_connector_usage(
+    pub(crate) fn lower_binding_connector_usage(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -8977,7 +5023,7 @@ impl SemanticModelBuilder {
     /// as an authored reference of `kind` through the shared `DeclarationDomain::Any` lexical
     /// lookup, with no expression-shape gating (`BindingConnectorUsage`'s ends are never a general
     /// `Expression`, unlike `Bind`'s).
-    fn lower_binding_connector_operand(
+    pub(crate) fn lower_binding_connector_operand(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -9008,7 +5054,7 @@ impl SemanticModelBuilder {
     /// `ReferenceKind::IncludeUseCase`'s doc comment: a single-operand reference to an existing
     /// use case, sourced directly at the enclosing use case declaration (no anonymous
     /// nested-declaration scope shift), mirroring `lower_variant_usage`'s shape.
-    fn lower_include_use_case(
+    pub(crate) fn lower_include_use_case(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -9033,122 +5079,12 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a package/definition/usage-level `state` feature member (BNF StateUsage), e.g.
-    /// `state s;` or `state s : SomeState;`, mirroring `lower_action_usage`. `StateUsage`'s
-    /// typing is a structured `TypingRelationship` (like `ActionUsage.typing`), not a bare
-    /// `QualifiedReferenceId`. Behavioral clauses (`entry`/`do`/`exit`, transitions,
-    /// abstract/reference/individual prefixes) are explicitly out of scope; owned members lower
-    /// through the same `lower_state_def_body` as a `state def`'s body (both share
-    /// `StateDefBody`/`StateDefBodyElement`).
-    fn lower_state_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserStateUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::StateUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    individual: node.value.is_individual,
-                    derived: node.value.is_derived,
-                    reference: node.value.is_reference,
-                    ..DeclarationModifiers::default()
-                },
-                direction: direction_fact(node.value.direction.as_ref()),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        self.lower_state_def_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers the declaration-shaped `exhibit state name : Type` form using the parser's typed
-    /// state-usage facts. The reference-only `exhibit qualified::state` form denotes a distinct
-    /// exhibit relationship which this publication does not yet own, so it remains explicitly
-    /// unsupported rather than being misrepresented as feature typing.
-    fn lower_exhibit_state(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        unsupported_family: UnsupportedFamily,
-        node: &Node<ParserExhibitState>,
-    ) -> Result<(), ConstructionError> {
-        if node.value.state_reference.is_some() {
-            self.push_unsupported(document, unsupported_family, node.span.clone());
-            return Ok(());
-        }
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::StateUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    individual: node.value.is_individual,
-                    derived: node.value.is_derived,
-                    reference: node.value.is_reference,
-                    ..DeclarationModifiers::default()
-                },
-                direction: direction_fact(node.value.direction.as_ref()),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        self.lower_state_def_body(document, declaration, &node.value.body)
-    }
-
     /// Lowers a `requirement def` (BNF RequirementDefinition), mirroring `lower_part_def`:
     /// ownership, membership, an optional `:>` specialization relationship, and owned
     /// attribute/requirement members. Requirement-specific semantics (subject binding,
     /// assumption/constraint facts) are explicitly out of scope; unrecognized body elements fall
     /// through to `unsupported_requirement_definition_member`.
-    fn lower_requirement_def(
+    pub(crate) fn lower_requirement_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9200,7 +5136,7 @@ impl SemanticModelBuilder {
     /// RequirementUsage), mirroring `lower_part_usage`: ownership, membership, an optional
     /// `:`/`:>` typing reference, `subsets`/`references` subsetting relationships, and owned
     /// attribute/requirement members.
-    fn lower_requirement_usage(
+    pub(crate) fn lower_requirement_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9218,7 +5154,7 @@ impl SemanticModelBuilder {
     /// generated `checkRequirementUsageRequirementVerificationSpecialization` library
     /// specialization. Everything else about the declaration is identical, so the two forms share
     /// one walker rather than a copy that could drift.
-    fn lower_requirement_usage_as(
+    pub(crate) fn lower_requirement_usage_as(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9293,7 +5229,7 @@ impl SemanticModelBuilder {
     /// the single `RequirementDefinitionMember` family (both def and usage bodies share the same
     /// grammar production, `RequirementBody`, so there is no def/usage-specific distinction to
     /// make here).
-    fn lower_requirement_def_body(
+    pub(crate) fn lower_requirement_def_body(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -9311,7 +5247,7 @@ impl SemanticModelBuilder {
     /// `RequirementDefBodyElement` (`requirement def`/`requirement` usage and `viewpoint def`),
     /// parameterized by the caller-supplied `unsupported` family so each kind's diagnostics stay
     /// distinct even though the typed AST body shape is identical.
-    fn lower_requirement_shaped_body(
+    pub(crate) fn lower_requirement_shaped_body(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -9446,7 +5382,7 @@ impl SemanticModelBuilder {
     /// through to `unsupported_requirement_definition_member` (the same family `requirement def`
     /// uses, since `ViewpointDef` shares its exact body shape). `viewpoint` usage lowering is
     /// deferred -- see `DeclarationKind::ViewpointDefinition`'s doc comment.
-    fn lower_viewpoint_def(
+    pub(crate) fn lower_viewpoint_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9497,7 +5433,7 @@ impl SemanticModelBuilder {
     /// members via the same shared `lower_requirement_shaped_body` walker, plus the header-level
     /// `:>`/`:>>` clauses through the shared `lower_subsetting_relationship`, exactly as
     /// `lower_concern_usage` handles its own pair.
-    fn lower_viewpoint_usage(
+    pub(crate) fn lower_viewpoint_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9569,7 +5505,7 @@ impl SemanticModelBuilder {
     /// (planning/UPSTREAM_PARSER_GAPS.md #9), resolved upstream in `0757de13`. Stakeholder/subject-binding
     /// semantics are out of scope, sharing `UnsupportedFamily::RequirementDefinitionMember` with
     /// `requirement def`/`viewpoint def`.
-    fn lower_concern_usage(
+    pub(crate) fn lower_concern_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9651,7 +5587,7 @@ impl SemanticModelBuilder {
     /// planning/UPSTREAM_PARSER_GAPS.md #5) fall through to `unsupported_analysis_case_definition_member`.
     /// `analysis` usage lowering itself is deferred entirely (same doc entry): `AnalysisCaseUsage`
     /// silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`.
-    fn lower_analysis_case_def(
+    pub(crate) fn lower_analysis_case_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9704,7 +5640,7 @@ impl SemanticModelBuilder {
     /// attribute def/usage; everything else (subject/actor/objective/succession/nested
     /// action/analysis/calc/requirement/part usages, etc.) falls through to
     /// `unsupported_analysis_case_definition_member`.
-    fn lower_analysis_case_def_body(
+    pub(crate) fn lower_analysis_case_def_body(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -9725,7 +5661,7 @@ impl SemanticModelBuilder {
     /// body elements fall through to `unsupported_case_definition_member`. `case` usage lowering
     /// is deferred entirely (planning/UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` silently drops parsed
     /// `:>`/`:>>` clauses, unlike `CaseDef`.
-    fn lower_case_def(
+    pub(crate) fn lower_case_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9784,7 +5720,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
     /// (planning/UPSTREAM_PARSER_GAPS.md #5): `AnalysisCaseUsage` previously had no typed field to lower
     /// these relationships from.
-    fn lower_analysis_case_usage(
+    pub(crate) fn lower_analysis_case_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9847,7 +5783,7 @@ impl SemanticModelBuilder {
     /// `lower_analysis_case_usage` (shares the same field shape). Resolved upstream in `0757de13`
     /// (planning/UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` previously had no typed field to lower
     /// `subsets`/`redefines` from.
-    fn lower_case_usage(
+    pub(crate) fn lower_case_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9915,7 +5851,7 @@ impl SemanticModelBuilder {
     /// `DeclarationKind::UseCaseUsage`), so `name`/`type_name`/`is_abstract`/`multiplicity`/
     /// `subsets` are lowered as facts; owned members are walked through the shared
     /// `lower_case_family_def_body`.
-    fn lower_use_case_usage(
+    pub(crate) fn lower_use_case_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -9980,7 +5916,7 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `verification` feature member (BNF
     /// VerificationCaseUsage), mirroring `lower_use_case_usage` (shares the same field
     /// shape/limitation: no `redefines` field on `ast::VerificationCaseUsage`).
-    fn lower_verification_case_usage(
+    pub(crate) fn lower_verification_case_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10047,7 +5983,7 @@ impl SemanticModelBuilder {
     /// fall through to `unsupported_verification_case_definition_member`. `verification` usage
     /// lowering (`DeclarationKind::VerificationCaseUsage`, `lower_verification_case_usage`): see
     /// its own doc comment for the remaining `redefines` gap.
-    fn lower_verification_case_def(
+    pub(crate) fn lower_verification_case_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10105,7 +6041,7 @@ impl SemanticModelBuilder {
     /// body elements fall through to `unsupported_use_case_definition_member`. `use case` usage
     /// lowering is deferred entirely (planning/UPSTREAM_PARSER_GAPS.md #5): `UseCaseUsage` silently drops
     /// parsed `:>`/`:>>` clauses, unlike `UseCaseDef`.
-    fn lower_use_case_def(
+    pub(crate) fn lower_use_case_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10164,7 +6100,7 @@ impl SemanticModelBuilder {
     /// def/usage; everything else (subject/actor/objective/succession/nested
     /// action/analysis/calc/requirement/part usages, etc.) falls through to the caller-supplied
     /// `unsupported` family so each def kind's diagnostics stay distinct.
-    fn lower_case_family_def_body(
+    pub(crate) fn lower_case_family_def_body(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -10311,7 +6247,7 @@ impl SemanticModelBuilder {
     /// in resolver.rs), and owned attribute/enum/nested-port members. Port-specific semantics
     /// (interface/flow binding, port conformance, connector-end validation) are explicitly out of
     /// scope; unrecognized body elements fall through to `unsupported_port_definition_member`.
-    fn lower_port_def(
+    pub(crate) fn lower_port_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10423,7 +6359,7 @@ impl SemanticModelBuilder {
     /// `lower_typing_relationship`, never folded into the reference target), `subsets`/
     /// `redefines`/`references`/`crosses`/`intersects` subsetting relationships, and owned
     /// attribute/nested-port members.
-    fn lower_port_usage(
+    pub(crate) fn lower_port_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10547,7 +6483,7 @@ impl SemanticModelBuilder {
     /// members plus connector-end structure via `lower_connection_body`. Connector-end
     /// referential/multiplicity validation is explicitly out of scope; unrecognized body elements
     /// fall through to `unsupported_connection_definition_member`.
-    fn lower_connection_def(
+    pub(crate) fn lower_connection_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10602,7 +6538,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` subsetting relationships, an optional inline `connect from to to`
     /// clause (connector-end references), and owned attribute/item/port/nested-connection
     /// members via the same shared `lower_connection_body` as `connection def`.
-    fn lower_connection_usage(
+    pub(crate) fn lower_connection_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10677,7 +6613,7 @@ impl SemanticModelBuilder {
     /// declarations and `connect` statements carry the connector-end structure; everything else
     /// beyond attribute/item/port/nested-part-usage members falls through to
     /// `unsupported_connection_definition_member`.
-    fn lower_connection_body(
+    pub(crate) fn lower_connection_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -10761,7 +6697,7 @@ impl SemanticModelBuilder {
     /// resolver.rs). `redefines`/`crosses`/`nested_usage` -- connector-end referential
     /// constraints, not the plain reference shape this slice covers -- are explicitly out of
     /// scope and left unlowered.
-    fn lower_end_decl(
+    pub(crate) fn lower_end_decl(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -10823,7 +6759,7 @@ impl SemanticModelBuilder {
     /// target. `ConnectionUsage`'s body is `UsageBody`, so a braced body owns the whole usage
     /// member set; a `connect` statement mints no declaration of its own, so those members have no
     /// element to belong to and stay explicitly unsupported (see the body walk below).
-    fn lower_connect_stmt(
+    pub(crate) fn lower_connect_stmt(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -10859,7 +6795,7 @@ impl SemanticModelBuilder {
     /// for the algorithm), through `flatten_member_access_chain`/`push_member_access_reference`.
     /// Any other expression shape is left as an explicit `unsupported_connection_definition_member`
     /// diagnostic rather than a fabricated or partial resolution.
-    fn lower_connector_end(
+    pub(crate) fn lower_connector_end(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -10917,7 +6853,7 @@ impl SemanticModelBuilder {
     /// `ReferenceKind::ConnectorEnd` machinery `lower_connection_def` uses (interface ends are
     /// semantically the same kind of fact). `interface` usage lowering is deferred -- see
     /// `DeclarationKind::InterfaceDefinition`'s doc comment and planning/UPSTREAM_PARSER_GAPS.md #6.
-    fn lower_interface_def(
+    pub(crate) fn lower_interface_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -10970,7 +6906,7 @@ impl SemanticModelBuilder {
     /// connector-end structure through the same `lower_end_decl`/`lower_connect_stmt` helpers
     /// `connection def` uses; everything else beyond attribute/item/port members falls through to
     /// `unsupported_interface_definition_member`.
-    fn lower_interface_body(
+    pub(crate) fn lower_interface_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -11047,7 +6983,7 @@ impl SemanticModelBuilder {
     /// endpoints via `lower_interface_connector_expression`, reusing the same
     /// `ReferenceKind::ConnectorEnd` machinery `interface def`/`connection` usage use). Resolved
     /// upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #6).
-    fn lower_interface_usage(
+    pub(crate) fn lower_interface_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11187,7 +7123,7 @@ impl SemanticModelBuilder {
 
     /// Lowers an `InterfacePart` -- the binary `<from> to <to>` pair or the parenthesized n-ary
     /// end list upstream now models -- as `ConnectorEnd` references, one per authored endpoint.
-    fn lower_interface_part(
+    pub(crate) fn lower_interface_part(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -11211,7 +7147,7 @@ impl SemanticModelBuilder {
     /// reference subsetting, so the endpoint target is a source-backed qualified reference rather
     /// than an expression; an optional declaration label (`left ::> port`) is not itself a
     /// reference and is not lowered here.
-    fn lower_interface_end(
+    pub(crate) fn lower_interface_end(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -11245,7 +7181,7 @@ impl SemanticModelBuilder {
     /// `Node<Expression>` (rather than the `Node<ConnectionEnd>` wrapper `connection` usage's
     /// `connect_from`/`connect_to` use).
     #[allow(dead_code)]
-    fn lower_interface_connector_expression(
+    pub(crate) fn lower_interface_connector_expression(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -11295,7 +7231,7 @@ impl SemanticModelBuilder {
     /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). View-specific
     /// body members (`render`, `filter`) are out of scope -- see `DeclarationKind::ViewDefinition`'s
     /// doc comment and planning/UPSTREAM_PARSER_GAPS.md #8.
-    fn lower_view_def(
+    pub(crate) fn lower_view_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11346,7 +7282,7 @@ impl SemanticModelBuilder {
     /// Body walker for `view def` bodies (`ViewDefBody`/`ViewDefBodyElement`). `filter`/`render`
     /// members are out of scope for this slice and fall through to
     /// `unsupported_view_definition_member`.
-    fn lower_view_def_body(
+    pub(crate) fn lower_view_def_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -11430,7 +7366,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
     /// (planning/UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field. Multiplicity
     /// and view-specific body members (`render`/`filter`) are out of scope for this slice.
-    fn lower_view_usage(
+    pub(crate) fn lower_view_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11494,7 +7430,7 @@ impl SemanticModelBuilder {
     /// Body walker for `view` usage bodies (`ViewBody`/`ViewBodyElement`), mirroring
     /// `lower_view_def_body`. `filter`/`render` members are out of scope for this slice and fall
     /// through to `unsupported_view_definition_member`.
-    fn lower_view_usage_body(
+    pub(crate) fn lower_view_usage_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -11569,7 +7505,7 @@ impl SemanticModelBuilder {
     /// field parity with `ViewUsage` (planning/UPSTREAM_PARSER_GAPS.md #26, resolved upstream in
     /// `cb026cd`) -- `is_abstract`/`multiplicity`/`ordered`/`nonunique`/`value` are not modeled as
     /// distinct facts here (see `DeclarationKind::RenderingUsage`).
-    fn lower_rendering_usage(
+    pub(crate) fn lower_rendering_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11641,7 +7577,7 @@ impl SemanticModelBuilder {
     /// `view`/`rendering` member uses); anything else falls through to
     /// `UnsupportedFamily::PackageMember`, matching the top-level dispatch this body's owner was
     /// itself lowered from.
-    fn lower_rendering_usage_body(
+    pub(crate) fn lower_rendering_usage_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -11681,7 +7617,7 @@ impl SemanticModelBuilder {
     /// ownership, membership, an optional `:>` specialization relationship participating in the
     /// shared `DeclarationDomain::Type` fixed point. Constraint-body expression content is out of
     /// scope for this slice and falls through to `UnsupportedFamily::ConstraintDefinitionMember`.
-    fn lower_constraint_def(
+    pub(crate) fn lower_constraint_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11726,7 +7662,7 @@ impl SemanticModelBuilder {
     /// `ConstraintDefBody`/`ConstraintDefBodyElement` in the typed AST -- there is no separate
     /// `ConstraintUsageBody`), mirroring `lower_view_def_body`. Expression/nested-constraint
     /// content falls through to `unsupported_constraint_definition_member`.
-    fn lower_constraint_def_body(
+    pub(crate) fn lower_constraint_def_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -11821,7 +7757,7 @@ impl SemanticModelBuilder {
     /// typing target, and `subsets`/`redefines` subsetting relationships. Resolved upstream in
     /// `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no
     /// `subsets`/`redefines` fields at all.
-    fn lower_constraint_usage(
+    pub(crate) fn lower_constraint_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -11892,7 +7828,7 @@ impl SemanticModelBuilder {
     /// - `assert <path> { ... }` shorthand (`target` set, no `constraint` keyword): references an
     ///   existing constraint by path rather than declaring one inline; out of scope for this
     ///   slice, which targets the `constraint`-keyword forms only.
-    fn lower_assert_constraint_member(
+    pub(crate) fn lower_assert_constraint_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -11971,7 +7907,7 @@ impl SemanticModelBuilder {
     /// constraint <name> :>> <target>;` (a `:`/`:>>` clause after the name) fails to parse as
     /// `RequireConstraint` at all upstream (no field for either), so those never reach this
     /// function in the first place.
-    fn lower_require_constraint_member(
+    pub(crate) fn lower_require_constraint_member(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -12019,7 +7955,7 @@ impl SemanticModelBuilder {
     /// (planning/UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` clause.
     /// Calculation-expression body content is out of scope and falls through to
     /// `UnsupportedFamily::CalcDefinitionMember`.
-    fn lower_calc_def(
+    pub(crate) fn lower_calc_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12064,7 +8000,7 @@ impl SemanticModelBuilder {
     /// `CalcDefBodyElement` in the typed AST -- there is no separate `CalcUsageBody`), mirroring
     /// `lower_constraint_def_body`. Calculation-expression content, in/out/return parameters, and
     /// nested calc structure fall through to `unsupported_calc_definition_member`.
-    fn lower_calc_def_body(
+    pub(crate) fn lower_calc_def_body(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
@@ -12209,7 +8145,7 @@ impl SemanticModelBuilder {
     /// `lower_subsetting_relationship`. `in`/`out`/`inout` direction, value binding, and
     /// calculation-expression body content are out of scope, sharing
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
-    fn lower_calc_usage(
+    pub(crate) fn lower_calc_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12300,7 +8236,7 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
-    fn lower_rendering_def(
+    pub(crate) fn lower_rendering_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12387,275 +8323,6 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers an `occurrence def` (BNF OccurrenceDefinition), mirroring `lower_port_def`:
-    /// ownership, membership, an optional `:>` specialization relationship, and owned
-    /// attribute/item/part/nested-occurrence declarations. Occurrence-specific semantics
-    /// (individual/portion-of-life, time-slicing, snapshot facts, `exhibit`/`succession`/
-    /// `satisfy`/`allocate`/connector-end body constructs) are explicitly out of scope; unrecognized
-    /// body elements fall through to `unsupported_occurrence_definition_member` via
-    /// `lower_occurrence_body_element`. `OccurrenceDef.body` is the generic `DefinitionBody`
-    /// (shared with e.g. `ItemDef`), which wraps the same `OccurrenceBodyElement` that
-    /// `OccurrenceUsage.body` (`OccurrenceUsageBody`) holds directly -- both def and usage publish
-    /// under one `UnsupportedFamily::OccurrenceDefinitionMember`.
-    fn lower_occurrence_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<OccurrenceDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::OccurrenceDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        let DefinitionBody::Brace { elements, .. } = &node.value.body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                DefinitionBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                DefinitionBodyElement::OccurrenceMember(member) => {
-                    self.lower_occurrence_body_element(document, declaration, member)?;
-                }
-                DefinitionBodyElement::Unsupported(node) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                ),
-            }
-        }
-        Ok(())
-    }
-
-    /// Lowers one `OccurrenceBodyElement`, shared by `occurrence def`'s body (wrapped in
-    /// `DefinitionBodyElement::OccurrenceMember`), an `occurrence` usage's own owned members
-    /// (`OccurrenceUsageBody` holds `OccurrenceBodyElement` directly), and `allocation def`/
-    /// `flow def` bodies (also `DefinitionBodyElement::OccurrenceMember`): recognized owned
-    /// members are attribute/part/item/nested-occurrence usages plus `end` declarations (lowered
-    /// as connector-end references through the same `lower_end_decl`/`ReferenceKind::ConnectorEnd`
-    /// machinery `connection def`/`interface def` use), plus `assert constraint` members
-    /// (`lower_assert_constraint_member`); everything else -- flow usages, succession usages,
-    /// `satisfy`, `allocate`, `exhibit` state usages -- falls through to
-    /// `unsupported_occurrence_definition_member`.
-    fn lower_occurrence_body_element(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        element: &Node<OccurrenceBodyElement>,
-    ) -> Result<(), ConstructionError> {
-        match &element.value {
-            OccurrenceBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
-            }
-            OccurrenceBodyElement::Bind(node) => {
-                // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::OccurrenceDefinitionMember,
-                    node.span.clone(),
-                );
-            }
-            OccurrenceBodyElement::Annotating(member) => {
-                self.lower_annotating_member(
-                    document,
-                    Some(owner),
-                    UnsupportedFamily::OccurrenceDefinitionMember,
-                    member,
-                )?;
-            }
-            OccurrenceBodyElement::AttributeUsage(attribute) => {
-                self.lower_attribute_usage(document, Some(owner), attribute)?;
-            }
-            OccurrenceBodyElement::PartUsage(part) => {
-                self.lower_part_usage(document, Some(owner), part)?;
-            }
-            OccurrenceBodyElement::ItemUsage(item) => {
-                self.lower_item_usage(document, Some(owner), item)?;
-            }
-            OccurrenceBodyElement::OccurrenceUsage(occurrence) => {
-                self.lower_occurrence_usage(document, Some(owner), occurrence)?;
-            }
-            OccurrenceBodyElement::EndDecl(end_decl) => {
-                self.lower_end_decl(document, owner, end_decl)?;
-            }
-            OccurrenceBodyElement::RefDecl(ref_decl) => {
-                self.lower_ref_decl(document, Some(owner), ref_decl)?;
-            }
-            OccurrenceBodyElement::ConnectionUsage(connection_usage) => {
-                self.lower_connection_usage(document, Some(owner), connection_usage)?;
-            }
-            OccurrenceBodyElement::StateUsage(state_usage) => {
-                self.lower_state_usage(document, Some(owner), state_usage)?;
-            }
-            OccurrenceBodyElement::Satisfy(node) => {
-                self.lower_satisfy(
-                    document,
-                    owner,
-                    UnsupportedFamily::OccurrenceDefinitionMember,
-                    node,
-                )?;
-            }
-            OccurrenceBodyElement::Allocate(node) => {
-                self.lower_allocate(
-                    document,
-                    owner,
-                    UnsupportedFamily::OccurrenceDefinitionMember,
-                    node,
-                )?;
-            }
-            OccurrenceBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::OccurrenceDefinitionMember,
-                node,
-            )?,
-            OccurrenceBodyElement::MetadataKeywordUsage(_)
-            | OccurrenceBodyElement::FlowUsage(_)
-            | OccurrenceBodyElement::SuccessionUsage(_) => self.push_unsupported(
-                document,
-                UnsupportedFamily::OccurrenceDefinitionMember,
-                element.span.clone(),
-            ),
-        }
-        Ok(())
-    }
-
-    /// Lowers a package/definition/usage-level `occurrence` feature member (BNF OccurrenceUsage),
-    /// e.g. `occurrence o;` or `occurrence o : SomeOccurrence;`, mirroring `lower_port_usage`.
-    /// `type_name` is a bare `QualifiedReferenceId` (like `ItemUsage`/`MetadataUsage`), not a
-    /// structured `TypingRelationship`, but does carry an independent `type_is_conjugated` flag
-    /// (mirrored as an explicit `RelationshipFlags::conjugated` fact on the pushed `FeatureTyping`
-    /// reference, the same convention `lower_typing_relationship` uses for `PortUsage`). Individual/
-    /// event/portion-of-life prefixes (`individual`/`then`/`event`/`ref`/`abstract`/`constant`,
-    /// `portion_kind`) and the `event path` occurrence-reference shorthand are explicitly out of
-    /// scope -- only the ordinary declaration/typing/subsetting shape is lowered. Owned members
-    /// lower through the shared `lower_occurrence_body_element` (both def and usage share
-    /// `OccurrenceBodyElement`).
-    fn lower_occurrence_usage(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ParserOccurrenceUsage>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::OccurrenceUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    event: node.value.is_event,
-                    ..occurrence_prefix_modifiers(&node.value.prefix)
-                },
-                portion_kind: portion_kind_node_fact(node.value.prefix.portion.as_ref()),
-                direction: direction_node_fact(
-                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
-                ),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::FeatureMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-        }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags {
-                    conjugated: node.value.type_is_conjugated,
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.references {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.crosses {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.intersects {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        let OccurrenceUsageBody::Brace { elements, .. } = &node.value.body else {
-            return Ok(());
-        };
-        for element in elements {
-            self.lower_occurrence_body_element(document, declaration, element)?;
-        }
-        Ok(())
-    }
-
     /// Lowers an `allocation def` (BNF AllocationDefinition), mirroring `lower_occurrence_def`:
     /// ownership, membership, an optional `:>` specialization relationship, and owned
     /// attribute/part/item/nested-occurrence declarations plus `end` connector-end structure via
@@ -12663,7 +8330,7 @@ impl SemanticModelBuilder {
     /// `DefinitionBody`/`OccurrenceBodyElement` shape `OccurrenceDef.body` uses). Allocation-
     /// specific semantics (the `allocate ... to ...` binding itself) are explicitly out of scope
     /// here -- see `DeclarationKind::AllocationDefinition`'s doc comment.
-    fn lower_allocation_def(
+    pub(crate) fn lower_allocation_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12732,7 +8399,7 @@ impl SemanticModelBuilder {
     /// Lowers a named `allocation` usage from the parser-owned usage header and connector ends.
     /// This is distinct from the anonymous `allocate source to target` statement lowered by
     /// `lower_allocate`, but publishes the same directional endpoint kinds.
-    fn lower_allocation_usage(
+    pub(crate) fn lower_allocation_usage(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12820,81 +8487,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a `flow def` (BNF FlowDefinition), mirroring `lower_allocation_def`/
-    /// `lower_occurrence_def`: ownership, membership, an optional `:>` specialization
-    /// relationship, and owned attribute/part/item/nested-occurrence declarations plus `end`
-    /// connector-end structure via the shared `lower_occurrence_body_element` walker
-    /// (`FlowDef.body` is the same `DefinitionBody`/`OccurrenceBodyElement` shape
-    /// `OccurrenceDef.body`/`AllocationDef.body` use). Flow-payload (`ref :>> payload : Type;`)
-    /// and succession-flow semantics are explicitly out of scope here -- see
-    /// `DeclarationKind::FlowDefinition`'s doc comment.
-    fn lower_flow_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<FlowDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::FlowDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
-                modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    ..DeclarationModifiers::default()
-                },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        let DefinitionBody::Brace { elements, .. } = &node.value.body else {
-            return Ok(());
-        };
-        for element in elements {
-            match &element.value {
-                DefinitionBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                DefinitionBodyElement::OccurrenceMember(member) => {
-                    self.lower_occurrence_body_element(document, declaration, member)?;
-                }
-                DefinitionBodyElement::Unsupported(node) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                ),
-            }
-        }
-        Ok(())
-    }
-
-    fn lower_subsetting_relationship(
+    pub(crate) fn lower_subsetting_relationship(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
@@ -12935,7 +8528,7 @@ impl SemanticModelBuilder {
     /// `AliasBinding` reference for `Y`, following the Subclassification/typing lowering pattern
     /// above: `target` is already a structured `QualifiedReferenceId` (not a flattened string), so
     /// it resolves through the same lexical lookup fixed point as every other authored reference.
-    fn lower_alias_def(
+    pub(crate) fn lower_alias_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -12994,7 +8587,7 @@ impl SemanticModelBuilder {
     /// membership, an optional `:>` specialization relationship, and owned members via the
     /// shared `lower_attribute_body` walker (`IndividualDef.body: AttributeBody` is the same
     /// shape `ItemDef`/`ClassDef` use).
-    fn lower_individual_def(
+    pub(crate) fn lower_individual_def(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -13048,7 +8641,7 @@ impl SemanticModelBuilder {
     /// synthesized), mirroring `lower_connect_stmt`'s anonymous shape: `from`/`to` resolve
     /// through the shared `lower_connector_end` walker, and an optional `:>`/`:>>` `subsets`/
     /// `redefines` clause resolves through the shared `lower_subsetting_relationship` helper.
-    fn lower_bare_connect(
+    pub(crate) fn lower_bare_connect(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -13092,7 +8685,7 @@ impl SemanticModelBuilder {
     /// `Owning`/`Default` membership for the same reason -- see `lower_package`), so membership is
     /// synthesized identically. The `#`-prefix keyword tags and `abstract`/`variation` prefix are
     /// out of scope; see `DeclarationKind::ExtendedDefinition`'s doc comment.
-    fn lower_extended_definition(
+    pub(crate) fn lower_extended_definition(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -13146,7 +8739,7 @@ impl SemanticModelBuilder {
     /// declaration's own span (matching `lower_satisfy`'s anonymous-relationship shape).
     /// Its `RelationshipBody` members (doc/comment/metadata only) are walked through the same
     /// `lower_relationship_body_elements` helper `AliasDef`/`Import` use.
-    fn lower_dependency(
+    pub(crate) fn lower_dependency(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
@@ -13227,7 +8820,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn lower_typing_relationship(
+    pub(crate) fn lower_typing_relationship(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
@@ -13245,7 +8838,7 @@ impl SemanticModelBuilder {
     /// reference has always carried its direction, so it keeps doing so now that the declaration
     /// reaches this shared path instead of pushing its own reference. Every other caller goes
     /// through the `lower_typing_relationship` wrapper above.
-    fn lower_typing_relationship_impl(
+    pub(crate) fn lower_typing_relationship_impl(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
@@ -13308,7 +8901,7 @@ impl SemanticModelBuilder {
     /// `MembershipRole::Variant`. That loss is pre-existing -- the `Perform` arm has always had it
     /// -- and recovering it means returning the new `DeclarationId` from five hot lowerings, so it
     /// is recorded in planning/UPSTREAM_PARSER_GAPS.md rather than widened into this change.
-    fn lower_variant_usage(
+    pub(crate) fn lower_variant_usage(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
@@ -13372,7 +8965,7 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    fn member_visibility(
+    pub(crate) fn member_visibility(
         &self,
         membership: &Membership,
         expected: ParserMembershipKind,
@@ -13386,7 +8979,7 @@ impl SemanticModelBuilder {
             .unwrap_or(Visibility::Default))
     }
 
-    fn visibility(value: ParserVisibility) -> Visibility {
+    pub(crate) fn visibility(value: ParserVisibility) -> Visibility {
         match value {
             ParserVisibility::Public => Visibility::Public,
             ParserVisibility::Private => Visibility::Private,
