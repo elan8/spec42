@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 use tower_lsp::lsp_types::{Range, SymbolKind, Url};
 
 #[derive(Debug, Clone)]
@@ -202,15 +203,13 @@ pub(crate) fn recover_short_name_search_symbols(
             let anchor = entries
                 .iter()
                 .find(|e| e.0.range.start.line == line_idx as u32 && !e.0.name.trim().is_empty());
-            let (kind, container_name, detail, description) = match anchor {
+            let (container_name, detail, description) = match anchor {
                 Some(a) => (
-                    a.0.kind,
                     a.0.container_name.clone(),
                     a.0.detail.clone(),
                     Some(format!("short name for {}", a.0.name)),
                 ),
                 None => (
-                    SymbolKind::VARIABLE,
                     None,
                     Some("short name".to_string()),
                     Some("short name from declaration".to_string()),
@@ -219,11 +218,10 @@ pub(crate) fn recover_short_name_search_symbols(
             entries.push(RecoverySearchSymbol(crate::language::SymbolEntry {
                 name: token.to_string(),
                 uri: uri.clone(),
-                range: Range::new(
-                    tower_lsp::lsp_types::Position::new(line_idx as u32, start_char),
-                    tower_lsp::lsp_types::Position::new(line_idx as u32, end_char),
+                range: TextRange::new(
+                    TextPosition::new(line_idx as u32, start_char),
+                    TextPosition::new(line_idx as u32, end_char),
                 ),
-                kind,
                 container_name,
                 detail,
                 description,

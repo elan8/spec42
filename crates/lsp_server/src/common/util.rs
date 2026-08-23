@@ -234,28 +234,9 @@ pub fn env_usize(name: &str, default_value: usize) -> usize {
         .unwrap_or(default_value)
 }
 
-/// Builds Markdown for symbol hover: title (kind + name), code block with signature or description, container, optional location.
+/// Builds Markdown for symbol hover. Presentation is owned by `language_service`.
 pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String {
-    let kind = entry.detail.as_deref().unwrap_or("symbol");
-    let name = &entry.name;
-    let mut md = format!("**{}** `{}`\n\n", kind, name);
-    let code_block = entry
-        .signature
-        .as_deref()
-        .or(entry.description.as_deref())
-        .unwrap_or(name.as_str());
-    md.push_str("```sysml\n");
-    md.push_str(code_block);
-    md.push_str("\n```\n\n");
-    if let Some(ref pkg) = entry.container_name {
-        if pkg != "(top level)" {
-            md.push_str(&format!("*Package:* `{}`\n\n", pkg));
-        }
-    }
-    if show_location {
-        md.push_str(&format!("*Defined in:* {}", entry.uri.path()));
-    }
-    md
+    language_service::symbol_hover_markdown(entry, show_location)
 }
 
 #[cfg(test)]

@@ -6,9 +6,7 @@ use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
 use sysml_query::syntax::ParsedSource;
-use tower_lsp::lsp_types::{
-    DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
-};
+use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind};
 
 /// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
 pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
@@ -20,7 +18,11 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
         .collect()
 }
 
-fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
+/// The single `&str` outline-kind -> LSP [`SymbolKind`] table for this crate.
+///
+/// The strings are the published outline kind vocabulary (`language_service`); document symbols
+/// and workspace symbols must classify them identically.
+pub(crate) fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
     match kind {
         "package" | "namespace" | "library package" => SymbolKind::MODULE,
         "part def" | "classifier decl" => SymbolKind::CLASS,
@@ -85,20 +87,6 @@ pub fn collect_folding_ranges(root: &ParsedSource) -> Vec<FoldingRange> {
             collapsed_text: None,
         })
         .collect()
-}
-
-/// Workspace-wide symbol entry: one definable name with location and semantic info.
-#[derive(Debug, Clone)]
-pub struct SymbolEntry {
-    pub name: String,
-    pub uri: Url,
-    pub range: Range,
-    pub kind: SymbolKind,
-    pub container_name: Option<String>,
-    pub detail: Option<String>,
-    pub description: Option<String>,
-    /// One-line signature for hover code block (e.g. "part def Vehicle : Car;").
-    pub signature: Option<String>,
 }
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).

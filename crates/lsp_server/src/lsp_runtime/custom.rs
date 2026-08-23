@@ -180,10 +180,15 @@ pub(crate) fn sysml_library_search_result(
         .map(
             |(score, entry)| crate::session::library_search::LibrarySearchItem {
                 name: entry.name.clone(),
-                kind: crate::session::library_search::symbol_kind_label(entry.kind).to_string(),
+                kind: crate::session::library_search::symbol_kind_label(
+                    crate::language::outline_kind_to_lsp(
+                        entry.detail.as_deref().unwrap_or("symbol"),
+                    ),
+                )
+                .to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
-                range: entry.range,
+                range: crate::common::text_span::to_lsp_range(entry.range),
                 score,
                 source: crate::session::library_search::library_source_label(&entry.uri)
                     .to_string(),

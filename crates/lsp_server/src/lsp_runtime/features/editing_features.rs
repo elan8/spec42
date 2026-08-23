@@ -210,7 +210,9 @@ pub(crate) fn workspace_symbol(
             let uri = Url::parse(&entry.uri).ok()?;
             Some(SymbolInformation {
                 name: entry.name,
-                kind: workspace_symbol_kind(entry.detail.as_deref().unwrap_or("symbol")),
+                kind: crate::language::outline_kind_to_lsp(
+                    entry.detail.as_deref().unwrap_or("symbol"),
+                ),
                 tags: None,
                 deprecated: None,
                 location: Location {
@@ -222,22 +224,6 @@ pub(crate) fn workspace_symbol(
         })
         .collect();
     Ok(Some(out))
-}
-
-fn workspace_symbol_kind(kind: &str) -> SymbolKind {
-    match kind {
-        "package" | "namespace" | "library package" => SymbolKind::MODULE,
-        "part def" | "classifier decl" => SymbolKind::CLASS,
-        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
-        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
-        "action def" => SymbolKind::FUNCTION,
-        "part" => SymbolKind::OBJECT,
-        "action" => SymbolKind::EVENT,
-        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
-            SymbolKind::NAMESPACE
-        }
-        _ => SymbolKind::VARIABLE,
-    }
 }
 
 pub(crate) fn code_action(

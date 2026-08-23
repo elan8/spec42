@@ -1,45 +1,24 @@
-use language_service::{SymbolEntry as LsSymbolEntry, WorkspaceSnapshot};
+use language_service::{SymbolEntry, WorkspaceSnapshot};
 use std::sync::Arc;
 use tower_lsp::lsp_types::Url;
 
-use crate::common::text_span::to_core_range;
 use crate::common::util;
-use crate::language::SymbolEntry;
 use crate::session::ServerState;
 
 /// Adapter that exposes LSP [`ServerState`] through the neutral [`WorkspaceSnapshot`] trait.
 pub(crate) struct ServerStateSnapshot<'a> {
     state: &'a ServerState,
-    symbol_table: Vec<LsSymbolEntry>,
     perf_logging_enabled: bool,
     published_model: Option<Arc<sysml_query::resolved_slice::PublishedModel>>,
 }
 
 impl<'a> ServerStateSnapshot<'a> {
     pub(crate) fn new(state: &'a ServerState, perf_logging_enabled: bool) -> Self {
-        let symbol_table = state
-            .symbol_table
-            .iter()
-            .map(convert_symbol_entry)
-            .collect();
         Self {
             state,
-            symbol_table,
             perf_logging_enabled,
             published_model: Some(Arc::clone(state.session.current())),
         }
-    }
-}
-
-fn convert_symbol_entry(entry: &SymbolEntry) -> LsSymbolEntry {
-    LsSymbolEntry {
-        name: entry.name.clone(),
-        uri: entry.uri.clone(),
-        range: to_core_range(entry.range),
-        container_name: entry.container_name.clone(),
-        detail: entry.detail.clone(),
-        description: entry.description.clone(),
-        signature: entry.signature.clone(),
     }
 }
 
@@ -79,8 +58,8 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
         self.published_model.as_deref()
     }
 
-    fn symbol_table(&self) -> &[LsSymbolEntry] {
-        &self.symbol_table
+    fn symbol_table(&self) -> &[SymbolEntry] {
+        &self.state.symbol_table
     }
 
     fn index_uris(&self) -> Vec<Url> {

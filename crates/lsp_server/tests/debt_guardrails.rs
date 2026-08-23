@@ -240,20 +240,10 @@ fn no_duplicate_free_function_bodies_across_consumer_crates() {
             "language_service/src/code_actions.rs::parse_untyped_part_usage_name",
             "lsp_server/src/common/util.rs::parse_untyped_part_usage_line",
         ],
-        // D8 — collapses with the round-trip `SymbolEntry` conversion.
-        &[
-            "language_service/src/symbol.rs::symbol_hover_markdown",
-            "lsp_server/src/common/util.rs::symbol_hover_markdown",
-        ],
         // D8 — the host's re-exported test of the owner's behaviour.
         &[
             "language_service/src/symbol.rs::find_reference_ranges_finds_multiple_occurrences",
             "lsp_server/src/language/mod.rs::test_find_reference_ranges_multiple",
-        ],
-        // D9 — one `SymbolKind` vocabulary, owned by `language_service`.
-        &[
-            "lsp_server/src/language/symbols.rs::outline_kind_to_lsp",
-            "lsp_server/src/lsp_runtime/features/editing_features.rs::workspace_symbol_kind",
         ],
     ];
     const MIN_BODY_CHARS: usize = 80;

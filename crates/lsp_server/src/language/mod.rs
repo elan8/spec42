@@ -5,28 +5,10 @@ mod symbols;
 
 pub use language_service::{
     completion_prefix, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
-    line_prefix_at_position, position_to_byte_offset, sysml_keywords,
-    unit_value_suffix_at_position, word_at_position, RESERVED_KEYWORDS,
+    line_prefix_at_position, position_to_byte_offset, symbol_entries_for_uri, sysml_keywords,
+    unit_value_suffix_at_position, word_at_position, SymbolEntry, RESERVED_KEYWORDS,
 };
 
-pub(crate) fn symbol_entries_for_uri(
-    model: &sysml_query::resolved_slice::PublishedModel,
-    uri: &tower_lsp::lsp_types::Url,
-) -> Vec<SymbolEntry> {
-    language_service::symbol_entries_for_uri(model, uri)
-        .into_iter()
-        .map(|entry| SymbolEntry {
-            name: entry.name,
-            uri: entry.uri,
-            range: crate::common::text_span::to_lsp_range(entry.range),
-            kind: tower_lsp::lsp_types::SymbolKind::NULL,
-            container_name: entry.container_name,
-            detail: entry.detail,
-            description: entry.description,
-            signature: entry.signature,
-        })
-        .collect()
-}
 #[cfg(test)]
 mod position {
     use tower_lsp::lsp_types::{Position, Range};
@@ -64,9 +46,8 @@ mod position {
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
 #[cfg(test)]
 pub use symbols::collect_named_elements;
-pub use symbols::{
-    collect_document_symbols, collect_folding_ranges, find_reference_ranges, SymbolEntry,
-};
+pub(crate) use symbols::outline_kind_to_lsp;
+pub use symbols::{collect_document_symbols, collect_folding_ranges, find_reference_ranges};
 
 use language_service::{format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion};
 use tower_lsp::lsp_types::{
