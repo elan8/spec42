@@ -1,7 +1,8 @@
 //! Hover integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server, TestSession,
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+    wait_for_publications, TestSession,
 };
 
 fn position_for(content: &str, needle: &str) -> (usize, usize) {
@@ -694,44 +695,30 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
             .to_string(),
         );
     }
-    let barrier_id = next_id();
-    let barrier_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": barrier_id,
-        "method": "workspace/symbol",
-        "params": { "query": "" }
-    });
-    send_message(&mut stdin, &barrier_req.to_string());
-    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
+    // Deterministic barrier: cross-file import-chain resolution is settled for these documents
+    // once each relink task has committed its fully resolved graph to the session publication
+    // and published that document's diagnostics.
+    wait_for_publications(&mut stdout, &[uri_core, uri_domain, uri_use]);
 
-    // Retry: cross-file import-chain resolution can lag under CI load.
-    let mut contents = String::new();
-    for _ in 0..20 {
-        let hover_id = next_id();
-        let hover_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 75 }
-            }
-        });
-        send_message(&mut stdin, &hover_req.to_string());
-        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
-        let hover_json: serde_json::Value =
-            serde_json::from_str(&hover_resp).expect("parse hover response");
-        contents = hover_json["result"]["contents"]["value"]
-            .as_str()
-            .or_else(|| hover_json["result"]["contents"].as_str())
-            .unwrap_or_default()
-            .to_string();
-        if contents.contains("Name") && contents.contains("attribute def") {
-            break;
+    let hover_id = next_id();
+    let hover_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": hover_id,
+        "method": "textDocument/hover",
+        "params": {
+            "textDocument": { "uri": uri_use },
+            "position": { "line": 0, "character": 75 }
         }
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &hover_req.to_string());
+    let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
+    let hover_json: serde_json::Value =
+        serde_json::from_str(&hover_resp).expect("parse hover response");
+    let contents = hover_json["result"]["contents"]["value"]
+        .as_str()
+        .or_else(|| hover_json["result"]["contents"].as_str())
+        .unwrap_or_default()
+        .to_string();
     assert!(
         contents.contains("Name") && contents.contains("attribute def"),
         "hover on public re-exported type should resolve to the definition: {}",
