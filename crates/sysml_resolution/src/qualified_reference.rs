@@ -24,9 +24,13 @@ pub struct QualifiedElementReference {
 /// One canonical candidate for a readable qualified reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedReferenceTarget {
+    /// The element this candidate names.
+    ///
+    /// The qualified name is not handed back: the caller supplied it in the request, and the
+    /// publication already stores it once. Read it with
+    /// [`PublishedResolution::qualified_name`] where a renderer needs the text.
     pub identity: SymbolId,
     pub kind: ElementKind,
-    pub qualified_name: Box<str>,
     pub location: SourceLocation,
 }
 
@@ -155,7 +159,6 @@ impl From<SymbolEntry> for QualifiedReferenceTarget {
         Self {
             identity: entry.identity,
             kind: entry.kind,
-            qualified_name: entry.qualified_name,
             location: entry.location,
         }
     }

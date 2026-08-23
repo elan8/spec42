@@ -637,7 +637,6 @@ const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
     "DiagramViewCatalogEntry::name",
     "Documentation::text",
     "PackageTargets::qualified_name",
-    "QualifiedReferenceTarget::qualified_name",
     "SymbolEntry::qualified_name",
     // Not a copy of source text: the parser's own message, and for a parser panic a message this
     // crate writes. The diagnostics are stored *inside* the `ParsedSource` next to the parse

@@ -6743,7 +6743,8 @@ fn generation_arguments(
                 &view.reference,
                 DiagramSemanticReference::Qualified { document, qualified_name, .. }
                     if Some(document.as_ref()) == publication.document_identity(target.location.document)
-                        && qualified_name == target.qualified_name.as_ref()
+                        && Some(qualified_name.as_ref())
+                            == publication.qualified_name(target.identity)
             ) && diagram_kind_id(view.kind) == selection.kind
         })
         .collect::<Vec<_>>();
@@ -6753,7 +6754,7 @@ fn generation_arguments(
             "{}: selected diagram view kind {:?} with qualified reference {:?} in {:?} is not in the active publication; authored catalog entries: {}",
             fixture_path.display(),
             selection.kind,
-            target.qualified_name,
+            publication.qualified_name(target.identity).unwrap_or_default(),
             target.location.document,
             catalog
                 .iter()

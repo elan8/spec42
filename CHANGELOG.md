@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A qualified-reference candidate names its element by handle.**
+  `QualifiedReferenceTarget::qualified_name` is gone. The caller supplied that name in the
+  `QualifiedElementReference` it asked with, so handing a `Box<str>` copy back -- once per
+  candidate of an ambiguous or wrong-kind outcome -- duplicated both the request and the
+  publication's own storage. Consumers read it through the borrowed
+  `PublishedResolution::qualified_name`. Rendering is unchanged, so snapshot output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank from 16 entries to 15.
+
 - **An element inspection names its element by handle; the qualified name is read from the
   publication.** `ElementInspection::qualified_name` is gone. It was a `Box<str>` copy of the
   `::`-joined display path the publication already stores, allocated once per inspection -- and

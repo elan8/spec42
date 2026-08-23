@@ -1122,7 +1122,7 @@ fn write_qualified_reference_target(
             .map(SymbolToken::as_str)
             .unwrap_or_default(),
         target.kind.as_str(),
-        target.qualified_name
+        model.qualified_name(target.identity).unwrap_or_default()
     )?;
     write_location(model, output, &target.location)?;
     write!(output, ")")
