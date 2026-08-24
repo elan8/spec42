@@ -182,7 +182,7 @@ impl ParsedSource {
     ///
     /// These are parser-recovery facts, never resolved symbols. The explicit provenance prevents
     /// a consumer from presenting a partial recovered tree as settled model meaning.
-    pub fn recovered_short_names(&self) -> Vec<RecoveredShortName> {
+    pub fn recovered_short_names(&self) -> Vec<RecoveredShortName<'_>> {
         let mut out = Vec::new();
         let mut seen = std::collections::HashSet::new();
         for (line_index, line) in self.source().lines().enumerate() {
@@ -218,12 +218,12 @@ impl ParsedSource {
                     continue;
                 }
                 out.push(RecoveredShortName {
-                    name: name.to_string(),
+                    name,
                     declaration_name: None,
                     range: expected,
                     provenance: SyntaxRecoveryProvenance::ParserRecovery,
                 });
-                seen.insert(name.to_string());
+                seen.insert(name);
             }
         }
         out
@@ -269,9 +269,9 @@ pub enum SyntaxRecoveryProvenance {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RecoveredShortName {
-    pub name: String,
-    pub declaration_name: Option<String>,
+pub struct RecoveredShortName<'a> {
+    pub name: &'a str,
+    pub declaration_name: Option<&'a str>,
     pub range: SyntaxRange,
     pub provenance: SyntaxRecoveryProvenance,
 }

@@ -192,7 +192,7 @@ pub fn search_symbols_from_recovered_short_names(
                 sysml_query::syntax::SyntaxRecoveryProvenance::ParserRecovery
             );
             RecoverySearchSymbol(SymbolEntry {
-                name: short_name.name,
+                name: short_name.name.to_owned(),
                 uri: uri.clone(),
                 range: TextRange::new(
                     TextPosition::new(

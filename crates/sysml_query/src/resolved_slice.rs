@@ -1852,19 +1852,14 @@ mod tests {
 
     #[test]
     fn legacy_and_service_admission_share_uri_and_line_ending_identity() {
-        let legacy = build(
-            BuildRequest::resolved(
-                vec![AdmittedSource::from_uri(
-                    "memory://PARITY/a/../model.sysml",
-                    "package P {\r\n part def A;\r\n}\r\n".into(),
-                    SourceKind::Workspace,
-                )
-                .unwrap()],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap(),
+        let admitted = AdmittedSource::from_uri(
+            "memory://PARITY/a/../model.sysml",
+            "package P {\r\n part def A;\r\n}\r\n".into(),
+            SourceKind::Workspace,
         )
         .unwrap();
+        let legacy_request =
+            BuildRequest::resolved(vec![admitted], ConstructionStrategy::Sequential).unwrap();
 
         let services = crate::Services::new();
         let document = services
@@ -1875,6 +1870,14 @@ mod tests {
                 SourceKind::Workspace,
             )
             .unwrap();
+        let canonical_request = services
+            .publication
+            .prepare(std::slice::from_ref(&document), [])
+            .unwrap();
+
+        assert_eq!(legacy_request.identity(), canonical_request.identity());
+
+        let legacy = build(legacy_request).unwrap();
         let canonical = services.publication.publish(&[document], []).unwrap();
 
         assert_eq!(

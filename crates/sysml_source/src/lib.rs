@@ -203,16 +203,27 @@ pub fn normalize_line_endings(text: &str) -> std::borrow::Cow<'_, str> {
 
 /// The one URI normalisation policy.
 ///
-/// Existing file paths are canonicalised so alternate filesystem spellings (for example macOS's
-/// `/var` symlink to `/private/var`) cannot create distinct document identities. Nonexistent
-/// paths keep their lexical identity, which unsaved editor buffers require. Windows drive letters
-/// are lowercased in either case. Non-file schemes are returned unchanged.
+/// URI hosts are lowercased because DNS host names are case-insensitive, including for custom
+/// in-memory schemes whose parsers may preserve authored case. Existing file paths are
+/// canonicalised so alternate filesystem spellings (for example macOS's `/var` symlink to
+/// `/private/var`) cannot create distinct document identities. Nonexistent paths keep their
+/// lexical identity, which unsaved editor buffers require. Windows drive letters are lowercased
+/// in either case.
 pub fn normalize_uri(uri: &Url) -> Url {
+    let mut uri = uri.clone();
+    if let Some(host) = uri.host_str() {
+        let normalized = host.to_ascii_lowercase();
+        if normalized != host {
+            // The existing parsed host proves this replacement is syntactically valid.
+            uri.set_host(Some(&normalized))
+                .expect("lowercasing a parsed URI host preserves validity");
+        }
+    }
     if uri.scheme() != "file" {
-        return uri.clone();
+        return uri;
     }
     let Ok(path) = uri.to_file_path() else {
-        return uri.clone();
+        return uri;
     };
     let path = fs::canonicalize(&path).unwrap_or(path);
     let Ok(normalized) = Url::from_file_path(path) else {
@@ -590,6 +601,28 @@ mod tests {
             )
             .expect("custom URI");
         assert_eq!(document.uri().scheme(), "surreal");
+    }
+
+    #[test]
+    fn custom_uri_hosts_have_one_case_insensitive_identity() {
+        let authority = SourceAuthority::new();
+        let authored = authority
+            .admit(
+                "memory://WORKSPACE/model.sysml",
+                "package P;",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let canonical = authority
+            .admit(
+                "memory://workspace/model.sysml",
+                "package P;",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+
+        assert_eq!(authored.uri(), canonical.uri());
+        assert_eq!(authored.digest(), canonical.digest());
     }
 
     #[test]
