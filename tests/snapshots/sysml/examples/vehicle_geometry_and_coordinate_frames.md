@@ -700,7 +700,7 @@ package VehicleGeometryAndCoordinateFrames {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:2c20ce5bbe2049af5cc8b4ba5bb73d8eca47002657b09399a7e5b7402b55b814") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:2c20ce5bbe2049af5cc8b4ba5bb73d8eca47002657b09399a7e5b7402b55b814") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (path (named (kind package) (name "VehicleGeometryAndCoordinateFrames")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "TrigFunctions") (import (shape namespace) (recursive false))))))

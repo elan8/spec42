@@ -57,7 +57,7 @@ class A {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bf8a3f17c1c71a61dbf0120f7205c5c1540c834b5e62fe275a3f2ad5e2d3ff1d") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bf8a3f17c1c71a61dbf0120f7205c5c1540c834b5e62fe275a3f2ad5e2d3ff1d") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (qualified-name "A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (qualified-name "A::innerSpaceDimension"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Natural")))))

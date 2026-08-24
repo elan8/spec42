@@ -67,13 +67,14 @@ Invariants of the pipeline:
   extends the service; it does not compute the answer from facade data, source text, or names.
   *Why:* two derivations of one fact drift; the repository has already shipped divergent severity
   labels and file-admission predicates from exactly this pattern.
-- **Facade types expose identities, enums, and borrowed views — never owned storage.** A public
-  contract type may carry `Copy` values, exhaustive enums, opaque ids, and `&'m` accessors or
-  `impl Iterator` over a publication; it may not carry `String`, `Box<str>`, `Vec`, `Box<[T]>`, or
-  map fields. An element handle is an identity, not a string; materialising its text is a boundary
-  operation a consumer asks for explicitly. *Why:* an owned field is an allocation per result on
-  every keystroke and a pinned representation the authority can never change; a borrowed view costs
-  nothing and lets dense layouts, arenas, and interning change underneath without touching a host.
+- **Semantic views are borrowed; owned values are explicit boundaries.** A publication query exposes
+  `Copy` values, exhaustive enums, opaque ids, and `&'m` accessors or iterators over authority-owned
+  storage. Stable cross-publication tokens, requests, errors, protocol values, and deliberately
+  materialised boundary results may own text or collections, but are not semantic storage and do not
+  expose the authority's representation. An element handle is an identity, not a string;
+  materialising its text is an explicit boundary operation. *Why:* accidental owned query fields
+  allocate on every keystroke and pin the authority's representation, while named boundary values
+  make the necessary ownership and compatibility cost visible.
 - **A sealed publication holds no parse tree.** Every location, range, and name a query can return is
   settled into the model at the publication barrier; the parse tree is owned by the syntax service
   only. *Why:* retaining trees multiplies resident memory by the corpus and turns every navigation
@@ -93,7 +94,7 @@ share one set of authorities per host process.
 | `source::SourceService` | `SourceDocument` | admission of text as an identified document; URI normalisation; line-ending policy; providers (filesystem with ignore rules, in-memory, library roots); content digests |
 | `syntax::SyntaxService` | `ParsedSource` | the parser call and parse memo; syntax-fidelity queries over a parsed tree: outline, folding, token roles, package declarations, closure facts, reserved keywords; formatting-preservation checks |
 | `library::LibraryClosureService` | `LibraryClosure` | the package index over library roots and the transitive import closure a workspace needs, with its seed signature |
-| `publication::PublicationService` and `PublicationSession` | `PublishedModel`, `RelinkToken`, `BuildToken`, `SessionLifecycle` | partitioning admitted documents by provenance, library-stratum reuse, constructing the immutable publication; the publication lifecycle (startup, relink, reindex, reset), its tokens, and the barrier that admits a finished build |
+| `publication::PublicationService` and `PublicationSession` | `PublishedModel`, `BuildToken`, `SessionLifecycle` | partitioning admitted documents by provenance, library-stratum reuse, constructing the immutable publication; the publication lifecycle, its input revision and build token, and the barrier that atomically admits a finished build with its dependent projections |
 | `PublishedModel` queries | `navigation()`, `types()`, `diagnostics()`, … | typed, opaque semantic queries over one immutable publication |
 
 A host obtains every handle from one `Services` value (`Services::new()`); sources come from the
@@ -228,21 +229,33 @@ publication lifecycle state outside a `PublicationSession`.
 ## Publication lifecycle and identity
 
 A publication is an immutable `PublishedModel` with a dependency-complete, owner-scoped identity
-derived from the content digests of every admitted document, their provenance, and the semantic
-contract version. Cold, warm, sequential, and parallel construction of the same inputs produce the
-same identity and observably equivalent results.
+derived through domain-separated canonical encoding from the content digests of every admitted
+document, their provenance, semantic configuration, and the semantic contract version. Cold, warm,
+sequential, and parallel construction of the same inputs produce the same identity and observably
+equivalent results.
 
-`PublicationSession` owns the lifecycle for a long-lived host. It separates two token kinds:
+`PublicationSession` owns the lifecycle for a long-lived host. Every semantic-input mutation
+advances its owner-scoped input revision. A **build token** captures that revision, its build
+generation, and the dependency-complete identity it must produce. A finished build is admitted only
+when its owner, input revision, generation, and exact identity remain current. There is no separate
+semantic relink token or host-side semantic commit path.
 
-- a **relink token** gates editor-staged symbol commits; every edit supersedes the previous one;
-- a **build token** carries the identity a build was started for; a finished build is admitted only
-  if its owner is still current *and* its identity still matches the session's inputs. Admission is
-  independent of relink generation, so an edit arriving while a build runs does not discard a build
-  whose inputs it did not change.
+Successful admission atomically replaces the publication and every publication-derived host
+projection, and advances a monotonically increasing **publication version**. Previously captured
+publication tokens therefore never name a replacement model. Failed, cancelled, stale,
+identity-mismatched, and out-of-order builds leave the last coherent publication and its projections
+in place and report a typed outcome. While newer construction is pending, readers may continue using
+that last coherent state. Syntax-recovery search data for deliberately unadmitted documents is kept
+separate and never masquerades as a semantic projection.
 
-The session also carries a monotonically increasing **version** that hosts report to clients and
-use to gate diagnostics. Failed, cancelled, stale, identity-mismatched, and out-of-order builds leave
-the last coherent publication in place and report a typed outcome.
+Publication completeness is lossless: it records every applicable typed obstacle, including parse
+recovery, unsupported syntax, and bounded non-convergence, in canonical order. Query outcomes retain
+that publication provenance independently of whether the particular answer is resolved, ambiguous,
+unsupported, or unavailable. Consumers may deliberately present partial read-only values, but edit
+operations that mutate source require the facts they depend on to be complete. Artifact generation
+may consume a partial read-only projection, but its result contract carries the publication
+completeness so the caller can present, reject, or qualify that output without mistaking it for a
+complete result. Incompleteness is a normal publication state, not a separate construction policy.
 
 Library documents are resolved once into a library stratum keyed by their digests and reused across
 publications whose library inputs are unchanged.
@@ -280,9 +293,10 @@ Each invariant above is checked in a place the constrained crates cannot disable
 | one `Services` per host; library closure never on the edit path | `crates/lsp_server/tests/debt_guardrails.rs` |
 | reporting policy decides nothing semantic | `crates/sysml_diagnostics/tests/dependency_guardrails.rs` |
 | phases only depend on earlier products; evaluation has one writer; a sealed publication holds no parse tree or source text | `crates/sysml_resolution/tests/integration/phase_order.rs` |
-| asynchronous publication admits only a build whose owner-scoped generation and exact expected identity are still current; superseded and failed builds retain the last coherent publication | `crates/sysml_resolution/src/publication/session.rs` unit tests and `crates/lsp_server/src/session/handle.rs` concurrency tests |
+| asynchronous publication admits only a build whose owner, semantic-input revision, generation, and exact expected identity are still current; successful admission invalidates old publication tokens; superseded and failed builds retain the last coherent publication | `crates/sysml_resolution/src/publication/session.rs` unit tests and `crates/lsp_server/src/session/handle.rs` concurrency tests |
+| publication and publication-derived host projections become observable atomically; recovery search data stays separate | deterministic snapshot-coherence tests in `crates/lsp_server/src/session/handle.rs` and LSP integration tests |
 | cold/warm and sequential/parallel construction produce equivalent identities and observable projections | `crates/sysml_resolution/tests/integration/incremental_reuse.rs` and `construction_schedule_parity.rs`; every fixture is also built sequentially and in parallel by `spec42-snapshot` |
 | diagnostic codes, severities, exact ranges, related information, and canonical ordering are public behavior | `crates/sysml_resolution/tests/integration/diagnostics_contract.rs` and authored `EXPECTED DIAGNOSTICS` assertions under `tests/snapshots/` |
 | checked-in semantic projections and authored expectations remain current and blocker-consistent | required CI runs `cargo snapshot check`; the standalone runner owns the contract |
 | normative evidence coverage debt remains explicit while coverage is incomplete | CI runs `cargo snapshot report --format json` and uploads the report even when its deliberate coverage-debt exit is non-zero |
-| representation changes demonstrate neutral-or-better performance on the bundled standard-library corpus | local review evidence from the commands in `DEVELOPMENT.md`; timing and allocation measurements are deliberately not CI gates because shared runners do not provide a controlled performance environment |
+| representation changes demonstrate neutral-or-better performance on the bundled standard-library corpus | structured local review evidence from the commands in `DEVELOPMENT.md`, including corpus and environment identity; timing and allocation measurements are deliberately not CI gates because shared runners do not provide a controlled performance environment |

@@ -503,16 +503,16 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
         "contract-v1",
     ).unwrap();
     let published = build(request).unwrap();
-    let catalog = match published.diagram_view_catalog() {
-        QueryOutcome::Resolved(catalog) | QueryOutcome::UnsupportedWith(catalog) => catalog,
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
         other => panic!("expected diagram catalog, got {other:?}"),
     };
     let structure = catalog
         .iter()
         .find(|view| view.kind == DiagramViewKind::General)
         .unwrap();
-    let projection = match published.diagram_view(structure.semantic_id) {
-        QueryOutcome::Resolved(projection) => projection,
+    let projection = match published.diagram_view(structure.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
         other => panic!("expected General View projection, got {other:?}"),
     };
     let root = projection
@@ -531,8 +531,8 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
         .iter()
         .find(|view| view.kind == DiagramViewKind::StateTransition)
         .unwrap();
-    let projection = match published.diagram_view(behavior.semantic_id) {
-        QueryOutcome::Resolved(projection) => projection,
+    let projection = match published.diagram_view(behavior.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
         other => panic!("expected State Transition projection, got {other:?}"),
     };
     let DiagramScene::StateTransition(scene) = projection.scene else {
@@ -715,8 +715,8 @@ fn inspection_keeps_an_unresolved_reference_and_its_authored_text() {
 fn inspecting_an_unknown_document_is_unresolved() {
     let published = publication_for(&[("memory://i.sysml", "package P { }")]);
     assert!(matches!(
-        published.document_symbols("memory://absent.sysml"),
-        QueryOutcome::Unresolved
+        published.document_symbols("memory://absent.sysml").answer,
+        QueryAnswer::Unresolved
     ));
 }
 
@@ -736,27 +736,33 @@ satisfy Missing by vehicle;
 }
 "#,
     )]);
-    let values = match published.satisfy_relationships() {
-        QueryOutcome::Resolved(values) => values,
+    let values = match published.satisfy_relationships().answer {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected resolved satisfy query, got {other:?}"),
     };
     assert_eq!(values.len(), 3);
-    let requirements = match published.search_elements(ElementSearch {
-        kind: ElementKind::RequirementDefinition,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(values) => values,
+    let requirements = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected requirements, got {other:?}"),
     };
     let performance = requirements
         .iter()
         .find(|value| published.qualified_name(value.identity) == Some("Trace::Performance"))
         .expect("Performance");
-    let parts = match published.search_elements(ElementSearch {
-        kind: ElementKind::PartUsage,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(values) => values,
+    let parts = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected parts, got {other:?}"),
     };
     let vehicle = parts
@@ -792,8 +798,8 @@ action def Act {
 }
 "#,
     )]);
-    let values = match published.binding_connectors() {
-        QueryOutcome::Resolved(values) => values,
+    let values = match published.binding_connectors().answer {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected resolved binding connectors, got {other:?}"),
     };
     assert_eq!(
@@ -801,11 +807,14 @@ action def Act {
         3,
         "each authored binding must remain a separate fact"
     );
-    let actions = match published.search_elements(ElementSearch {
-        kind: ElementKind::ActionUsage,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(values) => values,
+    let actions = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::ActionUsage,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected actions, got {other:?}"),
     };
     let start = actions
@@ -838,15 +847,16 @@ fn feature_reference_expression_binding_check_is_explicitly_unsupported_without_
     )]);
     assert!(matches!(
         published
-            .binding_connector_validation(BindingConnectorCheckKind::FeatureReferenceExpression),
-        QueryOutcome::Resolved(BindingConnectorValidationOutcome::Unsupported {
+            .binding_connector_validation(BindingConnectorCheckKind::FeatureReferenceExpression)
+            .answer,
+        QueryAnswer::Resolved(BindingConnectorValidationOutcome::Unsupported {
             prerequisite:
                 BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
         })
     ));
     assert!(matches!(
-        published.binding_connectors(),
-        QueryOutcome::Resolved(values) if values.len() == 1
+        published.binding_connectors().answer,
+        QueryAnswer::Resolved(values) if values.len() == 1
     ));
 }
 
@@ -864,16 +874,19 @@ verification def Check {
 }
 "#,
     )]);
-    let values = match published.requirement_verifications() {
-        QueryOutcome::Resolved(values) => values,
+    let values = match published.requirement_verifications().answer {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected resolved verification query, got {other:?}"),
     };
     assert_eq!(values.len(), 2);
-    let cases = match published.search_elements(ElementSearch {
-        kind: ElementKind::VerificationCaseDefinition,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(values) => values,
+    let cases = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::VerificationCaseDefinition,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected verification cases, got {other:?}"),
     };
     let check = cases
@@ -1077,12 +1090,12 @@ fn variable_feature_membership_is_explicitly_unsupported_without_snapshots() {
     );
     let mass = identity_of(&published, "memory://model.sysml", "Model::Vehicle::mass");
     assert!(matches!(
-        published.featuring_types(mass),
-        QueryOutcome::Unsupported
+        published.featuring_types(mass).answer,
+        QueryAnswer::Unsupported
     ));
     assert!(matches!(
-        published.featuring_type(mass),
-        QueryOutcome::Unsupported
+        published.featuring_type(mass).answer,
+        QueryAnswer::Unsupported
     ));
     assert!(type_featuring_relationships(
         &published,
@@ -1119,11 +1132,13 @@ fn polarity_branch_anchor_failures_are_explicit_and_deduplicated() {
     )
     .unwrap();
     assert!(matches!(
-        missing.library_specialization_anchor_branch(
-            RULE,
-            LibrarySpecializationAnchorBranch::PredicateTrue,
-        ),
-        QueryOutcome::Unresolved
+        missing
+            .library_specialization_anchor_branch(
+                RULE,
+                LibrarySpecializationAnchorBranch::PredicateTrue,
+            )
+            .answer,
+        QueryAnswer::Unresolved
     ));
     let missing_published_diagnostics = missing.diagnostics();
     let missing_diagnostics = missing_published_diagnostics
@@ -1162,8 +1177,8 @@ fn polarity_branch_anchor_failures_are_explicit_and_deduplicated() {
         ambiguous.library_specialization_anchor_branch(
             RULE,
             LibrarySpecializationAnchorBranch::PredicateTrue,
-        ),
-        QueryOutcome::Ambiguous(candidates) if candidates.len() == 2
+        ).answer,
+        QueryAnswer::Ambiguous(candidates) if candidates.len() == 2
     ));
     let ambiguous_published_diagnostics = ambiguous.diagnostics();
     let ambiguous_diagnostics = ambiguous_published_diagnostics
@@ -1203,8 +1218,8 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
     )
     .unwrap();
     assert!(matches!(
-        missing.part_definition_specialization_anchor(),
-        QueryOutcome::Unresolved
+        missing.part_definition_specialization_anchor().answer,
+        QueryAnswer::Unresolved
     ));
     assert_eq!(
         missing
@@ -1249,8 +1264,8 @@ fn part_definition_anchor_failures_are_explicit_and_report_one_root_cause() {
     )
     .unwrap();
     assert!(matches!(
-        ambiguous.part_definition_specialization_anchor(),
-        QueryOutcome::Ambiguous(candidates) if candidates.len() == 2
+        ambiguous.part_definition_specialization_anchor().answer,
+        QueryAnswer::Ambiguous(candidates) if candidates.len() == 2
     ));
     let published_diagnostics = ambiguous.diagnostics();
     let diagnostics = published_diagnostics.iter().collect::<Vec<_>>();
@@ -1287,8 +1302,8 @@ fn generated_library_anchor_diagnostics_deduplicate_by_anchor_and_document() {
     .unwrap();
 
     assert!(matches!(
-        published.library_specialization_anchor(ITEM_RULE),
-        QueryOutcome::Unresolved
+        published.library_specialization_anchor(ITEM_RULE).answer,
+        QueryAnswer::Unresolved
     ));
     let published_diagnostics = published.diagnostics();
     let diagnostics = published_diagnostics.iter().collect::<Vec<_>>();
@@ -1311,12 +1326,35 @@ fn element_details_over_recovery_produced_input_keep_their_recovery_outcome() {
     let symbol = identity_of(&published, "memory://recovery.sysml", "P::Wheel");
     assert!(
         matches!(
-            published.element_details(symbol),
-            QueryOutcome::Recovered(_) | QueryOutcome::UnsupportedWith(_)
+            published.element_details(symbol).answer,
+            QueryAnswer::Resolved(_)
         ),
         "expected a degraded publication to say so, got: {:?}",
         published.completeness()
     );
+}
+
+#[test]
+fn every_publication_obstacle_flows_through_value_and_non_value_query_answers() {
+    let published = detail_publication(
+        &[((
+            "memory://mixed.sysml",
+            "package P { part def Wheel; constraint def C { ~x } part broken : ; }",
+        ))],
+        ConstructionSchedule::Sequential,
+    );
+    let completeness = published.completeness();
+    assert!(completeness.contains(PublicationObstacle::ParseRecovery));
+    assert!(completeness.contains(PublicationObstacle::UnsupportedSyntax));
+
+    let wheel = identity_of(&published, "memory://mixed.sysml", "P::Wheel");
+    let resolved = published.element_details(wheel);
+    assert!(matches!(resolved.answer, QueryAnswer::Resolved(_)));
+    assert_eq!(resolved.completeness, completeness);
+
+    let unresolved = published.target_at("memory://not-admitted.sysml", TextPosition::new(0, 0));
+    assert!(matches!(unresolved.answer, QueryAnswer::Unresolved));
+    assert_eq!(unresolved.completeness, completeness);
 }
 
 #[test]
@@ -1335,7 +1373,7 @@ fn an_unresolved_import_makes_dependency_selection_explicitly_recovered() {
     )
     .unwrap();
     assert!(matches!(
-        published.affected_documents("memory://a.sysml"),
-        QueryOutcome::Recovered(_)
+        published.affected_documents("memory://a.sysml").answer,
+        QueryAnswer::Resolved(_)
     ));
 }

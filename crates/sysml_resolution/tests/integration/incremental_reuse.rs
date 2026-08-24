@@ -47,6 +47,11 @@ fn assert_warm_matches_cold(warm: &PublicationAuthority, documents: &[SourceDocu
         "a warm build and a cold build of the same sources are one publication identity"
     );
     assert_eq!(
+        warm_publication.identity().model_digest(),
+        cold_publication.identity().model_digest(),
+        "typed model identity is independent of cache warmth"
+    );
+    assert_eq!(
         render(&warm_publication),
         render(&cold_publication),
         "a warm build and a cold build of the same sources render identically"

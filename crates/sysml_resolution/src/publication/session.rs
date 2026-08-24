@@ -1,17 +1,8 @@
 //! The publication lifecycle for a long-lived host, and the barrier that admits a finished build.
 //!
-//! A session owns the current publication and two independent token spaces:
-//!
-//! * a **relink token** gates editor-staged symbol commits — every edit supersedes the previous
-//!   one, and a relink result is committed only while its token is current;
-//! * a **build token** carries the identity a background build was started for — a finished
-//!   build is admitted only if no newer build has been started since and the publication it
-//!   produced has exactly the identity the token names.
-//!
-//! Admission is independent of relink generation, so an edit that arrives while a build runs
-//! does not discard a build whose inputs it did not change; the host's own revision check decides
-//! whether the result is still worth mirroring. The session is a plain synchronous state machine:
-//! whatever single-writer discipline guards the host's state guards this too.
+//! A session owns the current publication and the input revision from which the next publication
+//! is built. Every semantic-input mutation advances that revision. A build token captures it, so
+//! work completed for superseded inputs can never cross the publication barrier.
 
 use std::sync::Arc;
 
@@ -46,28 +37,12 @@ impl PublicationToken {
     }
 }
 
-/// Token returned by [`Session::schedule_relink`]. Only the newest relink's token is current.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct RelinkToken {
-    publication: PublicationToken,
-    generation: u64,
-}
-
-impl RelinkToken {
-    pub fn generation(&self) -> u64 {
-        self.generation
-    }
-
-    pub fn publication(&self) -> PublicationToken {
-        self.publication
-    }
-}
-
 /// Token carried by a background build: the owner it was started in, its place in the build
 /// order, and the identity it must produce.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BuildToken {
     owner: u64,
+    input_revision: u64,
     generation: u64,
     identity: PublicationIdentity,
 }
@@ -106,9 +81,7 @@ impl Published for crate::PublishedResolution {
 /// ```text
 /// Cold → Indexing             begin_startup()
 /// Cold/Indexing → Ready       complete_startup()
-/// Ready → Reindexing          schedule_relink()
-/// Reindexing → Reindexing     schedule_relink()   (newer edit supersedes)
-/// Reindexing → Ready          commit_relink()
+/// Ready/Reindexing → Reindexing invalidate_inputs()
 /// * → Reindexing              begin_library_reindex()
 /// Reindexing → Ready          complete_reindex()
 /// Cold/Indexing/Ready/Reindexing → Cold  reset()
@@ -121,8 +94,8 @@ pub struct Session<P> {
     /// Bumped on every transition and on bare `bump_version` calls: the "did anything change?"
     /// discriminator in-flight work checks before publishing.
     version: u64,
-    /// Incremented per scheduled relink; only the newest token's generation is current.
-    relink_generation: u64,
+    /// Incremented for every mutation of a semantic construction prerequisite.
+    input_revision: u64,
     /// Incremented per started build; only the newest build may be admitted.
     build_generation: u64,
     current: Arc<P>,
@@ -134,7 +107,7 @@ impl<P> Clone for Session<P> {
             owner: self.owner,
             lifecycle: self.lifecycle,
             version: self.version,
-            relink_generation: self.relink_generation,
+            input_revision: self.input_revision,
             build_generation: self.build_generation,
             current: Arc::clone(&self.current),
         }
@@ -148,7 +121,7 @@ impl<P: Published> Session<P> {
             owner: next_session_owner(),
             lifecycle: SessionLifecycle::Cold,
             version: 0,
-            relink_generation: 0,
+            input_revision: 0,
             build_generation: 0,
             current: initial,
         }
@@ -198,6 +171,7 @@ impl<P: Published> Session<P> {
 
     /// Resets to `Cold`, invalidating every outstanding token.
     pub fn reset(&mut self) {
+        self.input_revision = increment(self.input_revision, "input revision");
         self.transition(SessionLifecycle::Cold);
     }
 
@@ -219,37 +193,23 @@ impl<P: Published> Session<P> {
         self.transition(SessionLifecycle::Ready)
     }
 
-    /// A document changed: schedule an async relink, superseding any previous one.
-    pub fn schedule_relink(&mut self) -> RelinkToken {
-        debug_assert!(matches!(
-            self.lifecycle,
-            SessionLifecycle::Ready | SessionLifecycle::Reindexing
-        ));
-        self.relink_generation = increment(self.relink_generation, "relink generation");
-        self.transition(SessionLifecycle::Reindexing);
-        RelinkToken {
-            publication: self.publication(),
-            generation: self.relink_generation,
+    /// Marks the semantic construction inputs changed and supersedes all work for older inputs.
+    pub fn invalidate_inputs(&mut self) -> u64 {
+        self.input_revision = increment(self.input_revision, "input revision");
+        match self.lifecycle {
+            SessionLifecycle::Ready | SessionLifecycle::Reindexing => {
+                self.transition(SessionLifecycle::Reindexing);
+            }
+            SessionLifecycle::Cold | SessionLifecycle::Indexing => {
+                self.version = increment(self.version, "publication version");
+            }
+            SessionLifecycle::Closed => {}
         }
-    }
-
-    /// Whether `token` is the current pending relink.
-    pub fn is_token_current(&self, token: &RelinkToken) -> bool {
-        self.relink_generation == token.generation
-            && self.is_publication_current(&token.publication)
-            && self.lifecycle == SessionLifecycle::Reindexing
-    }
-
-    /// Commits a relink; `false` when the token was superseded and nothing changed.
-    pub fn commit_relink(&mut self, token: &RelinkToken) -> bool {
-        if !self.is_token_current(token) {
-            return false;
-        }
-        self.transition(SessionLifecycle::Ready);
-        true
+        self.input_revision
     }
 
     pub fn begin_library_reindex(&mut self) {
+        self.input_revision = increment(self.input_revision, "input revision");
         self.transition(SessionLifecycle::Reindexing);
     }
 
@@ -260,6 +220,7 @@ impl<P: Published> Session<P> {
 
     /// Bumps the version without a lifecycle change, invalidating in-flight work.
     pub fn bump_version(&mut self) -> u64 {
+        self.input_revision = increment(self.input_revision, "input revision");
         self.version = increment(self.version, "publication version");
         self.version
     }
@@ -269,6 +230,7 @@ impl<P: Published> Session<P> {
         self.build_generation = increment(self.build_generation, "build generation");
         BuildToken {
             owner: self.owner,
+            input_revision: self.input_revision,
             generation: self.build_generation,
             identity,
         }
@@ -282,6 +244,7 @@ impl<P: Published> Session<P> {
         result: Result<Arc<P>, E>,
     ) -> PublicationOutcome {
         if token.owner != self.owner
+            || token.input_revision != self.input_revision
             || token.generation != self.build_generation
             || self.lifecycle == SessionLifecycle::Closed
         {
@@ -290,10 +253,34 @@ impl<P: Published> Session<P> {
         match result {
             Ok(published) if published.identity() == &token.identity => {
                 self.current = published;
+                self.version = increment(self.version, "publication version");
+                if self.lifecycle == SessionLifecycle::Reindexing {
+                    self.lifecycle = SessionLifecycle::Ready;
+                }
                 PublicationOutcome::Published
             }
-            Ok(_) => PublicationOutcome::IdentityMismatch,
-            Err(_) => PublicationOutcome::Failed,
+            Ok(_) => {
+                self.finish_current_build();
+                PublicationOutcome::IdentityMismatch
+            }
+            Err(_) => {
+                self.finish_current_build();
+                PublicationOutcome::Failed
+            }
+        }
+    }
+
+    fn finish_current_build(&mut self) {
+        if self.lifecycle == SessionLifecycle::Reindexing {
+            self.transition(SessionLifecycle::Ready);
+        }
+    }
+
+    /// Finishes a failed preparation for the current semantic inputs. There is no build token yet,
+    /// but the lifecycle must not claim work remains in flight.
+    pub fn finish_preparation_failure(&mut self) {
+        if self.lifecycle == SessionLifecycle::Reindexing {
+            self.transition(SessionLifecycle::Ready);
         }
     }
 
@@ -371,24 +358,26 @@ mod tests {
     }
 
     #[test]
-    fn newer_relink_invalidates_older_token_and_commit_returns_to_ready() {
+    fn an_input_change_supersedes_a_build_for_the_previous_revision() {
         let mut session = ready();
-        let stale = session.schedule_relink();
-        let fresh = session.schedule_relink();
-        assert!(!session.is_token_current(&stale));
-        assert!(session.is_token_current(&fresh));
-        assert!(!session.commit_relink(&stale));
-        assert_eq!(session.lifecycle(), SessionLifecycle::Reindexing);
-        assert!(session.commit_relink(&fresh));
-        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        let stale = session.begin_build(identity("stale"));
+        session.invalidate_inputs();
+        assert_eq!(
+            session.admit::<()>(&stale, Ok(Arc::new(Fake(identity("stale"))))),
+            PublicationOutcome::Superseded
+        );
     }
 
     #[test]
     fn bump_reset_and_close_invalidate_outstanding_work() {
         let mut session = ready();
-        let token = session.schedule_relink();
+        let token = session.begin_build(identity("pending"));
         session.bump_version();
-        assert!(!session.is_token_current(&token));
+        session.invalidate_inputs();
+        assert_eq!(
+            session.admit::<()>(&token, Ok(Arc::new(Fake(identity("pending"))))),
+            PublicationOutcome::Superseded
+        );
         let publication = session.publication();
         session.reset();
         assert_eq!(session.lifecycle(), SessionLifecycle::Cold);
@@ -401,21 +390,23 @@ mod tests {
     fn a_token_from_another_session_is_never_current() {
         let mut first = ready();
         let mut second = ready();
-        let first_token = first.schedule_relink();
-        let second_token = second.schedule_relink();
-        assert_eq!(first_token.generation(), second_token.generation());
-        assert!(!second.is_token_current(&first_token));
-        assert!(second.is_token_current(&second_token));
+        let first_token = first.begin_build(identity("x"));
+        let second_token = second.begin_build(identity("x"));
+        assert_eq!(
+            second.admit::<()>(&first_token, Ok(Arc::new(Fake(identity("x"))))),
+            PublicationOutcome::Superseded
+        );
+        assert_eq!(
+            second.admit::<()>(&second_token, Ok(Arc::new(Fake(identity("x"))))),
+            PublicationOutcome::Published
+        );
     }
 
     #[test]
-    fn builds_are_admitted_by_order_and_identity_independently_of_relinks() {
+    fn builds_are_admitted_by_order_and_identity() {
         let mut session = ready();
         let older = session.begin_build(identity("older"));
         let newer = session.begin_build(identity("newer"));
-        // An edit arriving while the builds run does not supersede them.
-        let _relink = session.schedule_relink();
-
         assert_eq!(
             session.admit::<()>(&older, Ok(Arc::new(Fake(identity("older"))))),
             PublicationOutcome::Superseded
@@ -435,6 +426,55 @@ mod tests {
             PublicationOutcome::Published
         );
         assert_eq!(session.current().0, identity("newer"));
+    }
+
+    #[test]
+    fn successful_admission_invalidates_the_previous_publication_token() {
+        let mut session = ready();
+        let previous = session.publication();
+        let token = session.begin_build(identity("new"));
+        assert_eq!(
+            session.admit::<()>(&token, Ok(Arc::new(Fake(identity("new"))))),
+            PublicationOutcome::Published
+        );
+        assert!(!session.is_publication_current(&previous));
+        assert!(session.is_publication_current(&session.publication()));
+    }
+
+    #[test]
+    fn reset_and_library_reindex_supersede_preexisting_builds() {
+        let mut session = ready();
+        let before_reset = session.begin_build(identity("before-reset"));
+        session.reset();
+        assert_eq!(
+            session.admit::<()>(&before_reset, Ok(Arc::new(Fake(identity("before-reset"))))),
+            PublicationOutcome::Superseded
+        );
+
+        session.begin_startup();
+        session.complete_startup();
+        let before_reindex = session.begin_build(identity("before-reindex"));
+        session.begin_library_reindex();
+        assert_eq!(
+            session.admit::<()>(
+                &before_reindex,
+                Ok(Arc::new(Fake(identity("before-reindex"))))
+            ),
+            PublicationOutcome::Superseded
+        );
+    }
+
+    #[test]
+    fn failed_preparation_finishes_reindex_without_changing_the_last_good_publication() {
+        let mut session = ready();
+        let last_good = Arc::clone(session.current());
+        session.invalidate_inputs();
+        assert_eq!(session.lifecycle(), SessionLifecycle::Reindexing);
+
+        session.finish_preparation_failure();
+
+        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        assert!(Arc::ptr_eq(session.current(), &last_good));
     }
 
     #[test]

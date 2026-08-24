@@ -63,7 +63,7 @@ pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<
     let imports = entry.parsed.imports();
     let links = navigation::collect_document_links(&imports, |import_name| {
         state
-            .symbol_table
+            .semantic_symbols
             .iter()
             .find(|entry| entry.name == import_name)
             .map(|entry| entry.uri.clone())

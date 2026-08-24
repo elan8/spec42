@@ -169,7 +169,7 @@ package Filtering {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:931e6c53a461d8ab14d6c29c0880e583f34ef4dfe3c2b750be576c4b45db35bf") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:931e6c53a461d8ab14d6c29c0880e583f34ef4dfe3c2b750be576c4b45db35bf") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

@@ -57,12 +57,15 @@ fn an_authored_standard_view_generates_a_complete_scene_from_its_catalog_handle(
         let snapshot = load_snapshot_for_paths(&cli, &views_document, Some(&workspace), false)
             .expect("the state-view fixture publishes");
         let publication = snapshot.published_model_arc();
-        let model = Arc::new(GeneratorModelView::new(
-            Arc::clone(&publication),
-            publication.publication().model_digest(),
-            env!("CARGO_PKG_VERSION"),
-            QueryLimits::default(),
-        ));
+        let model = Arc::new(
+            GeneratorModelView::new(
+                Arc::clone(&publication),
+                publication.publication().model_digest().to_string(),
+                env!("CARGO_PKG_VERSION"),
+                QueryLimits::default(),
+            )
+            .expect("complete generator model"),
+        );
 
         // The handle is minted by this catalog listing, on this model view.
         let views = model.diagram_views().expect("the view catalog lists");

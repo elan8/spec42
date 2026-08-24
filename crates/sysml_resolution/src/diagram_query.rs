@@ -1,9 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
-    ElementDetails, ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryOutcome,
-    RelationshipOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry,
-    SymbolId, ViewSelectionObstacle, ViewSelectionOutcome,
+    ElementDetails, ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryAnswer,
+    QueryOutcome, RelationshipOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation,
+    SymbolEntry, SymbolId, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
 pub use sysml_contract::{
@@ -364,7 +364,9 @@ impl PublishedResolution {
                 .filter(|entry| entry.name.as_deref() == Some(definition_name(kind)))
                 .collect::<Vec<_>>();
             if matches.len() > 1 {
-                return QueryOutcome::Ambiguous(Box::new([]));
+                return self
+                    .model
+                    .query_outcome(QueryAnswer::Ambiguous(Box::new([])));
             }
             if let Some(entry) = matches.first() {
                 definitions.insert(entry.identity, kind);
@@ -398,26 +400,31 @@ impl PublishedResolution {
         // A handle sorts as its canonical identity does, so this is the identity order the
         // catalog has always published, without materialising either string.
         catalog.sort_by_key(|a| a.semantic_id);
-        QueryOutcome::Resolved(catalog.into_boxed_slice())
+        self.model
+            .query_outcome(QueryAnswer::Resolved(catalog.into_boxed_slice()))
     }
 
     pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
-        let catalog = match self.diagram_view_catalog() {
-            QueryOutcome::Resolved(value) | QueryOutcome::Recovered(value) => value,
-            QueryOutcome::Ambiguous(_) => return QueryOutcome::Ambiguous(Box::new([])),
-            QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
-                return QueryOutcome::Unsupported;
+        let catalog = match self.diagram_view_catalog().answer {
+            QueryAnswer::Resolved(value) => value,
+            QueryAnswer::Ambiguous(_) => {
+                return self
+                    .model
+                    .query_outcome(QueryAnswer::Ambiguous(Box::new([])));
             }
-            QueryOutcome::Unresolved => return QueryOutcome::Unresolved,
-            QueryOutcome::Recovery => return QueryOutcome::Recovery,
-            QueryOutcome::Incomplete => return QueryOutcome::Incomplete,
+            QueryAnswer::Unsupported => {
+                return self.model.query_outcome(QueryAnswer::Unsupported);
+            }
+            QueryAnswer::Unresolved => return self.model.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Recovery => return self.model.query_outcome(QueryAnswer::Recovery),
+            QueryAnswer::Incomplete => return self.model.query_outcome(QueryAnswer::Incomplete),
         };
         let Some(view_entry) = catalog
             .iter()
             .find(|entry| entry.semantic_id == view)
             .cloned()
         else {
-            return QueryOutcome::Unresolved;
+            return self.model.query_outcome(QueryAnswer::Unresolved);
         };
 
         let all = self.diagram_entries();
@@ -431,10 +438,8 @@ impl PublishedResolution {
             .values()
             .filter(|entry| entry.owner == Some(view) && entry.kind == ElementKind::Expose)
         {
-            match self.inspect(expose.identity) {
-                QueryOutcome::Resolved(inspection)
-                | QueryOutcome::Recovered(inspection)
-                | QueryOutcome::UnsupportedWith(inspection) => {
+            match self.inspect(expose.identity).answer {
+                QueryAnswer::Resolved(inspection) => {
                     for relationship in inspection
                         .relationships
                         .iter()
@@ -462,12 +467,12 @@ impl PublishedResolution {
                         }
                     }
                 }
-                QueryOutcome::Unresolved => {
+                QueryAnswer::Unresolved => {
                     reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
                         exposure: expose.identity,
                     });
                 }
-                QueryOutcome::Ambiguous(_) => {
+                QueryAnswer::Ambiguous(_) => {
                     reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
                         exposure: expose.identity,
                     });
@@ -800,18 +805,19 @@ impl PublishedResolution {
         if view_entry.kind == DiagramViewKind::Geometry && !elements.is_empty() {
             reasons.insert(DiagramIncompleteReason::GeometryFactsUnavailable);
         }
-        QueryOutcome::Resolved(DiagramViewProjection {
-            view: view_entry,
-            exposed_roots: projected_roots
-                .into_iter()
-                .collect::<Vec<_>>()
-                .into_boxed_slice(),
-            elements: elements.into_boxed_slice(),
-            relationships: relationships.into_boxed_slice(),
-            edges: edges.into_boxed_slice(),
-            scene,
-            incomplete_reasons: reasons.into_iter().collect::<Vec<_>>().into_boxed_slice(),
-        })
+        self.model
+            .query_outcome(QueryAnswer::Resolved(DiagramViewProjection {
+                view: view_entry,
+                exposed_roots: projected_roots
+                    .into_iter()
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice(),
+                elements: elements.into_boxed_slice(),
+                relationships: relationships.into_boxed_slice(),
+                edges: edges.into_boxed_slice(),
+                scene,
+                incomplete_reasons: reasons.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+            }))
     }
 
     fn diagram_candidate_selected(
@@ -820,10 +826,8 @@ impl PublishedResolution {
         candidate: SymbolId,
         reasons: &mut BTreeSet<DiagramIncompleteReason>,
     ) -> bool {
-        match self.view_selection(view, candidate) {
-            QueryOutcome::Resolved(selection)
-            | QueryOutcome::Recovered(selection)
-            | QueryOutcome::UnsupportedWith(selection) => match selection.outcome {
+        match self.view_selection(view, candidate).answer {
+            QueryAnswer::Resolved(selection) => match selection.outcome {
                 ViewSelectionOutcome::Included => true,
                 ViewSelectionOutcome::Excluded => false,
                 ViewSelectionOutcome::Indeterminate(obstacles) => {
@@ -843,15 +847,15 @@ impl PublishedResolution {
                     false
                 }
             },
-            QueryOutcome::Ambiguous(_) => {
+            QueryAnswer::Ambiguous(_) => {
                 reasons.insert(DiagramIncompleteReason::ViewFilterAmbiguous);
                 false
             }
-            QueryOutcome::Unresolved => {
+            QueryAnswer::Unresolved => {
                 reasons.insert(DiagramIncompleteReason::ViewFilterUnresolved);
                 false
             }
-            QueryOutcome::Unsupported | QueryOutcome::Recovery | QueryOutcome::Incomplete => {
+            QueryAnswer::Unsupported | QueryAnswer::Recovery | QueryAnswer::Incomplete => {
                 reasons.insert(DiagramIncompleteReason::ViewFilterUnsupported);
                 false
             }
@@ -1187,19 +1191,15 @@ fn edge_from_relationships(
 }
 
 fn resolved_values<T>(outcome: QueryOutcome<Box<[T]>>) -> Box<[T]> {
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values,
+    match outcome.answer {
+        QueryAnswer::Resolved(values) => values,
         _ => Box::new([]),
     }
 }
 
 fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramElementTyping {
-    match outcome {
-        QueryOutcome::Resolved(details)
-        | QueryOutcome::Recovered(details)
-        | QueryOutcome::UnsupportedWith(details) => {
+    match outcome.answer {
+        QueryAnswer::Resolved(details) => {
             let types = details
                 .effective_typing
                 .types
@@ -1224,24 +1224,22 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
                 RelationshipOutcome::Unsupported => DiagramElementTyping::Unsupported,
             }
         }
-        QueryOutcome::Unresolved => DiagramElementTyping::Unresolved,
-        QueryOutcome::Ambiguous(_) => DiagramElementTyping::Ambiguous(Box::default()),
-        QueryOutcome::Unsupported => DiagramElementTyping::Unsupported,
-        QueryOutcome::Recovery => DiagramElementTyping::Recovery,
-        QueryOutcome::Incomplete => DiagramElementTyping::Incomplete,
+        QueryAnswer::Unresolved => DiagramElementTyping::Unresolved,
+        QueryAnswer::Ambiguous(_) => DiagramElementTyping::Ambiguous(Box::default()),
+        QueryAnswer::Unsupported => DiagramElementTyping::Unsupported,
+        QueryAnswer::Recovery => DiagramElementTyping::Recovery,
+        QueryAnswer::Incomplete => DiagramElementTyping::Incomplete,
     }
 }
 
 fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
-    match outcome {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => Some(value),
-        QueryOutcome::Unresolved
-        | QueryOutcome::Ambiguous(_)
-        | QueryOutcome::Unsupported
-        | QueryOutcome::Recovery
-        | QueryOutcome::Incomplete => None,
+    match outcome.answer {
+        QueryAnswer::Resolved(value) => Some(value),
+        QueryAnswer::Unresolved
+        | QueryAnswer::Ambiguous(_)
+        | QueryAnswer::Unsupported
+        | QueryAnswer::Recovery
+        | QueryAnswer::Incomplete => None,
     }
 }
 
@@ -1336,12 +1334,23 @@ impl DiagramViewProjection {
 #[cfg(test)]
 mod tests {
     use super::{compartment_kind, usable_value, DiagramCompartmentKind};
-    use crate::{ElementKind, QueryOutcome};
+    use crate::{
+        ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
+    };
 
     #[test]
     fn unsupported_outcomes_retain_their_usable_payload() {
-        assert_eq!(usable_value(QueryOutcome::UnsupportedWith(42)), Some(42));
-        assert_eq!(usable_value::<u8>(QueryOutcome::Unsupported), None);
+        let completeness = PublicationCompleteness::Complete
+            .with(PublicationObstacle::ParseRecovery)
+            .with(PublicationObstacle::UnsupportedSyntax);
+        assert_eq!(
+            usable_value(QueryOutcome::new(completeness, QueryAnswer::Resolved(42))),
+            Some(42)
+        );
+        assert_eq!(
+            usable_value::<u8>(QueryOutcome::new(completeness, QueryAnswer::Unsupported)),
+            None
+        );
     }
 
     #[test]

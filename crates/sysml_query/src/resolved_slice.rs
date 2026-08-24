@@ -27,212 +27,27 @@ pub use sysml_resolution::{
     LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
     MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, PublishedElement,
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome,
-    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
-    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
-    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
-    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
-    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
-    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
-    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
-    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
-    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    PublicationCompleteness, PublicationIdentity, PublicationModelDigest, PublicationObstacle,
+    PublishedDiagnostics, PublishedElement, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
+    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
+    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
+    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
+    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
+pub use sysml_resolution::source::RootDigest;
 /// Provenance of an admitted source; the one enum the source authority defines.
 pub use sysml_resolution::source::SourceKind;
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct AdmittedSource {
-    inner: sysml_resolution::SourceInput,
-}
-
-impl AdmittedSource {
-    pub fn from_uri(
-        uri: &str,
-        content: String,
-        source_kind: SourceKind,
-    ) -> Result<Self, SourceError> {
-        let document = crate::source::SourceAuthority::new()
-            .admit(uri, content, source_kind)
-            .map_err(SourceError::from)?;
-        Ok(Self::from_document(document))
-    }
-
-    pub fn from_memory_path(
-        namespace: &str,
-        path: &str,
-        content: String,
-        source_kind: SourceKind,
-    ) -> Result<Self, SourceError> {
-        let document = crate::source::SourceAuthority::new()
-            .admit_memory(namespace, path, content, source_kind)
-            .map_err(SourceError::from)?;
-        Ok(Self::from_document(document))
-    }
-
-    /// Admit a tree the syntax service already parsed; the editor's parse and the build's parse
-    /// are then the same tree.
-    pub fn from_parsed(
-        uri: &str,
-        parsed: crate::syntax::ParsedSource,
-        source_kind: SourceKind,
-    ) -> Result<Self, SourceError> {
-        let document = crate::source::SourceAuthority::new()
-            .admit(uri, parsed.source(), source_kind)
-            .map_err(SourceError::from)?;
-        let inner = if document.digest() == parsed.digest() {
-            sysml_resolution::SourceInput::from_parsed(document.uri().as_str(), parsed, source_kind)
-        } else {
-            // Line-ending normalization changed the bytes. Preserve semantic parity with every
-            // other admission path by parsing the normalized document during construction.
-            sysml_resolution::SourceInput::pending(document.uri().as_str(), document.clone())
-        };
-        Ok(Self { inner })
-    }
-
-    /// The identity queries and published facts address this document by.
-    pub fn identity(&self) -> &str {
-        self.inner.identity()
-    }
-
-    fn from_document(document: crate::source::SourceDocument) -> Self {
-        Self {
-            inner: sysml_resolution::SourceInput::pending(
-                document.uri().as_str(),
-                document.clone(),
-            ),
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SourceError(String);
-
-impl From<crate::source::SourceError> for SourceError {
-    fn from(error: crate::source::SourceError) -> Self {
-        Self(error.to_string())
-    }
-}
-
-impl fmt::Display for SourceError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(&self.0)
-    }
-}
-
-impl std::error::Error for SourceError {}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ConstructionStrategy {
-    Sequential,
-    Parallel,
-}
-
-#[derive(Debug)]
-pub struct BuildRequest {
-    inner: sysml_resolution::BuildRequest,
-}
-
-impl BuildRequest {
-    pub fn resolved(
-        sources: Vec<AdmittedSource>,
-        construction: ConstructionStrategy,
-    ) -> Result<Self, BuildError> {
-        let schedule = match construction {
-            ConstructionStrategy::Sequential => sysml_resolution::ConstructionSchedule::Sequential,
-            ConstructionStrategy::Parallel => sysml_resolution::ConstructionSchedule::Parallel,
-        };
-        sysml_resolution::BuildRequest::new(
-            sources.into_iter().map(|source| source.inner).collect(),
-            schedule,
-            sysml_resolution::RESOLVED_CONTRACT,
-        )
-        .map(|inner| Self { inner })
-        .map_err(BuildError)
-    }
-
-    /// Builds `sources` against a library that has already been parsed and solved.
-    ///
-    /// `sources` carries only the workspace documents; the library's come from the stratum.
-    pub fn resolved_with_library(
-        sources: Vec<AdmittedSource>,
-        construction: ConstructionStrategy,
-        library: &LibraryStratum,
-    ) -> Result<Self, BuildError> {
-        let schedule = match construction {
-            ConstructionStrategy::Sequential => sysml_resolution::ConstructionSchedule::Sequential,
-            ConstructionStrategy::Parallel => sysml_resolution::ConstructionSchedule::Parallel,
-        };
-        sysml_resolution::BuildRequest::with_library(
-            sources.into_iter().map(|source| source.inner).collect(),
-            schedule,
-            sysml_resolution::RESOLVED_CONTRACT,
-            library.handle(),
-        )
-        .map(|inner| Self { inner })
-        .map_err(BuildError)
-    }
-
-    /// Also reports diagnostics for these admitted documents, beyond the workspace-authored ones.
-    ///
-    /// A publication reports its workspace by default. That default is about provenance, which is
-    /// not the same question as which documents are an authoring surface: an editor with a library
-    /// file open is authoring it, and only the host knows that. Naming the document here is how it
-    /// says so, and it is part of the publication's identity because it changes what the
-    /// publication answers.
-    pub fn reporting(self, documents: impl IntoIterator<Item = Box<str>>) -> Self {
-        Self {
-            inner: self.inner.reporting(documents),
-        }
-    }
-
-    /// The identity the publication built from this request will carry.
-    ///
-    /// Available before the build so a publication owner can record what it scheduled and reject
-    /// a result built from anything else, rather than trusting whatever comes back.
-    pub fn identity(&self) -> &PublicationIdentity {
-        self.inner.identity()
-    }
-}
-
-/// A library parsed and solved once, reusable by any number of later publications.
-///
-/// Build it from the library's own sources when a session opens, then hand it to every workspace
-/// build. Reuse is conditional: a workspace that could change what a library reference resolves to
-/// gets a full solve instead, so the published result never depends on whether a stratum was
-/// supplied.
-#[derive(Debug)]
-pub struct LibraryStratum {
-    inner: std::sync::Arc<sysml_resolution::LibraryStratum>,
-}
-
-impl LibraryStratum {
-    pub fn build(sources: Vec<AdmittedSource>) -> Result<Self, BuildError> {
-        sysml_resolution::build_library_stratum(
-            sources.into_iter().map(|source| source.inner).collect(),
-        )
-        .map(|inner| Self {
-            inner: std::sync::Arc::new(inner),
-        })
-        .map_err(BuildError)
-    }
-
-    /// How many documents this stratum admits.
-    pub fn document_count(&self) -> usize {
-        self.inner.document_count()
-    }
-
-    fn handle(&self) -> std::sync::Arc<sysml_resolution::LibraryStratum> {
-        std::sync::Arc::clone(&self.inner)
-    }
-}
 
 /// Opaque published semantic state. Share it behind `Arc`; do not duplicate its owner.
 ///
@@ -250,32 +65,6 @@ impl PublishedModel {
         Self { inner }
     }
 }
-
-pub fn build(request: BuildRequest) -> Result<PublishedModel, BuildError> {
-    sysml_resolution::build(request.inner)
-        .map(|inner| PublishedModel { inner })
-        .map_err(BuildError)
-}
-
-/// Builds one publication and returns timings measured at its semantic phase barriers.
-pub fn build_measured(
-    request: BuildRequest,
-) -> Result<(PublishedModel, BuildMeasurements), BuildError> {
-    sysml_resolution::build_measured(request.inner)
-        .map(|(inner, measurements)| (PublishedModel { inner }, measurements))
-        .map_err(BuildError)
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct BuildError(sysml_resolution::BuildFailure);
-
-impl fmt::Display for BuildError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.fmt(formatter)
-    }
-}
-
-impl std::error::Error for BuildError {}
 
 impl PublishedModel {
     pub fn debug(&self) -> DebugQueries<'_> {
@@ -427,15 +216,16 @@ impl DependencyQueries<'_> {
         all_workspace.dedup();
         all_workspace.retain(|uri| uri != provider);
 
-        let documents = match self.affected_documents(provider.as_str()) {
-            QueryOutcome::Resolved(documents) => documents,
-            QueryOutcome::Recovered(_)
-            | QueryOutcome::UnsupportedWith(_)
-            | QueryOutcome::Unresolved
-            | QueryOutcome::Ambiguous(_)
-            | QueryOutcome::Unsupported
-            | QueryOutcome::Recovery
-            | QueryOutcome::Incomplete => {
+        let documents = match self.affected_documents(provider.as_str()).answer {
+            QueryAnswer::Resolved(documents) if self.model.completeness().is_complete() => {
+                documents
+            }
+            QueryAnswer::Resolved(_)
+            | QueryAnswer::Unresolved
+            | QueryAnswer::Ambiguous(_)
+            | QueryAnswer::Unsupported
+            | QueryAnswer::Recovery
+            | QueryAnswer::Incomplete => {
                 return AffectedWorkspaceDocuments {
                     uris: all_workspace,
                     conservative: true,
@@ -714,11 +504,11 @@ impl<'a> PublicationQueries<'a> {
     }
 
     /// Dependency-complete digest of every source admitted to this publication.
-    pub fn source_digest(&self) -> String {
-        self.model.identity().source_digest().to_string()
+    pub fn source_digest(&self) -> RootDigest {
+        *self.model.identity().source_digest()
     }
 
-    pub fn model_digest(&self) -> String {
+    pub fn model_digest(&self) -> PublicationModelDigest {
         self.model.identity().model_digest()
     }
 }
@@ -1058,10 +848,7 @@ impl DebugQueries<'_> {
             )?;
             let target = self.model.target_at(&probe.document, probe.position);
             write_target_outcome(model, output, "target", &target)?;
-            if let QueryOutcome::Resolved(target)
-            | QueryOutcome::Recovered(target)
-            | QueryOutcome::UnsupportedWith(target) = &target
-            {
+            if let QueryAnswer::Resolved(target) = &target.answer {
                 write_locations_outcome(
                     model,
                     output,
@@ -1216,10 +1003,8 @@ fn write_document_symbols(
     outcome: &QueryOutcome<Box<[SymbolEntry]>>,
 ) -> fmt::Result {
     writeln!(output, "  (document-symbols (document {document:?})")?;
-    match outcome {
-        QueryOutcome::Resolved(entries)
-        | QueryOutcome::Recovered(entries)
-        | QueryOutcome::UnsupportedWith(entries) => {
+    match &outcome.answer {
+        QueryAnswer::Resolved(entries) => {
             writeln!(output, "    (status {})", outcome_status(outcome))?;
             for entry in entries.iter() {
                 write!(output, "    (symbol (kind {:?})", entry.kind.as_str())?;
@@ -1292,20 +1077,12 @@ fn write_target_outcome(
     outcome: &QueryOutcome<NavigationTarget>,
 ) -> fmt::Result {
     write!(output, "    ({label} ")?;
-    match outcome {
-        QueryOutcome::Resolved(target) => {
-            write!(output, "(status resolved) ")?;
+    match &outcome.answer {
+        QueryAnswer::Resolved(target) => {
+            write!(output, "(status {}) ", outcome_status(outcome))?;
             write_target(model, output, target)?;
         }
-        QueryOutcome::Recovered(target) => {
-            write!(output, "(status recovery) ")?;
-            write_target(model, output, target)?;
-        }
-        QueryOutcome::UnsupportedWith(target) => {
-            write!(output, "(status unsupported) ")?;
-            write_target(model, output, target)?;
-        }
-        QueryOutcome::Ambiguous(targets) => {
+        QueryAnswer::Ambiguous(targets) => {
             write!(output, "(status ambiguous) (candidates")?;
             for target in targets {
                 write!(output, " ")?;
@@ -1313,10 +1090,10 @@ fn write_target_outcome(
             }
             write!(output, ")")?;
         }
-        QueryOutcome::Unresolved => write!(output, "(status unresolved)")?,
-        QueryOutcome::Unsupported => write!(output, "(status unsupported)")?,
-        QueryOutcome::Recovery => write!(output, "(status recovery)")?,
-        QueryOutcome::Incomplete => write!(output, "(status incomplete)")?,
+        QueryAnswer::Unresolved => write!(output, "(status unresolved)")?,
+        QueryAnswer::Unsupported => write!(output, "(status unsupported)")?,
+        QueryAnswer::Recovery => write!(output, "(status recovery)")?,
+        QueryAnswer::Incomplete => write!(output, "(status incomplete)")?,
     }
     writeln!(output, ")")
 }
@@ -1328,10 +1105,8 @@ fn write_locations_outcome(
     outcome: &QueryOutcome<Box<[SourceLocation]>>,
 ) -> fmt::Result {
     write!(output, "    ({label} ")?;
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => {
+    match &outcome.answer {
+        QueryAnswer::Resolved(values) => {
             write!(output, "(locations")?;
             for value in values.iter() {
                 write!(output, " ")?;
@@ -1387,10 +1162,8 @@ fn write_members_outcome(
     outcome: &QueryOutcome<VisibleMembers<'_>>,
 ) -> fmt::Result {
     write!(output, "    (visible-members ")?;
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => {
+    match &outcome.answer {
+        QueryAnswer::Resolved(values) => {
             write!(output, "(candidates")?;
             for value in values.iter() {
                 write!(
@@ -1418,10 +1191,8 @@ fn write_details_at_outcome(
     outcome: &QueryOutcome<ElementDetailsAt>,
 ) -> fmt::Result {
     writeln!(output, "    (inspection")?;
-    match outcome {
-        QueryOutcome::Resolved(at)
-        | QueryOutcome::Recovered(at)
-        | QueryOutcome::UnsupportedWith(at) => {
+    match &outcome.answer {
+        QueryAnswer::Resolved(at) => {
             writeln!(output, "      (status {})", outcome_status(outcome))?;
             match &at.containing {
                 Some(containing) => {
@@ -1439,13 +1210,14 @@ fn write_details_at_outcome(
 }
 
 fn outcome_status<T>(outcome: &QueryOutcome<T>) -> &'static str {
-    match outcome {
-        QueryOutcome::Resolved(_) => "resolved",
-        QueryOutcome::Recovered(_) | QueryOutcome::Recovery => "recovery",
-        QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => "unsupported",
-        QueryOutcome::Ambiguous(_) => "ambiguous",
-        QueryOutcome::Unresolved => "unresolved",
-        QueryOutcome::Incomplete => "incomplete",
+    match &outcome.answer {
+        QueryAnswer::Resolved(_) if outcome.completeness.is_complete() => "resolved",
+        QueryAnswer::Resolved(_) => "incomplete",
+        QueryAnswer::Recovery => "recovery",
+        QueryAnswer::Unsupported => "unsupported",
+        QueryAnswer::Ambiguous(_) => "ambiguous",
+        QueryAnswer::Unresolved => "unresolved",
+        QueryAnswer::Incomplete => "incomplete",
     }
 }
 
@@ -1828,342 +1600,3 @@ fn annotation_form_name(form: AnnotationForm) -> &'static str {
 /// use sysml_query::resolved_slice::{ResolutionResults, SemanticModelStorage};
 /// ```
 pub struct RawStorageIsNotPublic;
-
-#[cfg(test)]
-mod tests {
-    use super::{
-        build, build_measured, AdmittedSource, BuildRequest, ConstructionStrategy,
-        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind, SymbolId,
-    };
-
-    /// The display path of an anchor handle, for assertions that name an element in prose.
-    ///
-    /// A handle carries no text, so a test that wants to say "this anchor is the one in `Items`"
-    /// asks the publication, exactly as a host would.
-    fn qualified(model: &PublishedModel, symbol: impl std::borrow::Borrow<SymbolId>) -> &str {
-        model.qualified_name(*symbol.borrow()).unwrap_or_default()
-    }
-
-    #[test]
-    fn immutable_publication_can_be_shared_by_async_hosts() {
-        fn requires_send_sync<T: Send + Sync>() {}
-        requires_send_sync::<PublishedModel>();
-    }
-
-    #[test]
-    fn legacy_and_service_admission_share_uri_and_line_ending_identity() {
-        let admitted = AdmittedSource::from_uri(
-            "memory://PARITY/a/../model.sysml",
-            "package P {\r\n part def A;\r\n}\r\n".into(),
-            SourceKind::Workspace,
-        )
-        .unwrap();
-        let legacy_request =
-            BuildRequest::resolved(vec![admitted], ConstructionStrategy::Sequential).unwrap();
-
-        let services = crate::Services::new();
-        let document = services
-            .source
-            .admit(
-                "memory://parity/model.sysml",
-                "package P {\n part def A;\n}\n",
-                SourceKind::Workspace,
-            )
-            .unwrap();
-        let canonical_request = services
-            .publication
-            .prepare(std::slice::from_ref(&document), [])
-            .unwrap();
-
-        assert_eq!(legacy_request.identity(), canonical_request.identity());
-
-        let legacy = build(legacy_request).unwrap();
-        let canonical = services.publication.publish(&[document], []).unwrap();
-
-        assert_eq!(
-            legacy.publication().identity(),
-            canonical.publication().identity()
-        );
-    }
-
-    #[test]
-    fn measured_and_unmeasured_builds_publish_the_same_semantics() {
-        fn request() -> BuildRequest {
-            BuildRequest::resolved(
-                vec![AdmittedSource::from_memory_path(
-                    "measurement-parity",
-                    "model.sysml",
-                    "package P { part def Vehicle; part vehicle : Vehicle; }".into(),
-                    SourceKind::Workspace,
-                )
-                .unwrap()],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap()
-        }
-
-        let ordinary = build(request()).unwrap();
-        let (measured, _) = build_measured(request()).unwrap();
-        let mut ordinary_output = String::new();
-        let mut measured_output = String::new();
-        ordinary
-            .debug()
-            .write_semantic_sexpr(&mut ordinary_output)
-            .unwrap();
-        measured
-            .debug()
-            .write_semantic_sexpr(&mut measured_output)
-            .unwrap();
-        assert_eq!(ordinary_output, measured_output);
-    }
-
-    #[test]
-    fn type_facade_exposes_generated_library_anchor_outcomes() {
-        const ITEM_RULE: &str = "sysml-2.0:8.3.10.2:checkItemDefinitionSpecialization";
-        let publication = build(
-            BuildRequest::resolved(
-                vec![
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "items.sysml",
-                        "standard library package Items { item def Item; }".into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "workspace",
-                        "model.sysml",
-                        "package Model { item def Component; }".into(),
-                        SourceKind::Workspace,
-                    )
-                    .unwrap(),
-                ],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap(),
-        )
-        .unwrap();
-
-        assert!(matches!(
-            publication.types().library_specialization_anchor(ITEM_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("Items")
-        ));
-        assert!(matches!(
-            publication
-                .types()
-                .library_specialization_anchor("not-a-generated-rule"),
-            QueryOutcome::Unresolved
-        ));
-    }
-
-    #[test]
-    fn type_facade_exposes_typed_conditional_anchor_branches() {
-        const POLARITY_RULE: &str =
-            "sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization";
-        const MEMBERSHIP_RULE: &str =
-            "sysml-2.0:8.3.20.4:checkConstraintUsageRequirementConstraintSpecialization";
-        const IF_ACTION_RULE: &str = "sysml-2.0:8.3.17.10:checkIfActionUsageSpecialization";
-        const FLOW_BINARY_RULE: &str = "sysml-2.0:8.3.16.2:checkFlowDefinitionBinarySpecialization";
-        const FLOW_USAGE_RULE: &str = "sysml-2.0:8.3.16.3:checkFlowUsageFlowSpecialization";
-        const FLOW_WITH_ENDS_RULE: &str = "kerml-1.0:8.3.4.9.2:checkFlowWithEndsSpecialization";
-        const FEATURE_DATA_VALUE_RULE: &str =
-            "kerml-1.0:8.3.3.3.4:checkFeatureDataValueSpecialization";
-        const FEATURE_END_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureEndSpecialization";
-        let publication = build(
-            BuildRequest::resolved(
-                vec![
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "requirements.sysml",
-                        "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; package RequirementCheck { constraint def assumptions; constraint def constraints; } }".into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "actions.sysml",
-                        "standard library package Actions { action ifThenActions; action ifThenElseActions; }".into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "flows.sysml",
-                        "standard library package Flows { flow def Message; flow def flows; } standard library package Transfers { flow def flowTransfers; }".into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "feature-anchors.sysml",
-                        "standard library package Base { feature dataValues; } standard library package Links { class Link { feature participant; } }".into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "workspace",
-                        "model.sysml",
-                        "package Model {}".into(),
-                        SourceKind::Workspace,
-                    )
-                    .unwrap(),
-                ],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap(),
-        )
-        .unwrap();
-
-        assert!(matches!(
-            publication.types().library_specialization_anchor(POLARITY_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("satisfiedRequirementChecks")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor_branch(
-                POLARITY_RULE,
-                LibrarySpecializationAnchorBranch::PredicateTrue,
-            ),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("notSatisfiedRequirementChecks")
-        ));
-        assert!(matches!(
-            publication
-                .types()
-                .library_specialization_anchor(MEMBERSHIP_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("constraints")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor_branch(
-                MEMBERSHIP_RULE,
-                LibrarySpecializationAnchorBranch::PredicateTrue,
-            ),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("assumptions")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor(IF_ACTION_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenActions")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor_branch(
-                IF_ACTION_RULE,
-                LibrarySpecializationAnchorBranch::PredicateTrue,
-            ),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenElseActions")
-        ));
-        let flow_binary_anchor = publication
-            .types()
-            .library_specialization_anchor(FLOW_BINARY_RULE);
-        assert!(
-            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if qualified(&publication, anchor).contains("Message")),
-            "expected the flow-definition anchor, got {flow_binary_anchor:?}"
-        );
-        assert!(matches!(
-            publication.types().library_specialization_anchor(FLOW_USAGE_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flows")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor(FLOW_WITH_ENDS_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flowTransfers")
-        ));
-        assert!(matches!(
-            publication
-                .types()
-                .library_specialization_anchor(FEATURE_DATA_VALUE_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("dataValues")
-        ));
-        assert!(matches!(
-            publication.types().library_specialization_anchor(FEATURE_END_RULE),
-            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("participant")
-        ));
-    }
-
-    #[test]
-    fn type_facade_distinguishes_redefinition_anchor_from_unsupported_source_projection() {
-        const PAYLOAD_RULE: &str = "kerml-1.0:8.3.4.9.5:checkPayloadFeatureRedefinition";
-        let publication = build(
-            BuildRequest::resolved(
-                vec![
-                    AdmittedSource::from_memory_path(
-                        "library",
-                        "transfers.sysml",
-                        "standard library package Transfers { part def Transfer { attribute payload; } }"
-                            .into(),
-                        SourceKind::StandardLibrary,
-                    )
-                    .unwrap(),
-                    AdmittedSource::from_memory_path(
-                        "workspace",
-                        "model.sysml",
-                        "package Model {}".into(),
-                        SourceKind::Workspace,
-                    )
-                    .unwrap(),
-                ],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap(),
-        )
-        .unwrap();
-
-        let anchor_outcome = publication.types().library_rule_anchor(PAYLOAD_RULE);
-        assert!(
-            matches!(
-                anchor_outcome,
-                QueryOutcome::Resolved(ref anchor)
-                    if qualified(&publication, anchor).contains("Transfers")
-                        && qualified(&publication, anchor).contains("Transfer")
-                        && qualified(&publication, anchor).contains("payload")
-            ),
-            "{anchor_outcome:?}"
-        );
-        assert!(matches!(
-            publication
-                .types()
-                .library_redefinition_applicability(PAYLOAD_RULE),
-            QueryOutcome::Unsupported
-        ));
-        assert!(matches!(
-            publication
-                .types()
-                .library_redefinition_applicability("not-a-generated-rule"),
-            QueryOutcome::Unresolved
-        ));
-    }
-
-    #[test]
-    fn type_facade_exposes_canonical_type_featuring_provenance() {
-        let publication = build(
-            BuildRequest::resolved(
-                vec![AdmittedSource::from_memory_path(
-                    "workspace",
-                    "model.sysml",
-                    "package Model { part def Vehicle { attribute mass; } }".into(),
-                    SourceKind::Workspace,
-                )
-                .unwrap()],
-                ConstructionStrategy::Sequential,
-            )
-            .unwrap(),
-        )
-        .unwrap();
-        let symbols = match publication
-            .inspection()
-            .document_symbols("memory://workspace/model.sysml")
-        {
-            QueryOutcome::Resolved(symbols) => symbols,
-            outcome => panic!("unexpected document-symbol outcome: {outcome:?}"),
-        };
-        let mass = symbols
-            .iter()
-            .find(|symbol| {
-                publication.qualified_name(symbol.identity) == Some("Model::Vehicle::mass")
-            })
-            .expect("mass declaration")
-            .identity;
-        assert!(matches!(
-            publication.types().featuring_types(mass),
-            QueryOutcome::Resolved(values)
-                if values.len() == 1
-                    && values[0].provenance == sysml_resolution::RelationshipProvenance::Implied
-        ));
-    }
-}

@@ -55,19 +55,19 @@ pub fn goto_definition_at_position(
     let Some(uri) = workspace.resolve_uri_for_path(path) else {
         return DefinitionResult {
             locations: Vec::new(),
+            semantic_status: workspace.semantic_status(),
         };
     };
     let Some(model) = workspace.published_model() else {
         return DefinitionResult {
             locations: Vec::new(),
+            semantic_status: workspace.semantic_status(),
         };
     };
     let outcome = model.navigation().target_at(uri.as_str(), position);
-    let targets: Vec<_> = match outcome {
-        sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-        | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(target) => vec![target],
-        sysml_query::resolved_slice::QueryOutcome::Ambiguous(targets) => targets.into_vec(),
+    let targets: Vec<_> = match outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(target) => vec![target],
+        sysml_query::resolved_slice::QueryAnswer::Ambiguous(targets) => targets.into_vec(),
         _ => Vec::new(),
     };
     DefinitionResult {
@@ -75,6 +75,7 @@ pub fn goto_definition_at_position(
             .into_iter()
             .map(|target| location(workspace, model, target.location))
             .collect(),
+        semantic_status: workspace.semantic_status(),
     }
 }
 
@@ -85,10 +86,8 @@ pub fn resolve_symbol_target_at_position(
 ) -> Option<ResolvedSymbolTarget> {
     let model = workspace.published_model()?;
     let outcome = model.navigation().target_at(uri.as_str(), position);
-    let target = match outcome {
-        sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-        | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(target) => target,
+    let target = match outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(target) => target,
         _ => return None,
     };
     Some(ResolvedSymbolTarget {
@@ -110,34 +109,34 @@ pub fn find_references_at_position(
     let Some(uri) = workspace.resolve_uri_for_path(path) else {
         return ReferencesResult {
             locations: Vec::new(),
+            semantic_status: workspace.semantic_status(),
         };
     };
     let Some(model) = workspace.published_model() else {
         return ReferencesResult {
             locations: Vec::new(),
+            semantic_status: workspace.semantic_status(),
         };
     };
     let target_outcome = model.navigation().target_at(uri.as_str(), position);
-    let target = match target_outcome {
-        sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-        | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(target) => target,
+    let target = match target_outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(target) => target,
         _ => {
             return ReferencesResult {
                 locations: Vec::new(),
+                semantic_status: workspace.semantic_status(),
             }
         }
     };
     let locations_outcome = model
         .navigation()
         .references(target.symbol, include_declaration);
-    let locations = match locations_outcome {
-        sysml_query::resolved_slice::QueryOutcome::Resolved(locations)
-        | sysml_query::resolved_slice::QueryOutcome::Recovered(locations)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(locations) => locations,
+    let locations = match locations_outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(locations) => locations,
         _ => {
             return ReferencesResult {
                 locations: Vec::new(),
+                semantic_status: workspace.semantic_status(),
             }
         }
     };
@@ -147,5 +146,6 @@ pub fn find_references_at_position(
             .into_iter()
             .map(|value| location(workspace, model, value))
             .collect(),
+        semantic_status: workspace.semantic_status(),
     }
 }

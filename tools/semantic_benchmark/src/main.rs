@@ -3,13 +3,12 @@
 use std::fs;
 use std::hint::black_box;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::time::{Duration, Instant};
 
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
-use sysml_query::resolved_slice::{
-    build_measured, AdmittedSource, BuildRequest, ConstructionStrategy, LibraryStratum, SourceKind,
-};
+use sysml_query::{source::SourceKind, Services};
 
 #[derive(Debug, Parser)]
 #[command(name = "spec42-semantic-benchmark")]
@@ -35,10 +34,10 @@ struct Cli {
     /// against the whole library, rather than the workspace alone.
     #[arg(long, value_enum, default_value_t = Libraries::None)]
     libraries: Libraries,
-    /// Reuse one settled library stratum across iterations instead of resolving it every time.
+    /// Reuse one publication authority and its settled library cache across iterations.
     ///
-    /// This is what an editor session does: the library is parsed and solved once when the session
-    /// opens, and each edit rebuilds only the workspace against it.
+    /// This is what an editor session does: reuse stays private to `PublicationService` and each
+    /// edit republishes the workspace through the same owner.
     #[arg(long, requires = "libraries")]
     reuse_library: bool,
 }
@@ -58,19 +57,42 @@ enum Schedule {
 #[derive(Debug, Serialize)]
 struct Report {
     schema_version: u32,
+    benchmark: &'static str,
+    environment: Environment,
+    configuration: Configuration,
     corpus: CorpusFacts,
-    schedule: &'static str,
     samples: Vec<Sample>,
     summary: Summary,
 }
 
 #[derive(Debug, Serialize)]
 struct CorpusFacts {
+    digest: String,
     snapshots: usize,
     documents: usize,
     source_bytes: usize,
     library_documents: usize,
     library_source_bytes: usize,
+}
+
+#[derive(Debug, Serialize)]
+struct Environment {
+    os: &'static str,
+    architecture: &'static str,
+    logical_parallelism: usize,
+    rustc: Option<String>,
+    git_commit: Option<String>,
+    git_dirty: Option<bool>,
+    build_profile: &'static str,
+}
+
+#[derive(Debug, Serialize)]
+struct Configuration {
+    iterations: usize,
+    schedule: &'static str,
+    filter: Option<String>,
+    libraries: &'static str,
+    reuse_library: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -85,17 +107,22 @@ struct Sample {
 
 #[derive(Debug, Serialize)]
 struct Summary {
+    request_preparation_ns: Distribution,
     build_wall_time_ns: Distribution,
     parse_ns: Distribution,
     lowering_ns: Distribution,
     resolution_ns: Distribution,
+    unaccounted_build_ns: Distribution,
     median_phase_percent: PhasePercent,
 }
 
 #[derive(Debug, Serialize)]
 struct Distribution {
     min: u64,
+    p25: u64,
     median: u64,
+    p75: u64,
+    p95: u64,
     max: u64,
 }
 
@@ -127,6 +154,7 @@ fn main() -> Result<(), String> {
         Libraries::Standard => load_corpus(&root.join(STANDARD_LIBRARY_DIRECTORY), None)?.1,
     };
     let facts = CorpusFacts {
+        digest: corpus_digest(&documents, &library_documents),
         snapshots: snapshot_count,
         documents: documents.len(),
         source_bytes: documents.iter().map(|document| document.text.len()).sum(),
@@ -136,67 +164,51 @@ fn main() -> Result<(), String> {
             .map(|document| document.text.len())
             .sum(),
     };
-    let library_documents_for_request = if cli.reuse_library {
-        Vec::new()
-    } else {
-        library_documents.iter().collect::<Vec<_>>()
-    };
-    let stratum = if cli.reuse_library {
-        let sources = library_documents
-            .iter()
-            .map(|document| {
-                AdmittedSource::from_memory_path(
-                    "semantic-benchmark",
-                    &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
-                    document.text.clone(),
-                    SourceKind::StandardLibrary,
-                )
-                .map_err(|error| format!("{}: {error}", document.identity))
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        Some(LibraryStratum::build(sources).map_err(|error| format!("library stratum: {error}"))?)
-    } else {
-        None
-    };
+    let shared_services = Services::new();
     let mut samples = Vec::with_capacity(cli.iterations);
     for _ in 0..cli.iterations {
         let request_started = Instant::now();
+        let services = if cli.reuse_library {
+            shared_services.clone()
+        } else {
+            Services::new()
+        };
         let mut sources = documents
             .iter()
             .map(|document| {
-                AdmittedSource::from_memory_path(
-                    "semantic-benchmark",
-                    &document.identity,
-                    document.text.clone(),
-                    SourceKind::Workspace,
-                )
-                .map_err(|error| format!("{}: {error}", document.identity))
+                services
+                    .source
+                    .admit_memory(
+                        "semantic-benchmark",
+                        &document.identity,
+                        document.text.clone(),
+                        SourceKind::Workspace,
+                    )
+                    .map_err(|error| format!("{}: {error}", document.identity))
             })
             .collect::<Result<Vec<_>, _>>()?;
-        for document in &library_documents_for_request {
+        for document in &library_documents {
             sources.push(
-                AdmittedSource::from_memory_path(
-                    "semantic-benchmark",
-                    &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
-                    document.text.clone(),
-                    SourceKind::StandardLibrary,
-                )
-                .map_err(|error| format!("{}: {error}", document.identity))?,
+                services
+                    .source
+                    .admit_memory(
+                        "semantic-benchmark",
+                        &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
+                        document.text.clone(),
+                        SourceKind::StandardLibrary,
+                    )
+                    .map_err(|error| format!("{}: {error}", document.identity))?,
             );
         }
-        let strategy = match cli.schedule {
-            Schedule::Sequential => ConstructionStrategy::Sequential,
-            Schedule::Parallel => ConstructionStrategy::Parallel,
-        };
-        let request = match &stratum {
-            Some(stratum) => BuildRequest::resolved_with_library(sources, strategy, stratum),
-            None => BuildRequest::resolved(sources, strategy),
-        }
-        .map_err(|error| format!("prepare build: {error}"))?;
         let request_preparation_ns = nanos(request_started.elapsed());
         let build_started = Instant::now();
-        let (model, measured) =
-            build_measured(request).map_err(|error| format!("semantic build: {error}"))?;
+        let (model, measured) = match cli.schedule {
+            Schedule::Sequential => services
+                .publication
+                .publish_measured_sequential_for_testing(&sources, []),
+            Schedule::Parallel => services.publication.publish_measured(&sources, []),
+        }
+        .map_err(|error| format!("semantic build: {error}"))?;
         let build_wall_time_ns = nanos(build_started.elapsed());
         black_box(model.publication().completeness());
         let measured_ns = nanos(measured.parse)
@@ -212,18 +224,30 @@ fn main() -> Result<(), String> {
         });
     }
     let build = distribution(samples.iter().map(|sample| sample.build_wall_time_ns));
+    let request_preparation =
+        distribution(samples.iter().map(|sample| sample.request_preparation_ns));
     let parse = distribution(samples.iter().map(|sample| sample.parse_ns));
     let lowering = distribution(samples.iter().map(|sample| sample.lowering_ns));
     let resolution = distribution(samples.iter().map(|sample| sample.resolution_ns));
+    let unaccounted = distribution(samples.iter().map(|sample| sample.unaccounted_build_ns));
     let denominator = build.median.max(1) as f64;
     let report = Report {
-        schema_version: 1,
-        corpus: facts,
-        schedule: match cli.schedule {
-            Schedule::Sequential => "sequential",
-            Schedule::Parallel => "parallel",
+        schema_version: 2,
+        benchmark: "spec42-semantic-benchmark",
+        environment: environment(),
+        configuration: Configuration {
+            iterations: cli.iterations,
+            schedule: schedule_name(cli.schedule),
+            filter: cli.filter.clone(),
+            libraries: match cli.libraries {
+                Libraries::None => "none",
+                Libraries::Standard => "standard",
+            },
+            reuse_library: cli.reuse_library,
         },
+        corpus: facts,
         summary: Summary {
+            request_preparation_ns: request_preparation,
             median_phase_percent: PhasePercent {
                 parse: parse.median as f64 * 100.0 / denominator,
                 lowering: lowering.median as f64 * 100.0 / denominator,
@@ -233,6 +257,7 @@ fn main() -> Result<(), String> {
             parse_ns: parse,
             lowering_ns: lowering,
             resolution_ns: resolution,
+            unaccounted_build_ns: unaccounted,
         },
         samples,
     };
@@ -332,9 +357,67 @@ fn distribution(values: impl Iterator<Item = u64>) -> Distribution {
     values.sort_unstable();
     Distribution {
         min: values[0],
+        p25: percentile(&values, 25),
         median: values[values.len() / 2],
+        p75: percentile(&values, 75),
+        p95: percentile(&values, 95),
         max: *values.last().unwrap(),
     }
+}
+
+/// Nearest-rank percentile. Inputs are sorted and non-empty.
+fn percentile(sorted: &[u64], percentile: usize) -> u64 {
+    let rank = (percentile * sorted.len()).div_ceil(100);
+    sorted[rank.saturating_sub(1).min(sorted.len() - 1)]
+}
+
+fn corpus_digest(workspace: &[CorpusDocument], library: &[CorpusDocument]) -> String {
+    let mut hasher = blake3::Hasher::new_derive_key("spec42.semantic-benchmark.corpus.v1");
+    for (kind, documents) in [(b'W', workspace), (b'L', library)] {
+        hasher.update(&[kind]);
+        hasher.update(&(documents.len() as u64).to_le_bytes());
+        for document in documents {
+            update_len_prefixed(&mut hasher, document.identity.as_bytes());
+            update_len_prefixed(&mut hasher, document.text.as_bytes());
+        }
+    }
+    format!("blake3:{}", hasher.finalize().to_hex())
+}
+
+fn update_len_prefixed(hasher: &mut blake3::Hasher, bytes: &[u8]) {
+    hasher.update(&(bytes.len() as u64).to_le_bytes());
+    hasher.update(bytes);
+}
+
+fn schedule_name(schedule: Schedule) -> &'static str {
+    match schedule {
+        Schedule::Sequential => "sequential",
+        Schedule::Parallel => "parallel",
+    }
+}
+
+fn environment() -> Environment {
+    Environment {
+        os: std::env::consts::OS,
+        architecture: std::env::consts::ARCH,
+        logical_parallelism: std::thread::available_parallelism().map_or(1, usize::from),
+        rustc: command_output("rustc", &["--version", "--verbose"]),
+        git_commit: command_output("git", &["rev-parse", "HEAD"]),
+        git_dirty: command_output(
+            "git",
+            &["status", "--porcelain", "--untracked-files=normal"],
+        )
+        .map(|status| !status.is_empty()),
+        build_profile: env!("SPEC42_BENCH_BUILD_PROFILE"),
+    }
+}
+
+fn command_output(program: &str, args: &[&str]) -> Option<String> {
+    let output = Command::new(program).args(args).output().ok()?;
+    output
+        .status
+        .success()
+        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
 fn nanos(duration: Duration) -> u64 {
@@ -351,5 +434,65 @@ mod tests {
         let sources = parse_source_documents(fixture, "case.md").unwrap();
         assert_eq!(sources[0], ("a.sysml".into(), "package A {}".into()));
         assert_eq!(sources[1], ("b.sysml".into(), "package B {}".into()));
+    }
+
+    #[test]
+    fn percentiles_use_nearest_rank_and_include_tail_samples() {
+        let values = [1, 2, 3, 4, 100];
+        let summary = distribution(values.into_iter());
+        assert_eq!(
+            (summary.p25, summary.median, summary.p75, summary.p95),
+            (2, 3, 4, 100)
+        );
+    }
+
+    #[test]
+    fn corpus_identity_commits_kind_identity_order_and_text() {
+        let a = CorpusDocument {
+            identity: "a".into(),
+            text: "x".into(),
+        };
+        let b = CorpusDocument {
+            identity: "b".into(),
+            text: "y".into(),
+        };
+        assert_eq!(
+            corpus_digest(&[a], &[b]),
+            corpus_digest(
+                &[CorpusDocument {
+                    identity: "a".into(),
+                    text: "x".into()
+                }],
+                &[CorpusDocument {
+                    identity: "b".into(),
+                    text: "y".into()
+                }]
+            )
+        );
+        assert_ne!(
+            corpus_digest(
+                &[CorpusDocument {
+                    identity: "a".into(),
+                    text: "x".into()
+                }],
+                &[CorpusDocument {
+                    identity: "b".into(),
+                    text: "y".into()
+                }]
+            ),
+            corpus_digest(
+                &[
+                    CorpusDocument {
+                        identity: "b".into(),
+                        text: "y".into()
+                    },
+                    CorpusDocument {
+                        identity: "a".into(),
+                        text: "x".into()
+                    }
+                ],
+                &[]
+            )
+        );
     }
 }

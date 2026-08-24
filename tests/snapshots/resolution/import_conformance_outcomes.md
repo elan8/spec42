@@ -52,7 +52,7 @@ package Client {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:95c4b81d2bb89e903f70db28c07a645888253bfd8bde375d5427749969d0b849") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:95c4b81d2bb89e903f70db28c07a645888253bfd8bde375d5427749969d0b849") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/import_conformance_outcomes.md") (qualified-name "Client"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_conformance_outcomes.md") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Source") (import (shape namespace) (recursive false))))))

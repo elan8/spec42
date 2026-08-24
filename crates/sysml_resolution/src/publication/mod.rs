@@ -11,6 +11,7 @@ mod session;
 
 use std::sync::{Arc, Mutex};
 
+use source_identity::{LibrarySourceIdentity, LibraryStratumKey, SourceRole};
 use sysml_source::{SourceDocument, SourceKind};
 
 use crate::lower::memo::LoweringMemo;
@@ -21,8 +22,7 @@ use crate::{
 };
 
 pub use session::{
-    BuildToken, PublicationOutcome, PublicationToken, Published, RelinkToken, Session,
-    SessionLifecycle,
+    BuildToken, PublicationOutcome, PublicationToken, Published, Session, SessionLifecycle,
 };
 
 /// The semantic phase which rejected a publication request.
@@ -32,6 +32,7 @@ pub enum PublicationFailureStage {
     LibraryConstruction,
     RequestConstruction,
     ModelConstruction,
+    ConstructionWorker,
 }
 
 /// A typed failure from the sole publication construction path.
@@ -55,6 +56,11 @@ impl PublicationBuildFailure {
             stage,
             message: error.to_string(),
         }
+    }
+
+    /// Construction worker failed before it could return its typed semantic result.
+    pub fn construction_worker(error: impl std::fmt::Display) -> Self {
+        Self::at(PublicationFailureStage::ConstructionWorker, error)
     }
 }
 
@@ -105,7 +111,7 @@ impl PreparedPublication {
 
 #[derive(Debug)]
 struct CachedLibraryStratum {
-    key: blake3::Hash,
+    key: LibraryStratumKey,
     stratum: Arc<LibraryStratum>,
 }
 
@@ -144,12 +150,49 @@ impl PublicationAuthority {
             .and_then(PreparedPublication::build)
     }
 
+    /// Publishes through the canonical owner and reports measurements captured at phase barriers.
+    pub fn publish_measured(
+        &self,
+        documents: &[SourceDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
+        self.prepare(documents, reported_documents)
+            .and_then(PreparedPublication::build_measured)
+    }
+
+    #[doc(hidden)]
+    pub fn publish_measured_sequential_for_testing(
+        &self,
+        documents: &[SourceDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
+        self.prepare_with_schedule(
+            documents,
+            reported_documents,
+            ConstructionSchedule::Sequential,
+        )
+        .and_then(PreparedPublication::build_measured)
+    }
+
     /// Prepares the canonical request without parsing or building it, so an atomic publication
     /// owner can capture its dependency-complete identity before background construction starts.
     pub fn prepare(
         &self,
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<PreparedPublication, PublicationBuildFailure> {
+        self.prepare_with_schedule(
+            documents,
+            reported_documents,
+            ConstructionSchedule::Parallel,
+        )
+    }
+
+    fn prepare_with_schedule(
+        &self,
+        documents: &[SourceDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+        schedule: ConstructionSchedule,
     ) -> Result<PreparedPublication, PublicationBuildFailure> {
         let mut ordered = documents.iter().collect::<Vec<_>>();
         ordered.sort_unstable_by(|left, right| left.uri().as_str().cmp(right.uri().as_str()));
@@ -173,19 +216,10 @@ impl PublicationAuthority {
 
         let reported = reported_documents.into_iter().collect::<Vec<_>>();
         let request = if libraries.is_empty() {
-            BuildRequest::new(
-                workspace,
-                ConstructionSchedule::Parallel,
-                crate::RESOLVED_CONTRACT,
-            )
+            BuildRequest::new(workspace, schedule, crate::RESOLVED_CONTRACT)
         } else {
             let stratum = self.library_stratum(&libraries)?;
-            BuildRequest::with_library(
-                workspace,
-                ConstructionSchedule::Parallel,
-                crate::RESOLVED_CONTRACT,
-                stratum,
-            )
+            BuildRequest::with_library(workspace, schedule, crate::RESOLVED_CONTRACT, stratum)
         }
         .map_err(|error| {
             PublicationBuildFailure::at(PublicationFailureStage::RequestConstruction, error)
@@ -230,29 +264,22 @@ impl PublicationAuthority {
 
 /// The stratum identity: every library document's URI, provenance, and content digest, in URI
 /// order. Digests rather than bytes, so a warm publication hashes a few kilobytes, not the corpus.
-fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> blake3::Hash {
-    let mut digest = blake3::Hasher::new();
-    digest.update(b"spec42-library-stratum-v3\0");
-    for document in documents {
-        let identity = document.uri().as_str().as_bytes();
-        digest.update(&(identity.len() as u64).to_le_bytes());
-        digest.update(identity);
-        digest.update(&[match document.kind() {
-            SourceKind::Workspace => 0,
-            SourceKind::StandardLibrary => 1,
-            SourceKind::Library => 2,
-            SourceKind::External => 3,
-        }]);
-        digest.update(document.digest().as_bytes());
-        if let Some((slot, relative_path)) = document.library_location() {
-            digest.update(&(slot as u64 + 1).to_le_bytes());
-            digest.update(&(relative_path.len() as u64).to_le_bytes());
-            digest.update(relative_path.as_bytes());
-        } else {
-            digest.update(&0_u64.to_le_bytes());
-        }
-    }
-    digest.finalize()
+fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> LibraryStratumKey {
+    LibraryStratumKey::new(documents.into_iter().map(library_source_identity))
+}
+
+fn library_source_identity(document: &SourceDocument) -> LibrarySourceIdentity<'_> {
+    LibrarySourceIdentity::new(
+        document.uri().as_str(),
+        match document.kind() {
+            SourceKind::Workspace => SourceRole::Workspace,
+            SourceKind::StandardLibrary => SourceRole::StandardLibrary,
+            SourceKind::Library => SourceRole::Library,
+            SourceKind::External => SourceRole::External,
+        },
+        document.digest(),
+        document.library_location(),
+    )
 }
 
 #[cfg(test)]
@@ -268,7 +295,7 @@ mod tests {
         PublicationAuthority::new(Arc::new(SyntaxAuthority::new()))
     }
 
-    fn cached_key(authority: &PublicationAuthority) -> blake3::Hash {
+    fn cached_key(authority: &PublicationAuthority) -> LibraryStratumKey {
         authority
             .library
             .lock()
@@ -359,6 +386,83 @@ mod tests {
     }
 
     #[test]
+    fn publication_model_identity_is_invariant_to_host_document_order() {
+        let authority = authority();
+        let first = document(
+            "memory://workspace/a.sysml",
+            "package A;",
+            SourceKind::Workspace,
+        );
+        let second = document(
+            "memory://workspace/b.sysml",
+            "package B;",
+            SourceKind::Workspace,
+        );
+        let forward = authority
+            .prepare(&[first.clone(), second.clone()], [])
+            .unwrap()
+            .identity()
+            .model_digest();
+        let reverse = authority
+            .prepare(&[second, first], [])
+            .unwrap()
+            .identity()
+            .model_digest();
+        assert_eq!(forward, reverse);
+    }
+
+    #[test]
+    fn reporting_identity_keeps_only_canonical_admitted_non_workspace_additions() {
+        let authority = authority();
+        let workspace = document(
+            "memory://workspace/model.sysml",
+            "package Model;",
+            SourceKind::Workspace,
+        );
+        let external = document(
+            "memory://external/model.sysml",
+            "package External;",
+            SourceKind::External,
+        );
+        let documents = [workspace, external];
+
+        let baseline = authority
+            .prepare(&documents, [])
+            .unwrap()
+            .identity()
+            .clone();
+        let irrelevant = authority
+            .prepare(
+                &documents,
+                [
+                    Box::from("memory://workspace/model.sysml"),
+                    Box::from("memory://unknown/model.sysml"),
+                ],
+            )
+            .unwrap()
+            .identity()
+            .clone();
+        assert_eq!(baseline, irrelevant);
+
+        let canonical = authority
+            .prepare(
+                &documents,
+                [
+                    Box::from("memory://external/model.sysml"),
+                    Box::from("memory://external/model.sysml"),
+                ],
+            )
+            .unwrap()
+            .identity()
+            .clone();
+        assert_ne!(baseline, canonical);
+        assert_eq!(
+            canonical.reported_documents(),
+            [Box::<str>::from("memory://external/model.sysml")]
+        );
+    }
+
+    #[test]
     fn prepare_does_not_parse_and_build_parses_through_the_memo() {
         let authority = authority();
         let workspace = document(
@@ -438,5 +542,12 @@ mod tests {
 
         assert_eq!(error.stage(), PublicationFailureStage::LibraryConstruction);
         assert!(authority.library.lock().unwrap().is_none());
+    }
+
+    #[test]
+    fn construction_worker_failure_has_a_distinct_typed_stage() {
+        let failure = PublicationBuildFailure::construction_worker("worker panicked");
+        assert_eq!(failure.stage(), PublicationFailureStage::ConstructionWorker);
+        assert_eq!(failure.message(), "worker panicked");
     }
 }

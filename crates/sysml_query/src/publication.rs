@@ -10,13 +10,13 @@ use std::sync::Arc;
 
 use sysml_resolution::publication::PublicationAuthority;
 
-use crate::resolved_slice::{PublicationIdentity, PublishedModel};
+use crate::resolved_slice::{BuildMeasurements, PublicationIdentity, PublishedModel};
 use crate::source::SourceDocument;
 use crate::syntax::SyntaxService;
 
 pub use sysml_resolution::publication::{
     BuildToken, PublicationBuildFailure, PublicationFailureStage, PublicationOutcome,
-    PublicationToken, Published, RelinkToken, SessionLifecycle,
+    PublicationToken, Published, SessionLifecycle,
 };
 
 /// The lifecycle and publication barrier of one host session, publishing [`PublishedModel`]s.
@@ -103,6 +103,40 @@ impl PublicationService {
         self.inner
             .publish(documents, reported_documents)
             .map(|inner| Arc::new(PublishedModel::from_resolution(inner)))
+    }
+
+    /// Publishes through this process's authority and returns measurements captured by the phase
+    /// owners. Intended for benchmark/reporting hosts; it has identical semantics to `publish`.
+    pub fn publish_measured(
+        &self,
+        documents: &[SourceDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
+        self.inner
+            .publish_measured(documents, reported_documents)
+            .map(|(inner, measurements)| {
+                (
+                    Arc::new(PublishedModel::from_resolution(inner)),
+                    measurements,
+                )
+            })
+    }
+
+    /// Sequential counterpart used only by determinism tests and controlled benchmark tooling.
+    #[doc(hidden)]
+    pub fn publish_measured_sequential_for_testing(
+        &self,
+        documents: &[SourceDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
+        self.inner
+            .publish_measured_sequential_for_testing(documents, reported_documents)
+            .map(|(inner, measurements)| {
+                (
+                    Arc::new(PublishedModel::from_resolution(inner)),
+                    measurements,
+                )
+            })
     }
 
     /// Prepares the canonical request without parsing or building it.

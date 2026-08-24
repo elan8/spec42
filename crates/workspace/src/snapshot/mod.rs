@@ -10,7 +10,7 @@ mod request;
 mod update;
 mod validation;
 
-pub use build::{load_workspace_snapshot, HostWorkspaceSnapshot};
+pub use build::{load_workspace_snapshot, HostWorkspaceSnapshot, ValidationState};
 pub use changes::{apply_document_changes, DocumentChanges};
 pub use context::{CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits};
 pub use metadata::HostArtifactMetadata;

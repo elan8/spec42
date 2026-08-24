@@ -903,7 +903,7 @@ package TimingForStructuresExecution3 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3065ea3747b613e2e189122705d88ac5d79c4bd4b216a270beeedd8ab5e731b2") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:3065ea3747b613e2e189122705d88ac5d79c4bd4b216a270beeedd8ab5e731b2") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_5_timing_for_structures.md") (qualified-name "TimingForStructuresExecution1"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))
     (declaration (id (node (document "memory://snapshot/a_3_5_timing_for_structures.md") (path (named (kind package) (name "TimingForStructuresExecution1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Atoms") (import (shape namespace) (recursive false))))))

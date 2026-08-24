@@ -24,12 +24,12 @@
 //! where the SysML families bottom out in KerML ones -- from being reported against a table that
 //! does not describe KerML at all.
 
-use crate::diagnose::document_range;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;

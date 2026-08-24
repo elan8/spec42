@@ -11,12 +11,113 @@
 /// syntax outside the supported slice still answers queries; what changes is what an absent fact
 /// means. Collapsing these three into "incomplete" would leave a consumer unable to say whether a
 /// missing answer is a modelling gap or a tooling one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PublicationCompleteness {
-    Complete,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PublicationObstacle {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
+}
+
+/// The complete set of obstacles encountered while constructing one publication.
+///
+/// The representation is private so callers cannot manufacture unknown states. Iteration is in
+/// canonical enum order and therefore does not depend on discovery or phase scheduling order.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub struct PublicationCompleteness(u8);
+
+impl PublicationCompleteness {
+    #[allow(non_upper_case_globals)]
+    pub const Complete: Self = Self(0);
+    #[allow(non_upper_case_globals)]
+    pub const ParseRecovery: Self = Self(1 << 0);
+    #[allow(non_upper_case_globals)]
+    pub const UnsupportedSyntax: Self = Self(1 << 1);
+    #[allow(non_upper_case_globals)]
+    pub const NonConverged: Self = Self(1 << 2);
+
+    pub const fn is_complete(self) -> bool {
+        self.0 == 0
+    }
+
+    pub const fn contains(self, obstacle: PublicationObstacle) -> bool {
+        self.0 & Self::for_obstacle(obstacle).0 != 0
+    }
+
+    pub const fn with(self, obstacle: PublicationObstacle) -> Self {
+        Self(self.0 | Self::for_obstacle(obstacle).0)
+    }
+
+    pub fn obstacles(self) -> impl Iterator<Item = PublicationObstacle> {
+        [
+            PublicationObstacle::ParseRecovery,
+            PublicationObstacle::UnsupportedSyntax,
+            PublicationObstacle::NonConverged,
+        ]
+        .into_iter()
+        .filter(move |obstacle| self.contains(*obstacle))
+    }
+
+    const fn for_obstacle(obstacle: PublicationObstacle) -> Self {
+        match obstacle {
+            PublicationObstacle::ParseRecovery => Self::ParseRecovery,
+            PublicationObstacle::UnsupportedSyntax => Self::UnsupportedSyntax,
+            PublicationObstacle::NonConverged => Self::NonConverged,
+        }
+    }
+}
+
+impl std::fmt::Debug for PublicationCompleteness {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.debug_set().entries(self.obstacles()).finish()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{PublicationCompleteness, PublicationObstacle};
+
+    #[test]
+    fn completeness_retains_every_obstacle_in_canonical_order() {
+        let completeness = PublicationCompleteness::Complete
+            .with(PublicationObstacle::NonConverged)
+            .with(PublicationObstacle::ParseRecovery)
+            .with(PublicationObstacle::UnsupportedSyntax);
+
+        assert_eq!(
+            completeness.obstacles().collect::<Vec<_>>(),
+            vec![
+                PublicationObstacle::ParseRecovery,
+                PublicationObstacle::UnsupportedSyntax,
+                PublicationObstacle::NonConverged,
+            ]
+        );
+        assert!(!completeness.is_complete());
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct QueryOutcome<T> {
+    pub completeness: PublicationCompleteness,
+    pub answer: QueryAnswer<T>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum QueryAnswer<T> {
+    Resolved(T),
+    Unresolved,
+    Ambiguous(Box<[T]>),
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+impl<T> QueryOutcome<T> {
+    pub const fn new(completeness: PublicationCompleteness, answer: QueryAnswer<T>) -> Self {
+        Self {
+            completeness,
+            answer,
+        }
+    }
 }
 
 /// Which canonical anchor branch a generated conditional library-specialization rule selects.

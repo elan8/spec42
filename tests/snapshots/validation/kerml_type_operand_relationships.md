@@ -68,7 +68,7 @@ package Model { classifier Base; classifier Derived unions Base intersects Base 
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:64041063b934b53a138177680427338406d5831f8f3e8b7589057a7d5e314bc5") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:64041063b934b53a138177680427338406d5831f8f3e8b7589057a7d5e314bc5") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_operand_relationships.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_operand_relationships.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

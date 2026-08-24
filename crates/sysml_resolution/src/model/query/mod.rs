@@ -5,7 +5,6 @@ mod visible;
 pub use visible::VisibleMemberRef;
 pub use visible::VisibleMembers;
 
-use crate::diagnose::document_range;
 use crate::diagnose::valid_identifier;
 use crate::index::bindings as binding;
 use crate::index::documents::leaf_ranges_containing;
@@ -16,6 +15,7 @@ use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -110,6 +110,7 @@ use crate::NavigationTarget;
 use crate::OccurrenceRole;
 use crate::PublicationCompleteness;
 use crate::PublishedDiagnostics;
+use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::RelationshipProvenance;
 use crate::RelationshipTarget;
@@ -141,7 +142,7 @@ impl<D> SemanticModel<D> {
             .position(|document| document.identity.as_ref() == changed_document)
             .map(|index| DocumentIdx(index as u32))
         else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
 
         // `provider -> consumer`. Both resolved and ambiguous outcomes are owned facts: every
@@ -228,12 +229,20 @@ impl<D> SemanticModel<D> {
         affected.sort_by(|left, right| left.identity.cmp(&right.identity));
         let affected = affected.into_boxed_slice();
         if unsettled_dependency {
-            match self.metadata.completeness {
-                PublicationCompleteness::NonConverged => QueryOutcome::Incomplete,
-                PublicationCompleteness::UnsupportedSyntax => {
-                    QueryOutcome::UnsupportedWith(affected)
-                }
-                _ => QueryOutcome::Recovered(affected),
+            if self
+                .metadata
+                .completeness
+                .contains(crate::PublicationObstacle::NonConverged)
+            {
+                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Incomplete)
+            } else if self
+                .metadata
+                .completeness
+                .contains(crate::PublicationObstacle::UnsupportedSyntax)
+            {
+                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Resolved(affected))
+            } else {
+                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Resolved(affected))
             }
         } else {
             self.resolved_outcome(affected)
@@ -241,12 +250,11 @@ impl<D> SemanticModel<D> {
     }
 
     pub(crate) fn resolved_outcome<T>(&self, value: T) -> QueryOutcome<T> {
-        match self.metadata.completeness {
-            PublicationCompleteness::Complete => QueryOutcome::Resolved(value),
-            PublicationCompleteness::ParseRecovery => QueryOutcome::Recovered(value),
-            PublicationCompleteness::UnsupportedSyntax => QueryOutcome::UnsupportedWith(value),
-            PublicationCompleteness::NonConverged => QueryOutcome::Incomplete,
-        }
+        self.query_outcome(QueryAnswer::Resolved(value))
+    }
+
+    pub(crate) fn query_outcome<T>(&self, answer: QueryAnswer<T>) -> QueryOutcome<T> {
+        QueryOutcome::new(self.metadata.completeness, answer)
     }
 
     /// The handle for one declaration of this publication.
@@ -420,10 +428,10 @@ impl<D> SemanticModel<D> {
         position: TextPosition,
     ) -> QueryOutcome<NavigationTarget> {
         let Some(document_id) = self.documents.document(&self.storage, document) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(positions) = self.documents.positions(document_id) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let mut reference_matches = Vec::new();
         for reference_id in leaf_ranges_containing(&positions.references, position) {
@@ -442,11 +450,17 @@ impl<D> SemanticModel<D> {
                         .collect::<Vec<_>>();
                     targets.sort_by(|left, right| self.target_order(left, right));
                     targets.dedup_by(|a, b| a.symbol == b.symbol);
-                    return QueryOutcome::Ambiguous(targets.into_boxed_slice());
+                    return self.query_outcome(QueryAnswer::Ambiguous(targets.into_boxed_slice()));
                 }
-                Some(ResolutionStatus::Unsupported) => return QueryOutcome::Unsupported,
-                Some(ResolutionStatus::NonConverged) => return QueryOutcome::Incomplete,
-                Some(ResolutionStatus::Unresolved) | None => return QueryOutcome::Unresolved,
+                Some(ResolutionStatus::Unsupported) => {
+                    return self.query_outcome(QueryAnswer::Unsupported)
+                }
+                Some(ResolutionStatus::NonConverged) => {
+                    return self.query_outcome(QueryAnswer::Incomplete)
+                }
+                Some(ResolutionStatus::Unresolved) | None => {
+                    return self.query_outcome(QueryAnswer::Unresolved)
+                }
             }
         }
         reference_matches.sort_by(|left, right| self.target_order(left, right));
@@ -455,16 +469,17 @@ impl<D> SemanticModel<D> {
             return self.resolved_outcome(reference_matches.remove(0));
         }
         if reference_matches.len() > 1 {
-            return QueryOutcome::Ambiguous(reference_matches.into_boxed_slice());
+            return self
+                .query_outcome(QueryAnswer::Ambiguous(reference_matches.into_boxed_slice()));
         }
         let mut declarations = leaf_ranges_containing(&positions.identifiers, position)
             .filter_map(|id| self.declaration_target(id))
             .collect::<Vec<_>>();
         declarations.sort_by(|left, right| self.target_order(left, right));
         match declarations.len() {
-            0 => QueryOutcome::Unresolved,
+            0 => self.query_outcome(QueryAnswer::Unresolved),
             1 => self.resolved_outcome(declarations.remove(0)),
-            _ => QueryOutcome::Ambiguous(declarations.into_boxed_slice()),
+            _ => self.query_outcome(QueryAnswer::Ambiguous(declarations.into_boxed_slice())),
         }
     }
 
@@ -473,14 +488,15 @@ impl<D> SemanticModel<D> {
         symbol: SymbolId,
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
-        if matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::NonConverged
-        ) {
-            return QueryOutcome::Incomplete;
+        if self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::NonConverged)
+        {
+            return self.query_outcome(QueryAnswer::Incomplete);
         }
         let Some(target) = self.declaration_of(symbol) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         self.references_for(target, include_declaration)
     }
@@ -491,7 +507,7 @@ impl<D> SemanticModel<D> {
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
         let Some(target_declaration) = self.storage.declaration(target) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let mut locations = Vec::new();
         if include_declaration {
@@ -503,10 +519,10 @@ impl<D> SemanticModel<D> {
         record_visited_index_entries(references.len());
         for id in references {
             let Some(reference) = self.storage.references.get(id.index()) else {
-                return QueryOutcome::Incomplete;
+                return self.query_outcome(QueryAnswer::Incomplete);
             };
             let Some(source) = self.storage.declaration(reference.source) else {
-                return QueryOutcome::Incomplete;
+                return self.query_outcome(QueryAnswer::Incomplete);
             };
             // An unnamed target has no identifier to point at, so the whole reference span is the
             // honest location -- the same answer the text search used to fall back to.
@@ -517,13 +533,13 @@ impl<D> SemanticModel<D> {
                 Some(range) => range,
                 None => match document_range(&self.storage, source.document, &reference.span) {
                     Ok(range) => range,
-                    Err(_) => return QueryOutcome::Incomplete,
+                    Err(_) => return self.query_outcome(QueryAnswer::Incomplete),
                 },
             };
             locations.push(SourceLocation {
                 document: match self.document_handle(source.document) {
                     Some(document) => document,
-                    None => return QueryOutcome::Incomplete,
+                    None => return self.query_outcome(QueryAnswer::Incomplete),
                 },
                 range,
                 role: OccurrenceRole::Reference,
@@ -540,15 +556,19 @@ impl<D> SemanticModel<D> {
         position: TextPosition,
         new_name: Option<&str>,
     ) -> RenameOutcome {
-        let target = match self.target_at(document, position) {
-            QueryOutcome::Resolved(target)
-            | QueryOutcome::Recovered(target)
-            | QueryOutcome::UnsupportedWith(target) => target,
-            QueryOutcome::Ambiguous(targets) => return RenameOutcome::Ambiguous(targets),
-            QueryOutcome::Unsupported => return RenameOutcome::Unsupported,
-            QueryOutcome::Recovery => return RenameOutcome::Recovery,
-            QueryOutcome::Incomplete => return RenameOutcome::Incomplete,
-            QueryOutcome::Unresolved => return RenameOutcome::Unresolved,
+        // An edit must never be derived from a publication whose semantic facts are partial.
+        // Read-only consumers may deliberately present partial values, but applying a rename
+        // makes those values authoritative in source and therefore requires a complete model.
+        if !self.metadata.completeness.is_complete() {
+            return RenameOutcome::Incomplete;
+        }
+        let target = match self.target_at(document, position).answer {
+            QueryAnswer::Resolved(target) => target,
+            QueryAnswer::Ambiguous(targets) => return RenameOutcome::Ambiguous(targets),
+            QueryAnswer::Unsupported => return RenameOutcome::Unsupported,
+            QueryAnswer::Recovery => return RenameOutcome::Recovery,
+            QueryAnswer::Incomplete => return RenameOutcome::Incomplete,
+            QueryAnswer::Unresolved => return RenameOutcome::Unresolved,
         };
         if let Some(name) = new_name {
             if !valid_identifier(name) {
@@ -574,8 +594,8 @@ impl<D> SemanticModel<D> {
                 }
             }
         }
-        let occurrences = match self.references(target.symbol, true) {
-            QueryOutcome::Resolved(value) => value,
+        let occurrences = match self.references(target.symbol, true).answer {
+            QueryAnswer::Resolved(value) => value,
             _ => return RenameOutcome::Incomplete,
         };
         let range = occurrences
@@ -709,33 +729,34 @@ impl ResolvedSemanticModel {
         position: TextPosition,
         qualifier: Option<&str>,
     ) -> QueryOutcome<VisibleMembers<'_>> {
-        let recovered = matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::ParseRecovery
-        );
-        let unsupported = matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::UnsupportedSyntax
-        );
-        if matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::NonConverged
-        ) {
-            return QueryOutcome::Incomplete;
+        let recovered = self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::ParseRecovery);
+        let unsupported = self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::UnsupportedSyntax);
+        if self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::NonConverged)
+        {
+            return self.query_outcome(QueryAnswer::Incomplete);
         }
         let Some(document_id) = self.documents.document(&self.storage, document) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(positions) = self.documents.positions(document_id) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let owner = positions.spans.innermost_containing(position);
         let mut ids = Vec::new();
         if let Some(qualifier) = qualifier {
             let scopes = match self.resolve_qualifier_scopes(owner, qualifier) {
                 Ok(scopes) if !scopes.is_empty() => scopes,
-                Ok(_) => return QueryOutcome::Unresolved,
-                Err(_) => return QueryOutcome::Incomplete,
+                Ok(_) => return self.query_outcome(QueryAnswer::Unresolved),
+                Err(_) => return self.query_outcome(QueryAnswer::Incomplete),
             };
             if scopes.len() > 1 {
                 let candidates = scopes
@@ -745,7 +766,7 @@ impl ResolvedSemanticModel {
                     })
                     .collect::<Vec<_>>()
                     .into_boxed_slice();
-                return QueryOutcome::Ambiguous(candidates);
+                return self.query_outcome(QueryAnswer::Ambiguous(candidates));
             }
             ids.extend_from_slice(self.effective_scopes.members(Some(scopes[0])));
         } else {
@@ -763,11 +784,11 @@ impl ResolvedSemanticModel {
         }
         let members = self.visible_member_records(&ids);
         if recovered {
-            QueryOutcome::Recovered(members)
+            self.query_outcome(QueryAnswer::Resolved(members))
         } else if unsupported {
-            QueryOutcome::UnsupportedWith(members)
+            self.query_outcome(QueryAnswer::Resolved(members))
         } else {
-            QueryOutcome::Resolved(members)
+            self.query_outcome(QueryAnswer::Resolved(members))
         }
     }
 
@@ -869,13 +890,15 @@ impl<D> SemanticModel<D> {
         &self,
         symbol: SymbolId,
     ) -> Result<DeclarationId, QueryOutcome<T>> {
-        if matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::NonConverged
-        ) {
-            return Err(QueryOutcome::Incomplete);
+        if self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::NonConverged)
+        {
+            return Err(self.query_outcome(QueryAnswer::Incomplete));
         }
-        self.declaration_of(symbol).ok_or(QueryOutcome::Unresolved)
+        self.declaration_of(symbol)
+            .ok_or(self.query_outcome(QueryAnswer::Unresolved))
     }
 
     pub(crate) fn symbols(
@@ -928,7 +951,7 @@ impl<D> SemanticModel<D> {
         let Some(rule) = feature_derived_relationship_rule(collection) else {
             // A public enum value with no generated pinned-manifest contract is not a silently
             // empty collection. It is an incomplete implementation boundary.
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Feature"
             || self
@@ -939,7 +962,7 @@ impl<D> SemanticModel<D> {
             // The rule is defined on raw KerML Feature. A non-feature source has no valid empty
             // answer, and a lowering projection we do not yet classify as a Feature must remain
             // explicit rather than being accepted by display name or owning syntax.
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         self.resolved_outcome(
@@ -963,7 +986,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = type_derived_relationship_rule(collection) else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Type"
             || self
@@ -971,7 +994,7 @@ impl<D> SemanticModel<D> {
                 .declaration(declaration)
                 .is_none_or(|declaration| !DeclarationDomain::Type.accepts(declaration.kind))
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         self.resolved_outcome(
@@ -993,7 +1016,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = type_derived_element_rule(collection) else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Type"
             || self
@@ -1001,7 +1024,7 @@ impl<D> SemanticModel<D> {
                 .declaration(declaration)
                 .is_none_or(|value| !DeclarationDomain::Type.accepts(value.kind))
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let values = self.symbols(
@@ -1169,7 +1192,7 @@ impl<D> SemanticModel<D> {
                 .declaration(declaration)
                 .is_none_or(|value| !DeclarationDomain::Type.accepts(value.kind))
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let unavailable = match collection {
@@ -1270,10 +1293,10 @@ impl<D> SemanticModel<D> {
             });
         };
         let Some(source) = self.storage.declaration(declaration) else {
-            return QueryOutcome::Incomplete;
+            return self.query_outcome(QueryAnswer::Incomplete);
         };
         if !definition_usage_source_matches(rule.metaclass, source.kind) {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         match kind {
@@ -1371,10 +1394,10 @@ impl<D> SemanticModel<D> {
             });
         };
         let Some(source) = self.storage.declaration(declaration) else {
-            return QueryOutcome::Incomplete;
+            return self.query_outcome(QueryAnswer::Incomplete);
         };
         if !requirement_derived_source_matches(rule.metaclass, source.kind) {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         if collection.requires_text() {
@@ -1686,10 +1709,10 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = element_derived_owner_rule() else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Element" || rule.kind != ElementDerivedOwnerKind::Owner {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let value = self
@@ -1713,10 +1736,10 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = element_derived_documentation_rule(collection) else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Element" {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let form = match collection {
@@ -1750,7 +1773,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = namespace_derived_element_rule(collection) else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "Namespace"
             || self
@@ -1758,7 +1781,7 @@ impl<D> SemanticModel<D> {
                 .declaration(declaration)
                 .is_none_or(|value| !DeclarationDomain::Namespace.accepts(value.kind))
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let values = self.symbols(
@@ -1798,7 +1821,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let Some(rule) = namespace_import_derived_element_rule() else {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         };
         if rule.metaclass != "NamespaceImport"
             || rule.kind != NamespaceImportDerivedElementKind::ImportedElement
@@ -1807,7 +1830,7 @@ impl<D> SemanticModel<D> {
                 .declaration(namespace)
                 .is_none_or(|value| !DeclarationDomain::Namespace.accepts(value.kind))
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
         let mut values = Vec::new();
@@ -1825,10 +1848,10 @@ impl<D> SemanticModel<D> {
             let relationship = match relationships.as_ref() {
                 [] => continue,
                 [relationship] => relationship,
-                _ => return QueryOutcome::Unsupported,
+                _ => return self.query_outcome(QueryAnswer::Unsupported),
             };
             let Some(import) = self.symbol_id(import) else {
-                return QueryOutcome::Unsupported;
+                return self.query_outcome(QueryAnswer::Unsupported);
             };
             values.push(NamespaceImportDerivedElement {
                 import,
@@ -1852,7 +1875,7 @@ impl<D> SemanticModel<D> {
             .declaration(declaration)
             .is_none_or(|value| value.kind != DeclarationKind::RequirementUsage)
         {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let relationships = self.relationships(declaration);
         let mut typings = relationships
@@ -2209,16 +2232,20 @@ impl<D> SemanticModel<D> {
         match outcome {
             Some(LibrarySpecializationAnchor::Resolved(anchor)) => self
                 .symbol_id(*anchor)
-                .map_or(QueryOutcome::Unresolved, |anchor| {
+                .map_or(self.query_outcome(QueryAnswer::Unresolved), |anchor| {
                     self.resolved_outcome(anchor)
                 }),
-            Some(LibrarySpecializationAnchor::Ambiguous(candidates)) => QueryOutcome::Ambiguous(
-                candidates
-                    .iter()
-                    .filter_map(|candidate| self.symbol_id(*candidate))
-                    .collect(),
-            ),
-            Some(LibrarySpecializationAnchor::Missing) | None => QueryOutcome::Unresolved,
+            Some(LibrarySpecializationAnchor::Ambiguous(candidates)) => {
+                self.query_outcome(QueryAnswer::Ambiguous(
+                    candidates
+                        .iter()
+                        .filter_map(|candidate| self.symbol_id(*candidate))
+                        .collect(),
+                ))
+            }
+            Some(LibrarySpecializationAnchor::Missing) | None => {
+                self.query_outcome(QueryAnswer::Unresolved)
+            }
         }
     }
 
@@ -2234,12 +2261,12 @@ impl<D> SemanticModel<D> {
             .iter()
             .find(|rule| rule.rule_id == rule_id)
         else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         if lowered_redefinition_source_kind(rule.metaclass).is_some() {
             self.resolved_outcome(())
         } else {
-            QueryOutcome::Unsupported
+            self.query_outcome(QueryAnswer::Unsupported)
         }
     }
 
@@ -2316,7 +2343,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         if self.types.featuring_requires_snapshots(declaration) {
-            return QueryOutcome::Unsupported;
+            return self.query_outcome(QueryAnswer::Unsupported);
         }
         let featuring = self
             .types
@@ -2327,7 +2354,9 @@ impl<D> SemanticModel<D> {
         match featuring.as_slice() {
             [] => self.resolved_outcome(None),
             [owner] => self.resolved_outcome(Some(*owner)),
-            _ => QueryOutcome::Ambiguous(featuring.into_iter().map(Some).collect()),
+            _ => self.query_outcome(QueryAnswer::Ambiguous(
+                featuring.into_iter().map(Some).collect(),
+            )),
         }
     }
 
@@ -2355,9 +2384,9 @@ impl<D> SemanticModel<D> {
         let values = values.into_boxed_slice();
         if self.types.featuring_requires_snapshots(declaration) {
             if values.is_empty() {
-                QueryOutcome::Unsupported
+                self.query_outcome(QueryAnswer::Unsupported)
             } else {
-                QueryOutcome::UnsupportedWith(values)
+                self.query_outcome(QueryAnswer::Resolved(values))
             }
         } else {
             self.resolved_outcome(values)

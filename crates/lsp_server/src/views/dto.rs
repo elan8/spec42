@@ -236,6 +236,7 @@ pub struct SysmlFeatureInspectorResultDto {
     pub version: u32,
     pub source_uri: String,
     pub requested_position: PositionDto,
+    pub semantic_status: language_service::dto::SemanticResultStatus,
     pub selection: SysmlFeatureInspectorSelectionDto,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language_help: Option<SysmlFeatureInspectorLanguageHelpDto>,

@@ -51,8 +51,9 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 pub use sysml_contract::{
     DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
     LibrarySpecializationAnchorBranch, MembershipRole, OccurrenceRole, PublicationCompleteness,
-    RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition,
-    TextRange,
+    PublicationEvaluationPolicy, PublicationModelDigest, PublicationObstacle, QueryAnswer,
+    QueryOutcome, RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -287,18 +288,6 @@ pub struct NavigationTarget {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum QueryOutcome<T> {
-    Resolved(T),
-    Recovered(T),
-    UnsupportedWith(T),
-    Unresolved,
-    Ambiguous(Box<[T]>),
-    Unsupported,
-    Recovery,
-    Incomplete,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RenameOutcome {
     Ready {
         symbol: SymbolId,
@@ -344,21 +333,16 @@ impl PublicationIdentity {
     }
 
     /// Dependency-complete identity of every input that can change published semantic answers.
-    pub fn model_digest(&self) -> String {
-        let mut digest = blake3::Hasher::new();
-        digest.update(b"spec42-publication-model-v1\0");
-        digest.update(self.source_digest.to_string().as_bytes());
-        digest.update(b"\0");
-        digest.update(self.semantic_contract_version.as_bytes());
-        digest.update(&[match self.evaluation_policy {
-            EvaluationPolicy::Evaluate => 0,
-            EvaluationPolicy::Skip => 1,
-        }]);
-        for document in &self.reported_documents {
-            digest.update(&(document.len() as u64).to_le_bytes());
-            digest.update(document.as_bytes());
-        }
-        format!("blake3:{}", digest.finalize().to_hex())
+    pub fn model_digest(&self) -> PublicationModelDigest {
+        PublicationModelDigest::new(
+            self.source_digest,
+            &self.semantic_contract_version,
+            match self.evaluation_policy {
+                EvaluationPolicy::Evaluate => PublicationEvaluationPolicy::Evaluate,
+                EvaluationPolicy::Skip => PublicationEvaluationPolicy::Skip,
+            },
+            self.reported_documents.iter().map(AsRef::as_ref),
+        )
     }
 
     /// The admitted documents reported beyond the workspace, in canonical order.
@@ -587,6 +571,16 @@ impl BuildRequest {
         self.reported = documents.into_iter().collect();
         self.reported.sort_unstable();
         self.reported.dedup();
+        self.reported.retain(|identity| {
+            self.sources.iter().any(|source| {
+                source.identity.as_ref() == identity.as_ref()
+                    && source.kind != SourceKind::Workspace
+            }) || self.library.as_ref().is_some_and(|library| {
+                library.manifest_entries.iter().any(|entry| {
+                    entry.uri == identity.as_ref() && entry.role != SourceRole::Workspace
+                })
+            })
+        });
         self.identity.reported_documents = self.reported.clone().into_boxed_slice();
         self
     }
@@ -1342,7 +1336,7 @@ mod tests {
             published.inspect_at(document, position)
         });
         assert!(
-            matches!(outcome, QueryOutcome::Resolved(_)),
+            matches!(outcome.answer, QueryAnswer::Resolved(_)),
             "the probe must land on a resolved inspection, got: {outcome:?}"
         );
         visited
@@ -1357,15 +1351,15 @@ mod tests {
             .expect("the probed document is in the workspace")
             .1;
         let position = position_of(source, needle);
-        let symbol = match published.target_at(document, position) {
-            QueryOutcome::Resolved(target) => target.symbol,
+        let symbol = match published.target_at(document, position).answer {
+            QueryAnswer::Resolved(target) => target.symbol,
             other => panic!("the probe must resolve to a target, got: {other:?}"),
         };
         let (outcome, visited) = crate::index::documents::measure_visited_index_entries(|| {
             published.references(symbol, false)
         });
         assert!(
-            matches!(outcome, QueryOutcome::Resolved(_)),
+            matches!(outcome.answer, QueryAnswer::Resolved(_)),
             "the references query must resolve, got: {outcome:?}"
         );
         visited
@@ -1389,7 +1383,7 @@ mod tests {
             published.visible_members(document, position, qualifier)
         });
         assert!(
-            matches!(outcome, QueryOutcome::Resolved(_)),
+            matches!(outcome.answer, QueryAnswer::Resolved(_)),
             "the visible-members query must resolve, got: {outcome:?}"
         );
         visited
@@ -1418,8 +1412,11 @@ mod tests {
         document: &str,
         needle: &str,
     ) -> SymbolId {
-        match published.inspect_at(document, position_of(source, needle)) {
-            QueryOutcome::Resolved(at) => {
+        match published
+            .inspect_at(document, position_of(source, needle))
+            .answer
+        {
+            QueryAnswer::Resolved(at) => {
                 at.containing
                     .expect("the probe must land inside a declaration")
                     .identity
@@ -1440,7 +1437,7 @@ mod tests {
         let (outcome, visited) =
             crate::index::documents::measure_visited_index_entries(|| published.evaluate(symbol));
         assert!(
-            matches!(outcome, QueryOutcome::Resolved(_)),
+            matches!(outcome.answer, QueryAnswer::Resolved(_)),
             "the evaluation query must resolve, got: {outcome:?}"
         );
         visited
@@ -1525,10 +1522,10 @@ mod tests {
             evaluation_first.2, inspection_first.2,
             "query order changed the evaluation query's work"
         );
-        let QueryOutcome::Resolved(evaluation) = &evaluation_first.0 else {
+        let QueryAnswer::Resolved(evaluation) = &evaluation_first.0.answer else {
             panic!("the probe must resolve");
         };
-        let QueryOutcome::Resolved(inspection) = &evaluation_first.1 else {
+        let QueryAnswer::Resolved(inspection) = &evaluation_first.1.answer else {
             panic!("the probe must resolve");
         };
         assert_eq!(
@@ -1658,10 +1655,8 @@ mod tests {
     // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
 
     fn symbol_named(published: &PublishedResolution, document: &str, qualified: &str) -> SymbolId {
-        match published.document_symbols(document) {
-            QueryOutcome::Resolved(entries)
-            | QueryOutcome::Recovered(entries)
-            | QueryOutcome::UnsupportedWith(entries) => {
+        match published.document_symbols(document).answer {
+            QueryAnswer::Resolved(entries) => {
                 entries
                     .iter()
                     .find(|entry| published.qualified_name(entry.identity) == Some(qualified))
@@ -1727,25 +1722,27 @@ mod tests {
 
         assert!(
             matches!(
-                published.direct_supertypes(missing, SpecializationScope::AnySpecialization),
-                QueryOutcome::Unresolved
+                published
+                    .direct_supertypes(missing, SpecializationScope::AnySpecialization)
+                    .answer,
+                QueryAnswer::Unresolved
             ),
             "an identity that names nothing must not answer with an empty supertype list"
         );
         assert!(
             matches!(
-                published.conforms_to(a, missing, SpecializationScope::AnySpecialization),
-                QueryOutcome::Unresolved
+                published
+                    .conforms_to(a, missing, SpecializationScope::AnySpecialization)
+                    .answer,
+                QueryAnswer::Unresolved
             ),
             "conformance against an unknown identity is unanswerable, not false"
         );
     }
 
     fn settled<T: fmt::Debug>(outcome: QueryOutcome<T>) -> T {
-        match outcome {
-            QueryOutcome::Resolved(value)
-            | QueryOutcome::Recovered(value)
-            | QueryOutcome::UnsupportedWith(value) => value,
+        match outcome.answer {
+            QueryAnswer::Resolved(value) => value,
             other => panic!("expected a settled outcome, got: {other:?}"),
         }
     }
@@ -1776,7 +1773,7 @@ mod tests {
                 published.element_details(symbol)
             });
             assert!(
-                matches!(outcome, QueryOutcome::Resolved(_)),
+                matches!(outcome.answer, QueryAnswer::Resolved(_)),
                 "the probe must resolve, got: {outcome:?}"
             );
             visited

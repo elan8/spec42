@@ -460,7 +460,7 @@ standard library package OccurrenceFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:524592d79cb0d77c2a99dc505cb5746e66ef3d78a70ae13c5f4c6c0b4a056d13") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:524592d79cb0d77c2a99dc505cb5746e66ef3d78a70ae13c5f4c6c0b4a056d13") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines utility functions that operate on occurrences, primarily related to \n\t * time during which those occurrences exist.\n\t "))))
     (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Occurrence") (import (shape membership) (recursive false))))))

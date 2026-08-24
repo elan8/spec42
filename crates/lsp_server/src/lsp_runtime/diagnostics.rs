@@ -257,7 +257,7 @@ mod tests {
         // session to Reindexing. Diagnostics for a document diagnosed against `snap` must not
         // observe this — that's the whole point of consolidating to a single snapshot capture.
         handle
-            .schedule_relink_if_ready()
+            .invalidate_semantic_inputs_if_ready()
             .await
             .expect("actor mutate should not panic");
 
@@ -295,7 +295,7 @@ mod tests {
 
         // Any invalidating operation supersedes work already in flight.
         handle
-            .schedule_relink_if_ready()
+            .invalidate_semantic_inputs_if_ready()
             .await
             .expect("actor mutate should not panic");
 

@@ -74,7 +74,7 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ed93b90fad421e3b56c1864ebf9fee8d64e32398f22f799d437520fd45f34ab7") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ed93b90fad421e3b56c1864ebf9fee8d64e32398f22f799d437520fd45f34ab7") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_view_definition_only_one_view_rendering.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_view_definition_only_one_view_rendering.md") (qualified-name "Views::Bad"))) (kind view-def) (membership (kind owning) (visibility default)))

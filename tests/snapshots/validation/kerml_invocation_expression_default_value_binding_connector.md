@@ -38,7 +38,7 @@ package Invocations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:609c4cd625050b90063ee6adae6685a48d8cfe7bd87d12b8c16abf3db5eae3bd") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:609c4cd625050b90063ee6adae6685a48d8cfe7bd87d12b8c16abf3db5eae3bd") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations::Identity"))) (kind kerml-function) (membership (kind owning) (visibility default)))

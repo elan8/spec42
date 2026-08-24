@@ -105,7 +105,7 @@ fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
         "the committed symbol table must contain only exact PublishedModel query results"
     );
 
-    // Recovery is declared in `language_service::library_search`, not here; this crate has four
+    // Recovery is declared in `language_service::library_search`, not here; this crate has two
     // deliberately search-only call sites. A new use must make its non-admitted provenance
     // explicit and update this architectural gate deliberately.
     assert!(
@@ -116,7 +116,7 @@ fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
     );
     assert_eq!(
         count_occurrences(&root, "search_symbols_from_recovered_short_names"),
-        4,
+        2,
         "syntax-recovery search projection escaped its reviewed boundary"
     );
     assert_eq!(

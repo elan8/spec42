@@ -565,16 +565,16 @@ fn state_transition_scene_owns_vertices_and_composed_transitions() {
         "contract-v1",
     ).unwrap();
     let published = build(request).unwrap();
-    let catalog = match published.diagram_view_catalog() {
-        QueryOutcome::Resolved(catalog) => catalog,
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
         other => panic!("expected diagram catalog, got {other:?}"),
     };
     let view = catalog
         .iter()
         .find(|view| view.kind == DiagramViewKind::StateTransition)
         .unwrap();
-    let projection = match published.diagram_view(view.semantic_id) {
-        QueryOutcome::Resolved(projection) => projection,
+    let projection = match published.diagram_view(view.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
         other => panic!("expected state scene, got {other:?}"),
     };
     let DiagramScene::StateTransition(scene) = projection.scene else {
@@ -634,16 +634,16 @@ fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() 
     )
     .unwrap();
     let published = build(request).unwrap();
-    let catalog = match published.diagram_view_catalog() {
-        QueryOutcome::Resolved(catalog) | QueryOutcome::UnsupportedWith(catalog) => catalog,
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
         other => panic!("expected diagram catalog, got {other:?}"),
     };
     let view = catalog
         .iter()
         .find(|view| view.kind == DiagramViewKind::General)
         .unwrap();
-    let projection = match published.diagram_view(view.semantic_id) {
-        QueryOutcome::Resolved(projection) => projection,
+    let projection = match published.diagram_view(view.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
         other => panic!("expected General View projection, got {other:?}"),
     };
 
@@ -686,22 +686,35 @@ fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() 
     assert_ne!(connectors[0].target, connectors[1].target);
 }
 
-/// Reporting a document changes the answer, so it changes the publication's identity.
+/// Only an admitted non-workspace reporting addition changes the publication identity.
 #[test]
 fn the_reported_document_set_is_part_of_the_publication_identity() {
     let request = || {
         BuildRequest::new(
-            vec![SourceInput::new(
-                "memory://workspace.sysml",
-                "package W { part w; }".to_string(),
-                SourceKind::Workspace,
-            )],
+            vec![
+                SourceInput::new(
+                    "memory://workspace.sysml",
+                    "package W { part w; }".to_string(),
+                    SourceKind::Workspace,
+                ),
+                SourceInput::new(
+                    "memory://lib.sysml",
+                    "package L { part l; }".to_string(),
+                    SourceKind::Library,
+                ),
+            ],
             ConstructionSchedule::Sequential,
             "contract-v1",
         )
         .unwrap()
     };
     let plain = request();
+    let redundant = request().reporting([
+        Box::from("memory://workspace.sysml"),
+        Box::from("memory://unknown.sysml"),
+    ]);
+    assert_eq!(plain.identity(), redundant.identity());
+
     let reporting = request().reporting([Box::from("memory://lib.sysml")]);
     assert_ne!(plain.identity(), reporting.identity());
     assert_eq!(
@@ -1011,8 +1024,8 @@ fn duplicate_sibling_names_stay_separately_addressable() {
     );
 
     for symbol in [first, second] {
-        match published.references(symbol, true) {
-            QueryOutcome::Resolved(locations) => assert_eq!(
+        match published.references(symbol, true).answer {
+            QueryAnswer::Resolved(locations) => assert_eq!(
                 locations.len(),
                 1,
                 "expected each sibling to resolve to its own declaration site"
@@ -1084,14 +1097,17 @@ fn inspect_at_reports_the_containing_and_the_referenced_element() {
         "memory://i.sysml",
         "package P {\n  part def Wheel;\n  part w : Wheel;\n}",
     )]);
-    let at = match published.inspect_at(
-        "memory://i.sysml",
-        TextPosition {
-            line: 2,
-            character: 12,
-        },
-    ) {
-        QueryOutcome::Resolved(at) => at,
+    let at = match published
+        .inspect_at(
+            "memory://i.sysml",
+            TextPosition {
+                line: 2,
+                character: 12,
+            },
+        )
+        .answer
+    {
+        QueryAnswer::Resolved(at) => at,
         other => panic!("expected a resolved inspection, got: {other:?}"),
     };
 
@@ -1119,7 +1135,7 @@ fn visible_members_keeps_ambiguous_qualifier_scopes_separate() {
     let published = publication_for(&[("memory://i.sysml", source)]);
     let outcome =
         published.visible_members("memory://i.sysml", position_of(source, "part x"), Some("P"));
-    let QueryOutcome::Ambiguous(candidates) = outcome else {
+    let QueryAnswer::Ambiguous(candidates) = outcome.answer else {
         panic!("expected ambiguous qualifier scopes, got: {outcome:?}");
     };
     assert_eq!(candidates.len(), 2);
@@ -1139,8 +1155,8 @@ fn document_symbols_lists_every_declaration_with_its_identity() {
         "memory://i.sysml",
         "package P {\n  part def Wheel;\n  part w : Wheel;\n}",
     )]);
-    let symbols = match published.document_symbols("memory://i.sysml") {
-        QueryOutcome::Resolved(symbols) => symbols,
+    let symbols = match published.document_symbols("memory://i.sysml").answer {
+        QueryAnswer::Resolved(symbols) => symbols,
         other => panic!("expected resolved symbols, got: {other:?}"),
     };
     let names = symbols
@@ -1155,7 +1171,10 @@ fn document_symbols_lists_every_declaration_with_its_identity() {
         .expect("Wheel");
     assert_eq!(wheel.kind, ElementKind::PartDefinition);
     assert!(
-        matches!(published.inspect(wheel.identity), QueryOutcome::Resolved(_)),
+        matches!(
+            published.inspect(wheel.identity).answer,
+            QueryAnswer::Resolved(_)
+        ),
         "an outline entry's identity must address the same element"
     );
 }
@@ -1186,11 +1205,14 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
     .expect("request");
     let published = build(request).expect("publication");
 
-    let requirements = match published.search_elements(ElementSearch {
-        kind: ElementKind::RequirementDefinition,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(entries) => entries,
+    let requirements = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(entries) => entries,
         other => panic!("expected resolved search, got: {other:?}"),
     };
     assert_eq!(
@@ -1213,11 +1235,14 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
         .iter()
         .all(|entry| entry.kind == ElementKind::RequirementDefinition));
 
-    let library = match published.search_elements(ElementSearch {
-        kind: ElementKind::RequirementDefinition,
-        source: ElementSource::StandardLibrary,
-    }) {
-        QueryOutcome::Resolved(entries) => entries,
+    let library = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::StandardLibrary,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(entries) => entries,
         other => panic!("expected resolved search, got: {other:?}"),
     };
     assert_eq!(library.len(), 1);
@@ -1511,7 +1536,8 @@ fn affected_documents_are_transitive_across_public_imports_and_aliases() {
     let published =
         build(BuildRequest::new(sources, ConstructionSchedule::Sequential, "contract-v1").unwrap())
             .unwrap();
-    let QueryOutcome::Resolved(affected) = published.affected_documents("memory://a.sysml") else {
+    let QueryAnswer::Resolved(affected) = published.affected_documents("memory://a.sysml").answer
+    else {
         panic!("complete imports must publish a settled dependency outcome")
     };
     assert_eq!(

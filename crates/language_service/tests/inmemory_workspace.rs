@@ -1,12 +1,11 @@
 use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
-use std::sync::Arc;
-
-use sysml_query::resolved_slice::{build, AdmittedSource, BuildRequest, ConstructionStrategy};
-use sysml_query::source::{SourceKind, SourceService};
+use sysml_query::{source::SourceKind, Services};
 
 #[test]
 fn inmemory_workspace_indexes_an_injected_publication_and_symbols() {
-    let doc = SourceService::new()
+    let services = Services::new();
+    let doc = services
+        .source
         .admit_memory(
             "workspace",
             "Demo.sysml",
@@ -14,15 +13,10 @@ fn inmemory_workspace_indexes_an_injected_publication_and_symbols() {
             SourceKind::Workspace,
         )
         .expect("doc");
-    let source = AdmittedSource::from_uri(
-        doc.uri().as_str(),
-        doc.content().to_owned(),
-        SourceKind::Workspace,
-    )
-    .expect("source");
-    let request =
-        BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential).expect("request");
-    let publication = Arc::new(build(request).expect("publication"));
+    let publication = services
+        .publication
+        .publish(std::slice::from_ref(&doc), [])
+        .expect("publication");
     let workspace = InMemoryWorkspace::from_documents_and_publication(vec![doc], publication)
         .expect("workspace");
     assert!(!workspace.index_uris().is_empty());

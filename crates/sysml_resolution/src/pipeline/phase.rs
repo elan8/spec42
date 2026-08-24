@@ -127,15 +127,17 @@ impl Lowered {
         let library_anchors = library_specialization_anchors(&storage);
         let implied = synthesize_implied_relationships(&storage, &resolution, &library_anchors)?;
         let resolution = resolution.settle(implied, library_anchors);
-        let completeness = if has_recovery {
-            PublicationCompleteness::ParseRecovery
-        } else if has_unsupported {
-            PublicationCompleteness::UnsupportedSyntax
-        } else if !matches!(resolution.solver_status, SolverStatus::Converged) {
-            PublicationCompleteness::NonConverged
-        } else {
-            PublicationCompleteness::Complete
-        };
+        let mut completeness = PublicationCompleteness::Complete;
+        if has_recovery {
+            completeness = completeness.with(sysml_contract::PublicationObstacle::ParseRecovery);
+        }
+        if has_unsupported {
+            completeness =
+                completeness.with(sysml_contract::PublicationObstacle::UnsupportedSyntax);
+        }
+        if !matches!(resolution.solver_status, SolverStatus::Converged) {
+            completeness = completeness.with(sysml_contract::PublicationObstacle::NonConverged);
+        }
         Ok(Resolved {
             storage,
             sources,

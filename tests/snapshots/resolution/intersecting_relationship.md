@@ -37,7 +37,7 @@ package IntersectCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5636759edf98aecf2c19163942f8f9453be470a3a2d2c0fff33e63f6ddef1ea8") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5636759edf98aecf2c19163942f8f9453be470a3a2d2c0fff33e63f6ddef1ea8") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

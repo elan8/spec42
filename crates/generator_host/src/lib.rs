@@ -163,6 +163,7 @@ pub struct GeneratorHostError {
 #[derive(Debug)]
 pub struct GeneratorExecution {
     pub artifacts: ArtifactSet,
+    pub publication_completeness: generator_api::GeneratorPublicationCompleteness,
     pub diagnostics: Vec<GeneratorDiagnostic>,
     pub generator_digest: String,
     pub duration: Duration,
@@ -536,6 +537,7 @@ impl GeneratorRuntime {
         let state = store.into_data();
         Ok(GeneratorExecution {
             artifacts,
+            publication_completeness: state.model.publication_completeness(),
             diagnostics: state.diagnostics,
             generator_digest: prepared.generator_digest.clone(),
             duration,

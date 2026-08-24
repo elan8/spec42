@@ -134,8 +134,11 @@ pub fn target_symbol(
     line: u32,
     character: u32,
 ) -> SymbolId {
-    match published.target_at(document, TextPosition { line, character }) {
-        QueryOutcome::Resolved(target) => target.symbol,
+    match published
+        .target_at(document, TextPosition { line, character })
+        .answer
+    {
+        QueryAnswer::Resolved(target) => target.symbol,
         other => panic!("expected a resolved navigation target, got: {other:?}"),
     }
 }
@@ -149,8 +152,8 @@ pub fn inspect_named(
     character: u32,
 ) -> ElementInspection {
     let symbol = target_symbol(published, document, line, character);
-    match published.inspect(symbol) {
-        QueryOutcome::Resolved(inspection) => inspection,
+    match published.inspect(symbol).answer {
+        QueryAnswer::Resolved(inspection) => inspection,
         other => panic!("expected a resolved inspection, got: {other:?}"),
     }
 }
@@ -190,8 +193,11 @@ pub fn probe_symbol(
     document: &str,
     needle: &str,
 ) -> SymbolId {
-    match published.inspect_at(document, position_of(source, needle)) {
-        QueryOutcome::Resolved(at) => {
+    match published
+        .inspect_at(document, position_of(source, needle))
+        .answer
+    {
+        QueryAnswer::Resolved(at) => {
             at.containing
                 .expect("the probe must land inside a declaration")
                 .identity
@@ -207,10 +213,8 @@ pub fn probe_symbol(
 // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
 
 pub fn symbol_named(published: &PublishedResolution, document: &str, qualified: &str) -> SymbolId {
-    match published.document_symbols(document) {
-        QueryOutcome::Resolved(entries)
-        | QueryOutcome::Recovered(entries)
-        | QueryOutcome::UnsupportedWith(entries) => {
+    match published.document_symbols(document).answer {
+        QueryAnswer::Resolved(entries) => {
             entries
                 .iter()
                 .find(|entry| published.qualified_name(entry.identity) == Some(qualified))
@@ -222,19 +226,15 @@ pub fn symbol_named(published: &PublishedResolution, document: &str, qualified: 
 }
 
 pub fn conformance(outcome: QueryOutcome<Conformance>) -> Conformance {
-    match outcome {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
+    match outcome.answer {
+        QueryAnswer::Resolved(value) => value,
         other => panic!("expected a settled conformance answer, got: {other:?}"),
     }
 }
 
 pub fn symbols(outcome: QueryOutcome<Box<[SymbolId]>>) -> Vec<SymbolId> {
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values.into_vec(),
+    match outcome.answer {
+        QueryAnswer::Resolved(values) => values.into_vec(),
         other => panic!("expected settled symbols, got: {other:?}"),
     }
 }
@@ -433,10 +433,8 @@ pub fn detail_publication(
 }
 
 pub fn settled<T: fmt::Debug>(outcome: QueryOutcome<T>) -> T {
-    match outcome {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
+    match outcome.answer {
+        QueryAnswer::Resolved(value) => value,
         other => panic!("expected a settled outcome, got: {other:?}"),
     }
 }

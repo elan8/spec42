@@ -4,7 +4,6 @@
 //! re-reading authored text, and nothing is defaulted: a fact the parser cannot express is absent,
 //! and a fact resolution could not settle keeps its own outcome.
 
-use crate::diagnose::document_range;
 use crate::evaluate::EvaluationFact;
 use crate::index::documents::leaf_ranges_containing;
 use crate::index::documents::record_visited_index_entries;
@@ -14,6 +13,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentIdx;
@@ -28,6 +28,7 @@ use crate::ElementSearch;
 use crate::ElementSource;
 use crate::EvaluationState;
 use crate::OccurrenceRole;
+use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::SourceLocation;
 use crate::SymbolId;
@@ -624,11 +625,11 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         let Some(id) = self.declaration_of(symbol) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         match self.inspection(id) {
             Some(inspection) => self.resolved_outcome(inspection),
-            None => QueryOutcome::Unresolved,
+            None => self.query_outcome(QueryAnswer::Unresolved),
         }
     }
 
@@ -638,10 +639,10 @@ impl<D> SemanticModel<D> {
         position: TextPosition,
     ) -> QueryOutcome<ElementInspectionAt> {
         let Some(document_id) = self.documents.document(&self.storage, document) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(positions) = self.documents.positions(document_id) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
 
         let containing = positions
@@ -681,10 +682,10 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         let Some(document_id) = self.documents.document(&self.storage, document) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(positions) = self.documents.positions(document_id) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let entries = positions
             .spans

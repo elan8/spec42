@@ -22,7 +22,7 @@ pub(crate) fn build_code_lens(
 ) -> Vec<CodeLens> {
     let started_at = Instant::now();
     let indexed_symbols = state
-        .symbol_table
+        .semantic_symbols
         .iter()
         .filter(|s| s.uri == *uri_norm)
         .count();

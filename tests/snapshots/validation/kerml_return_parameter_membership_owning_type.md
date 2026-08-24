@@ -54,7 +54,7 @@ package Returns {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5f2fdba6c1d57a562e7f98a97c4450cc5e00c7c9721709b326cfb19aa6c0e60") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5f2fdba6c1d57a562e7f98a97c4450cc5e00c7c9721709b326cfb19aa6c0e60") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))

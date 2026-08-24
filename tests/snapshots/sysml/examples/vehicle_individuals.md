@@ -283,7 +283,7 @@ package VehicleIndividuals {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ebd1bfdcf66e6d42fb3be35cd2157e4d253d627734000a925e36c30f97e69a6") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ebd1bfdcf66e6d42fb3be35cd2157e4d253d627734000a925e36c30f97e69a6") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (path (named (kind package) (name "VehicleIndividuals")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleUsages") (import (shape namespace) (recursive false))))))

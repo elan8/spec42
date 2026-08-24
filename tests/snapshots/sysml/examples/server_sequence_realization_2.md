@@ -390,7 +390,7 @@ package ServerSequenceRealization_2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:767bb792c403b9f977070169590097ca1cbd777a09be995e9f13f3a1d6370f04") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:767bb792c403b9f977070169590097ca1cbd777a09be995e9f13f3a1d6370f04") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (qualified-name "ServerSequenceRealization_2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

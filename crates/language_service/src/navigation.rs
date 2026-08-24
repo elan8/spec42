@@ -37,6 +37,7 @@ pub fn hover_at_position(
         return Some(HoverResult {
             contents: md,
             range,
+            semantic_status: workspace.semantic_status(),
         });
     }
 
@@ -50,6 +51,7 @@ pub fn hover_at_position(
                             "**Unresolved reference** `{lookup_name}`\n\nSpec42 could not resolve this name in the current immutable publication."
                         ),
                         range,
+                        semantic_status: workspace.semantic_status(),
                     });
                 }
                 _ => at.containing,
@@ -63,6 +65,7 @@ pub fn hover_at_position(
                             != Some(uri_norm.as_str()),
                     ),
                     range,
+                    semantic_status: workspace.semantic_status(),
                 });
             }
         }
@@ -72,6 +75,7 @@ pub fn hover_at_position(
         return Some(HoverResult {
             contents: md,
             range,
+            semantic_status: workspace.semantic_status(),
         });
     }
 
@@ -83,6 +87,7 @@ pub fn hover_at_position(
         return Some(HoverResult {
             contents: md,
             range,
+            semantic_status: workspace.semantic_status(),
         });
     }
 
@@ -92,6 +97,7 @@ pub fn hover_at_position(
             lookup_name
         ),
         range,
+        semantic_status: workspace.semantic_status(),
     })
 }
 
@@ -242,10 +248,8 @@ fn element_evaluation(model: &PublishedModel, symbol: SymbolId) -> Option<Elemen
 
 /// The value of an outcome that carried one, whatever completeness it was published under.
 fn resolved<T>(outcome: QueryOutcome<T>) -> Option<T> {
-    match outcome {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => Some(value),
+    match outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(value) => Some(value),
         _ => None,
     }
 }

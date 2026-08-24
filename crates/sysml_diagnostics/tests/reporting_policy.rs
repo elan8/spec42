@@ -1,23 +1,22 @@
 //! The one reporting policy a host has, over diagnostics it does not decide.
 
+use std::sync::Arc;
 use sysml_diagnostics::{document_diagnostics, DiagnosticSeverity, ReportingPolicy};
-use sysml_query::resolved_slice::{
-    build, AdmittedSource, BuildRequest, ConstructionStrategy, PublishedModel, SourceKind,
-};
+use sysml_query::{resolved_slice::PublishedModel, source::SourceKind, Services};
 use url::Url;
 
 const DOCUMENT: &str = "memory://policy.sysml";
 
-fn publish(source: &str) -> PublishedModel {
-    let request = BuildRequest::resolved(
-        vec![
-            AdmittedSource::from_uri(DOCUMENT, source.to_string(), SourceKind::Workspace)
-                .expect("source"),
-        ],
-        ConstructionStrategy::Sequential,
-    )
-    .expect("request");
-    build(request).expect("publication")
+fn publish(source: &str) -> Arc<PublishedModel> {
+    let services = Services::new();
+    let document = services
+        .source
+        .admit(DOCUMENT, source.to_string(), SourceKind::Workspace)
+        .expect("source");
+    services
+        .publication
+        .publish(&[document], [])
+        .expect("publication")
 }
 
 fn codes(source: &str, policy: ReportingPolicy) -> Vec<String> {

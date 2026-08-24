@@ -11,7 +11,6 @@ use crate::details::{
     InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
     ViewSelectionObstacle, ViewSelectionOutcome,
 };
-use crate::diagnose::document_range;
 use crate::evaluation::{AnalysisEvaluation, EvaluatedScalar, EvaluationState};
 use crate::index::documents::leaf_ranges_containing;
 use crate::index::types;
@@ -22,6 +21,7 @@ use crate::lower::facts::FilterPredicate;
 use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::ReferenceKind;
@@ -29,12 +29,12 @@ use crate::resolve::results::ResolutionStatus;
 use crate::type_query::EffectiveTypeOrigin;
 use crate::ElementKind;
 use crate::OccurrenceRole;
+use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::RelationshipProvenance;
 use crate::SourceLocation;
 use crate::SymbolId;
 use crate::TextPosition;
-use sysml_contract::PublicationCompleteness;
 
 /// The relationship families an element-details answer reports separately.
 ///
@@ -312,18 +312,19 @@ impl<D> SemanticModel<D> {
     }
 
     pub(crate) fn element_details(&self, symbol: SymbolId) -> QueryOutcome<ElementDetails> {
-        if matches!(
-            self.metadata.completeness,
-            PublicationCompleteness::NonConverged
-        ) {
-            return QueryOutcome::Incomplete;
+        if self
+            .metadata
+            .completeness
+            .contains(crate::PublicationObstacle::NonConverged)
+        {
+            return self.query_outcome(QueryAnswer::Incomplete);
         }
         let Some(id) = self.declaration_of(symbol) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         match self.details(id) {
             Some(details) => self.resolved_outcome(details),
-            None => QueryOutcome::Unresolved,
+            None => self.query_outcome(QueryAnswer::Unresolved),
         }
     }
 
@@ -333,10 +334,10 @@ impl<D> SemanticModel<D> {
         position: TextPosition,
     ) -> QueryOutcome<ElementDetailsAt> {
         let Some(document_id) = self.documents.document(&self.storage, document) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(positions) = self.documents.positions(document_id) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
 
         let containing = positions

@@ -166,7 +166,7 @@ package ConnectionTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8ffd9e9a3b8219cd1cdbb709c567a116f46bf279bc129d37a5672d4f87e7219d") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8ffd9e9a3b8219cd1cdbb709c567a116f46bf279bc129d37a5672d4f87e7219d") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C")))))

@@ -13,18 +13,11 @@ pub fn document(path: &str, content: &str) -> SourceDocument {
 }
 
 pub fn workspace_from_docs(docs: Vec<SourceDocument>) -> InMemoryWorkspace {
-    use std::sync::Arc;
-    use sysml_query::resolved_slice::{build, AdmittedSource, BuildRequest, ConstructionStrategy};
-    let sources = docs
-        .iter()
-        .map(|doc| {
-            AdmittedSource::from_uri(doc.uri().as_str(), doc.content().to_owned(), doc.kind())
-                .expect("source")
-        })
-        .collect();
-    let request =
-        BuildRequest::resolved(sources, ConstructionStrategy::Sequential).expect("request");
-    let publication = Arc::new(build(request).expect("publication"));
+    let services = sysml_query::Services::new();
+    let publication = services
+        .publication
+        .publish(&docs, [])
+        .expect("publication");
     InMemoryWorkspace::from_documents_and_publication(docs, publication).expect("workspace")
 }
 

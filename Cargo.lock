@@ -2017,7 +2017,11 @@ dependencies = [
 name = "spec42-query-bench"
 version = "0.50.0"
 dependencies = [
+ "blake3",
+ "clap",
  "divan",
+ "serde",
+ "serde_json",
  "sysml_query",
 ]
 
@@ -2035,6 +2039,7 @@ dependencies = [
 name = "spec42-semantic-benchmark"
 version = "0.50.0"
 dependencies = [
+ "blake3",
  "clap",
  "serde",
  "serde_json",
@@ -2168,7 +2173,6 @@ dependencies = [
 name = "sysml_resolution"
 version = "0.50.0"
 dependencies = [
- "blake3",
  "hashbrown 0.17.1",
  "rayon",
  "serde",

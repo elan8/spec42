@@ -70,7 +70,7 @@ standard library package Attributes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cada5bf0e4466e5bac58e24d7c47b92a4742f379f473bae01e84dd27744dd34c") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cada5bf0e4466e5bac58e24d7c47b92a4742f379f473bae01e84dd27744dd34c") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n * This package defines the base types for attributes and related structural elements \n * in the SysML language.\n "))))
     (declaration (id (node (document "memory://snapshot/attributes.md") (path (named (kind library-package) (name "Attributes")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false))))))

@@ -350,16 +350,19 @@ A representation change is admitted with a benchmark showing it neutral-or-bette
 
 ```
 cargo bench -p spec42-query-bench
-cargo run --release -p spec42-query-bench --bin spec42-query-bench-allocations
+cargo run --release -p spec42-query-bench --bin spec42-query-bench-allocations -- \
+  --output /tmp/spec42-query-allocations.json
 ```
 
-The first reports wall time and divan's allocation profile per case; the second reports allocations
-and allocations per published element under a counting global allocator (the two cannot share a
-binary, because each installs its own `#[global_allocator]`). Record the machine, toolchain, commit,
-corpus size, and before/after results in the change under review; git history, not a planning
-document, retains completed measurement history.
+The first reports wall time and divan's allocation profile per case. The second writes a versioned
+JSON report with allocation counts, bytes, per-element normalization, a dependency-complete corpus
+digest, build/toolchain/host metadata, and the exact measurement configuration (the two cannot
+share a binary, because each installs its own `#[global_allocator]`). Keep the before/after JSON
+artifacts with the change under review; they are structured review evidence, not CI thresholds.
 
-`tools/semantic_benchmark` remains the JSON-reporting cold-build tool with a phase breakdown; the divan set is the admission gate.
+`tools/semantic_benchmark` remains the JSON-reporting cold-build tool with a phase breakdown. Its
+report retains raw samples, percentile summaries, corpus identity, configuration, and environment
+metadata. The divan set remains the admission benchmark; none of these host timings are CI gates.
 
 ## AI assistants
 

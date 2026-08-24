@@ -1066,7 +1066,7 @@ standard library package MeasurementReferences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the representations for measurement references.\n\t "))))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (path (named (kind library-package) (name "MeasurementReferences")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Collections::Array") (import (shape membership) (recursive false))))))

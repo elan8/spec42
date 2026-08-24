@@ -17,8 +17,8 @@ use spec42_generator_protocol::{
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
     AnnotationForm, ElementKind, ElementModifier, ElementSource, EvaluatedScalar,
-    MultiplicityBound, MultiplicityFacts, QueryOutcome, RelationshipProvenance, RelationshipTarget,
-    SymbolEntry, SymbolId, SymbolToken,
+    MultiplicityBound, MultiplicityFacts, QueryAnswer, QueryOutcome, RelationshipProvenance,
+    RelationshipTarget, SymbolEntry, SymbolId, SymbolToken,
 };
 use thiserror::Error;
 
@@ -206,6 +206,7 @@ pub struct GeneratorModelView {
     model_digest: String,
     spec42_version: String,
     query_limits: QueryLimits,
+    completeness: sysml_query::resolved_slice::PublicationCompleteness,
     by_identity: HashMap<SymbolId, RegisteredElement>,
     handles: Mutex<HashMap<String, SymbolId>>,
 }
@@ -226,30 +227,35 @@ impl GeneratorModelView {
         model_digest: impl Into<String>,
         spec42_version: impl Into<String>,
         query_limits: QueryLimits,
-    ) -> Self {
+    ) -> Result<Self, ModelQueryError> {
+        let completeness = model.publication().completeness();
         let mut by_identity = HashMap::new();
-        if let QueryOutcome::Resolved(elements)
-        | QueryOutcome::Recovered(elements)
-        | QueryOutcome::UnsupportedWith(elements) = model.inspection().all_elements()
-        {
-            for element in elements {
-                by_identity.insert(
-                    element.entry.identity,
-                    RegisteredElement {
-                        entry: element.entry,
-                        source: element.source,
-                    },
-                );
-            }
+        let QueryAnswer::Resolved(elements) = model.inspection().all_elements().answer else {
+            return Err(ModelQueryError::Incomplete);
+        };
+        for element in elements {
+            by_identity.insert(
+                element.entry.identity,
+                RegisteredElement {
+                    entry: element.entry,
+                    source: element.source,
+                },
+            );
         }
-        Self {
+        Ok(Self {
             model,
             model_digest: model_digest.into(),
             spec42_version: spec42_version.into(),
             query_limits,
+            completeness,
             by_identity,
             handles: Mutex::new(HashMap::new()),
-        }
+        })
+    }
+
+    /// The exact completeness of the publication admitted to this view.
+    pub fn publication_completeness(&self) -> sysml_query::resolved_slice::PublicationCompleteness {
+        self.completeness
     }
 
     pub fn model_digest(&self) -> String {
@@ -398,72 +404,62 @@ impl GeneratorModelView {
         &self,
         handle: &str,
     ) -> Result<RequirementUsageTypingSummary, ModelQueryError> {
-        use sysml_query::resolved_slice::{QueryOutcome, RequirementUsageTyping as Owned};
+        use sysml_query::resolved_slice::{QueryAnswer, RequirementUsageTyping as Owned};
         use RequirementUsageTypingSummary as Wire;
         let identity = self.resolve_handle(handle)?;
-        Ok(
-            match self.model.types().requirement_usage_typing(identity) {
-                QueryOutcome::Resolved(Owned::Missing) => Wire::Missing,
-                QueryOutcome::Resolved(Owned::Resolved(reference)) => Wire::Resolved {
+        let outcome = self.model.types().requirement_usage_typing(identity);
+        let recovered = !outcome.completeness.is_complete();
+        Ok(match outcome.answer {
+            QueryAnswer::Resolved(Owned::Missing) if recovered => Wire::RecoveredMissing,
+            QueryAnswer::Resolved(Owned::Missing) => Wire::Missing,
+            QueryAnswer::Resolved(Owned::Resolved(reference)) if recovered => {
+                Wire::RecoveredResolved {
                     definition: self.summary(reference.symbol)?,
                     provenance: match reference.provenance {
                         RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
                         RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
                     },
+                }
+            }
+            QueryAnswer::Resolved(Owned::Resolved(reference)) => Wire::Resolved {
+                definition: self.summary(reference.symbol)?,
+                provenance: match reference.provenance {
+                    RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                    RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
                 },
-                QueryOutcome::Resolved(Owned::Ambiguous(values)) => Wire::Ambiguous {
+            },
+            QueryAnswer::Resolved(Owned::Ambiguous(values)) if recovered => {
+                Wire::RecoveredAmbiguous {
                     candidates: values
                         .iter()
                         .map(|value| self.summary(value))
                         .collect::<Result<Vec<_>, _>>()?,
-                },
-                QueryOutcome::Resolved(Owned::Unresolved) | QueryOutcome::Unresolved => {
-                    Wire::Unresolved
                 }
-                QueryOutcome::Resolved(Owned::Unsupported) | QueryOutcome::Unsupported => {
-                    Wire::Unsupported
-                }
-                // `Recovered` and `UnsupportedWith` are the two incomplete publications; the
-                // typing inside is settled either way, so both reach the guest as `Recovered*`,
-                // the wire's "settled, but the publication is not complete" family.
-                QueryOutcome::Recovered(Owned::Resolved(reference))
-                | QueryOutcome::UnsupportedWith(Owned::Resolved(reference)) => {
-                    Wire::RecoveredResolved {
-                        definition: self.summary(reference.symbol)?,
-                        provenance: match reference.provenance {
-                            RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
-                            RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
-                        },
-                    }
-                }
-                QueryOutcome::Recovered(Owned::Missing)
-                | QueryOutcome::UnsupportedWith(Owned::Missing) => Wire::RecoveredMissing,
-                QueryOutcome::Recovered(Owned::Unresolved)
-                | QueryOutcome::UnsupportedWith(Owned::Unresolved) => Wire::RecoveredUnresolved,
-                QueryOutcome::Recovered(Owned::Ambiguous(values))
-                | QueryOutcome::UnsupportedWith(Owned::Ambiguous(values)) => {
-                    Wire::RecoveredAmbiguous {
-                        candidates: values
-                            .iter()
-                            .map(|value| self.summary(value))
-                            .collect::<Result<Vec<_>, _>>()?,
-                    }
-                }
-                QueryOutcome::Recovered(Owned::Unsupported)
-                | QueryOutcome::UnsupportedWith(Owned::Unsupported) => Wire::RecoveredUnsupported,
-                QueryOutcome::Recovery => Wire::Recovery,
-                QueryOutcome::Ambiguous(values) => Wire::Ambiguous {
-                    candidates: values
-                        .iter()
-                        .flat_map(|value| match value {
-                            Owned::Resolved(reference) => self.summary(reference.symbol).ok(),
-                            _ => None,
-                        })
-                        .collect(),
-                },
-                QueryOutcome::Incomplete => Wire::Incomplete,
+            }
+            QueryAnswer::Resolved(Owned::Ambiguous(values)) => Wire::Ambiguous {
+                candidates: values
+                    .iter()
+                    .map(|value| self.summary(value))
+                    .collect::<Result<Vec<_>, _>>()?,
             },
-        )
+            QueryAnswer::Resolved(Owned::Unresolved) if recovered => Wire::RecoveredUnresolved,
+            QueryAnswer::Resolved(Owned::Unresolved) | QueryAnswer::Unresolved => Wire::Unresolved,
+            QueryAnswer::Resolved(Owned::Unsupported) if recovered => Wire::RecoveredUnsupported,
+            QueryAnswer::Resolved(Owned::Unsupported) | QueryAnswer::Unsupported => {
+                Wire::Unsupported
+            }
+            QueryAnswer::Recovery => Wire::Recovery,
+            QueryAnswer::Ambiguous(values) => Wire::Ambiguous {
+                candidates: values
+                    .iter()
+                    .flat_map(|value| match value {
+                        Owned::Resolved(reference) => self.summary(reference.symbol).ok(),
+                        _ => None,
+                    })
+                    .collect(),
+            },
+            QueryAnswer::Incomplete => Wire::Incomplete,
+        })
     }
 
     pub fn relationships(&self, handle: &str) -> Result<Vec<RelationshipSummary>, ModelQueryError> {
@@ -520,32 +516,31 @@ impl GeneratorModelView {
         &self,
     ) -> Result<Vec<SatisfyRelationshipSummary>, ModelQueryError> {
         use sysml_query::resolved_slice::{
-            QueryOutcome, SatisfyEndpoint as OwnedEndpoint, SatisfyPolarity as OwnedPolarity,
+            QueryAnswer, SatisfyEndpoint as OwnedEndpoint, SatisfyPolarity as OwnedPolarity,
         };
         // `Recovered` and `UnsupportedWith` both carry every settled relationship of a
         // publication that is not complete; `recovered` reports that incompleteness to the
         // guest, exactly as the generic `outcome` helper below admits both for every other
         // query. Only a query with no values at all is an error.
-        let (relationships, recovered) = match self.model.inspection().satisfy_relationships() {
-            QueryOutcome::Resolved(values) => (values, false),
-            QueryOutcome::Recovered(values) | QueryOutcome::UnsupportedWith(values) => {
-                (values, true)
-            }
-            QueryOutcome::Unsupported => {
+        let query = self.model.inspection().satisfy_relationships();
+        let recovered = !query.completeness.is_complete();
+        let relationships = match query.answer {
+            QueryAnswer::Resolved(values) => values,
+            QueryAnswer::Unsupported => {
                 return Err(ModelQueryError::Unsupported("satisfy relationships".into()))
             }
-            QueryOutcome::Unresolved => {
+            QueryAnswer::Unresolved => {
                 return Err(ModelQueryError::Unresolved("satisfy relationships".into()))
             }
-            QueryOutcome::Ambiguous(_) => {
+            QueryAnswer::Ambiguous(_) => {
                 return Err(ModelQueryError::Ambiguous("satisfy relationships".into()))
             }
-            QueryOutcome::Recovery => {
+            QueryAnswer::Recovery => {
                 return Err(ModelQueryError::Unresolved(
                     "satisfy relationships are in parser recovery".into(),
                 ))
             }
-            QueryOutcome::Incomplete => return Err(ModelQueryError::Incomplete),
+            QueryAnswer::Incomplete => return Err(ModelQueryError::Incomplete),
         };
         let endpoint = |value: &OwnedEndpoint| -> Result<SatisfyEndpointSummary, ModelQueryError> {
             Ok(match value {
@@ -589,30 +584,29 @@ impl GeneratorModelView {
         &self,
     ) -> Result<Vec<RequirementVerificationSummary>, ModelQueryError> {
         use sysml_query::resolved_slice::{
-            QueryOutcome, VerificationOutcome as OwnedOutcome,
+            QueryAnswer, VerificationOutcome as OwnedOutcome,
             VerificationRequirement as OwnedRequirement,
         };
-        let (relationships, recovered) = match self.model.inspection().requirement_verifications() {
-            QueryOutcome::Resolved(values) => (values, false),
-            QueryOutcome::Recovered(values) | QueryOutcome::UnsupportedWith(values) => {
-                (values, true)
-            }
-            QueryOutcome::Unsupported => {
+        let query = self.model.inspection().requirement_verifications();
+        let recovered = !query.completeness.is_complete();
+        let relationships = match query.answer {
+            QueryAnswer::Resolved(values) => values,
+            QueryAnswer::Unsupported => {
                 return Err(ModelQueryError::Unsupported(
                     "requirement verifications".into(),
                 ))
             }
-            QueryOutcome::Unresolved | QueryOutcome::Recovery => {
+            QueryAnswer::Unresolved | QueryAnswer::Recovery => {
                 return Err(ModelQueryError::Unresolved(
                     "requirement verifications".into(),
                 ))
             }
-            QueryOutcome::Ambiguous(_) => {
+            QueryAnswer::Ambiguous(_) => {
                 return Err(ModelQueryError::Ambiguous(
                     "requirement verifications".into(),
                 ))
             }
-            QueryOutcome::Incomplete => return Err(ModelQueryError::Incomplete),
+            QueryAnswer::Incomplete => return Err(ModelQueryError::Incomplete),
         };
         let endpoint =
             |value: &OwnedRequirement| -> Result<VerificationRequirementSummary, ModelQueryError> {
@@ -1600,6 +1594,7 @@ impl GeneratorModelView {
             .cloned()
             .ok_or_else(|| ModelQueryError::UnknownHandle(handle.to_owned()))
     }
+
     fn summary(
         &self,
         identity: impl std::borrow::Borrow<SymbolId>,
@@ -1863,20 +1858,18 @@ fn unsupported(code: &str, message: &str) -> spec42_generator_protocol::Unsuppor
 }
 
 fn outcome<T>(value: QueryOutcome<T>, operation: &str) -> Result<T, ModelQueryError> {
-    match value {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => Ok(value),
-        QueryOutcome::Unresolved => Err(ModelQueryError::Unresolved(operation.into())),
-        QueryOutcome::Ambiguous(values) => Err(ModelQueryError::Ambiguous(format!(
+    match value.answer {
+        QueryAnswer::Resolved(value) => Ok(value),
+        QueryAnswer::Unresolved => Err(ModelQueryError::Unresolved(operation.into())),
+        QueryAnswer::Ambiguous(values) => Err(ModelQueryError::Ambiguous(format!(
             "{operation} returned {} candidates",
             values.len()
         ))),
-        QueryOutcome::Unsupported => Err(ModelQueryError::Unsupported(operation.into())),
-        QueryOutcome::Recovery => Err(ModelQueryError::Unresolved(format!(
+        QueryAnswer::Unsupported => Err(ModelQueryError::Unsupported(operation.into())),
+        QueryAnswer::Recovery => Err(ModelQueryError::Unresolved(format!(
             "{operation} is in parser recovery"
         ))),
-        QueryOutcome::Incomplete => Err(ModelQueryError::Incomplete),
+        QueryAnswer::Incomplete => Err(ModelQueryError::Incomplete),
     }
 }
 
@@ -2042,37 +2035,38 @@ fn generator_relationship_kind(kind: &str) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_query::resolved_slice::{
-        build, AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
-    };
+    use sysml_query::{source::SourceKind, Services};
 
     #[test]
     fn model_view_registers_one_canonical_traversal_with_provenance() {
+        let services = Services::new();
         let sources = vec![
-            AdmittedSource::from_memory_path(
-                "generator-test",
-                "workspace.sysml",
-                "package Workspace { part def Vehicle; }".into(),
-                SourceKind::Workspace,
-            )
-            .unwrap(),
-            AdmittedSource::from_memory_path(
-                "generator-test",
-                "library.sysml",
-                "package Library { attribute def Mass; }".into(),
-                SourceKind::StandardLibrary,
-            )
-            .unwrap(),
-        ];
-        let model = Arc::new(
-            build(BuildRequest::resolved(sources, ConstructionStrategy::Sequential).unwrap())
+            services
+                .source
+                .admit_memory(
+                    "generator-test",
+                    "workspace.sysml",
+                    "package Workspace { part def Vehicle; }",
+                    SourceKind::Workspace,
+                )
                 .unwrap(),
-        );
-        let expected = match model.inspection().all_elements() {
-            QueryOutcome::Resolved(elements) => elements,
+            services
+                .source
+                .admit_memory(
+                    "generator-test",
+                    "library.sysml",
+                    "package Library { attribute def Mass; }",
+                    SourceKind::StandardLibrary,
+                )
+                .unwrap(),
+        ];
+        let model = services.publication.publish(&sources, []).unwrap();
+        let expected = match model.inspection().all_elements().answer {
+            QueryAnswer::Resolved(elements) => elements,
             other => panic!("expected complete traversal, got {other:?}"),
         };
-        let view = GeneratorModelView::new(model, "digest", "version", QueryLimits::default());
+        let view = GeneratorModelView::new(model, "digest", "version", QueryLimits::default())
+            .expect("complete generator model");
 
         assert_eq!(view.by_identity.len(), expected.len());
         for element in expected {
@@ -2092,5 +2086,30 @@ mod tests {
             vec!["Workspace"],
             "library provenance remains available to the adapter's workspace-root policy"
         );
+    }
+
+    #[test]
+    fn incomplete_publication_retains_status_beside_usable_partial_enumeration() {
+        let services = Services::new();
+        let source = services
+            .source
+            .admit_memory(
+                "generator-test",
+                "recovery.sysml",
+                "package P { part def Wheel; part broken : ; }",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let model = services.publication.publish(&[source], []).unwrap();
+        let completeness = model.publication().completeness();
+        assert!(!completeness.is_complete());
+
+        let view = GeneratorModelView::new(model, "digest", "version", QueryLimits::default())
+            .expect("incomplete publications are normal generator inputs");
+        assert_eq!(view.publication_completeness(), completeness);
+        assert!(!view
+            .roots()
+            .expect("settled partial roots remain usable")
+            .is_empty());
     }
 }

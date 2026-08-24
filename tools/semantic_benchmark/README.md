@@ -51,5 +51,7 @@ samply load /tmp/spec42-semantic-profile.json
 ```
 
 Timings are local evidence, not CI thresholds. Parallel phase figures are elapsed wall time rather
-than summed worker CPU time. The benchmark retains every sample and reports min/median/max so warmup
-and host variance remain visible.
+than summed worker CPU time. Schema version 2 records a dependency-complete digest over the ordered
+workspace and library inputs, the exact schedule/library/filter configuration, commit and dirty-tree
+state, Rust toolchain, build profile, OS/architecture, and logical parallelism. The benchmark retains
+every sample and reports min/p25/median/p75/p95/max so warmup and host variance remain visible.

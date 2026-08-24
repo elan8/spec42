@@ -36,7 +36,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8daf4c591c114554419cd04fef02b44bb7e071afff1d8f48c66a9a5f0962231b") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8daf4c591c114554419cd04fef02b44bb7e071afff1d8f48c66a9a5f0962231b") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "B")))))

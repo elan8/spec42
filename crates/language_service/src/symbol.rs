@@ -1,4 +1,4 @@
-use sysml_query::resolved_slice::{PublishedModel, QueryOutcome};
+use sysml_query::resolved_slice::PublishedModel;
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 use url::Url;
 
@@ -16,10 +16,8 @@ pub struct SymbolEntry {
 
 /// Collects the immutable publication's symbols for one document.
 pub fn symbol_entries_for_uri(model: &PublishedModel, uri: &Url) -> Vec<SymbolEntry> {
-    let symbols = match model.inspection().document_symbols(uri.as_str()) {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
+    let symbols = match model.inspection().document_symbols(uri.as_str()).answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(value) => value,
         _ => return Vec::new(),
     };
     symbols
@@ -82,21 +80,19 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_query::resolved_slice::{
-        AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
-    };
+    use sysml_query::{source::SourceKind, Services};
     use url::Url;
 
     #[test]
     fn symbol_entries_for_uri_includes_definitions() {
         let input = "package P { part def Engine { } }";
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let source =
-            AdmittedSource::from_uri(uri.as_str(), input.to_string(), SourceKind::Workspace)
-                .unwrap();
-        let request =
-            BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential).unwrap();
-        let model = sysml_query::resolved_slice::build(request).unwrap();
+        let services = Services::new();
+        let source = services
+            .source
+            .admit(uri.as_str(), input.to_string(), SourceKind::Workspace)
+            .unwrap();
+        let model = services.publication.publish(&[source], []).unwrap();
         let symbols = symbol_entries_for_uri(&model, &uri);
         let names: Vec<_> = symbols.iter().map(|s| s.name.as_str()).collect();
         assert!(names.contains(&"P"));
