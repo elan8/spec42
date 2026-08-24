@@ -7,7 +7,7 @@ license.workspace = true
 description = "Batch host: engine, directory snapshots, validation, comparison and schema versions over the typed facade"
 
 [dependencies]
-library_catalog = { path = "../library_catalog" }
+library_catalog = { path = "../library_catalog", default-features = false }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 language_service = { path = "../language_service" }
