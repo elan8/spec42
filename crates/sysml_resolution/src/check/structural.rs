@@ -20,12 +20,12 @@
 //! comment naming what is missing.
 
 use crate::check::conformance;
-use crate::diagnose::document_range;
 use crate::index::expressions::conforms;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::ParameterDirection;
 use crate::model::element_kind::element_kind;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;

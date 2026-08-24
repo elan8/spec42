@@ -8,26 +8,31 @@
 use std::sync::Arc;
 
 use generator_api::{GeneratorModelView, QueryLimits};
-use sysml_query::resolved_slice::{
-    build, AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
-};
+use sysml_query::{source::SourceKind, Services};
 
 /// Publishes `source` and wraps it in the view the runtime serves queries from.
 pub fn published_model_view(source: &str) -> Arc<GeneratorModelView> {
-    let document = AdmittedSource::from_memory_path(
-        "generator-host-tests",
-        "model.sysml",
-        source.to_owned(),
-        SourceKind::Workspace,
+    let services = Services::new();
+    let document = services
+        .source
+        .admit_memory(
+            "generator-host-tests",
+            "model.sysml",
+            source.to_owned(),
+            SourceKind::Workspace,
+        )
+        .expect("in-memory source document");
+    let publication = services
+        .publication
+        .publish(&[document], [])
+        .expect("published model");
+    Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .expect("complete generator model"),
     )
-    .expect("in-memory source document");
-    let request = BuildRequest::resolved(vec![document], ConstructionStrategy::Sequential)
-        .expect("resolved build request");
-    let publication = Arc::new(build(request).expect("published model"));
-    Arc::new(GeneratorModelView::new(
-        Arc::clone(&publication),
-        publication.publication().model_digest(),
-        env!("CARGO_PKG_VERSION"),
-        QueryLimits::default(),
-    ))
 }

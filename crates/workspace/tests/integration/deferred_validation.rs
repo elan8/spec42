@@ -40,19 +40,34 @@ fn deferred_validation_matches_eager_after_ensure() {
         !deferred.validation_ready(),
         "deferred load should not collect validation eagerly"
     );
-    assert_eq!(deferred.validation().summary.document_count, 0);
+    assert!(matches!(
+        deferred.validation(),
+        workspace::ValidationState::Deferred
+    ));
 
     let collected = deferred.ensure_validation().expect("ensure validation");
     assert_eq!(
         collected.summary.document_count,
-        eager.validation().summary.document_count
+        eager
+            .ensure_validation()
+            .expect("eager validation")
+            .summary
+            .document_count
     );
     assert_eq!(
         collected.summary.error_count,
-        eager.validation().summary.error_count
+        eager
+            .ensure_validation()
+            .expect("eager validation")
+            .summary
+            .error_count
     );
     assert_eq!(
         collected.summary.warning_count,
-        eager.validation().summary.warning_count
+        eager
+            .ensure_validation()
+            .expect("eager validation")
+            .summary
+            .warning_count
     );
 }

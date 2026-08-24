@@ -138,6 +138,8 @@ impl GenerationOperations {
 pub struct GenerationReport {
     pub status: GenerationStatus,
     pub model_digest: String,
+    pub publication_complete: bool,
+    pub publication_obstacles: Vec<String>,
     pub generator_digest: String,
     pub api_version: String,
     pub spec42_version: String,
@@ -262,12 +264,15 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     // it keeps validation and generation on one semantic identity instead of rebuilding a second
     // model with independently mapped source provenance.
     let publication = snapshot.published_model_arc();
-    let model = Arc::new(GeneratorModelView::new(
-        Arc::clone(&publication),
-        publication.publication().model_digest(),
-        env!("CARGO_PKG_VERSION"),
-        QueryLimits::default(),
-    ));
+    let model = Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .map_err(|error| format!("generator model is unavailable: {error}"))?,
+    );
     let model_digest = model.model_digest();
     let spec42_version = model.spec42_version().to_owned();
     let execution = match runtime.execute_prepared(
@@ -369,6 +374,12 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let report = GenerationReport {
         status,
         model_digest,
+        publication_complete: execution.publication_completeness.is_complete(),
+        publication_obstacles: execution
+            .publication_completeness
+            .obstacles()
+            .map(|obstacle| format!("{obstacle:?}"))
+            .collect(),
         generator_digest: execution.generator_digest,
         api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version,

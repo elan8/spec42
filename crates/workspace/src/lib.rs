@@ -27,7 +27,8 @@ pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_w
 pub use snapshot::{
     apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
     HostResourceLimits, HostValidatedDocument, HostValidationReport, HostValidationSummary,
-    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
+    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationState, ValidationTiming,
+    WorkspaceLoadRequest,
 };
 pub use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
 pub use sysml_query::publication::{PublicationBuildFailure, PublicationFailureStage};

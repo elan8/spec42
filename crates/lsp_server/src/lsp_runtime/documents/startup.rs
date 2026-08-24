@@ -208,51 +208,17 @@ pub(crate) async fn initialized(
 
         let relink_start = Instant::now();
         let relink_metrics;
-        let mut stale_retries = 0u32;
-        let mut relink_used_fallback = false;
+        let stale_retries = 0u32;
+        let relink_used_fallback = false;
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
-        loop {
-            // Snapshot index/library_paths (a plain `Arc` read, no lock) before running the
-            // expensive rebuild off the actor so semantic-token and hover requests can proceed
-            // concurrently instead of queueing behind anything.
-            let (
-                snapshot_publication,
-                index_snapshot,
-                library_paths_snapshot,
-                standard_library_paths_snapshot,
-            ) = handle.relink_snapshot();
-            let (new_symbols, staged_relink_metrics) = tokio::task::spawn_blocking(move || {
-                crate::session::rebuild_publication_inputs_staged(
-                    &index_snapshot,
-                    &library_paths_snapshot,
-                    &standard_library_paths_snapshot,
-                    true, // startup: settle fully before first use, not the live-edit fast path
-                )
-            })
-            .await
-            .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
+        let _ = handle.rebuild_publication().await;
+        relink_metrics = crate::session::services::RebuildAllDocumentLinksMetrics {
+            total_ms: relink_start.elapsed().as_millis() as u32,
+            ..Default::default()
+        };
 
-            let outcome = handle
-                .commit_startup_relink_or_stale(snapshot_publication, new_symbols)
-                .await;
-            match outcome {
-                Ok(crate::session::handle::StartupRelinkOutcome::Committed) => {
-                    let mut metrics = staged_relink_metrics;
-                    metrics.total_ms = relink_start.elapsed().as_millis() as u32;
-                    relink_metrics = metrics;
-                }
-                Ok(crate::session::handle::StartupRelinkOutcome::Stale) | Err(_) => {
-                    stale_retries += 1;
-                    if stale_retries < 3 {
-                        continue;
-                    }
-                    let fallback_metrics = handle.fallback_full_rebuild().await.unwrap_or_default();
-                    relink_metrics = fallback_metrics;
-                    relink_used_fallback = true;
-                }
-            }
-
+        {
             let snap = handle.snapshot();
             if !crate::common::util::library_full_scan_enabled() && !snap.library_paths.is_empty() {
                 let library_paths_for_search = snap.library_paths.clone();
@@ -279,7 +245,7 @@ pub(crate) async fn initialized(
                 if util::uri_under_any_library(uri_norm, &snap.library_paths) {
                     let graph_nodes_for_uri = 0;
                     let symbol_entries_count = snap
-                        .symbol_table
+                        .semantic_symbols
                         .iter()
                         .filter(|entry| entry.uri == *uri_norm)
                         .count();
@@ -299,7 +265,6 @@ pub(crate) async fn initialized(
                     }
                 }
             }
-            break;
         }
         let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
         if perf_logging_enabled {

@@ -2,15 +2,10 @@ use crate::common::util;
 use crate::session::state::{DocumentStore, IndexEntry, ScanSummary};
 use language_service::library_search;
 use rayon::prelude::*;
-use std::time::Instant;
 use sysml_query::source::{SourceDocument, SourceKind};
 use sysml_query::syntax::ParsedSource;
 use sysml_query::Services;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
-
-fn elapsed_ms(start: Instant) -> u32 {
-    start.elapsed().as_millis().max(1) as u32
-}
 
 /// Walks the given roots for SysML sources through the source service.
 ///
@@ -117,26 +112,6 @@ pub(crate) fn parse_scanned_documents(
     documents.into_par_iter().map(entry).collect()
 }
 
-fn update_symbol_table_for_uri(
-    state: &mut impl DocumentStore,
-    uri: &Url,
-    new_entries: Option<&[crate::language::SymbolEntry]>,
-) {
-    state.symbol_table_mut().retain(|entry| entry.uri != *uri);
-    if let Some(entries) = new_entries {
-        state.symbol_table_mut().extend(entries.iter().cloned());
-    }
-}
-
-fn refresh_symbols_for_uri(state: &mut impl DocumentStore, uri: &Url) {
-    // Admitted documents are projected from the exact committed publication. Avoid a
-    // source-derived interim result that could masquerade as successfully resolved semantics.
-    let entries = state
-        .published_model()
-        .map(|model| crate::language::symbol_entries_for_uri(model, uri));
-    update_symbol_table_for_uri(state, uri, entries.as_deref());
-}
-
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn store_parsed_document_text(
     state: &mut impl DocumentStore,
@@ -156,7 +131,6 @@ pub(crate) fn store_parsed_document_text(
             admitted_to_publication: true,
         },
     );
-    refresh_symbols_for_uri(state, uri_norm);
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
 
@@ -288,7 +262,4 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 mod edits;
 mod rebuild;
 pub(crate) use edits::{apply_content_changes, apply_parsed_document_update, remove_document};
-pub(crate) use rebuild::{
-    clear_documents_under_roots, index_library_paths_for_search, rebuild_all_document_links,
-    rebuild_publication_inputs_staged,
-};
+pub(crate) use rebuild::{clear_documents_under_roots, index_library_paths_for_search};

@@ -23,8 +23,9 @@ use sysml_query::resolved_slice::{
     AnalysisEvaluation, AnnotationForm, ConnectedElement, ElementDetails, ElementDetailsAt,
     ElementEvaluation, ElementKind, ElementModifier, EvaluatedScalar, EvaluationFailure,
     EvaluationState, FeatureDirection, MultiplicityBound, MultiplicityFacts, PortionKind,
-    PublishedModel, QueryOutcome, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, SymbolEntry, SymbolId, SymbolToken, TextPosition, TextRange,
+    PublishedModel, QueryAnswer, QueryOutcome, ReferencedDetails, RelationshipFamily,
+    RelationshipOutcome, RelationshipProvenance, SymbolEntry, SymbolId, SymbolToken, TextPosition,
+    TextRange,
 };
 
 /// The document a declaration's authored text is read from: the source, paired with the tree the
@@ -51,9 +52,12 @@ pub(crate) fn details_at(
             character: position.character,
         },
     ) {
-        QueryOutcome::Resolved(at)
-        | QueryOutcome::Recovered(at)
-        | QueryOutcome::UnsupportedWith(at) => Some(at),
+        // Inspection is read-only: a resolved answer remains presentable while the independently
+        // reported publication completeness tells the client whether it is partial.
+        QueryOutcome {
+            completeness: _publication_completeness,
+            answer: QueryAnswer::Resolved(at),
+        } => Some(at),
         _ => None,
     }
 }
@@ -488,12 +492,13 @@ pub fn empty_feature_inspector_response(
     position: Position,
 ) -> SysmlFeatureInspectorResultDto {
     SysmlFeatureInspectorResultDto {
-        version: 2,
+        version: 3,
         source_uri: uri.to_string(),
         requested_position: PositionDto {
             line: position.line,
             character: position.character,
         },
+        semantic_status: language_service::dto::SemanticResultStatus::default(),
         selection: SysmlFeatureInspectorSelectionDto {
             kind: "other".to_string(),
             text: None,
@@ -614,6 +619,9 @@ pub(crate) fn feature_inspector_response(
     source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorResultDto {
     let mut response = empty_feature_inspector_response(uri, position);
+    response.semantic_status = language_service::dto::SemanticResultStatus::from_publication(
+        model.publication().completeness(),
+    );
     response.containing_element = at
         .containing
         .as_ref()
@@ -628,10 +636,14 @@ pub fn build_sysml_feature_inspector_response(
     position: Position,
     source: Option<DeclarationSource<'_>>,
 ) -> SysmlFeatureInspectorResultDto {
-    match details_at(model, uri, position) {
+    let mut response = match details_at(model, uri, position) {
         Some(at) => feature_inspector_response(model, uri, position, &at, source),
         None => empty_feature_inspector_response(uri, position),
-    }
+    };
+    response.semantic_status = language_service::dto::SemanticResultStatus::from_publication(
+        model.publication().completeness(),
+    );
+    response
 }
 
 #[cfg(test)]
@@ -654,6 +666,24 @@ mod tests {
             Position::new(line, character),
             Some((source, &parsed)),
         )
+    }
+
+    #[test]
+    fn inspector_reports_publication_obstacles_with_partial_values() {
+        let response = inspect(
+            "package P { part def Wheel; constraint def C { ~x } part broken : ; }",
+            0,
+            21,
+        );
+        assert!(response.semantic_status.available);
+        assert!(response
+            .semantic_status
+            .obstacles
+            .contains(&language_service::dto::SemanticObstacleDto::ParseRecovery));
+        assert!(response
+            .semantic_status
+            .obstacles
+            .contains(&language_service::dto::SemanticObstacleDto::UnsupportedSyntax));
     }
 
     #[test]

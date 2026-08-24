@@ -188,12 +188,15 @@ fn run_one(
     // A fresh view per case: the handle index accumulates as elements are exposed, so a
     // shared view would let one case resolve a handle it never legitimately obtained,
     // masking exactly the unknown-handle behaviour the suite exists to pin.
-    let model = Arc::new(GeneratorModelView::new(
-        Arc::clone(snapshot),
-        snapshot.publication().model_digest(),
-        env!("CARGO_PKG_VERSION"),
-        QueryLimits::default(),
-    ));
+    let model = Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(snapshot),
+            snapshot.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .expect("conformance fixtures publish a complete model"),
+    );
 
     let defaults = ArtifactLimits::default();
     let limits = ArtifactLimits {

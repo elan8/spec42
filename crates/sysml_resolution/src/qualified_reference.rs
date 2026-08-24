@@ -6,8 +6,8 @@
 //! opaque [`SymbolId`](crate::SymbolId).
 
 use crate::{
-    ElementKind, ElementSearch, ElementSource, PublicationCompleteness, PublishedResolution,
-    QueryOutcome, SourceLocation, SymbolEntry, SymbolId,
+    ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryAnswer, SourceLocation,
+    SymbolEntry, SymbolId,
 };
 
 /// A readable element reference interpreted against one immutable publication.
@@ -65,15 +65,13 @@ impl PublishedResolution {
         }
 
         let entries = match &reference.document {
-            Some(document) => match self.document_symbols(document) {
-                QueryOutcome::Resolved(entries)
-                | QueryOutcome::Recovered(entries)
-                | QueryOutcome::UnsupportedWith(entries) => entries.into_vec(),
-                QueryOutcome::Unresolved => return QualifiedReferenceOutcome::Unresolved,
-                QueryOutcome::Ambiguous(_) => return QualifiedReferenceOutcome::Incomplete,
-                QueryOutcome::Unsupported => return QualifiedReferenceOutcome::Unsupported,
-                QueryOutcome::Recovery => return QualifiedReferenceOutcome::Recovery,
-                QueryOutcome::Incomplete => return QualifiedReferenceOutcome::Incomplete,
+            Some(document) => match self.document_symbols(document).answer {
+                QueryAnswer::Resolved(entries) => entries.into_vec(),
+                QueryAnswer::Unresolved => return QualifiedReferenceOutcome::Unresolved,
+                QueryAnswer::Ambiguous(_) => return QualifiedReferenceOutcome::Incomplete,
+                QueryAnswer::Unsupported => return QualifiedReferenceOutcome::Unsupported,
+                QueryAnswer::Recovery => return QualifiedReferenceOutcome::Recovery,
+                QueryAnswer::Incomplete => return QualifiedReferenceOutcome::Incomplete,
             },
             None => self.qualified_reference_candidates(),
         };
@@ -116,15 +114,13 @@ impl PublishedResolution {
             ElementSource::External,
         ] {
             for &kind in ElementKind::ALL {
-                match self.search_elements(ElementSearch { kind, source }) {
-                    QueryOutcome::Resolved(found)
-                    | QueryOutcome::Recovered(found)
-                    | QueryOutcome::UnsupportedWith(found) => entries.extend(found.into_vec()),
-                    QueryOutcome::Unresolved
-                    | QueryOutcome::Ambiguous(_)
-                    | QueryOutcome::Unsupported
-                    | QueryOutcome::Recovery
-                    | QueryOutcome::Incomplete => {}
+                match self.search_elements(ElementSearch { kind, source }).answer {
+                    QueryAnswer::Resolved(found) => entries.extend(found.into_vec()),
+                    QueryAnswer::Unresolved
+                    | QueryAnswer::Ambiguous(_)
+                    | QueryAnswer::Unsupported
+                    | QueryAnswer::Recovery
+                    | QueryAnswer::Incomplete => {}
                 }
             }
         }
@@ -132,11 +128,15 @@ impl PublishedResolution {
     }
 
     fn absent_qualified_reference_outcome(&self) -> QualifiedReferenceOutcome {
-        match self.completeness() {
-            PublicationCompleteness::Complete => QualifiedReferenceOutcome::Unresolved,
-            PublicationCompleteness::ParseRecovery => QualifiedReferenceOutcome::Recovery,
-            PublicationCompleteness::UnsupportedSyntax => QualifiedReferenceOutcome::Unsupported,
-            PublicationCompleteness::NonConverged => QualifiedReferenceOutcome::Incomplete,
+        let completeness = self.completeness();
+        if completeness.contains(crate::PublicationObstacle::NonConverged) {
+            QualifiedReferenceOutcome::Incomplete
+        } else if completeness.contains(crate::PublicationObstacle::UnsupportedSyntax) {
+            QualifiedReferenceOutcome::Unsupported
+        } else if completeness.contains(crate::PublicationObstacle::ParseRecovery) {
+            QualifiedReferenceOutcome::Recovery
+        } else {
+            QualifiedReferenceOutcome::Unresolved
         }
     }
 
@@ -144,13 +144,15 @@ impl PublishedResolution {
         &self,
         target: QualifiedReferenceTarget,
     ) -> QualifiedReferenceOutcome {
-        match self.completeness() {
-            PublicationCompleteness::Complete => QualifiedReferenceOutcome::Resolved(target),
-            PublicationCompleteness::ParseRecovery => QualifiedReferenceOutcome::Recovered(target),
-            PublicationCompleteness::UnsupportedSyntax => {
-                QualifiedReferenceOutcome::UnsupportedWith(target)
-            }
-            PublicationCompleteness::NonConverged => QualifiedReferenceOutcome::Incomplete,
+        let completeness = self.completeness();
+        if completeness.contains(crate::PublicationObstacle::NonConverged) {
+            QualifiedReferenceOutcome::Incomplete
+        } else if completeness.contains(crate::PublicationObstacle::UnsupportedSyntax) {
+            QualifiedReferenceOutcome::UnsupportedWith(target)
+        } else if completeness.contains(crate::PublicationObstacle::ParseRecovery) {
+            QualifiedReferenceOutcome::Recovered(target)
+        } else {
+            QualifiedReferenceOutcome::Resolved(target)
         }
     }
 }

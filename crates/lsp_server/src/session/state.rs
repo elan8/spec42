@@ -2,7 +2,7 @@ use crate::language::SymbolEntry;
 use session_actor::TracksRelink;
 use std::sync::Arc;
 use sysml_query::publication::{
-    PublicationBuildFailure, PublicationSession, RelinkToken, SessionLifecycle,
+    PublicationBuildFailure, PublicationSession, PublicationToken, SessionLifecycle,
 };
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
@@ -71,7 +71,10 @@ pub(crate) struct ServerState {
     /// edits that race construction without treating search-only bookkeeping as semantic change.
     pub(crate) semantic_revision: u64,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
-    pub(crate) symbol_table: Vec<SymbolEntry>,
+    /// Presentation projection derived only from `session.current()` at the admission barrier.
+    pub(crate) semantic_symbols: Vec<SymbolEntry>,
+    /// Parser-recovery search entries for documents deliberately excluded from publication.
+    pub(crate) recovery_search_symbols: Vec<SymbolEntry>,
     /// Documents the editor currently has open.
     ///
     /// A library file is a library by *provenance* -- that is what decides how its names resolve.
@@ -105,7 +108,8 @@ impl ServerState {
             session,
             semantic_revision: 0,
             index: std::collections::HashMap::new(),
-            symbol_table: Vec::new(),
+            semantic_symbols: Vec::new(),
+            recovery_search_symbols: Vec::new(),
             open_in_editor: std::collections::BTreeSet::new(),
             publication_failure: None,
         }
@@ -118,10 +122,10 @@ impl ServerState {
 }
 
 impl TracksRelink for ServerState {
-    type Token = RelinkToken;
+    type Token = PublicationToken;
 
-    fn is_token_current(&self, token: &RelinkToken) -> bool {
-        self.session.is_token_current(token)
+    fn is_token_current(&self, token: &PublicationToken) -> bool {
+        self.session.is_publication_current(token)
     }
 
     fn rekey_for_actor(&mut self) {
@@ -135,8 +139,7 @@ impl TracksRelink for ServerState {
 pub(crate) trait DocumentStore {
     fn index(&self) -> &std::collections::HashMap<Url, IndexEntry>;
     fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry>;
-    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry>;
-    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
+    fn recovery_search_symbols_mut(&mut self) -> &mut Vec<SymbolEntry>;
     /// The services this store admits and parses through.
     fn services(&self) -> &Services;
     /// Configured library roots: generic libraries first, then the standard library.
@@ -152,11 +155,8 @@ impl DocumentStore for ServerState {
     fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry> {
         &mut self.index
     }
-    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry> {
-        &mut self.symbol_table
-    }
-    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
-        Some(self.session.current())
+    fn recovery_search_symbols_mut(&mut self) -> &mut Vec<SymbolEntry> {
+        &mut self.recovery_search_symbols
     }
     fn services(&self) -> &Services {
         &self.services
@@ -223,11 +223,14 @@ pub(crate) fn refresh_symbol_table_from_publication(state: &mut ServerState) {
     for uri in uris {
         symbols.extend(crate::language::symbol_entries_for_uri(&model, &uri));
     }
-    state.symbol_table = symbols;
+    state.semantic_symbols = symbols;
 }
 
 pub(crate) fn supports_semantic_queries(lifecycle: SessionLifecycle) -> bool {
-    matches!(lifecycle, SessionLifecycle::Ready)
+    matches!(
+        lifecycle,
+        SessionLifecycle::Ready | SessionLifecycle::Reindexing
+    )
 }
 
 #[derive(Debug, Default)]
@@ -296,9 +299,10 @@ mod tests {
 
         let model = state.session.current();
         let symbols = match model.inspection().document_symbols("file:///model.sysml") {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(entries)
-            | sysml_query::resolved_slice::QueryOutcome::Recovered(entries)
-            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(entries) => entries,
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(entries),
+                ..
+            } => entries,
             other => panic!("expected document symbols, got: {other:?}"),
         };
         let usage = symbols
@@ -306,9 +310,10 @@ mod tests {
             .find(|entry| model.qualified_name(entry.identity) == Some("W::w"))
             .expect("the workspace usage");
         let types = match model.types().direct_types(usage.identity) {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(types)
-            | sysml_query::resolved_slice::QueryOutcome::Recovered(types)
-            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(types) => types,
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(types),
+                ..
+            } => types,
             other => panic!("expected settled types, got: {other:?}"),
         };
         assert_eq!(
@@ -328,9 +333,10 @@ mod tests {
         publish(&mut state).await;
         let model = Arc::clone(state.session.current());
         let symbols = match model.inspection().document_symbols("file:///model.sysml") {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(symbols)
-            | sysml_query::resolved_slice::QueryOutcome::Recovered(symbols)
-            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(symbols) => symbols,
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(symbols),
+                ..
+            } => symbols,
             other => panic!("workspace usage: {other:?}"),
         };
         let symbol = symbols
@@ -339,7 +345,10 @@ mod tests {
             .unwrap();
         assert!(matches!(
             model.types().direct_types(symbol.identity),
-            sysml_query::resolved_slice::QueryOutcome::Resolved(ref types) if types.len() == 1
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(ref types),
+                ..
+            } if types.len() == 1
         ));
     }
 
@@ -363,9 +372,10 @@ mod tests {
 
         let model = state.session.current();
         let catalog = match model.diagrams().catalog() {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(catalog)
-            | sysml_query::resolved_slice::QueryOutcome::Recovered(catalog)
-            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(catalog) => catalog,
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(catalog),
+                ..
+            } => catalog,
             other => panic!("expected diagram catalog, got: {other:?}"),
         };
         let view = catalog
@@ -381,7 +391,10 @@ mod tests {
             })
             .expect("selected GeneralView");
         let projection = match model.diagrams().view(view.semantic_id) {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(projection) => projection,
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(projection),
+                ..
+            } => projection,
             other => panic!("expected resolved GeneralView projection, got: {other:?}"),
         };
         assert!(
@@ -396,18 +409,19 @@ mod tests {
     }
 
     #[test]
-    fn tracks_relink_delegates_to_session() {
+    fn actor_tokens_follow_the_publication_session() {
         let mut state = ServerState::default();
         state.session.begin_startup();
         state.session.complete_startup();
 
-        let first_token = state.session.schedule_relink();
+        let first_token = state.session.publication();
         assert!(
             state.is_token_current(&first_token),
-            "freshly scheduled token must be current"
+            "fresh publication token must be current"
         );
 
-        let second_token = state.session.schedule_relink();
+        state.session.invalidate_inputs();
+        let second_token = state.session.publication();
         assert!(
             !state.is_token_current(&first_token),
             "superseded token must no longer be current"

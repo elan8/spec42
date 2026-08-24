@@ -34,6 +34,12 @@ pub struct HostWorkspaceSnapshot {
     workspace_root: PathBuf,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValidationState<'a> {
+    Deferred,
+    Ready(&'a HostValidationReport),
+}
+
 impl HostWorkspaceSnapshot {
     pub fn metadata(&self) -> &HostArtifactMetadata {
         &self.metadata
@@ -69,10 +75,10 @@ impl HostWorkspaceSnapshot {
         &self.workspace_root
     }
 
-    pub fn validation(&self) -> &HostValidationReport {
+    pub fn validation(&self) -> ValidationState<'_> {
         self.validation_report
             .get()
-            .unwrap_or(empty_validation_report())
+            .map_or(ValidationState::Deferred, ValidationState::Ready)
     }
 
     pub fn validation_ready(&self) -> bool {
@@ -199,11 +205,6 @@ pub(crate) fn build_workspace_snapshot(
         library_paths,
         workspace_root,
     })
-}
-
-fn empty_validation_report() -> &'static HostValidationReport {
-    static EMPTY: OnceLock<HostValidationReport> = OnceLock::new();
-    EMPTY.get_or_init(HostValidationReport::default)
 }
 
 pub(crate) fn init_validation_report(

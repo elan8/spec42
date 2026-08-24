@@ -10,6 +10,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
+use source_identity::{LibraryListingKey, LibrarySourceIdentity, SourceRole};
 use sysml_source::{SourceAuthority, SourceDocument, SourceError, SourceKind};
 
 use crate::syntax::{ParsedSource, SyntaxAuthority, SyntaxClosureFacts};
@@ -87,7 +88,7 @@ struct PackageIndex {
 pub struct LibraryClosureAuthority {
     source: Arc<SourceAuthority>,
     syntax: Arc<SyntaxAuthority>,
-    index: Mutex<Option<(blake3::Hash, Arc<PackageIndex>)>>,
+    index: Mutex<Option<(LibraryListingKey, Arc<PackageIndex>)>>,
 }
 
 impl LibraryClosureAuthority {
@@ -191,24 +192,20 @@ impl LibraryClosureAuthority {
     }
 }
 
-fn listing_key(listed: &[SourceDocument]) -> blake3::Hash {
-    let mut hasher = blake3::Hasher::new();
-    hasher.update(b"spec42-library-listing-v1\0");
-    for document in listed {
-        let uri = document.uri().as_str().as_bytes();
-        hasher.update(&(uri.len() as u64).to_le_bytes());
-        hasher.update(uri);
-        hasher.update(&[document.kind() as u8]);
-        hasher.update(document.digest().as_bytes());
-        if let Some((slot, relative_path)) = document.library_location() {
-            hasher.update(&(slot as u64 + 1).to_le_bytes());
-            hasher.update(&(relative_path.len() as u64).to_le_bytes());
-            hasher.update(relative_path.as_bytes());
-        } else {
-            hasher.update(&0_u64.to_le_bytes());
-        }
-    }
-    hasher.finalize()
+fn listing_key(listed: &[SourceDocument]) -> LibraryListingKey {
+    LibraryListingKey::new(listed.iter().map(|document| {
+        LibrarySourceIdentity::new(
+            document.uri().as_str(),
+            match document.kind() {
+                SourceKind::Workspace => SourceRole::Workspace,
+                SourceKind::StandardLibrary => SourceRole::StandardLibrary,
+                SourceKind::Library => SourceRole::Library,
+                SourceKind::External => SourceRole::External,
+            },
+            document.digest(),
+            document.library_location(),
+        )
+    }))
 }
 
 fn references_sysml_namespace(facts: &SyntaxClosureFacts) -> bool {
@@ -809,6 +806,89 @@ mod tests {
             authority.syntax.memo_len(),
             2,
             "both library trees sit in the authority's memo after the rebuild"
+        );
+    }
+
+    #[test]
+    fn listing_key_commits_caller_mapped_content_provenance_location_and_order() {
+        let source = SourceAuthority::new();
+        let first = source
+            .admit_memory("library", "a.sysml", "package A;", SourceKind::Library)
+            .unwrap()
+            .with_library_location(0, "a.sysml");
+        let second = source
+            .admit_memory("library", "b.sysml", "package B;", SourceKind::Library)
+            .unwrap()
+            .with_library_location(1, "b.sysml");
+        let base = listing_key(&[first.clone(), second.clone()]);
+
+        let edited = source
+            .admit_memory(
+                "library",
+                "a.sysml",
+                "package Changed;",
+                SourceKind::Library,
+            )
+            .unwrap()
+            .with_library_location(0, "a.sysml");
+        assert_ne!(base, listing_key(&[edited, second.clone()]));
+        assert_ne!(
+            base,
+            listing_key(&[first.with_kind(SourceKind::StandardLibrary), second.clone()])
+        );
+        assert_ne!(
+            base,
+            listing_key(&[
+                second.clone().with_library_location(0, "b.sysml"),
+                first.with_library_location(1, "a.sysml"),
+            ])
+        );
+        assert_ne!(base, listing_key(&[second, first]));
+    }
+
+    #[test]
+    fn content_edit_rebuilds_listing_cache_with_cold_warm_answer_parity() {
+        let temp = tempfile::tempdir().unwrap();
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).unwrap();
+        let file = lib.join("Base.sysml");
+        fs::write(&file, "package Base;").unwrap();
+        let warm = authority();
+        warm.resolve(
+            &workspace(&[("m.sysml", "package App { import Base::*; }")]),
+            &library(&lib),
+            &LibraryClosureOptions::default(),
+        )
+        .unwrap();
+
+        fs::write(&file, "package Changed;").unwrap();
+        let workspace = workspace(&[("m.sysml", "package App { import Changed::*; }")]);
+        let warm_result = warm
+            .resolve(
+                &workspace,
+                &library(&lib),
+                &LibraryClosureOptions::default(),
+            )
+            .unwrap();
+        let cold_result = authority()
+            .resolve(
+                &workspace,
+                &library(&lib),
+                &LibraryClosureOptions::default(),
+            )
+            .unwrap();
+        assert_eq!(paths(&warm_result), paths(&cold_result));
+        assert_eq!(
+            warm_result
+                .documents
+                .iter()
+                .map(SourceDocument::digest)
+                .collect::<Vec<_>>(),
+            cold_result
+                .documents
+                .iter()
+                .map(SourceDocument::digest)
+                .collect::<Vec<_>>()
         );
     }
 

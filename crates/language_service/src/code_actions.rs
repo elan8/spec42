@@ -1,8 +1,6 @@
 //! Neutral quick-fix text edit suggesters.
 
-use sysml_query::resolved_slice::{
-    ElementKind, PublishedModel, QueryOutcome, TextPosition, TextRange,
-};
+use sysml_query::resolved_slice::{ElementKind, PublishedModel, TextPosition, TextRange};
 use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind, SyntaxOutlineNode};
 use url::Url;
 
@@ -180,8 +178,8 @@ fn has_matching_definition(model: &PublishedModel, kind: SyntaxOutlineKind, name
         _ => return false,
     };
     matches!(
-        model.inspection().named_element_exists(kind, name),
-        QueryOutcome::Resolved(true)
+        model.inspection().named_element_exists(kind, name).answer,
+        sysml_query::resolved_slice::QueryAnswer::Resolved(true)
     )
 }
 

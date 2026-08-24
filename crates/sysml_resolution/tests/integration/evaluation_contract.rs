@@ -810,7 +810,7 @@ fn a_missing_quantity_library_leaves_measurement_applicability_unavailable() {
     let workspace = "package P { attribute plain = 1; }";
     let published = publication_for(&[("memory://q.sysml", workspace)]);
     let symbol = probe_symbol(&published, workspace, "memory://q.sysml", "plain");
-    let QueryOutcome::Resolved(evaluation) = published.evaluate(symbol) else {
+    let QueryAnswer::Resolved(evaluation) = published.evaluate(symbol).answer else {
         panic!("the probe must resolve");
     };
     assert_eq!(
@@ -825,7 +825,7 @@ fn an_admitted_quantity_library_answers_a_non_quantity_element_affirmatively() {
     let workspace = "package P { attribute plain : ScalarValues::Integer = 1; }";
     let published = against_measurement_library(workspace, ConstructionSchedule::Sequential);
     let symbol = probe_symbol(&published, workspace, "memory://workspace.sysml", "plain");
-    let QueryOutcome::Resolved(evaluation) = published.evaluate(symbol) else {
+    let QueryAnswer::Resolved(evaluation) = published.evaluate(symbol).answer else {
         panic!("the probe must resolve");
     };
     assert_eq!(

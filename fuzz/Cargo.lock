@@ -1022,9 +1022,10 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.54.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=f52100fd71b5950fba6a8e9ba2760f1a1887ce34#f52100fd71b5950fba6a8e9ba2760f1a1887ce34"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056#c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056"
 dependencies = [
  "log",
+ "memchr",
  "nom",
  "nom_locate",
  "serde",
@@ -1032,9 +1033,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "sysml_contract"
+version = "0.50.0"
+dependencies = [
+ "serde",
+ "source_identity",
+]
+
+[[package]]
 name = "sysml_query"
 version = "0.50.0"
 dependencies = [
+ "sysml_contract",
  "sysml_resolution",
 ]
 
@@ -1042,13 +1052,13 @@ dependencies = [
 name = "sysml_resolution"
 version = "0.50.0"
 dependencies = [
- "blake3",
  "hashbrown",
  "rayon",
  "serde",
  "source_identity",
  "spec42-constraint-manifest",
  "sysml-v2-parser",
+ "sysml_contract",
  "sysml_source",
 ]
 
@@ -1058,6 +1068,7 @@ version = "0.50.0"
 dependencies = [
  "ignore",
  "source_identity",
+ "sysml_contract",
  "url",
 ]
 

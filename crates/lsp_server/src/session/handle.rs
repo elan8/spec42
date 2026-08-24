@@ -9,28 +9,16 @@
 //! This is the publication boundary for the live workspace: document and configuration updates
 //! enter through its named methods, and readers consume its immutable snapshots.
 
-use std::collections::HashMap;
 use std::sync::Arc;
 
 use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
-use sysml_query::publication::{
-    PublicationOutcome, PublicationToken, RelinkToken, SemanticBuild, SessionLifecycle,
-};
+use sysml_query::publication::{PublicationBuildFailure, PublicationOutcome, SemanticBuild};
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
-use crate::language::SymbolEntry;
 use crate::session::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
-use crate::session::state::{IndexEntry, ServerState};
-
-/// Outcome of `commit_startup_relink_or_stale`: whether the staged relink was committed, or
-/// whether it was superseded by a newer edit while it was being built (caller should retry).
-#[derive(Clone, Copy)]
-pub(crate) enum StartupRelinkOutcome {
-    Committed,
-    Stale,
-}
+use crate::session::state::ServerState;
 
 #[cfg(test)]
 mod publication_tests {
@@ -52,8 +40,10 @@ mod publication_tests {
         state.semantic_revision += 1;
         let handle = WorkspaceHandle::spawn(state);
 
+        let previous = handle.snapshot().session.publication();
         assert!(handle.rebuild_publication().await.unwrap());
         let snapshot = handle.snapshot();
+        assert!(!snapshot.session.is_publication_current(&previous));
         assert!(snapshot.publication_failure.is_none());
         let symbols = snapshot
             .session
@@ -62,11 +52,17 @@ mod publication_tests {
             .document_symbols(uri.as_str());
         assert!(matches!(
             symbols,
-            sysml_query::resolved_slice::QueryOutcome::Resolved(ref symbols)
-                | sysml_query::resolved_slice::QueryOutcome::Recovered(ref symbols)
-                | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(ref symbols)
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(ref symbols),
+                ..
+            }
                 if !symbols.is_empty()
         ));
+        assert_eq!(
+            snapshot.semantic_symbols.len(),
+            crate::language::symbol_entries_for_uri(snapshot.session.current(), &uri).len(),
+            "the actor must publish the model and its semantic projection together"
+        );
     }
 
     /// A document the host has admitted must never be missing from the publication that answers
@@ -116,13 +112,23 @@ mod publication_tests {
             assert!(
                 matches!(
                     symbols,
-                    sysml_query::resolved_slice::QueryOutcome::Resolved(ref symbols)
-                        | sysml_query::resolved_slice::QueryOutcome::Recovered(ref symbols)
-                        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(ref symbols)
+                    sysml_query::resolved_slice::QueryOutcome {
+                        answer: sysml_query::resolved_slice::QueryAnswer::Resolved(ref symbols),
+                        ..
+                    }
                         if !symbols.is_empty()
                 ),
                 "an accepted document must be in the publication that answers requests for it, \
                  got {symbols:?}"
+            );
+            assert_eq!(
+                snapshot
+                    .semantic_symbols
+                    .iter()
+                    .filter(|symbol| symbol.uri == uri)
+                    .count(),
+                crate::language::symbol_entries_for_uri(snapshot.session.current(), &uri).len(),
+                "an out-of-order completion must not split the model from its symbol projection"
             );
         }
     }
@@ -248,6 +254,7 @@ impl WorkspaceHandle {
                         Ok(SemanticBuild::new(token, prepared))
                     }
                     Err(failure) => {
+                        state.session.finish_preparation_failure();
                         let failure = Arc::new(failure);
                         state.publication_failure = Some(Arc::clone(&failure));
                         Err(failure)
@@ -262,10 +269,37 @@ impl WorkspaceHandle {
                 return Ok(false);
             }
         };
+        let token = build.token().clone();
         let publication = self.snapshot().services.publication.clone();
-        let completion = tokio::task::spawn_blocking(move || publication.construct(build))
+        let completion = match tokio::task::spawn_blocking(move || publication.construct(build))
             .await
-            .expect("semantic construction task panicked");
+        {
+            Ok(completion) => completion,
+            Err(join_error) => {
+                let failure = Arc::new(PublicationBuildFailure::construction_worker(join_error));
+                let admitted_failure = Arc::clone(&failure);
+                self.actor
+                    .mutate_if_changed(move |state| {
+                        let outcome = state.session.admit(
+                            &token,
+                            Err::<Arc<sysml_query::resolved_slice::PublishedModel>, _>(
+                                (*admitted_failure).clone(),
+                            ),
+                        );
+                        tracing::error!(stage = ?admitted_failure.stage(), message = %admitted_failure.message(), ?outcome, "semantic construction worker failed; retaining last good publication");
+                        match outcome {
+                            PublicationOutcome::Superseded => Mutation::Unchanged(false),
+                            PublicationOutcome::IdentityMismatch | PublicationOutcome::Failed => {
+                                state.publication_failure = Some(admitted_failure);
+                                Mutation::Changed(false)
+                            }
+                            PublicationOutcome::Published => unreachable!("a failed build cannot publish"),
+                        }
+                    })
+                    .await?;
+                return Ok(false);
+            }
+        };
         let failure = completion.failure().cloned().map(Arc::new);
         let mirrored = self
             .actor
@@ -329,69 +363,10 @@ impl WorkspaceHandle {
             .mutate(move |s| {
                 let results =
                     crate::session::services::ingest_parsed_scan_entries_batch(s, entries);
-                s.session.bump_version();
+                s.session.invalidate_inputs();
                 results
             })
             .await
-    }
-
-    /// Plain `Arc` read, no actor round-trip needed — snapshots `(publication, index, library_paths)`
-    /// for the caller to build a staged relink off of without holding anything.
-    pub(crate) fn relink_snapshot(
-        &self,
-    ) -> (
-        PublicationToken,
-        HashMap<Url, IndexEntry>,
-        Vec<Url>,
-        Vec<Url>,
-    ) {
-        let snap = self.snapshot();
-        (
-            snap.session.publication(),
-            snap.index.clone(),
-            snap.library_paths.clone(),
-            snap.standard_library_paths.clone(),
-        )
-    }
-
-    pub(crate) async fn commit_startup_relink_or_stale(
-        &self,
-        expected_publication: PublicationToken,
-        new_symbols: Vec<SymbolEntry>,
-    ) -> Result<StartupRelinkOutcome, MutatePanicked> {
-        let outcome = self
-            .actor
-            .mutate_if_changed(move |s| {
-                if !s.session.is_publication_current(&expected_publication) {
-                    return Mutation::Unchanged(StartupRelinkOutcome::Stale);
-                }
-                s.symbol_table = new_symbols;
-                s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.bump_version();
-                Mutation::Changed(StartupRelinkOutcome::Committed)
-            })
-            .await
-            .map(|outcome| outcome.value)?;
-        if matches!(outcome, StartupRelinkOutcome::Committed) {
-            self.rebuild_publication().await?;
-        }
-        Ok(outcome)
-    }
-
-    pub(crate) async fn fallback_full_rebuild(
-        &self,
-    ) -> Result<RebuildAllDocumentLinksMetrics, MutatePanicked> {
-        let metrics = self
-            .actor
-            .mutate(|s| {
-                let metrics = crate::session::services::rebuild_all_document_links(s);
-                s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.bump_version();
-                metrics
-            })
-            .await?;
-        self.rebuild_publication().await?;
-        Ok(metrics)
     }
 
     pub(crate) async fn index_library_paths_for_search(
@@ -405,7 +380,6 @@ impl WorkspaceHandle {
                 if indexed == 0 {
                     Mutation::Unchanged(0)
                 } else {
-                    s.session.bump_version();
                     Mutation::Changed(indexed)
                 }
             })
@@ -448,9 +422,10 @@ impl WorkspaceHandle {
                         if let Some(entry) = s.index.get_mut(&uri) {
                             entry.admitted_to_publication = true;
                         }
+                        s.recovery_search_symbols.retain(|symbol| symbol.uri != uri);
                     }
                     s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                    s.session.bump_version();
+                    s.session.invalidate_inputs();
                 }
                 Mutation::Changed(library)
             })
@@ -466,27 +441,18 @@ impl WorkspaceHandle {
         &self,
         uri: Url,
         text: String,
-    ) -> Result<(Option<String>, Option<RelinkToken>), MutatePanicked> {
+    ) -> Result<Option<String>, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 if s.index
                     .get(&uri)
                     .is_some_and(|entry| entry.content() == text)
                 {
-                    return Mutation::Unchanged((None, None));
+                    return Mutation::Unchanged(None);
                 }
                 let warning = crate::session::services::store_document_text_fast(s, &uri, text);
-                let can_relink = matches!(
-                    s.session.lifecycle(),
-                    SessionLifecycle::Ready | SessionLifecycle::Reindexing
-                );
-                let token = if can_relink {
-                    Some(s.session.schedule_relink())
-                } else {
-                    s.session.bump_version();
-                    None
-                };
-                Mutation::Changed((warning, token))
+                s.session.invalidate_inputs();
+                Mutation::Changed(warning)
             })
             .await
             .map(|outcome| outcome.value)
@@ -525,13 +491,13 @@ impl WorkspaceHandle {
         document: SourceDocument,
         parsed: ParsedSource,
         parse_time_ms: u32,
-    ) -> Result<(Option<RelinkToken>, Vec<(MessageType, String)>), MutatePanicked> {
+    ) -> Result<Vec<(MessageType, String)>, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 if s.index.get(&edit.uri).map(|entry| entry.content())
                     != Some(edit.base_content.as_str())
                 {
-                    return Mutation::Unchanged((None, Vec::new()));
+                    return Mutation::Unchanged(Vec::new());
                 }
                 let warnings = crate::session::services::apply_parsed_document_update(
                     s,
@@ -542,69 +508,30 @@ impl WorkspaceHandle {
                     parse_time_ms,
                     false,
                 );
-                s.session.bump_version();
-                let token = matches!(
-                    s.session.lifecycle(),
-                    SessionLifecycle::Ready | SessionLifecycle::Reindexing
-                )
-                .then(|| s.session.schedule_relink());
-                Mutation::Changed((token, warnings))
+                s.session.invalidate_inputs();
+                Mutation::Changed(warnings)
             })
             .await
             .map(|outcome| outcome.value)
     }
 
     #[cfg(test)]
-    pub(crate) async fn schedule_relink_if_ready(
-        &self,
-    ) -> Result<Option<RelinkToken>, MutatePanicked> {
+    pub(crate) async fn invalidate_semantic_inputs_if_ready(&self) -> Result<bool, MutatePanicked> {
         self.actor
             .mutate_if_changed(|s| {
                 if matches!(
                     s.session.lifecycle(),
-                    SessionLifecycle::Ready | SessionLifecycle::Reindexing
+                    sysml_query::publication::SessionLifecycle::Ready
+                        | sysml_query::publication::SessionLifecycle::Reindexing
                 ) {
-                    Mutation::Changed(Some(s.session.schedule_relink()))
-                } else {
-                    Mutation::Unchanged(None)
-                }
-            })
-            .await
-            .map(|outcome| outcome.value)
-    }
-
-    /// Commits an async relink's result via `mutate`, so the caller can `.await` it and be
-    /// guaranteed the new graph/lifecycle are visible before doing anything else (e.g.
-    /// publishing diagnostics) — `SessionActor::mutate` applies the closure and publishes to
-    /// the `watch` channel *before* replying, unlike the old fire-and-forget
-    /// `report_job_result` path this replaced. Calls `session.commit_relink` to perform the
-    /// actual `Reindexing -> Ready` lifecycle transition — without this, the session would stay
-    /// stuck in `Reindexing` forever after any edit. Returns whether the token was still
-    /// current (`false` means a newer relink superseded this one and nothing was applied — the
-    /// caller should skip any follow-up work tied to this result, since the superseding relink
-    /// will produce its own).
-    pub(crate) async fn report_relink_result(
-        &self,
-        token: RelinkToken,
-        new_symbols: Vec<SymbolEntry>,
-    ) -> Result<bool, MutatePanicked> {
-        let committed = self
-            .actor
-            .mutate_if_changed(move |s| {
-                if s.session.commit_relink(&token) {
-                    s.symbol_table = new_symbols;
-                    s.semantic_revision = s.semantic_revision.wrapping_add(1);
+                    s.session.invalidate_inputs();
                     Mutation::Changed(true)
                 } else {
                     Mutation::Unchanged(false)
                 }
             })
             .await
-            .map(|outcome| outcome.value)?;
-        if committed {
-            self.rebuild_publication().await?;
-        }
-        Ok(committed)
+            .map(|outcome| outcome.value)
     }
 
     // --- did_change_watched_files --------------------------------------------------------
@@ -625,7 +552,7 @@ impl WorkspaceHandle {
                 }
                 let warning = crate::session::services::refresh_document(s, &uri, content);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.bump_version();
+                s.session.invalidate_inputs();
                 Mutation::Changed(warning)
             })
             .await?;
@@ -644,7 +571,7 @@ impl WorkspaceHandle {
                 }
                 crate::session::services::remove_document(s, &uri);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.bump_version();
+                s.session.invalidate_inputs();
                 Mutation::Changed(())
             })
             .await?;
@@ -669,7 +596,7 @@ impl WorkspaceHandle {
                 } else {
                     let _ = crate::session::services::clear_documents_under_roots(s, &old);
                     s.library_paths = new_library_paths.clone();
-                    s.session.begin_library_reindex();
+                    s.session.invalidate_inputs();
                     Mutation::Changed(true)
                 }
             })
@@ -686,9 +613,9 @@ impl WorkspaceHandle {
             .mutate(move |s| {
                 let ingest_results =
                     crate::session::services::ingest_parsed_scan_entries(s, entries);
-                let relink_metrics = crate::session::services::rebuild_all_document_links(s);
+                let relink_metrics = RebuildAllDocumentLinksMetrics::default();
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.complete_reindex();
+                s.session.invalidate_inputs();
                 (ingest_results, relink_metrics)
             })
             .await?;
@@ -705,7 +632,7 @@ impl WorkspaceHandle {
             .mutate_if_changed(|s| {
                 let counts = crate::lsp_runtime::custom::clear_document_store_state_full(s);
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.bump_version();
+                s.session.invalidate_inputs();
                 Mutation::Changed(counts)
             })
             .await

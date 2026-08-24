@@ -42,19 +42,13 @@ pub(crate) async fn did_open(
         // evaluation pass, then schedule an async relink so that cross-document
         // edges and expression evaluation happen outside the lock.
         let lock_start = Instant::now();
-        let (warning, token) = handle
+        let warning = handle
             .store_document_text_fast(uri_norm.clone(), text.clone())
             .await
             .unwrap_or_default();
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let scheduled_relink = token.is_some();
-        if let Some(token) = token {
-            publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), token).await;
-        } else {
-            // Startup may not yet permit a relink token for the first loose/library document.
-            // It must still enter the canonical publication before this notification completes.
-            let _ = handle.rebuild_publication().await;
-        }
+        let scheduled_relink = true;
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
         (warning, lock_wait_ms, scheduled_relink)
     };
 
@@ -130,7 +124,7 @@ pub(crate) async fn did_change(
     // it as a `mutate` closure would stall every other in-flight request
     // (hover, completion, further edits) behind it. `spawn_blocking` also
     // keeps this off the async executor thread.
-    let mut token = None;
+    let mut semantic_inputs_changed = false;
     if let Some(edit) = edit {
         let services = handle.snapshot().services.clone();
         let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
@@ -142,11 +136,11 @@ pub(crate) async fn did_change(
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
             Ok((document, parsed)) => {
-                let (relink, parse_warnings) = handle
+                let parse_warnings = handle
                     .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
-                token = relink;
+                semantic_inputs_changed = true;
                 warnings.extend(parse_warnings);
             }
             Err(_) => {
@@ -176,8 +170,8 @@ pub(crate) async fn did_change(
     // Diagnostics are NOT published here. Cross-document edges and expression
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
-    if let Some(token) = token {
-        publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), token).await;
+    if semantic_inputs_changed {
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
     }
     log_perf(
         client,

@@ -3030,8 +3030,8 @@ classifier C {
 }
 "#,
     )]);
-    let values = match published.binding_connectors() {
-        QueryOutcome::Resolved(values) => values,
+    let values = match published.binding_connectors().answer {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected resolved binding connector, got {other:?}"),
     };
     assert_eq!(values.len(), 1);
@@ -3094,8 +3094,8 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
     ];
 
     for (rule, prerequisite) in expected {
-        let outcome = match published.binding_connector_validation(rule) {
-            QueryOutcome::Resolved(outcome) => outcome,
+        let outcome = match published.binding_connector_validation(rule).answer {
+            QueryAnswer::Resolved(outcome) => outcome,
             other => panic!("expected resolved validation outcome for {rule:?}, got {other:?}"),
         };
         assert_eq!(
@@ -3178,7 +3178,10 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     for (rule, prerequisite) in expected {
         assert_eq!(
             published.redefinition_check(rule),
-            QueryOutcome::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
+            QueryOutcome::new(
+                published.completeness(),
+                QueryAnswer::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
+            ),
             "{rule:?} must expose its first missing canonical prerequisite rather than infer a relationship"
         );
     }
@@ -3248,7 +3251,10 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
         expected.map(|(rule, prerequisite)| {
             assert_eq!(
                 published.specialization_check(rule),
-                QueryOutcome::Resolved(SpecializationCheckOutcome::Unsupported { prerequisite }),
+                QueryOutcome::new(
+                    published.completeness(),
+                    QueryAnswer::Resolved(SpecializationCheckOutcome::Unsupported { prerequisite }),
+                ),
                 "{rule:?} must not treat the model's authored/implied specialization facts as proof of its richer predicate"
             );
             settled(published.specialization_check(rule))
@@ -3284,8 +3290,8 @@ fn binding_connector_facts_have_sequential_parallel_and_source_order_parity() {
         .unwrap()
     };
     let permuted = [sources[1], sources[0]];
-    let render = |published: &PublishedResolution| match published.binding_connectors() {
-        QueryOutcome::Resolved(values) => values,
+    let render = |published: &PublishedResolution| match published.binding_connectors().answer {
+        QueryAnswer::Resolved(values) => values,
         other => panic!("expected binding facts, got {other:?}"),
     };
     let sequential = build_with(&sources, ConstructionSchedule::Sequential);
@@ -3313,19 +3319,22 @@ part vehicle : Vehicle;
 }
 "#,
     )]);
-    let entries = match published.search_elements(ElementSearch {
-        kind: ElementKind::PartUsage,
-        source: ElementSource::Workspace,
-    }) {
-        QueryOutcome::Resolved(entries) => entries,
+    let entries = match published
+        .search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        })
+        .answer
+    {
+        QueryAnswer::Resolved(entries) => entries,
         other => panic!("expected part usage, got {other:?}"),
     };
     let vehicle = entries
         .iter()
         .find(|entry| published.qualified_name(entry.identity) == Some("P::vehicle"))
         .expect("vehicle usage");
-    let features = match published.effective_features(vehicle.identity) {
-        QueryOutcome::Resolved(features) => features,
+    let features = match published.effective_features(vehicle.identity).answer {
+        QueryAnswer::Resolved(features) => features,
         other => panic!("expected effective features, got {other:?}"),
     };
     assert_eq!(
@@ -3461,10 +3470,8 @@ fn an_untyped_feature_conforms_because_it_inherits_the_typing() {
         Conformance::Conforms,
         "a redefinition that declares no typing takes the redefined feature's"
     );
-    let effective = match published.effective_types(specific) {
-        QueryOutcome::Resolved(types)
-        | QueryOutcome::Recovered(types)
-        | QueryOutcome::UnsupportedWith(types) => types,
+    let effective = match published.effective_types(specific).answer {
+        QueryAnswer::Resolved(types) => types,
         other => panic!("expected settled effective types, got: {other:?}"),
     };
     assert!(
@@ -3486,10 +3493,8 @@ fn subsetting_conformance_reports_its_halves_separately() {
     let subsetting = symbol_named(&published, "memory://types.sysml", "P::U::y");
     let subsetted = symbol_named(&published, "memory://types.sysml", "P::A::x");
 
-    let outcome = match published.subsetting_conforms(subsetting, subsetted) {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
+    let outcome = match published.subsetting_conforms(subsetting, subsetted).answer {
+        QueryAnswer::Resolved(value) => value,
         other => panic!("expected a settled subsetting answer, got: {other:?}"),
     };
     assert_eq!(
@@ -3890,8 +3895,9 @@ fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
     );
     assert!(matches!(
         published
-            .namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember,),
-        QueryOutcome::Unsupported
+            .namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember,)
+            .answer,
+        QueryAnswer::Unsupported
     ));
 }
 
@@ -4517,11 +4523,13 @@ fn exact_feature_relationship_collections_project_canonical_authored_and_implied
         } if target == &vehicle
     ));
     assert!(matches!(
-        published.feature_derived_relationships(
-            vehicle,
-            FeatureDerivedRelationshipCollection::OwnedTyping,
-        ),
-        QueryOutcome::Unsupported
+        published
+            .feature_derived_relationships(
+                vehicle,
+                FeatureDerivedRelationshipCollection::OwnedTyping,
+            )
+            .answer,
+        QueryAnswer::Unsupported
     ));
 }
 
@@ -4662,8 +4670,10 @@ fn type_owned_feature_projects_canonical_direct_feature_members() {
     )
     .is_empty());
     assert!(matches!(
-        published.type_derived_elements(owned, TypeDerivedElementCollection::OwnedFeature),
-        QueryOutcome::Unsupported
+        published
+            .type_derived_elements(owned, TypeDerivedElementCollection::OwnedFeature)
+            .answer,
+        QueryAnswer::Unsupported
     ));
 }
 
@@ -4765,40 +4775,42 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
         sequential.definition_usage_derived(
             vehicle,
             DefinitionUsageDerivedKind::DefinitionOwnedPart,
-        ),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+        ).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.as_ref() == [wheel]
     ));
     assert!(matches!(
         sequential.definition_usage_derived(
             vehicle,
             DefinitionUsageDerivedKind::DefinitionOwnedAction,
-        ),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+        ).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.as_ref() == [service]
     ));
     // `usage` selects every usage in the effective feature membership, so both direct members
     // appear; `directedUsage` selects none of them, because neither is directed.
     assert!(matches!(
         sequential
-            .definition_usage_derived(vehicle, DefinitionUsageDerivedKind::DefinitionUsage,),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+            .definition_usage_derived(vehicle, DefinitionUsageDerivedKind::DefinitionUsage,).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.contains(&wheel) && values.contains(&service)
     ));
     assert!(matches!(
         sequential.definition_usage_derived(
             vehicle,
             DefinitionUsageDerivedKind::DefinitionDirectedUsage,
-        ),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+        ).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.is_empty()
     ));
     assert!(matches!(
-        sequential.definition_usage_derived(
-            vehicle,
-            DefinitionUsageDerivedKind::DefinitionVariantMembership,
-        ),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
+        sequential
+            .definition_usage_derived(
+                vehicle,
+                DefinitionUsageDerivedKind::DefinitionVariantMembership,
+            )
+            .answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
             prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
         })
     ));
@@ -4827,14 +4839,15 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     let sized = identity_of(&published, "memory://model.sysml", "Model::Sized");
     let unsupported = |symbol: SymbolId, collection, prerequisite| {
         assert!(matches!(
-            published.type_derived_fact(symbol, collection),
-            QueryOutcome::Resolved(TypeDerivedFactOutcome::Unsupported { prerequisite: actual })
+            published.type_derived_fact(symbol, collection).answer,
+            QueryAnswer::Resolved(TypeDerivedFactOutcome::Unsupported { prerequisite: actual })
                 if actual == prerequisite
         ));
     };
     let values =
-        |symbol: SymbolId, collection| match published.type_derived_fact(symbol, collection) {
-            QueryOutcome::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
+        |symbol: SymbolId, collection| match published.type_derived_fact(symbol, collection).answer
+        {
+            QueryAnswer::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
             other => panic!("expected published values, got {other:?}"),
         };
     let member = |symbol: SymbolId| TypeDerivedFactValue::FeatureMembership { member: symbol };
@@ -5421,32 +5434,41 @@ fn requirement_derived_facts_use_canonical_membership_roles() {
             source,
             RequirementDerivedFactCollection::DefinitionActorParameter,
         ),
-        QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
-            vec![actor].into_boxed_slice()
-        ))
+        QueryOutcome::new(
+            sequential.completeness(),
+            QueryAnswer::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![actor].into_boxed_slice()
+            )),
+        )
     );
     assert_eq!(
         sequential.requirement_derived_fact(
             source,
             RequirementDerivedFactCollection::DefinitionFramedConcern,
         ),
-        QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
-            vec![framed].into_boxed_slice()
-        ))
+        QueryOutcome::new(
+            sequential.completeness(),
+            QueryAnswer::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![framed].into_boxed_slice()
+            )),
+        )
     );
     assert_eq!(
         parallel.requirement_derived_fact(
             identity_of(&parallel, "memory://requirements-derived.sysml", "Model::R"),
             RequirementDerivedFactCollection::DefinitionActorParameter,
         ),
-        QueryOutcome::Resolved(RequirementDerivedFactOutcome::Elements(
-            vec![identity_of(
-                &parallel,
-                "memory://requirements-derived.sysml",
-                "Model::R::operator",
-            )]
-            .into_boxed_slice()
-        ))
+        QueryOutcome::new(
+            parallel.completeness(),
+            QueryAnswer::Resolved(RequirementDerivedFactOutcome::Elements(
+                vec![identity_of(
+                    &parallel,
+                    "memory://requirements-derived.sysml",
+                    "Model::R::operator",
+                )]
+                .into_boxed_slice()
+            )),
+        )
     );
 }
 

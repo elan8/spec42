@@ -36,7 +36,8 @@ pub fn compare_snapshots(
     let identity_preservation =
         identity::assess_identity_preservation(&previous_artifact, &next_artifact);
 
-    let diagnostics = diagnostics::compare_diagnostics(previous.validation(), next.validation())?;
+    let diagnostics =
+        diagnostics::compare_diagnostics(previous.ensure_validation()?, next.ensure_validation()?)?;
 
     Ok(SemanticComparisonReport {
         schema_versions: HostSchemaVersions::current(),

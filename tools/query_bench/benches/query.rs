@@ -13,7 +13,7 @@ use divan::Bencher;
 use spec42_query_bench::{
     cold_build, completion_position, navigation_position, warm_relink, Corpus, Fixture,
 };
-use sysml_query::resolved_slice::{QueryOutcome, SymbolId};
+use sysml_query::resolved_slice::{QueryAnswer, SymbolId};
 
 /// Divan's allocation profiler. It reports allocations alongside time for every case here; the
 /// per-element normalisation is the `spec42-query-bench-allocations` binary's job.
@@ -122,12 +122,13 @@ fn q_diagnostics_for_document(bencher: Bencher) {
 }
 
 fn navigation_symbol(fixture: &Fixture) -> SymbolId {
-    match fixture
+    let outcome = fixture
         .model
         .navigation()
-        .target_at(&fixture.workspace_document, navigation_position())
-    {
-        QueryOutcome::Resolved(target) | QueryOutcome::Recovered(target) => target.symbol,
-        outcome => panic!("the navigation fixture must resolve; got {outcome:?}"),
+        .target_at(&fixture.workspace_document, navigation_position());
+    black_box(outcome.completeness);
+    match outcome.answer {
+        QueryAnswer::Resolved(target) => target.symbol,
+        answer => panic!("the navigation fixture must resolve; got {answer:?}"),
     }
 }

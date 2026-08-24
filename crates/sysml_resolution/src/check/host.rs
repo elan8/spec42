@@ -25,12 +25,12 @@
 //! each document's diagnostics by range and code once every producer has contributed, so the order
 //! a rule happens to visit storage in is never observable.
 
-use crate::diagnose::document_range;
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;

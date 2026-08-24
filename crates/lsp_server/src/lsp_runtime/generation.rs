@@ -11,7 +11,7 @@ use generator_host::{
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use sysml_query::resolved_slice::PublishedModel;
+use sysml_query::resolved_slice::{PublicationModelDigest, PublishedModel};
 
 const MAX_PLUGIN_BYTES: usize = 16 * 1024 * 1024;
 const MAX_PREPARED_MODULES: usize = 8;
@@ -67,6 +67,7 @@ pub(crate) struct GenerationTimings {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct GenerateResult {
     pub(crate) model_digest: String,
+    pub(crate) semantic_status: language_service::dto::SemanticResultStatus,
     pub(crate) generator_digest: String,
     pub(crate) artifacts: Vec<GeneratedArtifact>,
     pub(crate) timings: GenerationTimings,
@@ -84,6 +85,7 @@ pub(crate) type DiagramViewsParams = StateTransitionViewsParams;
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramViewsResult {
     pub(crate) model_digest: String,
+    pub(crate) semantic_status: language_service::dto::SemanticResultStatus,
     pub(crate) views: Vec<DiagramViewChoice>,
 }
 
@@ -238,7 +240,7 @@ pub(crate) struct GeneratorService {
     /// Query handles are scoped to one immutable `GeneratorModelView`. Reusing the adapter for
     /// the same dependency-complete publication identity lets a catalog handle be consumed by a
     /// subsequent generator request without turning handles into a second semantic identity.
-    models: Mutex<HashMap<String, Arc<GeneratorModelView>>>,
+    models: Mutex<HashMap<PublicationModelDigest, Arc<GeneratorModelView>>>,
 }
 
 impl GeneratorService {
@@ -272,12 +274,15 @@ impl GeneratorService {
 
         // Building the boundary adapter walks the publication. Keep that work outside the cache
         // lock so unrelated generation requests can continue using already-prepared views.
-        let model = Arc::new(GeneratorModelView::new(
-            Arc::clone(&publication),
-            &publication_identity,
-            env!("CARGO_PKG_VERSION"),
-            QueryLimits::default(),
-        ));
+        let model = Arc::new(
+            GeneratorModelView::new(
+                Arc::clone(&publication),
+                publication_identity.to_string(),
+                env!("CARGO_PKG_VERSION"),
+                QueryLimits::default(),
+            )
+            .map_err(|error| error.to_string())?,
+        );
         let mut models = self
             .models
             .lock()
@@ -367,6 +372,9 @@ impl GeneratorService {
             .map_err(|error| error.to_string())?;
         Ok(GenerateResult {
             model_digest,
+            semantic_status: language_service::dto::SemanticResultStatus::from_publication(
+                execution.publication_completeness,
+            ),
             generator_digest: execution.generator_digest,
             artifacts: execution
                 .artifacts
@@ -437,6 +445,9 @@ impl GeneratorService {
             .collect();
         Ok(DiagramViewsResult {
             model_digest: model.model_digest(),
+            semantic_status: language_service::dto::SemanticResultStatus::from_publication(
+                model.publication_completeness(),
+            ),
             views,
         })
     }
@@ -444,7 +455,7 @@ impl GeneratorService {
 
 /// Remove one exact-identity entry without turning a capacity miss into a full-cache flush.
 /// Lexicographic selection keeps eviction deterministic; cache contents never affect semantics.
-fn evict_one<V>(cache: &mut HashMap<String, V>) {
+fn evict_one<K: Clone + Eq + std::hash::Hash + Ord, V>(cache: &mut HashMap<K, V>) {
     if let Some(key) = cache.keys().min().cloned() {
         cache.remove(&key);
     }

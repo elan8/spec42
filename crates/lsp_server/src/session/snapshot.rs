@@ -66,7 +66,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn symbol_table(&self) -> &[SymbolEntry] {
-        &self.state.symbol_table
+        &self.state.semantic_symbols
     }
 
     fn index_uris(&self) -> Vec<Url> {

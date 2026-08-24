@@ -14,6 +14,7 @@
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fmt::Write as _;
 use std::fs;
+use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
@@ -33,13 +34,12 @@ use spec42_constraint_manifest::{
     TypeDerivedRelationshipKind,
 };
 use sysml_query::resolved_slice::{
-    build as build_published_model, ActionDerivedFactCollection, ActionDerivedFactOutcome,
-    AdmittedSource as QuerySourceDocument, AnnotationForm, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BuildRequest, ConstructionStrategy,
+    ActionDerivedFactCollection, ActionDerivedFactOutcome, AnnotationForm,
+    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
     Documentation, EditorProbe, ElementDerivedDocumentationCollection, ElementKind,
-    FeatureDerivedRelationshipCollection, LibraryStratum, NamespaceDerivedElementCollection,
-    PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe,
+    FeatureDerivedRelationshipCollection, NamespaceDerivedElementCollection, PublishedModel,
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryAnswer,
     QueryOutcome, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
     RelationshipTarget, RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
     RequirementDerivedFactPrerequisite, SourceKind, SpecializationCheckOutcome,
@@ -48,6 +48,7 @@ use sysml_query::resolved_slice::{
     TypeDerivedRelationshipCollection,
 };
 use sysml_query::source::{SourceDocument as AdmittedDocument, SourceService};
+type QuerySourceDocument = AdmittedDocument;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -2060,8 +2061,7 @@ const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 /// Lazily loaded library sources, shared by every fixture that admits them.
 struct LibraryCorpus {
     root: PathBuf,
-    standard: OnceLock<Result<Vec<QuerySourceDocument>, String>>,
-    standard_stratum: OnceLock<Result<LibraryStratum, String>>,
+    services: sysml_query::Services,
     standard_documents: OnceLock<Result<Vec<AdmittedDocument>, String>>,
 }
 
@@ -2069,8 +2069,7 @@ impl LibraryCorpus {
     fn new(root: PathBuf) -> Self {
         Self {
             root,
-            standard: OnceLock::new(),
-            standard_stratum: OnceLock::new(),
+            services: sysml_query::Services::new(),
             standard_documents: OnceLock::new(),
         }
     }
@@ -2080,52 +2079,17 @@ impl LibraryCorpus {
             LibrarySelection::None => Ok(&[]),
             LibrarySelection::Standard => self
                 .standard_documents
-                .get_or_init(|| load_standard_library_documents(&self.root))
+                .get_or_init(|| load_standard_library_documents(&self.root, &self.services.source))
                 .as_deref()
-                .map_err(Clone::clone),
-        }
-    }
-
-    fn sources(&self, selection: LibrarySelection) -> Result<&[QuerySourceDocument], String> {
-        match selection {
-            LibrarySelection::None => Ok(&[]),
-            LibrarySelection::Standard => self
-                .standard
-                .get_or_init(|| {
-                    self.documents(LibrarySelection::Standard)?
-                        .iter()
-                        .map(|document| {
-                            QuerySourceDocument::from_uri(
-                                document.uri().as_str(),
-                                document.content().to_owned(),
-                                SourceKind::StandardLibrary,
-                            )
-                            .map_err(|error| format!("invalid library source: {error}"))
-                        })
-                        .collect()
-                })
-                .as_deref()
-                .map_err(|error| error.clone()),
-        }
-    }
-
-    fn stratum(&self, selection: LibrarySelection) -> Result<Option<&LibraryStratum>, String> {
-        match selection {
-            LibrarySelection::None => Ok(None),
-            LibrarySelection::Standard => self
-                .standard_stratum
-                .get_or_init(|| {
-                    LibraryStratum::build(self.sources(LibrarySelection::Standard)?.to_vec())
-                        .map_err(|error| format!("standard-library stratum: {error}"))
-                })
-                .as_ref()
-                .map(Some)
                 .map_err(Clone::clone),
         }
     }
 }
 
-fn load_standard_library_documents(root: &Path) -> Result<Vec<AdmittedDocument>, String> {
+fn load_standard_library_documents(
+    root: &Path,
+    source: &sysml_query::source::SourceService,
+) -> Result<Vec<AdmittedDocument>, String> {
     let directory = root.join(STANDARD_LIBRARY_DIRECTORY);
     let mut paths = Vec::new();
     visit_markdown(&directory, &mut paths)?;
@@ -2147,7 +2111,7 @@ fn load_standard_library_documents(root: &Path) -> Result<Vec<AdmittedDocument>,
         for document in parse_source_documents(&text, fallback_name)? {
             let name = format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.name);
             documents.push(
-                SourceService::new()
+                source
                     .admit_memory(
                         "snapshot",
                         &name,
@@ -2447,10 +2411,7 @@ fn main() -> Result<(), String> {
         return Err("snapshot processing failed".to_string());
     }
 
-    for (path, bytes) in writes {
-        fs::write(&path, bytes)
-            .map_err(|error| format!("{}: write failed: {error}", path.display()))?;
-    }
+    replace_snapshot_files(writes)?;
 
     if stale.is_empty() {
         return Ok(());
@@ -2460,6 +2421,56 @@ fn main() -> Result<(), String> {
         eprintln!("  {}", path.display());
     }
     Err("snapshot check failed".to_string())
+}
+
+/// Stages the complete update set before replacing any fixture.
+///
+/// Each temporary file lives beside its target, so persistence is one atomic filesystem rename.
+/// If any staging write fails, dropping the staged files leaves every target unchanged. Filesystem
+/// APIs cannot atomically rename a set of paths together, but readers can never observe a torn or
+/// partially written individual snapshot.
+fn replace_snapshot_files(writes: Vec<(PathBuf, Vec<u8>)>) -> Result<(), String> {
+    let mut staged = Vec::with_capacity(writes.len());
+    for (path, bytes) in writes {
+        let parent = path
+            .parent()
+            .ok_or_else(|| format!("{}: snapshot path has no parent directory", path.display()))?;
+        let mut temporary = tempfile::Builder::new()
+            .prefix(".spec42-snapshot-")
+            .tempfile_in(parent)
+            .map_err(|error| {
+                format!("{}: staging file creation failed: {error}", path.display())
+            })?;
+        temporary
+            .write_all(&bytes)
+            .map_err(|error| format!("{}: staging write failed: {error}", path.display()))?;
+        temporary
+            .as_file()
+            .sync_all()
+            .map_err(|error| format!("{}: staging sync failed: {error}", path.display()))?;
+        if let Ok(metadata) = fs::metadata(&path) {
+            temporary
+                .as_file()
+                .set_permissions(metadata.permissions())
+                .map_err(|error| {
+                    format!("{}: staging permissions failed: {error}", path.display())
+                })?;
+        }
+        // Retain the staged path, not an open handle: a corpus update may contain hundreds of
+        // fixtures and must not exhaust the process file-descriptor limit before the commit pass.
+        staged.push((path, temporary.into_temp_path()));
+    }
+
+    for (path, temporary) in staged {
+        temporary.persist(&path).map_err(|error| {
+            format!(
+                "{}: atomic replacement failed: {}",
+                path.display(),
+                error.error
+            )
+        })?;
+    }
+    Ok(())
 }
 
 /// `report` is read-only coverage and expectation auditing. It records stale generated sections,
@@ -2596,41 +2607,12 @@ fn regenerate_snapshot(
             ));
         }
     }
-    let workspace_source_documents = documents
-        .iter()
-        .filter(|document| !meta.standard_library_documents.contains(&document.name))
-        .map(|document| {
-            QuerySourceDocument::from_memory_path(
-                "snapshot",
-                &document.name,
-                document.text.clone(),
-                SourceKind::Workspace,
-            )
-        })
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
-    let mut source_documents = documents
-        .iter()
-        .map(|document| {
-            let kind = if meta.standard_library_documents.contains(&document.name) {
-                SourceKind::StandardLibrary
-            } else {
-                SourceKind::Workspace
-            };
-            QuerySourceDocument::from_memory_path(
-                "snapshot",
-                &document.name,
-                document.text.clone(),
-                kind,
-            )
-        })
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
-    source_documents.extend_from_slice(libraries.sources(meta.libraries)?);
+    let services = libraries.services.clone();
     let mut admitted_documents = documents
         .iter()
         .map(|document| {
-            SourceService::new()
+            services
+                .source
                 .admit_memory(
                     "snapshot",
                     &document.name,
@@ -2645,32 +2627,22 @@ fn regenerate_snapshot(
         })
         .collect::<Result<Vec<_>, _>>()?;
     admitted_documents.extend_from_slice(libraries.documents(meta.libraries)?);
+    let source_documents = admitted_documents.clone();
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
         parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
-    // One build per fixture. A fixture that selects a library is built over the cached library
-    // stratum, exactly as a warm host does; a fixture without a library is built cold, which is
-    // small. Construction-strategy parity (sequential versus parallel schedules) and cold/full
-    // versus warm/stratum parity are authority invariants, proven once over the examples corpus
-    // by the authority's own tests rather than re-proven per fixture here.
-    let canonical_model = if let Some(stratum) = libraries.stratum(meta.libraries)? {
-        Arc::new(build_model_with_library(
-            &workspace_source_documents,
-            ConstructionStrategy::Parallel,
-            stratum,
-            path,
-        )?)
-    } else {
-        sysml_query::Services::new()
-            .publication
-            .publish(&admitted_documents, std::iter::empty::<Box<str>>())
-            .map_err(|error| {
-                format!(
-                    "{}: canonical semantic build failed: {error}",
-                    path.display()
-                )
-            })?
-    };
+    // One build per fixture through the shared publication owner. That owner alone partitions and
+    // reuses library inputs; schedule and cold/warm parity remain authority invariants rather than
+    // fixture-level construction choices.
+    let canonical_model = services
+        .publication
+        .publish(&admitted_documents, std::iter::empty::<Box<str>>())
+        .map_err(|error| {
+            format!(
+                "{}: canonical semantic build failed: {error}",
+                path.display()
+            )
+        })?;
     let canonical = render_owned_sections(
         &canonical_model,
         &documents,
@@ -4679,15 +4651,13 @@ fn observe_semantic_relationship(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let inspection = match model.inspection().inspect(source) {
-        QueryOutcome::Resolved(inspection)
-        | QueryOutcome::Recovered(inspection)
-        | QueryOutcome::UnsupportedWith(inspection) => inspection,
-        QueryOutcome::Unresolved => return Err("source inspection is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => return Err("source inspection is ambiguous".to_string()),
-        QueryOutcome::Unsupported => return Err("source inspection is unsupported".to_string()),
-        QueryOutcome::Recovery => return Err("source inspection is recovery".to_string()),
-        QueryOutcome::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
+    let inspection = match snapshot_answer(model.inspection().inspect(source)) {
+        QueryAnswer::Resolved(inspection) => inspection,
+        QueryAnswer::Unresolved => return Err("source inspection is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("source inspection is ambiguous".to_string()),
+        QueryAnswer::Unsupported => return Err("source inspection is unsupported".to_string()),
+        QueryAnswer::Recovery => return Err("source inspection is recovery".to_string()),
+        QueryAnswer::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
     };
     observe_expected_relationship(
         model,
@@ -4698,6 +4668,14 @@ fn observe_semantic_relationship(
         expectation.outcome,
         inspection.relationships.as_ref(),
     )
+}
+
+/// Snapshot metadata renders publication completeness once for the whole model. Individual
+/// expectation checks consume the independent typed answer without recreating completeness from
+/// it, while unresolved, ambiguous, unsupported, recovery, and incomplete answers remain distinct.
+fn snapshot_answer<T>(outcome: QueryOutcome<T>) -> QueryAnswer<T> {
+    let _publication_completeness = outcome.completeness;
+    outcome.answer
 }
 
 fn observe_feature_derived_relationship(
@@ -4711,24 +4689,23 @@ fn observe_feature_derived_relationship(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let relationships = match model
-        .inspection()
-        .feature_derived_relationships(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(relationships)
-        | QueryOutcome::Recovered(relationships)
-        | QueryOutcome::UnsupportedWith(relationships) => relationships,
-        QueryOutcome::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
-        QueryOutcome::Unresolved => {
+    let relationships = match snapshot_answer(
+        model
+            .inspection()
+            .feature_derived_relationships(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(relationships) => relationships,
+        QueryAnswer::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
+        QueryAnswer::Unresolved => {
             return Err("derived relationship collection is unresolved".to_string())
         }
-        QueryOutcome::Ambiguous(_) => {
+        QueryAnswer::Ambiguous(_) => {
             return Err("derived relationship collection is ambiguous".to_string())
         }
-        QueryOutcome::Unsupported => {
+        QueryAnswer::Unsupported => {
             return Err("derived relationship collection is unsupported".to_string())
         }
-        QueryOutcome::Recovery => {
+        QueryAnswer::Recovery => {
             return Err("derived relationship collection is recovery".to_string())
         }
     };
@@ -4754,24 +4731,23 @@ fn observe_type_derived_relationship(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let relationships = match model
-        .inspection()
-        .type_derived_relationships(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(relationships)
-        | QueryOutcome::Recovered(relationships)
-        | QueryOutcome::UnsupportedWith(relationships) => relationships,
-        QueryOutcome::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
-        QueryOutcome::Unresolved => {
+    let relationships = match snapshot_answer(
+        model
+            .inspection()
+            .type_derived_relationships(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(relationships) => relationships,
+        QueryAnswer::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
+        QueryAnswer::Unresolved => {
             return Err("Type derived relationship collection is unresolved".to_string())
         }
-        QueryOutcome::Ambiguous(_) => {
+        QueryAnswer::Ambiguous(_) => {
             return Err("Type derived relationship collection is ambiguous".to_string())
         }
-        QueryOutcome::Unsupported => {
+        QueryAnswer::Unsupported => {
             return Err("Type derived relationship collection is unsupported".to_string())
         }
-        QueryOutcome::Recovery => {
+        QueryAnswer::Recovery => {
             return Err("Type derived relationship collection is recovery".to_string())
         }
     };
@@ -4797,18 +4773,17 @@ fn observe_type_derived_element(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let values = match model
-        .inspection()
-        .type_derived_elements(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values,
-        QueryOutcome::Incomplete => return Ok(TypeDerivedElementObservation::Incomplete),
-        QueryOutcome::Unsupported => return Ok(TypeDerivedElementObservation::Unsupported),
-        QueryOutcome::Unresolved => return Err("Type element query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => return Err("Type element query is ambiguous".to_string()),
-        QueryOutcome::Recovery => return Err("Type element query is recovery".to_string()),
+    let values = match snapshot_answer(
+        model
+            .inspection()
+            .type_derived_elements(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(values) => values,
+        QueryAnswer::Incomplete => return Ok(TypeDerivedElementObservation::Incomplete),
+        QueryAnswer::Unsupported => return Ok(TypeDerivedElementObservation::Unsupported),
+        QueryAnswer::Unresolved => return Err("Type element query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("Type element query is ambiguous".to_string()),
+        QueryAnswer::Recovery => return Err("Type element query is recovery".to_string()),
     };
     let expected = expectation
         .target
@@ -4832,18 +4807,17 @@ fn observe_type_derived_fact(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match model
-        .inspection()
-        .type_derived_fact(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
-        QueryOutcome::Incomplete => return Ok(TypeDerivedFactObservation::Incomplete),
-        QueryOutcome::Unresolved => return Err("Type fact query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => return Err("Type fact query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => return Err("Type fact query is unsupported".to_string()),
-        QueryOutcome::Recovery => return Err("Type fact query is recovery".to_string()),
+    let value = match snapshot_answer(
+        model
+            .inspection()
+            .type_derived_fact(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(value) => value,
+        QueryAnswer::Incomplete => return Ok(TypeDerivedFactObservation::Incomplete),
+        QueryAnswer::Unresolved => return Err("Type fact query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("Type fact query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => return Err("Type fact query is unsupported".to_string()),
+        QueryAnswer::Recovery => return Err("Type fact query is recovery".to_string()),
     };
     let expected = expectation
         .target
@@ -4867,18 +4841,17 @@ fn observe_action_derived_fact(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match model
-        .inspection()
-        .action_derived_fact(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
-        QueryOutcome::Incomplete => return Ok(ActionDerivedFactObservation::Incomplete),
-        QueryOutcome::Unresolved => return Err("Action fact query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => return Err("Action fact query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => return Err("Action fact query is unsupported".to_string()),
-        QueryOutcome::Recovery => return Err("Action fact query is recovery".to_string()),
+    let value = match snapshot_answer(
+        model
+            .inspection()
+            .action_derived_fact(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(value) => value,
+        QueryAnswer::Incomplete => return Ok(ActionDerivedFactObservation::Incomplete),
+        QueryAnswer::Unresolved => return Err("Action fact query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("Action fact query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => return Err("Action fact query is unsupported".to_string()),
+        QueryAnswer::Recovery => return Err("Action fact query is recovery".to_string()),
     };
     let expected = expectation
         .target
@@ -4902,24 +4875,23 @@ fn observe_definition_usage_derived(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match model
-        .inspection()
-        .definition_usage_derived(source, expectation.kind)
-    {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
-        QueryOutcome::Incomplete => return Ok(DefinitionUsageDerivedObservation::Incomplete),
-        QueryOutcome::Unresolved => {
+    let value = match snapshot_answer(
+        model
+            .inspection()
+            .definition_usage_derived(source, expectation.kind),
+    ) {
+        QueryAnswer::Resolved(value) => value,
+        QueryAnswer::Incomplete => return Ok(DefinitionUsageDerivedObservation::Incomplete),
+        QueryAnswer::Unresolved => {
             return Err("Definition/Usage derivation query is unresolved".to_string())
         }
-        QueryOutcome::Ambiguous(_) => {
+        QueryAnswer::Ambiguous(_) => {
             return Err("Definition/Usage derivation query is ambiguous".to_string())
         }
-        QueryOutcome::Unsupported => {
+        QueryAnswer::Unsupported => {
             return Err("Definition/Usage derivation query is unsupported".to_string())
         }
-        QueryOutcome::Recovery => {
+        QueryAnswer::Recovery => {
             return Err("Definition/Usage derivation query is recovery".to_string())
         }
     };
@@ -4945,22 +4917,19 @@ fn observe_requirement_derived_fact(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match model
-        .inspection()
-        .requirement_derived_fact(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(value)
-        | QueryOutcome::Recovered(value)
-        | QueryOutcome::UnsupportedWith(value) => value,
-        QueryOutcome::Incomplete => return Ok(RequirementDerivedFactObservation::Incomplete),
-        QueryOutcome::Unresolved => return Err("Requirements fact query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => {
-            return Err("Requirements fact query is ambiguous".to_string())
-        }
-        QueryOutcome::Unsupported => {
+    let value = match snapshot_answer(
+        model
+            .inspection()
+            .requirement_derived_fact(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(value) => value,
+        QueryAnswer::Incomplete => return Ok(RequirementDerivedFactObservation::Incomplete),
+        QueryAnswer::Unresolved => return Err("Requirements fact query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("Requirements fact query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => {
             return Err("Requirements fact query is unsupported".to_string())
         }
-        QueryOutcome::Recovery => return Err("Requirements fact query is recovery".to_string()),
+        QueryAnswer::Recovery => return Err("Requirements fact query is recovery".to_string()),
     };
     let expected = expectation
         .target
@@ -4985,15 +4954,13 @@ fn observe_element_derived_owner(
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
     let ElementDerivedOwnerKind::Owner = expectation.kind;
-    let owner = match model.inspection().derived_element_owner(source) {
-        QueryOutcome::Resolved(owner)
-        | QueryOutcome::Recovered(owner)
-        | QueryOutcome::UnsupportedWith(owner) => owner,
-        QueryOutcome::Incomplete => return Ok(ElementDerivedOwnerObservation::Incomplete),
-        QueryOutcome::Unresolved => return Err("element owner query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => return Err("element owner query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => return Err("element owner query is unsupported".to_string()),
-        QueryOutcome::Recovery => return Err("element owner query is recovery".to_string()),
+    let owner = match snapshot_answer(model.inspection().derived_element_owner(source)) {
+        QueryAnswer::Resolved(owner) => owner,
+        QueryAnswer::Incomplete => return Ok(ElementDerivedOwnerObservation::Incomplete),
+        QueryAnswer::Unresolved => return Err("element owner query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("element owner query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => return Err("element owner query is unsupported".to_string()),
+        QueryAnswer::Recovery => return Err("element owner query is recovery".to_string()),
     };
     match owner {
         DerivedElementOwner::Owner(actual) => {
@@ -5026,24 +4993,23 @@ fn observe_element_derived_documentation(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let values = match model
-        .inspection()
-        .element_derived_documentation(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values,
-        QueryOutcome::Incomplete => return Ok(ElementDerivedDocumentationObservation::Incomplete),
-        QueryOutcome::Unresolved => {
+    let values = match snapshot_answer(
+        model
+            .inspection()
+            .element_derived_documentation(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(values) => values,
+        QueryAnswer::Incomplete => return Ok(ElementDerivedDocumentationObservation::Incomplete),
+        QueryAnswer::Unresolved => {
             return Err("element documentation query is unresolved".to_string())
         }
-        QueryOutcome::Ambiguous(_) => {
+        QueryAnswer::Ambiguous(_) => {
             return Err("element documentation query is ambiguous".to_string())
         }
-        QueryOutcome::Unsupported => {
+        QueryAnswer::Unsupported => {
             return Err("element documentation query is unsupported".to_string())
         }
-        QueryOutcome::Recovery => return Err("element documentation query is recovery".to_string()),
+        QueryAnswer::Recovery => return Err("element documentation query is recovery".to_string()),
     };
     let texts = values
         .iter()
@@ -5068,20 +5034,17 @@ fn observe_namespace_derived_element(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let values = match model
-        .inspection()
-        .namespace_derived_elements(source, expectation.collection)
-    {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values,
-        QueryOutcome::Incomplete => return Ok(NamespaceDerivedElementObservation::Incomplete),
-        QueryOutcome::Unsupported => return Ok(NamespaceDerivedElementObservation::Unsupported),
-        QueryOutcome::Unresolved => return Err("Namespace element query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => {
-            return Err("Namespace element query is ambiguous".to_string())
-        }
-        QueryOutcome::Recovery => return Err("Namespace element query is recovery".to_string()),
+    let values = match snapshot_answer(
+        model
+            .inspection()
+            .namespace_derived_elements(source, expectation.collection),
+    ) {
+        QueryAnswer::Resolved(values) => values,
+        QueryAnswer::Incomplete => return Ok(NamespaceDerivedElementObservation::Incomplete),
+        QueryAnswer::Unsupported => return Ok(NamespaceDerivedElementObservation::Unsupported),
+        QueryAnswer::Unresolved => return Err("Namespace element query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => return Err("Namespace element query is ambiguous".to_string()),
+        QueryAnswer::Recovery => return Err("Namespace element query is recovery".to_string()),
     };
     let expected = expectation
         .target
@@ -5106,21 +5069,20 @@ fn observe_namespace_import_derived_element(
         Err(status) => return Err(format!("owner reference is {}", status.description())),
     };
     let NamespaceImportDerivedElementKind::ImportedElement = expectation.kind;
-    let values = match model.inspection().namespace_import_derived_elements(owner) {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values,
-        QueryOutcome::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
-        QueryOutcome::Unresolved => {
+    let values = match snapshot_answer(model.inspection().namespace_import_derived_elements(owner))
+    {
+        QueryAnswer::Resolved(values) => values,
+        QueryAnswer::Incomplete => return Ok(SemanticRelationshipObservation::Incomplete),
+        QueryAnswer::Unresolved => {
             return Err("NamespaceImport element query is unresolved".to_string())
         }
-        QueryOutcome::Ambiguous(_) => {
+        QueryAnswer::Ambiguous(_) => {
             return Err("NamespaceImport element query is ambiguous".to_string())
         }
-        QueryOutcome::Unsupported => {
+        QueryAnswer::Unsupported => {
             return Err("NamespaceImport element query is unsupported".to_string())
         }
-        QueryOutcome::Recovery => {
+        QueryAnswer::Recovery => {
             return Err("NamespaceImport element query is recovery".to_string())
         }
     };
@@ -5143,20 +5105,17 @@ fn observe_binding_connector_check(
     model: &PublishedModel,
     expectation: &BindingConnectorCheckExpectation,
 ) -> Result<BindingConnectorCheckObservation, String> {
-    match model
-        .inspection()
-        .binding_connector_validation(expectation.rule)
-    {
-        QueryOutcome::Resolved(outcome)
-        | QueryOutcome::Recovered(outcome)
-        | QueryOutcome::UnsupportedWith(outcome) => {
-            Ok(BindingConnectorCheckObservation::Outcome(outcome))
-        }
-        QueryOutcome::Incomplete => Ok(BindingConnectorCheckObservation::Incomplete),
-        QueryOutcome::Unresolved => Err("BindingConnector check query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => Err("BindingConnector check query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => Err("BindingConnector check query is unsupported".to_string()),
-        QueryOutcome::Recovery => Err("BindingConnector check query is recovery".to_string()),
+    match snapshot_answer(
+        model
+            .inspection()
+            .binding_connector_validation(expectation.rule),
+    ) {
+        QueryAnswer::Resolved(outcome) => Ok(BindingConnectorCheckObservation::Outcome(outcome)),
+        QueryAnswer::Incomplete => Ok(BindingConnectorCheckObservation::Incomplete),
+        QueryAnswer::Unresolved => Err("BindingConnector check query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => Err("BindingConnector check query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => Err("BindingConnector check query is unsupported".to_string()),
+        QueryAnswer::Recovery => Err("BindingConnector check query is recovery".to_string()),
     }
 }
 
@@ -5164,17 +5123,13 @@ fn observe_redefinition_check(
     model: &PublishedModel,
     expectation: &RedefinitionCheckExpectation,
 ) -> Result<RedefinitionCheckObservation, String> {
-    match model.inspection().redefinition_check(expectation.rule) {
-        QueryOutcome::Resolved(outcome)
-        | QueryOutcome::Recovered(outcome)
-        | QueryOutcome::UnsupportedWith(outcome) => {
-            Ok(RedefinitionCheckObservation::Outcome(outcome))
-        }
-        QueryOutcome::Incomplete => Ok(RedefinitionCheckObservation::Incomplete),
-        QueryOutcome::Unresolved => Err("redefinition check query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => Err("redefinition check query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => Err("redefinition check query is unsupported".to_string()),
-        QueryOutcome::Recovery => Err("redefinition check query is recovery".to_string()),
+    match snapshot_answer(model.inspection().redefinition_check(expectation.rule)) {
+        QueryAnswer::Resolved(outcome) => Ok(RedefinitionCheckObservation::Outcome(outcome)),
+        QueryAnswer::Incomplete => Ok(RedefinitionCheckObservation::Incomplete),
+        QueryAnswer::Unresolved => Err("redefinition check query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => Err("redefinition check query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => Err("redefinition check query is unsupported".to_string()),
+        QueryAnswer::Recovery => Err("redefinition check query is recovery".to_string()),
     }
 }
 
@@ -5182,17 +5137,13 @@ fn observe_specialization_check(
     model: &PublishedModel,
     expectation: &SpecializationCheckExpectation,
 ) -> Result<SpecializationCheckObservation, String> {
-    match model.inspection().specialization_check(expectation.rule) {
-        QueryOutcome::Resolved(outcome)
-        | QueryOutcome::Recovered(outcome)
-        | QueryOutcome::UnsupportedWith(outcome) => {
-            Ok(SpecializationCheckObservation::Outcome(outcome))
-        }
-        QueryOutcome::Incomplete => Ok(SpecializationCheckObservation::Incomplete),
-        QueryOutcome::Unresolved => Err("specialization check query is unresolved".to_string()),
-        QueryOutcome::Ambiguous(_) => Err("specialization check query is ambiguous".to_string()),
-        QueryOutcome::Unsupported => Err("specialization check query is unsupported".to_string()),
-        QueryOutcome::Recovery => Err("specialization check query is recovery".to_string()),
+    match snapshot_answer(model.inspection().specialization_check(expectation.rule)) {
+        QueryAnswer::Resolved(outcome) => Ok(SpecializationCheckObservation::Outcome(outcome)),
+        QueryAnswer::Incomplete => Ok(SpecializationCheckObservation::Incomplete),
+        QueryAnswer::Unresolved => Err("specialization check query is unresolved".to_string()),
+        QueryAnswer::Ambiguous(_) => Err("specialization check query is ambiguous".to_string()),
+        QueryAnswer::Unsupported => Err("specialization check query is unsupported".to_string()),
+        QueryAnswer::Recovery => Err("specialization check query is recovery".to_string()),
     }
 }
 
@@ -6468,12 +6419,25 @@ fn execute_generation(
         )
     })?;
     let model_digest = publication.publication().model_digest();
-    let model = Arc::new(GeneratorModelView::new(
-        Arc::clone(&publication),
-        model_digest,
-        env!("CARGO_PKG_VERSION"),
-        QueryLimits::default(),
-    ));
+    let model = Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(&publication),
+            model_digest.to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .map_err(|error| {
+            format!(
+                "{}: generator model unavailable: {error}",
+                fixture_path.display()
+            )
+        })?,
+    );
+    debug_assert_eq!(
+        model.publication_completeness(),
+        publication.publication().completeness(),
+        "snapshot evidence must record the exact publication completeness"
+    );
     let args = generation_arguments(request, &publication, &model, fixture_path)?;
     let runtime = GeneratorRuntime::new().map_err(|error| {
         format!(
@@ -6546,21 +6510,22 @@ fn generation_arguments(
             selection.kind
         )
     })?;
-    let document = QuerySourceDocument::from_memory_path(
-        "snapshot",
-        &selection.document,
-        String::new(),
-        SourceKind::Workspace,
-    )
-    .map_err(|error| {
-        format!(
-            "{}: invalid diagram selection document {:?}: {error}",
-            fixture_path.display(),
-            selection.document
+    let document = SourceService::new()
+        .admit_memory(
+            "snapshot",
+            &selection.document,
+            String::new(),
+            SourceKind::Workspace,
         )
-    })?;
+        .map_err(|error| {
+            format!(
+                "{}: invalid diagram selection document {:?}: {error}",
+                fixture_path.display(),
+                selection.document
+            )
+        })?;
     let reference = QualifiedElementReference {
-        document: Some(document.identity().into()),
+        document: Some(document.uri().as_str().into()),
         qualified_name: selection.qualified_name.clone().into(),
         expected_kind: Some(expected_kind),
     };
@@ -6653,19 +6618,6 @@ struct OwnedSections {
     navigation: String,
     editor_queries: String,
     qualified_references: String,
-}
-
-fn build_model_with_library(
-    workspace_documents: &[QuerySourceDocument],
-    construction: ConstructionStrategy,
-    library: &LibraryStratum,
-    path: &Path,
-) -> Result<PublishedModel, String> {
-    let request =
-        BuildRequest::resolved_with_library(workspace_documents.to_vec(), construction, library)
-            .map_err(|error| format!("{}: invalid warm semantic input: {error}", path.display()))?;
-    build_published_model(request)
-        .map_err(|error| format!("{}: warm semantic build failed: {error}", path.display()))
 }
 
 fn render_owned_sections(
@@ -7321,14 +7273,15 @@ fn parse_qualified_reference_probes(
                     "{fallback_name}: unknown reference document {document_name:?}"
                 ));
             }
-            let source = QuerySourceDocument::from_memory_path(
-                "snapshot",
-                document_name,
-                String::new(),
-                SourceKind::Workspace,
-            )
-            .map_err(|error| format!("{fallback_name}: invalid reference document: {error}"))?;
-            Some(source.identity().to_string())
+            let source = SourceService::new()
+                .admit_memory(
+                    "snapshot",
+                    document_name,
+                    String::new(),
+                    SourceKind::Workspace,
+                )
+                .map_err(|error| format!("{fallback_name}: invalid reference document: {error}"))?;
+            Some(source.uri().as_str().to_string())
         };
         let qualified_name = fields
             .next()
@@ -7495,6 +7448,44 @@ fn fenced_block(input: &str) -> Option<(String, &str)> {
 mod tests {
     use super::*;
     use spec42_constraint_manifest::{SpecificationManifest, SCHEMA_VERSION};
+
+    #[test]
+    fn snapshot_replacement_is_atomic_per_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let fixture = directory.path().join("fixture.md");
+        fs::write(&fixture, "before").unwrap();
+
+        replace_snapshot_files(vec![(fixture.clone(), b"after".to_vec())]).unwrap();
+
+        assert_eq!(fs::read_to_string(fixture).unwrap(), "after");
+    }
+
+    #[test]
+    fn snapshot_staging_failure_changes_no_targets() {
+        let directory = tempfile::tempdir().unwrap();
+        let first = directory.path().join("first.md");
+        let unavailable = directory.path().join("missing/second.md");
+        fs::write(&first, "before").unwrap();
+
+        let error = replace_snapshot_files(vec![
+            (first.clone(), b"after".to_vec()),
+            (unavailable, b"never".to_vec()),
+        ])
+        .unwrap_err();
+
+        assert!(error.contains("staging file creation failed"));
+        assert_eq!(fs::read_to_string(first).unwrap(), "before");
+        assert!(
+            fs::read_dir(directory.path()).unwrap().all(|entry| {
+                !entry
+                    .unwrap()
+                    .file_name()
+                    .to_string_lossy()
+                    .starts_with(".spec42-snapshot-")
+            }),
+            "failed staging must clean up temporary files"
+        );
+    }
 
     #[test]
     fn cli_does_not_allow_a_strategy_override() {

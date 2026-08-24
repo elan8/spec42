@@ -137,6 +137,8 @@ jobs:
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
 
+      - name: Deterministic SysML fuzz seed corpus
+        run: cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
 
       - name: Generator conformance corpus
         run: |

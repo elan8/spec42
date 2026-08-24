@@ -152,9 +152,16 @@ pub fn complete(
         &hints,
         &edit_shape,
     ));
+    let semantic_status = workspace
+        .published_model()
+        .map(|model| {
+            crate::dto::SemanticResultStatus::from_publication(model.publication().completeness())
+        })
+        .unwrap_or_default();
     Some(CompletionResult {
         items,
-        is_incomplete: false,
+        is_incomplete: !semantic_status.is_complete(),
+        semantic_status,
     })
 }
 
@@ -628,26 +635,25 @@ fn collect_symbol_candidates(
         },
         qualifier.map(|value| value.trim_end_matches(':')),
     );
-    let mut members = match outcome {
-        sysml_query::resolved_slice::QueryOutcome::Resolved(members)
-        | sysml_query::resolved_slice::QueryOutcome::Recovered(members)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(members) => {
+    let mut members = match outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(members) => {
             members.iter().collect::<Vec<_>>()
         }
         _ => return,
     };
     if qualifier.is_some() {
-        match completion.visible_members(
-            current_uri.as_str(),
-            sysml_query::resolved_slice::TextPosition {
-                line: query_position.line,
-                character: query_position.character,
-            },
-            None,
-        ) {
-            sysml_query::resolved_slice::QueryOutcome::Resolved(extra)
-            | sysml_query::resolved_slice::QueryOutcome::Recovered(extra)
-            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(extra) => {
+        match completion
+            .visible_members(
+                current_uri.as_str(),
+                sysml_query::resolved_slice::TextPosition {
+                    line: query_position.line,
+                    character: query_position.character,
+                },
+                None,
+            )
+            .answer
+        {
+            sysml_query::resolved_slice::QueryAnswer::Resolved(extra) => {
                 members.extend(extra.iter())
             }
             _ => {}

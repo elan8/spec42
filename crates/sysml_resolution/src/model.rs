@@ -1400,6 +1400,7 @@ pub(crate) mod evaluation;
 pub(crate) mod query;
 pub(crate) mod render;
 pub(crate) mod resolver;
+pub(crate) mod span;
 
 #[cfg(test)]
 mod tests {

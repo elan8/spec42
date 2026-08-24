@@ -333,7 +333,7 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
 
     let vehicle = inspect(&mut session, uri, 3, 12);
     let vehicle_element = &vehicle["result"]["containingElement"];
-    assert_eq!(vehicle["result"]["version"].as_u64(), Some(2));
+    assert_eq!(vehicle["result"]["version"].as_u64(), Some(3));
     assert_eq!(
         vehicle_element["documentation"].as_str(),
         Some("A reusable vehicle definition.")

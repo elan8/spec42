@@ -75,32 +75,6 @@ struct ForwardEdge {
 
 const FORWARD_EDGES: &[ForwardEdge] = &[
     ForwardEdge {
-        from: "check",
-        to: "diagnose",
-        item: "document_range",
-        reason: "a pure span-projection helper misfiled in the diagnostics phase; it derives no \
-                 diagnostic and reads no assembled model",
-    },
-    ForwardEdge {
-        from: "index",
-        to: "diagnose",
-        item: "document_range",
-        reason: "same span-projection helper as check -> diagnose",
-    },
-    ForwardEdge {
-        from: "index",
-        to: "diagnose",
-        item: "declaration_identifier_range",
-        reason: "span projection for a declaration's own identifier; derives no diagnostic",
-    },
-    ForwardEdge {
-        from: "index",
-        to: "diagnose",
-        item: "identifier_range",
-        reason: "the same span projection for one segment of an authored reference path; the \
-                 index settles it at the barrier so a navigation query never reads source text",
-    },
-    ForwardEdge {
         from: "evaluate",
         to: "index",
         item: "expressions",

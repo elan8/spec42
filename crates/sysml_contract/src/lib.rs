@@ -49,7 +49,7 @@ pub use element_kind::{
 pub use position::{OccurrenceRole, TextPosition, TextRange};
 pub use publication::{
     EvaluationFailure, LibrarySpecializationAnchorBranch, PublicationCompleteness,
-    VerificationOutcome,
+    PublicationObstacle, QueryAnswer, QueryOutcome, VerificationOutcome,
 };
 pub use relationship::{
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, Conformance,
@@ -58,6 +58,7 @@ pub use relationship::{
     SpecializationCheckPrerequisite, SpecializationScope, SubsettingConformance,
     TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
+pub use source_identity::{PublicationEvaluationPolicy, PublicationModelDigest};
 pub use symbol::{SymbolId, SymbolToken};
 pub use syntax::{ImportScope, SyntaxOutlineKind};
 pub use text::TextId;

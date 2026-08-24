@@ -3,7 +3,6 @@
 //! The writer accepts only the resolved owner and a caller-provided `fmt::Write`. It does not
 //! expose storage collections or return projections that could become a second semantic model.
 
-use crate::diagnose::document_range;
 #[cfg(test)]
 #[cfg(test)]
 #[cfg(test)]
@@ -26,6 +25,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -39,7 +39,6 @@ use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
 use crate::TextRange;
 use source_identity::SourceRole;
-use sysml_contract::PublicationCompleteness;
 
 use std::fmt;
 
@@ -316,11 +315,20 @@ pub(crate) fn write_metadata(
     let phase = match model.metadata.phase {
         PublicationPhase::Resolved => "resolved",
     };
-    let completeness = match model.metadata.completeness {
-        PublicationCompleteness::Complete => "complete",
-        PublicationCompleteness::ParseRecovery => "parse-recovery",
-        PublicationCompleteness::UnsupportedSyntax => "unsupported-syntax",
-        PublicationCompleteness::NonConverged => "non-converged",
+    let completeness = if model.metadata.completeness.is_complete() {
+        "complete".to_owned()
+    } else {
+        model
+            .metadata
+            .completeness
+            .obstacles()
+            .map(|obstacle| match obstacle {
+                crate::PublicationObstacle::ParseRecovery => "parse-recovery",
+                crate::PublicationObstacle::UnsupportedSyntax => "unsupported-syntax",
+                crate::PublicationObstacle::NonConverged => "non-converged",
+            })
+            .collect::<Vec<_>>()
+            .join(",")
     };
     write!(
         output,

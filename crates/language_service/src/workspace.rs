@@ -38,6 +38,15 @@ pub trait WorkspaceSnapshot {
     /// need a syntax answer ask the tree for it instead of re-deriving one from the text.
     fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource>;
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
+    fn semantic_status(&self) -> crate::dto::SemanticResultStatus {
+        self.published_model()
+            .map(|model| {
+                crate::dto::SemanticResultStatus::from_publication(
+                    model.publication().completeness(),
+                )
+            })
+            .unwrap_or_default()
+    }
     fn symbol_table(&self) -> &[SymbolEntry];
     fn index_uris(&self) -> Vec<Url>;
     fn normalize_uri(&self, uri: &Url) -> Url {

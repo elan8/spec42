@@ -264,6 +264,105 @@ macro_rules! digest_newtype {
 digest_newtype!(ContentDigest, "spec42.source_identity.content.v1");
 digest_newtype!(RootDigest, "spec42.source_identity.root.v1");
 digest_newtype!(ArtifactKey, "spec42.cache.artifact_key.v1");
+digest_newtype!(PublicationModelDigest, "spec42.publication.model.v2");
+digest_newtype!(LibraryStratumKey, "spec42.library.stratum.v4");
+digest_newtype!(LibraryListingKey, "spec42.library.listing.v2");
+
+/// Evaluation configuration committed into a publication identity.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PublicationEvaluationPolicy {
+    Evaluate,
+    Skip,
+}
+
+impl PublicationEvaluationPolicy {
+    const fn tag(self) -> u8 {
+        match self {
+            Self::Evaluate => 0,
+            Self::Skip => 1,
+        }
+    }
+}
+
+impl PublicationModelDigest {
+    /// Commits every semantic prerequisite of a published model. `reported_documents` must be
+    /// supplied in the canonical order owned by the publication request.
+    pub fn new<'a>(
+        source_digest: RootDigest,
+        semantic_contract_version: &str,
+        evaluation_policy: PublicationEvaluationPolicy,
+        reported_documents: impl IntoIterator<Item = &'a str>,
+    ) -> Self {
+        let mut enc = CanonicalEncoder::new(Self::DOMAIN);
+        enc.field(source_digest.as_bytes());
+        enc.field(semantic_contract_version.as_bytes());
+        enc.field(&[evaluation_policy.tag()]);
+        for document in reported_documents {
+            enc.field(document.as_bytes());
+        }
+        Self::from_encoder(&enc)
+    }
+}
+
+/// Identity-relevant fields of one ordered library source.
+#[derive(Debug, Clone, Copy)]
+pub struct LibrarySourceIdentity<'a> {
+    uri: &'a str,
+    role: SourceRole,
+    content_digest: ContentDigest,
+    library_location: Option<(u32, &'a str)>,
+}
+
+impl<'a> LibrarySourceIdentity<'a> {
+    pub fn new(
+        uri: &'a str,
+        role: SourceRole,
+        content_digest: ContentDigest,
+        library_location: Option<(u32, &'a str)>,
+    ) -> Self {
+        Self {
+            uri,
+            role,
+            content_digest,
+            library_location,
+        }
+    }
+}
+
+fn encode_library_sources<'a>(
+    domain: &str,
+    sources: impl IntoIterator<Item = LibrarySourceIdentity<'a>>,
+) -> CanonicalEncoder {
+    let mut enc = CanonicalEncoder::new(domain);
+    for source in sources {
+        enc.field(source.uri.as_bytes());
+        enc.field(&[source.role.tag()]);
+        enc.field(source.content_digest.as_bytes());
+        enc.field_u64(
+            source
+                .library_location
+                .map_or(0, |(slot, _)| u64::from(slot) + 1),
+        );
+        if let Some((_, relative_path)) = source.library_location {
+            enc.field(relative_path.as_bytes());
+        }
+    }
+    enc
+}
+
+impl LibraryStratumKey {
+    /// Commits the caller's canonical source order. Reordering sources is intentionally visible.
+    pub fn new<'a>(sources: impl IntoIterator<Item = LibrarySourceIdentity<'a>>) -> Self {
+        Self::from_encoder(&encode_library_sources(Self::DOMAIN, sources))
+    }
+}
+
+impl LibraryListingKey {
+    /// Commits configured root precedence and deterministic listing order exactly as supplied.
+    pub fn new<'a>(sources: impl IntoIterator<Item = LibrarySourceIdentity<'a>>) -> Self {
+        Self::from_encoder(&encode_library_sources(Self::DOMAIN, sources))
+    }
+}
 
 impl ArtifactKey {
     /// Two lowercase hex bytes each, used for the two-level object directory sharding
@@ -528,6 +627,140 @@ mod tests {
         assert_ne!(content.digest(), root.digest());
         assert_ne!(root.digest(), key.digest());
         assert_ne!(content.digest(), key.digest());
+    }
+
+    #[test]
+    fn semantic_identity_domains_are_separate_for_identical_fields() {
+        let source = LibrarySourceIdentity {
+            uri: "file:///lib/a.sysml",
+            role: SourceRole::Library,
+            content_digest: ContentDigest::of_bytes(b"package A;"),
+            library_location: Some((0, "a.sysml")),
+        };
+        assert_ne!(
+            LibraryStratumKey::new([source]).digest(),
+            LibraryListingKey::new([source]).digest()
+        );
+    }
+
+    #[test]
+    fn publication_digest_commits_each_field_and_report_order() {
+        let root = RootDigest::of_bytes(b"sources");
+        let base = PublicationModelDigest::new(
+            root,
+            "contract",
+            PublicationEvaluationPolicy::Evaluate,
+            ["a", "b"],
+        );
+        assert_ne!(
+            base,
+            PublicationModelDigest::new(
+                RootDigest::of_bytes(b"other"),
+                "contract",
+                PublicationEvaluationPolicy::Evaluate,
+                ["a", "b"],
+            )
+        );
+        assert_ne!(
+            base,
+            PublicationModelDigest::new(
+                root,
+                "other",
+                PublicationEvaluationPolicy::Evaluate,
+                ["a", "b"],
+            )
+        );
+        assert_ne!(
+            base,
+            PublicationModelDigest::new(
+                root,
+                "contract",
+                PublicationEvaluationPolicy::Skip,
+                ["a", "b"],
+            )
+        );
+        assert_ne!(
+            base,
+            PublicationModelDigest::new(
+                root,
+                "contract",
+                PublicationEvaluationPolicy::Evaluate,
+                ["b", "a"],
+            )
+        );
+    }
+
+    #[test]
+    fn library_keys_commit_every_source_field_and_order() {
+        let digest = ContentDigest::of_bytes(b"same");
+        let source = LibrarySourceIdentity {
+            uri: "file:///lib/a.sysml",
+            role: SourceRole::Library,
+            content_digest: digest,
+            library_location: Some((0, "a.sysml")),
+        };
+        let base = LibraryStratumKey::new([source]);
+        let changed = |entry| LibraryStratumKey::new([entry]);
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                uri: "file:///lib/b.sysml",
+                ..source
+            })
+        );
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                role: SourceRole::StandardLibrary,
+                ..source
+            })
+        );
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                content_digest: ContentDigest::of_bytes(b"edit"),
+                ..source
+            })
+        );
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                library_location: Some((1, "a.sysml")),
+                ..source
+            })
+        );
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                library_location: Some((0, "b.sysml")),
+                ..source
+            })
+        );
+
+        let second = LibrarySourceIdentity {
+            uri: "file:///lib/b.sysml",
+            library_location: Some((0, "b.sysml")),
+            ..source
+        };
+        assert_ne!(
+            LibraryStratumKey::new([source, second]),
+            LibraryStratumKey::new([second, source])
+        );
+    }
+
+    #[test]
+    fn structured_library_fields_cannot_collide_at_boundaries() {
+        let digest = ContentDigest::of_bytes(b"same");
+        let entry = |uri, path| LibrarySourceIdentity {
+            uri,
+            role: SourceRole::Library,
+            content_digest: digest,
+            library_location: Some((0, path)),
+        };
+        assert_ne!(
+            LibraryListingKey::new([entry("ab", "c")]),
+            LibraryListingKey::new([entry("a", "bc")])
+        );
     }
 
     #[test]

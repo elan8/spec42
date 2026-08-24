@@ -37,6 +37,9 @@ pub(crate) fn sysml_feature_inspector_result(
         ),
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
+    response.semantic_status = language_service::dto::SemanticResultStatus::from_publication(
+        model.publication().completeness(),
+    );
 
     if let Some(literal) = entry
         .parsed
@@ -127,7 +130,8 @@ pub(crate) fn sysml_library_search_result(
     // Startup can admit a library document to the publication before the search-only index pass.
     // Build any missing entries from that same publication, retaining the parser-backed search
     // projection only for documents deliberately not admitted to semantic construction.
-    let mut search_symbols = state.symbol_table.clone();
+    let mut search_symbols = state.semantic_symbols.clone();
+    search_symbols.extend(state.recovery_search_symbols.iter().cloned());
     for (uri, index_entry) in &state.index {
         if !crate::common::util::uri_under_any_library(uri, &state.library_paths)
             || search_symbols.iter().any(|entry| entry.uri == *uri)
@@ -231,7 +235,7 @@ pub(crate) fn sysml_server_stats_result(
         memory: dto::SysmlServerMemoryDto { rss: 0 },
         caches: dto::SysmlServerCachesDto {
             documents: state.index.len(),
-            symbol_tables: state.symbol_table.len(),
+            symbol_tables: state.semantic_symbols.len() + state.recovery_search_symbols.len(),
             semantic_tokens: 0,
         },
     }
@@ -240,11 +244,12 @@ pub(crate) fn sysml_server_stats_result(
 /// Clears the document-store side of the cache (index/symbol table/publication/render cache),
 /// returning the pre-clear document and symbol counts. Called via
 /// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure.
-pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usize, usize) {
+pub(crate) fn clear_document_store_state(state: &mut ServerState) -> (usize, usize) {
     let docs = state.index().len();
-    let syms = state.symbol_table_mut().len();
+    let syms = state.semantic_symbols.len() + state.recovery_search_symbols.len();
     state.index_mut().clear();
-    state.symbol_table_mut().clear();
+    state.semantic_symbols.clear();
+    state.recovery_search_symbols.clear();
     (docs, syms)
 }
 

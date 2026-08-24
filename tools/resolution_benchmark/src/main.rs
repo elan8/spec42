@@ -20,10 +20,11 @@ use std::time::{Duration, Instant};
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sysml_query::resolved_slice::{
-    build_measured, AdmittedSource as QuerySourceDocument, BuildMeasurements, BuildRequest,
-    ConstructionStrategy, PublicationCompleteness, PublishedModel, QueryOutcome, SourceKind,
+    BuildMeasurements, PublicationCompleteness, PublicationObstacle, PublishedModel, QueryAnswer,
     SpecializationScope, SymbolId, TextPosition,
 };
+use sysml_query::source::{SourceDocument as QuerySourceDocument, SourceKind};
+use sysml_query::Services;
 
 const REVIEWED_PRIMARY_TARGET_NS: u64 = 1_000_000_000;
 
@@ -245,9 +246,10 @@ fn main() -> Result<(), String> {
         .model
         .map(|model| vec![model])
         .unwrap_or_else(|| vec![ModelSize::Small, ModelSize::Medium, ModelSize::Large]);
+    let services = Services::new();
     let workloads = sizes
         .into_iter()
-        .map(|size| run_workload(&cli, size))
+        .map(|size| run_workload(&cli, &services, size))
         .collect::<Result<Vec<_>, _>>()?;
     let report = Report {
         schema_version: 1,
@@ -267,7 +269,7 @@ fn main() -> Result<(), String> {
             build_profile: if cfg!(debug_assertions) { "debug" } else { "release" },
         },
         methodology: Methodology {
-            construction: "BuildRequest selects the parallel construction schedule; the opaque publication owner controls internal scheduling and deterministic canonicalization",
+            construction: "PublicationService owns internal scheduling, reuse, and deterministic canonicalization",
             evaluation: "the publication evaluates supported constant expressions; per-phase parse, lowering, and resolution wall times are reported by the owner at its own barriers",
             fresh_build_definition: "a new immutable source snapshot and opaque PublishedModel are constructed for every sample; no semantic cache is reused, while OS filesystem and allocator caches are not controlled",
             replacement_definition: "one workspace document receives a fixed-size comment edit; a reader thread repeatedly queries the prior immutable publication while the replacement model is built",
@@ -307,7 +309,7 @@ fn main() -> Result<(), String> {
     Ok(())
 }
 
-fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
+fn run_workload(cli: &Cli, services: &Services, size: ModelSize) -> Result<WorkloadReport, String> {
     let relative_manifest = PathBuf::from(format!(
         "tests/benchmarks/canonical_resolution/{}.txt",
         size.name()
@@ -332,12 +334,13 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
         let loaded = load_workload(&cli.repo_root, &manifest, size.name())?;
         let source_acquisition_ns = nanos(acquisition_started.elapsed());
         let documents = loaded.documents;
-        let built = build_model(&documents)?;
+        let built = build_model(services, &documents)?;
         let request_and_build_wall_time_ns = built
             .request_preparation_ns
             .saturating_add(built.publication_build_wall_time_ns);
         downstream_queries.push(measure_downstream(
             &built.model,
+            services,
             &documents,
             cli.query_repetitions,
         )?);
@@ -350,10 +353,11 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
             owner_phases: built.measurements.into(),
         });
         last_documents = documents;
-        last_model = Some(Arc::new(built.model));
+        last_model = Some(Arc::clone(&built.model));
     }
     let (replacements, _) = measure_replacements(
         last_model.expect("positive iterations"),
+        services,
         &last_documents,
         cli.replacement_builds,
     )?;
@@ -386,21 +390,21 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
 }
 
 struct BuiltModel {
-    model: PublishedModel,
+    model: Arc<PublishedModel>,
     request_preparation_ns: u64,
     publication_build_wall_time_ns: u64,
     measurements: BuildMeasurements,
 }
 
-fn build_model(documents: &[BenchmarkDocument]) -> Result<BuiltModel, String> {
+fn build_model(services: &Services, documents: &[BenchmarkDocument]) -> Result<BuiltModel, String> {
     let request_started = Instant::now();
-    let sources = query_documents(documents)?;
-    let request = BuildRequest::resolved(sources, ConstructionStrategy::Parallel)
-        .map_err(|error| format!("invalid benchmark source snapshot: {error}"))?;
+    let sources = query_documents(documents, services)?;
     let request_preparation_ns = nanos(request_started.elapsed());
     let build_started = Instant::now();
-    let (model, measurements) =
-        build_measured(request).map_err(|error| format!("semantic build failed: {error}"))?;
+    let (model, measurements) = services
+        .publication
+        .publish_measured(&sources, [])
+        .map_err(|error| format!("semantic build failed: {error}"))?;
     Ok(BuiltModel {
         model,
         request_preparation_ns,
@@ -420,16 +424,18 @@ fn completeness_name(model: &PublishedModel) -> &'static str {
         PublicationCompleteness::ParseRecovery => "parse-recovery",
         PublicationCompleteness::UnsupportedSyntax => "unsupported-syntax",
         PublicationCompleteness::NonConverged => "non-converged",
+        _ => "multiple-obstacles",
     }
 }
 
 fn measure_downstream(
     model: &PublishedModel,
+    services: &Services,
     documents: &[BenchmarkDocument],
     repetitions: usize,
 ) -> Result<Vec<QueryMeasurement>, String> {
     let source_adapter_started = Instant::now();
-    let query_documents = query_documents(documents)?;
+    let query_documents = query_documents(documents, services)?;
     let source_adapter_elapsed = source_adapter_started.elapsed();
     let preparation_started = Instant::now();
     let prepared = prepare_queries(model, documents, &query_documents)?;
@@ -555,11 +561,16 @@ fn prepare_queries(
     let probes = source_probes(documents)?;
     let mut symbols = std::collections::BTreeSet::new();
     for (document, position) in &probes {
-        if let QueryOutcome::Resolved(target) | QueryOutcome::Recovered(target) = model
+        let outcome = model
             .navigation()
-            .target_at(query_documents[*document].identity(), *position)
+            .target_at(query_documents[*document].uri().as_str(), *position);
+        if !outcome
+            .completeness
+            .contains(PublicationObstacle::UnsupportedSyntax)
         {
-            symbols.insert(target.symbol);
+            if let QueryAnswer::Resolved(target) = outcome.answer {
+                symbols.insert(target.symbol);
+            }
         }
     }
     Ok(PreparedQueries {
@@ -578,11 +589,13 @@ fn run_navigation_queries(
         counts.operations += 1;
         let outcome = model
             .navigation()
-            .target_at(documents[*document].identity(), *position);
-        counts.results += u64::from(matches!(
-            outcome,
-            QueryOutcome::Resolved(_) | QueryOutcome::Recovered(_)
-        ));
+            .target_at(documents[*document].uri().as_str(), *position);
+        counts.results += u64::from(
+            !outcome
+                .completeness
+                .contains(PublicationObstacle::UnsupportedSyntax)
+                && matches!(outcome.answer, QueryAnswer::Resolved(_)),
+        );
         black_box(outcome);
     }
     counts
@@ -593,9 +606,13 @@ fn run_reference_queries(model: &PublishedModel, prepared: &PreparedQueries) -> 
     for &symbol in &prepared.symbols {
         counts.operations += 1;
         let occurrences = model.navigation().references(symbol, true);
-        if let QueryOutcome::Resolved(locations) | QueryOutcome::Recovered(locations) = &occurrences
+        if !occurrences
+            .completeness
+            .contains(PublicationObstacle::UnsupportedSyntax)
         {
-            counts.results += locations.len() as u64;
+            if let QueryAnswer::Resolved(locations) = &occurrences.answer {
+                counts.results += locations.len() as u64;
+            }
         }
         black_box(occurrences);
     }
@@ -610,11 +627,21 @@ fn run_type_queries(model: &PublishedModel, prepared: &PreparedQueries) -> Query
         let supertypes = model
             .types()
             .all_supertypes(symbol, SpecializationScope::AnySpecialization);
-        if let QueryOutcome::Resolved(types) | QueryOutcome::Recovered(types) = &effective {
-            counts.results += types.len() as u64;
+        if !effective
+            .completeness
+            .contains(PublicationObstacle::UnsupportedSyntax)
+        {
+            if let QueryAnswer::Resolved(types) = &effective.answer {
+                counts.results += types.len() as u64;
+            }
         }
-        if let QueryOutcome::Resolved(types) | QueryOutcome::Recovered(types) = &supertypes {
-            counts.results += types.len() as u64;
+        if !supertypes
+            .completeness
+            .contains(PublicationObstacle::UnsupportedSyntax)
+        {
+            if let QueryAnswer::Resolved(types) = &supertypes.answer {
+                counts.results += types.len() as u64;
+            }
         }
         black_box((effective, supertypes));
     }
@@ -623,6 +650,7 @@ fn run_type_queries(model: &PublishedModel, prepared: &PreparedQueries) -> Query
 
 fn measure_replacements(
     mut prior: Arc<PublishedModel>,
+    services: &Services,
     base_documents: &[BenchmarkDocument],
     replacement_builds: usize,
 ) -> Result<(Vec<ReplacementSample>, Arc<PublishedModel>), String> {
@@ -633,7 +661,7 @@ fn measure_replacements(
         let source_preparation_ns = nanos(preparation_started.elapsed());
 
         let reader_preparation_started = Instant::now();
-        let reader_documents = query_documents(base_documents)?;
+        let reader_documents = query_documents(base_documents, services)?;
         let prepared = prepare_queries(&prior, base_documents, &reader_documents)?;
         let prior_model_reader_preparation_ns = nanos(reader_preparation_started.elapsed());
         let stop = Arc::new(AtomicBool::new(false));
@@ -654,7 +682,7 @@ fn measure_replacements(
             (batches, operations, results)
         });
 
-        let built = build_model(&documents)?;
+        let built = build_model(services, &documents)?;
         let request_and_build_wall_time_ns = built
             .request_preparation_ns
             .saturating_add(built.publication_build_wall_time_ns);
@@ -673,7 +701,7 @@ fn measure_replacements(
             prior_model_reader_operations: operations,
             prior_model_reader_results: results,
         });
-        prior = Arc::new(built.model);
+        prior = built.model;
     }
     Ok((samples, prior))
 }
@@ -869,17 +897,22 @@ fn append_sources(
     Ok(())
 }
 
-fn query_documents(documents: &[BenchmarkDocument]) -> Result<Vec<QuerySourceDocument>, String> {
+fn query_documents(
+    documents: &[BenchmarkDocument],
+    services: &Services,
+) -> Result<Vec<QuerySourceDocument>, String> {
     documents
         .iter()
         .map(|document| {
-            QuerySourceDocument::from_memory_path(
-                "resolution-benchmark",
-                &document.path,
-                document.text.clone(),
-                document.source_kind,
-            )
-            .map_err(|error| format!("{}: construct query document: {error}", document.path))
+            services
+                .source
+                .admit_memory(
+                    "resolution-benchmark",
+                    &document.path,
+                    document.text.clone(),
+                    document.source_kind,
+                )
+                .map_err(|error| format!("{}: construct query document: {error}", document.path))
         })
         .collect()
 }

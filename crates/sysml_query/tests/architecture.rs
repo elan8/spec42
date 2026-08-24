@@ -11,10 +11,13 @@ use syn::{Fields, Item, ReturnType, Signature, Type, UseTree, Visibility};
 const DESIGNATED_CONSUMERS: &[&str] = &[
     "generator_api",
     "generator_conformance",
+    "generator_host",
     "kpar",
     "language_service",
+    "library_catalog",
     "lsp_server",
     "server",
+    "spec42-query-bench",
     "spec42-resolution-benchmark",
     "spec42-semantic-benchmark",
     "spec42-snapshot",
@@ -51,6 +54,10 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "SemanticModelIdentity",
     "SemanticBuildRequest",
     "PreparedSemanticBuildRequest",
+    "AdmittedSource",
+    "BuildRequest",
+    "ConstructionStrategy",
+    "LibraryStratum",
     "ImmutableSourceSnapshot",
     "SemanticQueryIndexes",
     "ResolutionState",
@@ -79,6 +86,29 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
     );
     let metadata: Value = serde_json::from_slice(&output.stdout).expect("parse cargo metadata");
     let packages = metadata["packages"].as_array().expect("packages array");
+    let actual_consumers = packages
+        .iter()
+        .filter(|package| {
+            package["dependencies"]
+                .as_array()
+                .expect("package dependencies")
+                .iter()
+                // `name` is the depended-on package name; `rename` is only the local spelling.
+                // Comparing the package name therefore also catches facade dependencies renamed
+                // in a consumer manifest.
+                .any(|dependency| dependency["name"] == "sysml_query")
+        })
+        .map(|package| package["name"].as_str().expect("package name").to_owned())
+        .collect::<BTreeSet<_>>();
+    let declared_consumers = DESIGNATED_CONSUMERS
+        .iter()
+        .map(|name| (*name).to_owned())
+        .collect::<BTreeSet<_>>();
+    assert_eq!(
+        actual_consumers, declared_consumers,
+        "the designated-consumer declaration must be the exact closed set of direct sysml_query \
+         dependants; classify every added consumer and delete every stale entry"
+    );
     let mut direct_model_dependencies = BTreeSet::new();
     for package in packages {
         let name = package["name"].as_str().expect("package name");
@@ -92,7 +122,7 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
         if dependency_names.contains("sysml_model") {
             direct_model_dependencies.insert(name);
         }
-        if DESIGNATED_CONSUMERS.contains(&name) {
+        if actual_consumers.contains(name) {
             assert!(
                 dependency_names.contains("sysml_query"),
                 "designated semantic consumer {name} must depend on sysml_query"
@@ -153,6 +183,27 @@ fn facade_tests_do_not_duplicate_semantic_pipeline_snapshots() {
 }
 
 #[test]
+fn publication_digest_vocabulary_is_routed_through_the_contract() {
+    let root = repository_root();
+    let contract = fs::read_to_string(root.join("crates/sysml_contract/src/lib.rs"))
+        .expect("read semantic contract root");
+    let resolution = fs::read_to_string(root.join("crates/sysml_resolution/src/lib.rs"))
+        .expect("read semantic authority root");
+    assert!(
+        contract.contains("PublicationModelDigest"),
+        "the publication digest must be part of the neutral semantic vocabulary"
+    );
+    assert!(
+        !resolution.contains("pub use source_identity::PublicationModelDigest"),
+        "the semantic authority must re-export publication identity through sysml_contract"
+    );
+    assert!(
+        resolution.contains("PublicationEvaluationPolicy, PublicationModelDigest"),
+        "the authority must consume the contract-owned publication identity vocabulary"
+    );
+}
+
+#[test]
 fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
     let root = repository_root();
     let output = Command::new(env!("CARGO"))
@@ -199,7 +250,6 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
     assert_eq!(
         actual_dependencies,
         BTreeSet::from([
-            "blake3".to_owned(),
             "hashbrown".to_owned(),
             "rayon".to_owned(),
             "serde".to_owned(),

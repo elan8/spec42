@@ -23,7 +23,6 @@
 //! with no specialization path between them in either direction.
 
 use crate::check::conformance;
-use crate::diagnose::document_range;
 use crate::index::expressions::conforms;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
@@ -31,6 +30,7 @@ use crate::index::types::TypeIndex;
 use crate::lower::facts::FilterForm;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;

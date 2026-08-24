@@ -39,7 +39,6 @@
 //! symbol two of them answer to is reported as ambiguous rather than decided by proximity. That is
 //! visible behaviour, not an accident -- see `tests/snapshots/resolution/ambiguous_unit_symbol.md`.
 
-use crate::diagnose::document_range;
 use crate::index::documents::record_visited_index_entries;
 use crate::index::types;
 use crate::index::types::TypeIndex;
@@ -47,6 +46,7 @@ use crate::lower::facts::FilterForm;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
@@ -59,6 +59,7 @@ use crate::ElementEvaluation;
 use crate::EvaluationState;
 use crate::ExpectedMeasurement;
 use crate::OccurrenceRole;
+use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::ResolvedUnit;
 use crate::SourceLocation;
@@ -838,7 +839,7 @@ impl<D> SemanticModel<D> {
         };
         match self.element_evaluation(declaration) {
             Some(evaluation) => self.resolved_outcome(evaluation),
-            None => QueryOutcome::Unresolved,
+            None => self.query_outcome(QueryAnswer::Unresolved),
         }
     }
 

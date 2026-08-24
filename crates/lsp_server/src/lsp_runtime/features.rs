@@ -197,9 +197,12 @@ fn element_at(
     uri: &Url,
     position: Position,
 ) -> Option<sysml_query::resolved_slice::ElementInspection> {
-    use sysml_query::resolved_slice::{QueryOutcome, TextPosition};
+    use sysml_query::resolved_slice::{QueryAnswer, QueryOutcome, TextPosition};
 
     let model = state.published_model();
+    if !model.publication().completeness().is_complete() {
+        return None;
+    }
     let at = match model.inspection().inspect_at(
         uri.as_str(),
         TextPosition {
@@ -207,9 +210,10 @@ fn element_at(
             character: position.character,
         },
     ) {
-        QueryOutcome::Resolved(at)
-        | QueryOutcome::Recovered(at)
-        | QueryOutcome::UnsupportedWith(at) => at,
+        QueryOutcome {
+            completeness: _publication_completeness,
+            answer: QueryAnswer::Resolved(at),
+        } => at,
         _ => return None,
     };
     at.containing
@@ -225,7 +229,7 @@ fn hierarchy_step(
     position: Position,
     ascending: bool,
 ) -> Option<Vec<TypeHierarchyItem>> {
-    use sysml_query::resolved_slice::{QueryOutcome, SpecializationScope};
+    use sysml_query::resolved_slice::{QueryAnswer, QueryOutcome, SpecializationScope};
 
     let model = state.published_model();
     let element = element_at(state, uri, position)?;
@@ -239,20 +243,20 @@ fn hierarchy_step(
             .direct_subtypes(element.identity, SpecializationScope::AnySpecialization)
     };
     let symbols = match outcome {
-        QueryOutcome::Resolved(symbols)
-        | QueryOutcome::Recovered(symbols)
-        | QueryOutcome::UnsupportedWith(symbols) => symbols,
+        QueryOutcome {
+            completeness: _publication_completeness,
+            answer: QueryAnswer::Resolved(symbols),
+        } => symbols,
         _ => return Some(Vec::new()),
     };
     Some(
         symbols
             .iter()
             .filter_map(|symbol| match model.inspection().inspect(*symbol) {
-                QueryOutcome::Resolved(inspection)
-                | QueryOutcome::Recovered(inspection)
-                | QueryOutcome::UnsupportedWith(inspection) => {
-                    hierarchy::type_hierarchy_item(model, &inspection)
-                }
+                QueryOutcome {
+                    completeness: _publication_completeness,
+                    answer: QueryAnswer::Resolved(inspection),
+                } => hierarchy::type_hierarchy_item(model, &inspection),
                 _ => None,
             })
             .collect(),

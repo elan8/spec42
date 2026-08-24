@@ -8,7 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use sysml_query::resolved_slice::{PublishedModel, QueryOutcome, TextPosition};
+use sysml_query::resolved_slice::{PublishedModel, QueryAnswer, QueryOutcome, TextPosition};
 use sysml_query::source::{SourceDocument, SourceKind};
 use sysml_query::Services;
 
@@ -56,6 +56,8 @@ pub struct CorpusDocument {
 pub struct Corpus {
     pub library: Vec<CorpusDocument>,
     pub library_bytes: usize,
+    /// Dependency-complete identity of the ordered benchmark inputs.
+    pub digest: String,
 }
 
 impl Corpus {
@@ -67,11 +69,33 @@ impl Corpus {
             return Err("the standard-library corpus is empty".into());
         }
         let library_bytes = library.iter().map(|document| document.text.len()).sum();
+        let mut workload = library.clone();
+        workload.push(CorpusDocument {
+            identity: WORKSPACE_DOCUMENT.to_owned(),
+            text: WORKSPACE_SOURCE.to_owned(),
+        });
+        let digest = corpus_digest(&workload);
         Ok(Self {
             library,
             library_bytes,
+            digest,
         })
     }
+}
+
+/// A stable, domain-separated digest over document identities and exact source bytes.
+pub fn corpus_digest(documents: &[CorpusDocument]) -> String {
+    let mut hasher = blake3::Hasher::new_derive_key("spec42.query-benchmark.corpus.v1");
+    for document in documents {
+        update_len_prefixed(&mut hasher, document.identity.as_bytes());
+        update_len_prefixed(&mut hasher, document.text.as_bytes());
+    }
+    format!("blake3:{}", hasher.finalize().to_hex())
+}
+
+fn update_len_prefixed(hasher: &mut blake3::Hasher, bytes: &[u8]) {
+    hasher.update(&(bytes.len() as u64).to_le_bytes());
+    hasher.update(bytes);
 }
 
 /// A warm host: one `Services`, the library admitted, one publication already built.
@@ -225,11 +249,10 @@ pub fn published_element_count(
 pub fn view_outcome_len(
     outcome: QueryOutcome<sysml_query::resolved_slice::VisibleMembers<'_>>,
 ) -> usize {
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values.len(),
-        QueryOutcome::Ambiguous(alternatives) => {
+    std::hint::black_box(outcome.completeness);
+    match outcome.answer {
+        QueryAnswer::Resolved(values) => values.len(),
+        QueryAnswer::Ambiguous(alternatives) => {
             alternatives.iter().map(|values| values.len()).sum()
         }
         _ => 0,
@@ -237,11 +260,10 @@ pub fn view_outcome_len(
 }
 
 pub fn outcome_len<T>(outcome: QueryOutcome<Box<[T]>>) -> usize {
-    match outcome {
-        QueryOutcome::Resolved(values)
-        | QueryOutcome::Recovered(values)
-        | QueryOutcome::UnsupportedWith(values) => values.len(),
-        QueryOutcome::Ambiguous(alternatives) => {
+    std::hint::black_box(outcome.completeness);
+    match outcome.answer {
+        QueryAnswer::Resolved(values) => values.len(),
+        QueryAnswer::Ambiguous(alternatives) => {
             alternatives.iter().map(|values| values.len()).sum()
         }
         _ => 0,
@@ -331,4 +353,46 @@ fn fenced_block(input: &str) -> Option<(String, &str)> {
     }
     let end = body.find("\n~~~")?;
     Some((body[..end].to_string(), &body[end + 4..]))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn corpus_digest_commits_document_boundaries_order_and_content() {
+        let documents = vec![
+            CorpusDocument {
+                identity: "a".into(),
+                text: "bc".into(),
+            },
+            CorpusDocument {
+                identity: "d".into(),
+                text: "e".into(),
+            },
+        ];
+        assert_eq!(corpus_digest(&documents), corpus_digest(&documents));
+        assert_ne!(
+            corpus_digest(&documents),
+            corpus_digest(&[CorpusDocument {
+                identity: "ab".into(),
+                text: "cde".into()
+            }])
+        );
+        let mut reversed = documents;
+        reversed.reverse();
+        assert_ne!(
+            corpus_digest(&reversed),
+            corpus_digest(&[
+                CorpusDocument {
+                    identity: "a".into(),
+                    text: "bc".into()
+                },
+                CorpusDocument {
+                    identity: "d".into(),
+                    text: "e".into()
+                },
+            ])
+        );
+    }
 }

@@ -1,12 +1,12 @@
 //! Phase 8: diagnostics, decided from the assembled model and nowhere else.
 
 use crate::diagnostics::UNCODED_PARSE_ERROR;
-use crate::lower::facts::LineIndex;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::storage::ParsedSources;
-use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
+use crate::model::span::document_range;
+use crate::model::span::identifier_character;
 use crate::model::AuthoredReferenceId;
 use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
@@ -20,7 +20,6 @@ use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
 use crate::TextPosition;
 use crate::TextRange;
-use sysml_v2_parser::ast::Span;
 use sysml_v2_parser::ParseError;
 use sysml_v2_parser::ParsedDocument;
 
@@ -194,21 +193,6 @@ impl<D> SemanticModel<D> {
 /// rather than as two calls a caller could interleave.
 pub(crate) type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
 
-pub(crate) fn document_range(
-    storage: &SemanticModelStorage,
-    document: DocumentIdx,
-    span: &Span,
-) -> Result<TextRange, ResolutionError> {
-    // From the settled line index, not from the parse tree: a sealed publication answers a
-    // location question from a fact it kept, never by re-reading source it no longer owns.
-    storage
-        .document(document)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .lines
-        .range(span)
-        .ok_or(ResolutionError::InvalidStorage)
-}
-
 pub(crate) fn parser_diagnostic_category(
     category: Option<sysml_v2_parser::DiagnosticCategory>,
 ) -> DiagnosticCategory {
@@ -350,117 +334,6 @@ pub(crate) fn reference_diagnostic(
             },
         )),
     }
-}
-
-/// Where a *declaration* writes its own name.
-///
-/// Distinct from [`identifier_range`], which searches a reference span and takes the last
-/// word-boundary match because a qualified path names its target in the final segment. A
-/// declaration span covers the whole declaration including its body, so the same rule finds the
-/// last mention of the name anywhere inside -- for `part def Vehicle { part engine : Vehicle; }`
-/// it points at the body's reference rather than at the declared name.
-///
-/// The declared name is in the header, after the keywords and after an optional `<shortName>`, so
-/// the search is bounded to the text before the body opener and skips the short-name group. A
-/// declaration whose header is unrecoverable -- a parse recovery that lost its `{` or `;` -- falls
-/// back to the whole-span search rather than losing its location entirely.
-pub(crate) fn declaration_identifier_range(
-    storage: &SemanticModelStorage,
-    sources: &ParsedSources,
-    document: DocumentIdx,
-    span: &Span,
-    identifier: &str,
-) -> Result<TextRange, ResolutionError> {
-    let lines = &storage
-        .document(document)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .lines;
-    let source = sources
-        .parsed(document)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .source
-        .slice(span)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let header = source
-        .find(['{', ';'])
-        .map_or(source, |body| &source[..body]);
-    let relative = word_boundary_matches(header, identifier)
-        .find(|start| !inside_short_name(header, *start))
-        .or_else(|| word_boundary_matches(header, identifier).next())
-        .or_else(|| word_boundary_matches(source, identifier).last())
-        .ok_or(ResolutionError::InvalidStorage)?;
-    identifier_text_range(lines, span, relative, identifier.len())
-}
-
-/// Whether `start` falls inside an unclosed `<`...`>` short-name group.
-pub(crate) fn inside_short_name(header: &str, start: usize) -> bool {
-    let before = &header[..start];
-    before
-        .rfind('<')
-        .is_some_and(|open| !before[open..].contains('>'))
-}
-
-/// Every occurrence of `identifier` in `text` that is not part of a longer identifier.
-pub(crate) fn word_boundary_matches<'a>(
-    text: &'a str,
-    identifier: &'a str,
-) -> impl Iterator<Item = usize> + 'a {
-    text.match_indices(identifier)
-        .filter(move |(start, _)| {
-            let before = text[..*start].chars().next_back();
-            let after = text[*start + identifier.len()..].chars().next();
-            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
-        })
-        .map(|(start, _)| start)
-}
-
-pub(crate) fn identifier_range(
-    storage: &SemanticModelStorage,
-    sources: &ParsedSources,
-    document: DocumentIdx,
-    span: &Span,
-    identifier: &str,
-) -> Result<TextRange, ResolutionError> {
-    let lines = &storage
-        .document(document)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .lines;
-    let source = sources
-        .parsed(document)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .source
-        .slice(span)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let relative = word_boundary_matches(source, identifier)
-        .last()
-        .ok_or(ResolutionError::InvalidStorage)?;
-    identifier_text_range(lines, span, relative, identifier.len())
-}
-
-pub(crate) fn identifier_text_range(
-    lines: &LineIndex,
-    span: &Span,
-    relative: usize,
-    length: usize,
-) -> Result<TextRange, ResolutionError> {
-    let start_offset = span
-        .offset
-        .checked_add(relative)
-        .ok_or(ResolutionError::Capacity)?;
-    let end_offset = start_offset
-        .checked_add(length)
-        .ok_or(ResolutionError::Capacity)?;
-    let start = lines
-        .position(start_offset)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let end = lines
-        .position(end_offset)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    Ok(TextRange { start, end })
-}
-
-pub(crate) fn identifier_character(character: char) -> bool {
-    character.is_alphanumeric() || matches!(character, '_' | '-')
 }
 
 pub(crate) fn valid_identifier(value: &str) -> bool {
