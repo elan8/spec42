@@ -43,7 +43,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:028606cb5a4be9bb66204d7148e92c1a2941d6359d3c6076839732ad12ba3283") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fa1595078c56e9e6dd8ba7f575a417b826d1d6663928bfaf44c990e0200c5b3c") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " Root package for the kitchen timer teaching example. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "KitchenTimerPorts") (import (shape namespace) (recursive false))))))
@@ -202,13 +202,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Battery-powered kitchen timer; PCB with MCU, display, buttons, buzzer driver; buzzer off-board. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::mcu::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::display::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buttons::pwr")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buzzerDriver::pwrIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "pcb::buzzerDriver::buzzerPwrOut")) (memberAccessOperand (reference "buzzer::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Battery")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buttons::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Buzzer")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::buzzerDriver::pwrIn")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "pcb::buzzerDriver::buzzerPwrOut")) (memberAccessOperand (reference "buzzer::pwr")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::display::pwr")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::mcu::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerPCB")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " MCU on PCB with built-in LCD controller; runs timer firmware; COM/SEG to display glass, GPIO to buttons. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonInputPort") (conjugated true)))))
@@ -222,13 +222,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerStateMachine")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " PCB assembly; display and buttons mounted on board; MCU and buzzer driver. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "buttons::output")) (memberAccessOperand (reference "mcu::buttonIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "buttons::output")) (memberAccessOperand (reference "mcu::buttonIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::displayOut")) (memberAccessOperand (reference "display::cmd")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::lcdDrive")) (memberAccessOperand (reference "display::lcdIn")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::buzzerOut")) (memberAccessOperand (reference "buzzerDriver::ctrlIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonInterface")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::buzzerOut")) (memberAccessOperand (reference "buzzerDriver::ctrlIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BuzzerDriver")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Display")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::displayOut")) (memberAccessOperand (reference "display::cmd")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "mcu::lcdDrive")) (memberAccessOperand (reference "display::lcdIn")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Microcontroller")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -602,42 +602,42 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "maxCurrent")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "pcb::buzzerDriver::buzzerPwrOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::mcu::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::display::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::buttons::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "pcb::buzzerDriver::pwrIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "buzzer::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0))
       (authored-target "Battery")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::buttons::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0))
       (authored-target "Buzzer")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::buzzerDriver::pwrIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "pcb::buzzerDriver::buzzerPwrOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "buzzer::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::display::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "pcb::mcu::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind featureTyping) (ordinal 0))
       (authored-target "TimerPCB")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))))
@@ -671,39 +671,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind featureTyping) (ordinal 0))
       (authored-target "TimerStateMachine")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "buttons::output")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::displayOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::lcdDrive")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "mcu::buzzerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
       (authored-target "mcu::buttonIn")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "display::cmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "display::lcdIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "buzzerDriver::ctrlIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0))
       (authored-target "ButtonInterface")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::buzzerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "buzzerDriver::ctrlIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind featureTyping) (ordinal 0))
       (authored-target "BuzzerDriver")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0))
       (authored-target "Display")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::displayOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "display::cmd")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "mcu::lcdDrive")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1))
-      (authored-target "display::lcdIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind featureTyping) (ordinal 0))
       (authored-target "Microcontroller")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller")))))
@@ -847,18 +847,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::LcdSegmentDrivePort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BuzzerCommandPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (kind featureTyping) (ordinal 0)))
@@ -870,17 +870,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "connections")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/Views.sysml") (path (named (kind package) (name "Views")) (named (kind view) (name "connections")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
@@ -1103,20 +1103,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
@@ -1146,20 +1146,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/Views.sysml") (qualified-name "Views::connections"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
@@ -2974,6 +2974,101 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer")) (scopes any))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")) (provenance authored))
@@ -2990,25 +3085,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")) (provenance authored))
@@ -3023,82 +3099,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")))
@@ -3291,7 +3291,64 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::pcb")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput")))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
@@ -3326,25 +3383,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerDriver")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")) (provenance authored))
@@ -3375,44 +3413,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
-    )
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals")))
-      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB")))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::mcu")))
@@ -4097,64 +4097,64 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))))
     )
   )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 10) (end 76 26)) (probe (position 76 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 10) (end 77 26)) (probe (position 77 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 10) (end 78 26)) (probe (position 78 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 10) (end 79 26)) (probe (position 79 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 10) (end 80 39)) (probe (position 80 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 0) (authored-target "pcb::buzzerDriver::buzzerPwrOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 30) (end 76 41)) (probe (position 76 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::mcu::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 30) (end 77 45)) (probe (position 77 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::display::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 30) (end 78 45)) (probe (position 78 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buttons::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 30) (end 79 52)) (probe (position 79 30))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buzzerDriver::pwrIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 43) (end 80 53)) (probe (position 80 43))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 4))))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzer::pwr")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
+    )
+  )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 73 17) (end 73 24)) (probe (position 73 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery"))) (kind featureTyping) (ordinal 0) (authored-target "Battery")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 33) (end 78 49)) (probe (position 78 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 78 53) (end 78 68)) (probe (position 78 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buttonPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buttons::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))))
-    )
-  )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 74 16) (end 74 22)) (probe (position 74 16))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer"))) (kind featureTyping) (ordinal 0) (authored-target "Buzzer")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 39) (end 79 55)) (probe (position 79 39))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 79 59) (end 79 81)) (probe (position 79 59))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::buzzerDriver::pwrIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 33) (end 80 62)) (probe (position 80 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "pcb::buzzerDriver::buzzerPwrOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 80 66) (end 80 76)) (probe (position 80 66))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzerPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzer::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 34) (end 77 50)) (probe (position 77 34))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 77 54) (end 77 69)) (probe (position 77 54))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::displayPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::display::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 30) (end 76 46)) (probe (position 76 30))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 0) (authored-target "battery::powerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Battery::powerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 76 50) (end 76 61)) (probe (position 76 50))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::mcuPower"))) (kind memberAccessOperand) (ordinal 1) (authored-target "pcb::mcu::pwr")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 72 13) (end 72 21)) (probe (position 72 13))
@@ -4212,29 +4212,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 33) (end 56 47)) (probe (position 56 33))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 0) (authored-target "buttons::output")
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 10) (end 56 24)) (probe (position 56 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "buttons::output")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 51) (end 56 63)) (probe (position 56 51))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttonInput"))) (kind memberAccessOperand) (ordinal 1) (authored-target "mcu::buttonIn")
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 10) (end 57 24)) (probe (position 57 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::displayOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 10) (end 58 22)) (probe (position 58 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::lcdDrive")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 10) (end 59 23)) (probe (position 59 10))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::buzzerOut")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 56 28) (end 56 40)) (probe (position 56 28))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "mcu::buttonIn")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buttonIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 28) (end 57 39)) (probe (position 57 28))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 1))))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::cmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 26) (end 58 39)) (probe (position 58 26))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 2))))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::lcdIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 27) (end 59 46)) (probe (position 59 27))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "TimerPCB")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzerDriver::ctrlIn")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 54 17) (end 54 32)) (probe (position 54 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buttons"))) (kind featureTyping) (ordinal 0) (authored-target "ButtonInterface")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 36) (end 59 49)) (probe (position 59 36))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::buzzerOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::buzzerOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 59 53) (end 59 72)) (probe (position 59 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::buzzerCommands"))) (kind memberAccessOperand) (ordinal 1) (authored-target "buzzerDriver::ctrlIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 55 22) (end 55 34)) (probe (position 55 22))
@@ -4245,26 +4265,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 53 17) (end 53 24)) (probe (position 53 17))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::display"))) (kind featureTyping) (ordinal 0) (authored-target "Display")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 37) (end 57 51)) (probe (position 57 37))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::displayOut")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::displayOut")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 57 55) (end 57 66)) (probe (position 57 55))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::displayCommands"))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::cmd")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 37) (end 58 49)) (probe (position 58 37))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 0) (authored-target "mcu::lcdDrive")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive")))))
-    )
-  )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 58 53) (end 58 66)) (probe (position 58 53))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB::lcdDriveSignals"))) (kind memberAccessOperand) (ordinal 1) (authored-target "display::lcdIn")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn")))))
     )
   )
   (query (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (range (start 52 13) (end 52 28)) (probe (position 52 13))
@@ -4344,7 +4344,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:abee443128cef0d57fefb8b0ef8962809bf08fd4314aa74eedd6a046d02d91d7",
+  "modelDigest": "blake3:12ad6e589a94002572ab9ee3acd9889b026bd91b1abd22327d19b5a61cd8ad92",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimer.sysml",
@@ -5582,7 +5582,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 3,
       "range": [
         56,
-        13,
+        2,
+        56,
+        41
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        56,
+        10,
         56,
         24
       ]
@@ -5591,99 +5600,90 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 3,
       "range": [
         56,
-        33,
+        28,
         56,
+        40
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        57,
+        2,
+        57,
+        40
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        57,
+        10,
+        57,
+        24
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        57,
+        28,
+        57,
+        39
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        58,
+        2,
+        58,
+        40
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        58,
+        10,
+        58,
+        22
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        58,
+        26,
+        58,
+        39
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        59,
+        2,
+        59,
         47
       ]
     },
     {
       "document": 3,
       "range": [
-        56,
-        51,
-        56,
-        63
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        57,
-        13,
-        57,
-        28
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        57,
-        37,
-        57,
-        51
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        57,
-        55,
-        57,
-        66
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        58,
-        13,
-        58,
-        28
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        58,
-        37,
-        58,
-        49
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        58,
-        53,
-        58,
-        66
+        59,
+        10,
+        59,
+        23
       ]
     },
     {
       "document": 3,
       "range": [
         59,
-        13,
+        27,
         59,
-        27
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        59,
-        36,
-        59,
-        49
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        59,
-        53,
-        59,
-        72
+        46
       ]
     },
     {
@@ -5816,9 +5816,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 3,
       "range": [
         76,
-        13,
+        2,
         76,
-        21
+        42
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        76,
+        10,
+        76,
+        26
       ]
     },
     {
@@ -5827,124 +5836,115 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         76,
         30,
         76,
+        41
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        77,
+        2,
+        77,
         46
       ]
     },
     {
       "document": 3,
       "range": [
-        76,
-        50,
-        76,
-        61
+        77,
+        10,
+        77,
+        26
       ]
     },
     {
       "document": 3,
       "range": [
         77,
-        13,
+        30,
         77,
-        25
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        77,
-        34,
-        77,
-        50
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        77,
-        54,
-        77,
-        69
+        45
       ]
     },
     {
       "document": 3,
       "range": [
         78,
-        13,
+        2,
         78,
-        24
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        78,
-        33,
-        78,
-        49
+        46
       ]
     },
     {
       "document": 3,
       "range": [
         78,
-        53,
+        10,
         78,
-        68
+        26
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        78,
+        30,
+        78,
+        45
       ]
     },
     {
       "document": 3,
       "range": [
         79,
-        13,
+        2,
         79,
-        30
+        53
       ]
     },
     {
       "document": 3,
       "range": [
         79,
-        39,
+        10,
         79,
-        55
+        26
       ]
     },
     {
       "document": 3,
       "range": [
         79,
-        59,
+        30,
         79,
-        81
+        52
       ]
     },
     {
       "document": 3,
       "range": [
         80,
-        13,
+        2,
         80,
-        24
+        54
       ]
     },
     {
       "document": 3,
       "range": [
         80,
-        33,
+        10,
         80,
-        62
+        39
       ]
     },
     {
       "document": 3,
       "range": [
         80,
-        66,
+        43,
         80,
-        76
+        53
       ]
     },
     {
@@ -6331,37 +6331,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 3,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer::battery"
     },
     {
       "document": 3,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buttonPower"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzer"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzerDriverPower"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzerPower"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::displayPower"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::KitchenTimer::mcuPower"
     },
     {
       "document": 3,
@@ -6431,17 +6411,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 3,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::buttonInput"
+      "qualifiedName": "KitchenTimerStructure::TimerPCB::"
     },
     {
       "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::TimerPCB::buttons"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::buzzerCommands"
     },
     {
       "document": 3,
@@ -6452,16 +6427,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::TimerPCB::display"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::displayCommands"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::TimerPCB::lcdDriveSignals"
     },
     {
       "document": 3,
@@ -6646,9 +6611,72 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 156,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 159,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 162,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 165,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 168,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Microcontroller::pwr",
       "source": 88,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 130,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 133,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 136,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
+      "source": 139,
       "sourceDomain": "workspace"
     },
     {
@@ -6671,31 +6699,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 107,
+      "ordinal": 100,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 108,
+      "ordinal": 101,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 109,
+      "ordinal": 102,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 110,
+      "ordinal": 103,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 111,
+      "ordinal": 104,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -7241,25 +7269,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 146,
+      "ordinal": 162,
       "relationshipKind": "specializes",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 182,
+      "ordinal": 198,
       "relationshipKind": "specializes",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 207,
+      "ordinal": 223,
       "relationshipKind": "specializes",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 226,
+      "ordinal": 242,
       "relationshipKind": "specializes",
       "source": 34
     },
@@ -7271,7 +7299,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 274,
+      "ordinal": 294,
       "relationshipKind": "specializes",
       "source": 34
     },
@@ -7283,25 +7311,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 147,
+      "ordinal": 163,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 183,
+      "ordinal": 199,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 208,
+      "ordinal": 224,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 227,
+      "ordinal": 243,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
@@ -7313,7 +7341,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 275,
+      "ordinal": 295,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
@@ -7325,25 +7353,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 143,
+      "ordinal": 159,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 179,
+      "ordinal": 195,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 204,
+      "ordinal": 220,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 223,
+      "ordinal": 239,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
@@ -7355,7 +7383,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 271,
+      "ordinal": 291,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
@@ -7367,25 +7395,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 142,
+      "ordinal": 158,
       "relationshipKind": "typing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 178,
+      "ordinal": 194,
       "relationshipKind": "typing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 203,
+      "ordinal": 219,
       "relationshipKind": "typing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 222,
+      "ordinal": 238,
       "relationshipKind": "typing",
       "source": 35
     },
@@ -7397,7 +7425,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 270,
+      "ordinal": 290,
       "relationshipKind": "typing",
       "source": 35
     },
@@ -7409,25 +7437,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 144,
+      "ordinal": 160,
       "relationshipKind": "specializes",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 180,
+      "ordinal": 196,
       "relationshipKind": "specializes",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 205,
+      "ordinal": 221,
       "relationshipKind": "specializes",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 224,
+      "ordinal": 240,
       "relationshipKind": "specializes",
       "source": 36
     },
@@ -7439,7 +7467,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 272,
+      "ordinal": 292,
       "relationshipKind": "specializes",
       "source": 36
     },
@@ -7451,25 +7479,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 145,
+      "ordinal": 161,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 181,
+      "ordinal": 197,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 206,
+      "ordinal": 222,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 225,
+      "ordinal": 241,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
@@ -7481,7 +7509,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 273,
+      "ordinal": 293,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
@@ -7493,7 +7521,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 162,
+      "ordinal": 178,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
@@ -7505,7 +7533,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 161,
+      "ordinal": 177,
       "relationshipKind": "typing",
       "source": 38
     },
@@ -7517,7 +7545,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 164,
+      "ordinal": 180,
       "relationshipKind": "typeFeaturing",
       "source": 39
     },
@@ -7529,7 +7557,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 163,
+      "ordinal": 179,
       "relationshipKind": "typing",
       "source": 39
     },
@@ -7541,7 +7569,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 158,
+      "ordinal": 174,
       "relationshipKind": "typeFeaturing",
       "source": 40
     },
@@ -7553,7 +7581,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 157,
+      "ordinal": 173,
       "relationshipKind": "typing",
       "source": 40
     },
@@ -7565,7 +7593,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 160,
+      "ordinal": 176,
       "relationshipKind": "typeFeaturing",
       "source": 41
     },
@@ -7577,7 +7605,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 159,
+      "ordinal": 175,
       "relationshipKind": "typing",
       "source": 41
     },
@@ -7589,7 +7617,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 156,
+      "ordinal": 172,
       "relationshipKind": "typeFeaturing",
       "source": 42
     },
@@ -7601,7 +7629,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 155,
+      "ordinal": 171,
       "relationshipKind": "typing",
       "source": 42
     },
@@ -7613,7 +7641,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 217,
+      "ordinal": 233,
       "relationshipKind": "typeFeaturing",
       "source": 44
     },
@@ -7625,7 +7653,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 216,
+      "ordinal": 232,
       "relationshipKind": "typing",
       "source": 44
     },
@@ -7637,7 +7665,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 173,
+      "ordinal": 189,
       "relationshipKind": "typeFeaturing",
       "source": 46
     },
@@ -7649,7 +7677,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 172,
+      "ordinal": 188,
       "relationshipKind": "typing",
       "source": 46
     },
@@ -7661,7 +7689,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 192,
+      "ordinal": 208,
       "relationshipKind": "typeFeaturing",
       "source": 48
     },
@@ -7673,129 +7701,105 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 191,
+      "ordinal": 207,
       "relationshipKind": "typing",
       "source": 48
     },
     {
       "kind": "relationship",
-      "ordinal": 277,
+      "ordinal": 297,
       "relationshipKind": "specializes",
       "source": 50
     },
     {
       "kind": "relationship",
-      "ordinal": 278,
+      "ordinal": 298,
       "relationshipKind": "typeFeaturing",
       "source": 50
     },
     {
       "kind": "relationship",
-      "ordinal": 276,
+      "ordinal": 296,
       "relationshipKind": "typing",
       "source": 50
     },
     {
       "kind": "relationship",
-      "ordinal": 280,
+      "ordinal": 300,
       "relationshipKind": "specializes",
       "source": 51
     },
     {
       "kind": "relationship",
-      "ordinal": 281,
+      "ordinal": 301,
       "relationshipKind": "typeFeaturing",
       "source": 51
     },
     {
       "kind": "relationship",
-      "ordinal": 279,
+      "ordinal": 299,
       "relationshipKind": "typing",
       "source": 51
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 106,
       "relationshipKind": "containment",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 107,
       "relationshipKind": "containment",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "ordinal": 108,
       "relationshipKind": "containment",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 267,
+      "ordinal": 287,
       "relationshipKind": "specializes",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 268,
+      "ordinal": 288,
       "relationshipKind": "specializes",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 269,
+      "ordinal": 289,
       "relationshipKind": "typeFeaturing",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 266,
+      "ordinal": 286,
       "relationshipKind": "typing",
       "source": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 283,
+      "ordinal": 303,
       "relationshipKind": "specializes",
       "source": 53
     },
     {
       "kind": "relationship",
-      "ordinal": 284,
+      "ordinal": 304,
       "relationshipKind": "typeFeaturing",
       "source": 53
     },
     {
       "kind": "relationship",
-      "ordinal": 282,
+      "ordinal": 302,
       "relationshipKind": "typing",
       "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "containment",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "containment",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "containment",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "containment",
-      "source": 55
     },
     {
       "kind": "relationship",
@@ -7805,91 +7809,115 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 152,
+      "ordinal": 65,
+      "relationshipKind": "containment",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "containment",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "containment",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "containment",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 168,
       "relationshipKind": "specializes",
       "source": 55
     },
     {
       "kind": "relationship",
-      "ordinal": 153,
+      "ordinal": 169,
       "relationshipKind": "specializes",
       "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 170,
+      "relationshipKind": "typeFeaturing",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 167,
+      "relationshipKind": "typing",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 155,
+      "relationshipKind": "specializes",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 156,
+      "relationshipKind": "specializes",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 157,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
     },
     {
       "kind": "relationship",
       "ordinal": 154,
-      "relationshipKind": "typeFeaturing",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 151,
-      "relationshipKind": "typing",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 139,
-      "relationshipKind": "specializes",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 140,
-      "relationshipKind": "specializes",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 141,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 138,
       "relationshipKind": "typing",
       "source": 56
     },
     {
       "kind": "relationship",
-      "ordinal": 148,
+      "ordinal": 164,
       "relationshipKind": "redefinition",
       "source": 57
     },
     {
       "kind": "relationship",
-      "ordinal": 149,
+      "ordinal": 165,
       "relationshipKind": "specializes",
       "source": 57
     },
     {
       "kind": "relationship",
-      "ordinal": 150,
+      "ordinal": 166,
       "relationshipKind": "typeFeaturing",
       "source": 57
     },
@@ -7979,350 +8007,446 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
+      "ordinal": 89,
       "relationshipKind": "containment",
       "source": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 90,
       "relationshipKind": "containment",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "containment",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 235,
+      "relationshipKind": "specializes",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 236,
+      "relationshipKind": "specializes",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 237,
+      "relationshipKind": "typeFeaturing",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 234,
+      "relationshipKind": "typing",
       "source": 63
     },
     {
       "kind": "relationship",
       "ordinal": 87,
       "relationshipKind": "containment",
-      "source": 63
+      "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 219,
+      "ordinal": 229,
       "relationshipKind": "specializes",
-      "source": 63
+      "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 220,
+      "ordinal": 230,
       "relationshipKind": "specializes",
-      "source": 63
+      "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 221,
+      "ordinal": 231,
       "relationshipKind": "typeFeaturing",
-      "source": 63
+      "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 218,
+      "ordinal": 228,
       "relationshipKind": "typing",
-      "source": 63
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "containment",
+      "source": 65
     },
     {
       "kind": "relationship",
       "ordinal": 83,
       "relationshipKind": "containment",
-      "source": 64
+      "source": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 213,
-      "relationshipKind": "specializes",
-      "source": 64
+      "ordinal": 84,
+      "relationshipKind": "containment",
+      "source": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 214,
+      "ordinal": 85,
+      "relationshipKind": "containment",
+      "source": 65
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 216,
       "relationshipKind": "specializes",
-      "source": 64
+      "source": 65
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 217,
+      "relationshipKind": "specializes",
+      "source": 65
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 218,
+      "relationshipKind": "typeFeaturing",
+      "source": 65
     },
     {
       "kind": "relationship",
       "ordinal": 215,
-      "relationshipKind": "typeFeaturing",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 212,
-      "relationshipKind": "typing",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 200,
-      "relationshipKind": "specializes",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 201,
-      "relationshipKind": "specializes",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 202,
-      "relationshipKind": "typeFeaturing",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 199,
       "relationshipKind": "typing",
       "source": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 209,
+      "ordinal": 225,
       "relationshipKind": "redefinition",
       "source": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 210,
+      "ordinal": 226,
       "relationshipKind": "specializes",
       "source": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 211,
+      "ordinal": 227,
       "relationshipKind": "typeFeaturing",
       "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "containment",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 169,
-      "relationshipKind": "specializes",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 170,
-      "relationshipKind": "specializes",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 171,
-      "relationshipKind": "typeFeaturing",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 168,
-      "relationshipKind": "typing",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 194,
-      "relationshipKind": "specializes",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 195,
-      "relationshipKind": "typeFeaturing",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 193,
-      "relationshipKind": "typing",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 188,
-      "relationshipKind": "specializes",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 189,
-      "relationshipKind": "specializes",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 190,
-      "relationshipKind": "typeFeaturing",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 187,
-      "relationshipKind": "typing",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "containment",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "containment",
-      "source": 71
     },
     {
       "kind": "relationship",
       "ordinal": 71,
       "relationshipKind": "containment",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "containment",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 175,
-      "relationshipKind": "specializes",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 176,
-      "relationshipKind": "specializes",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 177,
-      "relationshipKind": "typeFeaturing",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 174,
-      "relationshipKind": "typing",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 184,
-      "relationshipKind": "redefinition",
-      "source": 72
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 185,
       "relationshipKind": "specializes",
-      "source": 72
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 186,
+      "relationshipKind": "specializes",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 187,
+      "relationshipKind": "typeFeaturing",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 184,
+      "relationshipKind": "typing",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 210,
+      "relationshipKind": "specializes",
+      "source": 69
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 211,
+      "relationshipKind": "typeFeaturing",
+      "source": 69
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 209,
+      "relationshipKind": "typing",
+      "source": 69
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 204,
+      "relationshipKind": "specializes",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 205,
+      "relationshipKind": "specializes",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 206,
+      "relationshipKind": "typeFeaturing",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 203,
+      "relationshipKind": "typing",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 73,
+      "relationshipKind": "containment",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "containment",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "containment",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "containment",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 191,
+      "relationshipKind": "specializes",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 192,
+      "relationshipKind": "specializes",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 193,
+      "relationshipKind": "typeFeaturing",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 190,
+      "relationshipKind": "typing",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 200,
+      "relationshipKind": "redefinition",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 201,
+      "relationshipKind": "specializes",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 202,
       "relationshipKind": "typeFeaturing",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
-      "relationshipKind": "containment",
+      "ordinal": 263,
+      "relationshipKind": "memberAccessOperand",
       "source": 74
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "containment",
+      "ordinal": 264,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 267,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 268,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 271,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 272,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 275,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 276,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 279,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 280,
+      "relationshipKind": "memberAccessOperand",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 265,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 269,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 273,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 277,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 281,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 266,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 270,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 274,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 278,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 282,
+      "relationshipKind": "typeFeaturing",
       "source": 74
     },
     {
       "kind": "relationship",
       "ordinal": 105,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 106,
+      "ordinal": 109,
       "relationshipKind": "containment",
-      "source": 74
+      "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 264,
+      "ordinal": 110,
+      "relationshipKind": "containment",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 111,
+      "relationshipKind": "containment",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 284,
       "relationshipKind": "specializes",
-      "source": 74
+      "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 265,
+      "ordinal": 285,
       "relationshipKind": "typeFeaturing",
-      "source": 74
+      "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 263,
+      "ordinal": 283,
       "relationshipKind": "typing",
-      "source": 74
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 289,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 290,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 291,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 292,
-      "relationshipKind": "typeFeaturing",
       "source": 75
     },
     {
@@ -8357,805 +8481,709 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 301,
-      "relationshipKind": "memberAccessOperand",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 302,
-      "relationshipKind": "memberAccessOperand",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 303,
-      "relationshipKind": "specializes",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 304,
-      "relationshipKind": "typeFeaturing",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 293,
-      "relationshipKind": "memberAccessOperand",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 294,
-      "relationshipKind": "memberAccessOperand",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 295,
-      "relationshipKind": "specializes",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 296,
-      "relationshipKind": "typeFeaturing",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 297,
-      "relationshipKind": "memberAccessOperand",
-      "source": 79
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 298,
-      "relationshipKind": "memberAccessOperand",
-      "source": 79
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 299,
-      "relationshipKind": "specializes",
-      "source": 79
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 300,
-      "relationshipKind": "typeFeaturing",
-      "source": 79
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 285,
-      "relationshipKind": "memberAccessOperand",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 286,
-      "relationshipKind": "memberAccessOperand",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 287,
-      "relationshipKind": "specializes",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 288,
-      "relationshipKind": "typeFeaturing",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 81
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 53,
       "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 88,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 89,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "specializes",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "specializes",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "specializes",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typing",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "containment",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "specializes",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "specializes",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "typeFeaturing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 133,
-      "relationshipKind": "specializes",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 134,
-      "relationshipKind": "typeFeaturing",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 132,
-      "relationshipKind": "typing",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 121,
-      "relationshipKind": "specializes",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 122,
-      "relationshipKind": "specializes",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 123,
-      "relationshipKind": "typeFeaturing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 120,
-      "relationshipKind": "typing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 130,
-      "relationshipKind": "specializes",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 131,
-      "relationshipKind": "typeFeaturing",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 129,
-      "relationshipKind": "typing",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "containment",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "specializes",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "specializes",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typeFeaturing",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typing",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "specializes",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "specializes",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typing",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "redefinition",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "specializes",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "typeFeaturing",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 127,
-      "relationshipKind": "specializes",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 128,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 126,
-      "relationshipKind": "typing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "specializes",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "typeFeaturing",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "typing",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 228,
-      "relationshipKind": "memberAccessOperand",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 229,
-      "relationshipKind": "memberAccessOperand",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 230,
-      "relationshipKind": "specializes",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 231,
-      "relationshipKind": "typeFeaturing",
-      "source": 94
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 54,
       "relationshipKind": "containment",
-      "source": 95
+      "source": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 55,
       "relationshipKind": "containment",
-      "source": 95
+      "source": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 136,
+      "ordinal": 56,
+      "relationshipKind": "containment",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "containment",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "containment",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "containment",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "specializes",
-      "source": 95
+      "source": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 137,
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
-      "source": 95
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typing",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "specializes",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "specializes",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "typeFeaturing",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "typing",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "containment",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "specializes",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
+      "relationshipKind": "specializes",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "typeFeaturing",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "typing",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 133,
+      "relationshipKind": "specializes",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 134,
+      "relationshipKind": "typeFeaturing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 132,
+      "relationshipKind": "typing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "containment",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "specializes",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "specializes",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
+      "relationshipKind": "typeFeaturing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 120,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 130,
+      "relationshipKind": "specializes",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 131,
+      "relationshipKind": "typeFeaturing",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 129,
+      "relationshipKind": "typing",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "specializes",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "specializes",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "typeFeaturing",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "typing",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "specializes",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "specializes",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "typeFeaturing",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typing",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "redefinition",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "specializes",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "typeFeaturing",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 127,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 128,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 126,
+      "relationshipKind": "typing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "specializes",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "typing",
+      "source": 88
     },
     {
       "kind": "relationship",
       "ordinal": 135,
-      "relationshipKind": "typing",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 232,
       "relationshipKind": "memberAccessOperand",
-      "source": 96
+      "source": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 233,
+      "ordinal": 136,
       "relationshipKind": "memberAccessOperand",
-      "source": 96
+      "source": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 234,
+      "ordinal": 139,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 140,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 143,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 144,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 147,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 148,
+      "relationshipKind": "memberAccessOperand",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 137,
       "relationshipKind": "specializes",
-      "source": 96
+      "source": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 235,
+      "ordinal": 141,
+      "relationshipKind": "specializes",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 145,
+      "relationshipKind": "specializes",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 149,
+      "relationshipKind": "specializes",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 138,
       "relationshipKind": "typeFeaturing",
-      "source": 96
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 142,
+      "relationshipKind": "typeFeaturing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 146,
+      "relationshipKind": "typeFeaturing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 150,
+      "relationshipKind": "typeFeaturing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 91
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "containment",
+      "source": 91
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 152,
+      "relationshipKind": "specializes",
+      "source": 91
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 153,
+      "relationshipKind": "typeFeaturing",
+      "source": 91
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 151,
+      "relationshipKind": "typing",
+      "source": 91
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 213,
+      "relationshipKind": "specializes",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 214,
+      "relationshipKind": "typeFeaturing",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 212,
+      "relationshipKind": "typing",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "containment",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
+      "relationshipKind": "containment",
+      "source": 93
     },
     {
       "kind": "relationship",
       "ordinal": 77,
       "relationshipKind": "containment",
-      "source": 97
+      "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 79,
       "relationshipKind": "containment",
-      "source": 97
+      "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "containment",
-      "source": 97
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 197,
+      "ordinal": 182,
       "relationshipKind": "specializes",
-      "source": 97
+      "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 198,
+      "ordinal": 183,
       "relationshipKind": "typeFeaturing",
-      "source": 97
+      "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 196,
+      "ordinal": 181,
       "relationshipKind": "typing",
-      "source": 97
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "containment",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "containment",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "containment",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "containment",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 166,
-      "relationshipKind": "specializes",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 167,
-      "relationshipKind": "typeFeaturing",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 165,
-      "relationshipKind": "typing",
-      "source": 98
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 236,
-      "relationshipKind": "memberAccessOperand",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 237,
-      "relationshipKind": "memberAccessOperand",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 238,
-      "relationshipKind": "specializes",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 239,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 240,
-      "relationshipKind": "memberAccessOperand",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 241,
-      "relationshipKind": "memberAccessOperand",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 242,
-      "relationshipKind": "specializes",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 243,
-      "relationshipKind": "typeFeaturing",
-      "source": 100
+      "source": 93
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 48,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 50,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 51,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 52,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "specializes",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "typeFeaturing",
-      "source": 101
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
-      "source": 101
+      "source": 94
     }
   ],
   "selectedView": {
-    "reference": 102,
+    "reference": 95,
     "kind": "interconnection-view",
     "name": "connections",
     "source": 171
@@ -9170,7 +9198,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 150,
         "provenance": "implied",
-        "reference": 133,
+        "reference": 135,
         "source": 0,
         "target": 6
       },
@@ -9178,7 +9206,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 122,
         "provenance": "implied",
-        "reference": 433,
+        "reference": 435,
         "source": 6,
         "target": 23
       },
@@ -9186,7 +9214,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 86,
         "provenance": "implied",
-        "reference": 538,
+        "reference": 540,
         "source": 23,
         "target": 26
       },
@@ -9194,7 +9222,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 474,
+        "reference": 476,
         "source": 26,
         "target": 29
       },
@@ -9202,7 +9230,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 475,
+        "reference": 477,
         "source": 26,
         "target": 28
       },
@@ -9210,7 +9238,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 476,
+        "reference": 478,
         "source": 26,
         "target": 27
       },
@@ -9218,7 +9246,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 88,
         "provenance": "authored",
-        "reference": 477,
+        "reference": 479,
         "source": 26,
         "target": 30
       },
@@ -9226,7 +9254,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 78,
         "provenance": "implied",
-        "reference": 539,
+        "reference": 541,
         "source": 23,
         "target": 31
       },
@@ -9234,7 +9262,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 58,
         "provenance": "implied",
-        "reference": 444,
+        "reference": 446,
         "source": 31,
         "target": 32
       },
@@ -9242,7 +9270,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 60,
         "provenance": "implied",
-        "reference": 445,
+        "reference": 447,
         "source": 31,
         "target": 33
       },
@@ -9250,7 +9278,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 56,
         "provenance": "implied",
-        "reference": 446,
+        "reference": 448,
         "source": 31,
         "target": 34
       },
@@ -9258,7 +9286,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 64,
         "provenance": "implied",
-        "reference": 447,
+        "reference": 449,
         "source": 31,
         "target": 35
       },
@@ -9266,7 +9294,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 62,
         "provenance": "implied",
-        "reference": 448,
+        "reference": 450,
         "source": 31,
         "target": 36
       },
@@ -9274,7 +9302,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 82,
         "provenance": "implied",
-        "reference": 540,
+        "reference": 542,
         "source": 23,
         "target": 37
       },
@@ -9282,7 +9310,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 68,
         "provenance": "implied",
-        "reference": 469,
+        "reference": 471,
         "source": 37,
         "target": 38
       },
@@ -9290,7 +9318,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 84,
         "provenance": "implied",
-        "reference": 541,
+        "reference": 543,
         "source": 23,
         "target": 39
       },
@@ -9298,7 +9326,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 70,
         "provenance": "implied",
-        "reference": 453,
+        "reference": 455,
         "source": 39,
         "target": 40
       },
@@ -9306,7 +9334,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 90,
         "provenance": "implied",
-        "reference": 542,
+        "reference": 544,
         "source": 23,
         "target": 41
       },
@@ -9314,7 +9342,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 4,
         "provenance": "implied",
-        "reference": 488,
+        "reference": 490,
         "source": 41,
         "target": 59
       },
@@ -9322,7 +9350,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 8,
         "provenance": "implied",
-        "reference": 489,
+        "reference": 491,
         "source": 41,
         "target": 60
       },
@@ -9330,7 +9358,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 2,
         "provenance": "implied",
-        "reference": 490,
+        "reference": 492,
         "source": 41,
         "target": 58
       },
@@ -9338,7 +9366,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "initial-state",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 143,
+        "reference": 145,
         "source": 58,
         "target": 59
       },
@@ -9346,7 +9374,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 10,
         "provenance": "implied",
-        "reference": 491,
+        "reference": 493,
         "source": 41,
         "target": 61
       },
@@ -9354,7 +9382,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 6,
         "provenance": "implied",
-        "reference": 492,
+        "reference": 494,
         "source": 41,
         "target": 62
       },
@@ -9362,7 +9390,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 28,
         "provenance": "implied",
-        "reference": 493,
+        "reference": 495,
         "source": 41,
         "target": 56
       },
@@ -9370,7 +9398,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 29,
         "provenance": "implied",
-        "reference": 178,
+        "reference": 180,
         "source": 62,
         "target": 60
       },
@@ -9378,7 +9406,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 206,
+        "reference": 208,
         "source": 56,
         "target": 57
       },
@@ -9386,7 +9414,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 33,
         "provenance": "implied",
-        "reference": 494,
+        "reference": 496,
         "source": 41,
         "target": 42
       },
@@ -9394,7 +9422,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 34,
         "provenance": "implied",
-        "reference": 179,
+        "reference": 181,
         "source": 62,
         "target": 61
       },
@@ -9402,7 +9430,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 182,
+        "reference": 184,
         "source": 42,
         "target": 43
       },
@@ -9410,7 +9438,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 13,
         "provenance": "implied",
-        "reference": 495,
+        "reference": 497,
         "source": 41,
         "target": 44
       },
@@ -9418,7 +9446,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 14,
         "provenance": "implied",
-        "reference": 159,
+        "reference": 161,
         "source": 59,
         "target": 62
       },
@@ -9426,7 +9454,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 214,
+        "reference": 216,
         "source": 44,
         "target": 45
       },
@@ -9434,7 +9462,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 23,
         "provenance": "implied",
-        "reference": 496,
+        "reference": 498,
         "source": 41,
         "target": 46
       },
@@ -9442,7 +9470,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 24,
         "provenance": "implied",
-        "reference": 160,
+        "reference": 162,
         "source": 59,
         "target": 59
       },
@@ -9450,7 +9478,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 146,
+        "reference": 148,
         "source": 46,
         "target": 47
       },
@@ -9458,7 +9486,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 18,
         "provenance": "implied",
-        "reference": 497,
+        "reference": 499,
         "source": 41,
         "target": 48
       },
@@ -9466,7 +9494,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 19,
         "provenance": "implied",
-        "reference": 161,
+        "reference": 163,
         "source": 59,
         "target": 59
       },
@@ -9474,7 +9502,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 164,
+        "reference": 166,
         "source": 48,
         "target": 49
       },
@@ -9482,7 +9510,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 38,
         "provenance": "implied",
-        "reference": 498,
+        "reference": 500,
         "source": 41,
         "target": 50
       },
@@ -9490,7 +9518,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 39,
         "provenance": "implied",
-        "reference": 173,
+        "reference": 175,
         "source": 60,
         "target": 62
       },
@@ -9498,7 +9526,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 37,
         "provenance": "authored",
-        "reference": 222,
+        "reference": 224,
         "source": 50,
         "target": 51
       },
@@ -9506,7 +9534,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 43,
         "provenance": "implied",
-        "reference": 499,
+        "reference": 501,
         "source": 41,
         "target": 52
       },
@@ -9514,7 +9542,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 44,
         "provenance": "implied",
-        "reference": 174,
+        "reference": 176,
         "source": 60,
         "target": 59
       },
@@ -9522,7 +9550,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 200,
         "source": 52,
         "target": 53
       },
@@ -9530,7 +9558,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 48,
         "provenance": "implied",
-        "reference": 500,
+        "reference": 502,
         "source": 41,
         "target": 54
       },
@@ -9538,7 +9566,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 49,
         "provenance": "implied",
-        "reference": 155,
+        "reference": 157,
         "source": 61,
         "target": 59
       },
@@ -9546,7 +9574,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 47,
         "provenance": "authored",
-        "reference": 190,
+        "reference": 192,
         "source": 54,
         "target": 55
       },
@@ -9554,7 +9582,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 80,
         "provenance": "implied",
-        "reference": 543,
+        "reference": 545,
         "source": 23,
         "target": 24
       },
@@ -9562,7 +9590,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 66,
         "provenance": "implied",
-        "reference": 461,
+        "reference": 463,
         "source": 24,
         "target": 25
       },
@@ -9570,7 +9598,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 76,
         "provenance": "implied",
-        "reference": 544,
+        "reference": 546,
         "source": 23,
         "target": 64
       },
@@ -9578,7 +9606,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 74,
         "provenance": "implied",
-        "reference": 545,
+        "reference": 547,
         "source": 23,
         "target": 65
       },
@@ -9586,15 +9614,47 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 72,
         "provenance": "implied",
-        "reference": 546,
+        "reference": 548,
         "source": 23,
         "target": 63
       },
       {
         "kind": "containment",
+        "navigation": 130,
+        "provenance": "implied",
+        "reference": 436,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 133,
+        "provenance": "implied",
+        "reference": 437,
+        "source": 6,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 136,
+        "provenance": "implied",
+        "reference": 438,
+        "source": 6,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 139,
+        "provenance": "implied",
+        "reference": 439,
+        "source": 6,
+        "target": 10
+      },
+      {
+        "kind": "containment",
         "navigation": 126,
         "provenance": "implied",
-        "reference": 434,
+        "reference": 440,
         "source": 6,
         "target": 66
       },
@@ -9602,7 +9662,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 112,
         "provenance": "implied",
-        "reference": 508,
+        "reference": 522,
         "source": 66,
         "target": 67
       },
@@ -9610,7 +9670,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 329,
+        "reference": 331,
         "source": 67,
         "target": 70
       },
@@ -9618,7 +9678,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 330,
+        "reference": 332,
         "source": 67,
         "target": 69
       },
@@ -9626,7 +9686,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 331,
+        "reference": 333,
         "source": 67,
         "target": 68
       },
@@ -9634,7 +9694,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 114,
         "provenance": "authored",
-        "reference": 332,
+        "reference": 334,
         "source": 67,
         "target": 71
       },
@@ -9642,7 +9702,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 110,
         "provenance": "implied",
-        "reference": 509,
+        "reference": 523,
         "source": 66,
         "target": 72
       },
@@ -9650,7 +9710,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 58,
         "provenance": "implied",
-        "reference": 320,
+        "reference": 322,
         "source": 72,
         "target": 73
       },
@@ -9658,7 +9718,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 60,
         "provenance": "implied",
-        "reference": 321,
+        "reference": 323,
         "source": 72,
         "target": 74
       },
@@ -9666,7 +9726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 56,
         "provenance": "implied",
-        "reference": 322,
+        "reference": 324,
         "source": 72,
         "target": 75
       },
@@ -9674,7 +9734,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 64,
         "provenance": "implied",
-        "reference": 323,
+        "reference": 325,
         "source": 72,
         "target": 76
       },
@@ -9682,7 +9742,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 62,
         "provenance": "implied",
-        "reference": 324,
+        "reference": 326,
         "source": 72,
         "target": 77
       },
@@ -9690,7 +9750,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 124,
         "provenance": "implied",
-        "reference": 435,
+        "reference": 441,
         "source": 6,
         "target": 78
       },
@@ -9698,7 +9758,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 102,
         "provenance": "implied",
-        "reference": 523,
+        "reference": 533,
         "source": 78,
         "target": 79
       },
@@ -9706,7 +9766,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 66,
         "provenance": "implied",
-        "reference": 377,
+        "reference": 379,
         "source": 79,
         "target": 80
       },
@@ -9714,7 +9774,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 106,
         "provenance": "implied",
-        "reference": 524,
+        "reference": 534,
         "source": 78,
         "target": 81
       },
@@ -9722,7 +9782,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 390,
+        "reference": 392,
         "source": 81,
         "target": 84
       },
@@ -9730,7 +9790,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 391,
+        "reference": 393,
         "source": 81,
         "target": 83
       },
@@ -9738,7 +9798,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 392,
+        "reference": 394,
         "source": 81,
         "target": 82
       },
@@ -9746,7 +9806,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 108,
         "provenance": "authored",
-        "reference": 393,
+        "reference": 395,
         "source": 81,
         "target": 85
       },
@@ -9754,7 +9814,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 104,
         "provenance": "implied",
-        "reference": 525,
+        "reference": 535,
         "source": 78,
         "target": 86
       },
@@ -9762,7 +9822,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 68,
         "provenance": "implied",
-        "reference": 385,
+        "reference": 387,
         "source": 86,
         "target": 87
       },
@@ -9770,7 +9830,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 100,
         "provenance": "implied",
-        "reference": 526,
+        "reference": 536,
         "source": 78,
         "target": 88
       },
@@ -9778,7 +9838,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 128,
         "provenance": "implied",
-        "reference": 436,
+        "reference": 442,
         "source": 6,
         "target": 11
       },
@@ -9786,7 +9846,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 94,
         "provenance": "implied",
-        "reference": 517,
+        "reference": 527,
         "source": 11,
         "target": 16
       },
@@ -9794,7 +9854,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 366,
+        "reference": 368,
         "source": 16,
         "target": 19
       },
@@ -9802,7 +9862,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 367,
+        "reference": 369,
         "source": 16,
         "target": 18
       },
@@ -9810,7 +9870,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 368,
+        "reference": 370,
         "source": 16,
         "target": 17
       },
@@ -9818,7 +9878,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 96,
         "provenance": "authored",
-        "reference": 369,
+        "reference": 371,
         "source": 16,
         "target": 20
       },
@@ -9826,7 +9886,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 92,
         "provenance": "implied",
-        "reference": 518,
+        "reference": 528,
         "source": 11,
         "target": 21
       },
@@ -9834,7 +9894,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 70,
         "provenance": "implied",
-        "reference": 361,
+        "reference": 363,
         "source": 21,
         "target": 22
       },
@@ -9842,7 +9902,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 98,
         "provenance": "implied",
-        "reference": 519,
+        "reference": 529,
         "source": 11,
         "target": 12
       },
@@ -9850,7 +9910,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 354,
+        "reference": 356,
         "source": 12,
         "target": 15
       },
@@ -9858,7 +9918,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 355,
+        "reference": 357,
         "source": 12,
         "target": 14
       },
@@ -9866,47 +9926,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 356,
+        "reference": 358,
         "source": 12,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 130,
-        "provenance": "implied",
-        "reference": 437,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 139,
-        "provenance": "implied",
-        "reference": 438,
-        "source": 6,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 133,
-        "provenance": "implied",
-        "reference": 439,
-        "source": 6,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 136,
-        "provenance": "implied",
-        "reference": 440,
-        "source": 6,
-        "target": 10
-      },
-      {
-        "kind": "containment",
         "navigation": 154,
         "provenance": "implied",
-        "reference": 134,
+        "reference": 136,
         "source": 0,
         "target": 89
       },
@@ -9914,7 +9942,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 118,
         "provenance": "implied",
-        "reference": 412,
+        "reference": 430,
         "source": 89,
         "target": 90
       },
@@ -9922,7 +9950,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 52,
         "provenance": "implied",
-        "reference": 343,
+        "reference": 345,
         "source": 90,
         "target": 93
       },
@@ -9930,7 +9958,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 54,
         "provenance": "implied",
-        "reference": 344,
+        "reference": 346,
         "source": 90,
         "target": 92
       },
@@ -9938,7 +9966,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 345,
+        "reference": 347,
         "source": 90,
         "target": 91
       },
@@ -9946,7 +9974,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 120,
         "provenance": "authored",
-        "reference": 346,
+        "reference": 348,
         "source": 90,
         "target": 94
       },
@@ -9954,85 +9982,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 116,
         "provenance": "implied",
-        "reference": 413,
+        "reference": 431,
         "source": 89,
         "target": 95
       },
       {
         "kind": "containment",
-        "navigation": 152,
-        "provenance": "implied",
-        "reference": 135,
-        "source": 0,
-        "target": 96
-      },
-      {
-        "kind": "containment",
-        "navigation": 148,
-        "provenance": "implied",
-        "reference": 401,
-        "source": 96,
-        "target": 97
-      },
-      {
-        "kind": "containment",
-        "navigation": 52,
-        "provenance": "implied",
-        "reference": 310,
-        "source": 97,
-        "target": 100
-      },
-      {
-        "kind": "containment",
-        "navigation": 54,
-        "provenance": "implied",
-        "reference": 311,
-        "source": 97,
-        "target": 99
-      },
-      {
-        "kind": "containment",
-        "navigation": 55,
-        "provenance": "implied",
-        "reference": 312,
-        "source": 97,
-        "target": 98
-      },
-      {
-        "kind": "containment",
-        "navigation": 142,
-        "provenance": "implied",
-        "reference": 402,
-        "source": 96,
-        "target": 103
-      },
-      {
-        "kind": "containment",
-        "navigation": 144,
-        "provenance": "implied",
-        "reference": 403,
-        "source": 96,
-        "target": 101
-      },
-      {
-        "kind": "containment",
-        "navigation": 146,
-        "provenance": "implied",
-        "reference": 404,
-        "source": 96,
-        "target": 102
-      },
-      {
-        "kind": "containment",
         "navigation": 156,
-        "provenance": "implied",
-        "reference": 136,
-        "source": 0,
-        "target": 5
-      },
-      {
-        "kind": "containment",
-        "navigation": 162,
         "provenance": "implied",
         "reference": 137,
         "source": 0,
@@ -10040,7 +9996,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "containment",
-        "navigation": 168,
+        "navigation": 159,
         "provenance": "implied",
         "reference": 138,
         "source": 0,
@@ -10048,7 +10004,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "containment",
-        "navigation": 159,
+        "navigation": 162,
         "provenance": "implied",
         "reference": 139,
         "source": 0,
@@ -10061,6 +10017,78 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 140,
         "source": 0,
         "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 168,
+        "provenance": "implied",
+        "reference": 141,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 152,
+        "provenance": "implied",
+        "reference": 142,
+        "source": 0,
+        "target": 96
+      },
+      {
+        "kind": "containment",
+        "navigation": 148,
+        "provenance": "implied",
+        "reference": 423,
+        "source": 96,
+        "target": 97
+      },
+      {
+        "kind": "containment",
+        "navigation": 52,
+        "provenance": "implied",
+        "reference": 312,
+        "source": 97,
+        "target": 100
+      },
+      {
+        "kind": "containment",
+        "navigation": 54,
+        "provenance": "implied",
+        "reference": 313,
+        "source": 97,
+        "target": 99
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "provenance": "implied",
+        "reference": 314,
+        "source": 97,
+        "target": 98
+      },
+      {
+        "kind": "containment",
+        "navigation": 142,
+        "provenance": "implied",
+        "reference": 424,
+        "source": 96,
+        "target": 103
+      },
+      {
+        "kind": "containment",
+        "navigation": 144,
+        "provenance": "implied",
+        "reference": 425,
+        "source": 96,
+        "target": 101
+      },
+      {
+        "kind": "containment",
+        "navigation": 146,
+        "provenance": "implied",
+        "reference": 426,
+        "source": 96,
+        "target": 102
       }
     ],
     "exposedRoots": [
@@ -10150,11 +10178,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buttonPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 75,
-        "source": 162,
+        "reference": 125,
+        "source": 156,
         "typing": {
           "status": "absent"
         }
@@ -10162,22 +10190,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 78,
-        "source": 168,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": "displayPower",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 79,
+        "reference": 126,
         "source": 159,
         "typing": {
           "status": "absent"
@@ -10186,10 +10202,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerDriverPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 77,
+        "reference": 127,
+        "source": 162,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 128,
         "source": 165,
         "typing": {
           "status": "absent"
@@ -10198,11 +10226,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "mcuPower",
+        "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 80,
-        "source": 156,
+        "reference": 129,
+        "source": 168,
         "typing": {
           "status": "absent"
         }
@@ -10234,14 +10262,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 81,
+        "reference": 77,
         "source": 150,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "TimerPCB",
-              "reference": 93
+              "reference": 89
             }
           ]
         }
@@ -10249,10 +10277,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buttonInput",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 94,
+        "reference": 131,
         "source": 130,
         "typing": {
           "status": "absent"
@@ -10261,22 +10289,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "buzzerCommands",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 96,
-        "source": 139,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": "displayCommands",
-        "notationRole": "usage",
-        "owner": 6,
-        "reference": 99,
+        "reference": 132,
         "source": 133,
         "typing": {
           "status": "absent"
@@ -10285,11 +10301,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "metaclass": "ConnectionUsage",
-        "name": "lcdDriveSignals",
+        "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 100,
+        "reference": 133,
         "source": 136,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 134,
+        "source": 139,
         "typing": {
           "status": "absent"
         }
@@ -10310,7 +10338,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "buzzerDriver",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 97,
+        "reference": 92,
         "source": 128,
         "typing": {
           "status": "resolved",
@@ -10387,7 +10415,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -10464,7 +10492,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -10475,7 +10503,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 16,
-        "reference": 130,
+        "reference": 123,
         "source": 96,
         "typing": {
           "status": "partial",
@@ -10521,7 +10549,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10560,14 +10588,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "mcu",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 101,
+        "reference": 94,
         "source": 122,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Microcontroller",
-              "reference": 82
+              "reference": 78
             }
           ]
         }
@@ -10586,7 +10614,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "displayOut",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 86,
+        "reference": 82,
         "source": 80,
         "typing": {
           "status": "resolved",
@@ -10611,7 +10639,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 117
+              "reference": 110
             }
           ]
         }
@@ -10639,7 +10667,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "pwr",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 89,
+        "reference": 85,
         "source": 86,
         "typing": {
           "status": "resolved",
@@ -10688,7 +10716,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -10699,7 +10727,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 26,
-        "reference": 132,
+        "reference": 130,
         "source": 88,
         "typing": {
           "status": "partial",
@@ -10724,7 +10752,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "buttonIn",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 83,
+        "reference": 79,
         "source": 78,
         "typing": {
           "status": "resolved",
@@ -10749,7 +10777,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10767,7 +10795,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10785,7 +10813,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10803,7 +10831,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10821,7 +10849,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10840,7 +10868,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "lcdDrive",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 88,
+        "reference": 84,
         "source": 82,
         "typing": {
           "status": "resolved",
@@ -10865,7 +10893,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 117
+              "reference": 110
             }
           ]
         }
@@ -10884,7 +10912,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "buzzerOut",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 84,
+        "reference": 80,
         "source": 84,
         "typing": {
           "status": "resolved",
@@ -10909,7 +10937,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -10931,7 +10959,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "timerMode",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 92,
+        "reference": 88,
         "source": 90,
         "typing": {
           "status": "resolved",
@@ -10969,7 +10997,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 42,
-        "reference": 122,
+        "reference": 115,
         "source": 32,
         "typing": {
           "status": "absent"
@@ -11001,7 +11029,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 44,
-        "reference": 126,
+        "reference": 119,
         "source": 12,
         "typing": {
           "status": "absent"
@@ -11033,7 +11061,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 46,
-        "reference": 120,
+        "reference": 113,
         "source": 22,
         "typing": {
           "status": "absent"
@@ -11065,7 +11093,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 48,
-        "reference": 121,
+        "reference": 114,
         "source": 17,
         "typing": {
           "status": "absent"
@@ -11097,7 +11125,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 50,
-        "reference": 127,
+        "reference": 120,
         "source": 37,
         "typing": {
           "status": "absent"
@@ -11129,7 +11157,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 52,
-        "reference": 124,
+        "reference": 117,
         "source": 42,
         "typing": {
           "status": "absent"
@@ -11161,7 +11189,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 54,
-        "reference": 123,
+        "reference": 116,
         "source": 47,
         "typing": {
           "status": "absent"
@@ -11193,7 +11221,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 56,
-        "reference": 125,
+        "reference": 118,
         "source": 27,
         "typing": {
           "status": "absent"
@@ -11205,7 +11233,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 41,
-        "reference": 119,
+        "reference": 112,
         "source": 2,
         "typing": {
           "status": "absent"
@@ -11289,14 +11317,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "clockFrequency",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 85,
+        "reference": 81,
         "source": 72,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "FrequencyValue",
-              "reference": 111
+              "reference": 104
             }
           ]
         }
@@ -11307,14 +11335,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "ramSize",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 91,
+        "reference": 87,
         "source": 76,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 116
+              "reference": 109
             }
           ]
         }
@@ -11325,14 +11353,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "flashSize",
         "notationRole": "usage",
         "owner": 23,
-        "reference": 87,
+        "reference": 83,
         "source": 74,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 116
+              "reference": 109
             }
           ]
         }
@@ -11352,7 +11380,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "buttons",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 95,
+        "reference": 91,
         "source": 126,
         "typing": {
           "status": "resolved",
@@ -11436,7 +11464,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -11447,7 +11475,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 67,
-        "reference": 128,
+        "reference": 121,
         "source": 114,
         "typing": {
           "status": "partial",
@@ -11497,7 +11525,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -11515,7 +11543,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -11533,7 +11561,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -11551,7 +11579,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -11569,7 +11597,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 115
+              "reference": 108
             }
           ]
         }
@@ -11597,7 +11625,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "display",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 98,
+        "reference": 93,
         "source": 124,
         "typing": {
           "status": "resolved",
@@ -11648,7 +11676,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 117
+              "reference": 110
             }
           ]
         }
@@ -11725,7 +11753,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -11736,7 +11764,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 81,
-        "reference": 131,
+        "reference": 124,
         "source": 108,
         "typing": {
           "status": "partial",
@@ -11782,7 +11810,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 117
+              "reference": 110
             }
           ]
         }
@@ -11800,7 +11828,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 117
+              "reference": 110
             }
           ]
         }
@@ -11910,7 +11938,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -11921,7 +11949,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 90,
-        "reference": 129,
+        "reference": 122,
         "source": 120,
         "typing": {
           "status": "partial",
@@ -11941,7 +11969,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "DurationValue",
-              "reference": 107
+              "reference": 100
             }
           ]
         }
@@ -11969,7 +11997,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 74,
+        "reference": 75,
         "source": 152,
         "typing": {
           "status": "resolved",
@@ -12046,7 +12074,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "electricPower",
-              "reference": 110
+              "reference": 103
             }
           ]
         }
@@ -12064,7 +12092,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "ElectricPotentialDifferenceValue",
-              "reference": 109
+              "reference": 102
             }
           ]
         }
@@ -12082,7 +12110,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "DurationValue",
-              "reference": 107
+              "reference": 100
             }
           ]
         }
@@ -12100,7 +12128,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "ElectricChargeValue",
-              "reference": 108
+              "reference": 101
             }
           ]
         }
@@ -12111,7 +12139,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 142,
+        "reference": 144,
         "source": 0,
         "target": {
           "reference": 73,
@@ -12122,10 +12150,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 141,
+        "reference": 143,
         "source": 0,
         "target": {
-          "reference": 113,
+          "reference": 106,
           "status": "resolved"
         }
       },
@@ -12133,10 +12161,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 151,
         "provenance": "authored",
-        "reference": 443,
+        "reference": 445,
         "source": 6,
         "target": {
-          "reference": 93,
+          "reference": 89,
           "status": "resolved"
         }
       },
@@ -12144,10 +12172,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 441,
+        "reference": 443,
         "source": 6,
         "target": {
-          "reference": 113,
+          "reference": 106,
           "status": "resolved"
         }
       },
@@ -12155,7 +12183,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 442,
+        "reference": 444,
         "source": 6,
         "target": {
           "reference": 73,
@@ -12166,10 +12194,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 123,
         "provenance": "authored",
-        "reference": 549,
+        "reference": 551,
         "source": 23,
         "target": {
-          "reference": 82,
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -12177,10 +12205,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 547,
+        "reference": 549,
         "source": 23,
         "target": {
-          "reference": 113,
+          "reference": 106,
           "status": "resolved"
         }
       },
@@ -12188,10 +12216,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 548,
+        "reference": 550,
         "source": 23,
         "target": {
-          "reference": 93,
+          "reference": 89,
           "status": "resolved"
         }
       },
@@ -12199,7 +12227,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 87,
         "provenance": "authored",
-        "reference": 481,
+        "reference": 483,
         "source": 26,
         "target": {
           "reference": 33,
@@ -12208,56 +12236,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 478,
-        "source": 26,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 479,
-        "source": 26,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
         "reference": 480,
         "source": 26,
         "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 53,
-        "provenance": "authored",
-        "reference": 251,
-        "source": 29,
-        "target": {
-          "reference": 110,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 244,
-        "source": 29,
-        "target": {
-          "reference": 33,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -12265,10 +12249,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 258,
-        "source": 28,
+        "reference": 481,
+        "source": 26,
         "target": {
-          "reference": 105,
+          "reference": 107,
           "status": "resolved"
         }
       },
@@ -12276,1792 +12260,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 265,
-        "source": 28,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 230,
-        "source": 27,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 237,
-        "source": 27,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 89,
-        "provenance": "authored",
         "reference": 482,
-        "source": 30,
+        "source": 26,
         "target": {
-          "node": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 483,
-        "source": 30,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 484,
-        "source": 30,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 79,
-        "provenance": "authored",
-        "reference": 452,
-        "source": 31,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 449,
-        "source": 31,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 450,
-        "source": 31,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 451,
-        "source": 31,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 59,
-        "provenance": "authored",
-        "reference": 290,
-        "source": 32,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 288,
-        "source": 32,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 61,
-        "provenance": "authored",
-        "reference": 282,
-        "source": 33,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 280,
-        "source": 33,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 57,
-        "provenance": "authored",
-        "reference": 286,
-        "source": 34,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 284,
-        "source": 34,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 65,
-        "provenance": "authored",
-        "reference": 274,
-        "source": 35,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 272,
-        "source": 35,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 63,
-        "provenance": "authored",
-        "reference": 278,
-        "source": 36,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 36,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 83,
-        "provenance": "authored",
-        "reference": 473,
-        "source": 37,
-        "target": {
-          "reference": 47,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 470,
-        "source": 37,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 471,
-        "source": 37,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 472,
-        "source": 37,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 69,
-        "provenance": "authored",
-        "reference": 302,
-        "source": 38,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 300,
-        "source": 38,
-        "target": {
-          "reference": 47,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 85,
-        "provenance": "authored",
-        "reference": 457,
-        "source": 39,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 454,
-        "source": 39,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 455,
-        "source": 39,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 456,
-        "source": 39,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 71,
-        "provenance": "authored",
-        "reference": 294,
-        "source": 40,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 292,
-        "source": 40,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 91,
-        "provenance": "authored",
-        "reference": 503,
-        "source": 41,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 501,
-        "source": 41,
-        "target": {
-          "reference": 118,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 502,
-        "source": 41,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 163,
-        "source": 59,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 158,
-        "source": 59,
-        "target": {
-          "reference": 118,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 162,
-        "source": 59,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 176,
-        "source": 60,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 172,
-        "source": 60,
-        "target": {
-          "reference": 118,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 175,
-        "source": 60,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "initialState",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 144,
-        "source": 58,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 145,
-        "source": 58,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 157,
-        "source": 61,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 154,
-        "source": 61,
-        "target": {
-          "reference": 118,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 156,
-        "source": 61,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 181,
-        "source": 62,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 177,
-        "source": 62,
-        "target": {
-          "reference": 118,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 180,
-        "source": 62,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 207,
-        "source": 56,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 29,
-        "provenance": "authored",
-        "reference": 208,
-        "source": 56,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 31,
-        "provenance": "authored",
-        "reference": 209,
-        "source": 56,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 210,
-        "source": 56,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 211,
-        "source": 56,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 212,
-        "source": 57,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 213,
-        "source": 57,
-        "target": {
-          "node": 56,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 183,
-        "source": 42,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 34,
-        "provenance": "authored",
-        "reference": 184,
-        "source": 42,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 36,
-        "provenance": "authored",
-        "reference": 185,
-        "source": 42,
-        "target": {
-          "node": 61,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 35,
-        "provenance": "authored",
-        "reference": 186,
-        "source": 42,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 187,
-        "source": 42,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 188,
-        "source": 43,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 189,
-        "source": 43,
-        "target": {
-          "node": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 215,
-        "source": 44,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 14,
-        "provenance": "authored",
-        "reference": 216,
-        "source": 44,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 217,
-        "source": 44,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 15,
-        "provenance": "authored",
-        "reference": 218,
-        "source": 44,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 219,
-        "source": 44,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 220,
-        "source": 45,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 221,
-        "source": 45,
-        "target": {
-          "node": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 147,
-        "source": 46,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 148,
-        "source": 46,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 149,
-        "source": 46,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 150,
-        "source": 46,
-        "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 151,
-        "source": 46,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 152,
-        "source": 47,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 153,
-        "source": 47,
-        "target": {
-          "node": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 165,
-        "source": 48,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 19,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 48,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 21,
-        "provenance": "authored",
-        "reference": 167,
-        "source": 48,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 168,
-        "source": 48,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 169,
-        "source": 48,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 170,
-        "source": 49,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 171,
-        "source": 49,
-        "target": {
-          "node": 48,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 223,
-        "source": 50,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 39,
-        "provenance": "authored",
-        "reference": 224,
-        "source": 50,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 41,
-        "provenance": "authored",
-        "reference": 225,
-        "source": 50,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 40,
-        "provenance": "authored",
-        "reference": 226,
-        "source": 50,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 227,
-        "source": 50,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 228,
-        "source": 51,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 229,
-        "source": 51,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 199,
-        "source": 52,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 44,
-        "provenance": "authored",
-        "reference": 200,
-        "source": 52,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 201,
-        "source": 52,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 45,
-        "provenance": "authored",
-        "reference": 202,
-        "source": 52,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 203,
-        "source": 52,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 204,
-        "source": 53,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 205,
-        "source": 53,
-        "target": {
-          "node": 52,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 191,
-        "source": 54,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 49,
-        "provenance": "authored",
-        "reference": 192,
-        "source": 54,
-        "target": {
-          "node": 61,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 51,
-        "provenance": "authored",
-        "reference": 193,
-        "source": 54,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 50,
-        "provenance": "authored",
-        "reference": 194,
-        "source": 54,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 195,
-        "source": 54,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 196,
-        "source": 55,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 197,
-        "source": 55,
-        "target": {
-          "node": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 81,
-        "provenance": "authored",
-        "reference": 465,
-        "source": 24,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 462,
-        "source": 24,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 463,
-        "source": 24,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 464,
-        "source": 24,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 298,
-        "source": 25,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 296,
-        "source": 25,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 77,
-        "provenance": "authored",
-        "reference": 487,
-        "source": 64,
-        "target": {
-          "reference": 116,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 485,
-        "source": 64,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 486,
-        "source": 64,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 75,
-        "provenance": "authored",
-        "reference": 468,
-        "source": 65,
-        "target": {
-          "reference": 116,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 466,
-        "source": 65,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 467,
-        "source": 65,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 73,
-        "provenance": "authored",
-        "reference": 460,
-        "source": 63,
-        "target": {
-          "reference": 111,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 458,
-        "source": 63,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 459,
-        "source": 63,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 127,
-        "provenance": "authored",
-        "reference": 512,
-        "source": 66,
-        "target": {
-          "reference": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 510,
-        "source": 66,
-        "target": {
-          "reference": 113,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 511,
-        "source": 66,
-        "target": {
-          "reference": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 113,
-        "provenance": "authored",
-        "reference": 336,
-        "source": 67,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 333,
-        "source": 67,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 334,
-        "source": 67,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 335,
-        "source": 67,
-        "target": {
-          "reference": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 53,
-        "provenance": "authored",
-        "reference": 252,
-        "source": 70,
-        "target": {
-          "reference": 110,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 245,
-        "source": 70,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 259,
-        "source": 69,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 266,
-        "source": 69,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 231,
-        "source": 68,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 238,
-        "source": 68,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 115,
-        "provenance": "authored",
-        "reference": 337,
-        "source": 71,
-        "target": {
-          "node": 68,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 338,
-        "source": 71,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 339,
-        "source": 71,
-        "target": {
-          "node": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 111,
-        "provenance": "authored",
-        "reference": 328,
-        "source": 72,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 325,
-        "source": 72,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 326,
-        "source": 72,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 327,
-        "source": 72,
-        "target": {
-          "reference": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 59,
-        "provenance": "authored",
-        "reference": 291,
-        "source": 73,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 289,
-        "source": 73,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 61,
-        "provenance": "authored",
-        "reference": 283,
-        "source": 74,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 281,
-        "source": 74,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 57,
-        "provenance": "authored",
-        "reference": 287,
-        "source": 75,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 285,
-        "source": 75,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 65,
-        "provenance": "authored",
-        "reference": 275,
-        "source": 76,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 76,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 63,
-        "provenance": "authored",
-        "reference": 279,
-        "source": 77,
-        "target": {
-          "reference": 115,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 277,
-        "source": 77,
-        "target": {
-          "reference": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 125,
-        "provenance": "authored",
-        "reference": 529,
-        "source": 78,
-        "target": {
-          "reference": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 527,
-        "source": 78,
-        "target": {
-          "reference": 113,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 528,
-        "source": 78,
-        "target": {
-          "reference": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 103,
-        "provenance": "authored",
-        "reference": 381,
-        "source": 79,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 378,
-        "source": 79,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 379,
-        "source": 79,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 380,
-        "source": 79,
-        "target": {
-          "reference": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 299,
-        "source": 80,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 297,
-        "source": 80,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 107,
-        "provenance": "authored",
-        "reference": 397,
-        "source": 81,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 394,
-        "source": 81,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 395,
-        "source": 81,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 396,
-        "source": 81,
-        "target": {
-          "reference": 67,
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -14070,9 +12272,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 53,
         "provenance": "authored",
         "reference": 253,
-        "source": 84,
+        "source": 29,
         "target": {
-          "reference": 110,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -14081,7 +12283,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 246,
-        "source": 84,
+        "source": 29,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14092,9 +12294,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 260,
-        "source": 83,
+        "source": 28,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14103,7 +12305,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 267,
-        "source": 83,
+        "source": 28,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14114,9 +12316,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 232,
-        "source": 82,
+        "source": 27,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14125,7 +12327,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 239,
-        "source": 82,
+        "source": 27,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14133,12 +12335,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "redefinition",
-        "navigation": 109,
+        "navigation": 89,
         "provenance": "authored",
-        "reference": 398,
-        "source": 85,
+        "reference": 484,
+        "source": 30,
         "target": {
-          "node": 82,
+          "node": 27,
           "status": "resolved"
         }
       },
@@ -14146,10 +12348,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 399,
-        "source": 85,
+        "reference": 485,
+        "source": 30,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14157,19 +12359,173 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 400,
-        "source": 85,
+        "reference": 486,
+        "source": 30,
         "target": {
-          "node": 81,
+          "node": 26,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 105,
+        "navigation": 79,
         "provenance": "authored",
-        "reference": 389,
-        "source": 86,
+        "reference": 454,
+        "source": 31,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 451,
+        "source": 31,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 452,
+        "source": 31,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 453,
+        "source": 31,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 59,
+        "provenance": "authored",
+        "reference": 292,
+        "source": 32,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 290,
+        "source": 32,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 61,
+        "provenance": "authored",
+        "reference": 284,
+        "source": 33,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 282,
+        "source": 33,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 57,
+        "provenance": "authored",
+        "reference": 288,
+        "source": 34,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 286,
+        "source": 34,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 65,
+        "provenance": "authored",
+        "reference": 276,
+        "source": 35,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 274,
+        "source": 35,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 63,
+        "provenance": "authored",
+        "reference": 280,
+        "source": 36,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 278,
+        "source": 36,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 83,
+        "provenance": "authored",
+        "reference": 475,
+        "source": 37,
         "target": {
           "reference": 47,
           "status": "resolved"
@@ -14179,10 +12535,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 386,
-        "source": 86,
+        "reference": 472,
+        "source": 37,
         "target": {
-          "reference": 112,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -14190,10 +12546,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 387,
-        "source": 86,
+        "reference": 473,
+        "source": 37,
         "target": {
-          "reference": 114,
+          "reference": 107,
           "status": "resolved"
         }
       },
@@ -14201,10 +12557,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 388,
-        "source": 86,
+        "reference": 474,
+        "source": 37,
         "target": {
-          "reference": 67,
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -14212,10 +12568,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 69,
         "provenance": "authored",
-        "reference": 303,
-        "source": 87,
+        "reference": 304,
+        "source": 38,
         "target": {
-          "reference": 117,
+          "reference": 110,
           "status": "resolved"
         }
       },
@@ -14223,8 +12579,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 301,
-        "source": 87,
+        "reference": 302,
+        "source": 38,
         "target": {
           "reference": 47,
           "status": "resolved"
@@ -14232,219 +12588,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 101,
+        "navigation": 85,
         "provenance": "authored",
-        "reference": 384,
-        "source": 88,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 382,
-        "source": 88,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 383,
-        "source": 88,
-        "target": {
-          "reference": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 129,
-        "provenance": "authored",
-        "reference": 522,
-        "source": 11,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 520,
-        "source": 11,
-        "target": {
-          "reference": 113,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 521,
-        "source": 11,
-        "target": {
-          "reference": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 95,
-        "provenance": "authored",
-        "reference": 373,
-        "source": 16,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 370,
-        "source": 16,
-        "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 371,
-        "source": 16,
-        "target": {
-          "reference": 114,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 372,
-        "source": 16,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 53,
-        "provenance": "authored",
-        "reference": 254,
-        "source": 19,
-        "target": {
-          "reference": 110,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 19,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 261,
-        "source": 18,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 268,
-        "source": 18,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 233,
-        "source": 17,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 240,
-        "source": 17,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 97,
-        "provenance": "authored",
-        "reference": 374,
-        "source": 20,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 375,
-        "source": 20,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 376,
-        "source": 20,
-        "target": {
-          "node": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 93,
-        "provenance": "authored",
-        "reference": 365,
-        "source": 21,
+        "reference": 459,
+        "source": 39,
         "target": {
           "reference": 43,
           "status": "resolved"
@@ -14454,10 +12601,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 362,
-        "source": 21,
+        "reference": 456,
+        "source": 39,
         "target": {
-          "reference": 112,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -14465,10 +12612,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 363,
-        "source": 21,
+        "reference": 457,
+        "source": 39,
         "target": {
-          "reference": 114,
+          "reference": 107,
           "status": "resolved"
         }
       },
@@ -14476,10 +12623,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 364,
-        "source": 21,
+        "reference": 458,
+        "source": 39,
         "target": {
-          "reference": 62,
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -14487,10 +12634,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 71,
         "provenance": "authored",
-        "reference": 295,
-        "source": 22,
+        "reference": 296,
+        "source": 40,
         "target": {
-          "reference": 115,
+          "reference": 108,
           "status": "resolved"
         }
       },
@@ -14498,8 +12645,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 293,
-        "source": 22,
+        "reference": 294,
+        "source": 40,
         "target": {
           "reference": 43,
           "status": "resolved"
@@ -14507,12 +12654,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 99,
+        "navigation": 91,
         "provenance": "authored",
-        "reference": 360,
-        "source": 12,
+        "reference": 505,
+        "source": 41,
         "target": {
-          "reference": 33,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -14520,21 +12667,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 357,
-        "source": 12,
+        "reference": 503,
+        "source": 41,
         "target": {
-          "reference": 112,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 358,
-        "source": 12,
-        "target": {
-          "reference": 114,
+          "reference": 111,
           "status": "resolved"
         }
       },
@@ -14542,19 +12678,833 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 359,
-        "source": 12,
+        "reference": 504,
+        "source": 41,
         "target": {
-          "reference": 62,
+          "reference": 78,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 53,
+        "navigation": 5,
         "provenance": "authored",
-        "reference": 255,
-        "source": 15,
+        "reference": 165,
+        "source": 59,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 160,
+        "source": 59,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 164,
+        "source": 59,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 178,
+        "source": 60,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 174,
+        "source": 60,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 177,
+        "source": 60,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "initialState",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 146,
+        "source": 58,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 147,
+        "source": 58,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 11,
+        "provenance": "authored",
+        "reference": 159,
+        "source": 61,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 156,
+        "source": 61,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 158,
+        "source": 61,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 7,
+        "provenance": "authored",
+        "reference": 183,
+        "source": 62,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 179,
+        "source": 62,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 182,
+        "source": 62,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 209,
+        "source": 56,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 29,
+        "provenance": "authored",
+        "reference": 210,
+        "source": 56,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 31,
+        "provenance": "authored",
+        "reference": 211,
+        "source": 56,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 30,
+        "provenance": "authored",
+        "reference": 212,
+        "source": 56,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 213,
+        "source": 56,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 214,
+        "source": 57,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 215,
+        "source": 57,
+        "target": {
+          "node": 56,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 185,
+        "source": 42,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 186,
+        "source": 42,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 187,
+        "source": 42,
+        "target": {
+          "node": 61,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 35,
+        "provenance": "authored",
+        "reference": 188,
+        "source": 42,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 189,
+        "source": 42,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 190,
+        "source": 43,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 191,
+        "source": 43,
+        "target": {
+          "node": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 217,
+        "source": 44,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 14,
+        "provenance": "authored",
+        "reference": 218,
+        "source": 44,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 219,
+        "source": 44,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 220,
+        "source": 44,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 221,
+        "source": 44,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 222,
+        "source": 45,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 223,
+        "source": 45,
+        "target": {
+          "node": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 149,
+        "source": 46,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 150,
+        "source": 46,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 151,
+        "source": 46,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 152,
+        "source": 46,
+        "target": {
+          "reference": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 153,
+        "source": 46,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 154,
+        "source": 47,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 155,
+        "source": 47,
+        "target": {
+          "node": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 167,
+        "source": 48,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 19,
+        "provenance": "authored",
+        "reference": 168,
+        "source": 48,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 21,
+        "provenance": "authored",
+        "reference": 169,
+        "source": 48,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 20,
+        "provenance": "authored",
+        "reference": 170,
+        "source": 48,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 171,
+        "source": 48,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 172,
+        "source": 49,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 173,
+        "source": 49,
+        "target": {
+          "node": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 225,
+        "source": 50,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 39,
+        "provenance": "authored",
+        "reference": 226,
+        "source": 50,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 41,
+        "provenance": "authored",
+        "reference": 227,
+        "source": 50,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 40,
+        "provenance": "authored",
+        "reference": 228,
+        "source": 50,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 229,
+        "source": 50,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 230,
+        "source": 51,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 231,
+        "source": 51,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 201,
+        "source": 52,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 44,
+        "provenance": "authored",
+        "reference": 202,
+        "source": 52,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 203,
+        "source": 52,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 204,
+        "source": 52,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 205,
+        "source": 52,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 206,
+        "source": 53,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 207,
+        "source": 53,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 193,
+        "source": 54,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 49,
+        "provenance": "authored",
+        "reference": 194,
+        "source": 54,
+        "target": {
+          "node": 61,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 51,
+        "provenance": "authored",
+        "reference": 195,
+        "source": 54,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 196,
+        "source": 54,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 197,
+        "source": 54,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 198,
+        "source": 55,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 199,
+        "source": 55,
+        "target": {
+          "node": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 81,
+        "provenance": "authored",
+        "reference": 467,
+        "source": 24,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 464,
+        "source": 24,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 465,
+        "source": 24,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 466,
+        "source": 24,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 67,
+        "provenance": "authored",
+        "reference": 300,
+        "source": 25,
         "target": {
           "reference": 110,
           "status": "resolved"
@@ -14564,10 +13514,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 248,
-        "source": 15,
+        "reference": 298,
+        "source": 25,
         "target": {
-          "reference": 33,
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 77,
+        "provenance": "authored",
+        "reference": 489,
+        "source": 64,
+        "target": {
+          "reference": 109,
           "status": "resolved"
         }
       },
@@ -14575,10 +13536,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 262,
-        "source": 14,
+        "reference": 487,
+        "source": 64,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14586,10 +13547,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 269,
-        "source": 14,
+        "reference": 488,
+        "source": 64,
         "target": {
-          "reference": 33,
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 75,
+        "provenance": "authored",
+        "reference": 470,
+        "source": 65,
+        "target": {
+          "reference": 109,
           "status": "resolved"
         }
       },
@@ -14597,10 +13569,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 234,
-        "source": 13,
+        "reference": 468,
+        "source": 65,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14608,10 +13580,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 241,
-        "source": 13,
+        "reference": 469,
+        "source": 65,
         "target": {
-          "reference": 33,
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 73,
+        "provenance": "authored",
+        "reference": 462,
+        "source": 63,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 460,
+        "source": 63,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 461,
+        "source": 63,
+        "target": {
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -14619,7 +13624,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 131,
         "provenance": "authored",
-        "reference": 504,
+        "reference": 506,
         "source": 7,
         "target": {
           "node": 72,
@@ -14630,7 +13635,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 132,
         "provenance": "authored",
-        "reference": 505,
+        "reference": 507,
         "source": 7,
         "target": {
           "node": 31,
@@ -14641,10 +13646,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 506,
+        "reference": 514,
         "source": 7,
         "target": {
-          "reference": 106,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -14652,32 +13657,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 507,
+        "reference": 518,
         "source": 7,
         "target": {
-          "reference": 93,
+          "reference": 89,
           "status": "resolved"
         }
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 140,
+        "navigation": 134,
         "provenance": "authored",
-        "reference": 513,
+        "reference": 508,
         "source": 8,
         "target": {
-          "node": 39,
+          "node": 24,
           "status": "resolved"
         }
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 141,
+        "navigation": 135,
         "provenance": "authored",
-        "reference": 514,
+        "reference": 509,
         "source": 8,
         "target": {
-          "node": 21,
+          "node": 79,
           "status": "resolved"
         }
       },
@@ -14688,7 +13693,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 515,
         "source": 8,
         "target": {
-          "reference": 106,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -14696,54 +13701,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 516,
+        "reference": 519,
         "source": 8,
         "target": {
-          "reference": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 134,
-        "provenance": "authored",
-        "reference": 530,
-        "source": 9,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 135,
-        "provenance": "authored",
-        "reference": 531,
-        "source": 9,
-        "target": {
-          "node": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 532,
-        "source": 9,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 533,
-        "source": 9,
-        "target": {
-          "reference": 93,
+          "reference": 89,
           "status": "resolved"
         }
       },
@@ -14751,8 +13712,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 137,
         "provenance": "authored",
-        "reference": 534,
-        "source": 10,
+        "reference": 510,
+        "source": 9,
         "target": {
           "node": 37,
           "status": "resolved"
@@ -14762,8 +13723,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 138,
         "provenance": "authored",
-        "reference": 535,
-        "source": 10,
+        "reference": 511,
+        "source": 9,
         "target": {
           "node": 86,
           "status": "resolved"
@@ -14773,8 +13734,85 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 536,
+        "reference": 516,
+        "source": 9,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 520,
+        "source": 9,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 140,
+        "provenance": "authored",
+        "reference": 512,
         "source": 10,
+        "target": {
+          "node": 39,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 141,
+        "provenance": "authored",
+        "reference": 513,
+        "source": 10,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 517,
+        "source": 10,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 521,
+        "source": 10,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 127,
+        "provenance": "authored",
+        "reference": 526,
+        "source": 66,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 524,
+        "source": 66,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -14784,52 +13822,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 537,
-        "source": 10,
+        "reference": 525,
+        "source": 66,
         "target": {
-          "reference": 93,
+          "reference": 89,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 155,
+        "navigation": 113,
         "provenance": "authored",
-        "reference": 416,
-        "source": 89,
-        "target": {
-          "reference": 58,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 414,
-        "source": 89,
-        "target": {
-          "reference": 113,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 415,
-        "source": 89,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 119,
-        "provenance": "authored",
-        "reference": 350,
-        "source": 90,
+        "reference": 338,
+        "source": 67,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14839,10 +13844,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 347,
-        "source": 90,
+        "reference": 335,
+        "source": 67,
         "target": {
-          "reference": 112,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -14850,10 +13855,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 348,
-        "source": 90,
+        "reference": 336,
+        "source": 67,
         "target": {
-          "reference": 114,
+          "reference": 107,
           "status": "resolved"
         }
       },
@@ -14861,10 +13866,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 349,
-        "source": 90,
+        "reference": 337,
+        "source": 67,
         "target": {
-          "reference": 58,
+          "reference": 54,
           "status": "resolved"
         }
       },
@@ -14872,8 +13877,338 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 53,
         "provenance": "authored",
-        "reference": 256,
-        "source": 93,
+        "reference": 254,
+        "source": 70,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 247,
+        "source": 70,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 261,
+        "source": 69,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 268,
+        "source": 69,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 233,
+        "source": 68,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 240,
+        "source": 68,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 115,
+        "provenance": "authored",
+        "reference": 339,
+        "source": 71,
+        "target": {
+          "node": 68,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 340,
+        "source": 71,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 341,
+        "source": 71,
+        "target": {
+          "node": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 111,
+        "provenance": "authored",
+        "reference": 330,
+        "source": 72,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 327,
+        "source": 72,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 328,
+        "source": 72,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 329,
+        "source": 72,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 59,
+        "provenance": "authored",
+        "reference": 293,
+        "source": 73,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 291,
+        "source": 73,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 61,
+        "provenance": "authored",
+        "reference": 285,
+        "source": 74,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 74,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 57,
+        "provenance": "authored",
+        "reference": 289,
+        "source": 75,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 287,
+        "source": 75,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 65,
+        "provenance": "authored",
+        "reference": 277,
+        "source": 76,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 275,
+        "source": 76,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 63,
+        "provenance": "authored",
+        "reference": 281,
+        "source": 77,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 279,
+        "source": 77,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 125,
+        "provenance": "authored",
+        "reference": 539,
+        "source": 78,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 537,
+        "source": 78,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 538,
+        "source": 78,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 103,
+        "provenance": "authored",
+        "reference": 383,
+        "source": 79,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 380,
+        "source": 79,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 381,
+        "source": 79,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 382,
+        "source": 79,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 67,
+        "provenance": "authored",
+        "reference": 301,
+        "source": 80,
         "target": {
           "reference": 110,
           "status": "resolved"
@@ -14883,8 +14218,349 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 299,
+        "source": 80,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 107,
+        "provenance": "authored",
+        "reference": 399,
+        "source": 81,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 396,
+        "source": 81,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 397,
+        "source": 81,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 398,
+        "source": 81,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 53,
+        "provenance": "authored",
+        "reference": 255,
+        "source": 84,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 248,
+        "source": 84,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 262,
+        "source": 83,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 269,
+        "source": 83,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 234,
+        "source": 82,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 241,
+        "source": 82,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 109,
+        "provenance": "authored",
+        "reference": 400,
+        "source": 85,
+        "target": {
+          "node": 82,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 401,
+        "source": 85,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 402,
+        "source": 85,
+        "target": {
+          "node": 81,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 105,
+        "provenance": "authored",
+        "reference": 391,
+        "source": 86,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 388,
+        "source": 86,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 389,
+        "source": 86,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 390,
+        "source": 86,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 69,
+        "provenance": "authored",
+        "reference": 305,
+        "source": 87,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 303,
+        "source": 87,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 386,
+        "source": 88,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 384,
+        "source": 88,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 385,
+        "source": 88,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 129,
+        "provenance": "authored",
+        "reference": 532,
+        "source": 11,
+        "target": {
+          "reference": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 530,
+        "source": 11,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 531,
+        "source": 11,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 95,
+        "provenance": "authored",
+        "reference": 375,
+        "source": 16,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 372,
+        "source": 16,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 373,
+        "source": 16,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 374,
+        "source": 16,
+        "target": {
+          "reference": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 53,
+        "provenance": "authored",
+        "reference": 256,
+        "source": 19,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 249,
-        "source": 93,
+        "source": 19,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14895,9 +14571,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 263,
-        "source": 92,
+        "source": 18,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14906,7 +14582,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 270,
-        "source": 92,
+        "source": 18,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14917,9 +14593,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 235,
-        "source": 91,
+        "source": 17,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14928,7 +14604,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 242,
-        "source": 91,
+        "source": 17,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -14936,12 +14612,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "redefinition",
-        "navigation": 121,
+        "navigation": 97,
         "provenance": "authored",
-        "reference": 351,
-        "source": 94,
+        "reference": 376,
+        "source": 20,
         "target": {
-          "node": 91,
+          "node": 17,
           "status": "resolved"
         }
       },
@@ -14949,10 +14625,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 352,
-        "source": 94,
+        "reference": 377,
+        "source": 20,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -14960,32 +14636,65 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 353,
-        "source": 94,
+        "reference": 378,
+        "source": 20,
         "target": {
-          "node": 90,
+          "node": 16,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 117,
+        "navigation": 93,
         "provenance": "authored",
-        "reference": 342,
-        "source": 95,
+        "reference": 367,
+        "source": 21,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 364,
+        "source": 21,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 365,
+        "source": 21,
         "target": {
           "reference": 107,
           "status": "resolved"
         }
       },
       {
-        "kind": "specializes",
+        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 340,
-        "source": 95,
+        "reference": 366,
+        "source": 21,
         "target": {
-          "reference": 105,
+          "reference": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 71,
+        "provenance": "authored",
+        "reference": 297,
+        "source": 22,
+        "target": {
+          "reference": 108,
           "status": "resolved"
         }
       },
@@ -14993,52 +14702,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 341,
-        "source": 95,
+        "reference": 295,
+        "source": 22,
         "target": {
-          "reference": 58,
+          "reference": 43,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 153,
+        "navigation": 99,
         "provenance": "authored",
-        "reference": 407,
-        "source": 96,
-        "target": {
-          "reference": 49,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 405,
-        "source": 96,
-        "target": {
-          "reference": 113,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 406,
-        "source": 96,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 149,
-        "provenance": "authored",
-        "reference": 316,
-        "source": 97,
+        "reference": 362,
+        "source": 12,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -15048,10 +14724,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 313,
-        "source": 97,
+        "reference": 359,
+        "source": 12,
         "target": {
-          "reference": 112,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -15059,10 +14735,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 314,
-        "source": 97,
+        "reference": 360,
+        "source": 12,
         "target": {
-          "reference": 114,
+          "reference": 107,
           "status": "resolved"
         }
       },
@@ -15070,10 +14746,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 315,
-        "source": 97,
+        "reference": 361,
+        "source": 12,
         "target": {
-          "reference": 49,
+          "reference": 62,
           "status": "resolved"
         }
       },
@@ -15082,9 +14758,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 53,
         "provenance": "authored",
         "reference": 257,
-        "source": 100,
+        "source": 15,
         "target": {
-          "reference": 110,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -15093,7 +14769,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 250,
-        "source": 100,
+        "source": 15,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -15104,9 +14780,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 264,
-        "source": 99,
+        "source": 14,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -15115,7 +14791,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 271,
-        "source": 99,
+        "source": 14,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -15126,9 +14802,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 236,
-        "source": 98,
+        "source": 13,
         "target": {
-          "reference": 105,
+          "reference": 98,
           "status": "resolved"
         }
       },
@@ -15137,7 +14813,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 243,
-        "source": 98,
+        "source": 13,
         "target": {
           "reference": 33,
           "status": "resolved"
@@ -15145,12 +14821,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 143,
+        "navigation": 155,
         "provenance": "authored",
-        "reference": 306,
-        "source": 103,
+        "reference": 434,
+        "source": 89,
         "target": {
-          "reference": 108,
+          "reference": 58,
           "status": "resolved"
         }
       },
@@ -15158,10 +14834,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 304,
-        "source": 103,
+        "reference": 432,
+        "source": 89,
         "target": {
-          "reference": 105,
+          "reference": 106,
           "status": "resolved"
         }
       },
@@ -15169,21 +14845,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 305,
-        "source": 103,
+        "reference": 433,
+        "source": 89,
         "target": {
-          "reference": 49,
+          "reference": 73,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 145,
+        "navigation": 119,
         "provenance": "authored",
-        "reference": 309,
-        "source": 101,
+        "reference": 352,
+        "source": 90,
         "target": {
-          "reference": 109,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -15191,43 +14867,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 307,
-        "source": 101,
+        "reference": 349,
+        "source": 90,
         "target": {
           "reference": 105,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
+        "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 308,
-        "source": 101,
-        "target": {
-          "reference": 49,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 147,
-        "provenance": "authored",
-        "reference": 319,
-        "source": 102,
+        "reference": 350,
+        "source": 90,
         "target": {
           "reference": 107,
           "status": "resolved"
         }
       },
       {
-        "kind": "specializes",
+        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 317,
-        "source": 102,
+        "reference": 351,
+        "source": 90,
         "target": {
-          "reference": 105,
+          "reference": 58,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 53,
+        "provenance": "authored",
+        "reference": 258,
+        "source": 93,
+        "target": {
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -15235,10 +14911,120 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 318,
-        "source": 102,
+        "reference": 251,
+        "source": 93,
         "target": {
-          "reference": 49,
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 265,
+        "source": 92,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 272,
+        "source": 92,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 237,
+        "source": 91,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 244,
+        "source": 91,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 121,
+        "provenance": "authored",
+        "reference": 353,
+        "source": 94,
+        "target": {
+          "node": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 354,
+        "source": 94,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 355,
+        "source": 94,
+        "target": {
+          "node": 90,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 117,
+        "provenance": "authored",
+        "reference": 344,
+        "source": 95,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 342,
+        "source": 95,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 343,
+        "source": 95,
+        "target": {
+          "reference": 58,
           "status": "resolved"
         }
       },
@@ -15246,8 +15032,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 157,
         "provenance": "authored",
-        "reference": 429,
-        "source": 5,
+        "reference": 403,
+        "source": 1,
         "target": {
           "node": 97,
           "status": "resolved"
@@ -15257,8 +15043,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 158,
         "provenance": "authored",
-        "reference": 430,
-        "source": 5,
+        "reference": 404,
+        "source": 1,
         "target": {
           "node": 26,
           "status": "resolved"
@@ -15268,10 +15054,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 431,
-        "source": 5,
+        "reference": 413,
+        "source": 1,
         "target": {
-          "reference": 106,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -15279,96 +15065,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 432,
-        "source": 5,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 163,
-        "provenance": "authored",
-        "reference": 408,
+        "reference": 418,
         "source": 1,
-        "target": {
-          "node": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 164,
-        "provenance": "authored",
-        "reference": 409,
-        "source": 1,
-        "target": {
-          "node": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 410,
-        "source": 1,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 411,
-        "source": 1,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 169,
-        "provenance": "authored",
-        "reference": 421,
-        "source": 2,
-        "target": {
-          "node": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 170,
-        "provenance": "authored",
-        "reference": 422,
-        "source": 2,
-        "target": {
-          "node": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 423,
-        "source": 2,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 424,
-        "source": 2,
         "target": {
           "reference": 73,
           "status": "resolved"
@@ -15378,8 +15076,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 160,
         "provenance": "authored",
-        "reference": 425,
-        "source": 3,
+        "reference": 405,
+        "source": 2,
         "target": {
           "node": 97,
           "status": "resolved"
@@ -15389,8 +15087,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 161,
         "provenance": "authored",
-        "reference": 426,
-        "source": 3,
+        "reference": 406,
+        "source": 2,
         "target": {
           "node": 81,
           "status": "resolved"
@@ -15400,10 +15098,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 427,
-        "source": 3,
+        "reference": 414,
+        "source": 2,
         "target": {
-          "reference": 106,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -15411,7 +15109,51 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 428,
+        "reference": 419,
+        "source": 2,
+        "target": {
+          "reference": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 163,
+        "provenance": "authored",
+        "reference": 407,
+        "source": 3,
+        "target": {
+          "node": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 164,
+        "provenance": "authored",
+        "reference": 408,
+        "source": 3,
+        "target": {
+          "node": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 415,
+        "source": 3,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 420,
         "source": 3,
         "target": {
           "reference": 73,
@@ -15422,7 +15164,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 166,
         "provenance": "authored",
-        "reference": 417,
+        "reference": 409,
         "source": 4,
         "target": {
           "node": 97,
@@ -15433,7 +15175,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "memberAccessOperand",
         "navigation": 167,
         "provenance": "authored",
-        "reference": 418,
+        "reference": 410,
         "source": 4,
         "target": {
           "node": 16,
@@ -15444,8 +15186,85 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 419,
+        "reference": 416,
         "source": 4,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 421,
+        "source": 4,
+        "target": {
+          "reference": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 169,
+        "provenance": "authored",
+        "reference": 411,
+        "source": 5,
+        "target": {
+          "node": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 170,
+        "provenance": "authored",
+        "reference": 412,
+        "source": 5,
+        "target": {
+          "node": 90,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 417,
+        "source": 5,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 422,
+        "source": 5,
+        "target": {
+          "reference": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 153,
+        "provenance": "authored",
+        "reference": 429,
+        "source": 96,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 427,
+        "source": 96,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -15455,10 +15274,219 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 420,
-        "source": 4,
+        "reference": 428,
+        "source": 96,
         "target": {
           "reference": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 149,
+        "provenance": "authored",
+        "reference": 318,
+        "source": 97,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 315,
+        "source": 97,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 316,
+        "source": 97,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 317,
+        "source": 97,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 53,
+        "provenance": "authored",
+        "reference": 259,
+        "source": 100,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 100,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 266,
+        "source": 99,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 273,
+        "source": 99,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 238,
+        "source": 98,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 98,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 143,
+        "provenance": "authored",
+        "reference": 308,
+        "source": 103,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 306,
+        "source": 103,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 307,
+        "source": 103,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 145,
+        "provenance": "authored",
+        "reference": 311,
+        "source": 101,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 309,
+        "source": 101,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 310,
+        "source": 101,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 147,
+        "provenance": "authored",
+        "reference": 321,
+        "source": 102,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 319,
+        "source": 102,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 320,
+        "source": 102,
+        "target": {
+          "reference": 49,
           "status": "resolved"
         }
       }
