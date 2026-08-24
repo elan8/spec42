@@ -1274,10 +1274,10 @@ impl<D> SemanticModel<D> {
     /// Returns one exact Systems::DefinitionAndUsage derived property from the canonical direct
     /// declaration owner, feature-membership, kind, and modifier facts.
     ///
-    /// This intentionally stops at the first unavailable owner for the broader `feature`,
-    /// `directedFeature`, VariantMembership, and time-variation predicates.  A direct child scan
-    /// is never substituted for an inherited collection, and a VariantMembership relationship is
-    /// never fabricated from an element role.
+    /// This intentionally stops at the first unavailable owner for broader inherited-feature and
+    /// time-variation predicates. A direct child scan is never substituted for an inherited
+    /// collection. Variant derivations consume the canonical membership role and return the
+    /// relationship's distinct identity where the normative property is relationship-valued.
     pub(crate) fn definition_usage_derived(
         &self,
         symbol: SymbolId,
@@ -1331,12 +1331,34 @@ impl<D> SemanticModel<D> {
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
             DefinitionUsageDerivedKind::DefinitionVariant
-            | DefinitionUsageDerivedKind::DefinitionVariantMembership
-            | DefinitionUsageDerivedKind::UsageVariant
+            | DefinitionUsageDerivedKind::UsageVariant => {
+                let values =
+                    self.symbols(self.child_declarations(declaration).iter().copied().filter(
+                        |candidate| {
+                            self.effective_membership_role(*candidate)
+                                == Some(crate::MembershipRole::Variant)
+                                && self
+                                    .storage
+                                    .declaration(*candidate)
+                                    .is_some_and(|member| is_usage_declaration(member.kind))
+                        },
+                    ));
+                self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
+            }
+            DefinitionUsageDerivedKind::DefinitionVariantMembership
             | DefinitionUsageDerivedKind::UsageVariantMembership => {
-                self.resolved_outcome(DefinitionUsageDerivedOutcome::Unsupported {
-                    prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
-                })
+                let values = self
+                    .child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|candidate| {
+                        self.effective_membership_role(*candidate)
+                            == Some(crate::MembershipRole::Variant)
+                    })
+                    .filter_map(|candidate| crate::MembershipId::from_index(candidate.index()))
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice();
+                self.resolved_outcome(DefinitionUsageDerivedOutcome::Memberships(values))
             }
             DefinitionUsageDerivedKind::UsageMayTimeVary => {
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Unsupported {

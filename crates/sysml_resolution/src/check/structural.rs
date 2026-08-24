@@ -459,17 +459,30 @@ impl<D> SemanticModel<D> {
                         )?);
                     }
                 }
-                // SysML 8.4.3: a typed `variant` member uses the variation's own usage kind.
-                ReferenceKind::Variant => {
+                // SysML 8.4.3: a reference-form `variant` member must target a usage compatible
+                // with the owning variation's kind. The reference source is the anonymous
+                // ReferenceUsage owned by the VariantMembership, so applicability comes from its
+                // canonical owner rather than from the proxy usage's own metaclass.
+                ReferenceKind::Subsetting
+                    if self.effective_membership_role(reference.source)
+                        == Some(crate::MembershipRole::Variant) =>
+                {
+                    let Some(variation_source) = self
+                        .storage
+                        .declaration(reference.source)
+                        .and_then(|source| source.owner)
+                    else {
+                        continue;
+                    };
                     if !self
                         .storage
-                        .declaration_facts(reference.source)
+                        .declaration_facts(variation_source)
                         .is_some_and(|facts| facts.modifiers.variation)
                     {
                         continue;
                     }
                     let (Some((variation, _)), Some((variant, _))) = (
-                        self.declaration_family(reference.source),
+                        self.declaration_family(variation_source),
                         self.declaration_family(target),
                     ) else {
                         continue;

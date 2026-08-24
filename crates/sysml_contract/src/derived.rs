@@ -95,9 +95,6 @@ pub enum DefinitionUsageDerivedPrerequisite {
     /// `feature`/`directedFeature` requires the effective inherited FeatureMembership closure;
     /// direct owner membership alone is deliberately not substituted.
     EffectiveFeatureMembershipClosure,
-    /// `variantMembership` is an OMG relationship identity, which compact declaration-aligned
-    /// storage does not currently publish as a queryable fact.
-    VariantMembershipIdentity,
     /// `mayTimeVary` needs the effective library-specialization and portion predicates as one
     /// canonical fact family; direct modifiers or graph edges alone do not decide it.
     EffectiveOccurrenceTimeVariationFacts,

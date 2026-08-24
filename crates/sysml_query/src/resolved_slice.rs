@@ -24,7 +24,8 @@ pub use sysml_resolution::{
     ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
     ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
     ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
-    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
+    MembershipRelationship, MembershipRole,
     MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
     PublicationCompleteness, PublicationIdentity, PublicationModelDigest, PublicationObstacle,
@@ -590,6 +591,12 @@ impl InspectionQueries<'_> {
     /// Everything the publication knows about one element.
     pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
+    }
+
+    /// Resolves a canonical Membership relationship identity without substituting its member
+    /// element.
+    pub fn membership(&self, identity: MembershipId) -> QueryOutcome<MembershipRelationship> {
+        self.model.membership(identity)
     }
 
     /// The exact derived `Element::owner` fact, from the publication's canonical ownership

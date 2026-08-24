@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Systems Definition and Usage exact derived collections consume canonical direct ownership, membership, kind, and modifier facts while inherited, variant, and time-variation inputs remain typed unavailable outcomes
+description=Systems Definition and Usage exact derived collections consume canonical direct ownership, membership, kind, and modifier facts while unavailable inherited and time-variation inputs remain typed prerequisite outcomes
 source_expectation=accepted
 rule_family=derive
 expectation=semantics

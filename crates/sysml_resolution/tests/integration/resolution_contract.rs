@@ -1949,16 +1949,15 @@ fn variation_part_resolves_both_variant_members_to_sibling_declarations() {
          \t}\n\
          }\n",
     );
-    assert!(
-        output.matches("(kind variant)").count() >= 2,
-        "expected two variant relationship kinds, got:\n{output}"
+    assert_eq!(
+        output.matches("(role variant)").count(),
+        4,
+        "expected two effective and two authored VariantMembership roles, got:\n{output}"
     );
-    assert!(
-        output.contains(
-            "(kind variant) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::vehicle::transmission\""
-        ),
-        "expected both variant references to be sourced at the variation declaration \
-         itself (no anonymous nested-declaration shift), got:\n{output}"
+    assert_eq!(
+        output.matches("(kind subsetting)").count(),
+        6,
+        "expected each anonymous reference usage to author and publish a Subsetting, got:\n{output}"
     );
     assert!(
         output.contains("(authored-target \"manualTransmission\")")
@@ -2571,9 +2570,14 @@ fn requirement_def_variant_usage_resolves() {
     let sexpr = semantic_sexpr_for(
         "package P { requirement def R1; requirement def R2; requirement def choice { variant R1; variant R2; } }",
     );
+    assert_eq!(
+        sexpr.matches("(role variant)").count(),
+        4,
+        "expected two effective and two authored VariantMembership roles, got: {sexpr}"
+    );
     assert!(
-        sexpr.contains("(kind variant)"),
-        "expected a variant reference, got: {sexpr}"
+        sexpr.contains("(kind subsetting)"),
+        "expected the reference usages to subset their authored targets, got: {sexpr}"
     );
     assert!(
         !sexpr.contains("unsupported_requirement_definition_member"),
@@ -4747,11 +4751,10 @@ fn type_owned_end_feature_has_sequential_parallel_and_warm_parity() {
 }
 
 #[test]
-fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missing_fact_boundaries()
-{
+fn definition_usage_derivations_use_canonical_members_and_membership_identities() {
     let sources = [(
         "memory://definition-usage.sysml",
-        "package Model { part def Vehicle { part wheel; action service; } part vehicle; }",
+        "package Model { part def Vehicle { part wheel; action service; } part vehicle; part def Base; part external : Base; variation part def Choice { variant part first : Base; variant external; } variation part choice : Base { variant part second : Base; } }",
     )];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
@@ -4803,6 +4806,100 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
         QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.is_empty()
     ));
+    let choice = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::Choice",
+    );
+    let first = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::Choice::first",
+    );
+    let usage_choice = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::choice",
+    );
+    let second = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::choice::second",
+    );
+    let definition_variants = match sequential
+        .definition_usage_derived(choice, DefinitionUsageDerivedKind::DefinitionVariant)
+    {
+        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+            if values.len() == 2 && values.contains(&first) =>
+        {
+            values
+        }
+        other => panic!("expected the typed and reference-form definition variants, got {other:?}"),
+    };
+    let reference_variant = definition_variants
+        .iter()
+        .copied()
+        .find(|variant| *variant != first)
+        .expect("reference-form variant usage");
+    assert!(matches!(
+        sequential.inspect(reference_variant),
+        QueryOutcome::Resolved(ElementInspection {
+            kind: ElementKind::ReferenceUsage,
+            role: Some(MembershipRole::Variant),
+            ..
+        })
+    ));
+    let definition_memberships = match sequential.definition_usage_derived(
+        choice,
+        DefinitionUsageDerivedKind::DefinitionVariantMembership,
+    ) {
+        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.len() == 2 =>
+        {
+            values
+        }
+        other => panic!("expected two definition VariantMemberships, got {other:?}"),
+    };
+    let definition_membership = definition_memberships
+        .iter()
+        .copied()
+        .find(|identity| {
+            matches!(
+                sequential.membership(*identity),
+                QueryOutcome::Resolved(MembershipRelationship { member, .. }) if member == first
+            )
+        })
+        .expect("typed variant membership");
+    assert!(matches!(
+        sequential.membership(definition_membership),
+        QueryOutcome::Resolved(MembershipRelationship {
+            owning_namespace: Some(owner),
+            member,
+            facts: MembershipFacts { kind: MembershipKind::Owning, .. },
+            role: Some(MembershipRole::Variant),
+            ..
+        }) if owner == choice && member == first
+    ));
+    let reference_membership = definition_memberships
+        .iter()
+        .copied()
+        .find(|identity| *identity != definition_membership)
+        .expect("reference-form variant membership");
+    assert!(matches!(
+        sequential.membership(reference_membership),
+        QueryOutcome::Resolved(MembershipRelationship {
+            owning_namespace: Some(owner),
+            member,
+            facts: MembershipFacts { kind: MembershipKind::Owning, .. },
+            role: Some(MembershipRole::Variant),
+            ..
+        }) if owner == choice && member == reference_variant
+    ));
+    assert!(matches!(
+        sequential.definition_usage_derived(usage_choice, DefinitionUsageDerivedKind::UsageVariant),
+        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+            if values.as_ref() == [second]
+    ));
     assert!(matches!(
         sequential
             .definition_usage_derived(
@@ -4814,6 +4911,23 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
             prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
         })
     ));
+    assert!(matches!(
+        sequential.definition_usage_derived(
+            usage_choice,
+            DefinitionUsageDerivedKind::UsageVariantMembership,
+        ),
+        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.len() == 1
+                && matches!(
+                    sequential.membership(values[0]),
+                    QueryOutcome::Resolved(MembershipRelationship {
+                        owning_namespace: Some(owner),
+                        member,
+                        role: Some(MembershipRole::Variant),
+                        ..
+                    }) if owner == usage_choice && member == second
+                )
+    ));
     let query = |published: &PublishedResolution| {
         let vehicle = identity_of(
             published,
@@ -4824,6 +4938,19 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));
+    let variant_query = |published: &PublishedResolution| {
+        let choice = identity_of(
+            published,
+            "memory://definition-usage.sysml",
+            "Model::Choice",
+        );
+        published.definition_usage_derived(
+            choice,
+            DefinitionUsageDerivedKind::DefinitionVariantMembership,
+        )
+    };
+    assert_eq!(variant_query(&sequential), variant_query(&parallel));
+    assert_eq!(variant_query(&sequential), variant_query(&warm));
 }
 
 #[test]

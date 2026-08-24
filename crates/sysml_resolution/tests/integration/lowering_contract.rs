@@ -11,10 +11,11 @@ use sysml_resolution::*;
 
 /// Every `variant` spelling delegates to the lowering its ordinary spelling already uses.
 ///
-/// Only `variant perform` was dispatched; the other five kinds wrap exactly the node their
-/// plain spelling does, so each reuses that lowering. The `body.is_none()` guard stays on all
-/// six -- an outer `VariantUsage.body` is invisible to the inner lowering, so lowering the
-/// inner declaration while dropping it would look complete while being partial.
+/// Every kind wraps exactly the node its plain spelling does, so each reuses that lowering while
+/// the enclosing variant production records the canonical `VariantMembership` role. The
+/// `body.is_none()` guard stays on all forms -- an outer `VariantUsage.body` is invisible to the
+/// inner lowering, so lowering the inner declaration while dropping it would look complete while
+/// being partial.
 #[test]
 fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
     // Every kind is placed in a `variation part def` body, whose `PartDefBodyElement` is one of
@@ -52,6 +53,22 @@ fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
             "expected {label} to lower as {kind}, got:\n{line}"
         );
     }
+
+    let publication = detail_publication(
+        &[(
+            "memory://variants.sysml",
+            "package Demo { part def Engine; variation part def V { variant part e : Engine; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let variant = identity_of(&publication, "memory://variants.sysml", "Demo::V::e");
+    assert!(matches!(
+        publication.inspect(variant),
+        QueryOutcome::Resolved(ElementInspection {
+            role: Some(MembershipRole::Variant),
+            ..
+        })
+    ));
 
     // `variant attribute` inside a `variation attribute def` body never reaches this lowering:
     // `ast::AttributeBodyElement` has no `VariantUsage` variant at all, so the member is

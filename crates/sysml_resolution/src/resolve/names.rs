@@ -16,6 +16,7 @@ use crate::resolve::results::ResolutionWork;
 use crate::resolve::DeclarationDomain;
 use crate::resolve::ResolutionIndexes;
 use crate::resolve::ResolutionReferenceFact;
+use crate::MembershipRole;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct NameKey {
@@ -127,6 +128,7 @@ pub(crate) struct EffectiveMembership {
     pub(crate) kind: MembershipKind,
     /// Whether the visibility above was written or defaulted.
     pub(crate) authored: bool,
+    pub(crate) role: Option<MembershipRole>,
 }
 
 /// Dense, declaration-aligned membership facts used by resolution. Authored `Default` is settled
@@ -181,6 +183,7 @@ impl MembershipIndex {
                 visibility,
                 kind: membership.kind,
                 authored: membership.visibility != Visibility::Default,
+                role: membership.role,
             });
         }
         let by_declaration = by_declaration
@@ -504,7 +507,6 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::AllocateTarget
             | ReferenceKind::BindSource
             | ReferenceKind::BindTarget
-            | ReferenceKind::Variant
             | ReferenceKind::IncludeUseCase
             | ReferenceKind::ViewExpose
             | ReferenceKind::MemberAccessOperand

@@ -250,6 +250,7 @@ impl SemanticModelBuilder {
                 member: relocation.declaration(membership.member)?,
                 kind: membership.kind,
                 visibility: membership.visibility,
+                role: membership.role,
                 span: membership.span,
             });
         }

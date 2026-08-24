@@ -1324,9 +1324,6 @@ fn parse_definition_usage_prerequisite(
         "effective_feature_membership_closure" => {
             Ok(DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure)
         }
-        "variant_membership_identity" => {
-            Ok(DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity)
-        }
         "effective_occurrence_time_variation_facts" => {
             Ok(DefinitionUsageDerivedPrerequisite::EffectiveOccurrenceTimeVariationFacts)
         }
@@ -4544,6 +4541,7 @@ enum DefinitionUsageDerivedObservation {
     Outcome {
         value: DefinitionUsageDerivedOutcome,
         expected: Option<SymbolId>,
+        membership_members: Box<[SymbolId]>,
     },
     Incomplete,
 }
@@ -4903,7 +4901,22 @@ fn observe_definition_usage_derived(
                 .map_err(|status| format!("target reference is {}", status.description()))
         })
         .transpose()?;
-    Ok(DefinitionUsageDerivedObservation::Outcome { value, expected })
+    let membership_members = match &value {
+        DefinitionUsageDerivedOutcome::Memberships(values) => values
+            .iter()
+            .filter_map(|identity| match model.inspection().membership(*identity) {
+                QueryOutcome::Resolved(membership) => Some(membership.member),
+                _ => None,
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice(),
+        _ => Box::new([]),
+    };
+    Ok(DefinitionUsageDerivedObservation::Outcome {
+        value,
+        expected,
+        membership_members,
+    })
 }
 
 fn observe_requirement_derived_fact(
@@ -5674,12 +5687,28 @@ fn compare_definition_usage_derived_observation(
             },
         ) if values.is_empty() => Ok(()),
         (
+            DefinitionUsageDerivedExpectationOutcome::Absent,
+            DefinitionUsageDerivedObservation::Outcome {
+                value: DefinitionUsageDerivedOutcome::Memberships(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
             DefinitionUsageDerivedExpectationOutcome::Resolved,
             DefinitionUsageDerivedObservation::Outcome {
                 value: DefinitionUsageDerivedOutcome::Elements(values),
                 expected: Some(expected),
+                ..
             },
         ) if values.iter().any(|actual| actual == expected) => Ok(()),
+        (
+            DefinitionUsageDerivedExpectationOutcome::Resolved,
+            DefinitionUsageDerivedObservation::Outcome {
+                value: DefinitionUsageDerivedOutcome::Memberships(_),
+                expected: Some(expected),
+                membership_members,
+            },
+        ) if membership_members.iter().any(|actual| actual == expected) => Ok(()),
         (
             DefinitionUsageDerivedExpectationOutcome::True,
             DefinitionUsageDerivedObservation::Outcome {

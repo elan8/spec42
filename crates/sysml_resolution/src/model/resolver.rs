@@ -1198,6 +1198,7 @@ mod tests {
                     } else {
                         Visibility::Default
                     },
+                    role: None,
                     span: Span::dummy(),
                 }
             })
@@ -1672,6 +1673,7 @@ mod tests {
                     member,
                     kind,
                     visibility: Visibility::Default,
+                    role: None,
                     span: Span::dummy(),
                 }
             })
@@ -1740,6 +1742,7 @@ mod tests {
             member: DeclarationId(5),
             kind: MembershipKind::Feature,
             visibility: Visibility::Default,
+            role: None,
             span: Span::dummy(),
         });
         fixture.memberships = memberships.into_boxed_slice();
@@ -1812,6 +1815,7 @@ mod tests {
                     member,
                     kind,
                     visibility: Visibility::Default,
+                    role: None,
                     span: Span::dummy(),
                 }
             })
@@ -1973,6 +1977,7 @@ mod tests {
                     member,
                     kind,
                     visibility: Visibility::Default,
+                    role: None,
                     span: Span::dummy(),
                 }
             })
@@ -2095,6 +2100,7 @@ mod tests {
                     member,
                     kind,
                     visibility,
+                    role: None,
                     span: Span::dummy(),
                 }
             })

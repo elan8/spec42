@@ -396,12 +396,7 @@ pub(crate) fn write_declarations(
             .iter()
             .find(|membership| membership.member == DeclarationId(index as u32))
         {
-            write!(
-                output,
-                " (membership (kind {}) (visibility {}))",
-                membership_kind(membership.kind),
-                visibility(membership.visibility),
-            )?;
+            write_membership(membership, output)?;
         }
         write_declaration_facts(model, DeclarationId(index as u32), output)?;
         write_documentation(model, DeclarationId(index as u32), output)?;
@@ -1007,12 +1002,7 @@ pub(crate) fn write_authored(
         .iter()
         .find(|membership| membership.member == source)
     {
-        write!(
-            output,
-            " (membership (kind {}) (visibility {}))",
-            membership_kind(membership.kind),
-            visibility(membership.visibility),
-        )?;
+        write_membership(membership, output)?;
     }
     output.write_str(" (relationships")?;
     for reference in references {
@@ -1037,6 +1027,22 @@ pub(crate) fn write_authored(
     // declaration's own closer was consumed by `(authored` and every declaration carrying
     // authored facts left its element open.
     output.write_str("))")
+}
+
+fn write_membership(
+    membership: &crate::lower::facts::MembershipRecord,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write!(
+        output,
+        " (membership (kind {}) (visibility {})",
+        membership_kind(membership.kind),
+        visibility(membership.visibility),
+    )?;
+    if let Some(role) = membership.role {
+        write!(output, " (role {role})")?;
+    }
+    output.write_char(')')
 }
 
 pub(crate) fn write_import(
@@ -1506,7 +1512,6 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::AllocateTarget => "allocateTarget",
         ReferenceKind::BindSource => "bindSource",
         ReferenceKind::BindTarget => "bindTarget",
-        ReferenceKind::Variant => "variant",
         ReferenceKind::IncludeUseCase => "includeUseCase",
         ReferenceKind::ViewExpose => "viewExpose",
         ReferenceKind::MemberAccessOperand => "memberAccessOperand",
@@ -1573,7 +1578,6 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::AllocateTarget => Some("allocateTarget"),
         ReferenceKind::BindSource => Some("bindSource"),
         ReferenceKind::BindTarget => Some("bindTarget"),
-        ReferenceKind::Variant => Some("variant"),
         ReferenceKind::IncludeUseCase => Some("includeUseCase"),
         ReferenceKind::ViewExpose => Some("viewExpose"),
         ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),

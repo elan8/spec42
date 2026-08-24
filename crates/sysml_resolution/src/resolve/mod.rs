@@ -292,7 +292,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::SatisfyTarget
                     | ReferenceKind::BindSource
                     | ReferenceKind::BindTarget
-                    | ReferenceKind::Variant
                     | ReferenceKind::IncludeUseCase
                     | ReferenceKind::ViewExpose
                     | ReferenceKind::InvocationCallee
@@ -971,7 +970,6 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::AllocateTarget
         | ReferenceKind::BindSource
         | ReferenceKind::BindTarget
-        | ReferenceKind::Variant
         | ReferenceKind::IncludeUseCase
         | ReferenceKind::MemberAccessOperand
         | ReferenceKind::InvocationCallee

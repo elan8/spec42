@@ -105,7 +105,7 @@ impl<'m> VisibleMemberRef<'m> {
     /// The role this member plays in its owner, where the OMG carries that on the owning
     /// membership rather than on the element; `None` for an ordinary member.
     pub fn role(&self) -> Option<MembershipRole> {
-        element_kind::membership_role(self.model.declaration_kind(self.id)?)
+        self.model.effective_membership_role(self.id)
     }
 
     /// The `::`-joined owner path, borrowed from the path blob settled at the barrier.

@@ -352,15 +352,17 @@ fn variant_with_an_unresolvable_target_stays_explicitly_unresolved() {
          }\n",
     );
     assert!(
-        output.contains("(kind variant)")
+        output.contains("(role variant)")
+            && output.contains("(kind subsetting)")
             && output.contains("(authored-target \"missingVariant\")")
             && output.contains("(status unresolved)"),
         "expected the unresolvable variant target to stay explicitly unresolved (not \
          fabricated), got:\n{output}"
     );
     assert!(
-        output
-            .contains("(authored-target \"manualTransmission\")\n      (outcome (status resolved)"),
+        output.contains(
+            "(authored-target \"manualTransmission\")\n      (outcome (status resolved)",
+        ),
         "expected the resolvable variant to still resolve independently, got:\n{output}"
     );
 }

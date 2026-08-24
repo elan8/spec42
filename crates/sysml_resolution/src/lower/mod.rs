@@ -44,6 +44,7 @@ use crate::model::MembershipKind;
 use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
+use crate::MembershipRole;
 use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
@@ -105,6 +106,10 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) next_anonymous_ordinals:
         BTreeMap<(DocumentIdx, Option<DeclarationId>, DeclarationKind), u32>,
     pub(crate) next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
+    /// A role supplied by an enclosing membership production and consumed by the very next
+    /// membership construction. This preserves roles such as `variant` while reusing the ordinary
+    /// element lowering for the owned member.
+    pub(crate) next_membership_override: Option<(MembershipKind, Visibility, MembershipRole, Span)>,
     /// Counts each owner's authored `end` members so every positional connector end carries the
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
     /// by one walker, so the counter is the authored position.
@@ -556,10 +561,15 @@ impl SemanticModelBuilder {
         if member.index() >= self.declarations.len() {
             return Err(ConstructionError::InvalidIdentity);
         }
+        let (kind, visibility, role, span) = self.next_membership_override.take().map_or(
+            (kind, visibility, None, span),
+            |(kind, visibility, role, span)| (kind, visibility, Some(role), span),
+        );
         self.memberships.push(MembershipRecord {
             member,
             kind,
             visibility,
+            role,
             span,
         });
         Ok(())
@@ -1991,13 +2001,10 @@ impl SemanticModelBuilder {
     /// Lowers a `variant <name>;` member (BNF `VariantUsageElement`'s untyped reference form,
     /// `ast::VariantUsage`) found inside a `variation part`/`variation part def` body, mirroring
     /// `lower_purpose_member`: the referenced sibling usage is a bare `QualifiedReferenceId` (not
-    /// wrapped in an `Expression`), resolved as an authored `Variant` reference sourced directly
-    /// at the enclosing variation `owner` declaration through the same `DeclarationDomain::Any`
-    /// lexical lookup fixed point as `Succession`/`SatisfySource` -- no anonymous nested-
-    /// declaration scope shift, since (unlike `Succession`/`Satisfy`) there is only one operand.
-    /// The typed inline form (`VariantUsage.typed`, e.g. `variant part name : Type { ... }`)
-    /// introduces a new usage rather than referencing an existing one -- out of scope, like
-    /// `Satisfy.inline_requirement`.
+    /// wrapped in an `Expression`). Per the Pilot grammar, that form introduces an anonymous
+    /// `ReferenceUsage` under the `VariantMembership`; its authored `Subsetting` resolves the
+    /// reference usage's target through the ordinary lexical fixed point. The typed inline
+    /// form (`variant part name : Type { ... }`) introduces its concrete usage directly.
     ///
     /// Every `VariantTypedUsage` kind wraps the exact same node its ordinary spelling uses, so
     /// each delegates to the lowering that already exists for it -- there is no new lowering
@@ -2007,11 +2014,9 @@ impl SemanticModelBuilder {
     /// complete. The untyped form with a body, and the case where neither `reference` nor `typed`
     /// is present, stay explicit unsupported-member diagnostics.
     ///
-    /// A delegated `variant part p : T;` publishes an ordinary `PartUsage` and therefore loses the
-    /// `VariantMembership` role that `DeclarationKind::EnumerationLiteral` publishes as
-    /// `MembershipRole::Variant`. That loss is pre-existing -- the `Perform` arm has always had it
-    /// -- and recovering it means returning the new `DeclarationId` from five hot lowerings, so it
-    /// is recorded in planning/UPSTREAM_PARSER_GAPS.md rather than widened into this change.
+    /// Before delegation, the enclosing production installs a one-shot `VariantMembership` role.
+    /// The ordinary usage lowering consumes it when it constructs the member's canonical
+    /// Membership record, so reusing element lowering does not erase the relationship metaclass.
     pub(crate) fn lower_variant_usage(
         &mut self,
         document: DocumentIdx,
@@ -2019,60 +2024,97 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<VariantUsage>,
     ) -> Result<(), ConstructionError> {
+        let visibility = self.member_visibility(
+            &node.value.membership,
+            ParserMembershipKind::VariantMembership,
+        )?;
+        if self
+            .next_membership_override
+            .replace((
+                MembershipKind::Owning,
+                visibility,
+                MembershipRole::Variant,
+                node.value.membership.span,
+            ))
+            .is_some()
+        {
+            return Err(ConstructionError::InvalidMembership);
+        }
         // `VariantUsageForm` makes the two authored shapes exclusive: an inline typed usage, or
         // a reference to an existing element with an optional body. A body on the reference form
-        // is not lowered yet and stays visible as an unsupported member.
-        let target = match &node.value.form {
+        // belongs to the anonymous ReferenceUsage introduced by that form.
+        match &node.value.form {
             VariantUsageForm::Typed(typed) => {
-                let owner = Some(owner);
-                return match typed {
+                let direct_owner = Some(owner);
+                match typed {
                     VariantTypedUsage::Perform(perform) => {
-                        self.lower_perform(document, owner, perform.as_ref())
+                        self.lower_perform(document, direct_owner, perform.as_ref())
                     }
                     VariantTypedUsage::Part(part) => {
-                        self.lower_part_usage(document, owner, part.as_ref())
+                        self.lower_part_usage(document, direct_owner, part.as_ref())
                     }
                     VariantTypedUsage::Attribute(attribute) => {
-                        self.lower_attribute_usage(document, owner, attribute.as_ref())
+                        self.lower_attribute_usage(document, direct_owner, attribute.as_ref())
                     }
                     VariantTypedUsage::Item(item) => {
-                        self.lower_item_usage(document, owner, item.as_ref())
+                        self.lower_item_usage(document, direct_owner, item.as_ref())
                     }
                     VariantTypedUsage::Port(port) => {
-                        self.lower_port_usage(document, owner, port.as_ref())
+                        self.lower_port_usage(document, direct_owner, port.as_ref())
                     }
                     VariantTypedUsage::Action(action) => {
-                        self.lower_action_usage(document, owner, action.as_ref())
+                        self.lower_action_usage(document, direct_owner, action.as_ref())
                     }
                     VariantTypedUsage::Requirement(requirement) => {
-                        self.lower_requirement_usage(document, owner, requirement.as_ref())
+                        self.lower_requirement_usage(document, direct_owner, requirement.as_ref())
                     }
-                };
+                }?;
+                if self.next_membership_override.is_some() {
+                    return Err(ConstructionError::InvalidMembership);
+                }
+                return Ok(());
             }
             VariantUsageForm::Reference { reference, body } => {
-                if body.is_some() {
-                    self.push_unsupported(document, family, node.span);
-                    return Ok(());
+                let declaration = self.push_typed_declaration(
+                    document,
+                    Some(owner),
+                    DeclarationKind::ReferenceUsage,
+                    None,
+                    node.span,
+                    DeclarationFacts::none(),
+                )?;
+                self.push_membership(
+                    declaration,
+                    MembershipKind::Owning,
+                    visibility,
+                    node.value.membership.span,
+                )?;
+                if let Some(body) = body {
+                    for element in body.members() {
+                        self.lower_part_usage_body_element(document, declaration, family, element)?;
+                    }
                 }
-                *reference
+                let target = *reference;
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span;
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    // Pilot `VariantReference = OwnedReferenceSubsetting ...`: the anonymous
+                    // ReferenceUsage subsets the referenced existing usage.
+                    kind: ReferenceKind::Subsetting,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                return Ok(());
             }
-        };
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(target)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span;
-        self.push_reference(PendingReference {
-            source: owner,
-            kind: ReferenceKind::Variant,
-            document,
-            local: target,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        Ok(())
+        }
     }
 
     pub(crate) fn member_visibility(

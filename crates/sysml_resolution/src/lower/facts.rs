@@ -18,8 +18,7 @@ use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentIdx, MembershipKind, NameId,
     ReferenceKind, SymbolPathId, Visibility,
 };
-use crate::TextPosition;
-use crate::TextRange;
+use crate::{MembershipRole, TextPosition, TextRange};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AuthoredImportShape {
@@ -702,6 +701,8 @@ pub(crate) struct MembershipRecord {
     pub(crate) member: DeclarationId,
     pub(crate) kind: MembershipKind,
     pub(crate) visibility: Visibility,
+    /// A role authored by the membership production rather than implied by the member metaclass.
+    pub(crate) role: Option<MembershipRole>,
     pub(crate) span: Span,
 }
 

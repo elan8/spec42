@@ -198,10 +198,6 @@ at pinned `c1677e7`; entries whose lowering has since landed were removed.
   `action_reference` and `body`, so `entry action entryAction :>> 'entry';` lowers as the reference
   form.
 
-- **The `VariantMembership` role on a delegated variant.** `lower_variant_usage` dispatches every
-  `VariantTypedUsage` kind to the lowering its ordinary spelling uses, but the five `lower_*_usage`
-  functions return `()` and the caller has no `DeclarationId` to set `MembershipRole::Variant` on.
-
 - **`variant attribute` in a `variation attribute def` body.** `ast::AttributeBodyElement` carries
   a `VariantUsage` variant; `lower_attribute_body_element` reports it as
   `unsupported_attribute_member` rather than delegating to `lower_variant_usage`.

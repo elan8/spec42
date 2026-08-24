@@ -81,15 +81,13 @@ abstract part def Container {
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Weight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
   )
   (relationships
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (provenance implied))
   )
   (evaluation
   )
@@ -98,12 +96,6 @@ abstract part def Container {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices")))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl")))
-      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices")))
-    )
 )
 ~~~
 # NAVIGATION
