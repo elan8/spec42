@@ -51,7 +51,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::ActionDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -68,7 +68,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -110,14 +110,14 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         match &element.value {
             ActionDefBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
+                self.push_recovery(document, error.span);
             }
             ActionDefBodyElement::Import(node) => {
                 // New upstream member kind: kept visible as unsupported rather than dropped.
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::ActionDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
             ActionDefBodyElement::VariantUsage(node) => {
@@ -125,7 +125,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::ActionDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
             ActionDefBodyElement::ActionUsage(action_usage) => {
@@ -203,7 +203,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Merge,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -212,7 +212,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Decide,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -221,7 +221,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Join,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -230,7 +230,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Fork,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -264,7 +264,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::While,
-                node.span.clone(),
+                node.span,
                 Some(&node.value.condition),
                 &node.value.body.body,
             )?,
@@ -273,7 +273,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Loop,
-                node.span.clone(),
+                node.span,
                 None,
                 &node.value.body.body,
             )?,
@@ -281,21 +281,21 @@ impl SemanticModelBuilder {
                 document,
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionDefBodyElement::Assign(node) => self.lower_assign_stmt(
                 document,
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionDefBodyElement::ForLoop(node) => self.lower_for_loop(
                 document,
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionDefBodyElement::AttributeUsage(node) => {
@@ -313,7 +313,7 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::ActionDefinitionMember,
-                element.span.clone(),
+                element.span,
             ),
         }
         Ok(())
@@ -345,7 +345,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::ActionUsage
             },
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -372,7 +372,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -464,8 +464,7 @@ impl SemanticModelBuilder {
             .qualified_reference(type_name)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::AcceptPayloadType,
@@ -512,15 +511,11 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         match &element.value {
             ActionUsageBodyElement::Error(error) => {
-                self.push_recovery(document, error.span.clone());
+                self.push_recovery(document, error.span);
             }
             ActionUsageBodyElement::Import(node) => {
                 // New upstream member kind: kept visible as unsupported rather than dropped.
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ActionUsageMember,
-                    node.span.clone(),
-                );
+                self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, node.span);
             }
             ActionUsageBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
@@ -589,7 +584,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Merge,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -598,7 +593,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Decide,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -607,7 +602,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Join,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -616,7 +611,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Fork,
-                node.span.clone(),
+                node.span,
                 &node.value.declaration,
                 &node.value.body,
             )?,
@@ -650,7 +645,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::While,
-                node.span.clone(),
+                node.span,
                 Some(&node.value.condition),
                 &node.value.body.body,
             )?,
@@ -659,7 +654,7 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Loop,
-                node.span.clone(),
+                node.span,
                 None,
                 &node.value.body.body,
             )?,
@@ -667,21 +662,21 @@ impl SemanticModelBuilder {
                 document,
                 owner,
                 UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionUsageBodyElement::Assign(node) => self.lower_assign_stmt(
                 document,
                 owner,
                 UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionUsageBodyElement::ForLoop(node) => self.lower_for_loop(
                 document,
                 owner,
                 UnsupportedFamily::ActionUsageMember,
-                node.span.clone(),
+                node.span,
                 &node.value,
             )?,
             ActionUsageBodyElement::VariantUsage(node) => {
@@ -704,11 +699,9 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::Dependency(node) => {
                 self.lower_dependency(document, Some(owner), node)?;
             }
-            ActionUsageBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                document,
-                UnsupportedFamily::ActionUsageMember,
-                element.span.clone(),
-            ),
+            ActionUsageBodyElement::MetadataKeywordUsage(_) => {
+                self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, element.span)
+            }
         }
         Ok(())
     }
@@ -735,7 +728,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Succession,
             None,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 // The succession feature's own multiplicity (`succession [n] first ... then ...`).
                 // The per-end `first_multiplicity`/`then_multiplicity` belong to the ends, which
@@ -748,7 +741,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_succession_end(
             document,
@@ -790,7 +783,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Succession,
             None,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 multiplicity: multiplicity_facts(
                     succession.and_then(|decl| decl.declaration.value.multiplicity.as_ref()),
@@ -802,15 +795,14 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(node.value.first)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::Succession,
@@ -858,8 +850,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: owner,
                     kind,
@@ -872,12 +863,12 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
                 if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                    self.push_member_access_reference(owner, document, &chain, node.span)?;
                 } else {
-                    self.push_unsupported(document, family, node.span.clone());
+                    self.push_unsupported(document, family, node.span);
                 }
             }
-            _ => self.push_unsupported(document, family, node.span.clone()),
+            _ => self.push_unsupported(document, family, node.span),
         }
         Ok(())
     }
@@ -909,7 +900,7 @@ impl SemanticModelBuilder {
                 match self.control_node_declared_name(document, expression)? {
                     Some(name) => Some(name),
                     None => {
-                        self.push_unsupported(document, family, expression.span.clone());
+                        self.push_unsupported(document, family, expression.span);
                         None
                     }
                 }
@@ -920,7 +911,7 @@ impl SemanticModelBuilder {
             Some(owner),
             decl_kind,
             name,
-            span.clone(),
+            span,
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -976,10 +967,10 @@ impl SemanticModelBuilder {
         for element in elements {
             match &element.value {
                 FirstMergeBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
+                    self.push_recovery(document, error.span);
                 }
                 FirstMergeBodyElement::Unsupported(_) => {
-                    self.push_unsupported(document, family, element.span.clone());
+                    self.push_unsupported(document, family, element.span);
                 }
                 FirstMergeBodyElement::Member(member) => match &member.value {
                     ActionDefBodyElement::ActionUsage(action_usage) => {
@@ -999,7 +990,7 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Merge,
-                        node.span.clone(),
+                        node.span,
                         &node.value.declaration,
                         &node.value.body,
                     )?,
@@ -1008,7 +999,7 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Decide,
-                        node.span.clone(),
+                        node.span,
                         &node.value.declaration,
                         &node.value.body,
                     )?,
@@ -1017,7 +1008,7 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Join,
-                        node.span.clone(),
+                        node.span,
                         &node.value.declaration,
                         &node.value.body,
                     )?,
@@ -1026,11 +1017,11 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Fork,
-                        node.span.clone(),
+                        node.span,
                         &node.value.declaration,
                         &node.value.body,
                     )?,
-                    _ => self.push_unsupported(document, family, element.span.clone()),
+                    _ => self.push_unsupported(document, family, element.span),
                 },
             }
         }
@@ -1068,7 +1059,7 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Merge,
-                merge_stmt.span.clone(),
+                merge_stmt.span,
                 &merge_stmt.value.declaration,
                 &merge_stmt.value.body,
             )?,
@@ -1077,7 +1068,7 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Fork,
-                fork_stmt.span.clone(),
+                fork_stmt.span,
                 &fork_stmt.value.declaration,
                 &fork_stmt.value.body,
             )?,
@@ -1086,7 +1077,7 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Join,
-                join_stmt.span.clone(),
+                join_stmt.span,
                 &join_stmt.value.declaration,
                 &join_stmt.value.body,
             )?,
@@ -1095,26 +1086,22 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Decide,
-                decision_stmt.span.clone(),
+                decision_stmt.span,
                 &decision_stmt.value.declaration,
                 &decision_stmt.value.body,
             )?,
             // `then if <condition> { ... }` -- an inline conditional action node, lowered
             // through the same owner the standalone `if` body element uses.
-            ThenTarget::If(if_stmt) => self.lower_if_stmt(
-                document,
-                owner,
-                family,
-                if_stmt.span.clone(),
-                &if_stmt.value,
-            )?,
+            ThenTarget::If(if_stmt) => {
+                self.lower_if_stmt(document, owner, family, if_stmt.span, &if_stmt.value)?
+            }
             ThenTarget::Feature(expression) => {
                 let declaration = self.push_typed_declaration(
                     document,
                     Some(owner),
                     DeclarationKind::ThenContinuation,
                     None,
-                    node.span.clone(),
+                    node.span,
                     // A synthesized scope for the `then <feature>` continuation target.
                     DeclarationFacts::none(),
                 )?;
@@ -1122,7 +1109,7 @@ impl SemanticModelBuilder {
                     declaration,
                     MembershipKind::Feature,
                     Visibility::Default,
-                    node.span.clone(),
+                    node.span,
                 )?;
                 self.lower_succession_end(
                     document,
@@ -1161,7 +1148,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Assign,
             None,
-            span.clone(),
+            span,
             // A synthesized scope for the assignment's target/value references.
             DeclarationFacts::none(),
         )?;
@@ -1212,7 +1199,7 @@ impl SemanticModelBuilder {
             Some(owner),
             decl_kind,
             None,
-            span.clone(),
+            span,
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -1250,7 +1237,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::If,
             None,
-            span.clone(),
+            span,
             // A synthesized scope for the conditional's guard and branches. `else_body` is a
             // typed parser distinction, so publish its presence once at this lowering boundary.
             DeclarationFacts {
@@ -1321,7 +1308,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::ForLoop,
             None,
-            span.clone(),
+            span,
             // A synthesized scope owning the loop variable and range expression.
             DeclarationFacts::none(),
         )?;
@@ -1329,7 +1316,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            span.clone(),
+            span,
         )?;
         self.push_evaluation_fact(
             declaration,
@@ -1348,7 +1335,7 @@ impl SemanticModelBuilder {
             Some(declaration),
             DeclarationKind::ForLoopVariable,
             var_name,
-            span.clone(),
+            span,
             // `ast::ForLoop::var` is a bare `String`; the parser records no type, multiplicity, or
             // modifier for the loop variable.
             DeclarationFacts::none(),
@@ -1482,7 +1469,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Flow,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1503,7 +1490,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         if let Some(usage) = usage {
             self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
@@ -1518,8 +1505,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(type_name)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::FlowPayloadType,
@@ -1568,7 +1554,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Succession,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
@@ -1581,7 +1567,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
@@ -1589,8 +1575,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_name)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -1682,7 +1667,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::PerformActionUsage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     is_abstract,
@@ -1699,7 +1684,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
@@ -1729,8 +1714,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*action)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::References,
@@ -1824,7 +1808,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::PerformParameterBinding,
             None,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 direction: direction_fact(Some(&node.value.direction)),
                 ..DeclarationFacts::none()
@@ -1834,15 +1818,14 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(node.value.target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::PerformParameterTarget,
@@ -1887,7 +1870,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::FlowDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1905,7 +1888,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -1928,16 +1911,14 @@ impl SemanticModelBuilder {
         for element in elements {
             match &element.value {
                 DefinitionBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
+                    self.push_recovery(document, error.span);
                 }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, owner, member)?;
                 }
-                DefinitionBodyElement::Unsupported(node) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                ),
+                DefinitionBodyElement::Unsupported(node) => {
+                    self.push_unsupported(document, UnsupportedFamily::ParserUnsupported, node.span)
+                }
             }
         }
         Ok(())

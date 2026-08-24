@@ -248,7 +248,7 @@ pub(crate) fn settled_filters(
             owner: condition.owner,
             document: condition.document,
             form: condition.form,
-            span: condition.span.clone(),
+            span: condition.span,
             state: state_of(condition),
             predicate: condition.predicate.clone(),
         })

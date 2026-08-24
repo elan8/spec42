@@ -271,7 +271,7 @@ pub(crate) fn multiplicity_facts(
     Some(MultiplicityRecord {
         lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
         upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
-        span: multiplicity.value.span.clone(),
+        span: multiplicity.value.span,
     })
 }
 

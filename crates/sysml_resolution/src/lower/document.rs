@@ -236,7 +236,7 @@ impl SemanticModelBuilder {
                 name: relocation.optional_symbol(declaration.name)?,
                 anonymous_ordinal: declaration.anonymous_ordinal,
                 kind: declaration.kind,
-                span: declaration.span.clone(),
+                span: declaration.span,
             });
             self.declaration_facts.push(DeclarationFacts {
                 short_name: relocation.optional_symbol(facts.short_name)?,
@@ -250,7 +250,7 @@ impl SemanticModelBuilder {
                 member: relocation.declaration(membership.member)?,
                 kind: membership.kind,
                 visibility: membership.visibility,
-                span: membership.span.clone(),
+                span: membership.span,
             });
         }
 
@@ -264,7 +264,7 @@ impl SemanticModelBuilder {
                 ordinal: reference.ordinal,
                 import: reference.import,
                 flags: reference.flags,
-                span: reference.span.clone(),
+                span: reference.span,
             });
         }
 
@@ -276,7 +276,7 @@ impl SemanticModelBuilder {
                 locale: relocation.optional_symbol(record.locale)?,
                 language: relocation.optional_symbol(record.language)?,
                 text: relocation.symbol(record.text)?,
-                span: record.span.clone(),
+                span: record.span,
             });
         }
 
@@ -287,7 +287,7 @@ impl SemanticModelBuilder {
                 kind: record.kind,
                 is_default: record.is_default,
                 has_operator: record.has_operator,
-                span: record.span.clone(),
+                span: record.span,
             });
         }
 
@@ -296,7 +296,7 @@ impl SemanticModelBuilder {
             self.unsupported.push(UnsupportedRecord {
                 document,
                 family: record.family,
-                span: record.span.clone(),
+                span: record.span,
             });
         }
 
@@ -304,7 +304,7 @@ impl SemanticModelBuilder {
         for record in lowered.recovery.iter() {
             self.recovery.push(RecoveryRecord {
                 document,
-                span: record.span.clone(),
+                span: record.span,
             });
         }
 
@@ -323,7 +323,7 @@ impl SemanticModelBuilder {
                 document,
                 ordinal: token.ordinal,
                 text: relocation.symbol(token.text)?,
-                span: token.span.clone(),
+                span: token.span,
             });
         }
 
@@ -333,7 +333,7 @@ impl SemanticModelBuilder {
                 owner: relocation.declaration(condition.owner)?,
                 document,
                 form: condition.form,
-                span: condition.span.clone(),
+                span: condition.span,
                 expression: relocation.expression(&condition.expression),
                 predicate: condition.predicate.clone(),
             });
@@ -346,7 +346,7 @@ impl SemanticModelBuilder {
                 document,
                 callee: relocation.reference(invocation.callee)?,
                 argument_count: invocation.argument_count,
-                span: invocation.span.clone(),
+                span: invocation.span,
             });
         }
 

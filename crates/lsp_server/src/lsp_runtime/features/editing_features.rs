@@ -248,7 +248,7 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "implicit_redefinition_without_operator"
         );
         if is_implicit_redefinition_without_operator {
-            if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic) {
+            if let Some(action) = suggest_explicit_redefinition_quick_fix(text, &uri, diagnostic) {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }
