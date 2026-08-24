@@ -14,8 +14,9 @@
 # longer or shorter absolute path -- for either this checkout or the toolchain install -- shifts
 # the embedded string's length, which shifts the compiled module's exact byte layout and
 # therefore its exact metered fuel consumption, even though no plugin logic changed.
-# `--remap-path-prefix` rewrites both to fixed placeholders so the same source always compiles
-# to the same bytes, regardless of where the repository or the toolchain happen to live on disk.
+# `--remap-path-prefix` rewrites all three -- this checkout, the toolchain, and `$CARGO_HOME`
+# (registry sources such as `serde_json` are embedded the same way) -- to fixed placeholders so
+# the same source always compiles to the same bytes, regardless of where any of them live on disk.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -40,8 +41,11 @@ to_native_path() {
   fi
 }
 root_native="$(to_native_path "$root")"
+# Registry sources (`$CARGO_HOME/registry/src/...`) are embedded by panic locations and debug
+# info too; without this remap a macOS-built guest and a Linux-built guest differ in bytes.
+cargo_home_native="$(to_native_path "${CARGO_HOME:-$HOME/.cargo}")"
 
-RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain" \
+RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain --remap-path-prefix=${cargo_home_native}=/cargo-home" \
   cargo build \
   --manifest-path "$root/generator-tests/plugins/Cargo.toml" \
   --release \

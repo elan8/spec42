@@ -19,8 +19,11 @@ to_native_path() {
   fi
 }
 root_native="$(to_native_path "$root")"
+# Registry sources (`$CARGO_HOME/registry/src/...`) are embedded by panic locations and debug
+# info too; without this remap a macOS-built guest and a Linux-built guest differ in bytes.
+cargo_home_native="$(to_native_path "${CARGO_HOME:-$HOME/.cargo}")"
 
-RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain" \
+RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain --remap-path-prefix=${cargo_home_native}=/cargo-home" \
   cargo build \
   --manifest-path "$root/generator-plugins/Cargo.toml" \
   --release \
