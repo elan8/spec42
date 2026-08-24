@@ -1355,6 +1355,8 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ActionDefinition => "action-def",
         DeclarationKind::ActionUsage => "action",
         DeclarationKind::AcceptActionUsage => "accept-action",
+        DeclarationKind::SendActionUsage => "send-action",
+        DeclarationKind::TerminateActionUsage => "terminate-action",
         DeclarationKind::Succession => "succession",
         DeclarationKind::StateDefinition => "state-def",
         DeclarationKind::StateUsage => "state",

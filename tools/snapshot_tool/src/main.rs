@@ -840,13 +840,14 @@ struct TypeDerivedFactExpectation {
 }
 
 /// A desired Systems::Actions fact selected by a manifest-owned closed collection. Action
-/// arguments and parameters are often anonymous, so a resolved expectation may intentionally
-/// omit `target`; that asserts a nonempty canonical result without inventing an identity.
+/// arguments and parameters are often anonymous, so their canonical one-based position can be
+/// asserted without inventing a declaration identity.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ActionDerivedFactExpectation {
     collection: ActionDerivedFactCollection,
     source: String,
     target: Option<String>,
+    position: Option<u32>,
     outcome: TypeDerivedElementOutcome,
 }
 
@@ -3671,7 +3672,7 @@ fn parse_action_derived_fact_expectation(
     };
     let fields = parse_semantic_assertion_fields(
         &items[1..],
-        &["rule_id", "source", "target", "outcome"],
+        &["rule_id", "source", "target", "position", "outcome"],
         "semantic Action fact",
         fallback_name,
     )?;
@@ -3694,21 +3695,41 @@ fn parse_action_derived_fact_expectation(
         fallback_name,
     )?;
     let target = fields.get("target").cloned();
+    let position = fields
+        .get("position")
+        .map(|value| {
+            value
+                .parse::<u32>()
+                .ok()
+                .filter(|position| *position > 0)
+                .ok_or_else(|| {
+                    format!(
+                        "{fallback_name}: semantic Action fact position must be a positive integer"
+                    )
+                })
+        })
+        .transpose()?;
     if matches!(
         outcome,
         TypeDerivedElementOutcome::Absent
             | TypeDerivedElementOutcome::Incomplete
             | TypeDerivedElementOutcome::Unsupported
-    ) && target.is_some()
+    ) && (target.is_some() || position.is_some())
     {
         return Err(format!(
-            "{fallback_name}: {outcome:?} semantic Action fact must not declare target"
+            "{fallback_name}: {outcome:?} semantic Action fact must not declare target or position"
+        ));
+    }
+    if target.is_some() && position.is_some() {
+        return Err(format!(
+            "{fallback_name}: semantic Action fact must not declare both target and position"
         ));
     }
     Ok(ActionDerivedFactExpectation {
         collection,
         source,
         target,
+        position,
         outcome,
     })
 }
@@ -5663,6 +5684,30 @@ fn compare_action_derived_fact_observation(
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Arguments(values),
+                expected: None,
+            },
+        ) if expectation
+            .position
+            .is_some_and(|position| values.iter().any(|actual| actual.position == position)) =>
+        {
+            Ok(())
+        }
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Parameters(values),
+                expected: None,
+            },
+        ) if expectation
+            .position
+            .is_some_and(|position| values.iter().any(|actual| actual.position == position)) =>
+        {
+            Ok(())
+        }
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Values(values),
                 expected: Some(expected),
             },
@@ -5680,21 +5725,21 @@ fn compare_action_derived_fact_observation(
                 value: ActionDerivedFactOutcome::Values(values),
                 expected: None,
             },
-        ) if !values.is_empty() => Ok(()),
+        ) if expectation.position.is_none() && !values.is_empty() => Ok(()),
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Parameters(values),
                 expected: None,
             },
-        ) if !values.is_empty() => Ok(()),
+        ) if expectation.position.is_none() && !values.is_empty() => Ok(()),
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Arguments(values),
                 expected: None,
             },
-        ) if !values.is_empty() => Ok(()),
+        ) if expectation.position.is_none() && !values.is_empty() => Ok(()),
         _ => Err(format!(
             "semantic Action fact expectation for {} did not match its typed outcome",
             expectation.source
@@ -8073,7 +8118,7 @@ mod tests {
 
     #[test]
     fn parses_closed_action_derived_fact_assertions() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (action-derived-fact\n    (rule_id \"sysml-2.0:8.3.17.3:deriveActionDefinitionAction\")\n    (source \"Actions::Procedure\")\n    (target \"Actions::Procedure::step\")\n    (outcome resolved))\n  (action-derived-fact\n    (rule_id \"sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression\")\n    (source \"Actions::Procedure\")\n    (outcome resolved)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (action-derived-fact\n    (rule_id \"sysml-2.0:8.3.17.3:deriveActionDefinitionAction\")\n    (source \"Actions::Procedure\")\n    (target \"Actions::Procedure::step\")\n    (outcome resolved))\n  (action-derived-fact\n    (rule_id \"sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression\")\n    (source \"Actions::Procedure\")\n    (position 2)\n    (outcome resolved)))\n~~~\n";
         let expectations = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8084,12 +8129,14 @@ mod tests {
                     collection: ActionDerivedFactCollection::ActionDefinitionAction,
                     source: "Actions::Procedure".to_string(),
                     target: Some("Actions::Procedure::step".to_string()),
+                    position: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
                 ActionDerivedFactExpectation {
                     collection: ActionDerivedFactCollection::AssignmentValueExpression,
                     source: "Actions::Procedure".to_string(),
                     target: None,
+                    position: Some(2),
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
             ]
@@ -8102,6 +8149,10 @@ mod tests {
             (
                 "(fixture-semantics (action-derived-fact (rule_id kerml-1.0:8.3.3.1.10:deriveTypeFeature) (source Actions::Procedure) (outcome resolved)))",
                 "does not own an exact Action fact query",
+            ),
+            (
+                "(fixture-semantics (action-derived-fact (rule_id sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression) (source Actions::Procedure) (position 0) (outcome resolved)))",
+                "position must be a positive integer",
             ),
         ] {
             let fixture = format!("# EXPECTED SEMANTICS\n~~~sexpr\n{body}\n~~~\n");

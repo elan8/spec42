@@ -49,17 +49,17 @@ package Actions {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (kind send-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (kind sendTarget) (ordinal 0))
       (authored-target "target")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target")))))
   )
   (relationships
-    (relationship (kind sendTarget) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0)))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind sendTarget) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (kind sendTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target"))) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
@@ -69,7 +69,7 @@ package Actions {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act")))
     )
     (declaration (id (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target")))
@@ -81,7 +81,7 @@ package Actions {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/sysml_send_action_parameters.md") (range (start 8 18) (end 8 24)) (probe (position 8 18))
-    (reference (id (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0) (authored-target "target")
+    (reference (id (source (node (document "memory://snapshot/sysml_send_action_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (kind sendTarget) (ordinal 0) (authored-target "target")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_send_action_parameters.md") (qualified-name "Actions::Act::target")))))
     )
   )

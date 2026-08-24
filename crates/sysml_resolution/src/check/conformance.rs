@@ -113,7 +113,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::OccurrenceUsage => (F::Occurrence, Usage),
         K::ActionDefinition => (F::Action, Definition),
         K::ActionUsage => (F::Action, Usage),
-        K::AcceptActionUsage => (F::Action, Usage),
+        K::AcceptActionUsage | K::SendActionUsage | K::TerminateActionUsage => (F::Action, Usage),
         K::StateDefinition => (F::State, Definition),
         K::StateUsage => (F::State, Usage),
         K::PortDefinition => (F::Port, Definition),

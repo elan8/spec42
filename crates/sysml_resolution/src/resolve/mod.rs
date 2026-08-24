@@ -1083,6 +1083,8 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::ItemUsage
             | DeclarationKind::ActionUsage
             | DeclarationKind::AcceptActionUsage
+            | DeclarationKind::SendActionUsage
+            | DeclarationKind::TerminateActionUsage
             | DeclarationKind::StateUsage
             | DeclarationKind::MetadataUsage
             | DeclarationKind::ConnectionUsage
@@ -1158,6 +1160,8 @@ pub(crate) fn definition_usage_candidate_matches(
             kind,
             DeclarationKind::ActionUsage
                 | DeclarationKind::AcceptActionUsage
+                | DeclarationKind::SendActionUsage
+                | DeclarationKind::TerminateActionUsage
                 | DeclarationKind::PerformActionUsage
                 | DeclarationKind::EntryActionBinding
                 | DeclarationKind::DoActionBinding

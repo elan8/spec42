@@ -103,6 +103,13 @@ pub(crate) enum DeclarationKind {
     /// semantic: ordinary action usages and accept actions share grammar infrastructure, but only
     /// the latter own the `isTriggerAction` specialization predicates.
     AcceptActionUsage,
+    /// An anonymous action usage lowered from the standalone `send` control-node production.
+    /// Its distinct metaclass identity owns the normative payload/sender/receiver argument order.
+    SendActionUsage,
+    /// An anonymous action usage lowered from a `terminate` control-node statement.
+    /// The statement is an action in the semantic model rather than a reference attached to its
+    /// enclosing action definition or usage.
+    TerminateActionUsage,
     /// An anonymous succession feature synthesized for a `first X then Y;` control-flow
     /// statement (BNF `FirstStmt`) found in an action def/usage body. Owned by the enclosing
     /// action def/usage declaration (mirroring `EndDecl`'s nested `ConnectionUsage` children),
@@ -886,6 +893,8 @@ impl DeclarationKind {
             self,
             Self::ActionUsage
                 | Self::AcceptActionUsage
+                | Self::SendActionUsage
+                | Self::TerminateActionUsage
                 | Self::StateUsage
                 | Self::CaseUsage
                 | Self::AnalysisCaseUsage

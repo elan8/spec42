@@ -1033,6 +1033,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
                             DeclarationKind::ActionDefinition
                                 | DeclarationKind::ActionUsage
                                 | DeclarationKind::AcceptActionUsage
+                                | DeclarationKind::SendActionUsage
+                                | DeclarationKind::TerminateActionUsage
                         )
                     })
                 })
@@ -1052,6 +1054,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
                             DeclarationKind::ActionDefinition
                                 | DeclarationKind::ActionUsage
                                 | DeclarationKind::AcceptActionUsage
+                                | DeclarationKind::SendActionUsage
+                                | DeclarationKind::TerminateActionUsage
                         )
                     })
                 })

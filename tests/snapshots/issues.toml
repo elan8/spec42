@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-anonymous-metaclass-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Send and terminate action forms lack separately addressable canonical action identities and exact metaclass facts."
-
-[[issue]]
 id = "lowering-gap-specialization-cross-feature-projection"
 kind = "lowering_gap"
 owner = "spec42-semantic"

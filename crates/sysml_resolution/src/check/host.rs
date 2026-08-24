@@ -119,6 +119,8 @@ pub(crate) fn is_action_kind(kind: DeclarationKind) -> bool {
         DeclarationKind::ActionDefinition
             | DeclarationKind::ActionUsage
             | DeclarationKind::AcceptActionUsage
+            | DeclarationKind::SendActionUsage
+            | DeclarationKind::TerminateActionUsage
             | DeclarationKind::PerformActionUsage
             | DeclarationKind::Decide
             | DeclarationKind::Merge
@@ -231,6 +233,8 @@ pub(crate) fn is_action_body_kind(kind: DeclarationKind) -> bool {
         DeclarationKind::ActionDefinition
             | DeclarationKind::ActionUsage
             | DeclarationKind::AcceptActionUsage
+            | DeclarationKind::SendActionUsage
+            | DeclarationKind::TerminateActionUsage
             | DeclarationKind::PerformActionUsage
             | DeclarationKind::VerificationCaseDefinition
             | DeclarationKind::VerificationCaseUsage

@@ -3104,7 +3104,7 @@ rule_id = "sysml-2.0:8.3.17.15:checkSendActionUsageSubactionSpecialization"
 [specifications.constraints.conditional_specializes_from_library]
 predicate = "is_subaction_usage"
 owner_metaclasses = []
-anchor = "Actions::Action::acceptSubactions"
+anchor = "Actions::Action::sendSubactions"
 
 [[specifications.constraints]]
 package = "Systems::Actions"

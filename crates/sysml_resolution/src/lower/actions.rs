@@ -22,9 +22,9 @@ use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
     ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
-    ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, AssignStmt,
-    ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression, FirstMergeBody,
-    FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
+    ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActionUsageKeyword,
+    AssignStmt, ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression,
+    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
     GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind, Node,
     Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
     PerformInOutBinding, SendPayload, Span, SuccessionUsage, TerminateStmt, ThenAction, ThenTarget,
@@ -336,6 +336,7 @@ impl SemanticModelBuilder {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let is_accept_action = node.value.accept.is_some();
+        let is_send_action = node.value.keyword == ActionUsageKeyword::Send;
         let (accept_has_payload_argument, accept_has_receiver_argument) = node
             .value
             .accept
@@ -353,6 +354,8 @@ impl SemanticModelBuilder {
             owner,
             if is_accept_action {
                 DeclarationKind::AcceptActionUsage
+            } else if is_send_action {
+                DeclarationKind::SendActionUsage
             } else {
                 DeclarationKind::ActionUsage
             },
@@ -376,6 +379,8 @@ impl SemanticModelBuilder {
                 is_trigger_action: is_accept_action.then_some(false),
                 accept_has_payload_argument,
                 accept_has_receiver_argument,
+                send_has_sender_argument: is_send_action.then_some(node.value.via.is_some()),
+                send_has_receiver_argument: is_send_action.then_some(node.value.to.is_some()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1662,12 +1667,10 @@ impl SemanticModelBuilder {
     /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
     /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
     /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
-    /// `DeclarationDomain::Any` lexical lookup, sourced directly at `owner` (the enclosing action
-    /// def/usage declaration) -- unlike `Succession`/`Decide`, no anonymous nested-declaration
-    /// scope shift is needed because the terminated node/action is looked up in the terminate
-    /// statement's own enclosing scope, where sibling action names like `terminate c1;`'s `c1` are
-    /// actually declared. The bare `terminate;` form (no target) has nothing to resolve and is a
-    /// legitimate no-op, not an unsupported construct.
+    /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct anonymous
+    /// `TerminateActionUsage` identity; lexical resolution from that child still reaches sibling
+    /// declarations through its owner. A bare `terminate;` has an implicit self argument and no
+    /// authored reference, but retains the same action identity and argument position.
     pub(crate) fn lower_terminate_stmt(
         &mut self,
         document: DocumentIdx,
@@ -1675,10 +1678,24 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
     ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::TerminateActionUsage,
+            None,
+            node.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
         if let Some(target) = &node.value.target {
             self.lower_satisfy_operand(
                 document,
-                owner,
+                declaration,
                 family,
                 ReferenceKind::TerminateTarget,
                 target,

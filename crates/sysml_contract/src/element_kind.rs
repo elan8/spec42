@@ -90,6 +90,8 @@ element_kinds! {
     ActionUsage,
     /// An `ActionUsage` carrying the `accept` action form.
     AcceptActionUsage,
+    SendActionUsage,
+    TerminateActionUsage,
     StateDefinition,
     StateUsage,
     CalculationDefinition,

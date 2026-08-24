@@ -179,6 +179,10 @@ pub(crate) struct DeclarationFacts {
     /// Whether an `AcceptActionUsage` has the optional receiver input parameter/argument authored
     /// by a trailing `via` clause.
     pub(crate) accept_has_receiver_argument: Option<bool>,
+    /// Whether a `SendActionUsage` owns its optional sender argument (`via`).
+    pub(crate) send_has_sender_argument: Option<bool>,
+    /// Whether a `SendActionUsage` owns its optional receiver argument (`to`).
+    pub(crate) send_has_receiver_argument: Option<bool>,
     /// Whether this `IfActionUsage` has its typed `elseAction` branch. The parser records this as
     /// `IfStmt::else_body`; lowering publishes the presence bit so generated specialization rules
     /// select their anchor without reconstructing control-flow syntax.

@@ -1562,6 +1562,40 @@ impl<D> SemanticModel<D> {
             ))
         };
         match (collection, source_kind) {
+            (
+                ActionDerivedFactCollection::TerminateOccurrenceArgument,
+                Some(DeclarationKind::TerminateActionUsage),
+            ) => return expression_parameter(1),
+            (
+                ActionDerivedFactCollection::SendPayloadArgument,
+                Some(DeclarationKind::SendActionUsage),
+            ) => return expression_parameter(1),
+            (
+                ActionDerivedFactCollection::SendSenderArgument,
+                Some(DeclarationKind::SendActionUsage),
+            ) => {
+                if self
+                    .storage
+                    .declaration_facts(declaration)
+                    .is_some_and(|facts| facts.send_has_sender_argument == Some(true))
+                {
+                    return expression_parameter(2);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            (
+                ActionDerivedFactCollection::SendReceiverArgument,
+                Some(DeclarationKind::SendActionUsage),
+            ) => {
+                if self
+                    .storage
+                    .declaration_facts(declaration)
+                    .is_some_and(|facts| facts.send_has_receiver_argument == Some(true))
+                {
+                    return expression_parameter(3);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
             (ActionDerivedFactCollection::IfArgument, Some(DeclarationKind::If))
             | (ActionDerivedFactCollection::WhileArgument, Some(DeclarationKind::While)) => {
                 return expression_parameter(1);
@@ -1712,12 +1746,12 @@ impl<D> SemanticModel<D> {
             ));
             return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
         }
-        let prerequisite = match collection {
+        match collection {
             ActionDerivedFactCollection::TerminateOccurrenceArgument
             | ActionDerivedFactCollection::SendSenderArgument
             | ActionDerivedFactCollection::SendReceiverArgument
             | ActionDerivedFactCollection::SendPayloadArgument => {
-                ActionDerivedFactPrerequisite::ActionMetaclassIdentity
+                self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])))
             }
             ActionDerivedFactCollection::ActionDefinitionAction => unreachable!(),
             ActionDerivedFactCollection::AssignmentValueExpression
@@ -1742,8 +1776,7 @@ impl<D> SemanticModel<D> {
             }
             ActionDerivedFactCollection::AssignmentReferent => unreachable!(),
             ActionDerivedFactCollection::ForLoopVariable => unreachable!(),
-        };
-        self.resolved_outcome(ActionDerivedFactOutcome::Unsupported { prerequisite })
+        }
     }
 
     /// Decides the exact FeatureMembership TypeFeaturing implication from the canonical
