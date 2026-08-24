@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The snapshot tool builds each fixture once.** The per-fixture sequential/parallel
+  construction lanes are gone; that invariant is proven once by the authority's own
+  `construction_schedule_parity` test over the examples corpus. `cargo snapshot check` runs the
+  tool in release over the cached library stratum: a full check is now ~2 seconds. The workspace
+  test suite runs in ~18 seconds (from ~56), with integration tests as one binary per crate and
+  the resolver and parser compiled at opt-level 1 in dev.
+
 - **A symbol entry names its element by handle; the qualified name is read from the
   publication.** `SymbolEntry::qualified_name` is gone. Document and workspace symbols are
   produced in bulk -- one entry per declaration in a document, every one carrying a `Box<str>`
