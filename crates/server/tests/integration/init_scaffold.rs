@@ -1,6 +1,5 @@
 //! `spec42 init` starter-workspace integration coverage.
 
-
 use std::fs;
 
 use crate::common::with_isolated_data_dir;

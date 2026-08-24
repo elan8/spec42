@@ -7,7 +7,9 @@
 use std::path::{Path, PathBuf};
 
 use sysml_contract::SEMANTIC_CONTRACT_VERSION;
-use sysml_resolution::{build, BuildRequest, ConstructionSchedule, PublishedResolution, SourceInput};
+use sysml_resolution::{
+    build, BuildRequest, ConstructionSchedule, PublishedResolution, SourceInput,
+};
 use sysml_source::SourceKind;
 
 /// Every rendered projection of a publication, concatenated: the whole observable model.
@@ -25,7 +27,10 @@ fn render(publication: &PublishedResolution) -> String {
     output
 }
 
-fn publish(sources: &[(String, String, SourceKind)], schedule: ConstructionSchedule) -> PublishedResolution {
+fn publish(
+    sources: &[(String, String, SourceKind)],
+    schedule: ConstructionSchedule,
+) -> PublishedResolution {
     let inputs = sources
         .iter()
         .map(|(identity, content, kind)| SourceInput::new(identity.clone(), content.clone(), *kind))
@@ -64,7 +69,10 @@ fn collect_sources(directory: &Path, into: &mut Vec<PathBuf>) {
                 continue;
             }
             collect_sources(&path, into);
-        } else if path.extension().is_some_and(|extension| extension == "sysml") {
+        } else if path
+            .extension()
+            .is_some_and(|extension| extension == "sysml")
+        {
             into.push(path);
         }
     }

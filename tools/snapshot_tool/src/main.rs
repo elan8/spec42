@@ -5858,7 +5858,6 @@ fn compare_semantic_relationship_observation(
     Ok(())
 }
 
-
 impl FixtureReport {
     fn from_meta(
         path: &Path,
@@ -6656,7 +6655,6 @@ struct OwnedSections {
     qualified_references: String,
 }
 
-
 fn build_model_with_library(
     workspace_documents: &[QuerySourceDocument],
     construction: ConstructionStrategy,
@@ -6764,7 +6762,6 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
         )
     })
 }
-
 
 fn render_semantic_model(model: &PublishedModel) -> Result<String, String> {
     let mut output = String::new();
@@ -7545,8 +7542,6 @@ mod tests {
             vec![Path::new("a.md"), Path::new("z.md")]
         );
     }
-
-
 
     /// Every owned section is compared, not only the first: the editor-query section carries the
     /// inspection output, which is the one most likely to depend on construction order.

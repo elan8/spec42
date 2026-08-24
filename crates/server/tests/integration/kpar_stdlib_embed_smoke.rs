@@ -1,6 +1,5 @@
 //! Smoke test: embedded OMG KPAR stdlib materializes and resolves ScalarValues imports.
 
-
 use crate::common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::stdlib::EMBEDDED_STDLIB_ARCHIVE;

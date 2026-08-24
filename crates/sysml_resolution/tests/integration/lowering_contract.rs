@@ -4,7 +4,6 @@
 
 #![allow(clippy::too_many_lines)]
 
-
 #[allow(unused_imports)]
 use crate::common::*;
 #[allow(unused_imports)]

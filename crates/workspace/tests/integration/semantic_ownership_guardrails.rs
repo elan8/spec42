@@ -374,7 +374,10 @@ fn visit_repository_rust_files(root: &Path, visit: &mut impl FnMut(&Path)) {
             continue;
         }
         let path = entry.path();
-        if path.file_name().is_some_and(|name| name == "target" || name == ".cache") {
+        if path
+            .file_name()
+            .is_some_and(|name| name == "target" || name == ".cache")
+        {
             continue;
         }
         if path.is_dir() {

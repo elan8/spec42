@@ -116,7 +116,10 @@ fn collect_rust_sources(directory: &Path, output: &mut Vec<PathBuf>) {
             continue;
         }
         if path.is_dir() {
-            if path.file_name().is_some_and(|name| name == "target" || name == ".cache") {
+            if path
+                .file_name()
+                .is_some_and(|name| name == "target" || name == ".cache")
+            {
                 continue;
             }
             collect_rust_sources(&path, output);

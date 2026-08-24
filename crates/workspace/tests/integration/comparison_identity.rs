@@ -1,5 +1,4 @@
-﻿use workspace::{compare_snapshots, IdentityPreservationStatus};
-
+use workspace::{compare_snapshots, IdentityPreservationStatus};
 
 use crate::comparison_fixtures::{load_snapshot, test_engine};
 use tempfile::tempdir;

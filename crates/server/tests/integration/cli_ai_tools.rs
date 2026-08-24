@@ -1,6 +1,5 @@
 //! CLI coverage for agent surfaces (`explain-diagnostic`, `model-summary`).
 
-
 use std::path::PathBuf;
 use std::process::Command;
 

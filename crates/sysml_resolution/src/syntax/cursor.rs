@@ -132,8 +132,7 @@ pub(super) fn unit_literal_at<'p>(
         }
     }
     let (open, close) = innermost?;
-    let inner =
-        &line_text[char_to_byte(line_text, open + 1)..char_to_byte(line_text, close)];
+    let inner = &line_text[char_to_byte(line_text, open + 1)..char_to_byte(line_text, close)];
     let leading = inner.chars().take_while(|ch| ch.is_whitespace()).count();
     let trailing = inner
         .chars()

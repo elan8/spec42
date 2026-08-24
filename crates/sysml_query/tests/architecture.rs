@@ -636,8 +636,6 @@ const FACADE_OWNED_STRING_INPUT_FIELDS: &[&str] = &[
 /// scan, read once by library closure loading on the batch path. Those stay until the value is
 /// settled into storage at the barrier, which is a representation change to admit with a bench.
 const FACADE_OWNED_STRING_PRODUCT_FIELDS: &[&str] = &[
-
-
     "PackageTargets::qualified_name",
     // Not a copy of source text: the parser's own message, and for a parser panic a message this
     // crate writes. The diagnostics are stored *inside* the `ParsedSource` next to the parse

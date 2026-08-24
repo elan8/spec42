@@ -1,6 +1,5 @@
 //! Smoke test: `perform_check` on a bundled example (same engine as `spec42 check` / MCP `spec42_check`).
 
-
 use std::path::PathBuf;
 
 use crate::common::with_isolated_data_dir;

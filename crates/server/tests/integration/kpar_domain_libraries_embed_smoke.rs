@@ -1,6 +1,5 @@
 //! Smoke tests: config-driven embedded KPAR libraries (domain + method).
 
-
 use crate::common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::kpar_libraries::{embedded_archive, embedded_entry};

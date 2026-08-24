@@ -1203,7 +1203,11 @@ fn write_document_symbols(
                 if let Some(name) = &entry.name {
                     write!(output, " (name {name:?})")?;
                 }
-                write!(output, " (qualified-name {:?}) ", model.qualified_name(entry.identity).unwrap_or_default())?;
+                write!(
+                    output,
+                    " (qualified-name {:?}) ",
+                    model.qualified_name(entry.identity).unwrap_or_default()
+                )?;
                 write_location(model, output, &entry.location)?;
                 write!(output, " (declaration ")?;
                 write_range(output, entry.declaration_range)?;
@@ -1569,7 +1573,9 @@ fn write_element(
             write!(
                 output,
                 " (type (qualified-name {:?})",
-                model.qualified_name(entry.element.identity).unwrap_or_default()
+                model
+                    .qualified_name(entry.element.identity)
+                    .unwrap_or_default()
             )?;
             match &entry.origin {
                 EffectiveTypeOrigin::Direct => write!(output, " (origin direct))")?,
@@ -1582,7 +1588,12 @@ fn write_element(
         writeln!(
             output,
             "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}))",
-            model.qualified_name(feature.feature.identity).unwrap_or_default(), model.qualified_name(feature.declared_in.identity).unwrap_or_default()
+            model
+                .qualified_name(feature.feature.identity)
+                .unwrap_or_default(),
+            model
+                .qualified_name(feature.declared_in.identity)
+                .unwrap_or_default()
         )?;
     }
     for entry in details.metadata.iter() {
@@ -1601,7 +1612,9 @@ fn write_element(
                 output,
                 "{indent}  ({label} (kind {:?}) (peer {:?}) (provenance {}))",
                 entry.kind,
-                model.qualified_name(entry.peer.identity).unwrap_or_default(),
+                model
+                    .qualified_name(entry.peer.identity)
+                    .unwrap_or_default(),
                 match entry.provenance {
                     RelationshipProvenance::Authored => "authored",
                     RelationshipProvenance::Implied => "implied",
@@ -1642,10 +1655,18 @@ fn write_family(
         family.outcome.as_str()
     )?;
     for target in family.targets.iter() {
-        write!(output, " (target {:?})", model.qualified_name(target.identity).unwrap_or_default())?;
+        write!(
+            output,
+            " (target {:?})",
+            model.qualified_name(target.identity).unwrap_or_default()
+        )?;
     }
     for candidate in family.candidates.iter() {
-        write!(output, " (candidate {:?})", model.qualified_name(candidate.identity).unwrap_or_default())?;
+        write!(
+            output,
+            " (candidate {:?})",
+            model.qualified_name(candidate.identity).unwrap_or_default()
+        )?;
     }
     writeln!(output, ")")
 }
@@ -2074,7 +2095,9 @@ mod tests {
         };
         let mass = symbols
             .iter()
-            .find(|symbol| publication.qualified_name(symbol.identity) == Some("Model::Vehicle::mass"))
+            .find(|symbol| {
+                publication.qualified_name(symbol.identity) == Some("Model::Vehicle::mass")
+            })
             .expect("mass declaration")
             .identity;
         assert!(matches!(

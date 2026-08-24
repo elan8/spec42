@@ -488,10 +488,10 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
     ));
     output.push_str(&format!(
         "owner {:?}\n",
-        details
-            .owner
-            .as_ref()
-            .map(|owner| published.qualified_name(owner.identity).unwrap_or_default().to_owned())
+        details.owner.as_ref().map(|owner| published
+            .qualified_name(owner.identity)
+            .unwrap_or_default()
+            .to_owned())
     ));
     family(&mut output, "typing", &details.typing);
     family(&mut output, "specialization", &details.specialization);
@@ -505,7 +505,10 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
             .types
             .iter()
             .map(|entry| (
-                published.qualified_name(entry.element.identity).unwrap_or_default().to_owned(),
+                published
+                    .qualified_name(entry.element.identity)
+                    .unwrap_or_default()
+                    .to_owned(),
                 format!("{:?}", entry.origin)
             ))
             .collect::<Vec<_>>()
@@ -516,8 +519,14 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
             .inherited_features
             .iter()
             .map(|entry| (
-                published.qualified_name(entry.feature.identity).unwrap_or_default().to_owned(),
-                published.qualified_name(entry.declared_in.identity).unwrap_or_default().to_owned()
+                published
+                    .qualified_name(entry.feature.identity)
+                    .unwrap_or_default()
+                    .to_owned(),
+                published
+                    .qualified_name(entry.declared_in.identity)
+                    .unwrap_or_default()
+                    .to_owned()
             ))
             .collect::<Vec<_>>()
     ));
@@ -532,7 +541,10 @@ pub fn render_details(published: &PublishedResolution, details: &ElementDetails)
                 .iter()
                 .map(|entry| (
                     entry.kind,
-                    published.qualified_name(entry.peer.identity).unwrap_or_default().to_owned(),
+                    published
+                        .qualified_name(entry.peer.identity)
+                        .unwrap_or_default()
+                        .to_owned(),
                     format!("{:?}", entry.provenance)
                 ))
                 .collect::<Vec<_>>()

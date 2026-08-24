@@ -2,7 +2,6 @@
 //! informational diagnostics either — an `info` such as `missing_library_anchor` means the
 //! publication admitted less of the standard library than the model needs.
 
-
 use std::path::{Path, PathBuf};
 
 use crate::common::with_isolated_data_dir;

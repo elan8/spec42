@@ -1418,7 +1418,11 @@ impl GeneratorModelView {
                     .document_identity(registered.entry.location.document)
                     .unwrap_or_default()
                     .to_owned(),
-                qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
+                qualified_name: self
+                    .model
+                    .qualified_name(registered.entry.identity)
+                    .unwrap_or_default()
+                    .to_string(),
                 source_domain,
             })
         } else {
@@ -1433,7 +1437,12 @@ impl GeneratorModelView {
                     .owner
                     .as_ref()
                     .and_then(|owner| self.by_identity.get(owner))
-                    .map(|owner| self.model.qualified_name(owner.entry.identity).unwrap_or_default().to_string()),
+                    .map(|owner| {
+                        self.model
+                            .qualified_name(owner.entry.identity)
+                            .unwrap_or_default()
+                            .to_string()
+                    }),
                 metaclass: api_metaclass(registered.entry.kind),
                 source_domain,
                 range: protocol_source_range(registered.entry.declaration_range),
@@ -1494,7 +1503,11 @@ impl GeneratorModelView {
                 .document_identity(registered.entry.location.document)
                 .unwrap_or_default()
                 .to_owned(),
-            source_qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
+            source_qualified_name: self
+                .model
+                .qualified_name(registered.entry.identity)
+                .unwrap_or_default()
+                .to_string(),
             relationship_kind,
             ordinal: u32::try_from(ordinal).map_err(|_| ModelQueryError::ResultLimit {
                 actual: ordinal,
@@ -1594,7 +1607,11 @@ impl GeneratorModelView {
             semantic_id,
             metaclass: api_metaclass(registered.entry.kind),
             name: registered.entry.name.as_deref().map(str::to_owned),
-            qualified_name: self.model.qualified_name(registered.entry.identity).unwrap_or_default().to_string(),
+            qualified_name: self
+                .model
+                .qualified_name(registered.entry.identity)
+                .unwrap_or_default()
+                .to_string(),
             library_element: registered.source != ElementSource::Workspace,
         })
     }
@@ -1622,7 +1639,10 @@ impl GeneratorModelView {
     }
 }
 
-fn display_label(model: &sysml_query::resolved_slice::PublishedModel, entry: &SymbolEntry) -> String {
+fn display_label(
+    model: &sysml_query::resolved_slice::PublishedModel,
+    entry: &SymbolEntry,
+) -> String {
     entry
         .display_label(model.qualified_name(entry.identity).unwrap_or_default())
         .to_owned()

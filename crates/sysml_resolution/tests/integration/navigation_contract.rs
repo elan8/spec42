@@ -4,7 +4,6 @@
 
 #![allow(clippy::too_many_lines)]
 
-
 #[allow(unused_imports)]
 use crate::common::*;
 #[allow(unused_imports)]
@@ -1223,7 +1222,9 @@ fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order()
     };
     assert_eq!(library.len(), 1);
     assert_eq!(
-        published.qualified_name(library[0].identity).unwrap_or_default(),
+        published
+            .qualified_name(library[0].identity)
+            .unwrap_or_default(),
         "Standard::LibraryRequirement"
     );
 }
@@ -1288,7 +1289,9 @@ fn an_ambiguous_relationship_target_keeps_every_candidate_and_chooses_none() {
             .effective_typing
             .candidates
             .iter()
-            .map(|candidate| published.qualified_name(candidate.element.identity).unwrap_or_default())
+            .map(|candidate| published
+                .qualified_name(candidate.element.identity)
+                .unwrap_or_default())
             .collect::<Vec<_>>(),
         vec!["P::A::Shared", "P::B::Shared"]
     );
