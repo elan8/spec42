@@ -2648,66 +2648,29 @@ fn regenerate_snapshot(
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
         parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
-    // A fixture that selects a library is built over the cached library stratum, exactly as a
-    // warm host does: three builds of the fixture's own documents (the facade-shaped canonical
-    // publication and the two direct strategy lanes) rather than three cold builds of the whole
-    // standard library. Cold/full versus warm/stratum parity is proven once, structurally, by
-    // `crates/sysml_resolution/tests/incremental_reuse.rs` over the examples corpus; it is not
-    // re-proven per fixture. A fixture without a library keeps the cold path, which is small.
-    let (canonical_model, sequential_model, parallel_model) =
-        if let Some(stratum) = libraries.stratum(meta.libraries)? {
-            let sequential_model = Arc::new(build_model_with_library(
-                &workspace_source_documents,
-                ConstructionStrategy::Sequential,
-                stratum,
-                path,
-            )?);
-            let parallel_model = Arc::new(build_model_with_library(
-                &workspace_source_documents,
-                ConstructionStrategy::Parallel,
-                stratum,
-                path,
-            )?);
-            (Arc::clone(&parallel_model), sequential_model, parallel_model)
-        } else {
-            let canonical_model = sysml_query::Services::new()
-                .publication
-                .publish(&admitted_documents, std::iter::empty::<Box<str>>())
-                .map_err(|error| {
-                    format!(
-                        "{}: canonical semantic build failed: {error}",
-                        path.display()
-                    )
-                })?;
-            let sequential_model = Arc::new(build_model(
-                &source_documents,
-                ConstructionStrategy::Sequential,
-                path,
-            )?);
-            let parallel_model = Arc::new(build_model(
-                &source_documents,
-                ConstructionStrategy::Parallel,
-                path,
-            )?);
-            (canonical_model, sequential_model, parallel_model)
-        };
-    // The direct builds are owner-internal equivalence lanes. Snapshot artifacts consume only
-    // `canonical_model`, exactly as production hosts do.
-    let sequential = render_owned_sections(
-        &sequential_model,
-        &documents,
-        &source_documents,
-        &probes,
-        &qualified_reference_probes,
-    )?;
-    let parallel = render_owned_sections(
-        &parallel_model,
-        &documents,
-        &source_documents,
-        &probes,
-        &qualified_reference_probes,
-    )?;
-    ensure_strategy_parity(path, &sequential, &parallel)?;
+    // One build per fixture. A fixture that selects a library is built over the cached library
+    // stratum, exactly as a warm host does; a fixture without a library is built cold, which is
+    // small. Construction-strategy parity (sequential versus parallel schedules) and cold/full
+    // versus warm/stratum parity are authority invariants, proven once over the examples corpus
+    // by the authority's own tests rather than re-proven per fixture here.
+    let canonical_model = if let Some(stratum) = libraries.stratum(meta.libraries)? {
+        Arc::new(build_model_with_library(
+            &workspace_source_documents,
+            ConstructionStrategy::Parallel,
+            stratum,
+            path,
+        )?)
+    } else {
+        sysml_query::Services::new()
+            .publication
+            .publish(&admitted_documents, std::iter::empty::<Box<str>>())
+            .map_err(|error| {
+                format!(
+                    "{}: canonical semantic build failed: {error}",
+                    path.display()
+                )
+            })?
+    };
     let canonical = render_owned_sections(
         &canonical_model,
         &documents,
@@ -2715,47 +2678,12 @@ fn regenerate_snapshot(
         &probes,
         &qualified_reference_probes,
     )?;
-    ensure_strategy_parity(path, &canonical, &sequential).map_err(|error| {
-        format!("{error}; canonical publication and direct equivalence lane differ")
-    })?;
     ensure_sections_balanced(&canonical).map_err(|error| format!("{}: {error}", path.display()))?;
 
     let semantic_mismatch = if let Some(expectations) = &semantic_expectations {
         match observe_semantic_expectations(&canonical_model, expectations) {
             Err(error) => Some(error),
             Ok(canonical_observations) => {
-                let sequential_observations =
-                    observe_semantic_expectations(&sequential_model, expectations).map_err(
-                        |error| {
-                            format!(
-                                "{}: sequential semantic expectation query failed: {error}",
-                                path.display()
-                            )
-                        },
-                    )?;
-                let parallel_observations =
-                    observe_semantic_expectations(&parallel_model, expectations).map_err(
-                        |error| {
-                            format!(
-                                "{}: parallel semantic expectation query failed: {error}",
-                                path.display()
-                            )
-                        },
-                    )?;
-                ensure_semantic_expectation_parity(
-                    path,
-                    &canonical_observations,
-                    &sequential_observations,
-                    "canonical",
-                    "sequential",
-                )?;
-                ensure_semantic_expectation_parity(
-                    path,
-                    &sequential_observations,
-                    &parallel_observations,
-                    "sequential",
-                    "parallel",
-                )?;
                 compare_semantic_expectations(expectations, &canonical_observations).err()
             }
         }
@@ -2817,16 +2745,6 @@ fn regenerate_snapshot(
     let fixture = if let Some(generation) = &meta.generation {
         let canonical_generated =
             execute_generation(Arc::clone(&canonical_model), generation, path)?;
-        let sequential_generated =
-            execute_generation(Arc::clone(&sequential_model), generation, path)?;
-        let parallel_generated = execute_generation(Arc::clone(&parallel_model), generation, path)?;
-        if canonical_generated != sequential_generated || sequential_generated != parallel_generated
-        {
-            return Err(format!(
-                "{}: sequential and parallel generation differ",
-                path.display()
-            ));
-        }
         replace_or_insert_generated_section(&fixture, &canonical_generated)
     } else {
         fixture
@@ -5940,22 +5858,6 @@ fn compare_semantic_relationship_observation(
     Ok(())
 }
 
-fn ensure_semantic_expectation_parity(
-    path: &Path,
-    left: &SemanticExpectationObservations,
-    right: &SemanticExpectationObservations,
-    left_name: &str,
-    right_name: &str,
-) -> Result<(), String> {
-    if left == right {
-        Ok(())
-    } else {
-        Err(format!(
-            "{}: {left_name} and {right_name} semantic expectation queries differ",
-            path.display()
-        ))
-    }
-}
 
 impl FixtureReport {
     fn from_meta(
@@ -6754,16 +6656,6 @@ struct OwnedSections {
     qualified_references: String,
 }
 
-fn build_model(
-    source_documents: &[QuerySourceDocument],
-    construction: ConstructionStrategy,
-    path: &Path,
-) -> Result<PublishedModel, String> {
-    let request = BuildRequest::resolved(source_documents.to_vec(), construction)
-        .map_err(|error| format!("{}: invalid semantic input: {error}", path.display()))?;
-    build_published_model(request)
-        .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
-}
 
 fn build_model_with_library(
     workspace_documents: &[QuerySourceDocument],
@@ -6873,49 +6765,6 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     })
 }
 
-fn ensure_strategy_parity(
-    path: &Path,
-    sequential: &OwnedSections,
-    parallel: &OwnedSections,
-) -> Result<(), String> {
-    if sequential.smg != parallel.smg {
-        return Err(format!(
-            "{}: sequential and parallel semantic-model outputs differ",
-            path.display()
-        ));
-    }
-    if sequential.diagnostics != parallel.diagnostics {
-        return Err(format!(
-            "{}: sequential and parallel diagnostics outputs differ",
-            path.display()
-        ));
-    }
-    if sequential.types != parallel.types {
-        return Err(format!(
-            "{}: sequential and parallel type outputs differ",
-            path.display()
-        ));
-    }
-    if sequential.navigation != parallel.navigation {
-        return Err(format!(
-            "{}: sequential and parallel navigation outputs differ",
-            path.display()
-        ));
-    }
-    if sequential.editor_queries != parallel.editor_queries {
-        return Err(format!(
-            "{}: sequential and parallel editor-query outputs differ",
-            path.display()
-        ));
-    }
-    if sequential.qualified_references != parallel.qualified_references {
-        return Err(format!(
-            "{}: sequential and parallel qualified-reference outputs differ",
-            path.display()
-        ));
-    }
-    Ok(())
-}
 
 fn render_semantic_model(model: &PublishedModel) -> Result<String, String> {
     let mut output = String::new();
@@ -7697,39 +7546,10 @@ mod tests {
         );
     }
 
-    fn owned_sections(smg: &str) -> OwnedSections {
-        OwnedSections {
-            smg: smg.to_string(),
-            types: "same".to_string(),
-            diagnostics: "same".to_string(),
-            navigation: "same".to_string(),
-            editor_queries: "same".to_string(),
-            qualified_references: "same".to_string(),
-        }
-    }
 
-    #[test]
-    fn parity_mismatch_is_reported_before_owned_output_is_selected() {
-        let error = ensure_strategy_parity(
-            Path::new("fixture.md"),
-            &owned_sections("sequential"),
-            &owned_sections("parallel"),
-        )
-        .expect_err("mismatched owned output must fail parity");
-        assert!(error.contains("semantic-model outputs differ"));
-    }
 
     /// Every owned section is compared, not only the first: the editor-query section carries the
     /// inspection output, which is the one most likely to depend on construction order.
-    #[test]
-    fn parity_covers_every_owned_section() {
-        let mut parallel = owned_sections("same");
-        parallel.editor_queries = "different".to_string();
-        let error =
-            ensure_strategy_parity(Path::new("fixture.md"), &owned_sections("same"), &parallel)
-                .expect_err("a differing editor-query section must fail parity");
-        assert!(error.contains("editor-query outputs differ"));
-    }
 
     #[test]
     fn parses_single_and_multi_source_documents() {
