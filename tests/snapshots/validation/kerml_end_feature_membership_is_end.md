@@ -47,7 +47,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bd31492d67bf80cc51b1c807edd46f0f7e8ee6d8207a40df69c6be1f1d2155e9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bd31492d67bf80cc51b1c807edd46f0f7e8ee6d8207a40df69c6be1f1d2155e9") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_end_feature_membership_is_end.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_end_feature_membership_is_end.md") (qualified-name "Ends::Link"))) (kind kerml-association) (membership (kind owning) (visibility default)))

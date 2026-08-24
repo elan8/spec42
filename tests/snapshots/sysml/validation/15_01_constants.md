@@ -151,7 +151,7 @@ package '15_01-Constants' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d17b05dafeaf1d07cf2bfddb67af28eab670e80ae3346cb8d689651d39c65ba4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d17b05dafeaf1d07cf2bfddb67af28eab670e80ae3346cb8d689651d39c65ba4") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Note: Value properties that are bound to specific values are constants and have the specified\n     * values in all contexts. It is not legal to redefine them.\n     "))))
     (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MeasurementReferences") (import (shape namespace) (recursive false))))))

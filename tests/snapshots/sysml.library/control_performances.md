@@ -369,7 +369,7 @@ standard library package ControlPerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4374b5e56a6b66d8eff91d505af4f134ce37ada0ab5677bed0860a7b491dd573") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4374b5e56a6b66d8eff91d505af4f134ce37ada0ab5677bed0860a7b491dd573") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Behaviors to be used to type Steps that control the sequencing of performance\n\t * of other Steps. \n\t "))))
     (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

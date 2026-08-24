@@ -37,7 +37,7 @@ package Model { part def Owned; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d85f157a6608e4d66fdc6d059354330aafd4b769dd50ce7aa8360546b40a1712") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d85f157a6608e4d66fdc6d059354330aafd4b769dd50ce7aa8360546b40a1712") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_namespace_derived_elements.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_namespace_derived_elements.md") (qualified-name "Model::Owned"))) (kind part-def) (membership (kind owning) (visibility default)))

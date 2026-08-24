@@ -36,7 +36,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:56dd6d8fc154c8f4521689e42d6c9e1f4dedda57e7c00d6ffc1dd4cc64be2ffa") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:56dd6d8fc154c8f4521689e42d6c9e1f4dedda57e7c00d6ffc1dd4cc64be2ffa") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants"))) (kind kerml-association) (membership (kind owning) (visibility default)))

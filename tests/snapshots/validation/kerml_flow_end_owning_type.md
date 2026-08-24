@@ -46,7 +46,7 @@ package Flows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2145a9dd20d21f311e765e48b71707d5798fbf044ba656ac14bd58e4ac7c0f65") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2145a9dd20d21f311e765e48b71707d5798fbf044ba656ac14bd58e4ac7c0f65") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_flow_end_owning_type.md") (qualified-name "Flows"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_flow_end_owning_type.md") (qualified-name "Flows::Moving"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

@@ -61,7 +61,7 @@ package RefPrefixFacts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8446da65fb084eb81401158dcf61956d1f0154c48c9daa3a177e0738e3c4b121") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8446da65fb084eb81401158dcf61956d1f0154c48c9daa3a177e0738e3c4b121") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))

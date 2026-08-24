@@ -470,7 +470,7 @@ package '4a-Functional Allocation' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a7b42e00c05051ab29e9a1a513a40cbb0f30070ae3a8068d88fe91f863b2368b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a7b42e00c05051ab29e9a1a513a40cbb0f30070ae3a8068d88fe91f863b2368b") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/4a_functional_allocation.md") (qualified-name "4a-Functional Allocation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/4a_functional_allocation.md") (path (named (kind package) (name "4a-Functional Allocation")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "2a-Parts Interconnection") (import (shape namespace) (recursive false))))))

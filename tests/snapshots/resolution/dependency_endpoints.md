@@ -24,7 +24,7 @@ package DependencyCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76777b26487a9109cac088b98f883a3a8b1a01cefb04c5e9f4f8976363db0988") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76777b26487a9109cac088b98f883a3a8b1a01cefb04c5e9f4f8976363db0988") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dependency_endpoints.md") (qualified-name "DependencyCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependency_endpoints.md") (path (named (kind package) (name "DependencyCoverage")) (anonymous (kind dependency) (ordinal 0))))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Source")) (dependencySupplier (reference "Target")))))

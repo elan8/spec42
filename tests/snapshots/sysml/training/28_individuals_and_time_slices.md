@@ -110,7 +110,7 @@ package 'Individuals and Time Slices' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0cd6b18f9e0f56c83b2bd04b31954c8933a32cf235596a7b9dc36065798f6956") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0cd6b18f9e0f56c83b2bd04b31954c8933a32cf235596a7b9dc36065798f6956") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Individuals and Snapshots Example") (import (shape namespace) (recursive false))))))
