@@ -957,7 +957,14 @@ impl<D> SemanticModel<D> {
                         let Some(target_kind) = self.kind_of(target) else {
                             continue;
                         };
-                        if is_action_kind(target_kind) {
+                        // A directed parameter is undecidable here: the pinned parser consumes
+                        // the kind keyword of `in action body { ... }` (`Actions.sysml`) without
+                        // recording it, so an action parameter and a value parameter reach
+                        // semantics as the same `ParameterUsage` (planning/UPSTREAM_PARSER_GAPS.md,
+                        // gap 82). Reporting it would name a defect the author did not write.
+                        if is_action_kind(target_kind)
+                            || target_kind == DeclarationKind::ParameterUsage
+                        {
                             continue;
                         }
                         diagnostics.push(self.reference_message_diagnostic(

@@ -27,7 +27,7 @@ use sysml_v2_parser::ast::{
     FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
     GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind, Node,
     Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
-    PerformInOutBinding, SendPayload, Span, TerminateStmt, ThenAction, ThenTarget,
+    PerformInOutBinding, SendPayload, Span, SuccessionUsage, TerminateStmt, ThenAction, ThenTarget,
     TransitionAccept,
 };
 
@@ -44,15 +44,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ActionDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -249,12 +242,9 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
-            ActionDefBodyElement::FlowUsage(node) => self.lower_flow_usage(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
+            ActionDefBodyElement::FlowUsage(node) => {
+                self.lower_flow_usage(document, owner, node)?
+            }
             ActionDefBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
                 document,
                 owner,
@@ -343,8 +333,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserActionUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let is_accept_action = node.value.accept.is_some();
         let declaration = self.push_typed_declaration(
             document,
@@ -639,7 +629,7 @@ impl SemanticModelBuilder {
                 )?;
             }
             ActionUsageBodyElement::FlowUsage(node) => {
-                self.lower_flow_usage(document, owner, UnsupportedFamily::ActionUsageMember, node)?
+                self.lower_flow_usage(document, owner, node)?
             }
             ActionUsageBodyElement::TerminateStmt(node) => self.lower_terminate_stmt(
                 document,
@@ -1351,10 +1341,8 @@ impl SemanticModelBuilder {
             family,
             &node.in_parameter.expression,
         )?;
-        let var_name = match node.variable.value.identification.name.as_deref() {
-            Some(name) => self.intern_declared_name(name)?,
-            None => None,
-        };
+        let var_name =
+            self.intern_declaration_name(document, node.variable.value.identification.name)?;
         let var_declaration = self.push_typed_declaration(
             document,
             Some(declaration),
@@ -1459,44 +1447,55 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
-        family: UnsupportedFamily,
         node: &Node<FlowUsage>,
     ) -> Result<(), ConstructionError> {
         // Upstream now models `FlowDeclaration`'s two grammar alternatives: the endpoint-only
         // shorthand this lowering supports, and the declaration-led form, whose named/typed
         // shapes stay unsupported exactly as before.
-        let (payload, endpoints) = match &node.value.declaration {
-            FlowDeclaration::EndpointOnly { endpoints } => (None, endpoints),
+        // `FlowDeclaration`'s two grammar alternatives: the endpoint-only shorthand, and the
+        // declaration-led form (`flow f : T from a to b;`, `abstract flow flows : Flow[0..*]
+        // nonunique :> messages { ... }`), whose `UsageDeclaration` clauses lower through the
+        // same helpers every keyworded usage uses and whose endpoints are optional.
+        let (usage, value, payload, endpoints) = match &node.value.declaration {
+            FlowDeclaration::EndpointOnly { endpoints } => (None, None, None, Some(endpoints)),
             FlowDeclaration::Declared {
                 declaration,
+                value,
                 payload,
                 endpoints,
                 ..
-            } => {
-                let declared_label = declaration.value.identification.name.is_some()
-                    || declaration.value.identification.short_name.is_some();
-                let Some(endpoints) = endpoints.as_ref() else {
-                    self.push_unsupported(document, family, node.span.clone());
-                    return Ok(());
-                };
-                if declared_label || declaration.value.typing.is_some() {
-                    self.push_unsupported(document, family, node.span.clone());
-                    return Ok(());
-                }
-                (payload.as_ref(), endpoints)
-            }
+            } => (
+                Some(&declaration.value),
+                value.as_ref(),
+                payload.as_ref(),
+                endpoints.as_ref().as_ref(),
+            ),
         };
-        let (from, to) = (&endpoints.from, &endpoints.to);
+        let name = self
+            .intern_declaration_name(document, usage.and_then(|usage| usage.identification.name))?;
+        let short_name = self.intern_short_name(
+            document,
+            usage.and_then(|usage| usage.identification.short_name),
+        )?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Flow,
-            None,
+            name,
             node.span.clone(),
-            // `ast::FlowUsage` carries no modifier, multiplicity, direction, or short name; its
-            // payload/from/to facts are lowered as references.
             DeclarationFacts {
-                owned_end_feature_count: Some(2),
+                short_name,
+                modifiers: DeclarationModifiers {
+                    ordered: usage.is_some_and(|usage| usage.multiplicity_modifiers.is_ordered()),
+                    nonunique: usage.is_some_and(|usage| !usage.multiplicity_modifiers.is_unique()),
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(
+                    usage.and_then(|usage| usage.multiplicity.as_ref()),
+                ),
+                // KerML's `ownedEndFeatures` are the two typed `from`/`to` endpoints; a declared
+                // flow without them owns no end features of its own.
+                owned_end_feature_count: endpoints.map(|_| 2),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1506,6 +1505,12 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
+        if let Some(usage) = usage {
+            self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
+        }
+        if let Some(feature_value) = value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(payload) = payload {
             if let Some(type_name) = payload.value.type_name {
                 let span = self.documents[document.index()]
@@ -1526,8 +1531,93 @@ impl SemanticModelBuilder {
                 })?;
             }
         }
-        self.lower_kerml_connector_end(document, declaration, ReferenceKind::FlowSource, from)?;
-        self.lower_kerml_connector_end(document, declaration, ReferenceKind::FlowTarget, to)?;
+        if let Some(endpoints) = endpoints {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::FlowSource,
+                &endpoints.from,
+            )?;
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::FlowTarget,
+                &endpoints.to,
+            )?;
+        }
+        self.lower_definition_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a SysML `succession` usage (BNF `SuccessionUsage`: `'succession' UsageDeclaration?
+    /// 'first' ConnectorEndMember 'then' ConnectorEndMember UsageBody`) found in a connection,
+    /// occurrence, state, requirement or part-usage body, mirroring the KerML
+    /// `lower_kerml_succession_member`: an optionally named `Succession` declaration whose two
+    /// ends resolve as `Succession` references through `lower_succession_end` (a plain name or a
+    /// dotted chain), an optional `: Type` typing, and its body members through the shared
+    /// part-usage body dispatcher.
+    pub(crate) fn lower_succession_usage(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<SuccessionUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_short_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Succession,
+            name,
+            node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_succession_end(
+            document,
+            declaration,
+            family,
+            ReferenceKind::Succession,
+            &node.value.source,
+        )?;
+        self.lower_succession_end(
+            document,
+            declaration,
+            family,
+            ReferenceKind::Succession,
+            &node.value.target,
+        )?;
+        for element in node.value.body.members() {
+            self.lower_part_usage_body_element(document, declaration, family, element)?;
+        }
         Ok(())
     }
 
@@ -1575,17 +1665,16 @@ impl SemanticModelBuilder {
             PerformActionTarget::Action(declaration) => Some(declaration.as_ref()),
             PerformActionTarget::Reference { .. } => None,
         };
-        let name_text = declared
-            .and_then(|declaration| {
+        let name = self.intern_declaration_name(
+            document,
+            declared.and_then(|declaration| {
                 declaration
                     .value
                     .identification
                     .name
-                    .clone()
-                    .or_else(|| declaration.value.identification.short_name.clone())
-            })
-            .unwrap_or_default();
-        let name = self.intern_declared_name(&name_text)?;
+                    .or(declaration.value.identification.short_name)
+            }),
+        )?;
         let (is_abstract, variation) =
             definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1630,7 +1719,27 @@ impl SemanticModelBuilder {
                     self.lower_subsetting_relationship(document, declaration, relationship)?;
                 }
             }
-            PerformActionTarget::Reference { redefines, .. } => {
+            // `perform <path>;` is `PerformActionUsage`'s `OwnedReferenceSubsetting` alternative
+            // (SysML BNF 1411-1417, Pilot `SysML.xtext`), so the performed action is a `::>`
+            // reference-subsetting target -- the reference family `validatePerformActionUsageReference`
+            // (`checkReferenceType` in the Pilot) reads.
+            PerformActionTarget::Reference { action, redefines } => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*action)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::References,
+                    document,
+                    local: *action,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
                 if let Some(relationship) = redefines {
                     self.lower_subsetting_relationship(document, declaration, relationship)?;
                 }
@@ -1769,15 +1878,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<FlowDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1808,7 +1910,19 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
-        let DefinitionBody::Brace { elements, .. } = &node.value.body else {
+        self.lower_definition_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the members of a shared `DefinitionBody` (`';' | '{' DefinitionBodyItem* '}'`):
+    /// each `OccurrenceMember` through the occurrence-body dispatcher, recovery and
+    /// parser-unsupported members kept visible.
+    pub(crate) fn lower_definition_body(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        body: &DefinitionBody,
+    ) -> Result<(), ConstructionError> {
+        let DefinitionBody::Brace { elements, .. } = body else {
             return Ok(());
         };
         for element in elements {
@@ -1817,7 +1931,7 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span.clone());
                 }
                 DefinitionBodyElement::OccurrenceMember(member) => {
-                    self.lower_occurrence_body_element(document, declaration, member)?;
+                    self.lower_occurrence_body_element(document, owner, member)?;
                 }
                 DefinitionBodyElement::Unsupported(node) => self.push_unsupported(
                     document,

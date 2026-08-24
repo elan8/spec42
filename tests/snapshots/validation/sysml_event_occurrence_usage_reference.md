@@ -48,15 +48,15 @@ package Events {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 6 41) (end 6 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
+        (code "incompatible_subset_redefine_kind")
         (source "semantic")
         (range (start 9 40) (end 9 47))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_event_occurrence_usage_reference.md")
+            (range (start 3 8) (end 3 30))
+          )
+        )
       )
     )
   )
@@ -77,12 +77,14 @@ package Events {
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "reading")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::reading")))))
     (reference (id (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "milestone")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::milestone")))))
   )
   (relationships
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::milestone"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::milestone"))) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (provenance implied))
@@ -114,12 +116,12 @@ package Events {
 (navigation
   (query (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (range (start 9 40) (end 9 47)) (probe (position 9 40))
     (reference (id (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::bad"))) (kind referenceSubsetting) (ordinal 0) (authored-target "reading")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::reading")))))
     )
   )
   (query (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (range (start 6 41) (end 6 50)) (probe (position 6 41))
     (reference (id (source (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::good"))) (kind referenceSubsetting) (ordinal 0) (authored-target "milestone")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing::milestone")))))
     )
   )
 )

@@ -24,18 +24,6 @@ package Conjugation {
         (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
-        (range (start 5 1) (end 5 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 1) (end 5 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
         (range (start 7 1) (end 7 18))
       )
       (diagnostic
@@ -56,10 +44,15 @@ package Conjugation {
     (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (conjugation (reference "A")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::B"))) (kind conjugation) (ordinal 0))
+      (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A")))))
   )
   (relationships
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::B"))) (target (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::B"))) (kind conjugation) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A::f"))) (target (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A"))) (provenance implied))
   )
   (evaluation
@@ -77,5 +70,10 @@ package Conjugation {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/conjugation.md") (range (start 5 20) (end 5 21)) (probe (position 5 20))
+    (reference (id (source (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::B"))) (kind conjugation) (ordinal 0) (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation::A")))))
+    )
+  )
 )
 ~~~

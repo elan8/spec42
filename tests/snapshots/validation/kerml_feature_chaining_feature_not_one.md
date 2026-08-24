@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureChainingFeatureNotOne
-blocked_by=lowering-kerml-feature-relationships
+blocked_by=semantic-feature-chaining-rules
 type=file
 ~~~
 # SOURCE
@@ -48,12 +48,6 @@ package Chains {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 28) (end 8 39))
-      )
     )
   )
 )
@@ -77,7 +71,7 @@ package Chains {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing")))))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::pair"))) (kind featureChaining) (ordinal 0))
       (authored-target "outer::inner")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing::inner")))))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::single"))) (kind featureChaining) (ordinal 0))
       (authored-target "outer")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::outer")))))
@@ -87,6 +81,7 @@ package Chains {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::outer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind featureChaining) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::pair"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing::inner"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::pair"))) (kind featureChaining) (ordinal 0)))
     (relationship (kind featureChaining) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::single"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::outer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::single"))) (kind featureChaining) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing::inner"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder"))) (provenance implied))
@@ -106,9 +101,6 @@ package Chains {
       (type (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::pair")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder")))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::single")))
       (featured-by (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder")))
@@ -135,7 +127,7 @@ package Chains {
   )
   (query (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (range (start 8 28) (end 8 39)) (probe (position 8 28))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Holder::pair"))) (kind featureChaining) (ordinal 0) (authored-target "outer::inner")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (qualified-name "Chains::Thing::inner")))))
     )
   )
   (query (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md") (range (start 11 30) (end 11 35)) (probe (position 11 30))

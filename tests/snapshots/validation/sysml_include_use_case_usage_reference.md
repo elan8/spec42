@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.25.2:validateIncludeUseCaseUsageReference
-blocked_by=parser-gap-73-include-use-case-membership
 type=file
 ~~~
 # SOURCE
@@ -39,7 +38,13 @@ package UseCases {
         (severity warning)
         (code "use_case_include_invalid_target")
         (source "semantic")
-        (range (start 13 8) (end 13 31))
+        (range (start 13 16) (end 13 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_include_use_case_usage_reference.md")
+            (range (start 4 8) (end 4 31))
+          )
+        )
       )
     )
   )

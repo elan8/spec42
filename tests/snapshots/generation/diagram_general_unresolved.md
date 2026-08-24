@@ -40,7 +40,7 @@ package GeneralNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:7c82e002d36b6a557d6cf0a1e6087cb6b4ca94433ddfaf9184e7f52fe160f521") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7c82e002d36b6a557d6cf0a1e6087cb6b4ca94433ddfaf9184e7f52fe160f521") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_general_unresolved.md") (qualified-name "GeneralNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_general_unresolved.md") (path (named (kind package) (name "GeneralNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))

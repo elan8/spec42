@@ -34,15 +34,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ViewDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -169,8 +162,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserViewUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -308,7 +301,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserRenderingUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -412,15 +405,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<RenderingDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(

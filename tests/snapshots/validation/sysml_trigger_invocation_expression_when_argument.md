@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.17:validateTriggerInvocationExpressionWhenArgument
-blocked_by=parser-gap-76-action-body-members
+blocked_by=semantic-trigger-invocation-argument-typing
 type=file
 ~~~
 # SOURCE
@@ -43,18 +43,6 @@ package Triggers {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 3 8) (end 6 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 3 8) (end 6 8))
-      )
     )
   )
 )
@@ -62,14 +50,18 @@ package Triggers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:17b043642d050122c92d903d446076c906dd7f2f5085d39dc81f8b81c8562b8b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17b043642d050122c92d903d446076c906dd7f2f5085d39dc81f8b81c8562b8b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
   )
   (evaluation
   )
@@ -78,6 +70,12 @@ package Triggers {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_when_argument.md") (qualified-name "Triggers::Act")))
+    )
 )
 ~~~
 # NAVIGATION

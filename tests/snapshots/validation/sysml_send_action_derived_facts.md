@@ -37,17 +37,17 @@ package Actions { action def Procedure { action target; send 1 to target; } }
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "target")))))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (kind sendTarget) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0))
       (authored-target "target")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target")))))
   )
   (relationships
-    (relationship (kind sendTarget) (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (kind sendTarget) (ordinal 0)))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (provenance implied))
+    (relationship (kind sendTarget) (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target"))) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (provenance implied))
   )
   (evaluation
@@ -57,7 +57,7 @@ package Actions { action def Procedure { action target; send 1 to target; } }
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send")))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure")))
     )
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target")))
@@ -69,7 +69,7 @@ package Actions { action def Procedure { action target; send 1 to target; } }
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/sysml_send_action_derived_facts.md") (range (start 0 66) (end 0 72)) (probe (position 0 66))
-    (reference (id (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::send"))) (kind sendTarget) (ordinal 0) (authored-target "target")
+    (reference (id (source (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind action) (ordinal 0))))) (kind sendTarget) (ordinal 0) (authored-target "target")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::target")))))
     )
   )

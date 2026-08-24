@@ -33,18 +33,6 @@ package FlowUsageEndSpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_library_anchor")
-        (source "semantic")
-        (range (start 4 8) (end 4 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_library_anchor")
-        (source "semantic")
-        (range (start 4 8) (end 4 35))
-      )
     )
   )
 )
@@ -52,7 +40,7 @@ package FlowUsageEndSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:1c0f21d2266c5d2c8336ca3947e160c1e15e53065d121a89a5499945bc55acfc") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1c0f21d2266c5d2c8336ca3947e160c1e15e53065d121a89a5499945bc55acfc") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -73,6 +61,9 @@ package FlowUsageEndSpecializations {
     (relationship (kind flowTarget) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner::source"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner::source"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -95,9 +86,17 @@ package FlowUsageEndSpecializations {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (path (named (kind package) (name "FlowUsageEndSpecializations")) (named (kind action-def) (name "Owner")) (anonymous (kind flow) (ordinal 0)))))
+      (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner")))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Flow")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Message")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::MessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any))
@@ -106,7 +105,9 @@ package FlowUsageEndSpecializations {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::FlowTransfer")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::Transfer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner::source")))

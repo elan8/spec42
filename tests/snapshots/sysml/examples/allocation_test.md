@@ -105,7 +105,7 @@ package AllocationTest {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c26d93f48afb7e16dbdf626d3f719811fd741dd30cf67f6906c45bb44046f79a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocate) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (allocateSource (reference "l::component")) (allocateTarget (reference "p::assembly::element")))))
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocate) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (allocateSource (reference "l::component")) (allocateTarget (reference "p::assembly::element")))))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::A"))) (kind allocation-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component"))) (kind part) (membership (kind feature) (visibility default)))
@@ -124,10 +124,10 @@ package AllocationTest {
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (named (kind part) (name "p")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "element")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocateSource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateSource) (ordinal 0))
       (authored-target "l::component")
       (outcome (status resolved) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component")))))
-    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocateTarget) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateTarget) (ordinal 0))
       (authored-target "p::assembly::element")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical"))) (kind specialization) (ordinal 0))
@@ -171,7 +171,7 @@ package AllocationTest {
       (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind allocateSource) (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocateSource) (ordinal 0)))
+    (relationship (kind allocateSource) (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateSource) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical"))) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::logical"))) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::logical"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::physical"))) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Physical"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::physical"))) (kind featureTyping) (ordinal 0)))
@@ -276,12 +276,12 @@ package AllocationTest {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/allocation_test.md") (range (start 34 10) (end 34 21)) (probe (position 34 10))
-    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocateSource) (ordinal 0) (authored-target "l::component")
+    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateSource) (ordinal 0) (authored-target "l::component")
       (outcome (status resolved) (target (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component")))))
     )
   )
   (query (document "memory://snapshot/allocation_test.md") (range (start 34 25) (end 34 43)) (probe (position 34 25))
-    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::"))) (kind allocateTarget) (ordinal 0) (authored-target "p::assembly::element")
+    (reference (id (source (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateTarget) (ordinal 0) (authored-target "p::assembly::element")
       (outcome (status unresolved)))
     )
   )

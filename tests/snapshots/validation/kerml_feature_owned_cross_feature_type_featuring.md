@@ -36,12 +36,6 @@ package Crossings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 5 33) (end 5 39))
-      )
     )
   )
 )
@@ -61,7 +55,7 @@ package Crossings {
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::crossing"))) (kind crossSubsetting) (ordinal 0))
       (authored-target "source")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source")))))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Thing")))))
@@ -70,6 +64,7 @@ package Crossings {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Thing")))))
   )
   (relationships
+    (relationship (kind crossSubsetting) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::crossing"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::crossing"))) (kind crossSubsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::target"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::target"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::crossing"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link"))) (provenance implied))
@@ -109,7 +104,7 @@ package Crossings {
 (navigation
   (query (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (range (start 5 33) (end 5 39)) (probe (position 5 33))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::crossing"))) (kind crossSubsetting) (ordinal 0) (authored-target "source")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (qualified-name "Crossings::Link::source")))))
     )
   )
   (query (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (range (start 3 29) (end 3 34)) (probe (position 3 29))

@@ -40,7 +40,7 @@ package GeometryNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:05c5456db9aebfe18ff29f2c4a9d79e3df76921be8b9a4ff7d7c53f8dc54af22") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:05c5456db9aebfe18ff29f2c4a9d79e3df76921be8b9a4ff7d7c53f8dc54af22") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_geometry_unresolved.md") (qualified-name "GeometryNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_geometry_unresolved.md") (path (named (kind package) (name "GeometryNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))

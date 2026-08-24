@@ -661,6 +661,10 @@ pub struct SatisfyRelationship {
     pub satisfying_element: SatisfyEndpoint,
     pub polarity: SatisfyPolarity,
     pub provenance: RelationshipProvenance,
+    /// Whether the publication this relationship came from is incomplete -- parser recovery or
+    /// syntax the semantic model does not yet support, in the workspace or an admitted library.
+    /// The relationship itself is settled either way; the flag tells a guest that the set may
+    /// be smaller than the authored model.
     pub recovered: bool,
 }
 
@@ -684,6 +688,7 @@ pub struct RequirementVerification {
     pub requirement: VerificationRequirement,
     pub provenance: RelationshipProvenance,
     pub outcome: VerificationOutcome,
+    /// See [`SatisfyRelationship::recovered`].
     pub recovered: bool,
 }
 

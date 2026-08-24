@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.17:validateTriggerInvocationExpressionAtArgument
-blocked_by=parser-gap-76-action-body-members
+blocked_by=semantic-trigger-invocation-argument-typing
 type=file
 ~~~
 # SOURCE
@@ -53,18 +53,6 @@ package Triggers {
         (source "semantic")
         (range (start 3 32) (end 3 54))
       )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 7 8) (end 10 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 7 8) (end 10 8))
-      )
     )
   )
 )
@@ -72,15 +60,23 @@ package Triggers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:02e166546ba41c5d6b26cf5ef36f7469106adeec0709fc369f561d0547007102") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:02e166546ba41c5d6b26cf5ef36f7469106adeec0709fc369f561d0547007102") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "instant")))))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "reading")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Time::TimeInstantValue")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Reading"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "instant")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading")))))
     (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (kind featureTyping) (ordinal 0))
       (authored-target "Time::TimeInstantValue")
       (outcome (status unresolved)))
@@ -89,7 +85,11 @@ package Triggers {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Reading")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
   )
@@ -100,6 +100,12 @@ package Triggers {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act")))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant")))
       (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act")))
     )
@@ -117,6 +123,16 @@ package Triggers {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (range (start 7 18) (end 7 25)) (probe (position 7 18))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "instant")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (range (start 10 18) (end 10 25)) (probe (position 10 18))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0) (authored-target "reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::reading")))))
+    )
+  )
   (query (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (range (start 3 32) (end 3 54)) (probe (position 3 32))
     (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_at_argument.md") (qualified-name "Triggers::Act::instant"))) (kind featureTyping) (ordinal 0) (authored-target "Time::TimeInstantValue")
       (outcome (status unresolved)))

@@ -197,6 +197,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::AssumeConstraintUsage
         | K::RequireConstraintUsage
         | K::DefaultReferenceUsage
+        | K::ExtendedUsage
         | K::Assign
         | K::While
         | K::Loop

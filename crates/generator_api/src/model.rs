@@ -425,25 +425,37 @@ impl GeneratorModelView {
                 QueryOutcome::Resolved(Owned::Unresolved) | QueryOutcome::Unresolved => {
                     Wire::Unresolved
                 }
-                QueryOutcome::Resolved(Owned::Unsupported)
-                | QueryOutcome::Unsupported
-                | QueryOutcome::UnsupportedWith(_) => Wire::Unsupported,
-                QueryOutcome::Recovered(Owned::Resolved(reference)) => Wire::RecoveredResolved {
-                    definition: self.summary(reference.symbol)?,
-                    provenance: match reference.provenance {
-                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
-                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
-                    },
-                },
-                QueryOutcome::Recovered(Owned::Missing) => Wire::RecoveredMissing,
-                QueryOutcome::Recovered(Owned::Unresolved) => Wire::RecoveredUnresolved,
-                QueryOutcome::Recovered(Owned::Ambiguous(values)) => Wire::RecoveredAmbiguous {
-                    candidates: values
-                        .iter()
-                        .map(|value| self.summary(value))
-                        .collect::<Result<Vec<_>, _>>()?,
-                },
-                QueryOutcome::Recovered(Owned::Unsupported) => Wire::RecoveredUnsupported,
+                QueryOutcome::Resolved(Owned::Unsupported) | QueryOutcome::Unsupported => {
+                    Wire::Unsupported
+                }
+                // `Recovered` and `UnsupportedWith` are the two incomplete publications; the
+                // typing inside is settled either way, so both reach the guest as `Recovered*`,
+                // the wire's "settled, but the publication is not complete" family.
+                QueryOutcome::Recovered(Owned::Resolved(reference))
+                | QueryOutcome::UnsupportedWith(Owned::Resolved(reference)) => {
+                    Wire::RecoveredResolved {
+                        definition: self.summary(reference.symbol)?,
+                        provenance: match reference.provenance {
+                            RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                            RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                        },
+                    }
+                }
+                QueryOutcome::Recovered(Owned::Missing)
+                | QueryOutcome::UnsupportedWith(Owned::Missing) => Wire::RecoveredMissing,
+                QueryOutcome::Recovered(Owned::Unresolved)
+                | QueryOutcome::UnsupportedWith(Owned::Unresolved) => Wire::RecoveredUnresolved,
+                QueryOutcome::Recovered(Owned::Ambiguous(values))
+                | QueryOutcome::UnsupportedWith(Owned::Ambiguous(values)) => {
+                    Wire::RecoveredAmbiguous {
+                        candidates: values
+                            .iter()
+                            .map(|value| self.summary(value))
+                            .collect::<Result<Vec<_>, _>>()?,
+                    }
+                }
+                QueryOutcome::Recovered(Owned::Unsupported)
+                | QueryOutcome::UnsupportedWith(Owned::Unsupported) => Wire::RecoveredUnsupported,
                 QueryOutcome::Recovery => Wire::Recovery,
                 QueryOutcome::Ambiguous(values) => Wire::Ambiguous {
                     candidates: values
@@ -515,10 +527,16 @@ impl GeneratorModelView {
         use sysml_query::resolved_slice::{
             QueryOutcome, SatisfyEndpoint as OwnedEndpoint, SatisfyPolarity as OwnedPolarity,
         };
+        // `Recovered` and `UnsupportedWith` both carry every settled relationship of a
+        // publication that is not complete; `recovered` reports that incompleteness to the
+        // guest, exactly as the generic `outcome` helper below admits both for every other
+        // query. Only a query with no values at all is an error.
         let (relationships, recovered) = match self.model.inspection().satisfy_relationships() {
             QueryOutcome::Resolved(values) => (values, false),
-            QueryOutcome::Recovered(values) => (values, true),
-            QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
+            QueryOutcome::Recovered(values) | QueryOutcome::UnsupportedWith(values) => {
+                (values, true)
+            }
+            QueryOutcome::Unsupported => {
                 return Err(ModelQueryError::Unsupported("satisfy relationships".into()))
             }
             QueryOutcome::Unresolved => {
@@ -581,8 +599,10 @@ impl GeneratorModelView {
         };
         let (relationships, recovered) = match self.model.inspection().requirement_verifications() {
             QueryOutcome::Resolved(values) => (values, false),
-            QueryOutcome::Recovered(values) => (values, true),
-            QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
+            QueryOutcome::Recovered(values) | QueryOutcome::UnsupportedWith(values) => {
+                (values, true)
+            }
+            QueryOutcome::Unsupported => {
                 return Err(ModelQueryError::Unsupported(
                     "requirement verifications".into(),
                 ))

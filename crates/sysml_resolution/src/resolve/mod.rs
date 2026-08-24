@@ -139,6 +139,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             matches!(
                 reference.kind(),
                 ReferenceKind::Subclassification
+                    | ReferenceKind::Conjugation
                     | ReferenceKind::Unioning
                     | ReferenceKind::Intersecting
                     | ReferenceKind::Differencing
@@ -194,12 +195,24 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // Subclassification outcomes below), because both explicit redefinition (`:>> status = ...;`)
     // and subsetting of an inherited feature must be able to reach a same-named or differently-named
     // feature owned by an ancestor, not just a directly owned member.
+    // `ReferenceSubsetting` (`::>`/`references`), `CrossSubsetting` (`crosses`), a feature's
+    // `intersects` clause and `FeatureInverting` (`inverse of`) all name a feature through the
+    // same lexical lookup a `subsets` clause uses, so they share this pass; each keeps its own
+    // `ReferenceKind` so the published relationship never collapses into a plain subsetting.
     let subsetting_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Subsetting).then_some(index)
+            (matches!(
+                reference.kind(),
+                ReferenceKind::Subsetting
+                    | ReferenceKind::References
+                    | ReferenceKind::Crosses
+                    | ReferenceKind::Intersects
+                    | ReferenceKind::FeatureInverting
+            ) && !reference.flags().dotted)
+                .then_some(index)
         })
         .collect();
     let redefinition_slots: Vec<usize> = references
@@ -207,7 +220,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Redefinition).then_some(index)
+            (reference.kind() == ReferenceKind::Redefinition && !reference.flags().dotted)
+                .then_some(index)
         })
         .collect();
     // An alias target can be any element (not just a Type), so `AliasBinding` resolves against
@@ -297,6 +311,11 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::PerformParameterTarget
                     | ReferenceKind::FeatureChaining
             )
+            // A dotted `chains a.b` is a `FeatureChain`, resolved hop by hop below.
+            .then(|| {
+                !(reference.kind() == ReferenceKind::FeatureChaining && reference.flags().dotted)
+            })
+            .unwrap_or(false)
             .then_some(index)
         })
         .collect();
@@ -311,12 +330,24 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            matches!(
+            // A dotted subsetting-family target (`subsets a.b`, `crosses a.b`, `inverse of
+            // a.b`, `chains a.b`) is a KerML `FeatureChain`, walked hop by hop exactly like a
+            // member access; its `ReferenceKind` stays the authored relationship.
+            (matches!(
                 reference.kind(),
                 ReferenceKind::MemberAccessOperand
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
-            )
+            ) || (reference.flags().dotted
+                && matches!(
+                    reference.kind(),
+                    ReferenceKind::Subsetting
+                        | ReferenceKind::References
+                        | ReferenceKind::Crosses
+                        | ReferenceKind::Redefinition
+                        | ReferenceKind::FeatureInverting
+                        | ReferenceKind::FeatureChaining
+                )))
             .then_some(index)
         })
         .collect();
@@ -909,6 +940,8 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::TypeFeaturing
         | ReferenceKind::FeatureChaining
         | ReferenceKind::Subclassification
+        | ReferenceKind::Conjugation
+        | ReferenceKind::FeatureInverting
         | ReferenceKind::Subsetting
         | ReferenceKind::Redefinition
         | ReferenceKind::References
@@ -1072,6 +1105,7 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::CalcUsage
             | DeclarationKind::ReferenceUsage
             | DeclarationKind::DefaultReferenceUsage
+            | DeclarationKind::ExtendedUsage
             | DeclarationKind::ParameterUsage
             | DeclarationKind::SubjectUsage
             | DeclarationKind::PerformActionUsage

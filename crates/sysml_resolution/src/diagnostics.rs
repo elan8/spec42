@@ -397,9 +397,24 @@ semantic_diagnostic_codes! {
     /// A binary connection-like declaration has more than two ends.
     InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
         "This binary connection-like definition declares more than two ends.";
-    /// An end feature is derived, abstract or composite.
+    /// An end feature is derived, abstract, composite or portion.
     EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
-        "An end feature must not be derived, abstract or composite.";
+        "An end feature must not be derived, abstract, composite or portion.";
+    /// An end feature has an authored direction.
+    EndFeatureHasDirection => "end_feature_has_direction",
+        "An end feature must not have a direction.";
+    /// A feature owned by a metadata feature does not redefine a feature of the metaclass.
+    MetadataBodyFeatureInvalid => "metadata_body_feature_invalid",
+        "A feature owned by a metadata feature must redefine a feature of its metaclass.";
+    /// A non-port usage owned by a port definition is composite.
+    PortOwnedUsageComposite => "port_owned_usage_composite",
+        "A usage owned by a port definition must not be composite unless it is a port.";
+    /// A non-port usage nested in a port usage is composite.
+    PortNestedUsageComposite => "port_nested_usage_composite",
+        "A usage nested in a port usage must not be composite unless it is a port.";
+    /// A parallel state owns a transition or succession between its substates.
+    ParallelStateSubstateTransition => "parallel_state_substate_transition",
+        "A parallel state must not own transitions or successions between its substates.";
     /// A variant member's metaclass family is not the variation's.
     InvalidVariationMemberKind => "invalid_variation_member_kind",
         "A variant member must use the variation's own kind.";

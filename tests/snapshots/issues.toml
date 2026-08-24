@@ -169,12 +169,6 @@ owner = "spec42-semantic"
 summary = "Multiplicity remains a fact attached to its owning declaration rather than an independently addressable canonical Multiplicity element required by deriveTypeMultiplicity."
 
 [[issue]]
-id = "lowering-gap-type-conjugation-relationship-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Conjugation is not yet published as an independently addressable canonical relationship with its original Type endpoint required by deriveTypeOwnedConjugator."
-
-[[issue]]
 id = "lowering-gap-redefinition-end-feature-position"
 kind = "lowering_gap"
 owner = "spec42-semantic"
@@ -511,106 +505,52 @@ owner = "spec42-semantic"
 summary = "a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics"
 
 [[issue]]
-id = "parser-gap-59-directed-end-feature"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "parser gap 59 cannot represent an authored directed end feature"
-
-[[issue]]
 id = "parser-gap-62-kerml-flow"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "at pinned f52100f a KerML flow declaration parses and lowers, but a Flow with two payload features has no production: `flow of Thing of Thing from source to target;` is reported as recovered_calc_body_element, so the at-most-one-payload violation cannot be authored"
-
-[[issue]]
-id = "parser-gap-64-conjugation-declaration"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the parser models conjugation only as the `~T` conjugated-typing flag (TypingRelationship.is_conjugated); there is no conjugation-declaration production, so a conjugated specific type is reported as unsupported_grammar_form"
-
-[[issue]]
-id = "parser-gap-65-state-definition-parallel"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser accepts the `parallel` body modifier on a state usage (src/parser/state.rs) but not on a state def, so `state def Good parallel { ... }` -- valid per the StateDefBody production -- fails with missing_body_or_semicolon"
-
-[[issue]]
-id = "parser-gap-67-end-restriction-modifiers"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser accepts `const end feature` -- which publishes (modifiers end constant) -- but rejects `var end feature`, reporting unrecognized_declaration_in_scope, so the violating variable end feature never reaches semantics"
+summary = "at pinned 23913ee a KerML flow declaration parses and lowers in every form, but a Flow with two payload features has no production: `flow of Thing of Thing from source to target;` is reported as recovered_calc_body_element, so the at-most-one-payload violation cannot be authored"
 
 [[issue]]
 id = "parser-gap-69-connector-end-body"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "the pinned parser has no production for a binding connector with an end-feature body, so the three-ended binding never reaches semantics and is reported as unexpected_keyword_in_scope"
-
-[[issue]]
-id = "parser-gap-70-metadata-feature-body-member"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser has no production for a named feature inside a metadata feature body, so the invalid body member is reported as unrecognized_declaration_in_scope and never reaches semantics"
-
-[[issue]]
-id = "parser-gap-72-perform-action-usage"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned f52100f `perform <action usage>` parses in a part-definition body but is still recovered_action_body_element in an action-definition body, so neither the conforming nor the violating side of the reference form reaches semantics from an action def"
-
-[[issue]]
-id = "parser-gap-73-include-use-case-membership"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser has no production for an include use case member, so it is reported as unexpected_keyword_in_scope and never reaches semantics"
+summary = "at pinned 23913ee the parser has no production for a binding connector with an end-feature body, so the three-ended binding never reaches semantics and is reported as unexpected_keyword_in_scope"
 
 [[issue]]
 id = "parser-gap-74-require-constraint-membership"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "the pinned parser has no production for a `require constraint` member, so the accepted side is reported as parser recovery rather than a RequirementConstraintMembership"
-
-[[issue]]
-id = "parser-gap-75-port-owned-usage"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser has no production for a part usage inside a port definition body, so the composite member is reported as unexpected_keyword_in_scope and never reaches semantics"
+summary = "at pinned 23913ee `require constraint c : C;` parses and lowers inside a requirement-shaped body, but `part def H { require constraint c : C; }` is still unexpected_keyword_in_scope, so the invalid-owner side of validateRequirementConstraintMembershipOwningType cannot reach semantics"
 
 [[issue]]
 id = "parser-gap-76-action-body-members"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "at pinned f52100f the time-trigger accept spellings (`accept when <expr>;`, `accept at <expr>;`) and the shorthand `if <cond> then <a> else <b>;` are still recovered_action_body_element as action-body statements, though `accept <name>;` and `if <cond> then <a>;` now parse"
+summary = "at pinned 23913ee `accept when <expr>;` and `accept at <expr>;` parse and lower, but the shorthand `if <cond> then <a> else <b>;` is still recovered_action_body_element as an action-body statement"
 
 [[issue]]
 id = "parser-gap-77-transition-body-members"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "at pinned f52100f a transition effect action member is still recovered_state_body_element in a state body, and a `transition` member in an action body is unexpected_keyword_in_scope, so neither reaches semantic validation"
+summary = "at pinned 23913ee a transition effect action member is still recovered_state_body_element in a state body, and a `transition` member in an action body is unexpected_keyword_in_scope, so neither reaches semantic validation"
 
 [[issue]]
 id = "parser-gap-78-variation-forms"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "at pinned f52100f a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries, so the abstractness rules cannot be exercised"
+summary = "at pinned 23913ee a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries (and unsupported_grammar_form in an attribute body), so the abstractness rules cannot be exercised"
 
 [[issue]]
 id = "parser-gap-79-membership-owner-forms"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "at pinned f52100f an `expose` member in a package body is recovered_package_body_element, and `verify`/`render` members in a part-definition body are unexpected_keyword_in_scope, so the invalid-owner forms these rules validate cannot reach semantics"
+summary = "at pinned 23913ee an `expose` member in a package body is recovered_package_body_element, and `verify`/`render` members in a part-definition body are unexpected_keyword_in_scope, so the invalid-owner forms these rules validate cannot reach semantics"
 
 [[issue]]
 id = "parser-gap-52-var-modifier"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
-summary = "the pinned parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
-
-[[issue]]
-id = "parser-gap-80-state-usage-parallel-fact"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "the pinned parser accepts a StateUsage `parallel` or `initial` body modifier in src/parser/state.rs:484-491 but discards it before constructing ast::StateUsage, so consumers cannot publish the required isParallel fact without inspecting source text"
+summary = "at pinned 23913ee the parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
 
 [[issue]]
 id = "semantic-association-end-type-not-one"
@@ -811,12 +751,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule counts the individual occurrence definitions of an occurrence usage; the canonical code occurrence_multiple_individual_definitions does not exist yet"
 
 [[issue]]
-id = "semantic-parallel-state-substate-transition"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks whether the substates of a parallel state carry transitions; the canonical code parallel_state_substate_transition does not exist yet"
-
-[[issue]]
 id = "semantic-parameter-membership-invalid-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -893,3 +827,51 @@ id = "semantic-variable-feature-owner-not-occurrence"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule checks the owningType of a variable feature against Occurrences::Occurrence; the canonical code variable_feature_owner_not_occurrence does not exist yet"
+
+[[issue]]
+id = "abstract-syntax-nonrepresentable-second-conjugation"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "KerML `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one owned Conjugation per type declaration, so a second `conjugates` clause has no concrete-syntax spelling; the pinned parser reports `classifier Two conjugates A conjugates B;` as unsupported_grammar_form and the violating Type never reaches semantics"
+
+[[issue]]
+id = "abstract-syntax-nonrepresentable-variable-end"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "KerML's `EndFeaturePrefix` spells only `const? end` and `var` lives in the exclusive `BasicFeaturePrefix` alternative, while SysML's `RefPrefix` has no `var`/`variable` slot, so a variable end feature has no concrete-syntax spelling; the pinned parser reports `var end feature` as end_feature_invalid_prefix and the violating Feature never reaches semantics"
+
+[[issue]]
+id = "lowering-gap-kerml-relationship-declarations"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "the standalone KerML relationship declarations (`specialization`/`subclassifier`/`subtype`/`typing`/`subset`/`redefinition`/`disjoining`/`inverting`/`featuring`/`conjugation`, ast::KermlRelationshipDecl) are typed upstream but lower_package_element reports them as unsupported_package_member, so a Specialization whose specific type is conjugated never reaches validateSpecializationSpecificNotConjugated"
+
+[[issue]]
+id = "lowering-gap-binding-connector-accept-receiver-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "AcceptActionUsage receiver-argument and receiver-parameter endpoint facts are not jointly published with canonical BindingConnector pairs, preventing checkAcceptActionUsageReceiverBindingConnector; the `accept when`/`accept at` triggers themselves now parse and lower"
+
+[[issue]]
+id = "semantic-trigger-invocation-argument-typing"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "no semantic rule classifies a TriggerInvocationExpression argument as Boolean, ISQBase::DurationValue or Time::TimeInstantValue; the `accept when`/`accept at`/`accept after` triggers parse and lower, but the canonical codes trigger_when_argument_not_boolean, trigger_at_argument_not_time_instant and trigger_after_argument_not_duration do not exist yet"
+
+[[issue]]
+id = "lowering-gap-state-usage-specialization-facts"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "StateUsage isParallel is now published as the `parallel` modifier, but the StateSubactionKind role and library-anchor facts that checkStateUsageExclusiveStateSpecialization and checkStateUsageSubstateSpecialization evaluate over are not jointly published (specialization_check prerequisite StateSubactionKindAndLibraryAnchor)"
+
+[[issue]]
+id = "parser-gap-66-subsetting-clause-count"
+kind = "parser_gap"
+owner = "sysml-v2-parser"
+summary = "at pinned 23913ee `feature two crosses source crosses target;` and `feature tworef references a references b;` parse and both targets lower and resolve, but the pinned AST carries one SubsettingRelationship with a Vec of targets per feature, so the authored clause count is unobservable and the at-most-one-clause rules validateFeatureOwnedCrossSubsetting / validateFeatureOwnedReferenceSubsetting have no violating side"
+
+[[issue]]
+id = "semantic-feature-chaining-rules"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "a `chains` clause lowers and resolves as a featureChaining relationship, but no semantic rule counts chaining features, checks that each is featured within the previous, or rejects a self-chain; the canonical codes feature_chaining_single_operand, feature_chaining_not_featured_within_previous and feature_chaining_includes_self do not exist yet"

@@ -407,6 +407,7 @@ impl<D> SemanticModel<D> {
             (modifiers.portion, ElementModifier::Portion),
             (modifiers.var, ElementModifier::Var),
             (modifiers.member, ElementModifier::Member),
+            (modifiers.parallel, ElementModifier::Parallel),
             (modifiers.ordered, ElementModifier::Ordered),
             (modifiers.nonunique, ElementModifier::Nonunique),
         ]

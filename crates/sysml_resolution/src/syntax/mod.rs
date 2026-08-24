@@ -11,7 +11,7 @@
 //! [`SyntaxAuthority`] is the one place a document is parsed; [`ParsedSource`] is the memoised
 //! handle every syntax query and the semantic build share.
 
-use sysml_v2_parser::ast::{DeclarationName, QualifiedIdentification};
+use sysml_v2_parser::ast::{NamespaceName, QualifiedIdentification};
 use sysml_v2_parser::{ParsedDocument, RootElement};
 
 mod keywords;
@@ -39,8 +39,10 @@ fn declaration_name(
     identification: &QualifiedIdentification,
 ) -> Option<String> {
     match identification.name.as_ref()? {
-        DeclarationName::Simple(name) => Some(name.clone()),
-        DeclarationName::Qualified(name) => document
+        NamespaceName::Simple(name) => document
+            .decoded_declaration_name(*name)
+            .map(|name| name.into_owned()),
+        NamespaceName::Qualified(name) => document
             .qualified_declaration_name(*name)
             .map(|view| view.authored_text().to_string()),
     }

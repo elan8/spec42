@@ -114,6 +114,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::RenderingDefinition
         | ElementKind::MetadataDefinition
         | ElementKind::Definition
+        | ElementKind::Usage
         | ElementKind::Type
         | ElementKind::Classifier
         | ElementKind::Class

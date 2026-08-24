@@ -44,8 +44,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<SubjectDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -94,7 +94,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<StakeholderMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.declaration_name)?;
+        let name = self.intern_declaration_name(document, node.value.declaration_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -194,7 +194,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<RequirementActorDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -246,7 +246,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<ActorUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -301,7 +301,7 @@ impl SemanticModelBuilder {
         unsupported: UnsupportedFamily,
         node: &Node<FrameMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -608,22 +608,60 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         node: &Node<IncludeUseCase>,
     ) -> Result<(), ConstructionError> {
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(node.value.target)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::IncludeUseCase,
-            document,
-            local: node.value.target,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
+        match node.value.target {
+            // `include <ref>;`: a reference to an existing use case, sourced at the owner.
+            Some(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::IncludeUseCase,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            // `include use case <name> [: Type] ...;` (`IncludeUseCaseUsage`'s second
+            // alternative, SysML BNF 2300-2306): declares the included use case inline as a
+            // `UseCaseUsage` owned by the including case, with `IncludeUseCase` as its membership
+            // role -- the same shape `lower_satisfy` gives an inline requirement declaration.
+            None => {
+                let name = self.intern_short_name(document, node.value.name)?;
+                let included = self.push_typed_declaration(
+                    document,
+                    Some(declaration),
+                    DeclarationKind::UseCaseUsage,
+                    name,
+                    node.span.clone(),
+                    DeclarationFacts {
+                        multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                        ..DeclarationFacts::none()
+                    },
+                )?;
+                self.push_membership(
+                    included,
+                    MembershipKind::Feature,
+                    Visibility::Default,
+                    node.span.clone(),
+                )?;
+                if let Some(relationship) = &node.value.typing {
+                    self.lower_typing_relationship(document, included, relationship)?;
+                }
+                self.lower_case_family_def_body(
+                    document,
+                    included,
+                    &node.value.body,
+                    UnsupportedFamily::UseCaseDefinitionMember,
+                )?;
+            }
+        }
         Ok(())
     }
 
@@ -638,15 +676,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<RequirementDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -709,8 +740,28 @@ impl SemanticModelBuilder {
         kind: DeclarationKind,
         node: &Node<ParserRequirementUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        self.lower_requirement_usage_as_with_implicit_name(document, owner, kind, node, None)
+    }
+
+    /// Lowers the shared requirement-usage payload while keeping a grammar-owned implicit role
+    /// name separate from an authored declaration name. `objective { ... }` has no authored NAME,
+    /// but the ObjectiveMembership canonically names its owned requirement `objective`; parser AST
+    /// v240 correctly stopped fabricating that spelling in the syntax tree.
+    fn lower_requirement_usage_as_with_implicit_name(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        kind: DeclarationKind,
+        node: &Node<ParserRequirementUsage>,
+        implicit_name: Option<&str>,
+    ) -> Result<(), ConstructionError> {
+        let name = match node.value.name {
+            Some(name) => self.intern_declaration_name(document, Some(name))?,
+            None => implicit_name
+                .map(|name| self.intern_name(name))
+                .transpose()?,
+        };
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -864,8 +915,6 @@ impl SemanticModelBuilder {
                 // The usage families a `requirement def` body inherits from the general member
                 // grammar, admitted upstream in `ec47463` (planning/UPSTREAM_PARSER_GAPS.md gap 42).
                 // Each dispatches to the lowering its package- or part-level spelling already uses;
-                // `SuccessionUsage` has no lowering in any scope, so it reports unsupported here
-                // exactly as it does in part-usage and state-def bodies.
                 RequirementDefBodyElement::ActionUsage(node) => {
                     self.lower_action_usage(document, Some(owner), node)?;
                 }
@@ -887,8 +936,8 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Connect(node) => {
                     self.lower_bare_connect(document, owner, unsupported, node)?;
                 }
-                RequirementDefBodyElement::SuccessionUsage(_) => {
-                    self.push_unsupported(document, unsupported, element.span.clone())
+                RequirementDefBodyElement::SuccessionUsage(node) => {
+                    self.lower_succession_usage(document, owner, unsupported, node)?;
                 }
                 // The three member families upstream added to close the `requirement def` half of
                 // planning/UPSTREAM_PARSER_GAPS.md gap 42: a nested definition of the body's own
@@ -936,15 +985,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ViewpointDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -987,7 +1029,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserViewpointUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1069,7 +1111,7 @@ impl SemanticModelBuilder {
         } else {
             (DeclarationKind::ConcernUsage, MembershipKind::Feature)
         };
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         // `ast::ConcernUsage` carries no direction or short name.
         let declaration = self.push_typed_declaration(
             document,
@@ -1141,15 +1183,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<AnalysisCaseDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1215,15 +1250,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<CaseDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1274,7 +1302,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserAnalysisCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1337,7 +1365,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1405,7 +1433,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserUseCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1470,7 +1498,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserVerificationCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1537,15 +1565,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<VerificationCaseDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1595,15 +1616,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<UseCaseDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1733,7 +1747,13 @@ impl SemanticModelBuilder {
                 // is not threaded through; the nested node's own membership visibility is used as
                 // authored, mirroring other case-family wrapper nodes' out-of-scope facts.
                 UseCaseDefBodyElement::Objective(node) => {
-                    self.lower_requirement_usage(document, Some(owner), &node.value.requirement)?;
+                    self.lower_requirement_usage_as_with_implicit_name(
+                        document,
+                        Some(owner),
+                        DeclarationKind::RequirementUsage,
+                        &node.value.requirement,
+                        Some("objective"),
+                    )?;
                 }
                 UseCaseDefBodyElement::CaseReturnDecl(node) => {
                     self.lower_case_return_decl(document, owner, unsupported, node)?;
@@ -1760,7 +1780,7 @@ impl SemanticModelBuilder {
                     self.lower_then_action(document, owner, unsupported, node)?;
                 }
                 UseCaseDefBodyElement::FlowUsage(node) => {
-                    self.lower_flow_usage(document, owner, unsupported, node)?;
+                    self.lower_flow_usage(document, owner, node)?;
                 }
                 // Bare result expression in an analysis/case body (validation `10a`: `vehicle.
                 // mass`) -- mirrors `CalcDefBodyElement::Expression`'s identical shape: the

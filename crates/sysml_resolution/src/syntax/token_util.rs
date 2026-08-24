@@ -39,14 +39,33 @@ pub fn span_to_source_range(span: &Span) -> SyntaxRange {
     }
 }
 
-/// Returns the display name from Identification (name, or short_name, or empty string).
-pub fn identification_name(ident: &Identification) -> String {
+/// Returns the decoded display name from an `Identification` (name, or short name, or empty).
+pub fn identification_name(
+    document: &sysml_v2_parser::ParsedDocument,
+    ident: &Identification,
+) -> String {
     ident
         .name
-        .as_deref()
-        .or(ident.short_name.as_deref())
+        .or(ident.short_name)
+        .and_then(|name| document.decoded_declaration_name(name))
+        .map(|name| name.into_owned())
+        .unwrap_or_default()
+}
+
+/// The decoded text of an optional declaration name, or `None` when absent.
+pub fn declaration_name_text(
+    document: &sysml_v2_parser::ParsedDocument,
+    name: Option<sysml_v2_parser::ast::DeclarationName>,
+) -> Option<String> {
+    name.and_then(|name| document.decoded_declaration_name(name))
+        .map(|name| name.into_owned())
+}
+
+/// The authored source text under a span.
+pub fn span_text<'a>(source: &'a str, span: &Span) -> &'a str {
+    source
+        .get(span.offset..span.offset.saturating_add(span.len))
         .unwrap_or("")
-        .to_string()
 }
 
 /// Locate a whole-word occurrence of `word` inside `span` on a single source line.
@@ -103,20 +122,18 @@ pub fn push_ident_definition_spans(
     }
 }
 
-/// Push usage name/type ranges using parser spans when present, otherwise source lookup in the node span.
+/// Push usage name/type ranges: the name is its own span; the type uses the parser span when
+/// present, otherwise a source lookup within the node span.
 pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
     source: &str,
     node_span: &Span,
-    name: &str,
+    name: impl Into<Option<sysml_v2_parser::ast::DeclarationName>>,
     type_name: Option<&T>,
-    name_span: Option<&Span>,
     type_span: Option<&Span>,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
 ) {
-    if let Some(s) = name_span {
-        out.push((span_to_source_range(s), SyntaxRole::Property));
-    } else if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), name) {
-        out.push((r, SyntaxRole::Property));
+    if let Some(name) = name.into() {
+        out.push((span_to_source_range(name.span()), SyntaxRole::Property));
     }
     if let Some(s) = type_span {
         out.push((span_to_source_range(s), SyntaxRole::Type));
@@ -186,13 +203,15 @@ pub fn qualified_identification_name(
     document: &sysml_v2_parser::ParsedDocument,
     identification: &sysml_v2_parser::ast::QualifiedIdentification,
 ) -> String {
-    use sysml_v2_parser::ast::DeclarationName;
+    use sysml_v2_parser::ast::NamespaceName;
     match identification.name.as_ref() {
-        Some(DeclarationName::Simple(name)) => name.clone(),
-        Some(DeclarationName::Qualified(name)) => document
+        Some(NamespaceName::Simple(name)) => {
+            declaration_name_text(document, Some(*name)).unwrap_or_default()
+        }
+        Some(NamespaceName::Qualified(name)) => document
             .qualified_declaration_name(*name)
             .map(|view| view.authored_text().to_string())
             .unwrap_or_default(),
-        None => identification.short_name.clone().unwrap_or_default(),
+        None => declaration_name_text(document, identification.short_name).unwrap_or_default(),
     }
 }

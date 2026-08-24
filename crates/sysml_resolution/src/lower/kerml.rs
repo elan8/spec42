@@ -55,13 +55,12 @@ impl SemanticModelBuilder {
     /// Lowers the `FeatureRelationshipPart` list a KerML feature declaration carries.
     ///
     /// `unions`/`intersects`/`disjoint from`/`differences` reuse the existing type-relationship
-    /// lowering. `chains` and `featured by` lower to their own canonical relationship kinds;
+    /// lowering. `chains`, `featured by` and `inverse of` lower to their own canonical relationship kinds;
     /// `inverse of` remains explicitly unsupported because it needs a separate inverse-fact owner.
     pub(crate) fn lower_kerml_feature_relationship_parts(
         &mut self,
         document: DocumentIdx,
         source: DeclarationId,
-        family: UnsupportedFamily,
         parts: &[Node<FeatureRelationshipPart>],
     ) -> Result<(), ConstructionError> {
         for part in parts {
@@ -111,8 +110,23 @@ impl SemanticModelBuilder {
                         })?;
                     }
                 }
-                FeatureRelationshipPart::Inverting { .. } => {
-                    self.push_unsupported(document, family, part.span.clone());
+                FeatureRelationshipPart::Inverting { target } => {
+                    let span = self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(*target)
+                        .ok_or(ConstructionError::InvalidParserReference)?
+                        .metadata
+                        .span
+                        .clone();
+                    self.push_reference(PendingReference {
+                        source,
+                        kind: ReferenceKind::FeatureInverting,
+                        document,
+                        local: *target,
+                        flags: RelationshipFlags::default(),
+                        span,
+                        import: None,
+                    })?;
                 }
             }
         }
@@ -160,15 +174,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<KermlClassifierDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -198,6 +205,29 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
+        // `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (KerML BNF 462): the
+        // declared type is the `Conjugation`'s source (`conjugatedType`) and owner, so the
+        // relationship is one authored reference sourced here. `TypeDeclaration` makes it the
+        // exclusive alternative of `SpecializationPart`, which is why both are never lowered from
+        // one declaration. The `conjugates`/`~` spelling is emission provenance, not semantics.
+        if let Some(conjugation) = &node.value.conjugates {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(conjugation.value.target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Conjugation,
+                document,
+                local: conjugation.value.target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
@@ -225,7 +255,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<KermlFeature>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -284,7 +314,6 @@ impl SemanticModelBuilder {
         self.lower_kerml_feature_relationship_parts(
             document,
             declaration,
-            family,
             &node.value.relationship_parts,
         )?;
         if let Some(feature_value) = &node.value.value {
@@ -313,7 +342,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<KermlConnectorMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -386,7 +415,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<KermlBindingMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -475,7 +504,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<KermlSuccessionMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -527,7 +556,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<KermlInvariantMember>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -566,7 +595,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<OwnedCrossFeature>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),

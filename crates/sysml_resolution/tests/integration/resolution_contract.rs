@@ -4860,10 +4860,11 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
         TypeDerivedFactCollection::Multiplicity,
         TypeDerivedFactPrerequisite::MultiplicityIdentity,
     );
-    unsupported(
-        child,
-        TypeDerivedFactCollection::OwnedConjugator,
-        TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity,
+    // `ownedConjugator` is answered from the authored `conjugation` reference; a type that
+    // declares none has an empty value set, not a missing prerequisite.
+    assert!(
+        values(child, TypeDerivedFactCollection::OwnedConjugator).is_empty(),
+        "expected no owned conjugator for an unconjugated type"
     );
 
     assert_eq!(

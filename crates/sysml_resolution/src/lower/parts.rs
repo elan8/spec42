@@ -1,10 +1,13 @@
 //! Phase 2 lowering — structure: parts, attributes, items, enumerations, occurrences, parameters.
 
+use crate::lower::facts::basic_usage_prefix_modifiers;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::occurrence_prefix_direction;
+use crate::lower::facts::occurrence_prefix_is_variation;
 use crate::lower::facts::occurrence_prefix_modifiers;
 use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::DeclarationFacts;
@@ -25,10 +28,11 @@ use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, CaseReturnDecl,
     DefaultReferenceUsage, DefinitionBody, DefinitionBodyElement, DefinitionPrefix, EnumDef,
     EnumerationBody, EnumerationBodyElement, EnumerationUsage as ParserEnumerationUsage,
-    FeatureValue, InOut, InOutDecl, ItemDef, ItemUsage as ParserItemUsage,
+    ExtendedUsage, FeatureValue, InOut, InOutDecl, ItemDef, ItemUsage as ParserItemUsage,
     MembershipKind as ParserMembershipKind, Node, OccurrenceBodyElement, OccurrenceDef,
-    OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, PartDef, PartDefBody,
-    PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, RefDecl, ReturnDecl,
+    OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OccurrenceUsagePrefix,
+    OwnedCrossUsage, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+    PartUsageBodyElement, RefDecl, ReturnDecl, UnextendedUsagePrefix,
 };
 
 impl SemanticModelBuilder {
@@ -38,15 +42,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<PartDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -348,8 +345,10 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::AllocationUsage(node) => {
                         self.lower_allocation_usage(document, Some(declaration), node)?;
                     }
-                    PartDefBodyElement::MetadataKeywordUsage(_)
-                    | PartDefBodyElement::FlowUsage(_) => self.push_unsupported(
+                    PartDefBodyElement::FlowUsage(node) => {
+                        self.lower_flow_usage(document, declaration, node)?;
+                    }
+                    PartDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
@@ -371,8 +370,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<PartUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let facts = DeclarationFacts {
             short_name,
             modifiers: DeclarationModifiers {
@@ -380,7 +379,7 @@ impl SemanticModelBuilder {
                 nonunique: !node.value.multiplicity_modifiers.is_unique(),
                 ..occurrence_prefix_modifiers(&node.value.prefix)
             },
-            direction: direction_node_fact(node.value.prefix.basic.ref_prefix.direction.as_ref()),
+            direction: occurrence_prefix_direction(&node.value.prefix),
             multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
             ..DeclarationFacts::none()
         };
@@ -401,6 +400,7 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
         // family is unchanged by this fact family.
@@ -412,16 +412,7 @@ impl SemanticModelBuilder {
                 document,
                 declaration,
                 relationship,
-                matches!(
-                    node.value
-                        .prefix
-                        .basic
-                        .ref_prefix
-                        .variance
-                        .as_ref()
-                        .map(|prefix| prefix.value),
-                    Some(DefinitionPrefix::Variation)
-                ),
+                occurrence_prefix_is_variation(&node.value.prefix),
                 None,
             )?;
         }
@@ -470,6 +461,9 @@ impl SemanticModelBuilder {
             }
             PartUsageBodyElement::PartUsage(part) => {
                 self.lower_part_usage(document, Some(owner), part)?;
+            }
+            PartUsageBodyElement::ExtendedUsage(usage) => {
+                self.lower_extended_usage(document, Some(owner), usage)?;
             }
             PartUsageBodyElement::Import(import) => {
                 self.lower_import(document, Some(owner), import)?;
@@ -615,9 +609,13 @@ impl SemanticModelBuilder {
             PartUsageBodyElement::RenderingUsage(node) => {
                 self.lower_rendering_usage(document, Some(owner), node)?;
             }
-            PartUsageBodyElement::FlowUsage(_)
-            | PartUsageBodyElement::SuccessionUsage(_)
-            | PartUsageBodyElement::MetadataKeywordUsage(_)
+            PartUsageBodyElement::FlowUsage(node) => {
+                self.lower_flow_usage(document, owner, node)?;
+            }
+            PartUsageBodyElement::SuccessionUsage(node) => {
+                self.lower_succession_usage(document, owner, family, node)?;
+            }
+            PartUsageBodyElement::MetadataKeywordUsage(_)
             | PartUsageBodyElement::IncludeUseCase(_) => {
                 self.push_unsupported(document, family, element.span.clone())
             }
@@ -641,10 +639,10 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<RefDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let (is_abstract, variation) =
             definition_prefix_modifiers(node.value.usage_prefix.as_ref());
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -704,14 +702,165 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `#Tag+ <name> ...` extended usage (BNF `ExtendedUsage`, SysML 341): a
+    /// `DeclarationKind::ExtendedUsage` declaration carrying the `end`/basic prefix modifiers,
+    /// one `MetadataAnnotation` reference per extension keyword, the `UsageDeclaration`'s
+    /// clauses, the authored value spelling, and its `PartUsageBody` members through the same
+    /// dispatcher a `part` usage body uses.
+    pub(crate) fn lower_extended_usage(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        node: &Node<ExtendedUsage>,
+    ) -> Result<(), ConstructionError> {
+        let usage = &node.value.declaration.value;
+        let name = self.intern_declaration_name(document, usage.identification.name)?;
+        let short_name = self.intern_short_name(document, usage.identification.short_name)?;
+        let (modifiers, direction, variation, cross) = match &node.value.prefix {
+            UnextendedUsagePrefix::End(end) => (
+                DeclarationModifiers {
+                    end: true,
+                    ..DeclarationModifiers::default()
+                },
+                None,
+                false,
+                end.cross.as_deref(),
+            ),
+            UnextendedUsagePrefix::Basic(basic) => (
+                basic_usage_prefix_modifiers(basic),
+                direction_node_fact(basic.ref_prefix.direction.as_ref()),
+                matches!(
+                    basic
+                        .ref_prefix
+                        .variance
+                        .as_ref()
+                        .map(|prefix| prefix.value),
+                    Some(DefinitionPrefix::Variation)
+                ),
+                None,
+            ),
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ExtendedUsage,
+            name,
+            node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    ordered: usage.multiplicity_modifiers.is_ordered(),
+                    nonunique: !usage.multiplicity_modifiers.is_unique(),
+                    ..modifiers
+                },
+                direction,
+                multiplicity: multiplicity_facts(usage.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(cross) = cross {
+            self.lower_owned_cross_usage(document, declaration, cross)?;
+        }
+        self.lower_usage_extension_keywords(document, declaration, &node.value.extension_keywords)?;
+        self.lower_usage_declaration_clauses(document, declaration, usage, variation, direction)?;
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
+        for element in node.value.body.members() {
+            self.lower_part_usage_body_element(
+                document,
+                declaration,
+                UnsupportedFamily::PartUsageMember,
+                element,
+            )?;
+        }
+        Ok(())
+    }
+
+    /// Lowers what an `OccurrenceUsagePrefix` *owns* beyond its modifier flags: the
+    /// `EndUsagePrefix`'s optional `OwnedCrossFeatureMember` and the trailing
+    /// `UsageExtensionKeyword*` run. Called by every usage family that spells the prefix, right
+    /// after its own declaration and membership exist to own them.
+    pub(crate) fn lower_occurrence_prefix_members(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        prefix: &OccurrenceUsagePrefix,
+    ) -> Result<(), ConstructionError> {
+        if let Some(cross) = prefix.end().and_then(|end| end.cross.as_deref()) {
+            self.lower_owned_cross_usage(document, declaration, cross)?;
+        }
+        self.lower_usage_extension_keywords(document, declaration, &prefix.extension_keywords)
+    }
+
+    /// Lowers `OwnedCrossFeature : ReferenceUsage = BasicUsagePrefix UsageDeclaration` (SysML
+    /// BNF 293), the cross feature an `end` usage owns (`end [1] part bead : TireBead;`, `end
+    /// theCauses [*] occurrence theCause :> causes;`), as a `ReferenceUsage` owned by the end --
+    /// the SysML counterpart of `lower_kerml_owned_cross_feature`. Its `crossFeature` role is
+    /// the owning membership; see `lowering-gap-specialization-cross-feature-projection`.
+    pub(crate) fn lower_owned_cross_usage(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<OwnedCrossUsage>,
+    ) -> Result<(), ConstructionError> {
+        let usage = &node.value.declaration.value;
+        let name = self.intern_declaration_name(document, usage.identification.name)?;
+        let short_name = self.intern_short_name(document, usage.identification.short_name)?;
+        let direction = direction_node_fact(node.value.prefix.ref_prefix.direction.as_ref());
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ReferenceUsage,
+            name,
+            node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    ordered: usage.multiplicity_modifiers.is_ordered(),
+                    nonunique: !usage.multiplicity_modifiers.is_unique(),
+                    ..basic_usage_prefix_modifiers(&node.value.prefix)
+                },
+                direction,
+                multiplicity: multiplicity_facts(usage.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        let variation = matches!(
+            node.value
+                .prefix
+                .ref_prefix
+                .variance
+                .as_ref()
+                .map(|prefix| prefix.value),
+            Some(DefinitionPrefix::Variation)
+        );
+        self.lower_usage_declaration_clauses(document, declaration, usage, variation, direction)
+    }
+
     pub(crate) fn lower_attribute_usage(
         &mut self,
         document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<AttributeUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let facts = DeclarationFacts {
@@ -827,8 +976,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<AttributeDef>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -872,108 +1021,115 @@ impl SemanticModelBuilder {
             return Ok(());
         };
         for element in elements {
-            match &element.value {
-                AttributeBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
-                }
-                AttributeBodyElement::DefaultReferenceUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::AttributeMember,
-                        node.span.clone(),
-                    );
-                }
-                AttributeBodyElement::VariantUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::AttributeMember,
-                        node.span.clone(),
-                    );
-                }
-                AttributeBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(
-                        document,
-                        Some(owner),
-                        UnsupportedFamily::AttributeMember,
-                        member,
-                    )?;
-                }
-                AttributeBodyElement::AttributeDef(attribute) => {
-                    self.lower_attribute_def(document, Some(owner), attribute)?;
-                }
-                AttributeBodyElement::AttributeUsage(attribute) => {
-                    self.lower_attribute_usage(document, Some(owner), attribute)?;
-                }
-                AttributeBodyElement::PartUsage(part) => {
-                    self.lower_part_usage(document, Some(owner), part)?;
-                }
-                AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
-                    self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
-                }
-                AttributeBodyElement::ItemUsage(item_usage) => {
-                    self.lower_item_usage(document, Some(owner), item_usage)?;
-                }
-                AttributeBodyElement::AssertConstraint(node) => self
-                    .lower_assert_constraint_member(
-                        document,
-                        owner,
-                        UnsupportedFamily::AttributeMember,
-                        node,
-                    )?,
-                AttributeBodyElement::RefDecl(node) => {
-                    self.lower_ref_decl(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::Connect(node) => {
-                    self.lower_bare_connect(
-                        document,
-                        owner,
-                        UnsupportedFamily::AttributeMember,
-                        node,
-                    )?;
-                }
-                AttributeBodyElement::Bind(node) => {
-                    self.lower_bind(document, owner, UnsupportedFamily::AttributeMember, node)?;
-                }
-                AttributeBodyElement::Connection(node) => {
-                    self.lower_connection_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::ConstraintUsage(node) => {
-                    self.lower_constraint_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::CalcDef(node) => {
-                    self.lower_calc_def(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::CalcUsage(node) => {
-                    self.lower_calc_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::KermlClassifier(node) => {
-                    self.lower_kerml_classifier_decl(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::KermlConnector(node) => {
-                    self.lower_kerml_connector_member(document, owner, node)?;
-                }
-                AttributeBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
+            self.lower_attribute_body_element(document, owner, element)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers one member of an `AttributeBody` -- the shared type-body dispatcher `attribute def`,
+    /// `metadata def`, `item def` and a `MetadataBody`'s `DefinitionMember` alternative all
+    /// reach.
+    pub(crate) fn lower_attribute_body_element(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        element: &Node<AttributeBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            AttributeBodyElement::Error(error) => {
+                self.push_recovery(document, error.span.clone());
+            }
+            AttributeBodyElement::DefaultReferenceUsage(node) => {
+                self.lower_default_reference_usage(
                     document,
                     Some(owner),
                     UnsupportedFamily::AttributeMember,
                     node,
-                )?,
-                AttributeBodyElement::Invariant(node) => {
-                    self.lower_kerml_invariant_member(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::Unsupported(node) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                ),
-                AttributeBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                )?;
+            }
+            AttributeBodyElement::VariantUsage(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(
                     document,
                     UnsupportedFamily::AttributeMember,
-                    element.span.clone(),
-                ),
+                    node.span.clone(),
+                );
             }
+            AttributeBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(owner),
+                    UnsupportedFamily::AttributeMember,
+                    member,
+                )?;
+            }
+            AttributeBodyElement::AttributeDef(attribute) => {
+                self.lower_attribute_def(document, Some(owner), attribute)?;
+            }
+            AttributeBodyElement::AttributeUsage(attribute) => {
+                self.lower_attribute_usage(document, Some(owner), attribute)?;
+            }
+            AttributeBodyElement::PartUsage(part) => {
+                self.lower_part_usage(document, Some(owner), part)?;
+            }
+            AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
+                self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
+            }
+            AttributeBodyElement::ItemUsage(item_usage) => {
+                self.lower_item_usage(document, Some(owner), item_usage)?;
+            }
+            AttributeBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
+                document,
+                owner,
+                UnsupportedFamily::AttributeMember,
+                node,
+            )?,
+            AttributeBodyElement::RefDecl(node) => {
+                self.lower_ref_decl(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::Connect(node) => {
+                self.lower_bare_connect(document, owner, UnsupportedFamily::AttributeMember, node)?;
+            }
+            AttributeBodyElement::Bind(node) => {
+                self.lower_bind(document, owner, UnsupportedFamily::AttributeMember, node)?;
+            }
+            AttributeBodyElement::Connection(node) => {
+                self.lower_connection_usage(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::ConstraintUsage(node) => {
+                self.lower_constraint_usage(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::CalcDef(node) => {
+                self.lower_calc_def(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::CalcUsage(node) => {
+                self.lower_calc_usage(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::KermlClassifier(node) => {
+                self.lower_kerml_classifier_decl(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::KermlConnector(node) => {
+                self.lower_kerml_connector_member(document, owner, node)?;
+            }
+            AttributeBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
+                document,
+                Some(owner),
+                UnsupportedFamily::AttributeMember,
+                node,
+            )?,
+            AttributeBodyElement::Invariant(node) => {
+                self.lower_kerml_invariant_member(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::Unsupported(node) => self.push_unsupported(
+                document,
+                UnsupportedFamily::ParserUnsupported,
+                node.span.clone(),
+            ),
+            AttributeBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                document,
+                UnsupportedFamily::AttributeMember,
+                element.span.clone(),
+            ),
         }
         Ok(())
     }
@@ -988,15 +1144,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<EnumDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1057,11 +1206,8 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<sysml_v2_parser::ast::EnumeratedValue>,
     ) -> Result<(), ConstructionError> {
-        let name = match node.value.identification.name.as_deref() {
-            Some(name) => self.intern_declared_name(name)?,
-            None => None,
-        };
-        let short_name = self.intern_short_name(node.value.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.value.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1108,7 +1254,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserEnumerationUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1165,15 +1311,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ItemDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1222,7 +1361,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<DefaultReferenceUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1276,8 +1415,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserItemUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1291,9 +1430,7 @@ impl SemanticModelBuilder {
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                direction: direction_node_fact(
-                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
-                ),
+                direction: occurrence_prefix_direction(&node.value.prefix),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -1307,6 +1444,7 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
         // family is unchanged by this fact family.
@@ -1327,16 +1465,7 @@ impl SemanticModelBuilder {
                 document,
                 local: type_name,
                 flags: RelationshipFlags {
-                    variation: matches!(
-                        node.value
-                            .prefix
-                            .basic
-                            .ref_prefix
-                            .variance
-                            .as_ref()
-                            .map(|prefix| prefix.value),
-                        Some(DefinitionPrefix::Variation)
-                    ),
+                    variation: occurrence_prefix_is_variation(&node.value.prefix),
                     ..RelationshipFlags::default()
                 },
                 span,
@@ -1378,7 +1507,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<InOutDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1483,8 +1612,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ReturnDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1565,7 +1694,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<CaseReturnDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.declaration_name)?;
+        let name = self.intern_declaration_name(document, node.value.declaration_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1658,15 +1787,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<OccurrenceDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1801,9 +1923,16 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::OccurrenceDefinitionMember,
                 node,
             )?,
-            OccurrenceBodyElement::MetadataKeywordUsage(_)
-            | OccurrenceBodyElement::FlowUsage(_)
-            | OccurrenceBodyElement::SuccessionUsage(_) => self.push_unsupported(
+            OccurrenceBodyElement::FlowUsage(node) => {
+                self.lower_flow_usage(document, owner, node)?
+            }
+            OccurrenceBodyElement::SuccessionUsage(node) => self.lower_succession_usage(
+                document,
+                owner,
+                UnsupportedFamily::OccurrenceDefinitionMember,
+                node,
+            )?,
+            OccurrenceBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::OccurrenceDefinitionMember,
                 element.span.clone(),
@@ -1829,8 +1958,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserOccurrenceUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1843,10 +1972,8 @@ impl SemanticModelBuilder {
                     event: node.value.is_event,
                     ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                portion_kind: portion_kind_node_fact(node.value.prefix.portion.as_ref()),
-                direction: direction_node_fact(
-                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
-                ),
+                portion_kind: portion_kind_node_fact(node.value.prefix.portion()),
+                direction: occurrence_prefix_direction(&node.value.prefix),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -1860,6 +1987,7 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
         // family is unchanged by this fact family.

@@ -18,12 +18,35 @@ use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     DoAction, EntryAction, ExhibitState as ParserExhibitState, ExitAction, Expression, FinalState,
-    MembershipKind as ParserMembershipKind, Node, QualifiedReferenceId, Span, StateDef,
-    StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, ThenStmt, Transition,
-    TransitionAccept, TransitionEffect,
+    MembershipKind as ParserMembershipKind, Node, QualifiedReferenceId, Span, StateBodyModifier,
+    StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, ThenStmt,
+    Transition, TransitionAccept, TransitionEffect,
 };
 
+/// `StateDefinition::isParallel` / `StateUsage::isParallel` from the authored body modifier.
+fn state_body_is_parallel(modifier: Option<&Node<StateBodyModifier>>) -> bool {
+    matches!(modifier, Some(node) if node.value == StateBodyModifier::Parallel)
+}
+
 impl SemanticModelBuilder {
+    /// Publishes the part of a state body modifier that is not a SysML fact. `parallel` is
+    /// `isParallel` and is recorded as a declaration modifier by the caller; the pinned parser's
+    /// `initial` body modifier has no production in `StateDefBody`/`StateUsageBody` (SysML BNF
+    /// 1192: `( isParallel ?= 'parallel' )?`), so it is kept visible as unsupported syntax rather
+    /// than invented into a semantic fact or silently dropped.
+    pub(crate) fn lower_state_body_modifier(
+        &mut self,
+        document: DocumentIdx,
+        family: UnsupportedFamily,
+        modifier: Option<&Node<StateBodyModifier>>,
+    ) {
+        if let Some(node) = modifier {
+            if node.value == StateBodyModifier::Initial {
+                self.push_unsupported(document, family, node.span.clone());
+            }
+        }
+    }
+
     /// Lowers a `state def` (BNF StateDefinition), mirroring `lower_action_def`: ownership,
     /// membership, an optional `:>` specialization relationship, and owned declarations.
     /// State-machine-specific semantics (entry/do/exit action bindings, transitions, exclusive/
@@ -35,15 +58,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<StateDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -54,11 +70,17 @@ impl SemanticModelBuilder {
                 short_name,
                 modifiers: DeclarationModifiers {
                     individual: node.value.is_individual,
+                    parallel: state_body_is_parallel(node.value.body_modifier.as_ref()),
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
             },
         )?;
+        self.lower_state_body_modifier(
+            document,
+            UnsupportedFamily::StateDefinitionMember,
+            node.value.body_modifier.as_ref(),
+        );
         self.push_membership(
             declaration,
             MembershipKind::Owning,
@@ -78,8 +100,7 @@ impl SemanticModelBuilder {
     /// members (BNF `StateDefBodyElement`): nested state/requirement usages, entry/do/exit action
     /// bindings, `then`/`final` state markers, `ref` bindings, and transitions are all lowered.
     /// `StateDefBodyElement` also carries `AttributeUsage`/`ActionUsage`/`AssertConstraint`/
-    /// `SuccessionUsage` variants; the first three dispatch to their existing lowerings here, and
-    /// a `succession` member stays on `unsupported_state_definition_member`.
+    /// `SuccessionUsage` variants, each dispatching to its existing lowering.
     pub(crate) fn lower_state_def_body(
         &mut self,
         document: DocumentIdx,
@@ -166,8 +187,13 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::StateDefinitionMember,
                         node,
                     )?,
-                StateDefBodyElement::SuccessionUsage(_)
-                | StateDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                StateDefBodyElement::SuccessionUsage(node) => self.lower_succession_usage(
+                    document,
+                    owner,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node,
+                )?,
+                StateDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
                     element.span.clone(),
@@ -359,7 +385,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<FinalState>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.state_name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.state_name))?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -422,13 +448,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<Transition>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -646,7 +666,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserStateUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -659,6 +679,7 @@ impl SemanticModelBuilder {
                     individual: node.value.is_individual,
                     derived: node.value.is_derived,
                     reference: node.value.is_reference,
+                    parallel: state_body_is_parallel(node.value.body_modifier.as_ref()),
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
@@ -666,6 +687,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
+        self.lower_state_body_modifier(
+            document,
+            UnsupportedFamily::StateDefinitionMember,
+            node.value.body_modifier.as_ref(),
+        );
         self.push_membership(
             declaration,
             MembershipKind::Feature,
@@ -702,7 +728,7 @@ impl SemanticModelBuilder {
             self.push_unsupported(document, unsupported_family, node.span.clone());
             return Ok(());
         }
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,

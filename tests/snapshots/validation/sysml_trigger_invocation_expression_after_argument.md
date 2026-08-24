@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.17:validateTriggerInvocationExpressionAfterArgument
-blocked_by=parser-gap-76-action-body-members
+blocked_by=semantic-trigger-invocation-argument-typing
 type=file
 ~~~
 # SOURCE
@@ -53,18 +53,6 @@ package Triggers {
         (source "semantic")
         (range (start 3 33) (end 3 51))
       )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 7 8) (end 10 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 7 8) (end 10 8))
-      )
     )
   )
 )
@@ -72,15 +60,23 @@ package Triggers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b1d63eb15740fff6262b52f62e626ee1735c6d4ddfce53bec94aa94fad63744b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b1d63eb15740fff6262b52f62e626ee1735c6d4ddfce53bec94aa94fad63744b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "duration")))))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "reading")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::DurationValue")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "duration")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading")))))
     (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::DurationValue")
       (outcome (status unresolved)))
@@ -89,7 +85,11 @@ package Triggers {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (provenance implied))
   )
@@ -100,6 +100,12 @@ package Triggers {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act")))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration")))
       (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act")))
     )
@@ -117,6 +123,16 @@ package Triggers {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (range (start 7 21) (end 7 29)) (probe (position 7 21))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "duration")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (range (start 10 21) (end 10 28)) (probe (position 10 21))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (path (named (kind package) (name "Triggers")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 1))))) (kind expressionOperand) (ordinal 0) (authored-target "reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading")))))
+    )
+  )
   (query (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (range (start 3 33) (end 3 51)) (probe (position 3 33))
     (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::DurationValue")
       (outcome (status unresolved)))

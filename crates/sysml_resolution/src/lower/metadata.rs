@@ -29,15 +29,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<MetadataDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -82,7 +75,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserMetadataUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -151,6 +144,18 @@ impl SemanticModelBuilder {
                 }
                 MetadataBodyElement::Usage(usage) => {
                     self.lower_metadata_body_usage(document, owner, usage)?;
+                }
+                // `MetadataBody`'s `DefinitionMember` alternative shares `metadata def`'s member
+                // dispatcher, so a nested declaration lowers exactly as it would in a `metadata
+                // def` body (SysML BNF 1677).
+                MetadataBodyElement::Definition(element) => {
+                    self.lower_attribute_body_element(document, owner, element)?;
+                }
+                MetadataBodyElement::Alias(alias) => {
+                    self.lower_alias_def(document, Some(owner), alias)?;
+                }
+                MetadataBodyElement::Import(import) => {
+                    self.lower_import(document, Some(owner), import)?;
                 }
             }
         }
@@ -254,13 +259,13 @@ impl SemanticModelBuilder {
                 .declared_name
                 .as_ref()
                 .map(|declared| &declared.value.identification);
-            let name = identification
-                .and_then(|identification| identification.name.as_deref())
-                .filter(|name| !name.is_empty())
-                .map(|name| self.intern_name(name))
-                .transpose()?;
+            let name = self.intern_declaration_name(
+                document,
+                identification.and_then(|identification| identification.name),
+            )?;
             let short_name = self.intern_short_name(
-                identification.and_then(|identification| identification.short_name.as_ref()),
+                document,
+                identification.and_then(|identification| identification.short_name),
             )?;
             let annotation_scope = self.push_typed_declaration(
                 document,

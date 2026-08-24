@@ -473,6 +473,8 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::TypeFeaturing
             | ReferenceKind::FeatureChaining
             | ReferenceKind::Subclassification
+            | ReferenceKind::Conjugation
+            | ReferenceKind::FeatureInverting
             | ReferenceKind::Subsetting
             | ReferenceKind::Redefinition
             | ReferenceKind::References

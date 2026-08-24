@@ -581,15 +581,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ConstraintDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -721,8 +714,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserConstraintUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -797,13 +790,7 @@ impl SemanticModelBuilder {
             self.push_unsupported(document, family, node.span.clone());
             return Ok(());
         }
-        let name = node
-            .value
-            .declaration_name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
+        let name = self.intern_declaration_name(document, node.value.declaration_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -876,13 +863,7 @@ impl SemanticModelBuilder {
             self.push_unsupported(document, family, node.span.clone());
             return Ok(());
         }
-        let name = node
-            .value
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -904,6 +885,11 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
+        // `require constraint c : C;` -- `ConstraintUsageDeclaration` is an ordinary
+        // `UsageDeclaration` (SysML BNF 2066-2071), so the declared usage may be typed.
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
 
@@ -919,15 +905,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<CalcDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -976,12 +955,7 @@ impl SemanticModelBuilder {
                     // `lower_flow_usage` an action body uses rather than being reported as an
                     // unsupported member.
                     CalcDefBodyElement::FlowUsage(node) => {
-                        self.lower_flow_usage(
-                            document,
-                            declaration,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            node,
-                        )?;
+                        self.lower_flow_usage(document, declaration, node)?;
                     }
                     CalcDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
@@ -1109,15 +1083,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserCalcUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
