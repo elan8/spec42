@@ -306,7 +306,13 @@ impl<'ast> Visit<'ast> for RelationshipProjectionAttributeVisitor {
 
 fn visit_production_modules(root: &Path, visit: &mut impl FnMut(&Path)) {
     for entry in fs::read_dir(root).expect("read production module directory") {
-        let path = entry.expect("read directory entry").path();
+        let entry = entry.expect("read directory entry");
+        if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+            // A symlinked directory is scratch or tooling state, never a repository source,
+            // and following one can loop.
+            continue;
+        }
+        let path = entry.path();
         if is_excluded(&path) {
             continue;
         }
@@ -363,8 +369,12 @@ fn repository_root() -> PathBuf {
 
 fn visit_repository_rust_files(root: &Path, visit: &mut impl FnMut(&Path)) {
     for entry in fs::read_dir(root).expect("read repository crate directory") {
-        let path = entry.expect("read repository crate entry").path();
-        if path.file_name().is_some_and(|name| name == "target") {
+        let entry = entry.expect("read repository crate entry");
+        if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+            continue;
+        }
+        let path = entry.path();
+        if path.file_name().is_some_and(|name| name == "target" || name == ".cache") {
             continue;
         }
         if path.is_dir() {

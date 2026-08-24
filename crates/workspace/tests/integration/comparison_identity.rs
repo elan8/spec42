@@ -1,9 +1,7 @@
 ﻿use workspace::{compare_snapshots, IdentityPreservationStatus};
 
-#[path = "support/comparison_fixtures.rs"]
-mod comparison_fixtures;
 
-use comparison_fixtures::{load_snapshot, test_engine};
+use crate::comparison_fixtures::{load_snapshot, test_engine};
 use tempfile::tempdir;
 
 #[test]

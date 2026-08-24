@@ -180,6 +180,11 @@ fn visit_rust_files(root: &Path, visit: &mut dyn FnMut(&Path)) {
         .flatten()
     {
         let path = entry.path();
+        if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+            // A symlinked directory is scratch or tooling state, never a repository source,
+            // and following one can loop.
+            continue;
+        }
         let name = entry.file_name();
         if path.is_dir() {
             if !matches!(
@@ -212,6 +217,11 @@ fn visit_markdown(root: &Path, visit: &mut dyn FnMut(&Path)) {
         .flatten()
     {
         let path = entry.path();
+        if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+            // A symlinked directory is scratch or tooling state, never a repository source,
+            // and following one can loop.
+            continue;
+        }
         if path.is_dir() {
             visit_markdown(&path, visit);
         } else if path.extension().is_some_and(|extension| extension == "md") {

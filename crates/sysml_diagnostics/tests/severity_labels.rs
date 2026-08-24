@@ -53,8 +53,13 @@ fn collect_rust_sources(directory: &Path, output: &mut Vec<PathBuf>) {
     };
     for entry in entries.flatten() {
         let path = entry.path();
+        if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+            // A symlinked directory is scratch or tooling state, never a repository source,
+            // and following one can loop.
+            continue;
+        }
         if path.is_dir() {
-            if path.file_name().is_some_and(|name| name == "target") {
+            if path.file_name().is_some_and(|name| name == "target" || name == ".cache") {
                 continue;
             }
             collect_rust_sources(&path, output);

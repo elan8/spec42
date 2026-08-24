@@ -46,12 +46,17 @@ fn manifests(root: &Path) -> Vec<PathBuf> {
         };
         for entry in entries.flatten() {
             let path = entry.path();
+            if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+                // A symlinked directory is scratch or tooling state, never a repository source,
+                // and following one can loop.
+                continue;
+            }
             let name = entry.file_name();
             let name = name.to_string_lossy();
             if path.is_dir() {
                 if matches!(
                     name.as_ref(),
-                    "target" | ".git" | ".claude" | "node_modules"
+                    "target" | ".git" | ".claude" | ".cache" | "node_modules"
                 ) {
                     continue;
                 }
@@ -119,6 +124,11 @@ fn parser_lines_with_aliases(manifest: &Path, aliases: &[String]) -> Vec<String>
         .filter(|line| {
             let line = line.trim();
             if line.starts_with('#') {
+                return false;
+            }
+            // A profile override (`[profile.<name>.package.<crate>]`) tunes how a crate is
+            // compiled; it is not a dependency and names no source of the parser.
+            if line.starts_with("[profile.") {
                 return false;
             }
             line.contains(PARSER_PACKAGE)
