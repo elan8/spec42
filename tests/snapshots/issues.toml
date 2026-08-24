@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-argument-identities"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Action argument expressions are not published as ordered canonical identities for exact Actions argument derivations."
-
-[[issue]]
 id = "lowering-gap-action-input-parameter-identities"
 kind = "lowering_gap"
 owner = "spec42-semantic"

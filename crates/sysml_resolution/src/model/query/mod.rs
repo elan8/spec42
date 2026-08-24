@@ -1483,9 +1483,9 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(RequirementDerivedFactOutcome::Elements(values))
     }
 
-    /// The exact Actions derivation boundary.  The current model preserves selected action forms
-    /// and references but not the normative ordered argument/input-parameter or inherited-usage
-    /// identities, so this returns the first unavailable canonical fact rather than guessing.
+    /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
+    /// sites guaranteed by assignment/for-loop lowering resolve here; other collections return
+    /// their first unavailable canonical prerequisite rather than guessing.
     pub(crate) fn action_derived_fact(
         &self,
         symbol: SymbolId,
@@ -1513,6 +1513,33 @@ impl<D> SemanticModel<D> {
             );
             return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
         }
+        let source_kind = self
+            .storage
+            .declaration(declaration)
+            .map(|value| value.kind);
+        let argument_position = match (collection, source_kind) {
+            (
+                ActionDerivedFactCollection::AssignmentTargetArgument,
+                Some(DeclarationKind::Assign),
+            )
+            | (ActionDerivedFactCollection::ForLoopSeqArgument, Some(DeclarationKind::ForLoop)) => {
+                Some(1)
+            }
+            (
+                ActionDerivedFactCollection::AssignmentValueExpression,
+                Some(DeclarationKind::Assign),
+            ) => Some(2),
+            _ => None,
+        };
+        if let Some(position) = argument_position {
+            return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(
+                vec![crate::ActionArgumentId {
+                    action: symbol,
+                    position,
+                }]
+                .into_boxed_slice(),
+            ));
+        }
         let prerequisite = match collection {
             ActionDerivedFactCollection::AssignmentReferent => {
                 ActionDerivedFactPrerequisite::OwnedMembershipIdentity
@@ -1521,7 +1548,9 @@ impl<D> SemanticModel<D> {
                 ActionDerivedFactPrerequisite::OrderedOwnedFeatureIdentity
             }
             ActionDerivedFactCollection::LoopBodyAction
+            | ActionDerivedFactCollection::AcceptPayloadArgument
             | ActionDerivedFactCollection::AcceptPayloadParameter
+            | ActionDerivedFactCollection::AcceptReceiverArgument
             | ActionDerivedFactCollection::WhileArgument
             | ActionDerivedFactCollection::UntilArgument
             | ActionDerivedFactCollection::IfThenAction
@@ -1536,12 +1565,12 @@ impl<D> SemanticModel<D> {
                 ActionDerivedFactPrerequisite::ActionMetaclassIdentity
             }
             ActionDerivedFactCollection::ActionDefinitionAction => unreachable!(),
-            _ => ActionDerivedFactPrerequisite::OrderedActionArgumentIdentity,
+            ActionDerivedFactCollection::AssignmentValueExpression
+            | ActionDerivedFactCollection::AssignmentTargetArgument
+            | ActionDerivedFactCollection::ForLoopSeqArgument => {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
         };
-        let _source_kind = self
-            .storage
-            .declaration(declaration)
-            .map(|value| value.kind);
         self.resolved_outcome(ActionDerivedFactOutcome::Unsupported { prerequisite })
     }
 

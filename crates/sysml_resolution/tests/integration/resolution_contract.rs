@@ -5098,6 +5098,70 @@ fn action_definition_action_selects_action_subtypes_from_the_effective_usage_clo
 }
 
 #[test]
+fn action_argument_identities_are_owned_ordered_and_schedule_independent() {
+    let document = "memory://actions.sysml";
+    let sources = [(
+        document,
+        "package Actions { action def Procedure { attribute target; assign target := 1; for item in (2) { action step; } } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let arguments = |published: &PublishedResolution| {
+        let entries = settled(published.document_symbols(document));
+        let action = |kind| {
+            entries
+                .iter()
+                .find(|entry| {
+                    settled(published.element_details(entry.identity))
+                        .inspection
+                        .kind
+                        == kind
+                })
+                .expect("lowered action")
+                .identity
+        };
+        let assign = action(ElementKind::AssignmentActionUsage);
+        let for_loop = action(ElementKind::ForLoopActionUsage);
+        [
+            published.action_derived_fact(
+                assign,
+                ActionDerivedFactCollection::AssignmentTargetArgument,
+            ),
+            published.action_derived_fact(
+                assign,
+                ActionDerivedFactCollection::AssignmentValueExpression,
+            ),
+            published
+                .action_derived_fact(for_loop, ActionDerivedFactCollection::ForLoopSeqArgument),
+        ]
+    };
+    let actual = arguments(&sequential);
+    let positions = actual
+        .iter()
+        .map(|outcome| match outcome {
+            QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(arguments)) => {
+                assert_eq!(arguments.len(), 1);
+                arguments[0].position
+            }
+            other => panic!("expected one canonical action argument identity, got {other:?}"),
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(positions, [1, 2, 1]);
+    assert_eq!(actual, arguments(&parallel));
+    assert_eq!(actual, arguments(&warm));
+
+    let procedure = identity_of(&sequential, document, "Actions::Procedure");
+    assert_eq!(
+        sequential.action_derived_fact(
+            procedure,
+            ActionDerivedFactCollection::AssignmentTargetArgument,
+        ),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
+    );
+}
+
+#[test]
 fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
     let published = detail_publication(
         &[ (

@@ -63,7 +63,7 @@ mod type_query;
 mod verification;
 
 pub use action_query::{
-    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
+    ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite,
 };
 pub use definition_usage_query::{

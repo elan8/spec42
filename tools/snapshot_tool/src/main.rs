@@ -5653,6 +5653,13 @@ fn compare_action_derived_fact_observation(
                 expected: None,
             },
         ) if !values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Arguments(values),
+                expected: None,
+            },
+        ) if !values.is_empty() => Ok(()),
         _ => Err(format!(
             "semantic Action fact expectation for {} did not match its typed outcome",
             expectation.source
