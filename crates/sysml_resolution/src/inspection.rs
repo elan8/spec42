@@ -151,6 +151,16 @@ pub struct SymbolEntry {
     pub declaration_range: TextRange,
 }
 
+/// One published element together with its authored-source provenance.
+///
+/// This is the canonical whole-publication traversal item. The provenance comes from the admitted
+/// document fact; consumers must not reconstruct it from a URI or package name.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublishedElement {
+    pub entry: SymbolEntry,
+    pub source: crate::ElementSource,
+}
+
 impl SymbolEntry {
     /// What to call this element in text a person reads.
     ///

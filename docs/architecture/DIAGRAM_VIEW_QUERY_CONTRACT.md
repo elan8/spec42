@@ -9,8 +9,8 @@ or ordering from labels.
 Every catalog entry shares a typed public semantic reference, standard view kind, authored display
 name, source URI/range, and completeness. Named elements use a document-scoped qualified name;
 authoritative tooling/library IDs may be used when published; unnamed elements use an explicit
-source/ownership anchor. Internal `SymbolIdentity` encodings never cross into diagram JSON. Every
-projection repeats its public reference and carries ordered
+source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
+never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
 is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.

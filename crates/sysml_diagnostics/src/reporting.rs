@@ -71,6 +71,9 @@ fn project(diagnostic: &Diagnostic, uri: &Url) -> SemanticDiagnostic {
         .to_string(),
         code: diagnostic.code().as_str().to_string(),
         message: diagnostic.message().to_string(),
+        unresolved_reference_target: diagnostic
+            .payload()
+            .map(|payload| payload.unresolved_reference_target().to_string()),
         related_information: diagnostic
             .related()
             .filter_map(|related| {

@@ -273,7 +273,7 @@ standard library package TradeStudies {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ed7630da059a289077f7d826fedb85589e626714badf7c70b4674d942fb5ff7") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ed7630da059a289077f7d826fedb85589e626714badf7c70b4674d942fb5ff7") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package provides a simple framework for defining trade-off study analysis cases.\n\t "))))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

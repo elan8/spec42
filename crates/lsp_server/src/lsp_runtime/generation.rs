@@ -260,21 +260,33 @@ impl GeneratorService {
         publication: Arc<PublishedModel>,
     ) -> Result<Arc<GeneratorModelView>, String> {
         let publication_identity = publication.publication().model_digest();
-        let mut models = self
-            .models
-            .lock()
-            .map_err(|_| "generator model cache is unavailable".to_owned())?;
-        if let Some(model) = models.get(&publication_identity) {
-            return Ok(Arc::clone(model));
+        {
+            let models = self
+                .models
+                .lock()
+                .map_err(|_| "generator model cache is unavailable".to_owned())?;
+            if let Some(model) = models.get(&publication_identity) {
+                return Ok(Arc::clone(model));
+            }
         }
+
+        // Building the boundary adapter walks the publication. Keep that work outside the cache
+        // lock so unrelated generation requests can continue using already-prepared views.
         let model = Arc::new(GeneratorModelView::new(
             Arc::clone(&publication),
             &publication_identity,
             env!("CARGO_PKG_VERSION"),
             QueryLimits::default(),
         ));
-        if models.len() == MAX_MODEL_VIEWS {
-            models.clear();
+        let mut models = self
+            .models
+            .lock()
+            .map_err(|_| "generator model cache is unavailable".to_owned())?;
+        if let Some(existing) = models.get(&publication_identity) {
+            return Ok(Arc::clone(existing));
+        }
+        if models.len() >= MAX_MODEL_VIEWS {
+            evict_one(&mut models);
         }
         models.insert(publication_identity, Arc::clone(&model));
         Ok(model)
@@ -295,24 +307,35 @@ impl GeneratorService {
         }
         let digest = format!("sha256:{:x}", Sha256::digest(module_bytes));
         let prepare_started = Instant::now();
-        let (prepared, prepared_reused) = {
+        let cached = {
+            let cache = self
+                .prepared
+                .lock()
+                .map_err(|_| "generator preparation cache is unavailable".to_owned())?;
+            cache.get(&digest).cloned()
+        };
+        let (prepared, prepared_reused) = if let Some(prepared) = cached {
+            (prepared, true)
+        } else {
+            // Wasmtime preparation can compile the module. Do not serialize that work behind the
+            // cache mutex; after construction, recheck in case another request won the race.
+            let candidate = Arc::new(
+                self.runtime
+                    .prepare(module_bytes)
+                    .map_err(|error| error.to_string())?,
+            );
             let mut cache = self
                 .prepared
                 .lock()
                 .map_err(|_| "generator preparation cache is unavailable".to_owned())?;
-            if let Some(prepared) = cache.get(&digest) {
-                (Arc::clone(prepared), true)
+            if let Some(existing) = cache.get(&digest) {
+                (Arc::clone(existing), true)
             } else {
-                let prepared = Arc::new(
-                    self.runtime
-                        .prepare(module_bytes)
-                        .map_err(|error| error.to_string())?,
-                );
-                if cache.len() == MAX_PREPARED_MODULES {
-                    cache.clear();
+                if cache.len() >= MAX_PREPARED_MODULES {
+                    evict_one(&mut cache);
                 }
-                cache.insert(digest.clone(), Arc::clone(&prepared));
-                (prepared, false)
+                cache.insert(digest.clone(), Arc::clone(&candidate));
+                (candidate, false)
             }
         };
         let module_prepare_ms = prepare_started.elapsed().as_millis();
@@ -419,11 +442,33 @@ impl GeneratorService {
     }
 }
 
+/// Remove one exact-identity entry without turning a capacity miss into a full-cache flush.
+/// Lexicographic selection keeps eviction deterministic; cache contents never affect semantics.
+fn evict_one<V>(cache: &mut HashMap<String, V>) {
+    if let Some(key) = cache.keys().min().cloned() {
+        cache.remove(&key);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use spec42_generator_protocol::COMPATIBILITY_TOKEN;
     use sysml_query::source::{SourceKind, SourceService};
+
+    #[test]
+    fn bounded_cache_evicts_one_deterministic_entry() {
+        let mut cache = HashMap::from([
+            ("b".to_owned(), 2),
+            ("a".to_owned(), 1),
+            ("c".to_owned(), 3),
+        ]);
+        evict_one(&mut cache);
+        assert_eq!(cache.len(), 2);
+        assert!(!cache.contains_key("a"));
+        assert_eq!(cache.get("b"), Some(&2));
+        assert_eq!(cache.get("c"), Some(&3));
+    }
 
     fn publication() -> Arc<PublishedModel> {
         sysml_query::Services::new()

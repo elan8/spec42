@@ -36,7 +36,7 @@ package SatisfyPolaritySpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:035c9ace5a4fd3467d0db77331ca0f06f722f743cc3fd9787579fa2ea5a9b188") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:035c9ace5a4fd3467d0db77331ca0f06f722f743cc3fd9787579fa2ea5a9b188") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_satisfy_polarity_specialization.md") (qualified-name "SatisfyPolaritySpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_satisfy_polarity_specialization.md") (path (named (kind package) (name "SatisfyPolaritySpecialization")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "Safety")) (satisfyTarget (reference "Vehicle")))))

@@ -310,7 +310,7 @@ impl ExpressionIndex {
                 document: token.document,
                 ordinal: token.ordinal,
                 text: token.text,
-                span: token.span.clone(),
+                span: token.span,
                 outcome: catalog.resolve(storage, token.text),
             })
             .collect::<Vec<_>>();
@@ -352,7 +352,7 @@ impl ExpressionIndex {
             invocations.push(SettledInvocation {
                 declaration: invocation.declaration,
                 document: invocation.document,
-                span: invocation.span.clone(),
+                span: invocation.span,
                 callee,
                 supplied: invocation.argument_count,
                 required: parameters.get(callee.index()).copied().unwrap_or_default(),

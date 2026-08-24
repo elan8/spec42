@@ -1522,3 +1522,63 @@ fn affected_documents_are_transitive_across_public_imports_and_aliases() {
         vec!["memory://b.sysml", "memory://c.sysml"]
     );
 }
+
+#[test]
+fn all_elements_is_the_canonical_ordered_union_of_typed_searches() {
+    let sources = vec![
+        SourceInput::new(
+            "memory://z-workspace.sysml",
+            "package Workspace { part def Vehicle; }".into(),
+            SourceKind::Workspace,
+        ),
+        SourceInput::new(
+            "memory://a-library.sysml",
+            "package Library { attribute def Mass; }".into(),
+            SourceKind::StandardLibrary,
+        ),
+    ];
+    let published =
+        build(BuildRequest::new(sources, ConstructionSchedule::Sequential, "contract-v1").unwrap())
+            .unwrap();
+    let all = settled(published.all_elements());
+
+    assert_eq!(all.len(), 4);
+    assert_eq!(all[0].source, ElementSource::StandardLibrary);
+    assert_eq!(all[0].entry.name.as_deref(), Some("Library"));
+    assert_eq!(all[1].source, ElementSource::StandardLibrary);
+    assert_eq!(all[1].entry.name.as_deref(), Some("Mass"));
+    assert_eq!(all[2].source, ElementSource::Workspace);
+    assert_eq!(all[2].entry.name.as_deref(), Some("Workspace"));
+    assert_eq!(all[3].source, ElementSource::Workspace);
+    assert_eq!(all[3].entry.name.as_deref(), Some("Vehicle"));
+
+    let all_ids = all
+        .iter()
+        .map(|element| element.entry.identity)
+        .collect::<Vec<_>>();
+    for source in [
+        ElementSource::Workspace,
+        ElementSource::StandardLibrary,
+        ElementSource::Library,
+        ElementSource::External,
+    ] {
+        for &kind in ElementKind::ALL {
+            for entry in settled(published.search_elements(ElementSearch { kind, source })) {
+                let element = all
+                    .iter()
+                    .find(|element| element.entry.identity == entry.identity)
+                    .expect("each filtered entry belongs to the whole-publication traversal");
+                assert_eq!(element.source, source);
+                assert_eq!(element.entry, entry);
+            }
+        }
+    }
+    assert_eq!(
+        all_ids.len(),
+        all_ids
+            .iter()
+            .collect::<std::collections::BTreeSet<_>>()
+            .len(),
+        "the traversal publishes each declaration exactly once"
+    );
+}

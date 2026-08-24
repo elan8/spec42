@@ -117,6 +117,7 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                payload: None,
                 message: DiagnosticCode::AttributeValueTypeIncompatible
                     .describe()
                     .into(),
@@ -154,6 +155,7 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                payload: None,
                 message: DiagnosticCode::AssignmentValueIncompatible
                     .describe()
                     .into(),
@@ -224,6 +226,7 @@ impl<D> SemanticModel<D> {
             };
             match &unit.outcome {
                 UnitOutcome::UnknownSymbol => diagnostics.push(Diagnostic {
+                    payload: None,
                     message: DiagnosticCode::UnknownUnitSymbol.describe().into(),
                     code: DiagnosticCode::UnknownUnitSymbol,
                     severity: DiagnosticSeverity::Warning,
@@ -238,6 +241,7 @@ impl<D> SemanticModel<D> {
                         related.push(self.related_declaration(*candidate, RELATED_UNIT_CANDIDATE)?);
                     }
                     diagnostics.push(Diagnostic {
+                        payload: None,
                         message: DiagnosticCode::AmbiguousUnitSymbol.describe().into(),
                         code: DiagnosticCode::AmbiguousUnitSymbol,
                         severity: DiagnosticSeverity::Warning,
@@ -279,6 +283,7 @@ impl<D> SemanticModel<D> {
                         related.push(self.related_declaration(*want, RELATED_EXPECTED_DIMENSION)?);
                     }
                     diagnostics.push(Diagnostic {
+                        payload: None,
                         message: DiagnosticCode::IncompatibleUnitDimension.describe().into(),
                         code: DiagnosticCode::IncompatibleUnitDimension,
                         severity: DiagnosticSeverity::Warning,
@@ -344,6 +349,7 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                payload: None,
                 message: code.describe().into(),
                 code,
                 severity: DiagnosticSeverity::Warning,
@@ -383,6 +389,7 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                payload: None,
                 message: DiagnosticCode::CalculationArgumentsIncomplete
                     .describe()
                     .into(),

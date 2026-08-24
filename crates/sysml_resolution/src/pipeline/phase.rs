@@ -31,7 +31,6 @@ use crate::lower::storage::ParsedSources;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::Indexed;
 use crate::model::resolver::NotYetDiagnosed;
-use crate::model::resolver::PublicationCompleteness;
 use crate::model::resolver::PublicationMetadata;
 use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
@@ -46,6 +45,7 @@ use crate::resolve::resolve_dense;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::SolverStatus;
+use sysml_contract::PublicationCompleteness;
 
 /// Phase 2's product: the frozen storage of authored facts, plus the parse product the phases
 /// after it still read.

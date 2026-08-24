@@ -36,7 +36,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::MetadataDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -53,7 +53,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -81,7 +81,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::MetadataUsage,
             name,
-            node.span.clone(),
+            node.span,
             // `ast::MetadataUsage` carries no modifier, multiplicity, direction, or short name.
             DeclarationFacts::none(),
         )?;
@@ -92,7 +92,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(type_reference) = node.value.type_reference {
             let span = self.documents[document.index()]
@@ -100,8 +100,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_reference)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -132,7 +131,7 @@ impl SemanticModelBuilder {
         for element in elements {
             match &element.value {
                 MetadataBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
+                    self.push_recovery(document, error.span);
                 }
                 MetadataBodyElement::Annotating(member) => {
                     self.lower_annotating_member(
@@ -176,22 +175,21 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::AttributeUsage,
             None,
-            node.span.clone(),
+            node.span,
             DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(node.value.target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::Redefinition,
@@ -228,8 +226,7 @@ impl SemanticModelBuilder {
             .qualified_reference(node.value.type_reference)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: owner,
             kind: ReferenceKind::MetadataAnnotation,
@@ -272,7 +269,7 @@ impl SemanticModelBuilder {
                 Some(owner),
                 DeclarationKind::MetadataUsage,
                 name,
-                node.span.clone(),
+                node.span,
                 DeclarationFacts {
                     short_name,
                     ..DeclarationFacts::none()
@@ -282,7 +279,7 @@ impl SemanticModelBuilder {
                 annotation_scope,
                 MembershipKind::Feature,
                 Visibility::Default,
-                node.span.clone(),
+                node.span,
             )?;
             self.lower_metadata_body(document, annotation_scope, &node.value.body)?;
         }

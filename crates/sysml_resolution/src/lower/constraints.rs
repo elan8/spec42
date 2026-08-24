@@ -92,8 +92,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::ExpressionOperand,
@@ -107,14 +106,9 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(
-                        declaration,
-                        document,
-                        &chain,
-                        node.span.clone(),
-                    )?;
+                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
                 } else {
-                    self.push_unsupported(document, family, node.span.clone());
+                    self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
             }
@@ -141,13 +135,7 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span.clone(),
-                )?;
+                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
@@ -192,7 +180,7 @@ impl SemanticModelBuilder {
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
-                self.push_unsupported(document, family, node.span.clone());
+                self.push_unsupported(document, family, node.span);
                 Ok(())
             }
         }
@@ -253,8 +241,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::ExpressionOperand,
@@ -268,14 +255,9 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(
-                        declaration,
-                        document,
-                        &chain,
-                        node.span.clone(),
-                    )?;
+                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
                 } else {
-                    self.push_unsupported(document, family, node.span.clone());
+                    self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
             }
@@ -297,13 +279,7 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span.clone(),
-                )?;
+                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
@@ -348,7 +324,7 @@ impl SemanticModelBuilder {
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
-                self.push_unsupported(document, family, node.span.clone());
+                self.push_unsupported(document, family, node.span);
                 Ok(())
             }
         }
@@ -395,7 +371,7 @@ impl SemanticModelBuilder {
         let Some(text) = quantity_unit_text(&parsed, &operands.value) else {
             return Ok(());
         };
-        self.push_unit_token(declaration, document, &text, operands.span.clone())
+        self.push_unit_token(declaration, document, &text, operands.span)
     }
 
     /// Lowers one authored `filter` condition: its references, and the classified expression that
@@ -419,14 +395,7 @@ impl SemanticModelBuilder {
             .copied()
             .unwrap_or(0);
         let predicate = classify_filter_predicate(&condition.value, &mut metadata_ordinal);
-        self.push_filter_condition(
-            owner,
-            document,
-            form,
-            condition.span.clone(),
-            expression,
-            predicate,
-        )?;
+        self.push_filter_condition(owner, document, form, condition.span, expression, predicate)?;
         self.lower_filter_expression(document, owner, condition)
     }
 
@@ -451,8 +420,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::ExpressionOperand,
@@ -470,8 +438,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*metaclass)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::FilterMetadataTest,
@@ -485,18 +452,9 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(
-                        declaration,
-                        document,
-                        &chain,
-                        node.span.clone(),
-                    )?;
+                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
                 } else {
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PackageMember,
-                        node.span.clone(),
-                    );
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 }
                 Ok(())
             }
@@ -515,13 +473,7 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span.clone(),
-                )?;
+                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
@@ -557,11 +509,7 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, operand)
             }
             _ => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                );
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 Ok(())
             }
         }
@@ -588,7 +536,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::ConstraintDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -601,7 +549,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -623,14 +571,14 @@ impl SemanticModelBuilder {
             for element in elements {
                 match &element.value {
                     ConstraintDefBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span.clone());
+                        self.push_recovery(document, error.span);
                     }
                     ConstraintDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
                         self.push_unsupported(
                             document,
                             UnsupportedFamily::ConstraintDefinitionMember,
-                            node.span.clone(),
+                            node.span,
                         );
                     }
                     ConstraintDefBodyElement::ReturnDecl(node) => {
@@ -638,7 +586,7 @@ impl SemanticModelBuilder {
                         self.push_unsupported(
                             document,
                             UnsupportedFamily::ConstraintDefinitionMember,
-                            node.span.clone(),
+                            node.span,
                         );
                     }
                     ConstraintDefBodyElement::Constraint(constraint) => {
@@ -658,7 +606,7 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConstraintDefinitionMember,
-                        element.span.clone(),
+                        element.span,
                     ),
                     ConstraintDefBodyElement::Annotating(member) => {
                         self.lower_annotating_member(
@@ -721,7 +669,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::ConstraintUsage,
             name,
-            node.span.clone(),
+            node.span,
             // `ast::ConstraintUsage` carries no modifier or direction field.
             DeclarationFacts {
                 short_name,
@@ -736,7 +684,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
@@ -744,8 +692,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_name)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -787,7 +734,7 @@ impl SemanticModelBuilder {
         node: &Node<AssertConstraintMember>,
     ) -> Result<(), ConstructionError> {
         if node.value.target.is_some() {
-            self.push_unsupported(document, family, node.span.clone());
+            self.push_unsupported(document, family, node.span);
             return Ok(());
         }
         let name = self.intern_declaration_name(document, node.value.declaration_name)?;
@@ -796,7 +743,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::AssertConstraintUsage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 negated: Some(node.value.is_negated),
                 ..DeclarationFacts::none()
@@ -809,7 +756,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
@@ -817,8 +764,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_name)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -860,7 +806,7 @@ impl SemanticModelBuilder {
         node: &Node<RequireConstraint>,
     ) -> Result<(), ConstructionError> {
         if !node.value.has_constraint_keyword {
-            self.push_unsupported(document, family, node.span.clone());
+            self.push_unsupported(document, family, node.span);
             return Ok(());
         }
         let name = self.intern_declaration_name(document, node.value.name)?;
@@ -873,7 +819,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::RequireConstraintUsage
             },
             name,
-            node.span.clone(),
+            node.span,
             // `has_constraint_keyword` selects the authored form (checked above) rather than
             // modifying the declaration; `is_assume` rides the declaration kind, because it is
             // what makes `RequirementConstraintMembership.kind` derivable.
@@ -883,7 +829,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         // `require constraint c : C;` -- `ConstraintUsageDeclaration` is an ordinary
         // `UsageDeclaration` (SysML BNF 2066-2071), so the declared usage may be typed.
@@ -912,7 +858,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::CalcDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -925,7 +871,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -947,7 +893,7 @@ impl SemanticModelBuilder {
             for element in elements {
                 match &element.value {
                     CalcDefBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span.clone());
+                        self.push_recovery(document, error.span);
                     }
                     // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
                     // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
@@ -962,7 +908,7 @@ impl SemanticModelBuilder {
                         self.push_unsupported(
                             document,
                             UnsupportedFamily::CalcDefinitionMember,
-                            node.span.clone(),
+                            node.span,
                         );
                     }
                     CalcDefBodyElement::CalcUsage(calc_usage) => {
@@ -985,7 +931,7 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
-                        element.span.clone(),
+                        element.span,
                     ),
                     // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`, so a
                     // calculation body owns every action-body member as well as its own `return`.
@@ -1090,7 +1036,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::CalcUsage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1109,7 +1055,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
@@ -1123,8 +1069,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_name)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -1142,8 +1087,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: declaration,
                     kind: ReferenceKind::Redefinition,

@@ -110,14 +110,16 @@ module under `sysml_resolution/src/` with one writer that consumes the previous 
 and yields the next as a distinct type:
 
 ```text
-pipeline ─► lower ─► resolve ─► evaluate ─► index ─► check ─► diagnose ─► publication
-            Lowered   Resolved   Evaluated   Indexed  ───────────────────► Complete
+pipeline ─► lower ─► resolve ─► evaluate ─► index ─► diagnose (including checks) ─► publication
+            Lowered   Resolved   Evaluated   Indexed  ──────────────────────────────────► Complete
 ```
 
 - A phase reads only earlier products and writes only its own store; the previous product is
   moved, not borrowed mutably, so there is no write-back and no half-built model to observe.
-- Every derived fact has one writer. Evaluation is decided in `evaluate`, never at lowering time;
-  diagnostics are decided in `diagnose`, never mid-construction.
+- Every derived fact has one writer. Evaluation is decided in `evaluate`, never at lowering time.
+  The final `diagnose` barrier runs the conformance checks and publishes their diagnostics together
+  with parser, unsupported-construct, and resolution diagnostics; there is currently no separate
+  published `Checked` product.
 - `model/query` reads `Complete` only. Projections (diagram scenes, navigation) read settled indexes;
   they do not derive at projection time.
 - No `use super::*` outside `#[cfg(test)]`; a phase names what it depends on.
@@ -277,3 +279,10 @@ Each invariant above is checked in a place the constrained crates cannot disable
 | a host declares no SysML text entry point and no document-keyed map outside the session's index, both against a shrinking allow-list | `crates/sysml_query/tests/architecture.rs` (AST visitors over `lsp_server/src` and `server/src`) |
 | one `Services` per host; library closure never on the edit path | `crates/lsp_server/tests/debt_guardrails.rs` |
 | reporting policy decides nothing semantic | `crates/sysml_diagnostics/tests/dependency_guardrails.rs` |
+| phases only depend on earlier products; evaluation has one writer; a sealed publication holds no parse tree or source text | `crates/sysml_resolution/tests/integration/phase_order.rs` |
+| asynchronous publication admits only a build whose owner-scoped generation and exact expected identity are still current; superseded and failed builds retain the last coherent publication | `crates/sysml_resolution/src/publication/session.rs` unit tests and `crates/lsp_server/src/session/handle.rs` concurrency tests |
+| cold/warm and sequential/parallel construction produce equivalent identities and observable projections | `crates/sysml_resolution/tests/integration/incremental_reuse.rs` and `construction_schedule_parity.rs`; every fixture is also built sequentially and in parallel by `spec42-snapshot` |
+| diagnostic codes, severities, exact ranges, related information, and canonical ordering are public behavior | `crates/sysml_resolution/tests/integration/diagnostics_contract.rs` and authored `EXPECTED DIAGNOSTICS` assertions under `tests/snapshots/` |
+| checked-in semantic projections and authored expectations remain current and blocker-consistent | required CI runs `cargo snapshot check`; the standalone runner owns the contract |
+| normative evidence coverage debt remains explicit while coverage is incomplete | CI runs `cargo snapshot report --format json` and uploads the report even when its deliberate coverage-debt exit is non-zero |
+| representation changes demonstrate neutral-or-better performance on the bundled standard-library corpus | local review evidence from the commands in `DEVELOPMENT.md`; timing and allocation measurements are deliberately not CI gates because shared runners do not provide a controlled performance environment |

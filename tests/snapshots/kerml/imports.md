@@ -110,7 +110,7 @@ package Imports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9e3430e702d813ef628a81d12b0c321be4801f6c36c62a3fc24b8489031d0fd7") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9e3430e702d813ef628a81d12b0c321be4801f6c36c62a3fc24b8489031d0fd7") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P"))) (kind package) (membership (kind owning) (visibility default)))

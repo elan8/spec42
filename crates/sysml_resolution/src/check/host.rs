@@ -368,6 +368,18 @@ impl<D> SemanticModel<D> {
             .ok_or(ResolutionError::InvalidStorage)?;
         Ok(Diagnostic {
             message: message.into_boxed_str(),
+            payload: matches!(
+                code,
+                DiagnosticCode::UnresolvedTypeReference
+                    | DiagnosticCode::UnresolvedSpecializesReference
+                    | DiagnosticCode::UnresolvedImportTarget
+                    | DiagnosticCode::UnresolvedReference
+            )
+            .then(
+                || crate::diagnostics::DiagnosticPayload::UnresolvedReference {
+                    authored_target: self.authored_path(reference.path).into_boxed_str(),
+                },
+            ),
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
@@ -1521,6 +1533,7 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                payload: None,
                 message: DiagnosticCode::ViewpointRepLanguageUnresolved
                     .describe()
                     .into(),
@@ -1589,6 +1602,7 @@ impl<D> SemanticModel<D> {
                 {
                     if lower < 0 || upper < lower {
                         diagnostics.push(Diagnostic {
+                            payload: None,
                             message: DiagnosticCode::InvalidMultiplicity.describe().into(),
                             code: DiagnosticCode::InvalidMultiplicity,
                             severity: DiagnosticSeverity::Warning,
@@ -1895,6 +1909,7 @@ impl<D> SemanticModel<D> {
             return Ok(());
         };
         diagnostics.push(Diagnostic {
+            payload: None,
             message: DiagnosticCode::MissingLibraryContext.describe().into(),
             code: DiagnosticCode::MissingLibraryContext,
             severity: DiagnosticSeverity::Information,

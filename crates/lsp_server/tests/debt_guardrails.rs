@@ -101,7 +101,7 @@ fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
     let state = fs::read_to_string(root.join("session/state.rs")).expect("workspace state");
     assert!(
-        !state.contains("recover_short_name_search_symbols"),
+        !state.contains("search_symbols_from_recovered_short_names"),
         "the committed symbol table must contain only exact PublishedModel query results"
     );
 
@@ -111,13 +111,18 @@ fn syntax_recovery_cannot_enter_the_admitted_symbol_projection() {
     assert!(
         !fs::read_to_string(root.join("session/services.rs"))
             .expect("session services")
-            .contains("fn recover_short_name_search_symbols"),
+            .contains("fn search_symbols_from_recovered_short_names"),
         "the editor host must not own a second short-name recovery"
     );
     assert_eq!(
-        count_occurrences(&root, "recover_short_name_search_symbols"),
+        count_occurrences(&root, "search_symbols_from_recovered_short_names"),
         4,
         "syntax-recovery search projection escaped its reviewed boundary"
+    );
+    assert_eq!(
+        count_occurrences(&root, "recover_short_name_search_symbols"),
+        0,
+        "the consumer-owned raw-text recovery scan must stay retired"
     );
     assert_eq!(
         count_occurrences(&root, "normalized_library_symbol_name"),
@@ -220,6 +225,11 @@ fn the_editor_host_constructs_one_services_value() {
         count_production_occurrences(&root, "Services::new("),
         1,
         "construct Services once and hand clones of its handles around"
+    );
+    assert_eq!(
+        count_production_occurrences(&root, "SourceService::new("),
+        0,
+        "construct source access only as part of the process Services value"
     );
 }
 

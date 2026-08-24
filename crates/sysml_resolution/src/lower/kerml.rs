@@ -78,8 +78,7 @@ impl SemanticModelBuilder {
                         .qualified_reference(*target)
                         .ok_or(ConstructionError::InvalidParserReference)?
                         .metadata
-                        .span
-                        .clone();
+                        .span;
                     self.push_reference(PendingReference {
                         source,
                         kind: ReferenceKind::FeatureChaining,
@@ -97,8 +96,7 @@ impl SemanticModelBuilder {
                             .qualified_reference(target)
                             .ok_or(ConstructionError::InvalidParserReference)?
                             .metadata
-                            .span
-                            .clone();
+                            .span;
                         self.push_reference(PendingReference {
                             source,
                             kind: ReferenceKind::TypeFeaturing,
@@ -116,8 +114,7 @@ impl SemanticModelBuilder {
                         .qualified_reference(*target)
                         .ok_or(ConstructionError::InvalidParserReference)?
                         .metadata
-                        .span
-                        .clone();
+                        .span;
                     self.push_reference(PendingReference {
                         source,
                         kind: ReferenceKind::FeatureInverting,
@@ -152,8 +149,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source,
                     kind,
@@ -181,7 +177,7 @@ impl SemanticModelBuilder {
             owner,
             kerml_classifier_kind(&node.value.keyword),
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -200,7 +196,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -216,8 +212,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(conjugation.value.target)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::Conjugation,
@@ -261,7 +256,7 @@ impl SemanticModelBuilder {
             owner,
             kerml_feature_kind(node.value.kind.as_ref()),
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
@@ -282,7 +277,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let FeaturePrefixHead::End {
             cross: Some(cross), ..
@@ -348,7 +343,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::KermlConnector,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
@@ -362,7 +357,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         if let Some(type_name) = node.value.typing {
             let span = self.documents[document.index()]
@@ -370,8 +365,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(type_name)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::FeatureTyping,
@@ -421,7 +415,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::KermlBinding,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
@@ -431,7 +425,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_kerml_connector_end(
             document,
@@ -473,8 +467,7 @@ impl SemanticModelBuilder {
             .qualified_reference(end.value.target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: owner,
             kind,
@@ -510,7 +503,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Succession,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
@@ -524,7 +517,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_kerml_connector_end(
             document,
@@ -562,7 +555,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::KermlInvariant,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 negated: Some(node.value.is_negated),
                 ..DeclarationFacts::none()
@@ -572,7 +565,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
@@ -601,7 +594,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::KermlEnd,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
@@ -617,7 +610,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;

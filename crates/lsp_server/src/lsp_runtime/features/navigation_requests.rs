@@ -61,7 +61,7 @@ pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<
         None => return Ok(None),
     };
     let imports = entry.parsed.imports();
-    let links = navigation::collect_document_links(entry.content(), &imports, |import_name| {
+    let links = navigation::collect_document_links(&imports, |import_name| {
         state
             .symbol_table
             .iter()

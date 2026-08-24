@@ -7,7 +7,6 @@ use tower_lsp::lsp_types::{DocumentLink, Position, Range, Url};
 /// the keyword anywhere on a line -- including inside a comment or a string -- and could not tell
 /// a two-line import from two imports.
 pub(crate) fn collect_document_links(
-    text: &str,
     imports: &[SyntaxImport],
     symbol_uri_for_import_name: impl Fn(&str) -> Option<Url>,
 ) -> Vec<DocumentLink> {
@@ -17,28 +16,15 @@ pub(crate) fn collect_document_links(
             Position::new(import.range.start_line, import.range.start_character),
             Position::new(import.range.end_line, import.range.end_character),
         );
-        // A `file://` target is a literal link the grammar keeps as part of the name, so it is
-        // read from the import's own line and anchored inside the import's range.
-        let line = text
-            .lines()
-            .nth(import.range.start_line as usize)
-            .unwrap_or("");
-        if let Some(file_idx) = line.find("file://") {
-            let target_text = line[file_idx..]
-                .split_whitespace()
-                .next()
-                .unwrap_or("")
-                .trim_matches('"')
-                .trim_matches('\'');
-            if let Ok(target) = Url::parse(target_text) {
-                let start = line[..file_idx].chars().count() as u32;
+        if let Some(file_target) = import.file_target {
+            if let Ok(target) = Url::parse(file_target.value) {
                 links.push(DocumentLink {
                     range: Range::new(
-                        Position::new(import.range.start_line, start),
                         Position::new(
-                            import.range.start_line,
-                            start + target_text.chars().count() as u32,
+                            file_target.range.start_line,
+                            file_target.range.start_character,
                         ),
+                        Position::new(file_target.range.end_line, file_target.range.end_character),
                     ),
                     target: Some(target),
                     tooltip: Some("Open import target".to_string()),

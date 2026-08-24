@@ -304,7 +304,7 @@ package '15_19-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:31456a3fbb126925c91b696fef8bffbb12b91517c0ea919499d2c90992f19bde") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:31456a3fbb126925c91b696fef8bffbb12b91517c0ea919499d2c90992f19bde") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19_materials_with_properties.md") (qualified-name "15_19-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text "\n\t * The classification of materials into metals and alloys is grossly simplified and not exhaustive.\n\t * A more complete classification would include: ChemicalSubstance, PureMaterial, MixedMaterial,\n\t * Class, Ceramic, OrganicMaterial, AnorganicMaterial, Polymer, HybridMaterial, CompositeMaterial,\n\t * etc.\n\t "))))
     (declaration (id (node (document "memory://snapshot/15_19_materials_with_properties.md") (path (named (kind package) (name "15_19-Materials with Properties")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

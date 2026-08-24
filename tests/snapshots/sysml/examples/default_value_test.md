@@ -48,7 +48,7 @@ package DefaultValueTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1bc00c685af6e05afe02171bb8cbf60c1cee045488f942ad583272da5cd0967e") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1bc00c685af6e05afe02171bb8cbf60c1cee045488f942ad583272da5cd0967e") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))

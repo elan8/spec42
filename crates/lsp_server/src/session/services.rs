@@ -18,8 +18,11 @@ fn elapsed_ms(start: Instant) -> u32 {
 /// `target/` or `node_modules/` is not indexed. Disk content arrives already normalised to LF,
 /// which is what the editor sends on `didOpen`, so a CRLF file does not look "changed" when
 /// opened. Counts are kept for the startup log.
-pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSummary) {
-    use sysml_query::source::{FilesystemProvider, SourceError, SourceKind, SourceService};
+pub(crate) fn scan_sysml_files(
+    roots: Vec<Url>,
+    source: &sysml_query::source::SourceService,
+) -> (Vec<SourceDocument>, ScanSummary) {
+    use sysml_query::source::{FilesystemProvider, SourceError, SourceKind};
 
     let mut summary = ScanSummary::default();
     let mut paths = Vec::new();
@@ -30,7 +33,7 @@ pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSumm
         }
     }
     let provider = FilesystemProvider::new(paths, SourceKind::Workspace);
-    let report = match SourceService::new().load(&provider) {
+    let report = match source.load(&provider) {
         Ok(report) => report,
         Err(error) => {
             tracing::warn!(%error, "workspace scan failed");
@@ -47,12 +50,7 @@ pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSumm
             _ => summary.read_failures += 1,
         }
     }
-    let out = report
-        .documents
-        .into_iter()
-        .map(|document| (document.uri().clone(), document.content().to_owned()))
-        .collect();
-    (out, summary)
+    (report.documents, summary)
 }
 
 #[derive(Debug)]
@@ -97,23 +95,6 @@ fn warning_from_parse_errors(
     }
 }
 
-fn parse_scanned_entry(uri: Url, content: String, services: &Services) -> ParsedScanEntry {
-    // The syntax service captures a parser panic itself and reports it as a diagnostic over an
-    // empty tree, so a scanned file always yields a document. Provenance is decided at
-    // publication time from the configured roots; admission here is as workspace text.
-    let document = services
-        .source
-        .admit_url(uri.clone(), &content, SourceKind::Workspace);
-    let parsed = services.syntax.parse(&document);
-    let parse_errors = util::parse_failure_diagnostics(&parsed, 5);
-    ParsedScanEntry {
-        uri,
-        document,
-        parsed,
-        parse_errors,
-    }
-}
-
 /// Scan entries for documents the source authority already admitted (the library closure).
 pub(crate) fn parse_scanned_documents(
     documents: Vec<SourceDocument>,
@@ -134,30 +115,6 @@ pub(crate) fn parse_scanned_documents(
         return documents.into_iter().map(entry).collect();
     }
     documents.into_par_iter().map(entry).collect()
-}
-
-pub(crate) fn parse_scanned_entries(
-    entries: Vec<(Url, String)>,
-    parallel_enabled: bool,
-    services: &Services,
-) -> Vec<ParsedScanEntry> {
-    if entries.is_empty() {
-        return Vec::new();
-    }
-
-    if !parallel_enabled || entries.len() < 2 {
-        return entries
-            .into_iter()
-            .map(|(uri, content)| parse_scanned_entry(uri, content, services))
-            .collect();
-    }
-
-    // `into_par_iter` on a `Vec` is an indexed parallel iterator, so `collect()` preserves
-    // the original order regardless of which worker finishes first.
-    entries
-        .into_par_iter()
-        .map(|(uri, content)| parse_scanned_entry(uri, content, services))
-        .collect()
 }
 
 fn update_symbol_table_for_uri(

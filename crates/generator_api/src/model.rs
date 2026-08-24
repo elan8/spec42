@@ -16,7 +16,7 @@ use spec42_generator_protocol::{
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
-    AnnotationForm, ElementKind, ElementModifier, ElementSearch, ElementSource, EvaluatedScalar,
+    AnnotationForm, ElementKind, ElementModifier, ElementSource, EvaluatedScalar,
     MultiplicityBound, MultiplicityFacts, QueryOutcome, RelationshipProvenance, RelationshipTarget,
     SymbolEntry, SymbolId, SymbolToken,
 };
@@ -228,23 +228,18 @@ impl GeneratorModelView {
         query_limits: QueryLimits,
     ) -> Self {
         let mut by_identity = HashMap::new();
-        for source in [
-            ElementSource::Workspace,
-            ElementSource::StandardLibrary,
-            ElementSource::Library,
-            ElementSource::External,
-        ] {
-            for &kind in ElementKind::ALL {
-                if let QueryOutcome::Resolved(entries)
-                | QueryOutcome::Recovered(entries)
-                | QueryOutcome::UnsupportedWith(entries) = model
-                    .inspection()
-                    .search_elements(ElementSearch { kind, source })
-                {
-                    for entry in entries {
-                        by_identity.insert(entry.identity, RegisteredElement { entry, source });
-                    }
-                }
+        if let QueryOutcome::Resolved(elements)
+        | QueryOutcome::Recovered(elements)
+        | QueryOutcome::UnsupportedWith(elements) = model.inspection().all_elements()
+        {
+            for element in elements {
+                by_identity.insert(
+                    element.entry.identity,
+                    RegisteredElement {
+                        entry: element.entry,
+                        source: element.source,
+                    },
+                );
             }
         }
         Self {
@@ -2041,5 +2036,61 @@ fn generator_relationship_kind(kind: &str) -> &str {
         "featureTyping" => "typing",
         "subclassification" | "specialization" => "specializes",
         other => other,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sysml_query::resolved_slice::{
+        build, AdmittedSource, BuildRequest, ConstructionStrategy, SourceKind,
+    };
+
+    #[test]
+    fn model_view_registers_one_canonical_traversal_with_provenance() {
+        let sources = vec![
+            AdmittedSource::from_memory_path(
+                "generator-test",
+                "workspace.sysml",
+                "package Workspace { part def Vehicle; }".into(),
+                SourceKind::Workspace,
+            )
+            .unwrap(),
+            AdmittedSource::from_memory_path(
+                "generator-test",
+                "library.sysml",
+                "package Library { attribute def Mass; }".into(),
+                SourceKind::StandardLibrary,
+            )
+            .unwrap(),
+        ];
+        let model = Arc::new(
+            build(BuildRequest::resolved(sources, ConstructionStrategy::Sequential).unwrap())
+                .unwrap(),
+        );
+        let expected = match model.inspection().all_elements() {
+            QueryOutcome::Resolved(elements) => elements,
+            other => panic!("expected complete traversal, got {other:?}"),
+        };
+        let view = GeneratorModelView::new(model, "digest", "version", QueryLimits::default());
+
+        assert_eq!(view.by_identity.len(), expected.len());
+        for element in expected {
+            let registered = view
+                .by_identity
+                .get(&element.entry.identity)
+                .expect("canonical traversal entry registered once");
+            assert_eq!(registered.entry, element.entry);
+            assert_eq!(registered.source, element.source);
+        }
+        assert_eq!(
+            view.roots()
+                .unwrap()
+                .iter()
+                .filter_map(|root| root.name.as_deref())
+                .collect::<Vec<_>>(),
+            vec!["Workspace"],
+            "library provenance remains available to the adapter's workspace-root policy"
+        );
     }
 }

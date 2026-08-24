@@ -42,7 +42,7 @@ impl SemanticModelBuilder {
     ) {
         if let Some(node) = modifier {
             if node.value == StateBodyModifier::Initial {
-                self.push_unsupported(document, family, node.span.clone());
+                self.push_unsupported(document, family, node.span);
             }
         }
     }
@@ -65,7 +65,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::StateDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -88,7 +88,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -113,14 +113,14 @@ impl SemanticModelBuilder {
         for element in elements {
             match &element.value {
                 StateDefBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
+                    self.push_recovery(document, error.span);
                 }
                 StateDefBodyElement::PartUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
+                        node.span,
                     );
                 }
                 StateDefBodyElement::ConstraintUsage(node) => {
@@ -128,7 +128,7 @@ impl SemanticModelBuilder {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
+                        node.span,
                     );
                 }
                 StateDefBodyElement::StateUsage(state_usage) => {
@@ -196,7 +196,7 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    element.span.clone(),
+                    element.span,
                 ),
             }
         }
@@ -227,7 +227,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
             return Ok(());
@@ -237,7 +237,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::EntryActionBinding,
             None,
-            node.span.clone(),
+            node.span,
             // A synthesized scope for the state's entry-action binding reference.
             DeclarationFacts::none(),
         )?;
@@ -245,7 +245,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.push_action_binding_reference(
             document,
@@ -268,7 +268,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
             return Ok(());
@@ -278,7 +278,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::DoActionBinding,
             None,
-            node.span.clone(),
+            node.span,
             // A synthesized scope for the state's do-action binding reference.
             DeclarationFacts::none(),
         )?;
@@ -286,7 +286,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.push_action_binding_reference(
             document,
@@ -309,7 +309,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
             return Ok(());
@@ -319,7 +319,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::ExitActionBinding,
             None,
-            node.span.clone(),
+            node.span,
             // A synthesized scope for the state's exit-action binding reference.
             DeclarationFacts::none(),
         )?;
@@ -327,7 +327,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.push_action_binding_reference(
             document,
@@ -354,7 +354,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::InitialState,
             None,
-            node.span.clone(),
+            node.span,
             // A synthesized scope for the `then <state>` initial-state reference.
             DeclarationFacts::none(),
         )?;
@@ -362,7 +362,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.push_action_binding_reference(
             document,
@@ -391,7 +391,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::FinalState,
             name,
-            node.span.clone(),
+            node.span,
             // `ast::FinalState` carries only its state name.
             DeclarationFacts::none(),
         )?;
@@ -399,7 +399,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         Ok(())
     }
@@ -420,8 +420,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind,
@@ -454,7 +453,7 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Transition,
             name,
-            node.span.clone(),
+            node.span,
             // `ast::Transition` carries no modifier, multiplicity, direction, or short name; its
             // source/target/trigger/guard/effect facts are lowered as references.
             DeclarationFacts::none(),
@@ -463,7 +462,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         if let Some(source) = &node.value.source {
             self.lower_transition_end(
@@ -492,7 +491,7 @@ impl SemanticModelBuilder {
             )?;
         }
         if node.value.accept.is_some() {
-            self.lower_transition_trigger_action(document, declaration, node.span.clone())?;
+            self.lower_transition_trigger_action(document, declaration, node.span)?;
         }
         match &node.value.accept {
             None => {}
@@ -523,7 +522,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
         }
@@ -557,7 +556,7 @@ impl SemanticModelBuilder {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span.clone(),
+                    node.span,
                 );
             }
         }
@@ -582,7 +581,7 @@ impl SemanticModelBuilder {
             Some(transition),
             DeclarationKind::AcceptActionUsage,
             None,
-            span.clone(),
+            span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     composite: true,
@@ -621,8 +620,7 @@ impl SemanticModelBuilder {
                     .qualified_reference(*target)
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
-                    .span
-                    .clone();
+                    .span;
                 self.push_reference(PendingReference {
                     source: owner,
                     kind,
@@ -635,19 +633,19 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
+                    self.push_member_access_reference(owner, document, &chain, node.span)?;
                 } else {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::StateDefinitionMember,
-                        node.span.clone(),
+                        node.span,
                     );
                 }
             }
             _ => self.push_unsupported(
                 document,
                 UnsupportedFamily::StateDefinitionMember,
-                node.span.clone(),
+                node.span,
             ),
         }
         Ok(())
@@ -672,7 +670,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::StateUsage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
@@ -699,7 +697,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -725,7 +723,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserExhibitState>,
     ) -> Result<(), ConstructionError> {
         if node.value.state_reference.is_some() {
-            self.push_unsupported(document, unsupported_family, node.span.clone());
+            self.push_unsupported(document, unsupported_family, node.span);
             return Ok(());
         }
         let name = self.intern_declaration_name(document, node.value.name)?;
@@ -734,7 +732,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::StateUsage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
@@ -755,7 +753,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;

@@ -36,7 +36,7 @@ package 'αβ' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f8a23e6174d62e17d3c65b92b6caa884baa28c0d45ccde488656c537a2982539") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f8a23e6174d62e17d3c65b92b6caa884baa28c0d45ccde488656c537a2982539") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::é"))) (kind class-def) (membership (kind owning) (visibility default)))

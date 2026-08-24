@@ -27,21 +27,22 @@ pub use sysml_resolution::{
     LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
     MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
-    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, RedefinitionCheckKind,
-    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
-    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
-    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
-    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
-    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
-    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
-    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
-    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, PublishedElement,
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome,
+    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
+    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
+    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
+    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
+    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
+    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 /// Provenance of an admitted source; the one enum the source authority defines.
@@ -58,12 +59,10 @@ impl AdmittedSource {
         content: String,
         source_kind: SourceKind,
     ) -> Result<Self, SourceError> {
-        if uri.is_empty() {
-            return Err(SourceError("source identity must not be empty"));
-        }
-        Ok(Self {
-            inner: sysml_resolution::SourceInput::new(uri, content, source_kind),
-        })
+        let document = crate::source::SourceAuthority::new()
+            .admit(uri, content, source_kind)
+            .map_err(SourceError::from)?;
+        Ok(Self::from_document(document))
     }
 
     pub fn from_memory_path(
@@ -72,17 +71,10 @@ impl AdmittedSource {
         content: String,
         source_kind: SourceKind,
     ) -> Result<Self, SourceError> {
-        let normalized = path.trim_start_matches('/').replace('\\', "/");
-        if namespace.is_empty() || normalized.is_empty() {
-            return Err(SourceError("source identity must not be empty"));
-        }
-        Ok(Self {
-            inner: sysml_resolution::SourceInput::new(
-                format!("memory://{namespace}/{normalized}"),
-                content,
-                source_kind,
-            ),
-        })
+        let document = crate::source::SourceAuthority::new()
+            .admit_memory(namespace, path, content, source_kind)
+            .map_err(SourceError::from)?;
+        Ok(Self::from_document(document))
     }
 
     /// Admit a tree the syntax service already parsed; the editor's parse and the build's parse
@@ -92,26 +84,46 @@ impl AdmittedSource {
         parsed: crate::syntax::ParsedSource,
         source_kind: SourceKind,
     ) -> Result<Self, SourceError> {
-        if uri.is_empty() {
-            return Err(SourceError("source identity must not be empty"));
-        }
-        Ok(Self {
-            inner: sysml_resolution::SourceInput::from_parsed(uri, parsed, source_kind),
-        })
+        let document = crate::source::SourceAuthority::new()
+            .admit(uri, parsed.source(), source_kind)
+            .map_err(SourceError::from)?;
+        let inner = if document.digest() == parsed.digest() {
+            sysml_resolution::SourceInput::from_parsed(document.uri().as_str(), parsed, source_kind)
+        } else {
+            // Line-ending normalization changed the bytes. Preserve semantic parity with every
+            // other admission path by parsing the normalized document during construction.
+            sysml_resolution::SourceInput::pending(document.uri().as_str(), document.clone())
+        };
+        Ok(Self { inner })
     }
 
     /// The identity queries and published facts address this document by.
     pub fn identity(&self) -> &str {
         self.inner.identity()
     }
+
+    fn from_document(document: crate::source::SourceDocument) -> Self {
+        Self {
+            inner: sysml_resolution::SourceInput::pending(
+                document.uri().as_str(),
+                document.clone(),
+            ),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SourceError(&'static str);
+pub struct SourceError(String);
+
+impl From<crate::source::SourceError> for SourceError {
+    fn from(error: crate::source::SourceError) -> Self {
+        Self(error.to_string())
+    }
+}
 
 impl fmt::Display for SourceError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(self.0)
+        formatter.write_str(&self.0)
     }
 }
 
@@ -845,6 +857,17 @@ impl InspectionQueries<'_> {
     /// Elements matching a typed kind and authored-source provenance filter.
     pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.search_elements(search)
+    }
+
+    /// Whether an element of `kind` with the exact authored `name` exists anywhere in this
+    /// immutable publication.
+    pub fn named_element_exists(&self, kind: ElementKind, name: &str) -> QueryOutcome<bool> {
+        self.model.named_element_exists(kind, name)
+    }
+
+    /// Every declared element in the publication's canonical order, retaining source provenance.
+    pub fn all_elements(&self) -> QueryOutcome<Box<[PublishedElement]>> {
+        self.model.all_elements()
     }
 
     /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
@@ -1825,6 +1848,42 @@ mod tests {
     fn immutable_publication_can_be_shared_by_async_hosts() {
         fn requires_send_sync<T: Send + Sync>() {}
         requires_send_sync::<PublishedModel>();
+    }
+
+    #[test]
+    fn legacy_and_service_admission_share_uri_and_line_ending_identity() {
+        let admitted = AdmittedSource::from_uri(
+            "memory://PARITY/a/../model.sysml",
+            "package P {\r\n part def A;\r\n}\r\n".into(),
+            SourceKind::Workspace,
+        )
+        .unwrap();
+        let legacy_request =
+            BuildRequest::resolved(vec![admitted], ConstructionStrategy::Sequential).unwrap();
+
+        let services = crate::Services::new();
+        let document = services
+            .source
+            .admit(
+                "memory://parity/model.sysml",
+                "package P {\n part def A;\n}\n",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let canonical_request = services
+            .publication
+            .prepare(std::slice::from_ref(&document), [])
+            .unwrap();
+
+        assert_eq!(legacy_request.identity(), canonical_request.identity());
+
+        let legacy = build(legacy_request).unwrap();
+        let canonical = services.publication.publish(&[document], []).unwrap();
+
+        assert_eq!(
+            legacy.publication().identity(),
+            canonical.publication().identity()
+        );
     }
 
     #[test]

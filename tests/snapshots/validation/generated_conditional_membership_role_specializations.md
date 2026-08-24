@@ -50,7 +50,7 @@ package MembershipRoleSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a14232fdad3bca43503ccb5895f6b20c3e34783e613d3e64489f6eb78eba2d4a") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a14232fdad3bca43503ccb5895f6b20c3e34783e613d3e64489f6eb78eba2d4a") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations::CaseCase"))) (kind case-def) (membership (kind owning) (visibility default)))

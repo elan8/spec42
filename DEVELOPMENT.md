@@ -93,7 +93,8 @@ The binary is at `target/release/spec42` (Windows: `target/release/spec42.exe`).
 "spec42.serverPath": "c:\\Git\\spec42\\target\\release\\spec42.exe"
 ```
 
-See [docs/engineering/PERFORMANCE-GUARDRAILS.md](docs/engineering/PERFORMANCE-GUARDRAILS.md) for nightly budgets and optional power-systems drill-down.
+Performance measurements are local review evidence; shared CI runners are not used as benchmark
+gates. See [Performance Checks](#performance-checks) for the reproducible commands.
 
 ### Embedded standard library bundle
 
@@ -339,9 +340,9 @@ The package prepublish hook stages the example and domain-library content before
 
 ## Performance Checks
 
-Spec42 emits structured performance logs when `spec42.performanceLogging.enabled` is true. CI also runs a report-only large-workspace performance step so changes can be tracked before budgets become hard gates.
-
-Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals while the nightly step remains non-blocking.
+Spec42 emits structured performance logs when `spec42.performanceLogging.enabled` is true.
+Performance measurements are gathered locally on controlled hardware and reviewed with the change;
+they are not CI gates.
 
 ### Query benchmarks
 
@@ -352,7 +353,11 @@ cargo bench -p spec42-query-bench
 cargo run --release -p spec42-query-bench --bin spec42-query-bench-allocations
 ```
 
-The first reports wall time and divan's allocation profile per case; the second reports allocations and allocations per published element under a counting global allocator (the two cannot share a binary, because each installs its own `#[global_allocator]`). Recorded baselines, with the machine and commit they were taken on, are in `planning/BENCH_BASELINE.md`; add a row there when a representation change moves the numbers.
+The first reports wall time and divan's allocation profile per case; the second reports allocations
+and allocations per published element under a counting global allocator (the two cannot share a
+binary, because each installs its own `#[global_allocator]`). Record the machine, toolchain, commit,
+corpus size, and before/after results in the change under review; git history, not a planning
+document, retains completed measurement history.
 
 `tools/semantic_benchmark` remains the JSON-reporting cold-build tool with a phase breakdown; the divan set is the admission gate.
 

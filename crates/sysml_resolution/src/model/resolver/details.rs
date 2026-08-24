@@ -21,7 +21,6 @@ use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
 use crate::model::element_kind;
 use crate::model::render as writer;
-use crate::model::resolver::PublicationCompleteness;
 use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -35,6 +34,7 @@ use crate::RelationshipProvenance;
 use crate::SourceLocation;
 use crate::SymbolId;
 use crate::TextPosition;
+use sysml_contract::PublicationCompleteness;
 
 /// The relationship families an element-details answer reports separately.
 ///

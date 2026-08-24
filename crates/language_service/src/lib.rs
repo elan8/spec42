@@ -45,7 +45,7 @@ pub use keywords::{
 };
 pub use library_search::{
     build_library_tree, library_search_score, library_source_label,
-    recover_short_name_search_symbols, LibrarySearchItem, LibrarySearchPackage,
+    search_symbols_from_recovered_short_names, LibrarySearchItem, LibrarySearchPackage,
     LibrarySearchSource, RecoverySearchSymbol,
 };
 pub use navigation::{find_references, goto_definition, hover};

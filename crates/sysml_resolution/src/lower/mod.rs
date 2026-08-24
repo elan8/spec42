@@ -435,7 +435,7 @@ impl SemanticModelBuilder {
             AnnotatingMember::MetadataAnnotation(node) => match annotated {
                 Some(annotated) => self.lower_metadata_annotation(document, annotated, node),
                 None => {
-                    self.push_unsupported(document, family, node.span.clone());
+                    self.push_unsupported(document, family, node.span);
                     Ok(())
                 }
             },
@@ -457,7 +457,7 @@ impl SemanticModelBuilder {
             locale,
             None,
             text,
-            node.span.clone(),
+            node.span,
         )
     }
 
@@ -476,7 +476,7 @@ impl SemanticModelBuilder {
             locale,
             None,
             text,
-            node.span.clone(),
+            node.span,
         )
     }
 
@@ -496,7 +496,7 @@ impl SemanticModelBuilder {
             None,
             language,
             text,
-            node.span.clone(),
+            node.span,
         )
     }
 
@@ -515,7 +515,7 @@ impl SemanticModelBuilder {
             kind,
             value.value.is_default,
             value.value.has_operator,
-            value.value.span.clone(),
+            value.value.span,
         )
     }
 
@@ -749,12 +749,7 @@ impl SemanticModelBuilder {
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(callee) {
-                    self.push_member_access_reference(
-                        declaration,
-                        document,
-                        &chain,
-                        callee.span.clone(),
-                    )?;
+                    self.push_member_access_reference(declaration, document, &chain, callee.span)?;
                 }
                 Ok(())
             }
@@ -777,8 +772,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::InvocationCallee,
@@ -806,8 +800,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::MetaCastTarget,
@@ -835,8 +828,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::TypeCheckTarget,
@@ -1074,7 +1066,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::Package,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -1084,7 +1076,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Owning,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
@@ -1102,7 +1094,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::LibraryPackage,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1116,7 +1108,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Owning,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
@@ -1134,7 +1126,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::Namespace,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -1144,7 +1136,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Owning,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
@@ -1179,14 +1171,10 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         match &element.value {
             PackageBodyElement::Error(node) => {
-                self.push_recovery(document, node.span.clone());
+                self.push_recovery(document, node.span);
             }
             PackageBodyElement::Unsupported(node) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ParserUnsupported,
-                    node.span.clone(),
-                );
+                self.push_unsupported(document, UnsupportedFamily::ParserUnsupported, node.span);
             }
             PackageBodyElement::Annotating(member) => {
                 self.lower_annotating_member(
@@ -1204,11 +1192,7 @@ impl SemanticModelBuilder {
                     &node.value.condition,
                 )?,
                 None => {
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PackageMember,
-                        node.span.clone(),
-                    );
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 }
             },
             PackageBodyElement::Package(node) => self.lower_package(document, owner, node)?,
@@ -1250,20 +1234,16 @@ impl SemanticModelBuilder {
                 Some(owner) => {
                     self.lower_satisfy(document, owner, UnsupportedFamily::PackageMember, node)?
                 }
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
             PackageBodyElement::UseCaseDef(node) => {
                 self.lower_use_case_def(document, owner, node)?
             }
-            PackageBodyElement::Actor(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Actor(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::StateDef(node) => self.lower_state_def(document, owner, node)?,
             PackageBodyElement::StateUsage(node) => {
                 self.lower_state_usage(document, owner, node)?
@@ -1316,11 +1296,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::FlowDef(node) => self.lower_flow_def(document, owner, node)?,
             PackageBodyElement::FlowUsage(node) => match owner {
                 Some(owner) => self.lower_flow_usage(document, owner, node)?,
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
             PackageBodyElement::ConcernUsage(node) => {
                 self.lower_concern_usage(document, owner, node)?
@@ -1342,26 +1320,18 @@ impl SemanticModelBuilder {
             PackageBodyElement::UseCaseUsage(node) => {
                 self.lower_use_case_usage(document, owner, node)?
             }
-            PackageBodyElement::FeatureDecl(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::ClassifierDecl(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::KermlSemanticDecl(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::KermlFeatureDecl(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::FeatureDecl(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
+            PackageBodyElement::ClassifierDecl(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
+            PackageBodyElement::KermlSemanticDecl(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
+            PackageBodyElement::KermlFeatureDecl(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::KermlClassifier(node) => {
                 self.lower_kerml_classifier_decl(document, owner, node)?
             }
@@ -1373,28 +1343,22 @@ impl SemanticModelBuilder {
                 // A connector at the root of a document has no type to be featured by, so there
                 // is no owner to source its ends at; the `connect` statement arm above defers the
                 // same shape for the same reason.
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
-            PackageBodyElement::KermlRelationship(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::KermlRelationship(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                 document,
                 owner,
                 UnsupportedFamily::PackageMember,
                 node,
             )?,
-            PackageBodyElement::ExtendedLibraryDecl(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ExtendedLibraryDecl(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::ItemUsage(node) => self.lower_item_usage(document, owner, node)?,
             PackageBodyElement::MetadataUsage(node) => {
                 self.lower_metadata_usage(document, owner, node)?
@@ -1407,11 +1371,9 @@ impl SemanticModelBuilder {
                 self.lower_interface_usage(document, owner, node)?
             }
             PackageBodyElement::Ref(node) => self.lower_ref_decl(document, owner, node)?,
-            PackageBodyElement::MetadataKeywordUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::MetadataKeywordUsage(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::Connect(node) => {
                 if let Some(owner) = owner {
                     self.lower_bare_connect(
@@ -1421,11 +1383,7 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 } else {
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PackageMember,
-                        node.span.clone(),
-                    );
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 }
             }
             PackageBodyElement::DefaultReferenceUsage(node) => self.lower_default_reference_usage(
@@ -1441,17 +1399,13 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::PackageMember,
                     node,
                 )?,
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
-            PackageBodyElement::KermlBareDeclaration(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::KermlBareDeclaration(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::PerformUsage(node) => self.lower_perform(document, owner, node)?,
             PackageBodyElement::BindingConnectorUsage(node) => match owner {
                 Some(owner) => self.lower_binding_connector_usage(
@@ -1460,30 +1414,24 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::PackageMember,
                     node,
                 )?,
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
             PackageBodyElement::Succession(node) => match owner {
                 Some(owner) => {
                     self.lower_first_stmt(document, owner, UnsupportedFamily::PackageMember, node)?
                 }
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
             },
             PackageBodyElement::ExhibitState(node) => {
                 self.lower_exhibit_state(document, owner, UnsupportedFamily::PackageMember, node)?
             }
-            PackageBodyElement::IncludeUseCase(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::IncludeUseCase(node) => {
+                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+            }
             PackageBodyElement::ExtendedDefinition(node) => {
                 self.lower_extended_definition(document, owner, node)?
             }
@@ -1502,7 +1450,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::Import,
             None,
-            node.span.clone(),
+            node.span,
             // An import declares no name, modifier, multiplicity, or direction of its own; its
             // recursive/wildcard/filter facts belong to the authored import reference below.
             DeclarationFacts::none(),
@@ -1512,7 +1460,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Import,
             self.member_visibility(membership, ParserMembershipKind::Import)?,
-            membership.span.clone(),
+            membership.span,
         )?;
         let (kind, flags) = match &node.value.target.shape {
             ImportShape::Membership { recursive_suffix } => (
@@ -1556,7 +1504,7 @@ impl SemanticModelBuilder {
             document,
             local: node.value.target.reference,
             flags,
-            span: node.value.target.span.clone(),
+            span: node.value.target.span,
             import,
         })?;
         if let Some(elements) = &node.value.body_elements {
@@ -1581,14 +1529,14 @@ impl SemanticModelBuilder {
             Some(owner),
             DeclarationKind::Expose,
             None,
-            node.span.clone(),
+            node.span,
             DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         // The target is an ordinary authored reference. What a `::*` or `::**` suffix would
         // *expand* to is not a fact this publication holds -- there is no published expose
@@ -1599,7 +1547,7 @@ impl SemanticModelBuilder {
             document,
             local: node.value.target.reference,
             flags: RelationshipFlags::default(),
-            span: node.value.target.span.clone(),
+            span: node.value.target.span,
             import: None,
         })?;
         if let sysml_v2_parser::ast::Body::Brace { elements, .. } = &node.value.body {
@@ -1629,7 +1577,7 @@ impl SemanticModelBuilder {
         for element in elements {
             match &element.value {
                 RelationshipBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span.clone());
+                    self.push_recovery(document, error.span);
                 }
                 RelationshipBodyElement::Annotating(member) => {
                     self.lower_annotating_member(
@@ -1669,8 +1617,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(target)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source,
                 kind,
@@ -1743,8 +1690,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(keyword.value.annotation)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::MetadataAnnotation,
@@ -1775,7 +1721,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::Alias,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -1785,7 +1731,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Alias,
             self.member_visibility(&node.value.membership, ParserMembershipKind::Alias)?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         let target = node.value.target;
         let span = self.documents[document.index()]
@@ -1793,8 +1739,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::AliasBinding,
@@ -1827,7 +1772,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::IndividualDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1845,7 +1790,7 @@ impl SemanticModelBuilder {
                 &node.value.membership,
                 ParserMembershipKind::OwningMembership,
             )?,
-            node.value.membership.span.clone(),
+            node.value.membership.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -1876,7 +1821,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::ExtendedDefinition,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
@@ -1891,7 +1836,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Owning,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -1933,7 +1878,7 @@ impl SemanticModelBuilder {
             owner,
             DeclarationKind::Dependency,
             name,
-            node.span.clone(),
+            node.span,
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -1943,7 +1888,7 @@ impl SemanticModelBuilder {
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span.clone(),
+            node.span,
         )?;
         for target in node.value.clients.iter().copied() {
             let span = self.documents[document.index()]
@@ -1951,8 +1896,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(target)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::DependencyClient,
@@ -1969,8 +1913,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(target)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source: declaration,
                 kind: ReferenceKind::DependencySupplier,
@@ -2025,8 +1968,7 @@ impl SemanticModelBuilder {
                 .qualified_reference(target)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
-                .span
-                .clone();
+                .span;
             self.push_reference(PendingReference {
                 source,
                 kind,
@@ -2109,7 +2051,7 @@ impl SemanticModelBuilder {
             }
             VariantUsageForm::Reference { reference, body } => {
                 if body.is_some() {
-                    self.push_unsupported(document, family, node.span.clone());
+                    self.push_unsupported(document, family, node.span);
                     return Ok(());
                 }
                 *reference
@@ -2120,8 +2062,7 @@ impl SemanticModelBuilder {
             .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
-            .span
-            .clone();
+            .span;
         self.push_reference(PendingReference {
             source: owner,
             kind: ReferenceKind::Variant,

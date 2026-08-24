@@ -106,7 +106,7 @@ package FuncSpec {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::F"))) (kind kerml-function) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::G")))))

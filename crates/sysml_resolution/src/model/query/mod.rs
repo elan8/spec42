@@ -14,7 +14,6 @@ use crate::index::types;
 use crate::lower::facts::ParameterDirection;
 use crate::model::element_kind;
 use crate::model::render as writer;
-use crate::model::resolver::PublicationCompleteness;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SemanticModel;
 use crate::model::AuthoredReferenceId;
@@ -109,7 +108,7 @@ use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
 use crate::NavigationTarget;
 use crate::OccurrenceRole;
-use crate::PublicationCompleteness as PublicCompleteness;
+use crate::PublicationCompleteness;
 use crate::PublishedDiagnostics;
 use crate::QueryOutcome;
 use crate::RelationshipProvenance;
@@ -127,13 +126,8 @@ use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
 use sysml_contract::{DocumentId, DocumentToken};
 
 impl<D> SemanticModel<D> {
-    pub(crate) fn completeness(&self) -> PublicCompleteness {
-        match self.metadata.completeness {
-            PublicationCompleteness::Complete => PublicCompleteness::Complete,
-            PublicationCompleteness::ParseRecovery => PublicCompleteness::ParseRecovery,
-            PublicationCompleteness::UnsupportedSyntax => PublicCompleteness::UnsupportedSyntax,
-            PublicationCompleteness::NonConverged => PublicCompleteness::NonConverged,
-        }
+    pub(crate) fn completeness(&self) -> PublicationCompleteness {
+        self.metadata.completeness
     }
 
     pub(crate) fn affected_documents(

@@ -18,6 +18,8 @@ pub enum SyntaxOutlineKind {
     Namespace,
     PartDef,
     PartUsage,
+    ItemDef,
+    ItemUsage,
     PortDef,
     PortUsage,
     InterfaceDef,
@@ -27,6 +29,12 @@ pub enum SyntaxOutlineKind {
     ClassifierDecl,
     ActionDef,
     ActionUsage,
+    RequirementDef,
+    RequirementUsage,
+    AnalysisDef,
+    AnalysisUsage,
+    VerificationDef,
+    VerificationUsage,
     ViewDef,
     ViewpointDef,
     RenderingDef,
@@ -45,6 +53,8 @@ impl SyntaxOutlineKind {
             Self::Namespace => "namespace",
             Self::PartDef => "part def",
             Self::PartUsage => "part",
+            Self::ItemDef => "item def",
+            Self::ItemUsage => "item",
             Self::PortDef => "port def",
             Self::PortUsage => "port",
             Self::InterfaceDef => "interface",
@@ -54,6 +64,12 @@ impl SyntaxOutlineKind {
             Self::ClassifierDecl => "classifier decl",
             Self::ActionDef => "action def",
             Self::ActionUsage => "action",
+            Self::RequirementDef => "requirement def",
+            Self::RequirementUsage => "requirement",
+            Self::AnalysisDef => "analysis def",
+            Self::AnalysisUsage => "analysis",
+            Self::VerificationDef => "verification def",
+            Self::VerificationUsage => "verification",
             Self::ViewDef => "view def",
             Self::ViewpointDef => "viewpoint def",
             Self::RenderingDef => "rendering def",
@@ -70,9 +86,13 @@ impl SyntaxOutlineKind {
             self,
             Self::PartDef
                 | Self::PortDef
+                | Self::ItemDef
                 | Self::InterfaceDef
                 | Self::AttributeDef
                 | Self::ActionDef
+                | Self::RequirementDef
+                | Self::AnalysisDef
+                | Self::VerificationDef
                 | Self::ViewDef
                 | Self::ViewpointDef
                 | Self::RenderingDef

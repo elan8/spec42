@@ -55,7 +55,10 @@ fn outline_kind_to_lsp(kind: SyntaxOutlineKind) -> SymbolKind {
         SyntaxOutlineKind::Package
         | SyntaxOutlineKind::Namespace
         | SyntaxOutlineKind::LibraryPackage => SymbolKind::MODULE,
-        SyntaxOutlineKind::PartDef | SyntaxOutlineKind::ClassifierDecl => SymbolKind::CLASS,
+        SyntaxOutlineKind::PartDef
+        | SyntaxOutlineKind::ItemDef
+        | SyntaxOutlineKind::RequirementDef
+        | SyntaxOutlineKind::ClassifierDecl => SymbolKind::CLASS,
         SyntaxOutlineKind::PortDef
         | SyntaxOutlineKind::InterfaceDef
         | SyntaxOutlineKind::PortUsage => SymbolKind::INTERFACE,
@@ -63,9 +66,15 @@ fn outline_kind_to_lsp(kind: SyntaxOutlineKind) -> SymbolKind {
         | SyntaxOutlineKind::AttributeUsage
         | SyntaxOutlineKind::FeatureDecl
         | SyntaxOutlineKind::Ref => SymbolKind::PROPERTY,
-        SyntaxOutlineKind::ActionDef => SymbolKind::FUNCTION,
-        SyntaxOutlineKind::PartUsage => SymbolKind::OBJECT,
-        SyntaxOutlineKind::ActionUsage => SymbolKind::EVENT,
+        SyntaxOutlineKind::ActionDef
+        | SyntaxOutlineKind::AnalysisDef
+        | SyntaxOutlineKind::VerificationDef => SymbolKind::FUNCTION,
+        SyntaxOutlineKind::PartUsage
+        | SyntaxOutlineKind::ItemUsage
+        | SyntaxOutlineKind::RequirementUsage => SymbolKind::OBJECT,
+        SyntaxOutlineKind::ActionUsage
+        | SyntaxOutlineKind::AnalysisUsage
+        | SyntaxOutlineKind::VerificationUsage => SymbolKind::EVENT,
         SyntaxOutlineKind::ViewDef
         | SyntaxOutlineKind::ViewpointDef
         | SyntaxOutlineKind::RenderingDef

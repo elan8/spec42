@@ -290,7 +290,7 @@ package VehicleUsages {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d4be45bd61d1cb232eb9686b40df25058196ae41734ca466b6646780276eadef") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d4be45bd61d1cb232eb9686b40df25058196ae41734ca466b6646780276eadef") (contract-version "parser-owned-resolution-v2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example usages of elements from the vehicle definitions model.\n\t ")) (comment (text " VALUES ")) (comment (text " PARTS "))))
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleDefinitions") (import (shape namespace) (recursive false))))))

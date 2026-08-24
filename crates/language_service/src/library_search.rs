@@ -9,7 +9,7 @@
 //! The `kind` an item carries is the host's own symbol-kind vocabulary, which the host fills in;
 //! this module only groups on it.
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::BTreeMap;
 
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 use url::Url;
@@ -179,66 +179,37 @@ impl RecoverySearchSymbol {
 /// Search-only recovery, and typed as such: a caller must name
 /// [`RecoverySearchSymbol::into_search_only_symbol`] to use one, so a recovered candidate cannot be
 /// mistaken for a published symbol.
-pub fn recover_short_name_search_symbols(content: &str, uri: &Url) -> Vec<RecoverySearchSymbol> {
-    let mut entries: Vec<RecoverySearchSymbol> = Vec::new();
-    let mut existing_names = HashSet::new();
-    for (line_idx, line) in content.lines().enumerate() {
-        let mut cursor = 0usize;
-        while let Some(open_rel) = line[cursor..].find('<') {
-            let open = cursor + open_rel;
-            let after_open = open + 1;
-            let Some(close_rel) = line[after_open..].find('>') else {
-                break;
-            };
-            let close = after_open + close_rel;
-            let token = &line[after_open..close];
-            cursor = close + 1;
-            if !is_valid_decl_name(token) || existing_names.contains(token) {
-                continue;
-            }
-
-            let start_char = line[..after_open].chars().count() as u32;
-            let end_char = start_char + token.chars().count() as u32;
-            let anchor = entries
-                .iter()
-                .find(|e| e.0.range.start.line == line_idx as u32 && !e.0.name.trim().is_empty());
-            let (container_name, detail, description) = match anchor {
-                Some(a) => (
-                    a.0.container_name.clone(),
-                    a.0.detail.clone(),
-                    Some(format!("short name for {}", a.0.name)),
-                ),
-                None => (
-                    None,
-                    Some("short name".to_string()),
-                    Some("short name from declaration".to_string()),
-                ),
-            };
-            entries.push(RecoverySearchSymbol(SymbolEntry {
-                name: token.to_string(),
+pub fn search_symbols_from_recovered_short_names(
+    parsed: &sysml_query::syntax::ParsedSource,
+    uri: &Url,
+) -> Vec<RecoverySearchSymbol> {
+    parsed
+        .recovered_short_names()
+        .into_iter()
+        .map(|short_name| {
+            debug_assert_eq!(
+                short_name.provenance,
+                sysml_query::syntax::SyntaxRecoveryProvenance::ParserRecovery
+            );
+            RecoverySearchSymbol(SymbolEntry {
+                name: short_name.name.to_owned(),
                 uri: uri.clone(),
                 range: TextRange::new(
-                    TextPosition::new(line_idx as u32, start_char),
-                    TextPosition::new(line_idx as u32, end_char),
+                    TextPosition::new(
+                        short_name.range.start_line,
+                        short_name.range.start_character,
+                    ),
+                    TextPosition::new(short_name.range.end_line, short_name.range.end_character),
                 ),
-                container_name,
-                detail,
-                description,
+                container_name: None,
+                detail: Some("recovered short name".to_string()),
+                description: short_name
+                    .declaration_name
+                    .map(|name| format!("parser-recovered short name for {name}")),
                 signature: None,
-            }));
-            existing_names.insert(token.to_string());
-        }
-    }
-    entries
-}
-
-fn is_valid_decl_name(token: &str) -> bool {
-    let mut chars = token.chars();
-    match chars.next() {
-        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
-        _ => return false,
-    }
-    chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
+            })
+        })
+        .collect()
 }
 
 fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {

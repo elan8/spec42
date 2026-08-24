@@ -5,20 +5,6 @@ asking the syntax service. Each cluster lands as one change: add the typed query
 service, migrate the callers, delete the heuristic, and remove its exemption entry from
 `crates/sysml_query/tests/syntax_authority.rs`. Exemptions exist only while an entry is listed here.
 
-## Quick-fix text scans
-
-`crates/language_service/src/code_actions.rs` still parses declaration headers from line text,
-counts braces to find a container's extent, and answers "does this definition already exist" by
-scanning the lines of the same file.
-
-The queries it needs exist now — `declaration_at`, `enclosing_declarations`, `body_range`,
-`typed_by` — so what is left is the migration and one behaviour decision: the public suggesters
-take `source: &str`, and a publication-wide "definition already exists" check needs the published
-model rather than the file's own lines. Both are signature changes through
-`lsp_server::language`, which is why this did not land with the rest of the outline work. The
-file will still spell declaration keywords afterwards, because the text it *writes* (`part def X
-{ }`) is presentation, so the exemption narrows rather than disappears.
-
 ## Name-only token roles
 
 `crates/sysml_tokens/src/ast_ranges.rs` narrows a wide declaration span to the declared name by
@@ -26,15 +12,6 @@ searching the line for `def ` and the package-like keywords. Retiring it needs t
 to publish the *name* span as its own role, which is a change to the semantic-token collector
 (`sysml_resolution::syntax::token_ranges`) with an intended golden diff over published tokens —
 a reviewed change of its own, not a side effect of an outline query.
-
-## Recovery search over short names
-
-`recover_short_name_search_symbols` (`crates/language_service/src/library_search.rs`) recovers
-`<shortName>` declarations from library documents the publication did not admit. The outline now
-publishes `short_name`, but only for declarations whose AST node carries an identification — and
-this path exists for documents whose parse *failed*, where the outline is empty or partial. It
-needs either short names on every declaration form or a recovery-aware query; until then the
-text scan is the only answer for an unparseable file.
 
 ## A container accessor on published qualified names
 

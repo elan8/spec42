@@ -488,6 +488,7 @@ mod tests {
                     source: "spec42".to_string(),
                     code: "demo_rule".to_string(),
                     message: "Demo warning".to_string(),
+                    unresolved_reference_target: None,
                     related_information: Vec::new(),
                 }],
             }],

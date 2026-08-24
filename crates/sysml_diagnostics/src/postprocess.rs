@@ -282,6 +282,7 @@ mod tests {
             source: PARSER_SOURCE.to_string(),
             code: "recovered_part_def_body_element".to_string(),
             message: "recovered".to_string(),
+            unresolved_reference_target: None,
             related_information: Vec::new(),
         }
     }
@@ -294,6 +295,7 @@ mod tests {
             source: SEMANTIC_SOURCE.to_string(),
             code: code.to_string(),
             message: code.to_string(),
+            unresolved_reference_target: None,
             related_information: Vec::new(),
         }
     }

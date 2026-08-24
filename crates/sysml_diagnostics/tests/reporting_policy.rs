@@ -96,3 +96,21 @@ fn repeated_and_reordered_queries_answer_identically() {
     let second = document_diagnostics(&model, &admitted, ReportingPolicy::default());
     assert_eq!(first, second);
 }
+
+#[test]
+fn unresolved_reference_context_is_typed_and_not_recovered_from_message() {
+    let model = publish("package P { part p : Missing::Thing; }");
+    let diagnostics = document_diagnostics(
+        &model,
+        &Url::parse(DOCUMENT).expect("uri"),
+        ReportingPolicy::default(),
+    );
+    let unresolved = diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "unresolved_type_reference")
+        .expect("unresolved type diagnostic");
+    assert_eq!(
+        unresolved.unresolved_reference_target.as_deref(),
+        Some("Missing::Thing")
+    );
+}
