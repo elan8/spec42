@@ -147,7 +147,7 @@ jobs:
           # Subprocess layer: exit codes, the output transaction and cross-process
           # determinism, none of which the in-process corpus can observe. Must run after the
           # plugins are built or it skips itself.
-          cargo test -p server --test generator_cli
+          cargo test -p server --test integration generator_cli
 
       - name: Sandboxed Rust generator smoke
         run: |
@@ -258,12 +258,10 @@ jobs:
 
       - name: Agent CLI surface integration tests
         run: |
-          cargo test -p server \
-            --test cli_ai_tools \
-            --test kitchen_timer_check \
-            --test kpar_stdlib_embed_smoke \
-            --test multi_file_check \
-            -- --include-ignored
+          # One integration binary per crate; each module is selected by name.
+          for module in cli_ai_tools kitchen_timer_check kpar_stdlib_embed_smoke multi_file_check; do
+            cargo test -p server --test integration "$module" -- --include-ignored
+          done
 
   frontend-unit:
     name: Frontend unit checks

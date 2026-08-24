@@ -61,7 +61,7 @@ pub enum AnnotationForm {
 
 /// One exact derived `Element` documentation collection selected by a pinned manifest rule.
 ///
-/// The values themselves remain [`Documentation`] facts from the canonical publication. The
+/// The values themselves remain `Documentation` facts from the canonical publication. The
 /// selector distinguishes the OMG's `Documentation` and `TextualRepresentation` metaclasses
 /// without reducing either to rendered source text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

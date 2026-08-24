@@ -245,9 +245,9 @@ Spec42 uses two Rust integration layers in CI:
 ### Rust (core, fast path)
 
 ```bash
-cargo test --workspace --exclude spec42
-cargo test -p spec42 --lib
-cargo test -p spec42 --test multi_file_check
+cargo test --workspace --exclude server
+cargo test -p server --lib
+cargo test -p server --test integration multi_file_check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
@@ -268,10 +268,8 @@ cargo test --workspace --no-default-features
 CLI agent-tool tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent CLI code:
 
 ```bash
-cargo test -p spec42 \
-  --test cli_ai_tools \
-  --test kitchen_timer_check \
-  -- --include-ignored
+cargo test -p server --test integration cli_ai_tools -- --include-ignored
+cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 ```
 
 | Integration test | Surface |
@@ -367,10 +365,8 @@ The first reports wall time and divan's allocation profile per case; the second 
 Tests (see [Running Tests](#running-tests) → agent CLI surfaces):
 
 ```bash
-cargo test -p spec42 \
-  --test cli_ai_tools \
-  --test kitchen_timer_check \
-  -- --include-ignored
+cargo test -p server --test integration cli_ai_tools -- --include-ignored
+cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
