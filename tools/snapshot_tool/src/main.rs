@@ -2648,27 +2648,51 @@ fn regenerate_snapshot(
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
         parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
-    let canonical_model = sysml_query::Services::new()
-        .publication
-        .publish(&admitted_documents, std::iter::empty::<Box<str>>())
-        .map_err(|error| {
-            format!(
-                "{}: canonical semantic build failed: {error}",
-                path.display()
-            )
-        })?;
-    // These direct builds are owner-internal equivalence lanes. Snapshot artifacts consume only
+    // A fixture that selects a library is built over the cached library stratum, exactly as a
+    // warm host does: three builds of the fixture's own documents (the facade-shaped canonical
+    // publication and the two direct strategy lanes) rather than three cold builds of the whole
+    // standard library. Cold/full versus warm/stratum parity is proven once, structurally, by
+    // `crates/sysml_resolution/tests/incremental_reuse.rs` over the examples corpus; it is not
+    // re-proven per fixture. A fixture without a library keeps the cold path, which is small.
+    let (canonical_model, sequential_model, parallel_model) =
+        if let Some(stratum) = libraries.stratum(meta.libraries)? {
+            let sequential_model = Arc::new(build_model_with_library(
+                &workspace_source_documents,
+                ConstructionStrategy::Sequential,
+                stratum,
+                path,
+            )?);
+            let parallel_model = Arc::new(build_model_with_library(
+                &workspace_source_documents,
+                ConstructionStrategy::Parallel,
+                stratum,
+                path,
+            )?);
+            (Arc::clone(&parallel_model), sequential_model, parallel_model)
+        } else {
+            let canonical_model = sysml_query::Services::new()
+                .publication
+                .publish(&admitted_documents, std::iter::empty::<Box<str>>())
+                .map_err(|error| {
+                    format!(
+                        "{}: canonical semantic build failed: {error}",
+                        path.display()
+                    )
+                })?;
+            let sequential_model = Arc::new(build_model(
+                &source_documents,
+                ConstructionStrategy::Sequential,
+                path,
+            )?);
+            let parallel_model = Arc::new(build_model(
+                &source_documents,
+                ConstructionStrategy::Parallel,
+                path,
+            )?);
+            (canonical_model, sequential_model, parallel_model)
+        };
+    // The direct builds are owner-internal equivalence lanes. Snapshot artifacts consume only
     // `canonical_model`, exactly as production hosts do.
-    let sequential_model = Arc::new(build_model(
-        &source_documents,
-        ConstructionStrategy::Sequential,
-        path,
-    )?);
-    let parallel_model = Arc::new(build_model(
-        &source_documents,
-        ConstructionStrategy::Parallel,
-        path,
-    )?);
     let sequential = render_owned_sections(
         &sequential_model,
         &documents,
@@ -2694,41 +2718,6 @@ fn regenerate_snapshot(
     ensure_strategy_parity(path, &canonical, &sequential).map_err(|error| {
         format!("{error}; canonical publication and direct equivalence lane differ")
     })?;
-    let warm_models = if let Some(stratum) = libraries.stratum(meta.libraries)? {
-        let warm_sequential = Arc::new(build_model_with_library(
-            &workspace_source_documents,
-            ConstructionStrategy::Sequential,
-            stratum,
-            path,
-        )?);
-        let warm_parallel = Arc::new(build_model_with_library(
-            &workspace_source_documents,
-            ConstructionStrategy::Parallel,
-            stratum,
-            path,
-        )?);
-        let warm_sequential_sections = render_owned_sections(
-            &warm_sequential,
-            &documents,
-            &source_documents,
-            &probes,
-            &qualified_reference_probes,
-        )?;
-        let warm_parallel_sections = render_owned_sections(
-            &warm_parallel,
-            &documents,
-            &source_documents,
-            &probes,
-            &qualified_reference_probes,
-        )?;
-        ensure_strategy_parity(path, &warm_sequential_sections, &warm_parallel_sections)?;
-        ensure_strategy_parity(path, &sequential, &warm_sequential_sections).map_err(|error| {
-            format!("{error}; cold/full and warm/library-stratum publications differ")
-        })?;
-        Some((warm_sequential, warm_parallel))
-    } else {
-        None
-    };
     ensure_sections_balanced(&canonical).map_err(|error| format!("{}: {error}", path.display()))?;
 
     let semantic_mismatch = if let Some(expectations) = &semantic_expectations {
@@ -2767,40 +2756,6 @@ fn regenerate_snapshot(
                     "sequential",
                     "parallel",
                 )?;
-                if let Some((warm_sequential, warm_parallel)) = &warm_models {
-                    let warm_sequential_observations =
-                        observe_semantic_expectations(warm_sequential, expectations).map_err(
-                            |error| {
-                                format!(
-                            "{}: warm sequential semantic expectation query failed: {error}",
-                            path.display()
-                        )
-                            },
-                        )?;
-                    let warm_parallel_observations =
-                        observe_semantic_expectations(warm_parallel, expectations).map_err(
-                            |error| {
-                                format!(
-                                    "{}: warm parallel semantic expectation query failed: {error}",
-                                    path.display()
-                                )
-                            },
-                        )?;
-                    ensure_semantic_expectation_parity(
-                        path,
-                        &sequential_observations,
-                        &warm_sequential_observations,
-                        "cold sequential",
-                        "warm sequential",
-                    )?;
-                    ensure_semantic_expectation_parity(
-                        path,
-                        &warm_sequential_observations,
-                        &warm_parallel_observations,
-                        "warm sequential",
-                        "warm parallel",
-                    )?;
-                }
                 compare_semantic_expectations(expectations, &canonical_observations).err()
             }
         }
@@ -2871,20 +2826,6 @@ fn regenerate_snapshot(
                 "{}: sequential and parallel generation differ",
                 path.display()
             ));
-        }
-        if let Some((warm_sequential, warm_parallel)) = &warm_models {
-            let warm_sequential_generated =
-                execute_generation(Arc::clone(warm_sequential), generation, path)?;
-            let warm_parallel_generated =
-                execute_generation(Arc::clone(warm_parallel), generation, path)?;
-            if sequential_generated != warm_sequential_generated
-                || sequential_generated != warm_parallel_generated
-            {
-                return Err(format!(
-                    "{}: cold/full and warm/library-stratum generation differ",
-                    path.display()
-                ));
-            }
         }
         replace_or_insert_generated_section(&fixture, &canonical_generated)
     } else {
