@@ -12,38 +12,10 @@ use crate::language::{
     suggest_qualify_ambiguous_name_quick_fixes, suggest_search_library_for_symbol_quick_fix,
     suggest_show_standard_library_info_quick_fix, suggest_wrap_in_package,
 };
-use crate::workspace::snapshot::ServerStateSnapshot;
-use crate::workspace::ServerState;
+use crate::session::snapshot::ServerStateSnapshot;
+use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
-
-fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
-    let mut out = Vec::new();
-    let mut stack: Vec<u32> = Vec::new();
-
-    for (line_idx, line) in text.lines().enumerate() {
-        let line_no = line_idx as u32;
-        for ch in line.chars() {
-            if ch == '{' {
-                stack.push(line_no);
-            } else if ch == '}' {
-                if let Some(start_line) = stack.pop() {
-                    if line_no > start_line {
-                        out.push(FoldingRange {
-                            start_line,
-                            start_character: None,
-                            end_line: line_no,
-                            end_character: None,
-                            kind: Some(FoldingRangeKind::Region),
-                            collapsed_text: None,
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    out
-}
+use sysml_query::syntax::SyntaxOutlineKind;
 
 pub(crate) fn signature_help(
     state: &ServerState,
@@ -51,24 +23,33 @@ pub(crate) fn signature_help(
     pos: Position,
 ) -> Result<Option<SignatureHelp>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let line = text.lines().nth(pos.line as usize).unwrap_or("");
+    let line = entry.content().lines().nth(pos.line as usize).unwrap_or("");
     let cursor_prefix = line
         .chars()
         .take(pos.character as usize)
         .collect::<String>();
     let active_param = cursor_prefix.matches(',').count() as u32;
-    let label = if line.contains("part def") {
-        "part def <Name> : <Type>"
-    } else if line.contains("port def") || line.contains("port ") {
-        "port <name> : <PortType>"
-    } else if line.contains("attribute") {
-        "attribute <name> : <AttributeType>"
-    } else {
-        "name : Type"
+    // Which declaration shape to prompt for is a question about the declaration the cursor is
+    // in, and the syntax service answers it. Testing the line's text for `part def` used to
+    // prompt from a keyword in a comment, and from the *enclosing* declaration's keyword when
+    // the cursor sat on a nested member.
+    let label = match entry
+        .parsed
+        .declaration_at(pos.line)
+        .map(|declaration| declaration.kind)
+    {
+        Some(SyntaxOutlineKind::PartDef) => "part def <Name> : <Type>",
+        Some(SyntaxOutlineKind::PortDef | SyntaxOutlineKind::PortUsage) => {
+            "port <name> : <PortType>"
+        }
+        Some(SyntaxOutlineKind::AttributeDef | SyntaxOutlineKind::AttributeUsage) => {
+            "attribute <name> : <AttributeType>"
+        }
+        _ => "name : Type",
     };
     Ok(Some(SignatureHelp {
         signatures: vec![SignatureInformation {
@@ -190,11 +171,10 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let parsed_ranges = collect_folding_ranges(&entry.parsed);
-    if !parsed_ranges.is_empty() {
-        return Ok(Some(parsed_ranges));
-    }
-    Ok(Some(collect_brace_folding_ranges(entry.content())))
+    // One derivation: the syntax service's folding regions, which already survive parser
+    // recovery. An empty answer means the document has no foldable region, not that a second
+    // heuristic should guess one.
+    Ok(Some(collect_folding_ranges(&entry.parsed)))
 }
 
 #[allow(deprecated)]
@@ -210,7 +190,7 @@ pub(crate) fn workspace_symbol(
             let uri = Url::parse(&entry.uri).ok()?;
             Some(SymbolInformation {
                 name: entry.name,
-                kind: workspace_symbol_kind(entry.detail.as_deref().unwrap_or("symbol")),
+                kind: crate::language::element_kind_label_to_lsp(entry.detail.as_deref()),
                 tags: None,
                 deprecated: None,
                 location: Location {
@@ -222,22 +202,6 @@ pub(crate) fn workspace_symbol(
         })
         .collect();
     Ok(Some(out))
-}
-
-fn workspace_symbol_kind(kind: &str) -> SymbolKind {
-    match kind {
-        "package" | "namespace" | "library package" => SymbolKind::MODULE,
-        "part def" | "classifier decl" => SymbolKind::CLASS,
-        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
-        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
-        "action def" => SymbolKind::FUNCTION,
-        "part" => SymbolKind::OBJECT,
-        "action" => SymbolKind::EVENT,
-        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
-            SymbolKind::NAMESPACE
-        }
-        _ => SymbolKind::VARIABLE,
-    }
 }
 
 pub(crate) fn code_action(

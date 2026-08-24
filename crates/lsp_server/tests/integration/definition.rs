@@ -1,7 +1,8 @@
 //! Goto definition integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+    next_id, read_message, read_response, send_message, spawn_server, wait_for_publication,
+    wait_for_publications,
 };
 
 #[test]
@@ -40,48 +41,39 @@ fn lsp_goto_definition() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: the relink task publishes this document's diagnostics only after
+    // its fully resolved graph is committed to the session publication.
+    wait_for_publication(&mut stdout, uri);
 
-    // Go to definition on "A" (usage "part a : A" -> def A). Retry for CI determinism.
-    let mut resolved_uri: Option<String> = None;
-    for _ in 0..100 {
-        let def_id = next_id();
-        let def_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": def_id,
-            "method": "textDocument/definition",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 0, "character": 22 }
-            }
-        });
-        send_message(&mut stdin, &def_req.to_string());
-        let def_resp = read_response(&mut stdout, def_id).expect("definition response");
-        let def_json: serde_json::Value =
-            serde_json::from_str(&def_resp).expect("parse definition response");
-        assert_eq!(def_json["id"], def_id);
-        let result = &def_json["result"];
-
-        let found_uri = if let Some(uri) = result["uri"].as_str() {
-            Some(uri.to_string())
-        } else {
-            result
-                .as_array()
-                .and_then(|arr| arr.first())
-                .and_then(|loc| loc["uri"].as_str())
-                .map(|uri| uri.to_string())
-        };
-        if let Some(uri) = found_uri {
-            resolved_uri = Some(uri);
-            break;
+    // Go to definition on "A" (usage "part a : A" -> def A).
+    let def_id = next_id();
+    let def_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": def_id,
+        "method": "textDocument/definition",
+        "params": {
+            "textDocument": { "uri": uri },
+            "position": { "line": 0, "character": 22 }
         }
-        // See lsp_cross_file_goto_definition: give background indexing real wall-clock
-        // time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(100));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &def_req.to_string());
+    let def_resp = read_response(&mut stdout, def_id).expect("definition response");
+    let def_json: serde_json::Value =
+        serde_json::from_str(&def_resp).expect("parse definition response");
+    assert_eq!(def_json["id"], def_id);
+    let result = &def_json["result"];
 
-    if let Some(u) = resolved_uri {
+    let found_uri = if let Some(uri) = result["uri"].as_str() {
+        Some(uri.to_string())
+    } else {
+        result
+            .as_array()
+            .and_then(|arr| arr.first())
+            .and_then(|loc| loc["uri"].as_str())
+            .map(|uri| uri.to_string())
+    };
+
+    if let Some(u) = found_uri {
         assert!(u.contains("def_test.sysml"));
     } else {
         panic!("definition should return location with uri");
@@ -138,63 +130,40 @@ fn lsp_cross_file_goto_definition() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    let barrier_id = next_id();
-    let barrier_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": barrier_id,
-        "method": "workspace/symbol",
-        "params": { "query": "" }
-    });
-    send_message(&mut stdin, &barrier_req.to_string());
-    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
+    // Deterministic barrier: cross-file indexing is finished for these documents once each
+    // relink task has committed its fully resolved graph to the session publication and
+    // published that document's diagnostics.
+    wait_for_publications(&mut stdout, &[uri_def, uri_use]);
 
     // Go to definition on "Engine" in use.sysml (position at "Engine" in "part e : Engine").
-    // Retry in case indexing in CI is delayed.
-    let mut resolved_uri: Option<String> = None;
-    for _ in 0..20 {
-        let def_id = next_id();
-        let def_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": def_id,
-            "method": "textDocument/definition",
-            "params": {
-                "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 35 }
-            }
-        });
-        send_message(&mut stdin, &def_req.to_string());
-        let def_resp = read_response(&mut stdout, def_id).expect("definition response");
-        let def_json: serde_json::Value =
-            serde_json::from_str(&def_resp).expect("parse definition response");
-        assert_eq!(def_json["id"], def_id);
-        let result = &def_json["result"];
-
-        let found_uri = if let Some(uri) = result["uri"].as_str() {
-            Some(uri.to_string())
-        } else {
-            result
-                .as_array()
-                .and_then(|arr| arr.first())
-                .and_then(|loc| loc["uri"].as_str())
-                .map(|uri| uri.to_string())
-        };
-
-        if let Some(uri) = found_uri {
-            if uri.contains("def.sysml") {
-                resolved_uri = Some(uri);
-                break;
-            }
-            resolved_uri = Some(uri);
+    let def_id = next_id();
+    let def_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": def_id,
+        "method": "textDocument/definition",
+        "params": {
+            "textDocument": { "uri": uri_use },
+            "position": { "line": 0, "character": 35 }
         }
-        // `lsp_barrier` only guarantees the server drained its message queue up to this
-        // point, not that background cross-file indexing has finished. Under CPU-starved
-        // CI runners the retry loop could otherwise burn through all iterations before the
-        // background indexer is even scheduled; give it real wall-clock time between tries.
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &def_req.to_string());
+    let def_resp = read_response(&mut stdout, def_id).expect("definition response");
+    let def_json: serde_json::Value =
+        serde_json::from_str(&def_resp).expect("parse definition response");
+    assert_eq!(def_json["id"], def_id);
+    let result = &def_json["result"];
 
-    let uri = resolved_uri.expect("definition should return location with uri");
+    let found_uri = if let Some(uri) = result["uri"].as_str() {
+        Some(uri.to_string())
+    } else {
+        result
+            .as_array()
+            .and_then(|arr| arr.first())
+            .and_then(|loc| loc["uri"].as_str())
+            .map(|uri| uri.to_string())
+    };
+
+    let uri = found_uri.expect("definition should return location with uri");
     assert!(
         uri.contains("def.sysml"),
         "goto_definition should resolve to def.sysml, got uri: {}",
@@ -254,47 +223,37 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
             .to_string(),
         );
     }
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: every opened document's relink task publishes its diagnostics
+    // only after committing its fully resolved graph to the session publication.
+    wait_for_publications(&mut stdout, &[uri_core, uri_domain, uri_use]);
 
-    let mut resolved_uri: Option<String> = None;
-    for _ in 0..20 {
-        let def_id = next_id();
-        let def_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": def_id,
-            "method": "textDocument/definition",
-            "params": {
-                "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 75 }
-            }
-        });
-        send_message(&mut stdin, &def_req.to_string());
-        let def_resp = read_response(&mut stdout, def_id).expect("definition response");
-        let def_json: serde_json::Value =
-            serde_json::from_str(&def_resp).expect("parse definition response");
-        let result = &def_json["result"];
-
-        let found_uri = if let Some(uri) = result["uri"].as_str() {
-            Some(uri.to_string())
-        } else {
-            result
-                .as_array()
-                .and_then(|arr| arr.first())
-                .and_then(|loc| loc["uri"].as_str())
-                .map(|uri| uri.to_string())
-        };
-
-        if let Some(uri) = found_uri {
-            resolved_uri = Some(uri);
-            break;
+    let def_id = next_id();
+    let def_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": def_id,
+        "method": "textDocument/definition",
+        "params": {
+            "textDocument": { "uri": uri_use },
+            "position": { "line": 0, "character": 75 }
         }
-        // See lsp_cross_file_goto_definition: give background indexing real wall-clock
-        // time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &def_req.to_string());
+    let def_resp = read_response(&mut stdout, def_id).expect("definition response");
+    let def_json: serde_json::Value =
+        serde_json::from_str(&def_resp).expect("parse definition response");
+    let result = &def_json["result"];
 
-    let uri = resolved_uri.expect("definition should return location with uri");
+    let found_uri = if let Some(uri) = result["uri"].as_str() {
+        Some(uri.to_string())
+    } else {
+        result
+            .as_array()
+            .and_then(|arr| arr.first())
+            .and_then(|loc| loc["uri"].as_str())
+            .map(|uri| uri.to_string())
+    };
+
+    let uri = found_uri.expect("definition should return location with uri");
     assert!(
         uri.contains("core.sysml"),
         "goto_definition should resolve re-exported Name to core.sysml, got uri: {}",

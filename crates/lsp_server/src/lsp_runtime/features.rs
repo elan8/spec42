@@ -10,9 +10,8 @@ use tower_lsp::lsp_types::*;
 use tracing::info;
 
 use crate::common::util;
-use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
-use crate::workspace::ServerState;
+use crate::session::ServerState;
 
 use super::{hierarchy, symbols};
 
@@ -148,29 +147,40 @@ pub(crate) fn linked_editing_range(
     pos: Position,
 ) -> Result<Option<LinkedEditingRanges>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content()) {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let (line, _, _, word) = match word_at_position(text, pos.line, pos.character) {
-        Some(parts) => parts,
-        None => return Ok(None),
+    let Some(token) = entry.parsed.token_at(pos.line, pos.character) else {
+        return Ok(None);
     };
-    if is_reserved_keyword(&word) {
+    if token.is_keyword {
         return Ok(None);
     }
-    let line_text = text.lines().nth(line as usize).unwrap_or("");
-    let declaration_like = line_text.contains(" def ")
-        || line_text.trim_start().starts_with("part ")
-        || line_text.trim_start().starts_with("port ")
-        || line_text.trim_start().starts_with("attribute ")
-        || line_text.trim_start().starts_with("action ");
-    if !declaration_like {
+    let line = token.range.start_line;
+    // Linked editing only applies on a declaration's own header line. The syntax service says
+    // which line that is; this used to guess from the line's leading keyword, which both missed
+    // declaration forms it had not enumerated and fired inside comments and strings.
+    let on_declaration_header = entry
+        .parsed
+        .declaration_at(line)
+        .is_some_and(|declaration| declaration.head_range.start_line == line);
+    if !on_declaration_header {
         return Ok(None);
     }
-    let ranges: Vec<_> = crate::language::find_reference_ranges(text, &word)
+    // Occurrences the syntax service found in code. The substring scan this replaced also
+    // matched inside comments and string literals, so editing a name could rewrite prose.
+    let ranges: Vec<_> = entry
+        .parsed
+        .occurrences_of(token.text)
         .into_iter()
-        .filter(|range| range.start.line == line)
+        .filter(|range| range.start_line == line)
+        .map(|range| {
+            Range::new(
+                Position::new(range.start_line, range.start_character),
+                Position::new(range.end_line, range.end_character),
+            )
+        })
         .collect();
     if ranges.is_empty() {
         return Ok(None);
@@ -222,11 +232,11 @@ fn hierarchy_step(
     let outcome = if ascending {
         model
             .types()
-            .direct_supertypes(&element.identity, SpecializationScope::AnySpecialization)
+            .direct_supertypes(element.identity, SpecializationScope::AnySpecialization)
     } else {
         model
             .types()
-            .direct_subtypes(&element.identity, SpecializationScope::AnySpecialization)
+            .direct_subtypes(element.identity, SpecializationScope::AnySpecialization)
     };
     let symbols = match outcome {
         QueryOutcome::Resolved(symbols)
@@ -237,11 +247,11 @@ fn hierarchy_step(
     Some(
         symbols
             .iter()
-            .filter_map(|symbol| match model.inspection().inspect(symbol) {
+            .filter_map(|symbol| match model.inspection().inspect(*symbol) {
                 QueryOutcome::Resolved(inspection)
                 | QueryOutcome::Recovered(inspection)
                 | QueryOutcome::UnsupportedWith(inspection) => {
-                    hierarchy::type_hierarchy_item(&inspection)
+                    hierarchy::type_hierarchy_item(model, &inspection)
                 }
                 _ => None,
             })
@@ -258,7 +268,7 @@ pub(crate) fn prepare_type_hierarchy(
     let Some(element) = element_at(state, &uri_norm, pos) else {
         return Ok(None);
     };
-    Ok(hierarchy::type_hierarchy_item(&element).map(|item| vec![item]))
+    Ok(hierarchy::type_hierarchy_item(state.published_model(), &element).map(|item| vec![item]))
 }
 
 pub(crate) fn supertypes(

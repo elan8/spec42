@@ -47,3 +47,13 @@ wrappers = ["sysml_query"]
 [[bans.deny]]
 name = "sysml_source"
 wrappers = ["sysml_resolution"]
+
+# The vocabulary crate is not an authority -- it computes nothing -- but the consumer rule is the
+# same and is stated here before anything moves into it. `sysml_query` re-exports the contract
+# verbatim, so a consumer that named `sysml_contract` directly would pin the vocabulary's crate
+# identity instead of the facade's, and every later move of a type into this crate would become a
+# consumer-visible API change. Three crates may name it: the two authorities that implement it and
+# the facade that re-exports it.
+[[bans.deny]]
+name = "sysml_contract"
+wrappers = ["sysml_source", "sysml_resolution", "sysml_query"]

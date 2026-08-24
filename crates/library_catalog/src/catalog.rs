@@ -171,7 +171,7 @@ fn resolve_stdlib_component(
             };
             return Ok(StdlibComponent {
                 path: Some(managed_path.clone()),
-                roots: stdlib_resolution_roots(&managed_path, Some(&metadata)),
+                roots: stdlib_library_roots(&managed_path, Some(&metadata)),
                 source: Some(source),
                 used_legacy_vscode_fallback: false,
             });
@@ -185,7 +185,7 @@ fn resolve_stdlib_component(
                 .map_err(CatalogError::from)?;
         let path = PathBuf::from(&metadata.install_path);
         return Ok(StdlibComponent {
-            roots: stdlib_resolution_roots(&path, Some(&metadata)),
+            roots: stdlib_library_roots(&path, Some(&metadata)),
             path: Some(path),
             source: Some("bundled".to_string()),
             used_legacy_vscode_fallback: false,
@@ -194,7 +194,7 @@ fn resolve_stdlib_component(
 
     if let Some(path) = legacy_vscode_stdlib_path(&request.standard_library) {
         return Ok(StdlibComponent {
-            roots: stdlib_resolution_roots(&path, None),
+            roots: stdlib_library_roots(&path, None),
             path: Some(path),
             source: Some("legacy-vscode".to_string()),
             used_legacy_vscode_fallback: true,
@@ -366,18 +366,6 @@ fn merge_package_roots(
         .collect()
 }
 
-fn stdlib_resolution_roots(
-    install_path: &Path,
-    metadata: Option<&crate::library::stdlib::StandardLibraryMetadata>,
-) -> Vec<PathBuf> {
-    let roots = stdlib_library_roots(install_path, metadata);
-    if roots.is_empty() {
-        vec![install_path.to_path_buf()]
-    } else {
-        roots
-    }
-}
-
 /// Scans every configured package root (in configured precedence order) and hashes every
 /// admitted source file's actual bytes into a [`RootDigest`] (plan §5.2/§5.3). A version string
 /// or install directory alone is never sufficient identity for a mutable local library root;
@@ -410,13 +398,7 @@ fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceMani
             continue;
         }
         let path = entry.path();
-        let is_admitted = path
-            .extension()
-            .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| {
-                ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml")
-            });
-        if !is_admitted {
+        if !sysml_query::source::is_sysml_like(path) {
             continue;
         }
         let Ok(bytes) = std::fs::read(path) else {

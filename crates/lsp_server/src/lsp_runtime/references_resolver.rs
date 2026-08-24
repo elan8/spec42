@@ -1,5 +1,5 @@
 use crate::common::text_span::{to_core_position, to_lsp_range};
-use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
+use crate::session::{snapshot::ServerStateSnapshot, ServerState};
 use language_service::WorkspaceSnapshot;
 use tower_lsp::lsp_types::{Location, Position, Url};
 

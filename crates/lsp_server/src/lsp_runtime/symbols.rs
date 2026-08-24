@@ -2,7 +2,7 @@
 
 use std::time::Instant;
 
-use crate::workspace::ServerState;
+use crate::session::ServerState;
 use tower_lsp::lsp_types::{CodeLens, Url};
 use tracing::info;
 

@@ -27,31 +27,23 @@ pub struct ResolvedSymbolTarget {
     pub identifier_range: TextRange,
 }
 
-fn query_position(position: TextPosition) -> sysml_query::resolved_slice::TextPosition {
-    sysml_query::resolved_slice::TextPosition {
-        line: position.line,
-        character: position.character,
-    }
-}
-
-fn core_range(range: sysml_query::resolved_slice::TextRange) -> TextRange {
-    TextRange::new(
-        TextPosition::new(range.start.line, range.start.character),
-        TextPosition::new(range.end.line, range.end.character),
-    )
-}
-
+/// A published location, projected onto the host's path vocabulary.
+///
+/// The location names its document by handle, so the identity is materialised here from the
+/// model that answered the query -- once per location a host is about to show a person.
 fn location(
     workspace: &impl WorkspaceSnapshot,
+    model: &sysml_query::resolved_slice::PublishedModel,
     value: sysml_query::resolved_slice::SourceLocation,
 ) -> SourceLocation {
+    let identity = model.document_identity(value.document).unwrap_or_default();
     let path = workspace
-        .resolve_uri_for_path(&value.document)
+        .resolve_uri_for_path(identity)
         .map(|uri| workspace.path_for_uri(&uri))
-        .unwrap_or_else(|| value.document.to_string());
+        .unwrap_or_else(|| identity.to_owned());
     SourceLocation {
         path,
-        range: core_range(value.range),
+        range: value.range,
     }
 }
 
@@ -70,9 +62,7 @@ pub fn goto_definition_at_position(
             locations: Vec::new(),
         };
     };
-    let outcome = model
-        .navigation()
-        .target_at(uri.as_str(), query_position(position));
+    let outcome = model.navigation().target_at(uri.as_str(), position);
     let targets: Vec<_> = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -83,7 +73,7 @@ pub fn goto_definition_at_position(
     DefinitionResult {
         locations: targets
             .into_iter()
-            .map(|target| location(workspace, target.location))
+            .map(|target| location(workspace, model, target.location))
             .collect(),
     }
 }
@@ -93,10 +83,8 @@ pub fn resolve_symbol_target_at_position(
     uri: &url::Url,
     position: TextPosition,
 ) -> Option<ResolvedSymbolTarget> {
-    let outcome = workspace
-        .published_model()?
-        .navigation()
-        .target_at(uri.as_str(), query_position(position));
+    let model = workspace.published_model()?;
+    let outcome = model.navigation().target_at(uri.as_str(), position);
     let target = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -104,9 +92,12 @@ pub fn resolve_symbol_target_at_position(
         _ => return None,
     };
     Some(ResolvedSymbolTarget {
-        name: target.name.to_string(),
-        definition_location: location(workspace, target.location.clone()),
-        identifier_range: core_range(target.location.range),
+        name: model
+            .symbol_name(target.symbol)
+            .unwrap_or_default()
+            .to_owned(),
+        definition_location: location(workspace, model, target.location),
+        identifier_range: target.location.range,
     })
 }
 
@@ -126,9 +117,7 @@ pub fn find_references_at_position(
             locations: Vec::new(),
         };
     };
-    let target_outcome = model
-        .navigation()
-        .target_at(uri.as_str(), query_position(position));
+    let target_outcome = model.navigation().target_at(uri.as_str(), position);
     let target = match target_outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(target)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(target)
@@ -141,7 +130,7 @@ pub fn find_references_at_position(
     };
     let locations_outcome = model
         .navigation()
-        .references(&target.symbol, include_declaration);
+        .references(target.symbol, include_declaration);
     let locations = match locations_outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(locations)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(locations)
@@ -156,7 +145,7 @@ pub fn find_references_at_position(
         locations: locations
             .into_vec()
             .into_iter()
-            .map(|value| location(workspace, value))
+            .map(|value| location(workspace, model, value))
             .collect(),
     }
 }

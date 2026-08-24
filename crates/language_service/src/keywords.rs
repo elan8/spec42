@@ -22,6 +22,10 @@ snapshot specializes stakeholder standard state subject subsets succession termi
 transition true until use variant variation verification verify via view viewpoint when while xor";
 
 /// Curated subset of reserved keywords used for completion suggestions.
+///
+/// A presentation order over the facade's vocabulary, not a second vocabulary: the test below
+/// holds every entry to [`is_reserved_keyword`], so a word the syntax service does not reserve
+/// cannot be offered as a keyword.
 pub fn sysml_keywords() -> &'static [&'static str] {
     &[
         "package",
@@ -618,6 +622,21 @@ mod tests {
         for identifier in ["value", "provides", "requires"] {
             assert!(!is_reserved_keyword(identifier), "{identifier}");
             assert!(keyword_hover_markdown(identifier).is_none(), "{identifier}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod completion_keyword_tests {
+    use super::*;
+
+    #[test]
+    fn every_completion_keyword_is_one_the_syntax_service_reserves() {
+        for keyword in sysml_keywords() {
+            assert!(
+                is_reserved_keyword(keyword),
+                "`{keyword}` is offered for completion but the syntax service does not reserve it"
+            );
         }
     }
 }

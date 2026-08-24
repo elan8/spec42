@@ -55,7 +55,7 @@ fn subsetting_target<'a>(
         .map(|view| view.authored_text())
 }
 
-fn typing_target_display(
+pub(super) fn typing_target_display(
     document: &ParsedRoot,
     relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
 ) -> Option<String> {
@@ -640,6 +640,13 @@ pub(crate) fn push_import_target(
         ImportShape::Filter { .. } => "",
     };
     out.push(format!("{target}{suffix}"));
+}
+
+/// Every type a declaration names, in source order.
+pub(super) fn type_reference_targets(document: &ParsedRoot) -> Vec<String> {
+    let mut sink = RefSink::default();
+    collect_type_reference_targets_from_root(document, &mut sink);
+    sink.targets
 }
 
 /// Everything closure resolution asks, from one already-parsed tree.

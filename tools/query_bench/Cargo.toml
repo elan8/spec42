@@ -1,0 +1,31 @@
+[package]
+name = "spec42-query-bench"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+# The bench crate names the facade and nothing else. It lives outside `crates/sysml_query` on
+# purpose: `crates/sysml_query/tests/architecture.rs` pins the facade's dependency set exactly,
+# and a dev-dependency added there would change it.
+
+[lib]
+name = "spec42_query_bench"
+path = "src/lib.rs"
+
+# Allocations per element: a counting global allocator cannot live in the same binary as divan's
+# own profiler, so the measurement is its own target.
+[[bin]]
+name = "spec42-query-bench-allocations"
+path = "src/main.rs"
+
+[[bench]]
+name = "query"
+path = "benches/query.rs"
+harness = false
+
+[dependencies]
+sysml_query = { path = "../../crates/sysml_query" }
+
+[dev-dependencies]
+divan = "0.1"

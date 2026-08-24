@@ -1,7 +1,8 @@
 //! Find references integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server, TestSession,
+    next_id, read_message, read_response, send_message, spawn_server, wait_for_publication,
+    wait_for_publications, TestSession,
 };
 
 /// Cross-file references: find references to a symbol defined in one file and used in another.
@@ -51,53 +52,33 @@ fn lsp_cross_file_references() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    let barrier_id = next_id();
-    let barrier_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": barrier_id,
-        "method": "workspace/symbol",
-        "params": { "query": "" }
-    });
-    send_message(&mut stdin, &barrier_req.to_string());
-    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
+    // Deterministic barrier: each document's diagnostics are published by its relink task after
+    // the fully resolved cross-document graph is committed to the session publication.
+    wait_for_publications(&mut stdout, &[uri_def, uri_use]);
 
     // Find references at "Widget" in use.sysml (include_declaration = true -> def + use).
-    // Retry until both expected files appear (CI indexing can lag).
-    let mut uris: Vec<String> = Vec::new();
-    for _ in 0..20 {
-        let ref_id = next_id();
-        let ref_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": ref_id,
-            "method": "textDocument/references",
-            "params": {
-                "textDocument": { "uri": uri_use },
-                "position": { "line": 0, "character": 34 },
-                "context": { "includeDeclaration": true }
-            }
-        });
-        send_message(&mut stdin, &ref_req.to_string());
-        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-        let ref_json: serde_json::Value =
-            serde_json::from_str(&ref_resp).expect("parse references response");
-        assert_eq!(ref_json["id"], ref_id);
-        let locs = ref_json["result"]
-            .as_array()
-            .expect("references should return array");
-        uris = locs
-            .iter()
-            .filter_map(|l| l["uri"].as_str().map(String::from))
-            .collect();
-        if uris.iter().any(|u| u.contains("def.sysml"))
-            && uris.iter().any(|u| u.contains("use.sysml"))
-        {
-            break;
+    let ref_id = next_id();
+    let ref_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": ref_id,
+        "method": "textDocument/references",
+        "params": {
+            "textDocument": { "uri": uri_use },
+            "position": { "line": 0, "character": 34 },
+            "context": { "includeDeclaration": true }
         }
-        // See definition::lsp_cross_file_goto_definition: give background indexing real
-        // wall-clock time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &ref_req.to_string());
+    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+    let ref_json: serde_json::Value =
+        serde_json::from_str(&ref_resp).expect("parse references response");
+    assert_eq!(ref_json["id"], ref_id);
+    let uris: Vec<String> = ref_json["result"]
+        .as_array()
+        .expect("references should return array")
+        .iter()
+        .filter_map(|l| l["uri"].as_str().map(String::from))
+        .collect();
     assert!(
         uris.iter().any(|u| u.contains("def.sysml")),
         "references should include def.sysml: {:?}",
@@ -155,46 +136,32 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: the relink task publishes diagnostics for this document only after
+    // its fully resolved graph is committed to the session publication. One request afterwards
+    // is enough — no retry budget, no wall-clock guess.
+    wait_for_publication(&mut stdout, uri);
 
     // Query references for Laptop::hdmi declaration (line 2).
-    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
-    for _ in 0..20 {
-        let ref_id = next_id();
-        let ref_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": ref_id,
-            "method": "textDocument/references",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 2, "character": 13 },
-                "context": { "includeDeclaration": true }
-            }
-        });
-        send_message(&mut stdin, &ref_req.to_string());
-        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-        let ref_json: serde_json::Value =
-            serde_json::from_str(&ref_resp).expect("parse references response");
-        let locs = ref_json["result"]
-            .as_array()
-            .expect("references should return array");
-        let has_laptop_decl = locs
-            .iter()
-            .any(|l| l["range"]["start"]["line"].as_u64() == Some(2));
-        let has_monitor_decl = locs
-            .iter()
-            .any(|l| l["range"]["start"]["line"].as_u64() == Some(5));
-        if has_laptop_decl && !has_monitor_decl {
-            collected_locs = locs.clone();
-            break;
+    let ref_id = next_id();
+    let ref_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": ref_id,
+        "method": "textDocument/references",
+        "params": {
+            "textDocument": { "uri": uri },
+            "position": { "line": 2, "character": 13 },
+            "context": { "includeDeclaration": true }
         }
-        collected_locs = locs.clone();
-        // See definition::lsp_cross_file_goto_definition: give background indexing real
-        // wall-clock time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
-    let locs = &collected_locs;
+    });
+    send_message(&mut stdin, &ref_req.to_string());
+    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+    let ref_json: serde_json::Value =
+        serde_json::from_str(&ref_resp).expect("parse references response");
+    let locs = ref_json["result"]
+        .as_array()
+        .expect("references should return array")
+        .clone();
+    let locs = &locs;
 
     // Must include Laptop declaration line.
     assert!(
@@ -262,43 +229,30 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: diagnostics for this document are published by the relink task
+    // after its fully resolved graph is committed to the session publication.
+    wait_for_publication(&mut stdout, uri);
 
-    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
-    for _ in 0..20 {
-        let ref_id = next_id();
-        let ref_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": ref_id,
-            "method": "textDocument/references",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 2, "character": 13 },
-                "context": { "includeDeclaration": true }
-            }
-        });
-        send_message(&mut stdin, &ref_req.to_string());
-        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-        let ref_json: serde_json::Value =
-            serde_json::from_str(&ref_resp).expect("parse references response");
-        let locs = ref_json["result"]
-            .as_array()
-            .expect("references should return array");
-        let has_decl = locs.iter().any(|l| {
-            l["range"]["start"]["line"].as_u64() == Some(2)
-                && l["range"]["start"]["character"].as_u64() == Some(13)
-        });
-        if has_decl {
-            collected_locs = locs.clone();
-            break;
+    let ref_id = next_id();
+    let ref_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": ref_id,
+        "method": "textDocument/references",
+        "params": {
+            "textDocument": { "uri": uri },
+            "position": { "line": 2, "character": 13 },
+            "context": { "includeDeclaration": true }
         }
-        collected_locs = locs.clone();
-        // See definition::lsp_cross_file_goto_definition: give background indexing real
-        // wall-clock time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
-    let locs = &collected_locs;
+    });
+    send_message(&mut stdin, &ref_req.to_string());
+    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+    let ref_json: serde_json::Value =
+        serde_json::from_str(&ref_resp).expect("parse references response");
+    let locs = ref_json["result"]
+        .as_array()
+        .expect("references should return array")
+        .clone();
+    let locs = &locs;
 
     assert!(
         locs.iter().any(|l| {
@@ -374,48 +328,31 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
         }
     });
     send_message(&mut stdin, &did_open_library.to_string());
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: both documents' relink tasks publish diagnostics only after their
+    // fully resolved graphs are committed to the session publication — including the library
+    // document opened outside the workspace root.
+    wait_for_publications(&mut stdout, &[uri_workspace, uri_library]);
 
-    // In slower CI environments, index updates can lag; retry until workspace declaration
-    // appears. This test additionally opens a document outside the workspace root
-    // (`file:///stdlib/...` vs. `rootUri` `file:///refs`), which has been observed to need more
-    // wall-clock time to settle under CI contention than same-root cross-file cases — so this
-    // budget is intentionally larger than the sibling reference tests' 20 * 50ms.
-    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
-    for _ in 0..40 {
-        let ref_id = next_id();
-        let ref_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": ref_id,
-            "method": "textDocument/references",
-            "params": {
-                "textDocument": { "uri": uri_workspace },
-                "position": { "line": 2, "character": 13 },
-                "context": { "includeDeclaration": true }
-            }
-        });
-        send_message(&mut stdin, &ref_req.to_string());
-        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-        let ref_json: serde_json::Value =
-            serde_json::from_str(&ref_resp).expect("parse references response");
-        let locs = ref_json["result"]
-            .as_array()
-            .expect("references should return array");
-        if locs
-            .iter()
-            .any(|l| l["uri"].as_str().is_some_and(|u| u == uri_workspace))
-        {
-            collected_locs = locs.clone();
-            break;
+    let ref_id = next_id();
+    let ref_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": ref_id,
+        "method": "textDocument/references",
+        "params": {
+            "textDocument": { "uri": uri_workspace },
+            "position": { "line": 2, "character": 13 },
+            "context": { "includeDeclaration": true }
         }
-        collected_locs = locs.clone();
-        // See definition::lsp_cross_file_goto_definition: give background indexing real
-        // wall-clock time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(100));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
-
-    let locs = &collected_locs;
+    });
+    send_message(&mut stdin, &ref_req.to_string());
+    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+    let ref_json: serde_json::Value =
+        serde_json::from_str(&ref_resp).expect("parse references response");
+    let locs = ref_json["result"]
+        .as_array()
+        .expect("references should return array")
+        .clone();
+    let locs = &locs;
     assert!(
         locs.iter()
             .any(|l| l["uri"].as_str().is_some_and(|u| u == uri_workspace)),

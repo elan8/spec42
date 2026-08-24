@@ -1,0 +1,16 @@
+[package]
+name = "sysml_contract"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "The semantic vocabulary every SysML answer is spoken in; it computes nothing"
+
+[dependencies]
+source_identity = { path = "../source_identity" }
+serde = { workspace = true, optional = true }
+
+[features]
+# The vocabulary's wire form, and the only thing a feature on this crate may ever admit: a derive
+# on types that already carry no behaviour. It cannot pull in an authority, a parser, or I/O.
+serde = ["dep:serde"]

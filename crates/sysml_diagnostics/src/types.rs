@@ -8,6 +8,11 @@
 use sysml_query::resolved_slice::TextRange;
 use url::Url;
 
+/// The `source` value a parser-owned diagnostic carries, as editors already key on it.
+pub const PARSER_SOURCE: &str = "sysml";
+/// The `source` value a resolution-owned diagnostic carries.
+pub const SEMANTIC_SOURCE: &str = "semantic";
+
 /// How a host presents one diagnostic.
 ///
 /// The three the publication settles. There is deliberately no `Hint`: nothing produces one, and a

@@ -370,7 +370,7 @@ impl GeneratorRuntime {
 
     /// Validates and compiles a core module without loading a model snapshot.
     pub fn prepare(&self, module_bytes: &[u8]) -> Result<PreparedGenerator, GeneratorHostError> {
-        let generator_digest = digest(module_bytes);
+        let generator_digest = artifact_digest(module_bytes);
         if !Parser::is_core_wasm(module_bytes) {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ArtifactInvalid,
@@ -1357,7 +1357,12 @@ fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
     })
 }
 
-fn digest(bytes: &[u8]) -> String {
+/// The digest format a generation artifact is identified by.
+///
+/// A generation result verifies by comparing the digest the host recorded for an artifact with
+/// the digest a later reader computes over the bytes on disk. The two must be the same string for
+/// the same bytes, so the format is declared once, here, where artifacts are produced.
+pub fn artifact_digest(bytes: &[u8]) -> String {
     format!("sha256:{:x}", Sha256::digest(bytes))
 }
 

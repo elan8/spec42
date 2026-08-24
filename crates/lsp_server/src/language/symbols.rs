@@ -5,35 +5,112 @@ use crate::common::text_span::to_lsp_range;
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
-use sysml_query::syntax::ParsedSource;
-use tower_lsp::lsp_types::{
-    DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
-};
+use sysml_query::resolved_slice::ElementKind;
+use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind};
+use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind};
 
-/// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
-pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
-    use crate::common::text_span::to_lsp_range;
-
-    language_service::find_reference_ranges(source, name)
-        .into_iter()
-        .map(to_lsp_range)
-        .collect()
+/// The one label a host prints for an LSP [`SymbolKind`], the inverse of the table above.
+///
+/// It lives beside `outline_kind_to_lsp` so the crate's kind vocabulary has one home: the library
+/// browser labels an outline kind by composing the two, rather than keeping a third table.
+pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
+    match kind {
+        SymbolKind::FILE => "file",
+        SymbolKind::MODULE => "module",
+        SymbolKind::NAMESPACE => "namespace",
+        SymbolKind::PACKAGE => "package",
+        SymbolKind::CLASS => "class",
+        SymbolKind::METHOD => "method",
+        SymbolKind::PROPERTY => "property",
+        SymbolKind::FIELD => "field",
+        SymbolKind::CONSTRUCTOR => "constructor",
+        SymbolKind::ENUM => "enum",
+        SymbolKind::INTERFACE => "interface",
+        SymbolKind::FUNCTION => "function",
+        SymbolKind::VARIABLE => "variable",
+        SymbolKind::CONSTANT => "constant",
+        SymbolKind::STRING => "string",
+        SymbolKind::NUMBER => "number",
+        SymbolKind::BOOLEAN => "boolean",
+        SymbolKind::ARRAY => "array",
+        SymbolKind::OBJECT => "object",
+        SymbolKind::KEY => "key",
+        SymbolKind::NULL => "null",
+        SymbolKind::ENUM_MEMBER => "enumMember",
+        SymbolKind::STRUCT => "struct",
+        SymbolKind::EVENT => "event",
+        SymbolKind::OPERATOR => "operator",
+        SymbolKind::TYPE_PARAMETER => "typeParameter",
+        _ => "symbol",
+    }
 }
 
-fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
+/// The single outline-kind -> LSP [`SymbolKind`] table for this crate.
+///
+/// It matches on the published [`SyntaxOutlineKind`] rather than on the authored keyword, so a
+/// new declaration form the grammar publishes is a compile error here instead of silently
+/// classifying as a variable; document symbols and workspace symbols share this one table.
+fn outline_kind_to_lsp(kind: SyntaxOutlineKind) -> SymbolKind {
     match kind {
-        "package" | "namespace" | "library package" => SymbolKind::MODULE,
-        "part def" | "classifier decl" => SymbolKind::CLASS,
-        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
-        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
-        "action def" => SymbolKind::FUNCTION,
-        "part" => SymbolKind::OBJECT,
-        "action" => SymbolKind::EVENT,
-        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
-            SymbolKind::NAMESPACE
+        SyntaxOutlineKind::Package
+        | SyntaxOutlineKind::Namespace
+        | SyntaxOutlineKind::LibraryPackage => SymbolKind::MODULE,
+        SyntaxOutlineKind::PartDef | SyntaxOutlineKind::ClassifierDecl => SymbolKind::CLASS,
+        SyntaxOutlineKind::PortDef
+        | SyntaxOutlineKind::InterfaceDef
+        | SyntaxOutlineKind::PortUsage => SymbolKind::INTERFACE,
+        SyntaxOutlineKind::AttributeDef
+        | SyntaxOutlineKind::AttributeUsage
+        | SyntaxOutlineKind::FeatureDecl
+        | SyntaxOutlineKind::Ref => SymbolKind::PROPERTY,
+        SyntaxOutlineKind::ActionDef => SymbolKind::FUNCTION,
+        SyntaxOutlineKind::PartUsage => SymbolKind::OBJECT,
+        SyntaxOutlineKind::ActionUsage => SymbolKind::EVENT,
+        SyntaxOutlineKind::ViewDef
+        | SyntaxOutlineKind::ViewpointDef
+        | SyntaxOutlineKind::RenderingDef
+        | SyntaxOutlineKind::ViewUsage
+        | SyntaxOutlineKind::ViewpointUsage
+        | SyntaxOutlineKind::RenderingUsage => SymbolKind::NAMESPACE,
+    }
+}
+
+/// The LSP [`SymbolKind`] for a published semantic element kind.
+///
+/// Workspace symbols and the library browser carry an [`ElementKind`] metaclass name, not an
+/// outline keyword: they used to be passed through the outline table, where no metaclass name
+/// matched and every symbol arrived as a variable. Classifying the parsed kind is the fix.
+fn element_kind_to_lsp(kind: Option<ElementKind>) -> SymbolKind {
+    let Some(kind) = kind else {
+        return SymbolKind::VARIABLE;
+    };
+    match kind {
+        ElementKind::Namespace | ElementKind::Package | ElementKind::LibraryPackage => {
+            SymbolKind::MODULE
         }
+        ElementKind::PortDefinition | ElementKind::InterfaceDefinition | ElementKind::PortUsage => {
+            SymbolKind::INTERFACE
+        }
+        ElementKind::AttributeDefinition
+        | ElementKind::AttributeUsage
+        | ElementKind::ReferenceUsage => SymbolKind::PROPERTY,
+        ElementKind::ActionDefinition | ElementKind::CalculationDefinition => SymbolKind::FUNCTION,
+        ElementKind::ActionUsage | ElementKind::CalculationUsage => SymbolKind::EVENT,
+        ElementKind::PartUsage | ElementKind::ItemUsage => SymbolKind::OBJECT,
+        ElementKind::ViewDefinition
+        | ElementKind::ViewpointDefinition
+        | ElementKind::RenderingDefinition
+        | ElementKind::ViewUsage
+        | ElementKind::ViewpointUsage
+        | ElementKind::RenderingUsage => SymbolKind::NAMESPACE,
+        other if other.as_str().ends_with("Definition") => SymbolKind::CLASS,
         _ => SymbolKind::VARIABLE,
     }
+}
+
+/// The LSP [`SymbolKind`] for a metaclass name a published symbol entry carries.
+pub(crate) fn element_kind_label_to_lsp(label: Option<&str>) -> SymbolKind {
+    element_kind_to_lsp(label.and_then(ElementKind::parse))
 }
 
 fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
@@ -46,8 +123,8 @@ fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
         .collect::<Vec<_>>();
     DocumentSymbol {
         name: symbol.name,
-        detail: Some(symbol.kind.clone()),
-        kind: outline_kind_to_lsp(&symbol.kind),
+        detail: Some(symbol.kind.keyword().to_string()),
+        kind: outline_kind_to_lsp(symbol.kind),
         tags: None,
         deprecated: None,
         range,
@@ -87,20 +164,6 @@ pub fn collect_folding_ranges(root: &ParsedSource) -> Vec<FoldingRange> {
         .collect()
 }
 
-/// Workspace-wide symbol entry: one definable name with location and semantic info.
-#[derive(Debug, Clone)]
-pub struct SymbolEntry {
-    pub name: String,
-    pub uri: Url,
-    pub range: Range,
-    pub kind: SymbolKind,
-    pub container_name: Option<String>,
-    pub detail: Option<String>,
-    pub description: Option<String>,
-    /// One-line signature for hover code block (e.g. "part def Vehicle : Car;").
-    pub signature: Option<String>,
-}
-
 /// Collects all named elements from the document for hover/completion: (name, short_description).
 /// Every named element in the document, flattened, with a short description.
 ///
@@ -110,7 +173,10 @@ pub struct SymbolEntry {
 pub fn collect_named_elements(document: &ParsedSource) -> Vec<(String, String)> {
     fn push(node: &language_service::OutlineSymbol, out: &mut Vec<(String, String)>) {
         if !node.name.is_empty() {
-            out.push((node.name.clone(), format!("{} '{}'", node.kind, node.name)));
+            out.push((
+                node.name.clone(),
+                format!("{} '{}'", node.kind.keyword(), node.name),
+            ));
         }
         for child in &node.children {
             push(child, out);

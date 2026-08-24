@@ -15,9 +15,7 @@
 //! The collapse table is pinned by a test, so a *new* collapse cannot appear by accident.
 
 use super::DeclarationKind;
-use crate::element_kind::{
-    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
-};
+use crate::{ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind};
 
 /// The published kind of a declaration.
 pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
@@ -321,7 +319,7 @@ pub(crate) fn membership_role_with_trigger(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::model::resolver::writer::declaration_kind;
+    use crate::model::render::declaration_kind;
     use std::collections::{BTreeMap, BTreeSet};
 
     /// Every declaration kind.
@@ -613,13 +611,13 @@ mod tests {
     }
 
     /// The kebab names are the *identity* channel, not the classification channel: they are
-    /// length-prefixed into every published `SymbolIdentity`
+    /// length-prefixed into every published `SymbolId`
     /// (`model/resolver.rs`, `encode_identity`). Changing one silently changes identities that
     /// consumers may be holding, so any edit here has to move `IDENTITY_ENCODING_VERSION` too.
     #[test]
     fn identity_kind_names_are_frozen_with_the_encoding_version() {
         assert_eq!(
-            crate::model::resolver::IDENTITY_ENCODING_VERSION,
+            crate::index::identity::IDENTITY_ENCODING_VERSION,
             "element/v1",
             "the identity encoding version changed; confirm every kebab kind name below is still \
              correct for it"

@@ -70,5 +70,5 @@ else
 fi
 
 echo "Run the zero-warning gate with:"
-echo "  cargo test -p server --test robot_vacuum_check -- --ignored --nocapture"
-echo "  cargo test -p workspace --test robot_vacuum_snapshot -- --ignored --nocapture"
+echo "  cargo test -p server --test integration robot_vacuum_check -- --ignored --nocapture"
+echo "  cargo test -p workspace --test integration robot_vacuum_snapshot -- --ignored --nocapture"

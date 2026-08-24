@@ -18,13 +18,16 @@ embed-stdlib = ["library_catalog/embed-stdlib"]
 embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
 
 [dependencies]
+# The batch host: validation, reports, engine and snapshots.
 workspace = { path = "../workspace" }
 library_catalog = { path = "../library_catalog", default-features = false }
+# Launch-only: `run_lsp`, `default_server_config`, `init_tracing`, and the custom-RPC traits.
+# Nothing semantic and no validation crosses this edge — see `crates/sysml_query/tests/architecture.rs`.
 lsp_server = { path = "../lsp_server" }
+sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
-walkdir = "2"
 kpar = { path = "../kpar" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }

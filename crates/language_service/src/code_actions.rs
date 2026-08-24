@@ -4,6 +4,7 @@ use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
+use crate::text::utf16_len;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagnosticLine {
@@ -21,11 +22,13 @@ fn line_full_range(line: u32, line_text: &str) -> TextRange {
     )
 }
 
-fn utf16_len(s: &str) -> u32 {
-    s.encode_utf16().count() as u32
-}
-
-fn parse_untyped_part_usage_name(raw_line: &str) -> Option<String> {
+/// The name of the untyped `part` usage a declaration line declares, if it declares one.
+///
+/// The one predicate for "this line is an untyped part usage": the code action that offers to
+/// create a definition and the host's advisory diagnostic must agree about which lines qualify,
+/// and a second copy of the test is a second answer. Text-level by necessity — the line may not
+/// have parsed — and it recovers a name, never a semantic fact.
+pub fn parse_untyped_part_usage_name(raw_line: &str) -> Option<String> {
     let code_only = raw_line.split("//").next().unwrap_or("");
     let trimmed = code_only.trim();
     if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {

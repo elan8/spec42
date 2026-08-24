@@ -13,7 +13,6 @@ name = "lsp_server"
 default = []
 
 [dependencies]
-workspace = { path = "../workspace", default-features = false }
 session_actor = { path = "../session_actor" }
 language_service = { path = "../language_service" }
 generator_api = { path = "../generator_api" }

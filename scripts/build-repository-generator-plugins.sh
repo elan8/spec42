@@ -19,8 +19,11 @@ to_native_path() {
   fi
 }
 root_native="$(to_native_path "$root")"
+# Registry sources (`$CARGO_HOME/registry/src/...`) are embedded by panic locations and debug
+# info too; without this remap a macOS-built guest and a Linux-built guest differ in bytes.
+cargo_home_native="$(to_native_path "${CARGO_HOME:-$HOME/.cargo}")"
 
-RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain" \
+RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-path-prefix=${sysroot}=/rustc-toolchain --remap-path-prefix=${cargo_home_native}=/cargo-home" \
   cargo build \
   --manifest-path "$root/generator-plugins/Cargo.toml" \
   --release \
@@ -31,3 +34,6 @@ cp \
   "$root/vscode/generators/diagram.wasm"
 
 echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
+echo "note: the committed diagram.wasm must be the bytes CI's ubuntu job builds (a guest links the"
+echo "      host toolchain's precompiled wasm32 std, so hosts differ by a few bytes); to refresh the"
+echo "      committed file, download the repository-generator-plugins artifact from a CI run."

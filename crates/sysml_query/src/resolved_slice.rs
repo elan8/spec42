@@ -2,10 +2,12 @@
 
 use std::fmt;
 
+use crate::source::Url;
+
 pub use sysml_resolution::{
-    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
-    ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation, AnnotationForm,
-    AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
+    requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
+    ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation,
+    AnnotationForm, AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, BuildMeasurements,
     Conformance, ConformanceObstacle, ConnectedElement, DefinitionUsageDerivedKind,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
@@ -13,16 +15,17 @@ pub use sysml_resolution::{
     DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
     DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
     DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
-    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
-    DiagramViewProjection, Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin,
-    EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt,
-    ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind, ElementModifier,
-    ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection,
-    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind,
-    MembershipRole, MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
+    DiagramSemanticReference, DiagramStateTransition, DiagramStateTransitionScene,
+    DiagramStateVertex, DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry,
+    DiagramViewKind, DiagramViewProjection, DocumentId, DocumentToken, Documentation,
+    EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
+    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
+    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
+    ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
     PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
     QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, RedefinitionCheckKind,
@@ -33,12 +36,12 @@ pub use sysml_resolution::{
     RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
     SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
     SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
-    TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection, TypeDerivedFactKind,
-    TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
     TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 /// Provenance of an admitted source; the one enum the source authority defines.
@@ -267,6 +270,77 @@ impl PublishedModel {
         DebugQueries { model: &self.inner }
     }
 
+    /// The authored name of one element, borrowed from this publication.
+    ///
+    /// `None` where the element is anonymous. Results carry the handle rather than a copy of the
+    /// name; this is where a host that has to render one reads it.
+    pub fn symbol_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.inner.symbol_name(symbol)
+    }
+
+    /// The `::`-joined display path of one element, borrowed from this publication.
+    ///
+    /// A display convenience, not an identity: two elements under an anonymous ancestor can share
+    /// one. Borrowed, so showing a name costs no allocation.
+    pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
+        self.inner.qualified_name(symbol)
+    }
+
+    /// One run of authored text, borrowed from this publication.
+    ///
+    /// Published facts carry a [`TextId`] rather than a copy of text the publication already
+    /// interned; this is where a host that has to render one reads it. `None` for a handle this
+    /// publication never minted.
+    pub fn text(&self, id: TextId) -> Option<&str> {
+        self.inner.text(id)
+    }
+
+    /// The stable, serialisable form of one element handle.
+    ///
+    /// A [`SymbolId`] addresses an element of *this* publication and must not outlive it. Take a
+    /// [`SymbolToken`] for anything that crosses a process or protocol boundary -- an LSP DTO, a
+    /// JSON report, an archive entry, the generator protocol -- or that has to survive a rebuild.
+    /// Materialising one allocates; it is a boundary operation, asked for explicitly.
+    pub fn symbol_token(&self, symbol: SymbolId) -> Option<SymbolToken> {
+        self.inner.symbol_token(symbol)
+    }
+
+    /// The handle a token names in this publication, if it still names one.
+    pub fn resolve_token(&self, token: &SymbolToken) -> Option<SymbolId> {
+        self.inner.resolve_token(token)
+    }
+
+    /// The normalised identity -- the URI -- of one document, borrowed from this publication.
+    ///
+    /// Every published location names its document by [`DocumentId`], not by string. This is the
+    /// one place that turns a handle back into text, and it borrows: a host that groups a
+    /// thousand references by document pays for one lookup per group, not one copy per result.
+    pub fn document_identity(&self, document: DocumentId) -> Option<&str> {
+        self.inner.document_identity(document)
+    }
+
+    /// The stable, serialisable form of one document handle.
+    ///
+    /// A [`DocumentId`] addresses a document of *this* publication and must not outlive it. Take
+    /// a [`DocumentToken`] for anything that crosses a process or protocol boundary or has to
+    /// survive a rebuild; its text is byte-for-byte what [`Self::document_identity`] borrows.
+    pub fn document_token(&self, document: DocumentId) -> Option<DocumentToken> {
+        self.inner.document_token(document)
+    }
+
+    /// The handle a document token names in this publication, if it still names one.
+    pub fn resolve_document_token(&self, token: &DocumentToken) -> Option<DocumentId> {
+        self.inner.resolve_document_token(token)
+    }
+
+    /// The handle for a document identity a host already holds as text.
+    ///
+    /// The boundary an editor request crosses: it names a document by URI once, and every
+    /// answer after that is handles.
+    pub fn document_of(&self, identity: &str) -> Option<DocumentId> {
+        self.inner.document_of(identity)
+    }
+
     pub fn publication(&self) -> PublicationQueries<'_> {
         PublicationQueries { model: &self.inner }
     }
@@ -320,6 +394,81 @@ impl DependencyQueries<'_> {
     ) -> QueryOutcome<Box<[AffectedDocument]>> {
         self.model.affected_documents(changed_document)
     }
+
+    /// The workspace documents whose diagnostics may change when `provider` changes.
+    ///
+    /// The derivation a host needs to decide what to republish, answered once here rather than
+    /// per host: the publication's settled import and alias facts name the dependents, and the
+    /// answer is narrowed to workspace documents because library documents are not republished.
+    ///
+    /// `workspace` is the host's own set of workspace document identities. It is used only for
+    /// the conservative answer, which stays explicit in the result rather than being indexed:
+    /// only a publication that could not settle the dependency graph produces a conservative
+    /// answer, and a caller can always tell over-invalidation from an exact empty answer.
+    pub fn workspace_documents_affected_by(
+        &self,
+        workspace: impl IntoIterator<Item = Url>,
+        provider: &Url,
+    ) -> AffectedWorkspaceDocuments {
+        let mut all_workspace = workspace.into_iter().collect::<Vec<_>>();
+        all_workspace.sort();
+        all_workspace.dedup();
+        all_workspace.retain(|uri| uri != provider);
+
+        let documents = match self.affected_documents(provider.as_str()) {
+            QueryOutcome::Resolved(documents) => documents,
+            QueryOutcome::Recovered(_)
+            | QueryOutcome::UnsupportedWith(_)
+            | QueryOutcome::Unresolved
+            | QueryOutcome::Ambiguous(_)
+            | QueryOutcome::Unsupported
+            | QueryOutcome::Recovery
+            | QueryOutcome::Incomplete => {
+                return AffectedWorkspaceDocuments {
+                    uris: all_workspace,
+                    conservative: true,
+                }
+            }
+        };
+
+        let mut uris = documents
+            .iter()
+            .filter(|document| document.source == ElementSource::Workspace)
+            .filter_map(|document| Url::parse(&document.identity).ok())
+            .collect::<Vec<_>>();
+        uris.sort();
+        uris.dedup();
+        AffectedWorkspaceDocuments {
+            uris,
+            conservative: false,
+        }
+    }
+}
+
+/// Which workspace documents a host must republish after one document changed.
+///
+/// `is_conservative` is the explicit unsettled state: the publication could not settle the
+/// dependency graph, so every workspace document is named rather than a narrower set being
+/// guessed. It is never a resolved answer wearing an exact set's clothes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AffectedWorkspaceDocuments {
+    uris: Vec<Url>,
+    conservative: bool,
+}
+
+impl AffectedWorkspaceDocuments {
+    /// True when the dependency graph was not settled and the answer over-invalidates.
+    pub fn is_conservative(&self) -> bool {
+        self.conservative
+    }
+
+    pub fn uris(&self) -> &[Url] {
+        &self.uris
+    }
+
+    pub fn into_uris(self) -> Vec<Url> {
+        self.uris
+    }
 }
 
 pub struct DiagramQueries<'a> {
@@ -331,8 +480,24 @@ impl DiagramQueries<'_> {
         self.model.diagram_view_catalog()
     }
 
-    pub fn view(&self, identity: &SymbolIdentity) -> QueryOutcome<DiagramViewProjection> {
+    pub fn view(&self, identity: SymbolId) -> QueryOutcome<DiagramViewProjection> {
         self.model.diagram_view(identity)
+    }
+
+    /// The display name of one catalogued view, borrowed from the publication.
+    ///
+    /// The authored name, falling back to the `::`-joined display path for an anonymous view
+    /// usage. A catalog entry carries the handle rather than a copy of this text.
+    pub fn view_name(&self, view: SymbolId) -> Option<&str> {
+        self.model.diagram_view_name(view)
+    }
+
+    /// The occurrence identity the projection uses for one exposed root.
+    ///
+    /// An occurrence carries the scene key generators and reports publish, which is derived from
+    /// boundary tokens; a consumer takes the occurrence from here rather than assembling a path.
+    pub fn root_occurrence(&self, root: SymbolId) -> Option<DiagramOccurrenceIdentity> {
+        self.model.diagram_root_occurrence(root)
     }
 }
 
@@ -349,10 +514,10 @@ pub struct DiagnosticQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl DiagnosticQueries<'_> {
+impl<'a> DiagnosticQueries<'a> {
     /// The published diagnostics, canonically ordered, with the completeness of the publication
     /// that produced them. Only workspace-authored documents are reported.
-    pub fn published(&self) -> PublishedDiagnostics {
+    pub fn published(&self) -> PublishedDiagnostics<'a> {
         self.model.diagnostics()
     }
 
@@ -362,7 +527,7 @@ impl DiagnosticQueries<'_> {
     /// computes: repeating the query, or asking about documents in any order, answers identically.
     /// A document this publication did not admit answers with no diagnostics and the same
     /// completeness, which is why the completeness travels with the answer.
-    pub fn for_document(&self, document: &str) -> PublishedDiagnostics {
+    pub fn for_document(&self, document: &str) -> PublishedDiagnostics<'a> {
         self.model.document_diagnostics(document)
     }
 }
@@ -380,7 +545,7 @@ pub struct EvaluationQueries<'a> {
 
 impl EvaluationQueries<'_> {
     /// What this publication settled for one element's authored expression.
-    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+    pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
         self.model.evaluate(symbol)
     }
 }
@@ -395,19 +560,19 @@ pub struct TypeQueries<'a> {
 
 impl TypeQueries<'_> {
     /// The types a feature declares.
-    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn direct_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.direct_types(symbol)
     }
 
     pub fn requirement_usage_typing(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<RequirementUsageTyping> {
         self.model.requirement_usage_typing(symbol)
     }
 
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
-    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+    pub fn effective_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[EffectiveType]>> {
         self.model.effective_types(symbol)
     }
 
@@ -416,7 +581,7 @@ impl TypeQueries<'_> {
     ///
     /// Missing and ambiguous anchors stay explicit query outcomes; this facade never substitutes
     /// a name from a rendered model or from fixture metadata.
-    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolIdentity> {
+    pub fn part_definition_specialization_anchor(&self) -> QueryOutcome<SymbolId> {
         self.model.part_definition_specialization_anchor()
     }
 
@@ -424,7 +589,7 @@ impl TypeQueries<'_> {
     ///
     /// The rule ID identifies an authoritative manifest entry. An absent or unresolved anchor is
     /// `Unresolved`; competing standard-library declarations remain `Ambiguous` candidates.
-    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_specialization_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_specialization_anchor(rule_id)
     }
 
@@ -434,14 +599,14 @@ impl TypeQueries<'_> {
         &self,
         rule_id: &str,
         branch: LibrarySpecializationAnchorBranch,
-    ) -> QueryOutcome<SymbolIdentity> {
+    ) -> QueryOutcome<SymbolId> {
         self.model
             .library_specialization_anchor_branch(rule_id, branch)
     }
 
     /// The typed canonical anchor outcome for any generated exact library rule, including
     /// `specializesFromLibrary` and `redefinesFromLibrary` contracts.
-    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolIdentity> {
+    pub fn library_rule_anchor(&self, rule_id: &str) -> QueryOutcome<SymbolId> {
         self.model.library_rule_anchor(rule_id)
     }
 
@@ -456,45 +621,45 @@ impl TypeQueries<'_> {
     /// The supertypes one specialization edge away.
     pub fn direct_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_supertypes(symbol, scope)
     }
 
     /// Every supertype, reflexively including `symbol` itself, as the Pilot's `allSupertypes` does.
     pub fn all_supertypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.all_supertypes(symbol, scope)
     }
 
     /// The declarations one specialization edge below `symbol`.
     pub fn direct_subtypes(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         scope: SpecializationScope,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.direct_subtypes(symbol, scope)
     }
 
     /// The type that features `symbol`, if any.
-    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+    pub fn featuring_type(&self, symbol: SymbolId) -> QueryOutcome<Option<SymbolId>> {
         self.model.featuring_type(symbol)
     }
 
     /// Every effective TypeFeaturing target, retaining authored versus implied provenance.
-    pub fn featuring_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+    pub fn featuring_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.featuring_types(symbol)
     }
 
     /// Whether `specific` conforms to `general` (KerML §8.4.3.2).
     pub fn conforms_to(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
         scope: SpecializationScope,
     ) -> QueryOutcome<Conformance> {
         self.model.conforms_to(specific, general, scope)
@@ -503,8 +668,8 @@ impl TypeQueries<'_> {
     /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
     pub fn feature_typing_conforms(
         &self,
-        specific: &SymbolIdentity,
-        general: &SymbolIdentity,
+        specific: SymbolId,
+        general: SymbolId,
     ) -> QueryOutcome<Conformance> {
         self.model.feature_typing_conforms(specific, general)
     }
@@ -512,8 +677,8 @@ impl TypeQueries<'_> {
     /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
     pub fn subsetting_conforms(
         &self,
-        subsetting: &SymbolIdentity,
-        subsetted: &SymbolIdentity,
+        subsetting: SymbolId,
+        subsetted: SymbolId,
     ) -> QueryOutcome<SubsettingConformance> {
         self.model.subsetting_conforms(subsetting, subsetted)
     }
@@ -561,7 +726,7 @@ impl NavigationQueries<'_> {
 
     pub fn references(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         include_declaration: bool,
     ) -> QueryOutcome<Box<[SourceLocation]>> {
         self.model.references(symbol, include_declaration)
@@ -587,13 +752,17 @@ pub struct CompletionQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl CompletionQueries<'_> {
+impl<'a> CompletionQueries<'a> {
+    /// The members visible at a position, as a borrowed view over the publication.
+    ///
+    /// The view outlives this query handle: it borrows the publication, not the handle, so a
+    /// caller can read it after the `completion()` temporary is gone.
     pub fn visible_members(
         &self,
         document: &str,
         position: TextPosition,
         qualifier: Option<&str>,
-    ) -> QueryOutcome<Box<[VisibleMember]>> {
+    ) -> QueryOutcome<VisibleMembers<'a>> {
         self.model.visible_members(document, position, qualifier)
     }
 }
@@ -617,17 +786,14 @@ impl InspectionQueries<'_> {
     }
 
     /// Everything the publication knows about one element.
-    pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
+    pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
     }
 
     /// The exact derived `Element::owner` fact, from the publication's canonical ownership
     /// structure. A root element resolves to [`DerivedElementOwner::NoOwner`]; it is not an
     /// unresolved query.
-    pub fn derived_element_owner(
-        &self,
-        symbol: &SymbolIdentity,
-    ) -> QueryOutcome<DerivedElementOwner> {
+    pub fn derived_element_owner(&self, symbol: SymbolId) -> QueryOutcome<DerivedElementOwner> {
         self.model.derived_element_owner(symbol)
     }
 
@@ -635,7 +801,7 @@ impl InspectionQueries<'_> {
     /// contract and projected from canonical documentation facts.
     pub fn element_derived_documentation(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ElementDerivedDocumentationCollection,
     ) -> QueryOutcome<Box<[Documentation]>> {
         self.model.element_derived_documentation(symbol, collection)
@@ -657,7 +823,7 @@ impl InspectionQueries<'_> {
     /// to decide how to combine. The facade adapts nothing here -- every field, including which
     /// relationship families are applicable and what each of them settled to, was decided by
     /// `sysml_resolution` at the publication barrier.
-    pub fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+    pub fn element_details(&self, symbol: SymbolId) -> QueryOutcome<ElementDetails> {
         self.model.element_details(symbol)
     }
 
@@ -689,7 +855,7 @@ impl InspectionQueries<'_> {
     /// One exact Feature relationship collection from the canonical relationship store.
     pub fn feature_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: FeatureDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.feature_derived_relationships(symbol, collection)
@@ -698,7 +864,7 @@ impl InspectionQueries<'_> {
     /// One exact Type relationship collection or operand projection from canonical facts.
     pub fn type_derived_relationships(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedRelationshipCollection,
     ) -> QueryOutcome<Box<[ElementRelationship]>> {
         self.model.type_derived_relationships(symbol, collection)
@@ -707,9 +873,9 @@ impl InspectionQueries<'_> {
     /// One exact Type element-valued derivation from canonical ownership and membership facts.
     pub fn type_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.type_derived_elements(symbol, collection)
     }
 
@@ -717,7 +883,7 @@ impl InspectionQueries<'_> {
     /// its canonical semantic owner can publish the normative values.
     pub fn type_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: TypeDerivedFactCollection,
     ) -> QueryOutcome<TypeDerivedFactOutcome> {
         self.model.type_derived_fact(symbol, collection)
@@ -727,7 +893,7 @@ impl InspectionQueries<'_> {
     /// semantic publication. The façade does not reconstruct direct or inherited membership.
     pub fn definition_usage_derived(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         kind: DefinitionUsageDerivedKind,
     ) -> QueryOutcome<DefinitionUsageDerivedOutcome> {
         self.model.definition_usage_derived(symbol, kind)
@@ -735,7 +901,7 @@ impl InspectionQueries<'_> {
 
     pub fn action_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: ActionDerivedFactCollection,
     ) -> QueryOutcome<ActionDerivedFactOutcome> {
         self.model.action_derived_fact(symbol, collection)
@@ -745,7 +911,7 @@ impl InspectionQueries<'_> {
     /// documentation records remain owned by the resolved semantic publication.
     pub fn requirement_derived_fact(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: RequirementDerivedFactCollection,
     ) -> QueryOutcome<RequirementDerivedFactOutcome> {
         self.model.requirement_derived_fact(symbol, collection)
@@ -754,7 +920,7 @@ impl InspectionQueries<'_> {
     /// The manifest-scoped outcome for one exact TypeFeaturing check.
     pub fn type_featuring_check(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         rule: TypeFeaturingCheckKind,
     ) -> QueryOutcome<TypeFeaturingCheckOutcome> {
         self.model.type_featuring_check(symbol, rule)
@@ -780,9 +946,9 @@ impl InspectionQueries<'_> {
     /// facts. This facade does not recreate Namespace membership from syntax or scope labels.
     pub fn namespace_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
         collection: NamespaceDerivedElementCollection,
-    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+    ) -> QueryOutcome<Box<[SymbolId]>> {
         self.model.namespace_derived_elements(symbol, collection)
     }
 
@@ -790,7 +956,7 @@ impl InspectionQueries<'_> {
     /// opaque facade preserves each import's canonical identity and typed target outcome.
     pub fn namespace_import_derived_elements(
         &self,
-        symbol: &SymbolIdentity,
+        symbol: SymbolId,
     ) -> QueryOutcome<Box<[NamespaceImportDerivedElement]>> {
         self.model.namespace_import_derived_elements(symbol)
     }
@@ -813,7 +979,7 @@ impl InspectionQueries<'_> {
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.
-    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+    pub fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
     }
 }
@@ -859,6 +1025,7 @@ impl DebugQueries<'_> {
         probes: &[EditorProbe],
         output: &mut dyn fmt::Write,
     ) -> fmt::Result {
+        let model = &self.model;
         writeln!(output, "(editor-queries")?;
         for probe in probes {
             writeln!(
@@ -867,18 +1034,20 @@ impl DebugQueries<'_> {
                 probe.document, probe.position.line, probe.position.character
             )?;
             let target = self.model.target_at(&probe.document, probe.position);
-            write_target_outcome(output, "target", &target)?;
+            write_target_outcome(model, output, "target", &target)?;
             if let QueryOutcome::Resolved(target)
             | QueryOutcome::Recovered(target)
             | QueryOutcome::UnsupportedWith(target) = &target
             {
                 write_locations_outcome(
+                    model,
                     output,
                     "references",
-                    &self.model.references(&target.symbol, true),
+                    &self.model.references(target.symbol, true),
                 )?;
             }
             write_rename_outcome(
+                model,
                 output,
                 &self.model.prepare_rename(
                     &probe.document,
@@ -895,6 +1064,7 @@ impl DebugQueries<'_> {
                 ),
             )?;
             write_details_at_outcome(
+                model,
                 output,
                 &self
                     .model
@@ -912,6 +1082,7 @@ impl DebugQueries<'_> {
             }
             written.push(probe.document.clone());
             write_document_symbols(
+                model,
                 output,
                 &probe.document,
                 &self.model.document_symbols(&probe.document),
@@ -945,7 +1116,7 @@ impl DebugQueries<'_> {
                     qualified_name: probe.qualified_name.clone().into(),
                     expected_kind: probe.expected_kind,
                 });
-            write_qualified_reference_outcome(output, &outcome)?;
+            write_qualified_reference_outcome(self.model, output, &outcome)?;
             writeln!(output, "  )")?;
         }
         write!(output, ")")
@@ -953,21 +1124,29 @@ impl DebugQueries<'_> {
 }
 
 fn write_qualified_reference_target(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     target: &QualifiedReferenceTarget,
 ) -> fmt::Result {
+    // The probe report is a baseline artefact, so it carries the boundary token, not the handle:
+    // a handle is a rank inside one publication and means nothing in a recorded file.
     write!(
         output,
         "(candidate (identity {:?}) (kind {:?}) (qualified-name {:?}) ",
-        target.identity.as_str(),
+        model
+            .symbol_token(target.identity)
+            .as_ref()
+            .map(SymbolToken::as_str)
+            .unwrap_or_default(),
         target.kind.as_str(),
-        target.qualified_name
+        model.qualified_name(target.identity).unwrap_or_default()
     )?;
-    write_location(output, &target.location)?;
+    write_location(model, output, &target.location)?;
     write!(output, ")")
 }
 
 fn write_qualified_reference_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     outcome: &QualifiedReferenceOutcome,
 ) -> fmt::Result {
@@ -975,15 +1154,15 @@ fn write_qualified_reference_outcome(
     match outcome {
         QualifiedReferenceOutcome::Resolved(target) => {
             write!(output, " (status resolved) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::Recovered(target) => {
             write!(output, " (status recovery) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::UnsupportedWith(target) => {
             write!(output, " (status unsupported) ")?;
-            write_qualified_reference_target(output, target)?;
+            write_qualified_reference_target(model, output, target)?;
         }
         QualifiedReferenceOutcome::Ambiguous(targets)
         | QualifiedReferenceOutcome::WrongKind(targets) => {
@@ -995,7 +1174,7 @@ fn write_qualified_reference_outcome(
             write!(output, " (status {status}) (candidates")?;
             for target in targets {
                 write!(output, " ")?;
-                write_qualified_reference_target(output, target)?;
+                write_qualified_reference_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1008,6 +1187,7 @@ fn write_qualified_reference_outcome(
 }
 
 fn write_document_symbols(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     document: &str,
     outcome: &QueryOutcome<Box<[SymbolEntry]>>,
@@ -1023,8 +1203,12 @@ fn write_document_symbols(
                 if let Some(name) = &entry.name {
                     write!(output, " (name {name:?})")?;
                 }
-                write!(output, " (qualified-name {:?}) ", entry.qualified_name)?;
-                write_location(output, &entry.location)?;
+                write!(
+                    output,
+                    " (qualified-name {:?}) ",
+                    model.qualified_name(entry.identity).unwrap_or_default()
+                )?;
+                write_location(model, output, &entry.location)?;
                 write!(output, " (declaration ")?;
                 write_range(output, entry.declaration_range)?;
                 writeln!(output, "))")?;
@@ -1043,19 +1227,43 @@ fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     )
 }
 
-fn write_location(output: &mut dyn fmt::Write, location: &SourceLocation) -> fmt::Result {
-    write!(output, "(location (document {:?}) ", location.document)?;
+/// A location, rendered with its document identity spelled out.
+///
+/// The published location names its document by handle; a baseline artefact records the URI, so
+/// the identity is materialised here -- at the boundary that writes the file -- and nowhere in
+/// the result itself.
+fn write_location(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    location: &SourceLocation,
+) -> fmt::Result {
+    write!(
+        output,
+        "(location (document {:?}) ",
+        model
+            .document_identity(location.document)
+            .unwrap_or_default()
+    )?;
     write_range(output, location.range)?;
     write!(output, " (role {:?}))", location.role)
 }
 
-fn write_target(output: &mut dyn fmt::Write, target: &NavigationTarget) -> fmt::Result {
-    write!(output, "(candidate (name {:?}) ", target.name)?;
-    write_location(output, &target.location)?;
+fn write_target(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    target: &NavigationTarget,
+) -> fmt::Result {
+    write!(
+        output,
+        "(candidate (name {:?}) ",
+        model.symbol_name(target.symbol).unwrap_or_default()
+    )?;
+    write_location(model, output, &target.location)?;
     write!(output, ")")
 }
 
 fn write_target_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     label: &str,
     outcome: &QueryOutcome<NavigationTarget>,
@@ -1064,21 +1272,21 @@ fn write_target_outcome(
     match outcome {
         QueryOutcome::Resolved(target) => {
             write!(output, "(status resolved) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::Recovered(target) => {
             write!(output, "(status recovery) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::UnsupportedWith(target) => {
             write!(output, "(status unsupported) ")?;
-            write_target(output, target)?;
+            write_target(model, output, target)?;
         }
         QueryOutcome::Ambiguous(targets) => {
             write!(output, "(status ambiguous) (candidates")?;
             for target in targets {
                 write!(output, " ")?;
-                write_target(output, target)?;
+                write_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1091,6 +1299,7 @@ fn write_target_outcome(
 }
 
 fn write_locations_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     label: &str,
     outcome: &QueryOutcome<Box<[SourceLocation]>>,
@@ -1103,7 +1312,7 @@ fn write_locations_outcome(
             write!(output, "(locations")?;
             for value in values.iter() {
                 write!(output, " ")?;
-                write_location(output, value)?;
+                write_location(model, output, value)?;
             }
             write!(output, ")")?;
         }
@@ -1112,15 +1321,19 @@ fn write_locations_outcome(
     writeln!(output, ")")
 }
 
-fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) -> fmt::Result {
+fn write_rename_outcome(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    outcome: &RenameOutcome,
+) -> fmt::Result {
     write!(output, "    (rename ")?;
     match outcome {
         RenameOutcome::Ready {
-            name,
+            symbol,
             range,
             occurrences,
-            ..
         } => {
+            let name = model.symbol_name(*symbol).unwrap_or_default();
             write!(output, "(status ready) (name {name:?}) ")?;
             write_range(output, *range)?;
             write!(output, " (occurrences {})", occurrences.len())?;
@@ -1129,7 +1342,7 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
             write!(output, "(status collision) (candidates")?;
             for target in targets.iter() {
                 write!(output, " ")?;
-                write_target(output, target)?;
+                write_target(model, output, target)?;
             }
             write!(output, ")")?;
         }
@@ -1148,7 +1361,7 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
 
 fn write_members_outcome(
     output: &mut dyn fmt::Write,
-    outcome: &QueryOutcome<Box<[VisibleMember]>>,
+    outcome: &QueryOutcome<VisibleMembers<'_>>,
 ) -> fmt::Result {
     write!(output, "    (visible-members ")?;
     match outcome {
@@ -1160,11 +1373,11 @@ fn write_members_outcome(
                 write!(
                     output,
                     " (member (name {:?}) (qualified-name {:?}) (kind {:?})",
-                    value.name,
-                    value.qualified_name,
-                    value.kind.as_str()
+                    value.name(),
+                    value.qualified_name(),
+                    value.kind().as_str()
                 )?;
-                if let Some(role) = value.role {
+                if let Some(role) = value.role() {
                     write!(output, " (role {:?})", role.as_str())?;
                 }
                 write!(output, ")")?;
@@ -1177,6 +1390,7 @@ fn write_members_outcome(
 }
 
 fn write_details_at_outcome(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     outcome: &QueryOutcome<ElementDetailsAt>,
 ) -> fmt::Result {
@@ -1189,12 +1403,12 @@ fn write_details_at_outcome(
             match &at.containing {
                 Some(containing) => {
                     writeln!(output, "      (containing")?;
-                    write_element(output, "        ", containing)?;
+                    write_element(model, output, "        ", containing)?;
                     writeln!(output, "      )")?;
                 }
                 None => writeln!(output, "      (containing (status none))")?,
             }
-            write_referenced_details(output, &at.referenced)?;
+            write_referenced_details(model, output, &at.referenced)?;
         }
         _ => writeln!(output, "      (status {})", outcome_status(outcome))?,
     }
@@ -1213,6 +1427,7 @@ fn outcome_status<T>(outcome: &QueryOutcome<T>) -> &'static str {
 }
 
 fn write_referenced_details(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     referenced: &ReferencedDetails,
 ) -> fmt::Result {
@@ -1229,13 +1444,13 @@ fn write_referenced_details(
         }
         ReferencedDetails::Resolved(details) => {
             writeln!(output, "      (referenced (status resolved)")?;
-            write_element(output, "        ", details)?;
+            write_element(model, output, "        ", details)?;
             writeln!(output, "      )")
         }
         ReferencedDetails::Ambiguous(candidates) => {
             writeln!(output, "      (referenced (status ambiguous)")?;
             for candidate in candidates.iter() {
-                write_element(output, "        ", candidate)?;
+                write_element(model, output, "        ", candidate)?;
             }
             writeln!(output, "      )")
         }
@@ -1247,6 +1462,7 @@ fn write_referenced_details(
 /// Absent facts are omitted rather than rendered as an empty form, so a snapshot diff that gains a
 /// line is a fact that started being published, not a formatting change.
 fn write_element(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     indent: &str,
     details: &ElementDetails,
@@ -1269,10 +1485,12 @@ fn write_element(
     writeln!(
         output,
         "{indent}  (qualified-name {:?})",
-        inspection.qualified_name
+        model
+            .qualified_name(inspection.identity)
+            .unwrap_or_default()
     )?;
     write!(output, "{indent}  ")?;
-    write_location(output, &inspection.location)?;
+    write_location(model, output, &inspection.location)?;
     writeln!(output)?;
     write!(output, "{indent}  (declaration ")?;
     write_range(output, inspection.declaration_range)?;
@@ -1343,7 +1561,7 @@ fn write_element(
         ("subsetting", &details.subsetting),
         ("redefinition", &details.redefinition),
     ] {
-        write_family(output, indent, label, family)?;
+        write_family(model, output, indent, label, family)?;
     }
     if details.effective_typing.outcome != RelationshipOutcome::NotApplicable {
         write!(
@@ -1355,7 +1573,9 @@ fn write_element(
             write!(
                 output,
                 " (type (qualified-name {:?})",
-                entry.element.qualified_name
+                model
+                    .qualified_name(entry.element.identity)
+                    .unwrap_or_default()
             )?;
             match &entry.origin {
                 EffectiveTypeOrigin::Direct => write!(output, " (origin direct))")?,
@@ -1368,14 +1588,19 @@ fn write_element(
         writeln!(
             output,
             "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}))",
-            feature.feature.qualified_name, feature.declared_in.qualified_name
+            model
+                .qualified_name(feature.feature.identity)
+                .unwrap_or_default(),
+            model
+                .qualified_name(feature.declared_in.identity)
+                .unwrap_or_default()
         )?;
     }
     for entry in details.metadata.iter() {
         writeln!(
             output,
             "{indent}  (metadata (qualified-name {:?}))",
-            entry.qualified_name
+            model.qualified_name(entry.identity).unwrap_or_default()
         )?;
     }
     for (label, connected) in [
@@ -1387,7 +1612,9 @@ fn write_element(
                 output,
                 "{indent}  ({label} (kind {:?}) (peer {:?}) (provenance {}))",
                 entry.kind,
-                entry.peer.qualified_name,
+                model
+                    .qualified_name(entry.peer.identity)
+                    .unwrap_or_default(),
                 match entry.provenance {
                     RelationshipProvenance::Authored => "authored",
                     RelationshipProvenance::Implied => "implied",
@@ -1413,6 +1640,7 @@ fn write_element(
 
 /// One relationship family, omitted entirely when the element declares nothing of its kind.
 fn write_family(
+    model: &sysml_resolution::PublishedResolution,
     output: &mut dyn fmt::Write,
     indent: &str,
     label: &str,
@@ -1427,10 +1655,18 @@ fn write_family(
         family.outcome.as_str()
     )?;
     for target in family.targets.iter() {
-        write!(output, " (target {:?})", target.qualified_name)?;
+        write!(
+            output,
+            " (target {:?})",
+            model.qualified_name(target.identity).unwrap_or_default()
+        )?;
     }
     for candidate in family.candidates.iter() {
-        write!(output, " (candidate {:?})", candidate.qualified_name)?;
+        write!(
+            output,
+            " (candidate {:?})",
+            model.qualified_name(candidate.identity).unwrap_or_default()
+        )?;
     }
     writeln!(output, ")")
 }
@@ -1574,8 +1810,16 @@ pub struct RawStorageIsNotPublic;
 mod tests {
     use super::{
         build, build_measured, AdmittedSource, BuildRequest, ConstructionStrategy,
-        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind,
+        LibrarySpecializationAnchorBranch, PublishedModel, QueryOutcome, SourceKind, SymbolId,
     };
+
+    /// The display path of an anchor handle, for assertions that name an element in prose.
+    ///
+    /// A handle carries no text, so a test that wants to say "this anchor is the one in `Items`"
+    /// asks the publication, exactly as a host would.
+    fn qualified(model: &PublishedModel, symbol: impl std::borrow::Borrow<SymbolId>) -> &str {
+        model.qualified_name(*symbol.borrow()).unwrap_or_default()
+    }
 
     #[test]
     fn immutable_publication_can_be_shared_by_async_hosts() {
@@ -1643,7 +1887,7 @@ mod tests {
 
         assert!(matches!(
             publication.types().library_specialization_anchor(ITEM_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("Items")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("Items")
         ));
         assert!(matches!(
             publication
@@ -1713,63 +1957,63 @@ mod tests {
 
         assert!(matches!(
             publication.types().library_specialization_anchor(POLARITY_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("satisfiedRequirementChecks")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("satisfiedRequirementChecks")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 POLARITY_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("notSatisfiedRequirementChecks")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("notSatisfiedRequirementChecks")
         ));
         assert!(matches!(
             publication
                 .types()
                 .library_specialization_anchor(MEMBERSHIP_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("constraints")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("constraints")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 MEMBERSHIP_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("assumptions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("assumptions")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(IF_ACTION_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenActions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenActions")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor_branch(
                 IF_ACTION_RULE,
                 LibrarySpecializationAnchorBranch::PredicateTrue,
             ),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("ifThenElseActions")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("ifThenElseActions")
         ));
         let flow_binary_anchor = publication
             .types()
             .library_specialization_anchor(FLOW_BINARY_RULE);
         assert!(
-            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if anchor.as_str().contains("Message")),
+            matches!(flow_binary_anchor, QueryOutcome::Resolved(ref anchor) if qualified(&publication, anchor).contains("Message")),
             "expected the flow-definition anchor, got {flow_binary_anchor:?}"
         );
         assert!(matches!(
             publication.types().library_specialization_anchor(FLOW_USAGE_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flows")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flows")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(FLOW_WITH_ENDS_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("flowTransfers")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("flowTransfers")
         ));
         assert!(matches!(
             publication
                 .types()
                 .library_specialization_anchor(FEATURE_DATA_VALUE_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("dataValues")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("dataValues")
         ));
         assert!(matches!(
             publication.types().library_specialization_anchor(FEATURE_END_RULE),
-            QueryOutcome::Resolved(anchor) if anchor.as_str().contains("participant")
+            QueryOutcome::Resolved(anchor) if qualified(&publication, anchor).contains("participant")
         ));
     }
 
@@ -1806,9 +2050,9 @@ mod tests {
             matches!(
                 anchor_outcome,
                 QueryOutcome::Resolved(ref anchor)
-                    if anchor.as_str().contains("Transfers")
-                        && anchor.as_str().contains("Transfer")
-                        && anchor.as_str().contains("payload")
+                    if qualified(&publication, anchor).contains("Transfers")
+                        && qualified(&publication, anchor).contains("Transfer")
+                        && qualified(&publication, anchor).contains("payload")
             ),
             "{anchor_outcome:?}"
         );
@@ -1851,12 +2095,13 @@ mod tests {
         };
         let mass = symbols
             .iter()
-            .find(|symbol| symbol.qualified_name.as_ref() == "Model::Vehicle::mass")
+            .find(|symbol| {
+                publication.qualified_name(symbol.identity) == Some("Model::Vehicle::mass")
+            })
             .expect("mass declaration")
-            .identity
-            .clone();
+            .identity;
         assert!(matches!(
-            publication.types().featuring_types(&mass),
+            publication.types().featuring_types(mass),
             QueryOutcome::Resolved(values)
                 if values.len() == 1
                     && values[0].provenance == sysml_resolution::RelationshipProvenance::Implied

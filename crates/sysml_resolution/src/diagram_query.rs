@@ -3,66 +3,44 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::{
     ElementDetails, ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryOutcome,
     RelationshipOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry,
-    SymbolIdentity, ViewSelectionObstacle, ViewSelectionOutcome,
+    SymbolId, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramViewKind {
-    General,
-    Interconnection,
-    ActionFlow,
-    StateTransition,
-    Sequence,
-    Browser,
-    Grid,
-    Geometry,
-}
+pub use sysml_contract::{
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramRelationshipKind,
+    DiagramStateVertexKind, DiagramViewKind,
+};
 
-impl DiagramViewKind {
-    pub const ALL: [Self; 8] = [
-        Self::General,
-        Self::Interconnection,
-        Self::ActionFlow,
-        Self::StateTransition,
-        Self::Sequence,
-        Self::Browser,
-        Self::Grid,
-        Self::Geometry,
-    ];
-
-    pub const fn id(self) -> &'static str {
-        match self {
-            Self::General => "general-view",
-            Self::Interconnection => "interconnection-view",
-            Self::ActionFlow => "action-flow-view",
-            Self::StateTransition => "state-transition-view",
-            Self::Sequence => "sequence-view",
-            Self::Browser => "browser-view",
-            Self::Grid => "grid-view",
-            Self::Geometry => "geometry-view",
-        }
-    }
-
-    const fn definition_name(self) -> &'static str {
-        match self {
-            Self::General => "GeneralView",
-            Self::Interconnection => "InterconnectionView",
-            Self::ActionFlow => "ActionFlowView",
-            Self::StateTransition => "StateTransitionView",
-            Self::Sequence => "SequenceView",
-            Self::Browser => "BrowserView",
-            Self::Grid => "GridView",
-            Self::Geometry => "GeometryView",
-        }
+/// The standard library declaration name each view kind is defined by.
+///
+/// Deliberately not a method on [`DiagramViewKind`]: matching a projected catalog entry against a
+/// library declaration is how *this* authority finds a view definition, not part of the vocabulary
+/// a consumer is handed.
+const fn definition_name(kind: DiagramViewKind) -> &'static str {
+    match kind {
+        DiagramViewKind::General => "GeneralView",
+        DiagramViewKind::Interconnection => "InterconnectionView",
+        DiagramViewKind::ActionFlow => "ActionFlowView",
+        DiagramViewKind::StateTransition => "StateTransitionView",
+        DiagramViewKind::Sequence => "SequenceView",
+        DiagramViewKind::Browser => "BrowserView",
+        DiagramViewKind::Grid => "GridView",
+        DiagramViewKind::Geometry => "GeometryView",
     }
 }
 
+/// One authored standard view usage, as the catalog publishes it.
+///
+/// The display name is not carried. It is the view usage's authored name -- or, where the usage
+/// is anonymous, its `::`-joined display path -- both of which the publication already stores.
+/// A catalog of every authored view would allocate one copy per entry for text only a picker
+/// renders; a consumer reads it with [`PublishedResolution::diagram_view_name`] instead, which
+/// borrows and applies the same fallback.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramViewCatalogEntry {
     pub kind: DiagramViewKind,
-    pub semantic_id: SymbolIdentity,
+    pub semantic_id: SymbolId,
     pub reference: DiagramSemanticReference,
-    pub name: Box<str>,
     pub source: SourceLocation,
 }
 
@@ -85,12 +63,24 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: SymbolIdentity },
-    ExposureAmbiguous { exposure: SymbolIdentity },
-    ExposureUnsupported { exposure: SymbolIdentity },
-    RelationshipUnresolved { relationship: Box<str> },
-    RelationshipAmbiguous { relationship: Box<str> },
-    RelationshipUnsupported { relationship: Box<str> },
+    ExposureUnresolved {
+        exposure: SymbolId,
+    },
+    ExposureAmbiguous {
+        exposure: SymbolId,
+    },
+    ExposureUnsupported {
+        exposure: SymbolId,
+    },
+    RelationshipUnresolved {
+        relationship: DiagramRelationshipKind,
+    },
+    RelationshipAmbiguous {
+        relationship: DiagramRelationshipKind,
+    },
+    RelationshipUnsupported {
+        relationship: DiagramRelationshipKind,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
@@ -105,7 +95,7 @@ pub struct DiagramElement {
     /// occur below several typed usages in the same diagram. Consumers use this identity for
     /// layout, expansion and containment, and use `semantic_id` for navigation and model queries.
     pub occurrence_id: DiagramOccurrenceIdentity,
-    pub semantic_id: SymbolIdentity,
+    pub semantic_id: SymbolId,
     pub reference: DiagramSemanticReference,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
@@ -122,78 +112,71 @@ pub struct DiagramElement {
 /// deterministic without deriving semantics from names or rendered labels.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DiagramOccurrenceIdentity {
-    pub semantic_path: Box<[SymbolIdentity]>,
+    pub semantic_path: Box<[SymbolId]>,
+    /// The length-prefixed concatenation of the path's boundary tokens.
+    ///
+    /// Diagram scene ids are published to generators and reports, so the key is the token text,
+    /// not the handles. It is settled once when the occurrence is created -- where the
+    /// publication is in hand -- rather than re-derived at each of the places that format a scene
+    /// id. Ordered after `semantic_path` so the derived `Ord` still compares paths, which is the
+    /// same order: a handle sorts as its token does.
+    key: Box<str>,
 }
 
 impl DiagramOccurrenceIdentity {
-    fn root(semantic_id: SymbolIdentity) -> Self {
+    fn root(semantic_id: SymbolId, token: &str) -> Self {
+        let mut key = String::new();
+        push_key_segment(&mut key, token);
         Self {
             semantic_path: vec![semantic_id].into_boxed_slice(),
+            key: key.into(),
         }
     }
 
-    fn child(&self, semantic_id: SymbolIdentity) -> Self {
+    fn child(&self, semantic_id: SymbolId, token: &str) -> Self {
         let mut path = self.semantic_path.to_vec();
         path.push(semantic_id);
+        let mut key = self.key.to_string();
+        push_key_segment(&mut key, token);
         Self {
             semantic_path: path.into_boxed_slice(),
+            key: key.into(),
         }
     }
 
-    fn contains(&self, semantic_id: &SymbolIdentity) -> bool {
-        self.semantic_path.contains(semantic_id)
+    fn contains(&self, semantic_id: SymbolId) -> bool {
+        self.semantic_path.contains(&semantic_id)
     }
 
-    fn semantic_id(&self) -> &SymbolIdentity {
-        self.semantic_path
+    fn semantic_id(&self) -> SymbolId {
+        *self
+            .semantic_path
             .last()
             .expect("a diagram occurrence path is never empty")
     }
 
-    fn stable_key(&self) -> String {
-        let mut key = String::new();
-        for identity in &self.semantic_path {
-            let value = identity.as_str();
-            key.push_str(&value.len().to_string());
-            key.push(':');
-            key.push_str(value);
-        }
-        key
+    /// The settled boundary form of this occurrence.
+    pub fn stable_key(&self) -> &str {
+        &self.key
     }
+}
+
+fn push_key_segment(key: &mut String, token: &str) {
+    key.push_str(&token.len().to_string());
+    key.push(':');
+    key.push_str(token);
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DiagramElementTyping {
     Absent,
-    Resolved(Box<[SymbolIdentity]>),
-    Partial(Box<[SymbolIdentity]>),
-    Ambiguous(Box<[SymbolIdentity]>),
+    Resolved(Box<[SymbolId]>),
+    Partial(Box<[SymbolId]>),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     Unsupported,
     Recovery,
     Incomplete,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramCompartmentKind {
-    Attributes,
-    Parts,
-    Ports,
-    Items,
-    Constraints,
-    Requirements,
-    Actions,
-    States,
-    Calculations,
-    Connections,
-    Interfaces,
-    Occurrences,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum DiagramCompartmentProvenance {
-    Direct,
-    Inherited,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -213,7 +196,7 @@ pub enum DiagramRelationshipTarget {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramRelationshipEndpoint {
-    pub semantic_id: SymbolIdentity,
+    pub semantic_id: SymbolId,
     pub occurrence: DiagramEndpointOccurrence,
 }
 
@@ -226,10 +209,11 @@ pub enum DiagramEndpointOccurrence {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramRelationship {
-    pub semantic_id: Box<str>,
+    /// Position of this relationship among the source element's published relationships.
+    pub ordinal: u32,
     pub source: DiagramOccurrenceIdentity,
-    pub source_semantic_id: SymbolIdentity,
-    pub kind: Box<str>,
+    pub source_semantic_id: SymbolId,
+    pub kind: DiagramRelationshipKind,
     pub target: DiagramRelationshipTarget,
     pub provenance: RelationshipProvenance,
     pub source_location: Option<SourceLocation>,
@@ -248,11 +232,14 @@ pub enum DiagramEdgeKind {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramEdge {
-    pub semantic_id: Box<str>,
+    /// Index into the projection's `elements` of the element this edge was composed for: the
+    /// contained element for containment, the state for an initial-state edge, the transition or
+    /// connector usage for a composed edge.
+    pub origin: u32,
     pub source: DiagramOccurrenceIdentity,
-    pub source_semantic_id: SymbolIdentity,
+    pub source_semantic_id: SymbolId,
     pub target: DiagramOccurrenceIdentity,
-    pub target_semantic_id: SymbolIdentity,
+    pub target_semantic_id: SymbolId,
     pub kind: DiagramEdgeKind,
     pub provenance: RelationshipProvenance,
     pub source_location: Option<SourceLocation>,
@@ -272,22 +259,19 @@ pub enum DiagramScene {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramStateTransitionScene {
-    pub machine: Option<SymbolIdentity>,
+    pub machine: Option<SymbolId>,
     pub vertices: Box<[DiagramStateVertex]>,
     pub transitions: Box<[DiagramStateTransition]>,
 }
 
+/// One vertex of a state-transition scene.
+///
+/// The label is not carried: it is the element's authored name, which the publication already
+/// stores. A consumer that renders one reads it with [`PublishedResolution::symbol_name`], which
+/// borrows from the settled symbol blob, rather than being handed a copy per vertex.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DiagramStateVertexKind {
-    Initial,
-    State,
-    Final,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramStateVertex {
-    pub semantic_id: SymbolIdentity,
-    pub label: Box<str>,
+    pub semantic_id: SymbolId,
     pub kind: DiagramStateVertexKind,
     pub source: SourceLocation,
 }
@@ -297,7 +281,7 @@ pub enum DiagramTransitionFeature {
     Absent,
     Resolved {
         label: Box<str>,
-        target: SymbolIdentity,
+        target: SymbolId,
         source: SourceLocation,
     },
     Unresolved,
@@ -305,12 +289,31 @@ pub enum DiagramTransitionFeature {
     Unsupported,
 }
 
+/// Whether a state-transition edge is the machine's initial-state edge or an authored transition.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramTransitionRole {
+    Initial,
+    Transition,
+}
+
+impl DiagramTransitionRole {
+    /// The suffix a scene id carries for this role.
+    pub const fn scene_suffix(self) -> &'static str {
+        match self {
+            Self::Initial => "initial",
+            Self::Transition => "edge",
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramStateTransition {
-    pub semantic_id: Box<str>,
+    /// Index into the projection's `elements` of the element the transition was composed for.
+    pub origin: u32,
+    pub role: DiagramTransitionRole,
     pub label: Option<Box<str>>,
-    pub source: SymbolIdentity,
-    pub target: SymbolIdentity,
+    pub source: SymbolId,
+    pub target: SymbolId,
     pub trigger: DiagramTransitionFeature,
     pub guard: DiagramTransitionFeature,
     pub effect: DiagramTransitionFeature,
@@ -321,7 +324,7 @@ pub struct DiagramStateTransition {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramViewProjection {
     pub view: DiagramViewCatalogEntry,
-    pub exposed_roots: Box<[SymbolIdentity]>,
+    pub exposed_roots: Box<[SymbolId]>,
     pub elements: Box<[DiagramElement]>,
     pub relationships: Box<[DiagramRelationship]>,
     pub edges: Box<[DiagramEdge]>,
@@ -330,6 +333,25 @@ pub struct DiagramViewProjection {
 }
 
 impl PublishedResolution {
+    /// The occurrence identity of an exposed root, as the projection spells it.
+    ///
+    /// An occurrence carries its published scene key, which is derived from boundary tokens, so
+    /// only the publication can mint one. A consumer that has a root handle and wants the
+    /// occurrence the projection uses for it asks here instead of assembling the path itself.
+    pub fn diagram_root_occurrence(&self, root: SymbolId) -> Option<DiagramOccurrenceIdentity> {
+        let token = self.symbol_token(root)?;
+        Some(DiagramOccurrenceIdentity::root(root, token.as_str()))
+    }
+
+    /// The display name of one catalogued diagram view, borrowed from this publication.
+    ///
+    /// The authored name where the view usage has one, and its `::`-joined display path where it
+    /// is anonymous. The fallback is the authority's rule, not a consumer's, so it lives here
+    /// rather than being re-decided at each edge that renders a view picker.
+    pub fn diagram_view_name(&self, view: SymbolId) -> Option<&str> {
+        self.symbol_name(view).or_else(|| self.qualified_name(view))
+    }
+
     pub fn diagram_view_catalog(&self) -> QueryOutcome<Box<[DiagramViewCatalogEntry]>> {
         let mut definitions = BTreeMap::new();
         for kind in DiagramViewKind::ALL {
@@ -339,13 +361,13 @@ impl PublishedResolution {
             }));
             let matches = entries
                 .iter()
-                .filter(|entry| entry.name.as_deref() == Some(kind.definition_name()))
+                .filter(|entry| entry.name.as_deref() == Some(definition_name(kind)))
                 .collect::<Vec<_>>();
             if matches.len() > 1 {
                 return QueryOutcome::Ambiguous(Box::new([]));
             }
             if let Some(entry) = matches.first() {
-                definitions.insert(entry.identity.clone(), kind);
+                definitions.insert(entry.identity, kind);
             }
         }
 
@@ -354,28 +376,32 @@ impl PublishedResolution {
             kind: ElementKind::ViewUsage,
             source: ElementSource::Workspace,
         })) {
-            let types = resolved_values(self.direct_types(&entry.identity));
+            let types = resolved_values(self.direct_types(entry.identity));
             for ty in types {
                 let Some(kind) = definitions.get(&ty.symbol).copied() else {
                     continue;
                 };
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
-                    semantic_id: entry.identity.clone(),
-                    reference: semantic_reference(&entry, &BTreeMap::new()),
-                    name: entry
-                        .name
-                        .clone()
-                        .unwrap_or_else(|| entry.qualified_name.clone()),
-                    source: entry.location.clone(),
+                    semantic_id: entry.identity,
+                    reference: semantic_reference(
+                        &entry,
+                        self.qualified_name(entry.identity).unwrap_or_default(),
+                        entry.owner.and_then(|owner| self.qualified_name(owner)),
+                        self.document_identity(entry.location.document)
+                            .unwrap_or_default(),
+                    ),
+                    source: entry.location,
                 });
             }
         }
-        catalog.sort_by(|a, b| a.semantic_id.as_str().cmp(b.semantic_id.as_str()));
+        // A handle sorts as its canonical identity does, so this is the identity order the
+        // catalog has always published, without materialising either string.
+        catalog.sort_by_key(|a| a.semantic_id);
         QueryOutcome::Resolved(catalog.into_boxed_slice())
     }
 
-    pub fn diagram_view(&self, view: &SymbolIdentity) -> QueryOutcome<DiagramViewProjection> {
+    pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
         let catalog = match self.diagram_view_catalog() {
             QueryOutcome::Resolved(value) | QueryOutcome::Recovered(value) => value,
             QueryOutcome::Ambiguous(_) => return QueryOutcome::Ambiguous(Box::new([])),
@@ -388,7 +414,7 @@ impl PublishedResolution {
         };
         let Some(view_entry) = catalog
             .iter()
-            .find(|entry| &entry.semantic_id == view)
+            .find(|entry| entry.semantic_id == view)
             .cloned()
         else {
             return QueryOutcome::Unresolved;
@@ -403,9 +429,9 @@ impl PublishedResolution {
         let mut reasons = BTreeSet::new();
         for expose in all
             .values()
-            .filter(|entry| entry.owner.as_ref() == Some(view) && entry.kind == ElementKind::Expose)
+            .filter(|entry| entry.owner == Some(view) && entry.kind == ElementKind::Expose)
         {
-            match self.inspect(&expose.identity) {
+            match self.inspect(expose.identity) {
                 QueryOutcome::Resolved(inspection)
                 | QueryOutcome::Recovered(inspection)
                 | QueryOutcome::UnsupportedWith(inspection) => {
@@ -416,21 +442,21 @@ impl PublishedResolution {
                     {
                         match &relationship.target {
                             RelationshipTarget::Resolved(target) => {
-                                roots.insert(target.clone());
+                                roots.insert(*target);
                             }
                             RelationshipTarget::Ambiguous(_) => {
                                 reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                             RelationshipTarget::Unresolved => {
                                 reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                             RelationshipTarget::Unsupported => {
                                 reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                                    exposure: expose.identity.clone(),
+                                    exposure: expose.identity,
                                 });
                             }
                         }
@@ -438,29 +464,29 @@ impl PublishedResolution {
                 }
                 QueryOutcome::Unresolved => {
                     reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
                 QueryOutcome::Ambiguous(_) => {
                     reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
                 _ => {
                     reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                        exposure: expose.identity.clone(),
+                        exposure: expose.identity,
                     });
                 }
             }
         }
 
-        let mut direct_children = BTreeMap::<SymbolIdentity, Vec<SymbolIdentity>>::new();
+        let mut direct_children = BTreeMap::<SymbolId, Vec<SymbolId>>::new();
         for entry in all.values() {
             if let Some(owner) = &entry.owner {
                 direct_children
-                    .entry(owner.clone())
+                    .entry(*owner)
                     .or_default()
-                    .push(entry.identity.clone());
+                    .push(entry.identity);
             }
         }
         for children in direct_children.values_mut() {
@@ -469,24 +495,28 @@ impl PublishedResolution {
         }
         let mut occurrences = BTreeMap::<
             DiagramOccurrenceIdentity,
-            (SymbolIdentity, Option<DiagramOccurrenceIdentity>),
+            (SymbolId, Option<DiagramOccurrenceIdentity>),
         >::new();
         let mut queue = VecDeque::new();
         for root in &roots {
-            if !self.diagram_candidate_selected(view, root, &mut reasons) {
+            if !self.diagram_candidate_selected(view, *root, &mut reasons) {
                 continue;
             }
-            let occurrence = DiagramOccurrenceIdentity::root(root.clone());
-            occurrences.insert(occurrence.clone(), (root.clone(), None));
+            // The scene id of an occurrence is published text, so the boundary token is taken
+            // here, once, where the publication is in hand.
+            let Some(token) = self.symbol_token(*root) else {
+                continue;
+            };
+            let occurrence = DiagramOccurrenceIdentity::root(*root, token.as_str());
+            occurrences.insert(occurrence.clone(), (*root, None));
             queue.push_back(occurrence);
         }
         while let Some(owner_occurrence) = queue.pop_front() {
             let owner = occurrences
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
-                .0
-                .clone();
-            let mut children = resolved_values(self.effective_features(&owner)).to_vec();
+                .0;
+            let mut children = resolved_values(self.effective_features(owner)).to_vec();
             children.extend(
                 direct_children
                     .get(&owner)
@@ -494,32 +524,35 @@ impl PublishedResolution {
                     .flatten()
                     .filter_map(|identity| all.get(identity).cloned()),
             );
-            children.sort_by(|left, right| left.identity.cmp(&right.identity));
+            children.sort_by_key(|left| left.identity);
             children.dedup_by(|left, right| left.identity == right.identity);
             for child in children {
                 if !workspace.contains(&child.identity) {
                     continue;
                 }
-                if !self.diagram_candidate_selected(view, &child.identity, &mut reasons) {
+                if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
                     continue;
                 }
-                let occurrence = owner_occurrence.child(child.identity.clone());
+                let Some(token) = self.symbol_token(child.identity) else {
+                    continue;
+                };
+                let occurrence = owner_occurrence.child(child.identity, token.as_str());
                 let inserted = occurrences
                     .insert(
                         occurrence.clone(),
-                        (child.identity.clone(), Some(owner_occurrence.clone())),
+                        (child.identity, Some(owner_occurrence.clone())),
                     )
                     .is_none();
                 // Recursive types have an unbounded semantic instance tree. Present the cycle-closing
                 // occurrence, but do not invent an arbitrary depth beyond the first repeated declaration.
-                if inserted && !owner_occurrence.contains(&child.identity) {
+                if inserted && !owner_occurrence.contains(child.identity) {
                     queue.push_back(occurrence);
                 }
             }
         }
         let projected_roots = occurrences
             .iter()
-            .filter_map(|(_, (identity, owner))| owner.is_none().then_some(identity.clone()))
+            .filter_map(|(_, (identity, owner))| owner.is_none().then_some(*identity))
             .collect::<BTreeSet<_>>();
         let mut elements = occurrences
             .iter()
@@ -528,19 +561,25 @@ impl PublishedResolution {
             })
             .map(|(occurrence_id, owner, entry)| DiagramElement {
                 occurrence_id: occurrence_id.clone(),
-                semantic_id: entry.identity.clone(),
-                reference: semantic_reference(entry, &all),
+                semantic_id: entry.identity,
+                reference: semantic_reference(
+                    entry,
+                    self.qualified_name(entry.identity).unwrap_or_default(),
+                    entry.owner.and_then(|owner| self.qualified_name(owner)),
+                    self.document_identity(entry.location.document)
+                        .unwrap_or_default(),
+                ),
                 kind: entry.kind,
                 name: entry.name.clone(),
-                typing: diagram_element_typing(self.element_details(&entry.identity)),
+                typing: diagram_element_typing(self.element_details(entry.identity)),
                 owner: owner.clone(),
-                source: entry.location.clone(),
+                source: entry.location,
                 compartments: Box::default(),
             })
             .collect::<Vec<_>>();
         let element_kinds = elements
             .iter()
-            .map(|element| (element.semantic_id.clone(), element.kind))
+            .map(|element| (element.semantic_id, element.kind))
             .collect::<BTreeMap<_, _>>();
         for owner in &mut elements {
             let mut grouped = BTreeMap::<
@@ -581,20 +620,25 @@ impl PublishedResolution {
         }
         let mut relationships = Vec::new();
         for element in &elements {
-            if let Some(inspection) = usable_value(self.inspect(&element.semantic_id)) {
+            if let Some(inspection) = usable_value(self.inspect(element.semantic_id)) {
                 for (index, relationship) in inspection.relationships.iter().enumerate() {
+                    // Every name the authority publishes is one of the canonical reference
+                    // kinds, which is exactly the enum's variant set.
+                    let kind = relationship_kind_from_name(relationship.kind).expect(
+                        "a published relationship names one of the canonical reference kinds",
+                    );
                     let target = match &relationship.target {
                         RelationshipTarget::Resolved(target) => {
                             DiagramRelationshipTarget::Resolved(contextual_endpoint(
                                 &element.occurrence_id,
-                                target,
+                                *target,
                                 &elements,
                             ))
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipAmbiguous {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Ambiguous(
@@ -603,7 +647,7 @@ impl PublishedResolution {
                                     .map(|candidate| {
                                         contextual_endpoint(
                                             &element.occurrence_id,
-                                            candidate,
+                                            *candidate,
                                             &elements,
                                         )
                                     })
@@ -612,124 +656,139 @@ impl PublishedResolution {
                             )
                         }
                         RelationshipTarget::Unresolved => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Unresolved
                         }
                         RelationshipTarget::Unsupported => {
-                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                            if relationship_is_required(view_entry.kind, kind) {
                                 reasons.insert(DiagramIncompleteReason::RelationshipUnsupported {
-                                    relationship: relationship.kind.into(),
+                                    relationship: kind,
                                 });
                             }
                             DiagramRelationshipTarget::Unsupported
                         }
                     };
                     relationships.push(DiagramRelationship {
-                        semantic_id: format!(
-                            "{}#{}:{index}",
-                            element.occurrence_id.stable_key(),
-                            relationship.kind
-                        )
-                        .into(),
+                        ordinal: index as u32,
                         source: element.occurrence_id.clone(),
-                        source_semantic_id: element.semantic_id.clone(),
-                        kind: relationship.kind.into(),
+                        source_semantic_id: element.semantic_id,
+                        kind,
                         target,
                         provenance: relationship.provenance,
-                        source_location: relationship.location.clone(),
+                        source_location: relationship.location,
                     });
                 }
             }
         }
-        relationships.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        relationships.sort_by_cached_key(|relationship| {
+            format!(
+                "{}#{}:{}",
+                relationship.source.stable_key(),
+                relationship.kind.name(),
+                relationship.ordinal
+            )
+        });
         let mut edges = elements
             .iter()
-            .filter_map(|element| {
+            .enumerate()
+            .filter_map(|(origin, element)| {
                 element.owner.as_ref().map(|owner| DiagramEdge {
-                    semantic_id: format!("{}#containment", element.occurrence_id.stable_key(),)
-                        .into(),
+                    origin: origin as u32,
                     source: owner.clone(),
-                    source_semantic_id: owner.semantic_id().clone(),
+                    source_semantic_id: owner.semantic_id(),
                     target: element.occurrence_id.clone(),
-                    target_semantic_id: element.semantic_id.clone(),
+                    target_semantic_id: element.semantic_id,
                     kind: DiagramEdgeKind::Containment,
-                    provenance: if all
-                        .get(&element.semantic_id)
-                        .and_then(|entry| entry.owner.as_ref())
+                    provenance: if all.get(&element.semantic_id).and_then(|entry| entry.owner)
                         == Some(owner.semantic_id())
                     {
                         RelationshipProvenance::Authored
                     } else {
                         RelationshipProvenance::Implied
                     },
-                    source_location: Some(element.source.clone()),
+                    source_location: Some(element.source),
                 })
             })
             .collect::<Vec<_>>();
-        for element in &elements {
+        for (origin, element) in elements.iter().enumerate() {
             let outgoing = relationships
                 .iter()
                 .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
             if let Some(edge) = composed_edge(
-                element,
+                origin as u32,
                 &outgoing,
-                "transitionSource",
-                "transitionTarget",
+                DiagramRelationshipKind::TransitionSource,
+                DiagramRelationshipKind::TransitionTarget,
                 DiagramEdgeKind::Transition,
             ) {
                 edges.push(edge);
                 continue;
             }
             if let Some(edge) = composed_edge(
-                element,
+                origin as u32,
                 &outgoing,
-                "flowSource",
-                "flowTarget",
+                DiagramRelationshipKind::FlowSource,
+                DiagramRelationshipKind::FlowTarget,
                 DiagramEdgeKind::Flow,
             ) {
                 edges.push(edge);
                 continue;
             }
             for (relationship_kind, edge_kind) in [
-                ("connectorEnd", DiagramEdgeKind::Connector),
-                ("succession", DiagramEdgeKind::Succession),
+                (
+                    DiagramRelationshipKind::ConnectorEnd,
+                    DiagramEdgeKind::Connector,
+                ),
+                (
+                    DiagramRelationshipKind::Succession,
+                    DiagramEdgeKind::Succession,
+                ),
             ] {
                 let endpoints = outgoing
                     .iter()
-                    .filter(|relationship| relationship.kind.as_ref() == relationship_kind)
+                    .filter(|relationship| relationship.kind == relationship_kind)
                     .filter_map(|relationship| resolved_target(&relationship.target))
                     .collect::<Vec<_>>();
                 if let [source, target] = endpoints.as_slice() {
                     edges.push(edge_from_relationships(
-                        element, source, target, edge_kind, &outgoing,
+                        origin as u32,
+                        source,
+                        target,
+                        edge_kind,
+                        &outgoing,
                     ));
                 }
             }
             if let Some(initial) = outgoing
                 .iter()
-                .find(|relationship| relationship.kind.as_ref() == "initialState")
+                .find(|relationship| relationship.kind == DiagramRelationshipKind::InitialState)
             {
                 if let Some(target) = resolved_target(&initial.target) {
                     edges.push(DiagramEdge {
-                        semantic_id: format!("{}#initial", element.occurrence_id.stable_key())
-                            .into(),
+                        origin: origin as u32,
                         source: element.occurrence_id.clone(),
-                        source_semantic_id: element.semantic_id.clone(),
+                        source_semantic_id: element.semantic_id,
                         target: target.clone(),
-                        target_semantic_id: target.semantic_id().clone(),
+                        target_semantic_id: target.semantic_id(),
                         kind: DiagramEdgeKind::InitialState,
                         provenance: initial.provenance,
-                        source_location: initial.source_location.clone(),
+                        source_location: initial.source_location,
                     });
                 }
             }
         }
-        edges.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        edges.sort_by_cached_key(|edge| {
+            format!(
+                "{}#{}",
+                elements[edge.origin as usize].occurrence_id.stable_key(),
+                edge_scene_suffix(&edge.kind)
+            )
+        });
         let scene = diagram_scene(
             view_entry.kind,
             &projected_roots,
@@ -757,8 +816,8 @@ impl PublishedResolution {
 
     fn diagram_candidate_selected(
         &self,
-        view: &SymbolIdentity,
-        candidate: &SymbolIdentity,
+        view: SymbolId,
+        candidate: SymbolId,
         reasons: &mut BTreeSet<DiagramIncompleteReason>,
     ) -> bool {
         match self.view_selection(view, candidate) {
@@ -799,7 +858,7 @@ impl PublishedResolution {
         }
     }
 
-    fn diagram_entries(&self) -> BTreeMap<SymbolIdentity, SymbolEntry> {
+    fn diagram_entries(&self) -> BTreeMap<SymbolId, SymbolEntry> {
         let mut entries = BTreeMap::new();
         for source in [
             ElementSource::Workspace,
@@ -812,31 +871,37 @@ impl PublishedResolution {
         entries
     }
 
-    fn diagram_entries_for(&self, source: ElementSource) -> BTreeMap<SymbolIdentity, SymbolEntry> {
+    fn diagram_entries_for(&self, source: ElementSource) -> BTreeMap<SymbolId, SymbolEntry> {
         let mut entries = BTreeMap::new();
         for &kind in ElementKind::ALL {
             for entry in resolved_values(self.search_elements(ElementSearch { kind, source })) {
-                entries.insert(entry.identity.clone(), entry);
+                entries.insert(entry.identity, entry);
             }
         }
         entries
     }
 }
 
-fn relationship_is_required(view: DiagramViewKind, kind: &str) -> bool {
+fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind) -> bool {
     match view {
-        DiagramViewKind::Interconnection => kind == "connectorEnd",
-        DiagramViewKind::ActionFlow => matches!(kind, "flowSource" | "flowTarget" | "succession"),
+        DiagramViewKind::Interconnection => kind == DiagramRelationshipKind::ConnectorEnd,
+        DiagramViewKind::ActionFlow => matches!(
+            kind,
+            DiagramRelationshipKind::FlowSource
+                | DiagramRelationshipKind::FlowTarget
+                | DiagramRelationshipKind::Succession
+        ),
         DiagramViewKind::StateTransition => matches!(
             kind,
-            "initialState"
-                | "transitionSource"
-                | "transitionTarget"
-                | "transitionTrigger"
-                | "transitionGuard"
-                | "transitionEffect"
+            DiagramRelationshipKind::InitialState
+                | DiagramRelationshipKind::TransitionSource
+                | DiagramRelationshipKind::TransitionTarget
+                | DiagramRelationshipKind::TransitionTrigger
+                | DiagramRelationshipKind::TransitionEffect
         ),
-        DiagramViewKind::Sequence => matches!(kind, "messageSource" | "messageTarget"),
+        // No reference kind publishes a sequence message end, so nothing is required of a
+        // sequence view yet; the enum says so where a string comparison could not.
+        DiagramViewKind::Sequence => false,
         DiagramViewKind::General
         | DiagramViewKind::Browser
         | DiagramViewKind::Grid
@@ -844,23 +909,26 @@ fn relationship_is_required(view: DiagramViewKind, kind: &str) -> bool {
     }
 }
 
+/// The boundary form of one element reference.
+///
+/// `document` is the identity the caller materialised from `entry.location.document`: the
+/// generator protocol is a process boundary, so the URI is spelled out here rather than carried
+/// as a publication-scoped handle no other process could resolve.
 fn semantic_reference(
     entry: &SymbolEntry,
-    entries: &BTreeMap<SymbolIdentity, SymbolEntry>,
+    qualified_name: &str,
+    owner_qualified_name: Option<&str>,
+    document: &str,
 ) -> DiagramSemanticReference {
     if entry.name.is_some() {
         DiagramSemanticReference::Qualified {
-            document: entry.location.document.clone(),
-            qualified_name: entry.qualified_name.clone(),
+            document: document.into(),
+            qualified_name: qualified_name.into(),
         }
     } else {
         DiagramSemanticReference::SourceAnchor {
-            document: entry.location.document.clone(),
-            owner_qualified_name: entry
-                .owner
-                .as_ref()
-                .and_then(|owner| entries.get(owner))
-                .map(|owner| owner.qualified_name.clone()),
+            document: document.into(),
+            owner_qualified_name: owner_qualified_name.map(Into::into),
             kind: entry.kind,
             range: entry.declaration_range,
         }
@@ -869,12 +937,12 @@ fn semantic_reference(
 
 fn contextual_endpoint(
     source: &DiagramOccurrenceIdentity,
-    semantic_id: &SymbolIdentity,
+    semantic_id: SymbolId,
     elements: &[DiagramElement],
 ) -> DiagramRelationshipEndpoint {
     let mut candidates = elements
         .iter()
-        .filter(|element| &element.semantic_id == semantic_id)
+        .filter(|element| element.semantic_id == semantic_id)
         .map(|element| {
             let shared = source
                 .semantic_path
@@ -901,7 +969,7 @@ fn contextual_endpoint(
         }
     };
     DiagramRelationshipEndpoint {
-        semantic_id: semantic_id.clone(),
+        semantic_id,
         occurrence,
     }
 }
@@ -953,11 +1021,11 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
 
 fn diagram_scene(
     kind: DiagramViewKind,
-    roots: &BTreeSet<SymbolIdentity>,
+    roots: &BTreeSet<SymbolId>,
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
     edges: &[DiagramEdge],
-    entries: &BTreeMap<SymbolIdentity, SymbolEntry>,
+    entries: &BTreeMap<SymbolId, SymbolEntry>,
 ) -> DiagramScene {
     match kind {
         DiagramViewKind::General => DiagramScene::General,
@@ -972,7 +1040,7 @@ fn diagram_scene(
             let initial_sources = edges
                 .iter()
                 .filter(|edge| edge.kind == DiagramEdgeKind::InitialState)
-                .map(|edge| edge.source_semantic_id.clone())
+                .map(|edge| edge.source_semantic_id)
                 .collect::<BTreeSet<_>>();
             let vertices = elements
                 .iter()
@@ -987,10 +1055,9 @@ fn diagram_scene(
                         }
                     };
                     Some(DiagramStateVertex {
-                        semantic_id: element.semantic_id.clone(),
-                        label: element.name.clone().unwrap_or_default(),
+                        semantic_id: element.semantic_id,
                         kind,
-                        source: element.source.clone(),
+                        source: element.source,
                     })
                 })
                 .collect::<Vec<_>>();
@@ -1003,32 +1070,32 @@ fn diagram_scene(
                     )
                 })
                 .filter_map(|edge| {
-                    let origin = elements.iter().find(|element| {
-                        edge.semantic_id.as_ref()
-                            == format!("{}#edge", element.occurrence_id.stable_key())
-                            || edge.semantic_id.as_ref()
-                                == format!("{}#initial", element.occurrence_id.stable_key())
-                    })?;
-                    let feature = |relationship_kind: &str| {
+                    let origin = elements.get(edge.origin as usize)?;
+                    let feature = |relationship_kind| {
                         transition_feature(origin, relationship_kind, relationships, entries)
                     };
                     Some(DiagramStateTransition {
-                        semantic_id: edge.semantic_id.clone(),
+                        origin: edge.origin,
+                        role: if edge.kind == DiagramEdgeKind::InitialState {
+                            DiagramTransitionRole::Initial
+                        } else {
+                            DiagramTransitionRole::Transition
+                        },
                         label: origin.name.clone(),
-                        source: edge.source_semantic_id.clone(),
-                        target: edge.target_semantic_id.clone(),
+                        source: edge.source_semantic_id,
+                        target: edge.target_semantic_id,
                         trigger: if edge.kind == DiagramEdgeKind::InitialState {
                             DiagramTransitionFeature::Absent
                         } else {
-                            feature("transitionTrigger")
+                            feature(DiagramRelationshipKind::TransitionTrigger)
                         },
-                        guard: feature("transitionGuard"),
-                        effect: feature("transitionEffect"),
+                        // No reference kind publishes a transition guard, so the guard slot is
+                        // always absent. The enum makes that explicit; the string form silently
+                        // looked for a name the authority never emits.
+                        guard: DiagramTransitionFeature::Absent,
+                        effect: feature(DiagramRelationshipKind::TransitionEffect),
                         provenance: edge.provenance,
-                        source_location: edge
-                            .source_location
-                            .clone()
-                            .unwrap_or_else(|| origin.source.clone()),
+                        source_location: edge.source_location.unwrap_or(origin.source),
                     })
                 })
                 .collect::<Vec<_>>();
@@ -1043,12 +1110,12 @@ fn diagram_scene(
 
 fn transition_feature(
     origin: &DiagramElement,
-    kind: &str,
+    kind: DiagramRelationshipKind,
     relationships: &[DiagramRelationship],
-    entries: &BTreeMap<SymbolIdentity, SymbolEntry>,
+    entries: &BTreeMap<SymbolId, SymbolEntry>,
 ) -> DiagramTransitionFeature {
     let Some(relationship) = relationships.iter().find(|relationship| {
-        relationship.source == origin.occurrence_id && relationship.kind.as_ref() == kind
+        relationship.source == origin.occurrence_id && relationship.kind == kind
     }) else {
         return DiagramTransitionFeature::Absent;
     };
@@ -1058,11 +1125,8 @@ fn transition_feature(
                 .get(&target.semantic_id)
                 .and_then(|entry| entry.name.clone())
                 .unwrap_or_default(),
-            target: target.semantic_id.clone(),
-            source: relationship
-                .source_location
-                .clone()
-                .unwrap_or_else(|| origin.source.clone()),
+            target: target.semantic_id,
+            source: relationship.source_location.unwrap_or(origin.source),
         },
         DiagramRelationshipTarget::Unresolved => DiagramTransitionFeature::Unresolved,
         DiagramRelationshipTarget::Ambiguous(_) => DiagramTransitionFeature::Ambiguous,
@@ -1071,22 +1135,22 @@ fn transition_feature(
 }
 
 fn composed_edge(
-    element: &DiagramElement,
+    origin: u32,
     relationships: &[&DiagramRelationship],
-    source_kind: &str,
-    target_kind: &str,
+    source_kind: DiagramRelationshipKind,
+    target_kind: DiagramRelationshipKind,
     kind: DiagramEdgeKind,
 ) -> Option<DiagramEdge> {
     let source_relationship = relationships
         .iter()
-        .find(|relationship| relationship.kind.as_ref() == source_kind)?;
+        .find(|relationship| relationship.kind == source_kind)?;
     let target_relationship = relationships
         .iter()
-        .find(|relationship| relationship.kind.as_ref() == target_kind)?;
+        .find(|relationship| relationship.kind == target_kind)?;
     let source = resolved_target(&source_relationship.target)?;
     let target = resolved_target(&target_relationship.target)?;
     Some(edge_from_relationships(
-        element,
+        origin,
         source,
         target,
         kind,
@@ -1095,18 +1159,18 @@ fn composed_edge(
 }
 
 fn edge_from_relationships(
-    element: &DiagramElement,
+    origin: u32,
     source: &DiagramOccurrenceIdentity,
     target: &DiagramOccurrenceIdentity,
     kind: DiagramEdgeKind,
     relationships: &[&DiagramRelationship],
 ) -> DiagramEdge {
     DiagramEdge {
-        semantic_id: format!("{}#edge", element.occurrence_id.stable_key()).into(),
+        origin,
         source: source.clone(),
-        source_semantic_id: source.semantic_id().clone(),
+        source_semantic_id: source.semantic_id(),
         target: target.clone(),
-        target_semantic_id: target.semantic_id().clone(),
+        target_semantic_id: target.semantic_id(),
         kind,
         provenance: if relationships
             .iter()
@@ -1118,7 +1182,7 @@ fn edge_from_relationships(
         },
         source_location: relationships
             .iter()
-            .find_map(|relationship| relationship.source_location.clone()),
+            .find_map(|relationship| relationship.source_location),
     }
 }
 
@@ -1140,7 +1204,7 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
                 .effective_typing
                 .types
                 .iter()
-                .map(|entry| entry.element.identity.clone())
+                .map(|entry| entry.element.identity)
                 .collect::<Vec<_>>()
                 .into_boxed_slice();
             match details.effective_typing.outcome {
@@ -1153,7 +1217,7 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
                         .effective_typing
                         .candidates
                         .iter()
-                        .map(|entry| entry.element.identity.clone())
+                        .map(|entry| entry.element.identity)
                         .collect::<Vec<_>>()
                         .into_boxed_slice(),
                 ),
@@ -1178,6 +1242,94 @@ fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
         | QueryOutcome::Unsupported
         | QueryOutcome::Recovery
         | QueryOutcome::Incomplete => None,
+    }
+}
+
+/// The canonical reference-kind name the inspection publishes, as the diagram vocabulary variant.
+/// The kind one canonical name states, or `None` where the name is not one of them.
+fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
+    match name {
+        "namespaceImport" => Some(DiagramRelationshipKind::NamespaceImport),
+        "membershipImport" => Some(DiagramRelationshipKind::MembershipImport),
+        "filterImport" => Some(DiagramRelationshipKind::FilterImport),
+        "featureTyping" => Some(DiagramRelationshipKind::FeatureTyping),
+        "typeFeaturing" => Some(DiagramRelationshipKind::TypeFeaturing),
+        "featureChaining" => Some(DiagramRelationshipKind::FeatureChaining),
+        "specialization" => Some(DiagramRelationshipKind::Specialization),
+        "subsetting" => Some(DiagramRelationshipKind::Subsetting),
+        "redefinition" => Some(DiagramRelationshipKind::Redefinition),
+        "referenceSubsetting" => Some(DiagramRelationshipKind::ReferenceSubsetting),
+        "crossSubsetting" => Some(DiagramRelationshipKind::CrossSubsetting),
+        "intersects" => Some(DiagramRelationshipKind::Intersects),
+        "unioning" => Some(DiagramRelationshipKind::Unioning),
+        "intersecting" => Some(DiagramRelationshipKind::Intersecting),
+        "differencing" => Some(DiagramRelationshipKind::Differencing),
+        "disjoining" => Some(DiagramRelationshipKind::Disjoining),
+        "aliasBinding" => Some(DiagramRelationshipKind::AliasBinding),
+        "connectorEnd" => Some(DiagramRelationshipKind::ConnectorEnd),
+        "succession" => Some(DiagramRelationshipKind::Succession),
+        "entryActionBinding" => Some(DiagramRelationshipKind::EntryActionBinding),
+        "doActionBinding" => Some(DiagramRelationshipKind::DoActionBinding),
+        "exitActionBinding" => Some(DiagramRelationshipKind::ExitActionBinding),
+        "initialState" => Some(DiagramRelationshipKind::InitialState),
+        "expressionOperand" => Some(DiagramRelationshipKind::ExpressionOperand),
+        "transitionSource" => Some(DiagramRelationshipKind::TransitionSource),
+        "transitionTarget" => Some(DiagramRelationshipKind::TransitionTarget),
+        "transitionTrigger" => Some(DiagramRelationshipKind::TransitionTrigger),
+        "transitionEffect" => Some(DiagramRelationshipKind::TransitionEffect),
+        "metadataAnnotation" => Some(DiagramRelationshipKind::MetadataAnnotation),
+        "filterMetadataTest" => Some(DiagramRelationshipKind::FilterMetadataTest),
+        "satisfySource" => Some(DiagramRelationshipKind::SatisfySource),
+        "satisfyTarget" => Some(DiagramRelationshipKind::SatisfyTarget),
+        "allocateSource" => Some(DiagramRelationshipKind::AllocateSource),
+        "allocateTarget" => Some(DiagramRelationshipKind::AllocateTarget),
+        "bindSource" => Some(DiagramRelationshipKind::BindSource),
+        "bindTarget" => Some(DiagramRelationshipKind::BindTarget),
+        "variant" => Some(DiagramRelationshipKind::Variant),
+        "includeUseCase" => Some(DiagramRelationshipKind::IncludeUseCase),
+        "viewExpose" => Some(DiagramRelationshipKind::ViewExpose),
+        "memberAccessOperand" => Some(DiagramRelationshipKind::MemberAccessOperand),
+        "invocationCallee" => Some(DiagramRelationshipKind::InvocationCallee),
+        "thenTarget" => Some(DiagramRelationshipKind::ThenTarget),
+        "acceptVia" => Some(DiagramRelationshipKind::AcceptVia),
+        "sendTarget" => Some(DiagramRelationshipKind::SendTarget),
+        "acceptPayloadType" => Some(DiagramRelationshipKind::AcceptPayloadType),
+        "terminateTarget" => Some(DiagramRelationshipKind::TerminateTarget),
+        "flowSource" => Some(DiagramRelationshipKind::FlowSource),
+        "flowTarget" => Some(DiagramRelationshipKind::FlowTarget),
+        "typeCheckTarget" => Some(DiagramRelationshipKind::TypeCheckTarget),
+        "metaCastTarget" => Some(DiagramRelationshipKind::MetaCastTarget),
+        "stakeholderTarget" => Some(DiagramRelationshipKind::StakeholderTarget),
+        "purposeTarget" => Some(DiagramRelationshipKind::PurposeTarget),
+        "verifyRequirementTarget" => Some(DiagramRelationshipKind::VerifyRequirementTarget),
+        "assignTarget" => Some(DiagramRelationshipKind::AssignTarget),
+        "dependencyClient" => Some(DiagramRelationshipKind::DependencyClient),
+        "dependencySupplier" => Some(DiagramRelationshipKind::DependencySupplier),
+        "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
+        "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
+        _ => None,
+    }
+}
+
+/// The suffix a scene id carries for an edge of this kind.
+fn edge_scene_suffix(kind: &DiagramEdgeKind) -> &'static str {
+    match kind {
+        DiagramEdgeKind::Containment => "containment",
+        DiagramEdgeKind::InitialState => "initial",
+        _ => "edge",
+    }
+}
+
+impl DiagramViewProjection {
+    /// The boundary form of a transition's scene id: the origin occurrence's settled key and the
+    /// role suffix. Rendered where a protocol needs text; the projection itself carries handles.
+    pub fn transition_scene_id(&self, transition: &DiagramStateTransition) -> Option<String> {
+        let origin = self.elements.get(transition.origin as usize)?;
+        Some(format!(
+            "{}#{}",
+            origin.occurrence_id.stable_key(),
+            transition.role.scene_suffix()
+        ))
     }
 }
 

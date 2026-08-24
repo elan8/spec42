@@ -8,7 +8,8 @@
 //! should not pattern-match a failure out of the value type -- so the two are joined here by a
 //! total match with no wildcard arm, exactly as the element-kind projection is.
 
-use super::{EvaluatedValue, ExpressionEvalShape};
+use super::EvaluatedValue;
+use crate::evaluate::classify::ExpressionEvalShape;
 use crate::evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationState};
 
 /// The published state for one settled evaluation outcome.

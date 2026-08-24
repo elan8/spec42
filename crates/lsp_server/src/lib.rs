@@ -1,6 +1,6 @@
 #![recursion_limit = "256"]
 
-//! The editor host: document lifecycle, workspace orchestration, LSP handlers, validation wiring,
+//! The editor host: document lifecycle, workspace orchestration, LSP handlers,
 //! DTO assembly and host adapters over the `sysml_query` services. It parses nothing and owns no
 //! semantic state of its own; its `ServerState` holds the facade's `PublicationSession` inside a
 //! `session_actor` mailbox. Used by the spec42 and spec42-pro binaries.
@@ -12,16 +12,14 @@ pub mod language;
 mod lsp_runtime;
 
 pub mod semantic_tokens;
+pub(crate) mod session;
 pub mod syntax;
-pub mod validation;
 pub mod views;
-pub(crate) mod workspace;
 
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{
     CapabilityAugmenter, CapabilityMetadata, CapabilityProvider, CustomMethodProvider,
-    CustomRpcContext, CustomRpcProvider, PipelineHook, Spec42Config, ValidationPipelineHook,
-    KERNEL_INTERFACE_VERSION,
+    CustomRpcContext, CustomRpcProvider, Spec42Config, KERNEL_INTERFACE_VERSION,
 };
 pub use host::default_config::default_config as default_server_config;
 pub use lsp_runtime::run as run_lsp;
@@ -31,11 +29,6 @@ pub use analysis::{
     ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range, SymbolEntry,
 };
 pub use common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value};
-pub use validation::{
-    built_workspace_input_from_snapshot, semantic_report_from_built_workspace, validate_paths,
-    validate_paths_with_semantics, BuiltWorkspaceInput, SemanticValidationReport,
-    ValidatedDocument, ValidationReport, ValidationRequest, ValidationSummary,
-};
 pub use views::dto::{
     SysmlClearCacheResultDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
     SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorEvaluationDto,

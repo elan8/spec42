@@ -10,11 +10,10 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, GeneratorDiagnosticLevel, GeneratorModelView, QueryLimits,
 };
 use generator_host::{
-    CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
-    RuntimeLimits, RuntimeOptions, GENERATOR_ABI_VERSION,
+    artifact_digest, CancellationHandle, GeneratorFailureCategory, GeneratorHostError,
+    GeneratorRuntime, RuntimeLimits, RuntimeOptions, GENERATOR_ABI_VERSION,
 };
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 
 pub mod apply;
 pub mod plan;
@@ -427,7 +426,7 @@ fn manifest_for(
             .chain(
                 artifacts
                     .entries()
-                    .map(|(path, content)| (path.to_string(), digest(content))),
+                    .map(|(path, content)| (path.to_string(), artifact_digest(content))),
             )
             .collect(),
     }
@@ -476,7 +475,7 @@ fn plan_outputs(
             .iter()
             .map(|(path, existing)| {
                 let seen = match existing {
-                    plan::Existing::File { content } => Some(digest(content)),
+                    plan::Existing::File { content } => Some(artifact_digest(content)),
                     _ => None,
                 };
                 (path.to_string(), seen)
@@ -484,7 +483,7 @@ fn plan_outputs(
             .collect(),
     };
 
-    let planned = plan::plan(&entries, &observation, force, &digest);
+    let planned = plan::plan(&entries, &observation, force, &artifact_digest);
     Ok((
         GenerationOperations {
             created: planned.paths_with(plan::Operation::Create),
@@ -722,10 +721,6 @@ fn artifact_path(root: &Path, normalized: &str) -> PathBuf {
             path.push(segment);
             path
         })
-}
-
-fn digest(bytes: &[u8]) -> String {
-    format!("sha256:{:x}", Sha256::digest(bytes))
 }
 
 fn emit_report(report: &GenerationReport, format: OutputFormat) -> Result<(), String> {

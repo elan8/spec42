@@ -141,22 +141,43 @@ jobs:
       - name: Generator conformance corpus
         run: |
           scripts/build-generator-plugins.sh
+          # The metered case pins an exact fuel count, and fuel follows the guest's exact bytes.
+          # Record what this host built so a mismatch can be diagnosed from the log alone.
+          for guest in generator-tests/plugins/target/wasm32-unknown-unknown/release/*.wasm; do
+            printf '%s  %s bytes  sha256=%s\n' "$(basename "$guest")" "$(stat -c %s "$guest")" "$(sha256sum "$guest" | cut -c1-16)"
+          done
           cargo run -p generator_conformance --bin generator-conformance
           # A blessed golden must be committed, never produced by CI.
           git diff --exit-code generator-tests/golden
           # Subprocess layer: exit codes, the output transaction and cross-process
           # determinism, none of which the in-process corpus can observe. Must run after the
           # plugins are built or it skips itself.
-          cargo test -p server --test generator_cli
+          cargo test -p server --test integration generator_cli
 
       - name: Sandboxed Rust generator smoke
+        id: repository-plugins
         run: |
           scripts/build-repository-generator-plugins.sh
+          # The committed diagram.wasm must be the bytes this job builds. A guest built on another
+          # host links a different precompiled wasm32 std and differs by a few bytes, so a local
+          # build can be a smoke check but not the source of the committed artifact: take it from
+          # the `repository-generator-plugins` artifact of a run on this branch instead.
           git diff --exit-code vscode/generators/diagram.wasm
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate vscode/generators/diagram.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/diagram-generator-smoke -- general-view
-          rg -q '"status": "incomplete"' target/diagram-generator-smoke/diagram.json
+          # The diagram guest takes a typed catalog handle (`h:<sha256>`), which only the host's
+          # view catalog can produce for the publication it runs against -- a view-kind id such as
+          # `general-view` is not a handle. The smoke lists the catalog and generates with a real
+          # handle in one test; it skips itself if the plugin above was not built.
+          cargo test -p server --test integration diagram_generator_smoke
+      - name: Upload repository generator plugins
+        if: always() && steps.repository-plugins.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-generator-plugins
+          path: generator-plugins/target/wasm32-unknown-unknown/release/*.wasm
+          if-no-files-found: error
+          retention-days: 14
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
@@ -258,12 +279,10 @@ jobs:
 
       - name: Agent CLI surface integration tests
         run: |
-          cargo test -p server \
-            --test cli_ai_tools \
-            --test kitchen_timer_check \
-            --test kpar_stdlib_embed_smoke \
-            --test multi_file_check \
-            -- --include-ignored
+          # One integration binary per crate; each module is selected by name.
+          for module in cli_ai_tools kitchen_timer_check kpar_stdlib_embed_smoke multi_file_check; do
+            cargo test -p server --test integration "$module" -- --include-ignored
+          done
 
   frontend-unit:
     name: Frontend unit checks

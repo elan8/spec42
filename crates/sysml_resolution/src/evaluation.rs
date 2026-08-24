@@ -14,7 +14,9 @@
 
 use std::fmt;
 
-use crate::{SourceLocation, SymbolIdentity};
+use crate::{SourceLocation, SymbolId, TextId};
+
+pub use sysml_contract::EvaluationFailure;
 
 /// A computed constant value.
 ///
@@ -34,38 +36,6 @@ pub enum EvaluatedScalar {
         magnitude: Box<EvaluatedScalar>,
         unit: Box<str>,
     },
-}
-
-/// Why an attempted evaluation produced no value.
-///
-/// Distinct from [`EvaluationState::NonConstant`] and [`EvaluationState::Cyclic`], which are
-/// answers rather than failures: an expression over a feature with no constant value is correctly
-/// not constant, and a value cycle is a property of the model. These three are cases where the
-/// expression could not be folded at all.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum EvaluationFailure {
-    /// A constant `/` or `%` whose divisor folded to zero.
-    ///
-    /// Intercepted before the operation runs: integer division would panic and float division
-    /// would silently yield an infinity, and neither is an honest published value.
-    DivisionByZero,
-    /// An operand folded to a type the operator cannot take, such as a boolean in an arithmetic
-    /// position.
-    TypeMismatch,
-    /// An operand reference that resolution left unresolved, ambiguous, unsupported or
-    /// non-converged, so what it would evaluate to is unknown.
-    UnresolvedOperand,
-}
-
-impl EvaluationFailure {
-    /// A stable kebab-case name for this failure, for diagnostic text and snapshot output.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::DivisionByZero => "division-by-zero",
-            Self::TypeMismatch => "type-mismatch",
-            Self::UnresolvedOperand => "unresolved-operand",
-        }
-    }
 }
 
 /// What evaluation produced for one element.
@@ -152,9 +122,9 @@ impl fmt::Display for EvaluationState {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedUnit {
     /// The unit declaration itself, such as `SI::kilogram`.
-    pub unit: SymbolIdentity,
+    pub unit: SymbolId,
     /// The measurement-reference types it is an instance of, in canonical order.
-    pub dimensions: Box<[SymbolIdentity]>,
+    pub dimensions: Box<[SymbolId]>,
 }
 
 /// What the publication settled for one authored unit token.
@@ -169,7 +139,7 @@ pub enum UnitResolution {
     /// A catalog is admitted and no unit in it carries this symbol.
     UnknownSymbol,
     /// Several admitted units carry this symbol, so choosing one would be a guess.
-    Ambiguous(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolId]>),
     /// The token is not a single unit symbol.
     ///
     /// The parser hands a unit over as opaque text rather than as a reference, because a unit may
@@ -189,7 +159,12 @@ pub enum UnitResolution {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AuthoredUnit {
     /// The token as written between the brackets, never normalized to the unit's declared name.
-    pub authored: Box<str>,
+    ///
+    /// A handle, not a copy: the token is text this publication interned once, and an element
+    /// with several unit literals would otherwise allocate one `Box<str>` per token for text a
+    /// consumer renders only at a hover or a diagnostic. Read it with
+    /// [`PublishedResolution::text`](crate::PublishedResolution::text).
+    pub authored: TextId,
     /// The token's own range: the text inside the brackets, so a diagnostic about the unit points
     /// at the unit rather than at the literal that carries it.
     pub location: SourceLocation,
@@ -205,7 +180,7 @@ pub struct AuthoredUnit {
 /// one of the questions unanswerable.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementEvaluation {
-    pub element: SymbolIdentity,
+    pub element: SymbolId,
     pub state: EvaluationState,
     /// The unit tokens authored in this element's expression, in authored order.
     ///
@@ -239,7 +214,7 @@ pub enum ExpectedMeasurement {
     /// type resolved but its measurement-reference feature has no type this publication can read.
     Indeterminate,
     /// The element's values must be measured in one of these measurement-reference types.
-    Required(Box<[SymbolIdentity]>),
+    Required(Box<[SymbolId]>),
 }
 
 /// What one publication settled about a verdict-bearing element's expression.

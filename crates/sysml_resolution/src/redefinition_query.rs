@@ -7,31 +7,4 @@
 //! semantic projection.
 
 pub use spec42_constraint_manifest::RedefinitionCheckKind;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RedefinitionCheckPrerequisite {
-    RuleNotPublished,
-    EndFeaturePositionAndInheritedEnds,
-    FlowEndOrdinalAndLibraryAnchors,
-    CrossFeatureAndSubsettingEndpoints,
-    ParameterDirectionAndInheritedPosition,
-    FunctionOrExpressionResult,
-    ConstructorResultAndInstantiatedTypeFeatures,
-    FeatureChainSourceTarget,
-    FeatureChainSourceTargetAndLibraryAnchor,
-    StateSubactionMembershipAndKind,
-    AssignmentActionInputParameterEndpoints,
-    ForLoopVariableProjection,
-    ObjectiveMembershipAndCaseObjective,
-    ViewRenderingMembership,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RedefinitionCheckOutcome {
-    Satisfied,
-    Violated,
-    Unresolved,
-    Unsupported {
-        prerequisite: RedefinitionCheckPrerequisite,
-    },
-}
+pub use sysml_contract::{RedefinitionCheckOutcome, RedefinitionCheckPrerequisite};

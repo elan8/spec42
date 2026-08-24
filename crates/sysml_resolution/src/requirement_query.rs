@@ -4,67 +4,48 @@
 //! canonical direct feature membership roles and documentation records; they do not reparse
 //! requirement syntax or infer a role from a member name.
 
-use crate::SymbolIdentity;
+use crate::SymbolId;
 
 pub use spec42_constraint_manifest::RequirementDerivedFactKind;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum RequirementDerivedFactCollection {
-    DefinitionActorParameter,
-    DefinitionSubjectParameter,
-    DefinitionText,
-    DefinitionRequiredConstraint,
-    DefinitionAssumedConstraint,
-    DefinitionFramedConcern,
-    UsageActorParameter,
-    UsageSubjectParameter,
-    UsageText,
-    UsageRequiredConstraint,
-    UsageAssumedConstraint,
-    UsageFramedConcern,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RequirementDerivedFactPrerequisite {
-    RuleNotPublished,
-    CanonicalMembershipRole,
-    DocumentationRecords,
-}
+pub use sysml_contract::{RequirementDerivedFactCollection, RequirementDerivedFactPrerequisite};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequirementDerivedFactOutcome {
-    Elements(Box<[SymbolIdentity]>),
+    Elements(Box<[SymbolId]>),
     Text(Box<[Box<str>]>),
     Unsupported {
         prerequisite: RequirementDerivedFactPrerequisite,
     },
 }
 
-impl RequirementDerivedFactCollection {
-    pub const fn from_kind(kind: RequirementDerivedFactKind) -> Self {
-        match kind {
-            RequirementDerivedFactKind::DefinitionActorParameter => Self::DefinitionActorParameter,
-            RequirementDerivedFactKind::DefinitionSubjectParameter => {
-                Self::DefinitionSubjectParameter
-            }
-            RequirementDerivedFactKind::DefinitionText => Self::DefinitionText,
-            RequirementDerivedFactKind::DefinitionRequiredConstraint => {
-                Self::DefinitionRequiredConstraint
-            }
-            RequirementDerivedFactKind::DefinitionAssumedConstraint => {
-                Self::DefinitionAssumedConstraint
-            }
-            RequirementDerivedFactKind::DefinitionFramedConcern => Self::DefinitionFramedConcern,
-            RequirementDerivedFactKind::UsageActorParameter => Self::UsageActorParameter,
-            RequirementDerivedFactKind::UsageSubjectParameter => Self::UsageSubjectParameter,
-            RequirementDerivedFactKind::UsageText => Self::UsageText,
-            RequirementDerivedFactKind::UsageRequiredConstraint => Self::UsageRequiredConstraint,
-            RequirementDerivedFactKind::UsageAssumedConstraint => Self::UsageAssumedConstraint,
-            RequirementDerivedFactKind::UsageFramedConcern => Self::UsageFramedConcern,
+/// The collection one manifest-published rule kind selects.
+///
+/// A free fn rather than a method: the mapping is between the pinned manifest's rule table and the
+/// contract vocabulary, and the contract crate does not depend on the manifest.
+pub const fn requirement_collection_from_kind(
+    kind: RequirementDerivedFactKind,
+) -> RequirementDerivedFactCollection {
+    use RequirementDerivedFactCollection as Collection;
+    match kind {
+        RequirementDerivedFactKind::DefinitionActorParameter => {
+            Collection::DefinitionActorParameter
         }
-    }
-
-    pub const fn requires_text(self) -> bool {
-        matches!(self, Self::DefinitionText | Self::UsageText)
+        RequirementDerivedFactKind::DefinitionSubjectParameter => {
+            Collection::DefinitionSubjectParameter
+        }
+        RequirementDerivedFactKind::DefinitionText => Collection::DefinitionText,
+        RequirementDerivedFactKind::DefinitionRequiredConstraint => {
+            Collection::DefinitionRequiredConstraint
+        }
+        RequirementDerivedFactKind::DefinitionAssumedConstraint => {
+            Collection::DefinitionAssumedConstraint
+        }
+        RequirementDerivedFactKind::DefinitionFramedConcern => Collection::DefinitionFramedConcern,
+        RequirementDerivedFactKind::UsageActorParameter => Collection::UsageActorParameter,
+        RequirementDerivedFactKind::UsageSubjectParameter => Collection::UsageSubjectParameter,
+        RequirementDerivedFactKind::UsageText => Collection::UsageText,
+        RequirementDerivedFactKind::UsageRequiredConstraint => Collection::UsageRequiredConstraint,
+        RequirementDerivedFactKind::UsageAssumedConstraint => Collection::UsageAssumedConstraint,
+        RequirementDerivedFactKind::UsageFramedConcern => Collection::UsageFramedConcern,
     }
 }

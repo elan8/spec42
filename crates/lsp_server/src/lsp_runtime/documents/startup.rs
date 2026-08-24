@@ -82,7 +82,7 @@ pub(crate) async fn initialized(
             .log_message(MessageType::INFO, format!("{} initialized", server_name))
             .await;
     }
-    let scan_roots = if crate::workspace::library_closure::library_full_scan_enabled() {
+    let scan_roots = if crate::common::util::library_full_scan_enabled() {
         scan_roots(&workspace_roots, &library_paths)
     } else {
         workspace_roots.clone()
@@ -147,12 +147,15 @@ pub(crate) async fn initialized(
         let (_library_parsed_count, _library_total_count, parsed_entries) = {
             let closure_services = services.clone();
             let library_entries = match tokio::task::spawn_blocking(move || {
-                crate::workspace::library_closure::load_library_closure_documents(
-                    &workspace_parsed,
-                    &library_paths_for_closure,
-                    &standard_library_paths,
-                    &closure_services,
-                )
+                closure_services
+                    .library
+                    .resolve_for_roots(
+                        &workspace_parsed,
+                        &library_paths_for_closure,
+                        &standard_library_paths,
+                        &sysml_query::library::LibraryClosureOptions::default(),
+                    )
+                    .map_err(|error| error.to_string())
             })
             .await
             {
@@ -218,7 +221,7 @@ pub(crate) async fn initialized(
                 standard_library_paths_snapshot,
             ) = handle.relink_snapshot();
             let (new_symbols, staged_relink_metrics) = tokio::task::spawn_blocking(move || {
-                crate::workspace::rebuild_publication_inputs_staged(
+                crate::session::rebuild_publication_inputs_staged(
                     &index_snapshot,
                     &library_paths_snapshot,
                     &standard_library_paths_snapshot,
@@ -232,12 +235,12 @@ pub(crate) async fn initialized(
                 .commit_startup_relink_or_stale(snapshot_publication, new_symbols)
                 .await;
             match outcome {
-                Ok(crate::workspace::handle::StartupRelinkOutcome::Committed) => {
+                Ok(crate::session::handle::StartupRelinkOutcome::Committed) => {
                     let mut metrics = staged_relink_metrics;
                     metrics.total_ms = relink_start.elapsed().as_millis() as u32;
                     relink_metrics = metrics;
                 }
-                Ok(crate::workspace::handle::StartupRelinkOutcome::Stale) | Err(_) => {
+                Ok(crate::session::handle::StartupRelinkOutcome::Stale) | Err(_) => {
                     stale_retries += 1;
                     if stale_retries < 3 {
                         continue;
@@ -249,9 +252,7 @@ pub(crate) async fn initialized(
             }
 
             let snap = handle.snapshot();
-            if !crate::workspace::library_closure::library_full_scan_enabled()
-                && !snap.library_paths.is_empty()
-            {
+            if !crate::common::util::library_full_scan_enabled() && !snap.library_paths.is_empty() {
                 let library_paths_for_search = snap.library_paths.clone();
                 drop(snap);
                 let search_indexed = handle

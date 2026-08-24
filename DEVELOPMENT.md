@@ -191,9 +191,13 @@ cannot walk, cache, or serialise a parser document even while holding one.
    `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
    The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
    momentarily resolvable, and it is silent about it -- use the fully qualified spec.
-2. `cargo check --workspace --all-targets`, then `cargo test --workspace`.
-3. `cargo run -p spec42-snapshot -- update`, review `git diff -- tests/snapshots`, then
-   `cargo run -p spec42-snapshot -- check`. The snapshot corpus is the primary end-to-end evidence
+2. `cargo check --workspace --all-targets`, then `cargo test --workspace`. Integration tests live
+   in one binary per crate (`tests/integration/main.rs` declaring one module per file): every
+   `tests/*.rs` file is its own crate that links the whole stack, and the link step -- not the
+   tests -- dominated a rebuild. Add a test as a module of that binary, not as a new file beside it.
+3. `cargo snapshot update`, review `git diff -- tests/snapshots`, then `cargo snapshot check`
+   (the alias in `.cargo/config.toml` runs the tool in release -- the debug profile is 10-30x
+   slower on this workload). The snapshot corpus is the primary end-to-end evidence
    for a parser bump; it is not CI-gated, so the diff review is the gate.
 4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
    the ones it closes. If the bump changes the keyword vocabulary, update
@@ -241,9 +245,9 @@ Spec42 uses two Rust integration layers in CI:
 ### Rust (core, fast path)
 
 ```bash
-cargo test --workspace --exclude spec42
-cargo test -p spec42 --lib
-cargo test -p spec42 --test multi_file_check
+cargo test --workspace --exclude server
+cargo test -p server --lib
+cargo test -p server --test integration multi_file_check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
@@ -264,10 +268,8 @@ cargo test --workspace --no-default-features
 CLI agent-tool tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent CLI code:
 
 ```bash
-cargo test -p spec42 \
-  --test cli_ai_tools \
-  --test kitchen_timer_check \
-  -- --include-ignored
+cargo test -p server --test integration cli_ai_tools -- --include-ignored
+cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 ```
 
 | Integration test | Surface |
@@ -341,6 +343,19 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 
 Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals while the nightly step remains non-blocking.
 
+### Query benchmarks
+
+A representation change is admitted with a benchmark showing it neutral-or-better on the bundled standard-library corpus. The six cases are the cold build, the warm relink one keystroke costs, and the four keystroke-path queries:
+
+```
+cargo bench -p spec42-query-bench
+cargo run --release -p spec42-query-bench --bin spec42-query-bench-allocations
+```
+
+The first reports wall time and divan's allocation profile per case; the second reports allocations and allocations per published element under a counting global allocator (the two cannot share a binary, because each installs its own `#[global_allocator]`). Recorded baselines, with the machine and commit they were taken on, are in `planning/BENCH_BASELINE.md`; add a row there when a representation change moves the numbers.
+
+`tools/semantic_benchmark` remains the JSON-reporting cold-build tool with a phase breakdown; the divan set is the admission gate.
+
 ## AI assistants
 
 **VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`).
@@ -350,10 +365,8 @@ Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUAR
 Tests (see [Running Tests](#running-tests) → agent CLI surfaces):
 
 ```bash
-cargo test -p spec42 \
-  --test cli_ai_tools \
-  --test kitchen_timer_check \
-  -- --include-ignored
+cargo test -p server --test integration cli_ai_tools -- --include-ignored
+cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 

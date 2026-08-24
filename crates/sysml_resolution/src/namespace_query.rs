@@ -4,16 +4,9 @@
 //! than inventing public relationship identities. This API therefore exposes only exact final
 //! element projections whose result can be represented without losing that distinction.
 
-use crate::{ElementRelationship, SymbolIdentity};
+use crate::{ElementRelationship, SymbolId};
 
-/// One element-valued Namespace derivation admitted by the pinned manifest.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum NamespaceDerivedElementCollection {
-    /// `ownedMembership->selectByKind(OwningMembership).ownedMemberElement`.
-    OwnedMember,
-    /// `ownedRelationship->selectByKind(Import)`.
-    OwnedImport,
-}
+pub use sysml_contract::NamespaceDerivedElementCollection;
 
 /// The exact `importedElement` projection of one canonical NamespaceImport reference.
 ///
@@ -23,6 +16,6 @@ pub enum NamespaceDerivedElementCollection {
 /// target outcome.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NamespaceImportDerivedElement {
-    pub import: SymbolIdentity,
+    pub import: SymbolId,
     pub relationship: ElementRelationship,
 }

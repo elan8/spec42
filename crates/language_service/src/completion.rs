@@ -619,7 +619,8 @@ fn collect_symbol_candidates(
     let Some(model) = workspace.published_model() else {
         return;
     };
-    let outcome = model.completion().visible_members(
+    let completion = model.completion();
+    let outcome = completion.visible_members(
         current_uri.as_str(),
         sysml_query::resolved_slice::TextPosition {
             line: query_position.line,
@@ -630,11 +631,13 @@ fn collect_symbol_candidates(
     let mut members = match outcome {
         sysml_query::resolved_slice::QueryOutcome::Resolved(members)
         | sysml_query::resolved_slice::QueryOutcome::Recovered(members)
-        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(members) => members.into_vec(),
+        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(members) => {
+            members.iter().collect::<Vec<_>>()
+        }
         _ => return,
     };
     if qualifier.is_some() {
-        match model.completion().visible_members(
+        match completion.visible_members(
             current_uri.as_str(),
             sysml_query::resolved_slice::TextPosition {
                 line: query_position.line,
@@ -645,35 +648,35 @@ fn collect_symbol_candidates(
             sysml_query::resolved_slice::QueryOutcome::Resolved(extra)
             | sysml_query::resolved_slice::QueryOutcome::Recovered(extra)
             | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(extra) => {
-                members.extend(extra.into_vec())
+                members.extend(extra.iter())
             }
             _ => {}
         }
     }
-    members.sort_by(|a, b| a.symbol.cmp(&b.symbol));
-    members.dedup_by(|a, b| a.symbol == b.symbol);
+    members.sort_by_key(|a| a.symbol());
+    members.dedup_by(|a, b| a.symbol() == b.symbol());
     for member in members {
-        let name = member.name.to_string();
+        let name = member.name().to_string();
         if !prefix.is_empty() && !name.to_lowercase().contains(&prefix) {
             continue;
         }
-        let detail = Some(query_kind_label(member.kind).to_string());
+        let detail = Some(query_kind_label(member.kind()).to_string());
         let documentation = Some(format!(
             "**{}**\n\nQualified name: `{}`",
-            name, member.qualified_name
+            name,
+            member.qualified_name()
         ));
         let label_details = Some(CompletionItemLabelDetailsDto {
-            detail: Some(format!(" - {}", member.kind)),
+            detail: Some(format!(" - {}", member.kind())),
             description: member
-                .container_name
-                .as_ref()
+                .container_name()
                 .map(ToString::to_string)
-                .or_else(|| Some(member.declaring_document.to_string())),
+                .or_else(|| Some(member.declaring_document().to_string())),
         });
-        let kind = Some(element_kind_to_completion_kind(member.kind));
+        let kind = Some(element_kind_to_completion_kind(member.kind()));
         out.push(CompletionCandidate {
             label: name.clone(),
-            element_kind: Some(member.kind),
+            element_kind: Some(member.kind()),
             item: CompletionItemDto {
                 label: name.clone(),
                 kind,
@@ -696,13 +699,13 @@ fn collect_symbol_candidates(
                 resolve_documentation: documentation,
             },
             tier: if qualifier
-                .is_some_and(|qualifier| member.declaring_document.contains(qualifier))
+                .is_some_and(|qualifier| member.declaring_document().contains(qualifier))
             {
                 TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
             } else if hints
                 .same_file_uri
                 .as_ref()
-                .is_some_and(|uri| uri.as_str() == member.declaring_document.as_ref())
+                .is_some_and(|uri| uri.as_str() == member.declaring_document())
             {
                 TIER_SAME_FILE_COMPATIBLE
             } else {

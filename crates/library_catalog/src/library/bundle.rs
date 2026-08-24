@@ -151,12 +151,7 @@ fn directory_contains_models(path: &Path) -> bool {
         .into_iter()
         .filter_map(Result::ok)
         .any(|entry| {
-            entry.file_type().is_file()
-                && entry
-                    .path()
-                    .extension()
-                    .and_then(|ext| ext.to_str())
-                    .is_some_and(|ext| ext == "sysml" || ext == "kerml")
+            entry.file_type().is_file() && sysml_query::source::is_sysml_like(entry.path())
         })
 }
 

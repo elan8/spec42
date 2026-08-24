@@ -1,5 +1,6 @@
 ﻿use serde::{Deserialize, Serialize};
 use sysml_query::resolved_slice::TextRange;
+use sysml_query::syntax::SyntaxOutlineKind;
 
 /// A source location using a logical path string and neutral text range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -88,7 +89,7 @@ pub struct CompletionEditShape {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OutlineSymbol {
     pub name: String,
-    pub kind: String,
+    pub kind: SyntaxOutlineKind,
     pub range: TextRange,
     pub selection_range: TextRange,
     pub children: Vec<OutlineSymbol>,

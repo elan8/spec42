@@ -70,7 +70,7 @@ fn dto_roundtrip_serde_extended() {
 
     let outline = OutlineSymbol {
         name: "P".to_string(),
-        kind: "package".to_string(),
+        kind: sysml_query::syntax::SyntaxOutlineKind::Package,
         range: TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 10)),
         selection_range: TextRange::new(TextPosition::new(0, 8), TextPosition::new(0, 9)),
         children: vec![],

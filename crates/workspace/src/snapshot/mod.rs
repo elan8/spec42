@@ -17,4 +17,5 @@ pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;
+pub(crate) use validation::summarize as summarize_validated_documents;
 pub use validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};

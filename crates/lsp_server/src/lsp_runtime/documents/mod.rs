@@ -8,12 +8,12 @@ use tracing::{info, warn};
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
-use crate::views::dto::SemanticIndexReadyNotificationDto;
-use crate::workspace::state::ServerState;
-use crate::workspace::{
+use crate::session::state::ServerState;
+use crate::session::{
     parse_scanned_documents, parse_scanned_entries, scan_sysml_files, RuntimeConfig,
     WorkspaceHandle,
 };
+use crate::views::dto::SemanticIndexReadyNotificationDto;
 use sysml_query::publication::RelinkToken;
 
 use super::capabilities::server_capabilities;
@@ -38,7 +38,7 @@ fn schedule_workspace_diagnostics_republish(
             return;
         }
         let lifecycle = handle.snapshot().session.lifecycle();
-        if !crate::workspace::state::supports_semantic_queries(lifecycle) {
+        if !crate::session::state::supports_semantic_queries(lifecycle) {
             return;
         }
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
@@ -65,12 +65,11 @@ async fn publish_semantic_change(
         })
         .cloned()
         .collect::<Vec<_>>();
-    let mut diagnostic_uris = crate::workspace::import_graph::affected_diagnostic_documents(
-        old.published_model(),
-        workspace_uris,
-        &changed_uri,
-    )
-    .into_uris();
+    let mut diagnostic_uris = old
+        .published_model()
+        .dependencies()
+        .workspace_documents_affected_by(workspace_uris, &changed_uri)
+        .into_uris();
     if !diagnostic_uris.contains(&changed_uri) {
         diagnostic_uris.push(changed_uri);
     }
@@ -172,7 +171,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
+            crate::session::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 
@@ -191,7 +190,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
+            crate::session::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 

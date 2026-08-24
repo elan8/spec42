@@ -3,11 +3,11 @@
 //! A qualified name is a semantic lookup key, not an element identity. The optional document
 //! identity narrows the lookup to one admitted source; without it, resolution ranges over every
 //! source domain in this immutable publication. The result always carries the publication-owned
-//! opaque [`SymbolIdentity`](crate::SymbolIdentity).
+//! opaque [`SymbolId`](crate::SymbolId).
 
 use crate::{
     ElementKind, ElementSearch, ElementSource, PublicationCompleteness, PublishedResolution,
-    QueryOutcome, SourceLocation, SymbolEntry, SymbolIdentity,
+    QueryOutcome, SourceLocation, SymbolEntry, SymbolId,
 };
 
 /// A readable element reference interpreted against one immutable publication.
@@ -24,9 +24,13 @@ pub struct QualifiedElementReference {
 /// One canonical candidate for a readable qualified reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedReferenceTarget {
-    pub identity: SymbolIdentity,
+    /// The element this candidate names.
+    ///
+    /// The qualified name is not handed back: the caller supplied it in the request, and the
+    /// publication already stores it once. Read it with
+    /// [`PublishedResolution::qualified_name`] where a renderer needs the text.
+    pub identity: SymbolId,
     pub kind: ElementKind,
-    pub qualified_name: Box<str>,
     pub location: SourceLocation,
 }
 
@@ -76,7 +80,9 @@ impl PublishedResolution {
 
         let mut named = entries
             .into_iter()
-            .filter(|entry| entry.qualified_name == reference.qualified_name)
+            .filter(|entry| {
+                self.qualified_name(entry.identity) == Some(reference.qualified_name.as_ref())
+            })
             .map(QualifiedReferenceTarget::from)
             .collect::<Vec<_>>();
         canonicalize_targets(&mut named);
@@ -155,7 +161,6 @@ impl From<SymbolEntry> for QualifiedReferenceTarget {
         Self {
             identity: entry.identity,
             kind: entry.kind,
-            qualified_name: entry.qualified_name,
             location: entry.location,
         }
     }

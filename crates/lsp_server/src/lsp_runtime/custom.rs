@@ -1,7 +1,7 @@
+use crate::session::state::DocumentStore;
+use crate::session::ServerState;
 use crate::views::dto;
 use crate::views::dto::range_to_dto;
-use crate::workspace::state::DocumentStore;
-use crate::workspace::ServerState;
 use std::time::Instant;
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 use tower_lsp::jsonrpc::Result;
@@ -29,50 +29,58 @@ pub(crate) fn sysml_feature_inspector_result(
     let at = crate::views::feature_inspector::details_at(model, &uri, position);
     let mut response = match &at {
         Some(at) => crate::views::feature_inspector::feature_inspector_response(
+            model,
             &uri,
             position,
             at,
-            Some(text.as_str()),
+            Some((text.as_str(), &entry.parsed)),
         ),
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
 
-    if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
-        &text,
-        position.line,
-        position.character,
-    ) {
+    if let Some(literal) = entry
+        .parsed
+        .unit_literal_at(position.line, position.character)
+    {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
             kind: "unit".to_string(),
-            text: Some(unit),
-            range: Some(range_to_dto(range)),
+            text: Some(literal.unit.to_string()),
+            range: Some(range_to_dto(TextRange {
+                start: TextPosition {
+                    line: literal.range.start_line,
+                    character: literal.range.start_character,
+                },
+                end: TextPosition {
+                    line: literal.range.end_line,
+                    character: literal.range.end_character,
+                },
+            })),
         };
         return Ok(response);
     }
 
-    let Some((line, start, end, word)) =
-        language_service::word_at_position(&text, position.line, position.character)
-    else {
+    let Some(token) = entry.parsed.token_at(position.line, position.character) else {
         return Ok(response);
     };
+    let word = token.text;
     let selection_range = TextRange {
         start: TextPosition {
-            line,
-            character: start,
+            line: token.range.start_line,
+            character: token.range.start_character,
         },
         end: TextPosition {
-            line,
-            character: end,
+            line: token.range.end_line,
+            character: token.range.end_character,
         },
     };
-    response.selection.text = Some(word.clone());
+    response.selection.text = Some(word.to_string());
     response.selection.range = Some(range_to_dto(selection_range));
 
-    if language_service::is_reserved_keyword(&word) {
+    if token.is_keyword {
         response.selection.kind = "keyword".to_string();
-        response.language_help = language_service::keyword_help(&word).map(|help| {
+        response.language_help = language_service::keyword_help(word).map(|help| {
             dto::SysmlFeatureInspectorLanguageHelpDto {
-                keyword: word,
+                keyword: word.to_string(),
                 description: help.description.to_string(),
                 syntax: help.syntax.map(str::to_string),
             }
@@ -130,14 +138,9 @@ pub(crate) fn sysml_library_search_result(
         // documents are represented exclusively by the committed publication query.
         if !index_entry.admitted_to_publication {
             search_symbols.extend(
-                crate::workspace::library_search::recover_short_name_search_symbols(
-                    index_entry.content(),
-                    uri,
-                )
-                .into_iter()
-                .map(
-                    crate::workspace::library_search::RecoverySearchSymbol::into_search_only_symbol,
-                ),
+                language_service::recover_short_name_search_symbols(index_entry.content(), uri)
+                    .into_iter()
+                    .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }
@@ -151,7 +154,7 @@ pub(crate) fn sysml_library_search_result(
             let score = if query.is_empty() {
                 1_000
             } else {
-                crate::workspace::library_search::library_search_score(&entry.name, &query)?
+                language_service::library_search_score(&entry.name, &query)?
             };
             Some((score, entry))
         })
@@ -176,25 +179,29 @@ pub(crate) fn sysml_library_search_result(
 
     let total = ranked.len();
     let effective_limit = if query.is_empty() { total } else { limit };
-    let items: Vec<crate::workspace::library_search::LibrarySearchItem> = ranked
+    let items: Vec<language_service::LibrarySearchItem> = ranked
         .into_iter()
         .take(effective_limit)
-        .map(
-            |(score, entry)| crate::workspace::library_search::LibrarySearchItem {
-                name: entry.name.clone(),
-                kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
-                container: entry.container_name.clone(),
-                uri: entry.uri.to_string(),
-                range: entry.range,
-                score,
-                source: crate::workspace::library_search::library_source_label(&entry.uri)
-                    .to_string(),
-                path: entry.uri.path().to_string(),
-            },
-        )
+        .map(|(score, entry)| language_service::LibrarySearchItem {
+            name: entry.name.clone(),
+            kind: crate::language::symbol_kind_label(crate::language::element_kind_label_to_lsp(
+                entry.detail.as_deref(),
+            ))
+            .to_string(),
+            container: entry.container_name.clone(),
+            uri: entry.uri.to_string(),
+            range: entry.range,
+            score,
+            source: language_service::library_source_label(
+                &entry.uri,
+                &state.standard_library_paths,
+            )
+            .to_string(),
+            path: entry.uri.path().to_string(),
+        })
         .collect();
 
-    let domain_sources = crate::workspace::library_search::build_library_tree(items);
+    let domain_sources = language_service::build_library_tree(items);
     let sources = crate::views::library_search_adapter::to_dto_sources(domain_sources);
     let symbol_total = sources
         .iter()

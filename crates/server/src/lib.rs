@@ -30,22 +30,22 @@ use cli::{
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
-use lsp_server::{
-    validate_paths_with_semantics, ValidationReport, ValidationRequest, ValidationSummary,
-};
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
+use workspace::{validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
-pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
-    let references_stdlib = environment::workspace_references_standard_library(&args.path);
+///
+/// The report — including its advice — is `workspace::validate_paths`'s answer. This crate adds
+/// nothing to it: a workspace that needs library roots says so through the diagnostics the
+/// publication settled, which is what the advice is derived from.
+pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport, String> {
     let environment = resolve_environment(cli)?;
     let engine = build_engine(cli)?;
-    let config = Arc::new(lsp_server::default_server_config());
-    let mut report = validate_paths_with_semantics(
+    validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -53,22 +53,7 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             parallel_enabled: true,
             strict_diagnostics: args.strict_diagnostics,
         },
-    )?
-    .validation;
-    if references_stdlib
-        && environment.stdlib_path.is_none()
-        && !cli.no_stdlib
-        && !report
-            .advice
-            .iter()
-            .any(|line| line.contains("standard library"))
-    {
-        report.advice.push(
-            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
-                .to_string(),
-        );
-    }
-    Ok(report)
+    )
 }
 
 /// Environment report (same as `spec42 doctor`).
@@ -88,12 +73,15 @@ pub struct ModelSummaryTruncation {
 #[derive(Debug, Clone, Serialize)]
 pub struct ModelSummaryResponse {
     pub workspace_root: Option<String>,
-    pub summary: ValidationSummary,
+    pub summary: HostValidationSummary,
     pub truncation: ModelSummaryTruncation,
 }
 
 /// Narrow summary while a typed model-summary projection is defined.
-pub fn build_model_summary(report: ValidationReport, _max_nodes: usize) -> ModelSummaryResponse {
+pub fn build_model_summary(
+    report: HostValidationReport,
+    _max_nodes: usize,
+) -> ModelSummaryResponse {
     // TODO(follow-up): expose a bounded typed summary from PublishedModel. Do not recreate the
     // retired graph DTO here; until that owner exists, diagnostics are the complete supported
     // result and semantic nodes/relationships are explicitly absent.

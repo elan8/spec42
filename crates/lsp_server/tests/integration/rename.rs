@@ -1,7 +1,8 @@
 //! Rename integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server, TestSession,
+    next_id, read_message, read_response, send_message, spawn_server, wait_for_publications,
+    TestSession,
 };
 
 /// Rename: prepareRename returns range; rename returns WorkspaceEdit updating all references.
@@ -51,34 +52,28 @@ fn lsp_rename() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    lsp_barrier(&mut stdin, &mut stdout);
+    // Deterministic barrier: workspace-wide indexing (needed to determine renameability) is
+    // complete for a document once its relink task has committed the fully resolved graph to
+    // the session publication and published that document's diagnostics.
+    wait_for_publications(&mut stdout, &[uri_def, uri_use]);
 
     // prepareRename at "Foo" in def.sysml ("package P { part def Foo; }" -> Foo at line 0, char 21)
-    // Retry: workspace-wide indexing (needed to determine renameability) can lag under CI load.
-    let mut prep_result = serde_json::Value::Null;
-    for _ in 0..20 {
-        let prep_id = next_id();
-        let prep_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": prep_id,
-            "method": "textDocument/prepareRename",
-            "params": {
-                "textDocument": { "uri": uri_def },
-                "position": { "line": 0, "character": 21 }
-            }
-        });
-        send_message(&mut stdin, &prep_req.to_string());
-        let prep_resp = read_response(&mut stdout, prep_id).expect("prepareRename response");
-        let prep_json: serde_json::Value =
-            serde_json::from_str(&prep_resp).expect("parse prepareRename response");
-        assert_eq!(prep_json["id"], prep_id);
-        prep_result = prep_json["result"].clone();
-        if !prep_result.is_null() {
-            break;
+    let prep_id = next_id();
+    let prep_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": prep_id,
+        "method": "textDocument/prepareRename",
+        "params": {
+            "textDocument": { "uri": uri_def },
+            "position": { "line": 0, "character": 21 }
         }
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
+    });
+    send_message(&mut stdin, &prep_req.to_string());
+    let prep_resp = read_response(&mut stdout, prep_id).expect("prepareRename response");
+    let prep_json: serde_json::Value =
+        serde_json::from_str(&prep_resp).expect("parse prepareRename response");
+    assert_eq!(prep_json["id"], prep_id);
+    let prep_result = prep_json["result"].clone();
     assert!(
         !prep_result.is_null(),
         "prepareRename should return range or result"

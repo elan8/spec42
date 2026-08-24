@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use tower_lsp::lsp_types::{Position, Range, Url};
 
 use crate::language::{position_to_byte_offset, SymbolEntry};
+use language_service::utf16_len;
 
 /// Applies an incremental content change (range + new text) to the document.
 /// Uses LSP UTF-16 positions and only slices on validated UTF-8 byte boundaries.
@@ -57,31 +58,10 @@ pub struct UntypedPartUsage {
     pub range: Range,
 }
 
-fn utf16_len(s: &str) -> u32 {
-    s.encode_utf16().count() as u32
-}
-
-fn parse_untyped_part_usage_line(raw_line: &str) -> Option<String> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {
-        return None;
-    }
-    if !trimmed.ends_with(';') || trimmed.contains(':') {
-        return None;
-    }
-    let after_part = trimmed.strip_prefix("part ")?;
-    let name = after_part.strip_suffix(';')?.trim();
-    if name.is_empty() || name.contains(char::is_whitespace) {
-        return None;
-    }
-    Some(name.to_string())
-}
-
 pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
     let mut out = Vec::new();
     for (line_idx, raw_line) in content.lines().enumerate() {
-        let Some(name) = parse_untyped_part_usage_line(raw_line) else {
+        let Some(name) = language_service::parse_untyped_part_usage_name(raw_line) else {
             continue;
         };
         let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
@@ -95,25 +75,6 @@ pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
         });
     }
     out
-}
-
-pub fn import_statement_ranges(content: &str) -> Vec<Range> {
-    let mut ranges = Vec::new();
-    for (line_idx, raw_line) in content.lines().enumerate() {
-        let code_only = raw_line.split("//").next().unwrap_or("");
-        let trimmed = code_only.trim();
-        if !trimmed.starts_with("import ") {
-            continue;
-        }
-
-        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
-        let end_char = start_char + utf16_len(trimmed);
-        ranges.push(Range {
-            start: Position::new(line_idx as u32, start_char),
-            end: Position::new(line_idx as u32, end_char),
-        });
-    }
-    ranges
 }
 
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
@@ -237,35 +198,24 @@ pub fn env_usize(name: &str, default_value: usize) -> usize {
         .unwrap_or(default_value)
 }
 
-/// Builds Markdown for symbol hover: title (kind + name), code block with signature or description, container, optional location.
+/// Builds Markdown for symbol hover. Presentation is owned by `language_service`.
 pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String {
-    let kind = entry.detail.as_deref().unwrap_or("symbol");
-    let name = &entry.name;
-    let mut md = format!("**{}** `{}`\n\n", kind, name);
-    let code_block = entry
-        .signature
-        .as_deref()
-        .or(entry.description.as_deref())
-        .unwrap_or(name.as_str());
-    md.push_str("```sysml\n");
-    md.push_str(code_block);
-    md.push_str("\n```\n\n");
-    if let Some(ref pkg) = entry.container_name {
-        if pkg != "(top level)" {
-            md.push_str(&format!("*Package:* `{}`\n\n", pkg));
-        }
-    }
-    if show_location {
-        md.push_str(&format!("*Defined in:* {}", entry.uri.path()));
-    }
-    md
+    language_service::symbol_hover_markdown(entry, show_location)
+}
+
+/// Whether the host was asked to admit whole library trees instead of the import closure.
+///
+/// Host configuration, read once here: the closure service decides what a workspace needs, and
+/// this only says whether the host asks it at all.
+pub(crate) fn library_full_scan_enabled() -> bool {
+    env_flag_enabled("SPEC42_LIBRARY_FULL_SCAN", false)
 }
 
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, import_statement_ranges, normalize_file_uri,
-        parse_diagnose_library_paths_from_value, untyped_part_usage_diagnostics,
+        apply_incremental_change, normalize_file_uri, parse_diagnose_library_paths_from_value,
+        untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -297,15 +247,6 @@ mod tests {
         let range = Range::new(Position::new(1, 17), Position::new(1, 18));
         let updated = apply_incremental_change(text, &range, "").expect("edit applies");
         assert_eq!(updated, "package Demo {\n  part def Engine\n}\n");
-    }
-
-    #[test]
-    fn import_statement_ranges_detects_import_lines() {
-        let content = "package P {\n  import ScalarValues::Real;\n  // import Ignored::Type;\n}\n";
-        let ranges = import_statement_ranges(content);
-        assert_eq!(ranges.len(), 1);
-        assert_eq!(ranges[0].start.line, 1);
-        assert_eq!(ranges[0].start.character, 2);
     }
 
     #[test]

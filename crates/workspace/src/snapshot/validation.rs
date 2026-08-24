@@ -1,5 +1,6 @@
 ﻿//! Host-facing validation report (portable, tower-lsp-free).
 
+use serde::Serialize;
 use sysml_diagnostics::{DiagnosticSeverity, ReportingPolicy, SemanticDiagnostic};
 use sysml_query::resolved_slice::PublishedModel;
 
@@ -11,7 +12,7 @@ pub struct HostValidatedDocument {
     pub diagnostics: Vec<SemanticDiagnostic>,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
 pub struct HostValidationSummary {
     pub document_count: usize,
     pub error_count: usize,
@@ -25,6 +26,9 @@ pub struct HostValidationReport {
     pub resolved_library_paths: Vec<String>,
     pub documents: Vec<HostValidatedDocument>,
     pub summary: HostValidationSummary,
+    /// Host advice about the report as a whole (cascade dominance, missing library roots).
+    /// Empty for the snapshot's eager report; filled by `crate::validation`.
+    pub advice: Vec<String>,
 }
 
 pub(crate) fn collect_host_validation_report(
@@ -54,10 +58,11 @@ pub(crate) fn collect_host_validation_report(
             .collect(),
         documents,
         summary,
+        advice: Vec::new(),
     })
 }
 
-fn summarize(documents: &[HostValidatedDocument]) -> HostValidationSummary {
+pub(crate) fn summarize(documents: &[HostValidatedDocument]) -> HostValidationSummary {
     let mut summary = HostValidationSummary {
         document_count: documents.len(),
         ..HostValidationSummary::default()

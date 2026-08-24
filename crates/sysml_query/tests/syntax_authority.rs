@@ -51,6 +51,14 @@ const RETIRED_NAMES: &[&str] = &[
     "ParseOutcome",
     "SemanticCoordinator",
     "build_semantic_model_from_documents",
+    "import_statement_ranges",
+    "find_reference_ranges",
+    "word_at_position",
+    "unit_value_suffix_at_position",
+    "unit_value_suffix_selection_at_position",
+    // An element identity is a `SymbolId` handle now; the string encoding is `SymbolToken` and
+    // exists only where one has to cross a boundary.
+    "SymbolIdentity",
 ];
 
 /// Files that may work on SysML text, each with the reason and (where one exists) a predicate
@@ -70,13 +78,28 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/language_service/src/completion.rs",
-        reason: "completion over text the grammar has not accepted yet (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
+        reason: "completion over text the grammar has not accepted yet; its keyword table is held to the facade's",
+        must_contain: Some("use crate::keywords::{keyword_doc, sysml_keywords};"),
     },
     Exemption {
         path: "crates/language_service/src/code_actions.rs",
-        reason: "declaration-header text scans awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
+        reason: "declaration-header text scans and same-file definition lookup awaiting migration to declaration_at/body_range (planning/SYNTAX_FOLLOW_UPS.md)",
         must_contain: None,
+    },
+    Exemption {
+        path: "crates/lsp_server/src/common/util.rs",
+        reason: "reads LSP configuration JSON whose boolean literals collide with the keyword table; it probes no SysML text",
+        must_contain: Some("parse_diagnose_library_paths_from_value"),
+    },
+    Exemption {
+        path: "crates/language_service/src/navigation.rs",
+        reason: "splits a published qualified name for its container; awaits a container accessor on the published name (planning/SYNTAX_FOLLOW_UPS.md)",
+        must_contain: Some("rsplit_once(\"::\")"),
+    },
+    Exemption {
+        path: "crates/language_service/src/symbol.rs",
+        reason: "splits a published qualified name for its container; awaits a container accessor on the published name (planning/SYNTAX_FOLLOW_UPS.md)",
+        must_contain: Some("rsplit_once(\"::\")"),
     },
     Exemption {
         path: "crates/language_service/src/keywords.rs",
@@ -84,58 +107,8 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: Some("pub use sysml_query::syntax::{is_reserved_keyword, RESERVED_KEYWORDS};"),
     },
     Exemption {
-        path: "crates/language_service/src/symbol.rs",
-        reason: "substring reference ranges awaiting navigation().references (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/language_service/src/text.rs",
-        reason: "cursor word and unit-suffix detection awaiting token_at/unit_literal_at (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/common/util.rs",
-        reason: "untyped-part-usage line scan awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/features.rs",
-        reason: "linked-editing declaration-line test awaiting declaration_at (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/features/editing_features.rs",
-        reason: "brace-folding fallback and keyword signature help awaiting outline queries (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
         path: "crates/lsp_server/src/lsp_runtime/features/completion.rs",
         reason: "completion snippet bodies are presentation",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/lsp_runtime/navigation.rs",
-        reason: "import document links awaiting structured imports (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/language/symbols.rs",
-        reason: "outline-kind keyword strings map to LSP symbol kinds awaiting an enum (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/workspace/library_search.rs",
-        reason: "short-name recovery for search-only documents awaiting outline short names (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/analysis/diagnostics_postprocess.rs",
-        reason: "recovery-code prefix test awaiting a structured category (planning/SYNTAX_FOLLOW_UPS.md, cluster C)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/lsp_server/src/views/feature_inspector.rs",
-        reason: "declaration head text of a publication-owned range awaiting a head range (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
         must_contain: None,
     },
     Exemption {
@@ -145,17 +118,7 @@ const EXEMPTIONS: &[Exemption] = &[
     },
     Exemption {
         path: "crates/sysml_tokens/src/ast_ranges.rs",
-        reason: "declaration-name narrowing awaiting name-only token roles (planning/SYNTAX_FOLLOW_UPS.md, cluster A)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/server/src/environment.rs",
-        reason: "budgeted standard-library detection awaiting referenced_namespace_roots (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
-        must_contain: None,
-    },
-    Exemption {
-        path: "crates/language_service/src/navigation.rs",
-        reason: "splits a qualified name on `::` awaiting a QualifiedName type (planning/SYNTAX_FOLLOW_UPS.md, cluster B)",
+        reason: "declaration-name narrowing awaiting name-only token roles (planning/SYNTAX_FOLLOW_UPS.md)",
         must_contain: None,
     },
     Exemption {
@@ -213,9 +176,9 @@ const EXEMPTIONS: &[Exemption] = &[
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,
 /// which are `Arc`s into the syntax memo rather than a cache.
 const PARSED_TREE_FIELD_ALLOWLIST: &[(&str, &str)] = &[
-    ("crates/lsp_server/src/workspace/state.rs", "IndexEntry"),
+    ("crates/lsp_server/src/session/state.rs", "IndexEntry"),
     (
-        "crates/lsp_server/src/workspace/services.rs",
+        "crates/lsp_server/src/session/services.rs",
         "ParsedScanEntry",
     ),
 ];

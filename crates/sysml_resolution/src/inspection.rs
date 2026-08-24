@@ -9,61 +9,14 @@
 //! Pilot's hover returns a pre-formatted markdown string carrying a kind label, a name and one
 //! type name, which throws away everything its own model knows. Rendering is a consumer's job.
 
-use crate::element_kind::{ElementKind, MembershipRole};
 use crate::evaluation::EvaluationState;
-use crate::{SourceLocation, SymbolIdentity, TextRange};
+use crate::{ElementKind, MembershipRole, SourceLocation, SymbolId, TextId, TextRange};
 
-/// How an element is owned by its namespace.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum MembershipKind {
-    /// An owned member.
-    Owning,
-    /// A feature of the owning type.
-    Feature,
-    /// An import.
-    Import,
-    /// An alias.
-    Alias,
-}
-
-/// Membership visibility.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Visibility {
-    Public,
-    Private,
-    Protected,
-}
-
-/// Where a membership's effective visibility came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum VisibilityProvenance {
-    /// A `public`/`private`/`protected` keyword was written.
-    Authored,
-    /// No keyword was written, so the KerML default for this membership's context applies.
-    Default,
-}
-
-/// The membership facts of one element.
-///
-/// Visibility lives here rather than on the element because the OMG models it on the membership
-/// (KerML §7.3.3.1), and the sibling compiler makes the same choice.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct MembershipFacts {
-    pub kind: MembershipKind,
-    pub visibility: Visibility,
-    pub provenance: VisibilityProvenance,
-}
-
-/// Which annotation production a documentation entry came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum AnnotationForm {
-    /// `doc /* ... */`.
-    Documentation,
-    /// `comment /* ... */`.
-    Comment,
-    /// `rep <language> "..." /* ... */`.
-    TextualRepresentation,
-}
+pub use sysml_contract::{
+    AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
+    FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound, MultiplicityFacts,
+    PortionKind, RelationshipProvenance, ValueKind, Visibility, VisibilityProvenance,
+};
 
 /// One documentation, comment or textual-representation annotation.
 ///
@@ -76,141 +29,12 @@ pub struct Documentation {
     pub locale: Option<Box<str>>,
     /// The `rep` language; always `None` for the other two forms.
     pub language: Option<Box<str>>,
-    pub text: Box<str>,
-}
-
-/// One exact derived `Element` documentation collection selected by a pinned manifest rule.
-///
-/// The values themselves remain [`Documentation`] facts from the canonical publication. The
-/// selector distinguishes the OMG's `Documentation` and `TextualRepresentation` metaclasses
-/// without reducing either to rendered source text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum ElementDerivedDocumentationCollection {
-    Documentation,
-    TextualRepresentation,
-}
-
-/// One authored multiplicity bound.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum MultiplicityBound {
-    /// No bound authored on this side: unbounded.
-    Unbounded,
-    /// A bound that folds to a literal integer.
-    Literal(i64),
-    /// A bound authored as a non-literal expression, published as an explicit non-literal fact
-    /// rather than guessed at.
-    Expression,
-}
-
-/// The authored multiplicity and collection modifiers of one element.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum MultiplicityFacts {
-    /// No `[...]` was authored.
+    /// The body, as a handle into the publication's interned text.
     ///
-    /// Distinct from `[*]`, which authors an unbounded multiplicity.
-    Absent,
-    Declared {
-        lower: MultiplicityBound,
-        upper: MultiplicityBound,
-        ordered: bool,
-        nonunique: bool,
-    },
-}
-
-/// A modifier prefix that was authored on an element.
-///
-/// A closed set: every variant has exactly one parser field behind it. Modifiers the pinned parser
-/// cannot express -- SysML `readonly`, SysML `variable`, `unique`, the bare `portion` prefix --
-/// are absent from this set by construction rather than reported as `false`; see
-/// `UPSTREAM_PARSER_GAPS.md`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum ElementModifier {
-    Abstract,
-    Variation,
-    Individual,
-    Derived,
-    End,
-    Reference,
-    Constant,
-    Event,
-    Standard,
-    All,
-    Composite,
-    Portion,
-    Var,
-    Member,
-    Ordered,
-    Nonunique,
-}
-
-impl ElementModifier {
-    /// The authored keyword.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::Abstract => "abstract",
-            Self::Variation => "variation",
-            Self::Individual => "individual",
-            Self::Derived => "derived",
-            Self::End => "end",
-            Self::Reference => "ref",
-            Self::Constant => "constant",
-            Self::Event => "event",
-            Self::Standard => "standard",
-            Self::All => "all",
-            Self::Composite => "composite",
-            Self::Portion => "portion",
-            Self::Var => "var",
-            Self::Member => "member",
-            Self::Ordered => "ordered",
-            Self::Nonunique => "nonunique",
-        }
-    }
-}
-
-/// The `snapshot`/`timeslice` portion prefix of an occurrence usage.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum PortionKind {
-    Snapshot,
-    Timeslice,
-}
-
-/// A directed feature's direction.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum FeatureDirection {
-    In,
-    Out,
-    InOut,
-}
-
-/// Which operator introduced an authored value.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum ValueKind {
-    /// `=`.
-    Bind,
-    /// `:=`.
-    Assign,
-}
-
-/// The authored spelling of an element's value clause.
-///
-/// Keeps all five spellings apart: `= e`, `:= e`, `default = e`, `default := e`, and the
-/// operator-less `default e`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct AuthoredValue {
-    pub kind: ValueKind,
-    pub is_default: bool,
-    /// `false` only for the operator-less bare `default e` spelling, so a renderer does not
-    /// fabricate an `=` the author never wrote.
-    pub has_operator: bool,
-}
-
-/// Whether a relationship was authored or derived by the resolver.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum RelationshipProvenance {
-    /// Written in the source.
-    Authored,
-    /// Synthesized by the resolver from a rule, such as an implied redefinition.
-    Implied,
+    /// Not a copy: a documentation body is often the longest string on an element, and an
+    /// inspection is produced per element in bulk answers. Read it with
+    /// [`PublishedResolution::text`](crate::PublishedResolution::text).
+    pub text: TextId,
 }
 
 /// The exact derived `Element::owner` value.
@@ -221,15 +45,15 @@ pub enum RelationshipProvenance {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DerivedElementOwner {
     NoOwner,
-    Owner(SymbolIdentity),
+    Owner(SymbolId),
 }
 
 /// What resolution concluded about one authored reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RelationshipTarget {
-    Resolved(SymbolIdentity),
+    Resolved(SymbolId),
     /// Resolution found more than one candidate, all retained in canonical order.
-    Ambiguous(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolId]>),
     Unresolved,
     /// The reference's form is outside the supported resolution slice.
     Unsupported,
@@ -253,21 +77,23 @@ pub struct ElementRelationship {
 /// Everything this crate knows about one element.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementInspection {
-    pub identity: SymbolIdentity,
+    /// The element this inspection is about.
+    ///
+    /// The `::`-joined display path is not carried: it is a copy of text the publication already
+    /// stores, and an inspection is produced per element in queries that return many. Read it
+    /// with `PublishedResolution::qualified_name`, which borrows from the settled blob.
+    pub identity: SymbolId,
     pub kind: ElementKind,
     /// The role this element plays in its owner, where the OMG carries it on the membership.
     pub role: Option<MembershipRole>,
     /// The authored name, absent for an anonymous element.
     pub name: Option<Box<str>>,
     pub short_name: Option<Box<str>>,
-    /// The `::`-joined owner path. Anonymous ancestors contribute no segment, so this is a display
-    /// convenience and not an identity -- use [`ElementInspection::identity`] for that.
-    pub qualified_name: Box<str>,
     /// The element's name range, or its declaration range when it has no name.
     pub location: SourceLocation,
     /// The whole declaration's range.
     pub declaration_range: TextRange,
-    pub owner: Option<SymbolIdentity>,
+    pub owner: Option<SymbolId>,
     pub membership: MembershipFacts,
     pub documentation: Box<[Documentation]>,
     pub multiplicity: MultiplicityFacts,
@@ -317,11 +143,22 @@ pub struct ElementInspectionAt {
 /// One entry of a document's symbol outline.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SymbolEntry {
-    pub identity: SymbolIdentity,
+    pub identity: SymbolId,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
-    pub qualified_name: Box<str>,
-    pub owner: Option<SymbolIdentity>,
+    pub owner: Option<SymbolId>,
     pub location: SourceLocation,
     pub declaration_range: TextRange,
+}
+
+impl SymbolEntry {
+    /// What to call this element in text a person reads.
+    ///
+    /// The authored name when there is one, and the qualified name otherwise. A presentation
+    /// default, decided here so every renderer shows the same string for the same element rather
+    /// than each choosing its own fallback: it never substitutes for `identity`, and an absent
+    /// `name` stays absent in the published fact.
+    pub fn display_label<'a>(&'a self, qualified_name: &'a str) -> &'a str {
+        self.name.as_deref().unwrap_or(qualified_name)
+    }
 }

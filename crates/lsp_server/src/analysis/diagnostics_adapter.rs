@@ -1,10 +1,9 @@
+use crate::common::text_span::to_lsp_range;
 use sysml_diagnostics::{
     DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic,
 };
-use sysml_query::resolved_slice::TextRange;
 use tower_lsp::lsp_types::{
     Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, NumberOrString,
-    Position, Range,
 };
 
 pub fn semantic_to_lsp_diagnostic(diagnostic: SemanticDiagnostic) -> Diagnostic {
@@ -22,17 +21,6 @@ pub fn semantic_to_lsp_diagnostic(diagnostic: SemanticDiagnostic) -> Diagnostic 
         related_information: map_related_information(&diagnostic.related_information),
         tags: None,
         data: None,
-    }
-}
-
-/// The publication's range in the protocol's shape.
-///
-/// Both are zero-based line/UTF-16 character pairs, which is the contract the resolution owner
-/// publishes and the one LSP defines, so this is a shape change and not a coordinate conversion.
-fn to_lsp_range(range: TextRange) -> Range {
-    Range {
-        start: Position::new(range.start.line, range.start.character),
-        end: Position::new(range.end.line, range.end.character),
     }
 }
 

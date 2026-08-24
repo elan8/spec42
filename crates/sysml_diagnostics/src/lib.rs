@@ -10,8 +10,14 @@
 //! never what a diagnostic means. Nothing here inspects a semantic model, resolves a name, or
 //! reads a diagnostic's message as an input.
 
+mod postprocess;
 mod reporting;
 pub mod types;
 
-pub use reporting::{document_diagnostics, ReportingPolicy};
-pub use types::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
+pub use postprocess::{
+    diagnostics_dominated_by_cascades, postprocess_document_diagnostics, PostprocessPolicy,
+};
+pub use reporting::{document_diagnostics, severity_label, ReportingPolicy};
+pub use types::{
+    DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic, PARSER_SOURCE, SEMANTIC_SOURCE,
+};

@@ -3,8 +3,8 @@ use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
-use crate::workspace::snapshot::ServerStateSnapshot;
-use crate::workspace::ServerState;
+use crate::session::snapshot::ServerStateSnapshot;
+use crate::session::ServerState;
 
 use language_service::{
     complete as ls_complete, CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot,

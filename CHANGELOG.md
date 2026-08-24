@@ -7,6 +7,150 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The snapshot tool builds each fixture once.** The per-fixture sequential/parallel
+  construction lanes are gone; that invariant is proven once by the authority's own
+  `construction_schedule_parity` test over the examples corpus. `cargo snapshot check` runs the
+  tool in release over the cached library stratum: a full check is now ~2 seconds. The workspace
+  test suite runs in ~18 seconds (from ~56), with integration tests as one binary per crate and
+  the resolver and parser compiled at opt-level 1 in dev.
+
+- **A symbol entry names its element by handle; the qualified name is read from the
+  publication.** `SymbolEntry::qualified_name` is gone. Document and workspace symbols are
+  produced in bulk -- one entry per declaration in a document, every one carrying a `Box<str>`
+  copy of the `::`-joined path the publication already stores. Consumers read it through the
+  borrowed `PublishedModel::qualified_name`, `display_label` takes the name it should fall back
+  to, and the LSP, generator and report edges materialise text only where a protocol demands
+  it. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank by one entry; the three entries that
+  remain are synthesised text with nothing to borrow from, and the guard's comment says why.
+
+- **Authored text is a handle too: `sysml_contract::TextId`.** A published fact that quoted text
+  the publication had already interned was allocating a second copy of it per result.
+  `TextId` is the publication-scoped slot of one interned run, with the same validity story as
+  `SymbolId`, and `PublishedModel::text` / `PublishedResolution::text` borrows the run back.
+  `AuthoredUnit::authored` -- the unit token as written between the brackets -- is the first fact
+  to carry the handle instead of a `Box<str>`; the hover edge reads the text through the
+  publication. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the
+  owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
+
+- **A qualified-reference candidate names its element by handle.**
+  `QualifiedReferenceTarget::qualified_name` is gone. The caller supplied that name in the
+  `QualifiedElementReference` it asked with, so handing a `Box<str>` copy back -- once per
+  candidate of an ambiguous or wrong-kind outcome -- duplicated both the request and the
+  publication's own storage. Consumers read it through the borrowed
+  `PublishedResolution::qualified_name`. Rendering is unchanged, so snapshot output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank by one entry.
+
+- **An element inspection names its element by handle; the qualified name is read from the
+  publication.** `ElementInspection::qualified_name` is gone. It was a `Box<str>` copy of the
+  `::`-joined display path the publication already stores, allocated once per inspection -- and
+  inspections are produced in bulk by details, hover and the feature inspector. Consumers now read
+  it through the borrowed `PublishedModel::qualified_name` / `PublishedResolution::qualified_name`,
+  which slices the settled blob, and the LSP and generator edges materialise an owned string only
+  where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
+  Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
+- **Diagram scene ids are typed; relationships, edges and transitions carry no synthesised
+  string.** `DiagramRelationship::semantic_id`, `DiagramEdge::semantic_id` and
+  `DiagramStateTransition::semantic_id` were `Box<str>`s composed from an occurrence key and a
+  suffix, allocated per scene item and used only to order the scene and to pair a transition with
+  its origin. A relationship now carries its `ordinal`; an edge and a transition carry the `origin`
+  index into the projection's elements, and a transition its `DiagramTransitionRole`. Ordering is
+  unchanged (the same key is compared, once, at construction), and the generator boundary renders
+  the transition id through `DiagramViewProjection::transition_scene_id`, so protocol output is
+  byte-identical. Enforcement: the owned-string inventory's product list in `architecture.rs`
+  shrank by three entries.
+
+- **A projected diagram relationship states its kind as an enum, not as text.**
+  `DiagramRelationship::kind` was a `Box<str>` of the canonical reference name, so every consumer
+  that dispatched on it -- the edge composer, the transition-feature lookup, the generator
+  boundary -- was a string comparison no compiler checks, where a typo silently produces a
+  missing edge instead of an error. `sysml_contract::DiagramRelationshipKind` has one variant per
+  reference kind the resolution authority publishes (58 of them), and `name()` returns the same
+  canonical text, so the published product and the scene keys derived from it are byte-identical.
+  `DiagramIncompleteReason`'s three relationship arms carry the enum too.
+
+  Making the set exhaustive surfaced two comparisons that could never match: the state-transition
+  scene looked up a `transitionGuard` relationship and the completeness rule required
+  `messageSource`/`messageTarget` for a sequence view, none of which any reference kind emits.
+  Both are now written as what they always evaluated to -- an absent guard, and nothing required
+  of a sequence view -- rather than as a lookup that quietly fails. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank by one entry.
+
+- **A diagram catalog entry names its view by handle; the display name is read at the edge.**
+  `DiagramViewCatalogEntry` no longer carries a `Box<str>` of the view usage's name. The catalog
+  lists every authored standard view in a workspace, so it was allocating one copy per entry --
+  and a second for the entry the projection echoes back -- for text only a view picker renders.
+  The authored-name-else-qualified-name fallback stays the authority's rule rather than moving to
+  each consumer: `PublishedResolution::diagram_view_name` (facade: `diagrams().view_name`)
+  applies it and borrows the result. Catalog order was already the handle's canonical identity
+  order, so nothing about ordering or output changes. Enforcement: the owned-string inventory's
+  product list in `architecture.rs` shrank by one entry.
+
+- **A state-transition vertex names its element by handle; the label is read at the edge.**
+  `DiagramStateVertex` is now `Copy` -- a `SymbolId`, a vertex kind and a `SourceLocation`. The
+  label it used to carry was a copy of the element's authored name, which the publication already
+  stores, allocated once per vertex for text only a renderer needs. A consumer reads it with
+  `symbol_name`, which borrows from the settled symbol blob. Output is byte-identical: the
+  generator boundary materialises the same `unwrap_or_default` empty label for an anonymous state.
+  Enforcement: the owned-string inventory's product list in `architecture.rs` shrank by one entry.
+
+- **A navigation result names its element by handle; the name is read at the editor edge.**
+  `NavigationTarget` is now `Copy` -- a `SymbolId` and a `SourceLocation` -- and
+  `RenameOutcome::Ready` no longer carries a `Box<str>` of the name either. A definition or
+  reference query that returns several candidates was allocating a copy of a name the publication
+  already stores, once per candidate, for text most consumers never render. `PublishedModel`
+  (and `PublishedResolution`) grew a borrowed `symbol_name`, which slices the settled symbol blob;
+  the LSP edge materialises there, where the protocol demands an owned string anyway. Candidate
+  ordering still breaks ties on the authored name, read through the publication, so output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank by one entry.
+
+- **The owned-string inventory says which owned strings are debt.** `FACADE_OWNED_STRING_FIELDS`
+  split into `FACADE_OWNED_STRING_INPUT_FIELDS` -- names a consumer hands in to ask a question,
+  which no publication storage backs and which are correctly owned -- and
+  `FACADE_OWNED_STRING_PRODUCT_FIELDS`, the copies a query hands back, which is the list meant to
+  shrink. Both sets are asserted exactly and are checked for overlap, so a product cannot be
+  reclassified as an input to escape the rule.
+
+- **A published location names its document by handle, not by a copy of the URI.**
+  `sysml_contract::DocumentId` is a `Copy`, publication-scoped ordinal with the same validity
+  story as `SymbolId`: valid for exactly the publication that minted it, and
+  `DocumentToken`/`PublishedModel::resolve_document_token` is what survives a rebuild or crosses a
+  process boundary. `SourceLocation::document` is now that handle, so `SourceLocation` is `Copy`
+  and every reference, rename occurrence, symbol entry and inspection stops carrying a per-result
+  `Box<str>` of a string the publication already holds once. Hosts materialise the identity where
+  they need text, through the borrowed `PublishedModel::document_identity`; `document_of` is the
+  inverse a host uses when an editor request names a document by URI. Contractually ordered
+  results still sort by identity, not by ordinal, so output is byte-identical. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank by one entry.
+
+- **The keystroke-path facade products are borrowed views over the publication, not owned copies
+  of it.** `visible_members` answers with `VisibleMembers<'m>`/`VisibleMemberRef<'m>`: handles plus
+  `&'m str` accessors that slice the publication's settled symbol, qualified-name and document
+  blobs, so a completion request over the standard library allocates 4 times instead of 487. The
+  qualified name comes from the barrier-settled `QualifiedNameIndex` that every other query reads,
+  retiring a second owner-chain derivation. `PublishedDiagnostics<'m>` borrows the settled
+  diagnostic sequence rather than cloning it per query, and `Diagnostic`, `DiagnosticLocation` and
+  `RelatedLocation` publish their storage through `&str` accessors. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank from 29 entries to 23.
+
+- **The editor host and the batch host are siblings again: `lsp_server` no longer depends on
+  `workspace`.** Batch validation — walk a directory, publish once, collect the diagnostics the
+  publication settled — moved from `lsp_server::validation` to `workspace::validation`, where the
+  rest of the batch path already lived. There is now one validation report type
+  (`HostValidationReport`, grown an `advice` field and shared with the snapshot's own eager
+  validation), one summariser, one target-discovery helper, and one entry point whose reporting
+  policy the caller chooses. `server` reaches validation through `workspace` and keeps
+  `lsp_server` only to launch the editor host; it no longer re-derives library advice by
+  re-scanning the workspace's `.sysml` text and grepping the report it was handed. The report
+  crosses the graph as neutral `SemanticDiagnostic` values, and `spec42 check --format json` keeps
+  publishing the LSP diagnostic shape as a CLI projection, so existing baselines still apply.
+  Enforcement: `architecture.rs` pins the exact dependency sets of both hosts, fails if
+  `lsp_server/src/validation` reappears, and adds two AST guards — no host function takes SysML
+  text as a parameter, and no host field keys derived data by document — each against an
+  allow-list that only ever shrinks.
+
 - **Spec42 now has a sole-authority pipeline: the parser is depended on only by `sysml_resolution`,
   `sysml_resolution` only by `sysml_query`, and `sysml_source` only by `sysml_resolution`; every
   consumer works with the facade's services and nothing else.** `design.md` at the repository root
@@ -27,6 +171,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `syntax_authority.rs` guard that rejects retired helpers, shadowed service queries, caches and
   SysML file reads outside the authorities, and string probes for SysML syntax; the heuristics it
   still exempts are recorded with their retiring queries in `planning/SYNTAX_FOLLOW_UPS.md`.
+- **Editor answers about declarations, imports and the cursor now come from the syntax service,
+  with visible differences.** The outline publishes a typed `SyntaxOutlineKind` with the authored
+  keyword as an accessor, each declaration's short name, its typing, and — new — its true
+  multi-line extent, its header range and its body range; `ParsedSource` answers
+  `declaration_at`/`enclosing_declarations`, `imports`, `type_references`,
+  `referenced_namespace_roots`, `token_at`, `unit_literal_at` and `occurrences_of`. Consequences a
+  user sees: folding regions now cover multi-line declarations (outline ranges used to end on the
+  declaration's opening line, so almost nothing was foldable); workspace symbols and library
+  search are classified by their element kind instead of arriving uniformly as "variable"; linked
+  editing and the feature inspector no longer trigger from a keyword written in a comment or a
+  string, and renaming through linked editing no longer rewrites a name inside a comment or a
+  string literal; document links anchor to each import's own range rather than to any line
+  containing the word `import`; and whether a workspace uses the standard library is decided from
+  the namespaces its sources name rather than from a substring of its bytes. Signature help reads
+  the declaration the cursor is in rather than the leading keyword of its line.
 - **Library closure is resolved from parsed facts rather than text, with visible differences.**
   A `SysML::` mention in a comment no longer admits the `SysML` package (authored imports and
   typing references do); `import sysml::*` admits every package under a standard-library root by
@@ -46,6 +205,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Line endings are normalised to LF before a document is digested, on every path.** The
   editor already sent LF text; batch snapshots of CRLF files now carry the same digests the
   editor would, so `document_digests` in persisted artifact metadata change for CRLF files.
+
+- **`spec42 check` and the workspace comparison harness agree on severity labels.** Both surfaces
+  now render a severity through `sysml_diagnostics::severity_label`, the single owner. The
+  comparison harness previously emitted `"information"` where the CLI emitted `"info"` for the same
+  published diagnostic; the CLI's spelling wins, so comparison snapshots that recorded
+  `"information"` now record `"info"`. The CLI text, JUnit, JSON, and SARIF outputs are unchanged.
 
 - **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
   effective feature membership.** The four SysML collections read the specialization closure that

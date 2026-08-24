@@ -230,7 +230,7 @@ fn specialization_check_kind(kind: SpecializationCheckKind) -> &'static str {
 fn write_generated(output: &PathBuf, name: &str, rows: Vec<String>) {
     let rows = rows.join("\n");
     let text = format!(
-        "const {name}: &[{name_type}] = &[\n{rows}\n];\n",
+        "pub(crate) const {name}: &[{name_type}] = &[\n{rows}\n];\n",
         name_type = match name {
             "GENERATED_LIBRARY_SPECIALIZATION_RULES" => "LibrarySpecializationRule",
             "GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES" => {

@@ -1,5 +1,6 @@
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
 use sysml_query::syntax::ParsedSource;
+use sysml_query::syntax::SyntaxOutlineKind;
 
 fn parse(text: &str) -> Result<ParsedSource, String> {
     let parsed = sysml_query::syntax::SyntaxService::new().parse_text(text);
@@ -66,7 +67,7 @@ fn document_symbols_package() {
     let symbols = document_symbols(&root);
     assert_eq!(symbols.len(), 1);
     assert_eq!(symbols[0].name, "P");
-    assert_eq!(symbols[0].kind, "package");
+    assert_eq!(symbols[0].kind, SyntaxOutlineKind::Package);
 }
 
 #[test]
@@ -79,7 +80,7 @@ fn document_symbols_nested() {
     let children = &symbols[0].children;
     assert_eq!(children.len(), 1);
     assert_eq!(children[0].name, "Engine");
-    assert_eq!(children[0].kind, "part def");
+    assert_eq!(children[0].kind, SyntaxOutlineKind::PartDef);
 }
 
 #[test]
@@ -88,10 +89,10 @@ fn document_symbols_feature_and_classifier_decls() {
     let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     let children = &symbols[0].children;
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "myFeature" && child.kind == "feature decl" }));
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "VehicleClass" && child.kind == "classifier decl" }));
+    assert!(children.iter().any(|child| {
+        child.name == "myFeature" && child.kind == SyntaxOutlineKind::FeatureDecl
+    }));
+    assert!(children.iter().any(|child| {
+        child.name == "VehicleClass" && child.kind == SyntaxOutlineKind::ClassifierDecl
+    }));
 }
