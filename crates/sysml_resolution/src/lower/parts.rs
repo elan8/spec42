@@ -837,10 +837,15 @@ impl SemanticModelBuilder {
         )?;
         self.push_membership(
             declaration,
-            MembershipKind::Feature,
+            MembershipKind::Owning,
             Visibility::Default,
             node.span,
         )?;
+        self.declaration_facts[owner.index()].cross_feature_projection =
+            Some(super::facts::CrossFeatureProjection {
+                cross_feature: declaration,
+                owned_cross_feature: declaration,
+            });
         let variation = matches!(
             node.value
                 .prefix

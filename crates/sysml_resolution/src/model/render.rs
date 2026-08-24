@@ -427,6 +427,7 @@ pub(crate) fn write_declaration_facts(
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
         && facts.positional_end.is_none()
+        && facts.cross_feature_projection.is_none()
     {
         return Ok(());
     }
@@ -457,6 +458,13 @@ pub(crate) fn write_declaration_facts(
     }
     if let Some(position) = facts.positional_end {
         write!(output, " (positional-end {position})")?;
+    }
+    if let Some(projection) = facts.cross_feature_projection {
+        output.write_str(" (cross-feature-projection (cross-feature ")?;
+        write_node_identity(model, projection.cross_feature, output)?;
+        output.write_str(") (owned-cross-feature ")?;
+        write_node_identity(model, projection.owned_cross_feature, output)?;
+        output.write_str("))")?;
     }
     output.write_char(')')
 }

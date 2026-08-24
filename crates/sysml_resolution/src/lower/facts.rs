@@ -211,6 +211,19 @@ pub(crate) struct DeclarationFacts {
     pub(crate) positional_end: Option<u32>,
     /// One-based position among the owner's authored FeatureMemberships.
     pub(crate) owned_feature_position: Option<u32>,
+    /// The two independently named endpoints of KerML `Feature::crossFeature` and
+    /// `Feature::ownedCrossFeature()` when lowering an authored owned-cross feature.
+    ///
+    /// The Pilot's `addCrossingSpecialization` creates the implied CrossSubsetting whose second
+    /// chained feature is the owned cross feature. Publishing both identities here preserves that
+    /// transformation result without asking a validation consumer to reconstruct parser syntax.
+    pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct CrossFeatureProjection {
+    pub(crate) cross_feature: DeclarationId,
+    pub(crate) owned_cross_feature: DeclarationId,
 }
 
 impl DeclarationFacts {

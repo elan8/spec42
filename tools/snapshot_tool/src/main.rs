@@ -1163,7 +1163,6 @@ fn parse_specialization_check_prerequisite(
     fixture: &str,
 ) -> Result<SpecializationCheckPrerequisite, String> {
     match value {
-        "cross_feature_projection" => Ok(SpecializationCheckPrerequisite::CrossFeatureProjection),
         "feature_typing_metaclass_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::FeatureTypingMetaclassAndLibraryAnchor)
         }

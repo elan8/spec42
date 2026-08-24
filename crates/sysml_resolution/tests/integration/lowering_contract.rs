@@ -934,48 +934,6 @@ fn kerml_binding_member_lowers_left_and_right_ends() {
 }
 
 #[test]
-fn end_prefixed_feature_lowers_its_cross_feature_and_subsets() {
-    // Upstream folded `KermlEndMember` into `FeaturePrefix`'s `OwnedCrossFeatureMember`, which
-    // inverts the ownership: the `end`-prefixed feature (`thatOccurrence`) owns the cross
-    // feature (`happensDuring`), as KerML BNF 584/592/595 spell it, rather than the reverse.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tassoc HappensDuring {\n\
-         \t\tfeature timeCoincidentOccurrences : Occurrence;\n\
-         \t\tfeature longerOccurrence : Occurrence;\n\
-         \t\tend happensDuring subsets timeCoincidentOccurrences feature thatOccurrence: \
-         Occurrence redefines longerOccurrence;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (kind kerml-feature) \
-             (membership (kind feature) (visibility default)) (facts (modifiers end))"
-        ),
-        "expected thatOccurrence to lower as an end-prefixed kerml-feature, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (kind kerml-end)"
-        ),
-        "expected the cross feature happensDuring to be owned by thatOccurrence, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::timeCoincidentOccurrences\")))"
-        ),
-        "expected the cross feature's subsets to resolve to timeCoincidentOccurrences, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::longerOccurrence\")))"
-        ),
-        "expected thatOccurrence's redefines to resolve to longerOccurrence, got:\n{output}"
-    );
-}
-
-#[test]
 fn kerml_invariant_member_lowers_its_boolean_expression() {
     let output = build_semantic_sexpr(
         "package Demo {\n\

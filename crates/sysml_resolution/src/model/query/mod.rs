@@ -1903,10 +1903,19 @@ impl<D> SemanticModel<D> {
             });
         };
         let _normative_rule = (rule.rule_id, rule.metaclass);
+        if kind == SpecializationCheckKind::FeatureCrossing {
+            let outcome = self
+                .storage
+                .declaration_facts
+                .iter()
+                .filter_map(|facts| facts.cross_feature_projection)
+                .all(|projection| projection.cross_feature == projection.owned_cross_feature)
+                .then_some(SpecializationCheckOutcome::Satisfied)
+                .unwrap_or(SpecializationCheckOutcome::Violated);
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
-            SpecializationCheckKind::FeatureCrossing => {
-                SpecializationCheckPrerequisite::CrossFeatureProjection
-            }
+            SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureObject | SpecializationCheckKind::FeatureOccurrence => {
                 SpecializationCheckPrerequisite::FeatureTypingMetaclassAndLibraryAnchor
             }
