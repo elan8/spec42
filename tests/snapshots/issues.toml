@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-feature-typing-metaclass-library-anchor"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Feature typing targets lack the required Class/Structure metaclass predicate and paired exact library anchor for the Feature object and occurrence specialization checks."
-
-[[issue]]
 id = "lowering-gap-specialization-owned-cross-feature-owner-types"
 kind = "lowering_gap"
 owner = "spec42-semantic"

@@ -16,8 +16,8 @@ package Actions { action def Procedure { accept when true; } }
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadArgument") (source "Actions::Procedure::") (outcome resolved))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadParameter") (source "Actions::Procedure::") (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadArgument") (source "Actions::Procedure::") (position 1) (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadParameter") (source "Actions::Procedure::") (position 1) (outcome resolved))
   (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsageReceiverArgument") (source "Actions::Procedure::") (outcome absent)))
 ~~~
 # DIAGNOSTICS

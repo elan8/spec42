@@ -6,7 +6,6 @@ specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
-rule_id=kerml-1.0:8.3.3.3.4:checkFeatureOccurrenceSpecialization
 rule_id=kerml-1.0:8.3.3.3.4:checkFeaturePortionSpecialization
 rule_id=kerml-1.0:8.3.3.3.4:checkFeatureSubobjectSpecialization
 rule_id=kerml-1.0:8.3.3.3.4:checkFeatureSuboccurrenceSpecialization
@@ -34,7 +33,6 @@ package FeatureCategoryLoweringGaps {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "FeatureCategoryLoweringGaps::Owner::occurrence") (target "Occurrences::occurrences") (provenance implied) (outcome resolved))
   (relationship (kind specialization) (source "FeatureCategoryLoweringGaps::Owner::portion") (target "Occurrence::Occurrence::portions") (provenance implied) (outcome resolved))
   (relationship (kind specialization) (source "FeatureCategoryLoweringGaps::Owner::suboccurrence") (target "Occurrence::Occurrence::suboccurrences") (provenance implied) (outcome resolved))
   (relationship (kind specialization) (source "FeatureCategoryLoweringGaps::StructureOwner::subobject") (target "Occurrence::Occurrence::suboccurrences") (provenance implied) (outcome resolved)))
@@ -87,13 +85,18 @@ package FeatureCategoryLoweringGaps {
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::occurrence"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::occurrence"))) (target (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::occurrence"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::portion"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::portion"))) (target (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::portion"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::suboccurrence"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::suboccurrence"))) (target (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::suboccurrence"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner::subobject"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner::subobject"))) (target (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner::subobject"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner::subobject"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
   )
   (evaluation
   )
@@ -127,6 +130,7 @@ package FeatureCategoryLoweringGaps {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::portion")))
       (featured-by (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner")))
@@ -136,6 +140,7 @@ package FeatureCategoryLoweringGaps {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::suboccurrence")))
       (featured-by (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::Owner")))
@@ -145,6 +150,7 @@ package FeatureCategoryLoweringGaps {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_lowering_gaps.md") (qualified-name "FeatureCategoryLoweringGaps::StructureOwner")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -159,7 +165,9 @@ package FeatureCategoryLoweringGaps {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any subclassification))
     )
 )
 ~~~

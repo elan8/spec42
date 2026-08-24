@@ -27,11 +27,11 @@ package Actions {
 ~~~sexpr
 (fixture-semantics
   (action-derived-fact (rule_id "sysml-2.0:8.3.17.10:deriveIfActionUsageElseAction") (source "Actions::IfProcedure::") (target "Actions::IfProcedure::::elseStep") (outcome resolved))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.10:deriveIfActionUsageIfArgument") (source "Actions::IfProcedure::") (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.10:deriveIfActionUsageIfArgument") (source "Actions::IfProcedure::") (position 1) (outcome resolved))
   (action-derived-fact (rule_id "sysml-2.0:8.3.17.10:deriveIfActionUsageThenAction") (source "Actions::IfProcedure::") (target "Actions::IfProcedure::::thenStep") (outcome resolved))
   (action-derived-fact (rule_id "sysml-2.0:8.3.17.12:deriveLoopActionUsageBodyAction") (source "Actions::WhileProcedure::") (target "Actions::WhileProcedure::::loopStep") (outcome resolved))
   (action-derived-fact (rule_id "sysml-2.0:8.3.17.19:deriveWhileLoopActionUsageUntilArgument") (source "Actions::WhileProcedure::") (outcome absent))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.19:deriveWhileLoopActionUsageWhileArgument") (source "Actions::WhileProcedure::") (outcome resolved)))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.19:deriveWhileLoopActionUsageWhileArgument") (source "Actions::WhileProcedure::") (position 1) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

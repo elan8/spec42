@@ -13,7 +13,7 @@ package Actions { action def Procedure { for item in (1) { action step; } } }
 ~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
-(fixture-semantics (action-derived-fact (rule_id "sysml-2.0:8.3.17.9:deriveForLoopActionUsageSeqArgument") (source "Actions::Procedure::") (outcome resolved)))
+(fixture-semantics (action-derived-fact (rule_id "sysml-2.0:8.3.17.9:deriveForLoopActionUsageSeqArgument") (source "Actions::Procedure::") (position 1) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

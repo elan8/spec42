@@ -1163,9 +1163,6 @@ fn parse_specialization_check_prerequisite(
     fixture: &str,
 ) -> Result<SpecializationCheckPrerequisite, String> {
     match value {
-        "feature_typing_metaclass_and_library_anchor" => {
-            Ok(SpecializationCheckPrerequisite::FeatureTypingMetaclassAndLibraryAnchor)
-        }
         "owned_cross_feature_owner_types" => {
             Ok(SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes)
         }
@@ -4921,10 +4918,12 @@ fn observe_definition_usage_derived(
     let membership_members = match &value {
         DefinitionUsageDerivedOutcome::Memberships(values) => values
             .iter()
-            .filter_map(|identity| match model.inspection().membership(*identity) {
-                QueryOutcome::Resolved(membership) => Some(membership.member),
-                _ => None,
-            })
+            .filter_map(
+                |identity| match model.inspection().membership(*identity).answer {
+                    QueryAnswer::Resolved(membership) => Some(membership.member),
+                    _ => None,
+                },
+            )
             .collect::<Vec<_>>()
             .into_boxed_slice(),
         _ => Box::new([]),

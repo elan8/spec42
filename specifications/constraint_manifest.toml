@@ -753,9 +753,10 @@ family = "check"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:checkFeatureObjectSpecialization"
 
-[specifications.constraints.specialization_check]
-kind = "feature_object"
-body_sha256 = "1f2b529eb4ca82e07862f31cfe545dfdf957a1d13647f0b13ab3bdb7a52528ab"
+[specifications.constraints.conditional_specializes_from_library]
+predicate = "owned_typing_structure"
+owner_metaclasses = []
+anchor = "Objects::objects"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -765,9 +766,10 @@ family = "check"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:checkFeatureOccurrenceSpecialization"
 
-[specifications.constraints.specialization_check]
-kind = "feature_occurrence"
-body_sha256 = "630ce8c543298b5047aae6f40b0077429014535533ed623a643ee59d0f50595e"
+[specifications.constraints.conditional_specializes_from_library]
+predicate = "owned_typing_class"
+owner_metaclasses = []
+anchor = "Occurrences::occurrences"
 
 [[specifications.constraints]]
 package = "Core::Features"

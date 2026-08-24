@@ -1380,17 +1380,16 @@ impl<D> SemanticModel<D> {
                         self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(value))
                     }
                     crate::index::types::UsageTimeVariationOutcome::Unresolved => {
-                        QueryOutcome::Unresolved
+                        self.query_outcome(QueryAnswer::Unresolved)
                     }
-                    crate::index::types::UsageTimeVariationOutcome::Ambiguous => {
-                        QueryOutcome::Ambiguous(
+                    crate::index::types::UsageTimeVariationOutcome::Ambiguous => self
+                        .query_outcome(QueryAnswer::Ambiguous(
                             vec![
                                 DefinitionUsageDerivedOutcome::Boolean(false),
                                 DefinitionUsageDerivedOutcome::Boolean(true),
                             ]
                             .into_boxed_slice(),
-                        )
-                    }
+                        )),
                 }
             }
             DefinitionUsageDerivedKind::UsageIsReference => {
@@ -1398,7 +1397,7 @@ impl<D> SemanticModel<D> {
                     Some(is_reference) => {
                         self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(is_reference))
                     }
-                    None => QueryOutcome::Unresolved,
+                    None => self.query_outcome(QueryAnswer::Unresolved),
                 }
             }
             _ => {
@@ -1677,7 +1676,7 @@ impl<D> SemanticModel<D> {
             let target = match self.resolution.outcome(reference_id) {
                 Some(ResolutionStatus::Resolved(target)) => target,
                 Some(ResolutionStatus::Ambiguous(candidates)) => {
-                    return QueryOutcome::Ambiguous(
+                    return self.query_outcome(QueryAnswer::Ambiguous(
                         self.resolution
                             .ambiguous_candidates(candidates)
                             .iter()
@@ -1698,11 +1697,17 @@ impl<D> SemanticModel<D> {
                             })
                             .collect::<Vec<_>>()
                             .into_boxed_slice(),
-                    );
+                    ));
                 }
-                Some(ResolutionStatus::Unsupported) => return QueryOutcome::Unsupported,
-                Some(ResolutionStatus::Unresolved) => return QueryOutcome::Unresolved,
-                Some(ResolutionStatus::NonConverged) | None => return QueryOutcome::Incomplete,
+                Some(ResolutionStatus::Unsupported) => {
+                    return self.query_outcome(QueryAnswer::Unsupported)
+                }
+                Some(ResolutionStatus::Unresolved) => {
+                    return self.query_outcome(QueryAnswer::Unresolved)
+                }
+                Some(ResolutionStatus::NonConverged) | None => {
+                    return self.query_outcome(QueryAnswer::Incomplete)
+                }
             };
             let selects_referent = self
                 .memberships
@@ -1916,9 +1921,6 @@ impl<D> SemanticModel<D> {
         }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
-            SpecializationCheckKind::FeatureObject | SpecializationCheckKind::FeatureOccurrence => {
-                SpecializationCheckPrerequisite::FeatureTypingMetaclassAndLibraryAnchor
-            }
             SpecializationCheckKind::FeatureOwnedCrossFeature => {
                 SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes
             }

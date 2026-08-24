@@ -1082,6 +1082,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
                 && facts.owned_end_feature_count.is_some_and(|count| count > 0)
         }
         LibrarySpecializationPredicate::OwnedTypingDataType
+        | LibrarySpecializationPredicate::OwnedTypingClass
+        | LibrarySpecializationPredicate::OwnedTypingStructure
         | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
         | LibrarySpecializationPredicate::ConnectorAssociationStructure => false,
         LibrarySpecializationPredicate::PolarityBranch => facts.negated.is_some(),
@@ -1123,6 +1125,20 @@ pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution
                 storage
                     .declaration(target)
                     .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlDataType)
+            })
+        }
+        LibrarySpecializationPredicate::OwnedTypingClass => {
+            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+                storage
+                    .declaration(target)
+                    .is_some_and(|declaration| declaration_kind_is_class(declaration.kind))
+            })
+        }
+        LibrarySpecializationPredicate::OwnedTypingStructure => {
+            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+                storage
+                    .declaration(target)
+                    .is_some_and(|declaration| declaration_kind_is_structure(declaration.kind))
             })
         }
         LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector => storage
@@ -1187,6 +1203,30 @@ pub(crate) fn direct_owned_typing_targets<'a>(
         .filter(move |target| storage.declaration(*target).is_some())
 }
 
+/// KerML's static metaclass test for the concrete declaration kinds represented by this model.
+/// This is language schema, not model typing: it must not be inferred from a declaration name or
+/// from whichever library happens to be admitted.
+pub(crate) const fn declaration_kind_is_class(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::ClassDefinition
+            | DeclarationKind::KermlStructure
+            | DeclarationKind::KermlAssociationStructure
+            | DeclarationKind::KermlBehavior
+            | DeclarationKind::KermlFunction
+            | DeclarationKind::KermlPredicate
+            | DeclarationKind::KermlInteraction
+    )
+}
+
+/// KerML `Structure` and its represented concrete subtype `AssociationStructure`.
+pub(crate) const fn declaration_kind_is_structure(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::KermlStructure | DeclarationKind::KermlAssociationStructure
+    )
+}
+
 /// Selects the already-published branch of a closed conditional contract. The `then` branch is a
 /// typed key shared by exact polarity and membership-role contracts; every other predicate retains
 /// the compatibility default anchor. A missing canonical fact was rejected by predicate
@@ -1232,6 +1272,8 @@ pub(crate) fn conditional_library_specialization_anchor_branch(
         | LibrarySpecializationPredicate::FlowEndCountIsTwo
         | LibrarySpecializationPredicate::OwnedEndFeaturesNotEmpty
         | LibrarySpecializationPredicate::OwnedTypingDataType
+        | LibrarySpecializationPredicate::OwnedTypingClass
+        | LibrarySpecializationPredicate::OwnedTypingStructure
         | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
         | LibrarySpecializationPredicate::ConnectorAssociationStructure
         | LibrarySpecializationPredicate::OwnedBy

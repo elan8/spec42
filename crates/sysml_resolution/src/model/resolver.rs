@@ -338,7 +338,7 @@ mod tests {
         assert_eq!(generated_library_specialization_rule_count(), 85);
         assert_eq!(
             generated_conditional_library_specialization_rule_count(),
-            56
+            58
         );
         let unique_rules = GENERATED_LIBRARY_SPECIALIZATION_RULES
             .iter()
@@ -383,7 +383,7 @@ mod tests {
         // contains no library declarations. That makes every missing prerequisite explicit, and
         // catches a manifest/generator change that adds a rule without publication coverage.
         let anchors = library_specialization_anchors(&storage_with_one_filter());
-        assert_eq!(anchors.by_rule.len(), 148);
+        assert_eq!(anchors.by_rule.len(), 150);
         for rule in GENERATED_LIBRARY_SPECIALIZATION_RULES {
             assert!(matches!(
                 anchors.outcome(rule.rule_id),

@@ -333,13 +333,13 @@ impl<D> SemanticModel<D> {
         identity: MembershipId,
     ) -> QueryOutcome<MembershipRelationship> {
         let Ok(member) = DeclarationId::from_index(identity.index()) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(declaration) = self.storage.declaration(member) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         let Some(facts) = self.membership_facts(member) else {
-            return QueryOutcome::Unresolved;
+            return self.query_outcome(QueryAnswer::Unresolved);
         };
         self.resolved_outcome(MembershipRelationship {
             identity,

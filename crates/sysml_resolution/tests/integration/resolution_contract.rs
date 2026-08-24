@@ -4828,8 +4828,9 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
     );
     let definition_variants = match sequential
         .definition_usage_derived(choice, DefinitionUsageDerivedKind::DefinitionVariant)
+        .answer
     {
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.len() == 2 && values.contains(&first) =>
         {
             values
@@ -4842,18 +4843,21 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
         .find(|variant| *variant != first)
         .expect("reference-form variant usage");
     assert!(matches!(
-        sequential.inspect(reference_variant),
-        QueryOutcome::Resolved(ElementInspection {
+        sequential.inspect(reference_variant).answer,
+        QueryAnswer::Resolved(ElementInspection {
             kind: ElementKind::ReferenceUsage,
             role: Some(MembershipRole::Variant),
             ..
         })
     ));
-    let definition_memberships = match sequential.definition_usage_derived(
-        choice,
-        DefinitionUsageDerivedKind::DefinitionVariantMembership,
-    ) {
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+    let definition_memberships = match sequential
+        .definition_usage_derived(
+            choice,
+            DefinitionUsageDerivedKind::DefinitionVariantMembership,
+        )
+        .answer
+    {
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
             if values.len() == 2 =>
         {
             values
@@ -4865,14 +4869,14 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
         .copied()
         .find(|identity| {
             matches!(
-                sequential.membership(*identity),
-                QueryOutcome::Resolved(MembershipRelationship { member, .. }) if member == first
+                sequential.membership(*identity).answer,
+                QueryAnswer::Resolved(MembershipRelationship { member, .. }) if member == first
             )
         })
         .expect("typed variant membership");
     assert!(matches!(
-        sequential.membership(definition_membership),
-        QueryOutcome::Resolved(MembershipRelationship {
+        sequential.membership(definition_membership).answer,
+        QueryAnswer::Resolved(MembershipRelationship {
             owning_namespace: Some(owner),
             member,
             facts: MembershipFacts { kind: MembershipKind::Owning, .. },
@@ -4886,8 +4890,8 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
         .find(|identity| *identity != definition_membership)
         .expect("reference-form variant membership");
     assert!(matches!(
-        sequential.membership(reference_membership),
-        QueryOutcome::Resolved(MembershipRelationship {
+        sequential.membership(reference_membership).answer,
+        QueryAnswer::Resolved(MembershipRelationship {
             owning_namespace: Some(owner),
             member,
             facts: MembershipFacts { kind: MembershipKind::Owning, .. },
@@ -4896,8 +4900,10 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
         }) if owner == choice && member == reference_variant
     ));
     assert!(matches!(
-        sequential.definition_usage_derived(usage_choice, DefinitionUsageDerivedKind::UsageVariant),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+        sequential
+            .definition_usage_derived(usage_choice, DefinitionUsageDerivedKind::UsageVariant)
+            .answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.as_ref() == [second]
     ));
     assert!(matches!(
@@ -4907,20 +4913,19 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
                 DefinitionUsageDerivedKind::DefinitionVariantMembership,
             )
             .answer,
-        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
-            prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
-        })
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.is_empty()
     ));
     assert!(matches!(
         sequential.definition_usage_derived(
             usage_choice,
             DefinitionUsageDerivedKind::UsageVariantMembership,
-        ),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+        ).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
             if values.len() == 1
                 && matches!(
-                    sequential.membership(values[0]),
-                    QueryOutcome::Resolved(MembershipRelationship {
+                    sequential.membership(values[0]).answer,
+                    QueryAnswer::Resolved(MembershipRelationship {
                         owning_namespace: Some(owner),
                         member,
                         role: Some(MembershipRole::Variant),
@@ -5002,8 +5007,8 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
         ("Model::Owner::happensLink", false),
     ] {
         assert_eq!(
-            query(&sequential, name),
-            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+            query(&sequential, name).answer,
+            QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
             "unexpected mayTimeVary result for {name}"
         );
         assert_eq!(query(&sequential, name), query(&parallel, name));
@@ -5016,8 +5021,9 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
         let usage = identity_of(&sequential, "memory://model.sysml", name);
         assert_eq!(
             sequential
-                .definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageIsReference,),
-            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+                .definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageIsReference,)
+                .answer,
+            QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
         );
     }
 
@@ -5029,8 +5035,8 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
         ConstructionSchedule::Sequential,
     );
     assert_eq!(
-        query(&without_libraries, "Model::packageOwned"),
-        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(false))
+        query(&without_libraries, "Model::packageOwned").answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(false))
     );
 
     let missing_negative_anchors = build(
@@ -5054,383 +5060,9 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
     )
     .unwrap();
     assert_eq!(
-        query(&missing_negative_anchors, "Model::Owner::ordinary"),
-        QueryOutcome::Unresolved,
+        query(&missing_negative_anchors, "Model::Owner::ordinary").answer,
+        QueryAnswer::Unresolved,
         "a missing standard-library anchor must not masquerade as a negative predicate"
-    );
-}
-
-#[test]
-fn action_definition_action_selects_action_subtypes_from_the_effective_usage_closure() {
-    let sources = [(
-        "memory://actions.sysml",
-        "package Actions { action def Base { action inherited; action retained; part notAction; } action def Procedure specializes Base { action replacement :>> inherited; action step; state mode; } }",
-    )];
-    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
-    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let query = |published: &PublishedResolution| {
-        let procedure = identity_of(published, "memory://actions.sysml", "Actions::Procedure");
-        published.action_derived_fact(
-            procedure,
-            ActionDerivedFactCollection::ActionDefinitionAction,
-        )
-    };
-    let values = match query(&sequential) {
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(values)) => values,
-        other => panic!("expected the effective ActionUsage collection, got {other:?}"),
-    };
-    let names = values
-        .iter()
-        .map(|value| sequential.qualified_name(*value).expect("qualified action"))
-        .collect::<Vec<_>>();
-    assert_eq!(
-        names,
-        vec![
-            "Actions::Base::retained",
-            "Actions::Procedure::mode",
-            "Actions::Procedure::replacement",
-            "Actions::Procedure::step",
-        ]
-    );
-    assert_eq!(query(&sequential), query(&parallel));
-    assert_eq!(query(&sequential), query(&warm));
-}
-
-#[test]
-fn action_argument_identities_are_owned_ordered_and_schedule_independent() {
-    let document = "memory://actions.sysml";
-    let sources = [(
-        document,
-        "package Actions { action def Procedure { attribute target; assign target := 1; for item in (2) { action step; } } }",
-    )];
-    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
-    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let arguments = |published: &PublishedResolution| {
-        let entries = settled(published.document_symbols(document));
-        let action = |kind| {
-            entries
-                .iter()
-                .find(|entry| {
-                    settled(published.element_details(entry.identity))
-                        .inspection
-                        .kind
-                        == kind
-                })
-                .expect("lowered action")
-                .identity
-        };
-        let assign = action(ElementKind::AssignmentActionUsage);
-        let for_loop = action(ElementKind::ForLoopActionUsage);
-        [
-            published.action_derived_fact(
-                assign,
-                ActionDerivedFactCollection::AssignmentTargetArgument,
-            ),
-            published.action_derived_fact(
-                assign,
-                ActionDerivedFactCollection::AssignmentValueExpression,
-            ),
-            published
-                .action_derived_fact(for_loop, ActionDerivedFactCollection::ForLoopSeqArgument),
-        ]
-    };
-    let actual = arguments(&sequential);
-    let positions = actual
-        .iter()
-        .map(|outcome| match outcome {
-            QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(arguments)) => {
-                assert_eq!(arguments.len(), 1);
-                arguments[0].position
-            }
-            other => panic!("expected one canonical action argument identity, got {other:?}"),
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(positions, [1, 2, 1]);
-    assert_eq!(actual, arguments(&parallel));
-    assert_eq!(actual, arguments(&warm));
-
-    let procedure = identity_of(&sequential, document, "Actions::Procedure");
-    assert_eq!(
-        sequential.action_derived_fact(
-            procedure,
-            ActionDerivedFactCollection::AssignmentTargetArgument,
-        ),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
-    );
-}
-
-#[test]
-fn for_loop_variable_uses_canonical_owned_feature_order_and_exact_metaclass() {
-    let document = "memory://actions.sysml";
-    let sources = [(
-        document,
-        "package Actions { action def Procedure { for z in (1) { action alpha; } } }",
-    )];
-    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
-    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let query = |published: &PublishedResolution| {
-        let for_loop = settled(published.document_symbols(document))
-            .iter()
-            .find(|entry| {
-                settled(published.element_details(entry.identity))
-                    .inspection
-                    .kind
-                    == ElementKind::ForLoopActionUsage
-            })
-            .expect("for-loop action")
-            .identity;
-        published.action_derived_fact(for_loop, ActionDerivedFactCollection::ForLoopVariable)
-    };
-    let variable = identity_of(&sequential, document, "Actions::Procedure::::z");
-    assert_eq!(
-        query(&sequential),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(
-            vec![variable].into_boxed_slice(),
-        ))
-    );
-    assert_eq!(query(&sequential), query(&parallel));
-    assert_eq!(query(&sequential), query(&warm));
-
-    let procedure = identity_of(&sequential, document, "Actions::Procedure");
-    assert_eq!(
-        sequential.action_derived_fact(procedure, ActionDerivedFactCollection::ForLoopVariable,),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(Box::new([])))
-    );
-}
-
-#[test]
-fn assignment_referent_preserves_its_non_feature_membership_identity() {
-    let document = "memory://actions.sysml";
-    let sources = [(
-        document,
-        "package Actions { action def Procedure { attribute target; assign target := 1; } }",
-    )];
-    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
-    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let query = |published: &PublishedResolution, source_document: &str| {
-        let assign = settled(published.document_symbols(source_document))
-            .iter()
-            .find(|entry| {
-                settled(published.element_details(entry.identity))
-                    .inspection
-                    .kind
-                    == ElementKind::AssignmentActionUsage
-            })
-            .expect("assignment action")
-            .identity;
-        (
-            assign,
-            published.action_derived_fact(assign, ActionDerivedFactCollection::AssignmentReferent),
-        )
-    };
-    let target = identity_of(&sequential, document, "Actions::Procedure::target");
-    let (assign, actual) = query(&sequential, document);
-    assert_eq!(
-        actual,
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::OwnedMembershipMembers(
-            vec![ActionOwnedMembershipMember {
-                identity: ActionOwnedMembershipId {
-                    action: assign,
-                    position: 1,
-                },
-                kind: ActionOwnedMembershipKind::Membership,
-                member: target,
-            }]
-            .into_boxed_slice(),
-        ))
-    );
-    assert_eq!(actual, query(&parallel, document).1);
-    assert_eq!(actual, query(&warm, document).1);
-
-    let unresolved = detail_publication(
-        &[(
-            "memory://unresolved.sysml",
-            "package Actions { action def Procedure { assign missing := 1; } }",
-        )],
-        ConstructionSchedule::Sequential,
-    );
-    assert_eq!(
-        query(&unresolved, "memory://unresolved.sysml").1,
-        QueryOutcome::Unresolved
-    );
-
-    let procedure = identity_of(&sequential, document, "Actions::Procedure");
-    assert_eq!(
-        sequential.action_derived_fact(procedure, ActionDerivedFactCollection::AssignmentReferent,),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::OwnedMembershipMembers(Box::new(
-            []
-        ),))
-    );
-}
-
-#[test]
-fn action_input_parameters_select_control_roles_and_accept_optionals_exactly() {
-    let document = "memory://actions.sysml";
-    let sources = [(
-        document,
-        "package Actions { action def Procedure { if true { action thenStep; } else { action elseStep; } while true { action loopStep; } accept when true; } }",
-    )];
-    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
-    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let outcomes = |published: &PublishedResolution| {
-        let entries = settled(published.document_symbols(document));
-        let action = |kind| {
-            entries
-                .iter()
-                .find(|entry| {
-                    settled(published.element_details(entry.identity))
-                        .inspection
-                        .kind
-                        == kind
-                })
-                .expect("lowered action")
-                .identity
-        };
-        let if_action = action(ElementKind::IfActionUsage);
-        let while_action = action(ElementKind::WhileLoopActionUsage);
-        let accept = action(ElementKind::AcceptActionUsage);
-        (
-            if_action,
-            while_action,
-            accept,
-            [
-                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfArgument),
-                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfThenAction),
-                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfElseAction),
-                published
-                    .action_derived_fact(while_action, ActionDerivedFactCollection::WhileArgument),
-                published
-                    .action_derived_fact(while_action, ActionDerivedFactCollection::LoopBodyAction),
-                published
-                    .action_derived_fact(while_action, ActionDerivedFactCollection::UntilArgument),
-                published.action_derived_fact(
-                    accept,
-                    ActionDerivedFactCollection::AcceptPayloadParameter,
-                ),
-                published.action_derived_fact(
-                    accept,
-                    ActionDerivedFactCollection::AcceptPayloadArgument,
-                ),
-                published.action_derived_fact(
-                    accept,
-                    ActionDerivedFactCollection::AcceptReceiverArgument,
-                ),
-            ],
-        )
-    };
-    let (if_action, while_action, accept, actual) = outcomes(&sequential);
-    assert_eq!(actual, outcomes(&parallel).3);
-    assert_eq!(actual, outcomes(&warm).3);
-    assert_eq!(
-        actual[0],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(
-            vec![ActionArgumentId {
-                action: if_action,
-                position: 1,
-            }]
-            .into_boxed_slice(),
-        ))
-    );
-    assert_eq!(
-        actual[3],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(
-            vec![ActionArgumentId {
-                action: while_action,
-                position: 1,
-            }]
-            .into_boxed_slice(),
-        ))
-    );
-    let value_name = |outcome: &QueryOutcome<ActionDerivedFactOutcome>| match outcome {
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(values)) if values.len() == 1 => {
-            sequential.qualified_name(values[0]).expect("action name")
-        }
-        other => panic!("expected one input action parameter, got {other:?}"),
-    };
-    assert_eq!(value_name(&actual[1]), "Actions::Procedure::::thenStep");
-    assert_eq!(value_name(&actual[2]), "Actions::Procedure::::elseStep");
-    assert_eq!(value_name(&actual[4]), "Actions::Procedure::::loopStep");
-    assert_eq!(
-        actual[5],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
-    );
-    assert_eq!(
-        actual[6],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Parameters(
-            vec![ActionInputParameterId {
-                action: accept,
-                position: 1,
-            }]
-            .into_boxed_slice(),
-        ))
-    );
-    assert!(matches!(
-        &actual[7],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(arguments))
-            if arguments.len() == 1 && arguments[0].action == accept && arguments[0].position == 1
-    ));
-    assert_eq!(
-        actual[8],
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
-    );
-
-    let ambiguous_body = detail_publication(
-        &[(
-            "memory://ambiguous.sysml",
-            "package Actions { action def Procedure { if true { action first; action second; } } }",
-        )],
-        ConstructionSchedule::Sequential,
-    );
-    let if_action = settled(ambiguous_body.document_symbols("memory://ambiguous.sysml"))
-        .iter()
-        .find(|entry| {
-            settled(ambiguous_body.element_details(entry.identity))
-                .inspection
-                .kind
-                == ElementKind::IfActionUsage
-        })
-        .expect("if action")
-        .identity;
-    assert_eq!(
-        ambiguous_body.action_derived_fact(if_action, ActionDerivedFactCollection::IfThenAction),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(Box::new([]))),
-        "a multi-action branch must not be collapsed to an arbitrary input parameter"
-    );
-
-    let typed_accept = detail_publication(
-        &[(
-            "memory://typed-accept.sysml",
-            "package Actions { item def Signal; action def Procedure { accept payload : Signal; } }",
-        )],
-        ConstructionSchedule::Sequential,
-    );
-    let accept = settled(typed_accept.document_symbols("memory://typed-accept.sysml"))
-        .iter()
-        .find(|entry| {
-            settled(typed_accept.element_details(entry.identity))
-                .inspection
-                .kind
-                == ElementKind::AcceptActionUsage
-        })
-        .expect("typed accept action")
-        .identity;
-    assert!(matches!(
-        typed_accept.action_derived_fact(
-            accept,
-            ActionDerivedFactCollection::AcceptPayloadParameter,
-        ),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Parameters(parameters))
-            if parameters.len() == 1
-    ));
-    assert_eq!(
-        typed_accept
-            .action_derived_fact(accept, ActionDerivedFactCollection::AcceptPayloadArgument,),
-        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
     );
 }
 

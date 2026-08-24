@@ -63,8 +63,8 @@ fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
     );
     let variant = identity_of(&publication, "memory://variants.sysml", "Demo::V::e");
     assert!(matches!(
-        publication.inspect(variant),
-        QueryOutcome::Resolved(ElementInspection {
+        publication.inspect(variant).answer,
+        QueryAnswer::Resolved(ElementInspection {
             role: Some(MembershipRole::Variant),
             ..
         })

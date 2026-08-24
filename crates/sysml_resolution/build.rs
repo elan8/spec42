@@ -180,8 +180,6 @@ fn redefinition_check_kind(kind: RedefinitionCheckKind) -> &'static str {
 fn specialization_check_kind(kind: SpecializationCheckKind) -> &'static str {
     match kind {
         SpecializationCheckKind::FeatureCrossing => "FeatureCrossing",
-        SpecializationCheckKind::FeatureObject => "FeatureObject",
-        SpecializationCheckKind::FeatureOccurrence => "FeatureOccurrence",
         SpecializationCheckKind::FeatureOwnedCrossFeature => "FeatureOwnedCrossFeature",
         SpecializationCheckKind::FeaturePortion => "FeaturePortion",
         SpecializationCheckKind::FeatureSubobject => "FeatureSubobject",
