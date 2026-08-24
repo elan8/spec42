@@ -462,12 +462,6 @@ impl GeneratorRuntime {
             });
         }
 
-        let mut linker = Linker::new(&self.engine);
-        add_host_functions(&mut linker).map_err(|error| GeneratorHostError {
-            category: GeneratorFailureCategory::ApiIncompatible,
-            phase: GenerationPhase::ApiLinking,
-            message: error.to_string(),
-        })?;
         if runtime_limits.fuel.is_some() && !self.options.fuel_metering {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ResourceExhausted,
