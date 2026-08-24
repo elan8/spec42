@@ -191,7 +191,10 @@ cannot walk, cache, or serialise a parser document even while holding one.
    `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
    The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
    momentarily resolvable, and it is silent about it -- use the fully qualified spec.
-2. `cargo check --workspace --all-targets`, then `cargo test --workspace`.
+2. `cargo check --workspace --all-targets`, then `cargo test --workspace`. Integration tests live
+   in one binary per crate (`tests/integration/main.rs` declaring one module per file): every
+   `tests/*.rs` file is its own crate that links the whole stack, and the link step -- not the
+   tests -- dominated a rebuild. Add a test as a module of that binary, not as a new file beside it.
 3. `cargo snapshot update`, review `git diff -- tests/snapshots`, then `cargo snapshot check`
    (the alias in `.cargo/config.toml` runs the tool in release -- the debug profile is 10-30x
    slower on this workload). The snapshot corpus is the primary end-to-end evidence
