@@ -192,8 +192,9 @@ cannot walk, cache, or serialise a parser document even while holding one.
    The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
    momentarily resolvable, and it is silent about it -- use the fully qualified spec.
 2. `cargo check --workspace --all-targets`, then `cargo test --workspace`.
-3. `cargo run -p spec42-snapshot -- update`, review `git diff -- tests/snapshots`, then
-   `cargo run -p spec42-snapshot -- check`. The snapshot corpus is the primary end-to-end evidence
+3. `cargo snapshot update`, review `git diff -- tests/snapshots`, then `cargo snapshot check`
+   (the alias in `.cargo/config.toml` runs the tool in release -- the debug profile is 10-30x
+   slower on this workload). The snapshot corpus is the primary end-to-end evidence
    for a parser bump; it is not CI-gated, so the diff review is the gate.
 4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
    the ones it closes. If the bump changes the keyword vocabulary, update

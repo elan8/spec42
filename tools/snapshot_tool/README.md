@@ -42,19 +42,22 @@ complete worker batch succeeds.
 
 Run it from the repository root:
 
+`cargo snapshot` is an alias in `.cargo/config.toml` for `cargo run --release -p spec42-snapshot --`;
+the tool builds every fixture's publication, and the debug profile is 10-30x slower on that.
+
 ```sh
-cargo run -p spec42-snapshot -- update
+cargo snapshot update
 git diff -- tests/snapshots
-cargo run -p spec42-snapshot -- check
-cargo run -p spec42-snapshot -- report
-cargo run -p spec42-snapshot -- report --format json
+cargo snapshot check
+cargo snapshot report
+cargo snapshot report --format json
 ```
 
 To inspect one fixture:
 
 ```sh
-cargo run -p spec42-snapshot -- update --fixture resolution/imports.md
-cargo run -p spec42-snapshot -- check --fixture resolution/imports.md
+cargo snapshot update --fixture resolution/imports.md
+cargo snapshot check --fixture resolution/imports.md
 ```
 
 `check` never writes files. A stale fixture is a failure and the Markdown diff is the review
@@ -359,7 +362,7 @@ Run either example with the normal fixture command. A successful enforced case p
 a blocked case remains visible through `report`:
 
 ```sh
-cargo run -p spec42-snapshot -- report --fixture validation/kerml_end_feature_direction.md
+cargo snapshot report --fixture validation/kerml_end_feature_direction.md
 ```
 
 Readable qualified-reference queries can be exercised directly without embedding opaque identity
