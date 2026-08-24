@@ -63,7 +63,7 @@ package 'Action Performance Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4792da0794e77a0d60357e60c04671e31362262b5ed5dd78100aad24ae05af99") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4792da0794e77a0d60357e60c04671e31362262b5ed5dd78100aad24ae05af99") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false))))))

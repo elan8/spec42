@@ -68,7 +68,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ad3bd4be3cdd6a192ab46a4439f1c008923329802fc48b5d2426daf79c4826a5") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ad3bd4be3cdd6a192ab46a4439f1c008923329802fc48b5d2426daf79c4826a5") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

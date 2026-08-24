@@ -108,7 +108,7 @@ package ServerSequenceModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:10e2c026b87621ea23aad2f7289cbc8b21677f436208e8b51cc479dc47d20465") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:10e2c026b87621ea23aad2f7289cbc8b21677f436208e8b51cc479dc47d20465") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

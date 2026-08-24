@@ -592,7 +592,7 @@ package AHFNorway {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b89ef7ee47cefea7426929f6a2f1fd17741bc39f10a0c4b75b3c6a816705bab7") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b89ef7ee47cefea7426929f6a2f1fd17741bc39f10a0c4b75b3c6a816705bab7") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " This is the Norwegian use-case for Arrowhead Framework "))))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFProfileLib") (import (shape namespace) (recursive false))))))

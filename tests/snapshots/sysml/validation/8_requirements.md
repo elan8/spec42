@@ -367,7 +367,7 @@ package '8-Requirements' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:760d4cca14b7207e41c47f068c6e60ee38e86987fb47fca722a89b7f9b5ae549") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:760d4cca14b7207e41c47f068c6e60ee38e86987fb47fca722a89b7f9b5ae549") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

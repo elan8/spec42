@@ -246,7 +246,7 @@ standard library package MeasurementRefCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cb3bb9a6969b967cd69ea4dd046c1ecf38b7addd6d6c11b4a2ac44318655f72b") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cb3bb9a6969b967cd69ea4dd046c1ecf38b7addd6d6c11b4a2ac44318655f72b") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_ref_calculations.md") (qualified-name "MeasurementRefCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package package defines calculations on MeasurementUnits and CoordinateFrames.\n\t ")) (comment (text " MeasurementUnit operations ")) (comment (text " CoordinateFrame and MeasurementUnit operations "))))
     (declaration (id (node (document "memory://snapshot/measurement_ref_calculations.md") (path (named (kind library-package) (name "MeasurementRefCalculations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

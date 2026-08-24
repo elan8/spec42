@@ -42,7 +42,7 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d64f696060a3d8a5413b577ff4929f22d8578fdc4b8528404e83e3ef9ba8c529") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d64f696060a3d8a5413b577ff4929f22d8578fdc4b8528404e83e3ef9ba8c529") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Imported"))) (kind package) (membership (kind owning) (visibility default)))

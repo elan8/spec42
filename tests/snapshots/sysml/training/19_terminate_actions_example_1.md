@@ -82,7 +82,7 @@ package 'Terminate Actions Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3555b074c24e17f1d6248fbb966bdf0673d190b526a2b3beb6aa84569bd88528") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3555b074c24e17f1d6248fbb966bdf0673d190b526a2b3beb6aa84569bd88528") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (qualified-name "Terminate Actions Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_1.md") (path (named (kind package) (name "Terminate Actions Example-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

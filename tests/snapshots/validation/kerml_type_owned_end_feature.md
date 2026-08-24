@@ -42,7 +42,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e74fd8ddc7f9141b9dc40ab76f8de28482a08dbcc4af14ad78fa857fd74a36b4") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e74fd8ddc7f9141b9dc40ab76f8de28482a08dbcc4af14ad78fa857fd74a36b4") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_end_feature.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_end_feature.md") (qualified-name "Model::Container"))) (kind kerml-type) (membership (kind owning) (visibility default)))

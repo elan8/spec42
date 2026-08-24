@@ -102,7 +102,7 @@ package AllocationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c26d93f48afb7e16dbdf626d3f719811fd741dd30cf67f6906c45bb44046f79a") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:c26d93f48afb7e16dbdf626d3f719811fd741dd30cf67f6906c45bb44046f79a") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (anonymous (kind allocate) (ordinal 0))))) (kind allocate) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (allocateSource (reference "l::component")) (allocateTarget (reference "p::assembly::element")))))

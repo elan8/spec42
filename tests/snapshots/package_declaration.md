@@ -19,7 +19,7 @@ package MyPkg { }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcfab2fcfbb49cdf8087e7e90f43c5d28d14d866976da97a329ceba86b448ee3") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcfab2fcfbb49cdf8087e7e90f43c5d28d14d866976da97a329ceba86b448ee3") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/package_declaration.md") (qualified-name "MyPkg"))) (kind package) (membership (kind owning) (visibility default)))
   )

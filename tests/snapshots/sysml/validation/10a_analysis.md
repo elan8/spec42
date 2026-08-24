@@ -232,7 +232,7 @@ package '10a-Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f2396f6496b97f2feca2ddba2d175a44d6ece1086a2d61db58b234e5f33cc103") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f2396f6496b97f2feca2ddba2d175a44d6ece1086a2d61db58b234e5f33cc103") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

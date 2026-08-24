@@ -39,7 +39,7 @@ package Actions { action def Procedure { if true { action thenStep; } else { act
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8a834d3a69289cabbb3194d8b706d9c7100d0748104c3170a06efd7e93a95dde") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8a834d3a69289cabbb3194d8b706d9c7100d0748104c3170a06efd7e93a95dde") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

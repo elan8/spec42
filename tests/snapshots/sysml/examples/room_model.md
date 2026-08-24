@@ -200,7 +200,7 @@ package RoomModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:95bbd68fcc77102e975866ee00d900456df50b7e94709f5891da94c948453a0e") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:95bbd68fcc77102e975866ee00d900456df50b7e94709f5891da94c948453a0e") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/room_model.md") (qualified-name "RoomModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/room_model.md") (qualified-name "RoomModel::RoomDefinitionModelLibrary"))) (kind package) (membership (kind owning) (visibility default)))

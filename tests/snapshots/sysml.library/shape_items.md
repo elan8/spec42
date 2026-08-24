@@ -4013,7 +4013,7 @@ standard library package ShapeItems {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c61a35071bf088fb2aa947f398cf3dff11c93566a3dce6b885ca75bb30ac1f3a") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c61a35071bf088fb2aa947f398cf3dff11c93566a3dce6b885ca75bb30ac1f3a") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package provides a model of items that represent basic geometric shapes. \n\t "))))
     (declaration (id (node (document "memory://snapshot/shape_items.md") (path (named (kind library-package) (name "ShapeItems")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

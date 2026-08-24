@@ -137,7 +137,7 @@ package '18-Use Case' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:39f8cb233733093cba3b33d7a329a437580e3ca1a386383354314d85f0d0b6d2") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:39f8cb233733093cba3b33d7a329a437580e3ca1a386383354314d85f0d0b6d2") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::Environment"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -124,7 +124,7 @@ package RequirementsAndCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74bfdfd058c9fe8f199d83bd3c095fb9c01bf34b5bc53cb977632e5a9c2e9486") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74bfdfd058c9fe8f199d83bd3c095fb9c01bf34b5bc53cb977632e5a9c2e9486") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::ConformingInclude"))) (kind use-case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (includeUseCase (reference "drive")))))

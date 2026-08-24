@@ -144,7 +144,7 @@ package Types {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:92bf859ed276e45c4017951a46cdb187a56914e606c9142aeeb6ef6f42b23613") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:92bf859ed276e45c4017951a46cdb187a56914e606c9142aeeb6ef6f42b23613") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::A"))) (kind kerml-type) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))

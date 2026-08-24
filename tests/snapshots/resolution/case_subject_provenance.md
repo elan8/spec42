@@ -24,7 +24,7 @@ package M {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5e7ca5133ba92cef73efb066c60f959921920855d122a4765f27bdcfa636968b") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5e7ca5133ba92cef73efb066c60f959921920855d122a4765f27bdcfa636968b") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A"))) (kind analysis-def) (membership (kind owning) (visibility default)))

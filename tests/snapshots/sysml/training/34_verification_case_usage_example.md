@@ -154,7 +154,7 @@ package 'Verification Case Usage Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:dac6ccdc5393d51bccd3426b33db91459a15062489af182d8f18465c53f7d8af") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:dac6ccdc5393d51bccd3426b33db91459a15062489af182d8f18465c53f7d8af") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Verification Case Definition Example") (import (shape namespace) (recursive false))))))

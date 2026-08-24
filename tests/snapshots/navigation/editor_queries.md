@@ -35,7 +35,7 @@ probe editor_queries.md 10 17 rename=Base
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:67e8dc0acb0a3208d0be8842b8c3fcec049fe083a338fd0fbe918f4672d0aaed") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:67e8dc0acb0a3208d0be8842b8c3fcec049fe083a338fd0fbe918f4672d0aaed") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

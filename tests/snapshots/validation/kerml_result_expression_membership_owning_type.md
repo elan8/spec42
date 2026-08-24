@@ -48,7 +48,7 @@ package Results {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4d2af3b82a80f888d16af0ca2a51f4414bfd61043a38e256dab95d875cea6d14") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4d2af3b82a80f888d16af0ca2a51f4414bfd61043a38e256dab95d875cea6d14") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))

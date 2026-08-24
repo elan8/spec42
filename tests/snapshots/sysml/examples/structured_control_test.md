@@ -72,7 +72,7 @@ package StructuredControlTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:84b55a1873c4b0df5137f643091f1de7c1aa033cb67835cd4609e1ade340c657") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:84b55a1873c4b0df5137f643091f1de7c1aa033cb67835cd4609e1ade340c657") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structured_control_test.md") (qualified-name "StructuredControlTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structured_control_test.md") (path (named (kind package) (name "StructuredControlTest")) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))

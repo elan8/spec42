@@ -47,7 +47,7 @@ package BehaviorModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cd1feb467dac01a3a89256904ace4c47dc547fca71b7ffa6b761410fbce02b28") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cd1feb467dac01a3a89256904ace4c47dc547fca71b7ffa6b761410fbce02b28") (contract-version "lossless-publication-completeness-v3") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -231,7 +231,7 @@ package BehaviorModel {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:9b0fa758ab8b1fa842bb3f86c460ed9ebe6087f49ca6dedc2c4b4267966383e5",
+  "modelDigest": "blake3:42d9c7a17bb33882d999c2895eec46a331d23f6d4e7fc29480c6387ec2efb39b",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",

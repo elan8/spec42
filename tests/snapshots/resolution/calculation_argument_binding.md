@@ -42,7 +42,7 @@ package Calculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ba9667db3d5bcdca9a75691357cb3ceee96949002b9812ce2901db8f8b749382") (contract-version "parser-owned-resolution-v2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ba9667db3d5bcdca9a75691357cb3ceee96949002b9812ce2901db8f8b749382") (contract-version "lossless-publication-completeness-v3") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum"))) (kind calc-def) (membership (kind owning) (visibility default)))

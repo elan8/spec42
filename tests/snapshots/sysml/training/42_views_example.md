@@ -125,7 +125,7 @@ package 'Views Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:75e1b12ea33488b2c3ff36d83083c66bb25c8b324aad65f842a384cc07595467") (contract-version "parser-owned-resolution-v2"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:75e1b12ea33488b2c3ff36d83083c66bb25c8b324aad65f842a384cc07595467") (contract-version "lossless-publication-completeness-v3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false))))))
