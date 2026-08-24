@@ -2,13 +2,9 @@
 //! (same engine path as `spec42 check`). Not run in Spec42 CI — the showcase repo
 //! owns Spec42 error/warning gates against released Spec42.
 
-#[path = "common/mod.rs"]
-mod common;
-#[path = "support/robot_vacuum_fixture.rs"]
-mod robot_vacuum_fixture;
 
-use common::with_isolated_data_dir;
-use robot_vacuum_fixture::require_robot_vacuum_fixture;
+use crate::common::with_isolated_data_dir;
+use crate::robot_vacuum_fixture::require_robot_vacuum_fixture;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 

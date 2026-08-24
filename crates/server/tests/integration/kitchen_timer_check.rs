@@ -1,10 +1,9 @@
 //! Smoke test: `perform_check` on a bundled example (same engine as `spec42 check` / MCP `spec42_check`).
 
-mod common;
 
 use std::path::PathBuf;
 
-use common::with_isolated_data_dir;
+use crate::common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 

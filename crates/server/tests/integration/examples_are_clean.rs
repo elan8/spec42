@@ -2,11 +2,10 @@
 //! informational diagnostics either — an `info` such as `missing_library_anchor` means the
 //! publication admitted less of the standard library than the model needs.
 
-mod common;
 
 use std::path::{Path, PathBuf};
 
-use common::with_isolated_data_dir;
+use crate::common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 

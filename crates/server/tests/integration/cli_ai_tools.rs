@@ -1,11 +1,10 @@
 //! CLI coverage for agent surfaces (`explain-diagnostic`, `model-summary`).
 
-mod common;
 
 use std::path::PathBuf;
 use std::process::Command;
 
-use common::with_isolated_data_dir;
+use crate::common::with_isolated_data_dir;
 use serde_json::Value;
 
 fn kitchen_timer_path() -> PathBuf {

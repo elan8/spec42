@@ -1,10 +1,9 @@
 //! `spec42 init` starter-workspace integration coverage.
 
-mod common;
 
 use std::fs;
 
-use common::with_isolated_data_dir;
+use crate::common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::{perform_check, starter_workspace};
 use tempfile::TempDir;
