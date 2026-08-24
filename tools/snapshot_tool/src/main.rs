@@ -1324,9 +1324,6 @@ fn parse_definition_usage_prerequisite(
         "effective_feature_membership_closure" => {
             Ok(DefinitionUsageDerivedPrerequisite::EffectiveFeatureMembershipClosure)
         }
-        "effective_occurrence_time_variation_facts" => {
-            Ok(DefinitionUsageDerivedPrerequisite::EffectiveOccurrenceTimeVariationFacts)
-        }
         "rule_not_published" => Ok(DefinitionUsageDerivedPrerequisite::RuleNotPublished),
         _ => Err(format!(
             "{fixture}: unknown Definition/Usage derivation prerequisite {value:?}"
@@ -8073,7 +8070,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_definition_usage_derivations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.2:deriveDefinitionOwnedPart\")\n    (source \"Model::Vehicle\")\n    (target \"Model::Vehicle::wheel\")\n    (outcome resolved))\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.4:deriveUsageIsReference\")\n    (source \"Model::vehicle\")\n    (outcome true))\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.4:deriveUsageMayTimeVary\")\n    (source \"Model::vehicle\")\n    (outcome unsupported)\n    (prerequisite effective_occurrence_time_variation_facts)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.2:deriveDefinitionOwnedPart\")\n    (source \"Model::Vehicle\")\n    (target \"Model::Vehicle::wheel\")\n    (outcome resolved))\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.4:deriveUsageIsReference\")\n    (source \"Model::vehicle\")\n    (outcome false))\n  (definition-usage-derived\n    (rule_id \"sysml-2.0:8.3.6.4:deriveUsageMayTimeVary\")\n    (source \"Model::vehicle\")\n    (outcome false)))\n~~~\n";
         let expectations = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8090,15 +8087,13 @@ mod tests {
                     kind: DefinitionUsageDerivedKind::UsageIsReference,
                     source: "Model::vehicle".to_string(),
                     target: None,
-                    outcome: DefinitionUsageDerivedExpectationOutcome::True,
+                    outcome: DefinitionUsageDerivedExpectationOutcome::False,
                 },
                 DefinitionUsageDerivedExpectation {
                     kind: DefinitionUsageDerivedKind::UsageMayTimeVary,
                     source: "Model::vehicle".to_string(),
                     target: None,
-                    outcome: DefinitionUsageDerivedExpectationOutcome::Unsupported(
-                        DefinitionUsageDerivedPrerequisite::EffectiveOccurrenceTimeVariationFacts,
-                    ),
+                    outcome: DefinitionUsageDerivedExpectationOutcome::False,
                 },
             ]
         );

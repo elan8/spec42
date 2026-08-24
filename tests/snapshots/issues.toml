@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-definition-usage-effective-occurrence-time-variation-facts"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Usage mayTimeVary requires one canonical effective occurrence/library-specialization and portion fact family; direct modifiers and graph edges are insufficient."
-
-[[issue]]
 id = "lowering-gap-action-effective-usage-closure"
 kind = "lowering_gap"
 owner = "spec42-semantic"

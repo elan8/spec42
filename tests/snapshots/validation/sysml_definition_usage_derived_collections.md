@@ -101,7 +101,7 @@ package Model {
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedVerificationCase") (source "Model::Vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedView") (source "Model::Vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedViewpoint") (source "Model::Vehicle") (outcome absent))
-  (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageIsReference") (source "Model::vehicle") (outcome true))
+  (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageIsReference") (source "Model::vehicle") (outcome false))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAction") (source "Model::vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAllocation") (source "Model::vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAnalysisCase") (source "Model::vehicle") (outcome absent))

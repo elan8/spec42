@@ -4954,6 +4954,113 @@ fn definition_usage_derivations_use_canonical_members_and_membership_identities(
 }
 
 #[test]
+fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_parity() {
+    let publish = |schedule| {
+        build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://occurrences.sysml",
+                        "standard library package Occurrences { classifier Occurrence; classifier HappensLink; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://links.sysml",
+                        "standard library package Links { classifier SelfLink; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://actions.sysml",
+                        "standard library package Actions { action def Action; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { part def Owner specializes Occurrences::Occurrence { part ordinary; snapshot occurrence slice; action behavior : Actions::Action; ref selfLink : Links::SelfLink; ref happensLink : Occurrences::HappensLink; } }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                schedule,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap()
+    };
+    let sequential = publish(ConstructionSchedule::Sequential);
+    let parallel = publish(ConstructionSchedule::Parallel);
+    let warm = publish(ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution, name: &str| {
+        let usage = identity_of(published, "memory://model.sysml", name);
+        published.definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageMayTimeVary)
+    };
+    for (name, expected) in [
+        ("Model::Owner::ordinary", true),
+        ("Model::Owner::slice", false),
+        ("Model::Owner::behavior", false),
+        ("Model::Owner::selfLink", false),
+        ("Model::Owner::happensLink", false),
+    ] {
+        assert_eq!(
+            query(&sequential, name),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+            "unexpected mayTimeVary result for {name}"
+        );
+        assert_eq!(query(&sequential, name), query(&parallel, name));
+        assert_eq!(query(&sequential, name), query(&warm, name));
+    }
+    for (name, expected) in [
+        ("Model::Owner::ordinary", false),
+        ("Model::Owner::selfLink", true),
+    ] {
+        let usage = identity_of(&sequential, "memory://model.sysml", name);
+        assert_eq!(
+            sequential
+                .definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageIsReference,),
+            QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+        );
+    }
+
+    let without_libraries = detail_publication(
+        &[(
+            "memory://model.sysml",
+            "package Model { part packageOwned; }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    assert_eq!(
+        query(&without_libraries, "Model::packageOwned"),
+        QueryOutcome::Resolved(DefinitionUsageDerivedOutcome::Boolean(false))
+    );
+
+    let missing_negative_anchors = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://occurrences.sysml",
+                    "standard library package Occurrences { classifier Occurrence; }".to_string(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    "package Model { part def Owner specializes Occurrences::Occurrence { part ordinary; } }".to_string(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        query(&missing_negative_anchors, "Model::Owner::ordinary"),
+        QueryOutcome::Unresolved,
+        "a missing standard-library anchor must not masquerade as a negative predicate"
+    );
+}
+
+#[test]
 fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
     let published = detail_publication(
         &[ (

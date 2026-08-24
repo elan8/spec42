@@ -1361,17 +1361,31 @@ impl<D> SemanticModel<D> {
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Memberships(values))
             }
             DefinitionUsageDerivedKind::UsageMayTimeVary => {
-                self.resolved_outcome(DefinitionUsageDerivedOutcome::Unsupported {
-                    prerequisite:
-                        DefinitionUsageDerivedPrerequisite::EffectiveOccurrenceTimeVariationFacts,
-                })
+                match self.types.usage_may_time_vary(&self.storage, declaration) {
+                    crate::index::types::UsageTimeVariationOutcome::Resolved(value) => {
+                        self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(value))
+                    }
+                    crate::index::types::UsageTimeVariationOutcome::Unresolved => {
+                        QueryOutcome::Unresolved
+                    }
+                    crate::index::types::UsageTimeVariationOutcome::Ambiguous => {
+                        QueryOutcome::Ambiguous(
+                            vec![
+                                DefinitionUsageDerivedOutcome::Boolean(false),
+                                DefinitionUsageDerivedOutcome::Boolean(true),
+                            ]
+                            .into_boxed_slice(),
+                        )
+                    }
+                }
             }
             DefinitionUsageDerivedKind::UsageIsReference => {
-                let is_composite = self
-                    .storage
-                    .declaration_facts(declaration)
-                    .is_some_and(|facts| facts.modifiers.composite);
-                self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(!is_composite))
+                match self.types.usage_is_reference(&self.storage, declaration) {
+                    Some(is_reference) => {
+                        self.resolved_outcome(DefinitionUsageDerivedOutcome::Boolean(is_reference))
+                    }
+                    None => QueryOutcome::Unresolved,
+                }
             }
             _ => {
                 // The members of one element, from the settled owner->member index: a query about

@@ -95,9 +95,6 @@ pub enum DefinitionUsageDerivedPrerequisite {
     /// `feature`/`directedFeature` requires the effective inherited FeatureMembership closure;
     /// direct owner membership alone is deliberately not substituted.
     EffectiveFeatureMembershipClosure,
-    /// `mayTimeVary` needs the effective library-specialization and portion predicates as one
-    /// canonical fact family; direct modifiers or graph edges alone do not decide it.
-    EffectiveOccurrenceTimeVariationFacts,
 }
 
 /// One closed exact `Systems::Actions` derived property.
