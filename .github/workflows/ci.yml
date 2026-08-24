@@ -165,8 +165,11 @@ jobs:
           git diff --exit-code vscode/generators/diagram.wasm
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate vscode/generators/diagram.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/diagram-generator-smoke -- general-view
-          rg -q '"status": "incomplete"' target/diagram-generator-smoke/diagram.json
+          # The diagram guest takes a typed catalog handle (`h:<sha256>`), which only the host's
+          # view catalog can produce for the publication it runs against -- a view-kind id such as
+          # `general-view` is not a handle. The smoke lists the catalog and generates with a real
+          # handle in one test; it skips itself if the plugin above was not built.
+          cargo test -p server --test integration diagram_generator_smoke
       - name: Upload repository generator plugins
         if: always() && steps.repository-plugins.outcome != 'skipped'
         uses: actions/upload-artifact@v4
