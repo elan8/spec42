@@ -1,6 +1,6 @@
 //! The pipeline's phase order is a property of the source tree, not just of a call sequence.
 //!
-//! `planning/B_resolution_phases.md` establishes that this crate is a barrier-ordered pipeline:
+//! `design.md` establishes that this crate is a barrier-ordered pipeline:
 //! each phase reads the frozen product of the phases before it and publishes its own, and nothing
 //! loops back. Ordering is enforced at runtime by the coordinator's call sequence — which no test
 //! can see once a module has been added that quietly reaches forward. This file guards the
@@ -12,8 +12,8 @@
 //! 2. **A phase does not import a later phase.** Every remaining forward edge is enumerated in
 //!    [`FORWARD_EDGES`] with the reason it stands. A new one fails; a listed one that no longer
 //!    exists fails too, so the list shrinks as the tree is fixed and never rots.
-//! 3. **Evaluation has exactly one writer.** `planning/B_resolution_phases.md` §2 item 3 recorded
-//!    two producers for one fact category: lowering classified constraint/calc expressions into
+//! 3. **Evaluation has exactly one writer.** A prior implementation had two producers for one
+//!    fact category: lowering classified constraint/calc expressions into
 //!    `ExpressionEvalShape` while evaluation settled the same category later. Lowering now records
 //!    the authored site and evaluation alone classifies it, so the shape vocabulary must not
 //!    appear outside `evaluate/`, and the retired two-writer helpers must stay deleted.
@@ -32,9 +32,9 @@ use std::path::{Path, PathBuf};
 
 /// The pipeline's phases, in build order, by the module directory that owns each one.
 ///
-/// Sourced from `planning/B_resolution_phases.md` §1, which lists the coordinator's call order.
-/// Only the phases that own a directory appear; the phases that are still spread across
-/// `model.rs`/`lib.rs` are the subject of that document's remaining work, not of this guard.
+/// Sourced from `design.md`, which declares the coordinator's call order. Only modules that own a
+/// construction phase appear; `model`, `pipeline`, and `publication` are boundary/coordinator
+/// modules rather than additional writers.
 const PHASES: &[(&str, &str)] = &[
     (
         "syntax",
@@ -299,7 +299,7 @@ fn no_phase_imports_a_later_phase_except_the_enumerated_edges() {
         new.is_empty(),
         "these phases reach forward to a later phase and are not enumerated in FORWARD_EDGES: \
          {new:?}. A phase reads the frozen product of the phases before it \
-         (planning/B_resolution_phases.md §1). Move the item down to the phase that owns it, or \
+         (`design.md`). Move the item down to the phase that owns it, or \
          add a FORWARD_EDGES entry recording why the edge stands."
     );
 

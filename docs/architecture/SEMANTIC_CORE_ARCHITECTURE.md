@@ -20,25 +20,25 @@ semantic answer.
 
 ## Identity and qualified references
 
-`SymbolIdentity` is the canonical identity of a declaration inside a publication. Its encoding is
-opaque to consumers and commits the normalized document identity plus the declaration's typed
-ownership path and occurrence. It is stable across sequential and parallel builds of identical
-inputs. Renaming or moving an element, changing its document identity, or changing the versioned
-identity contract may deliberately change it. A host must also retain the publication/model digest:
-an identity from another publication is not thereby current.
+`SymbolId` is the canonical in-process handle of a declaration inside one publication. It is an
+opaque, dense, `Copy` ordinal minted by the semantic authority and is valid only with the exact
+publication that returned it. It must not be retained across a rebuild, even when the inputs are
+unchanged. A consumer that needs a serialisable or cross-publication identity asks the publication
+for the declaration's opaque `SymbolToken` and resolves that token against the publication it will
+query. `DocumentId` and `DocumentToken` provide the corresponding document identity domains.
 
 A KerML `qualifiedName` is a readable semantic reference, not an identity. The resolution-owned
 `QualifiedElementReference` query accepts a qualified name, an optional normalized document
 identity, and an optional expected element kind. Document-scoped lookup distinguishes identical
 root/package names authored in different documents. Publication-wide lookup includes workspace,
 standard-library, other library, and external source domains and reports multiple matches as typed
-ambiguity. Resolution returns the canonical `SymbolIdentity`; unresolved, wrong-kind, recovery,
+ambiguity. Resolution returns a publication-scoped `SymbolId`; unresolved, wrong-kind, recovery,
 unsupported, and incomplete publications remain distinct outcomes. Adapters must not reproduce
 this lookup by scanning catalog labels.
 
 OMG `Element::elementId` is a separate tool-owned identity domain. An imported API/XMI UUID may be
-preserved as provenance or an alias, but it is not interchangeable with `SymbolIdentity`, a
-qualified name, a source URI, or a generator handle. Standard/external library documents likewise
+preserved as provenance or an alias, but it is not interchangeable with `SymbolId`, `SymbolToken`,
+a qualified name, a source URI, or a generator handle. Standard/external library documents likewise
 retain their admitted source identity and provenance; a matching qualified name does not merge
 them with a workspace declaration.
 

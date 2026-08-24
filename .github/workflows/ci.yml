@@ -170,6 +170,13 @@ jobs:
           # `general-view` is not a handle. The smoke lists the catalog and generates with a real
           # handle in one test; it skips itself if the plugin above was not built.
           cargo test -p server --test integration diagram_generator_smoke
+
+      # The standalone corpus is the compiler pipeline's primary end-to-end contract. Keep this
+      # after both generator build steps: some fixtures execute those checked repository guests.
+      - name: Semantic snapshot corpus and evidence integrity
+        run: |
+          cargo snapshot check
+          cargo snapshot report --format json
       - name: Upload repository generator plugins
         if: always() && steps.repository-plugins.outcome != 'skipped'
         uses: actions/upload-artifact@v4
