@@ -5162,6 +5162,72 @@ fn action_argument_identities_are_owned_ordered_and_schedule_independent() {
 }
 
 #[test]
+fn assignment_referent_preserves_its_non_feature_membership_identity() {
+    let document = "memory://actions.sysml";
+    let sources = [(
+        document,
+        "package Actions { action def Procedure { attribute target; assign target := 1; } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution, source_document: &str| {
+        let assign = settled(published.document_symbols(source_document))
+            .iter()
+            .find(|entry| {
+                settled(published.element_details(entry.identity))
+                    .inspection
+                    .kind
+                    == ElementKind::AssignmentActionUsage
+            })
+            .expect("assignment action")
+            .identity;
+        (
+            assign,
+            published.action_derived_fact(assign, ActionDerivedFactCollection::AssignmentReferent),
+        )
+    };
+    let target = identity_of(&sequential, document, "Actions::Procedure::target");
+    let (assign, actual) = query(&sequential, document);
+    assert_eq!(
+        actual,
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::OwnedMembershipMembers(
+            vec![ActionOwnedMembershipMember {
+                identity: ActionOwnedMembershipId {
+                    action: assign,
+                    position: 1,
+                },
+                kind: ActionOwnedMembershipKind::Membership,
+                member: target,
+            }]
+            .into_boxed_slice(),
+        ))
+    );
+    assert_eq!(actual, query(&parallel, document).1);
+    assert_eq!(actual, query(&warm, document).1);
+
+    let unresolved = detail_publication(
+        &[(
+            "memory://unresolved.sysml",
+            "package Actions { action def Procedure { assign missing := 1; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    assert_eq!(
+        query(&unresolved, "memory://unresolved.sysml").1,
+        QueryOutcome::Unresolved
+    );
+
+    let procedure = identity_of(&sequential, document, "Actions::Procedure");
+    assert_eq!(
+        sequential.action_derived_fact(procedure, ActionDerivedFactCollection::AssignmentReferent,),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::OwnedMembershipMembers(Box::new(
+            []
+        ),))
+    );
+}
+
+#[test]
 fn action_input_parameters_select_control_roles_and_accept_optionals_exactly() {
     let document = "memory://actions.sysml";
     let sources = [(

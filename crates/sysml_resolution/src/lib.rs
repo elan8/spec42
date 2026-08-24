@@ -64,7 +64,8 @@ mod verification;
 
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
-    ActionDerivedFactPrerequisite, ActionInputParameterId,
+    ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
+    ActionOwnedMembershipKind, ActionOwnedMembershipMember,
 };
 pub use definition_usage_query::{
     DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,

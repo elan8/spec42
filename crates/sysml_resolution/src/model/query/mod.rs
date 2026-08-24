@@ -1621,10 +1621,81 @@ impl<D> SemanticModel<D> {
             }
             _ => {}
         }
-        let prerequisite = match collection {
-            ActionDerivedFactCollection::AssignmentReferent => {
-                ActionDerivedFactPrerequisite::OwnedMembershipIdentity
+        if collection == ActionDerivedFactCollection::AssignmentReferent {
+            if source_kind != Some(DeclarationKind::Assign) {
+                return self.resolved_outcome(ActionDerivedFactOutcome::OwnedMembershipMembers(
+                    Box::new([]),
+                ));
             }
+            let Some(reference_id) = self
+                .outgoing_reference_ids(declaration)
+                .iter()
+                .copied()
+                .find(|reference_id| {
+                    self.storage.references[reference_id.index()].kind
+                        == ReferenceKind::AssignTarget
+                })
+            else {
+                return self.resolved_outcome(ActionDerivedFactOutcome::OwnedMembershipMembers(
+                    Box::new([]),
+                ));
+            };
+            let target = match self.resolution.outcome(reference_id) {
+                Some(ResolutionStatus::Resolved(target)) => target,
+                Some(ResolutionStatus::Ambiguous(candidates)) => {
+                    return QueryOutcome::Ambiguous(
+                        self.resolution
+                            .ambiguous_candidates(candidates)
+                            .iter()
+                            .filter_map(|candidate| {
+                                self.symbol_id(*candidate).map(|member| {
+                                    ActionDerivedFactOutcome::OwnedMembershipMembers(
+                                        vec![crate::ActionOwnedMembershipMember {
+                                            identity: crate::ActionOwnedMembershipId {
+                                                action: symbol,
+                                                position: 1,
+                                            },
+                                            kind: crate::ActionOwnedMembershipKind::Membership,
+                                            member,
+                                        }]
+                                        .into_boxed_slice(),
+                                    )
+                                })
+                            })
+                            .collect::<Vec<_>>()
+                            .into_boxed_slice(),
+                    );
+                }
+                Some(ResolutionStatus::Unsupported) => return QueryOutcome::Unsupported,
+                Some(ResolutionStatus::Unresolved) => return QueryOutcome::Unresolved,
+                Some(ResolutionStatus::NonConverged) | None => return QueryOutcome::Incomplete,
+            };
+            let selects_referent = self
+                .memberships
+                .get(target)
+                .is_some_and(|membership| membership.kind == MembershipKind::Feature)
+                && self.storage.declaration(target).is_some_and(|target| {
+                    element_kind::element_kind(target.kind) != crate::ElementKind::MetadataUsage
+                });
+            let values = selects_referent
+                .then(|| {
+                    self.symbol_id(target)
+                        .map(|member| crate::ActionOwnedMembershipMember {
+                            identity: crate::ActionOwnedMembershipId {
+                                action: symbol,
+                                position: 1,
+                            },
+                            kind: crate::ActionOwnedMembershipKind::Membership,
+                            member,
+                        })
+                })
+                .flatten()
+                .into_iter()
+                .collect::<Vec<_>>()
+                .into_boxed_slice();
+            return self.resolved_outcome(ActionDerivedFactOutcome::OwnedMembershipMembers(values));
+        }
+        let prerequisite = match collection {
             ActionDerivedFactCollection::ForLoopVariable => {
                 ActionDerivedFactPrerequisite::OrderedOwnedFeatureIdentity
             }
@@ -1655,6 +1726,7 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::IfElseAction => {
                 return self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])));
             }
+            ActionDerivedFactCollection::AssignmentReferent => unreachable!(),
         };
         self.resolved_outcome(ActionDerivedFactOutcome::Unsupported { prerequisite })
     }

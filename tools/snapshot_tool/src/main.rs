@@ -5654,12 +5654,26 @@ fn compare_action_derived_fact_observation(
             },
         ) if values.is_empty() => Ok(()),
         (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::OwnedMembershipMembers(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Values(values),
                 expected: Some(expected),
             },
         ) if values.iter().any(|actual| actual == expected) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::OwnedMembershipMembers(values),
+                expected: Some(expected),
+            },
+        ) if values.iter().any(|actual| actual.member == *expected) => Ok(()),
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {

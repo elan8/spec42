@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-owned-membership-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "AssignmentActionUsage owned Membership facts are compact storage rather than addressable canonical identities."
-
-[[issue]]
 id = "lowering-gap-action-owned-feature-order"
 kind = "lowering_gap"
 owner = "spec42-semantic"
