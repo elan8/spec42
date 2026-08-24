@@ -50,3 +50,11 @@ blake3 = "1"
 sysml-v2-parser = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "f52100fd71b5950fba6a8e9ba2760f1a1887ce34", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
+
+# The resolver and the parser do real work in every integration test; unoptimised they make
+# a cold standard-library build 3-5x slower. opt-level 1 costs ~3s on an incremental rebuild.
+[profile.dev.package.sysml_resolution]
+opt-level = 1
+
+[profile.dev.package.sysml-v2-parser]
+opt-level = 1
