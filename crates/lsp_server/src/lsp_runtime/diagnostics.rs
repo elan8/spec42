@@ -42,7 +42,7 @@ pub(crate) async fn publish_document_diagnostics(
     let snap = handle.snapshot();
     // Unlike `publish_workspace_diagnostics`'s debounced O(project files) republish pass
     // (which excludes library paths to bound its cost — see
-    // docs/engineering/PERFORMANCE-GUARDRAILS.md), this only diagnoses the single document
+    // DEVELOPMENT.md's performance checks), this only diagnoses the single document
     // that was just opened/changed. That cost is the same regardless of library
     // classification, so there's no performance reason to suppress it here — and doing so
     // meant editing a library file directly (e.g. via `spec42.kparLibraryPaths` local-dev
@@ -154,7 +154,7 @@ pub(crate) async fn publish_workspace_diagnostics(
         // Excludes library paths deliberately — this pass is O(project files) and runs on a
         // debounce after every edit; including the bundled standard library and any configured
         // KPAR libraries here would make every keystroke revalidate the whole library corpus.
-        // See docs/engineering/PERFORMANCE-GUARDRAILS.md. `publish_document_diagnostics` still
+        // See DEVELOPMENT.md's performance checks. `publish_document_diagnostics` still
         // diagnoses individual library files when they're actually opened/edited (no exclusion
         // there — see its comment), so this only affects the *background* cross-file sweep.
         snap.index

@@ -23,6 +23,7 @@ use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::ElementKind;
 use crate::ElementSearch;
 use crate::ElementSource;
 use crate::EvaluationState;
@@ -36,8 +37,9 @@ use source_identity::SourceRole;
 use crate::inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
-    MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
-    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    MultiplicityBound, MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt,
+    RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
+    VisibilityProvenance,
 };
 
 /// Per-declaration ranges into the record tables, so a per-element question never scans them all.
@@ -746,6 +748,51 @@ impl<D> SemanticModel<D> {
             self.document_order(left.location.document, right.location.document)
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(entries.into_boxed_slice())
+    }
+
+    /// Whether this publication contains a declaration with the exact authored name and kind.
+    ///
+    /// This is publication-wide by construction. Consumers use it instead of searching one
+    /// document's syntax outline or reconstructing qualified names.
+    pub(crate) fn named_element_exists(&self, kind: ElementKind, name: &str) -> QueryOutcome<bool> {
+        let exists = self.storage.declarations.iter().any(|declaration| {
+            element_kind::element_kind(declaration.kind) == kind
+                && declaration
+                    .name
+                    .and_then(|symbol| self.storage.symbol(symbol))
+                    == Some(name)
+        });
+        self.resolved_outcome(exists)
+    }
+
+    /// Every declared element in canonical source order, with admitted-source provenance.
+    pub(crate) fn all_elements(&self) -> QueryOutcome<Box<[PublishedElement]>> {
+        let mut entries = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                let document = self.storage.document(declaration.document)?;
+                let source = match document.role {
+                    SourceRole::Workspace => ElementSource::Workspace,
+                    SourceRole::StandardLibrary => ElementSource::StandardLibrary,
+                    SourceRole::Library => ElementSource::Library,
+                    SourceRole::External => ElementSource::External,
+                };
+                let id = DeclarationId::from_index(index).ok()?;
+                Some(PublishedElement {
+                    entry: self.symbol_entry(id)?,
+                    source,
+                })
+            })
+            .collect::<Vec<_>>();
+        entries.sort_by(|left, right| {
+            self.document_order(left.entry.location.document, right.entry.location.document)
+                .then_with(|| left.entry.location.range.cmp(&right.entry.location.range))
+                .then_with(|| left.entry.identity.cmp(&right.entry.identity))
         });
         self.resolved_outcome(entries.into_boxed_slice())
     }

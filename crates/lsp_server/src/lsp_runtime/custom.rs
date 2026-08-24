@@ -138,9 +138,12 @@ pub(crate) fn sysml_library_search_result(
         // documents are represented exclusively by the committed publication query.
         if !index_entry.admitted_to_publication {
             search_symbols.extend(
-                language_service::recover_short_name_search_symbols(index_entry.content(), uri)
-                    .into_iter()
-                    .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
+                language_service::search_symbols_from_recovered_short_names(
+                    &index_entry.parsed,
+                    uri,
+                )
+                .into_iter()
+                .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }

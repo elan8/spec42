@@ -114,12 +114,14 @@ pub(crate) async fn initialized(
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
+    let source = handle.snapshot().services.source.clone();
     tokio::spawn(async move {
         let scan_total_start = Instant::now();
         let discover_read_start = Instant::now();
-        let (entries, summary) = tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots))
-            .await
-            .unwrap_or_default();
+        let (entries, summary) =
+            tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots, &source))
+                .await
+                .unwrap_or_default();
         let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
         let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
         let parallel_parse_min_files =
@@ -131,7 +133,7 @@ pub(crate) async fn initialized(
         let parse_worker_start = Instant::now();
         let scan_services = services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse, &scan_services)
+            parse_scanned_documents(entries, should_parallel_parse, &scan_services)
         })
         .await
         .unwrap_or_default();

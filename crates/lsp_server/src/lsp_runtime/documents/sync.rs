@@ -365,6 +365,7 @@ pub(crate) async fn did_change_configuration(
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
+    let source = handle.snapshot().services.source.clone();
     tokio::spawn(async move {
         let perf_logging_enabled = runtime_config
             .get()
@@ -373,7 +374,7 @@ pub(crate) async fn did_change_configuration(
         let total_start = Instant::now();
         let discover_read_start = Instant::now();
         let (entries, summary) =
-            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths))
+            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
                 .await
                 .unwrap_or_default();
         let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
@@ -385,7 +386,7 @@ pub(crate) async fn did_change_configuration(
         let parse_worker_start = Instant::now();
         let services = handle.snapshot().services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse, &services)
+            parse_scanned_documents(entries, should_parallel_parse, &services)
         })
         .await
         .unwrap_or_default();

@@ -563,6 +563,7 @@ impl<D> SemanticModel<D> {
             }
             let mut report = |code: DiagnosticCode, severity| -> Result<(), ResolutionError> {
                 diagnostics.push(Diagnostic {
+                    payload: None,
                     message: code.describe().into(),
                     code,
                     severity,
@@ -848,6 +849,7 @@ impl<D> SemanticModel<D> {
         message: Option<String>,
     ) -> Result<Diagnostic, ResolutionError> {
         Ok(Diagnostic {
+            payload: None,
             message: match message {
                 Some(message) => message.into_boxed_str(),
                 None => code.describe().into(),
@@ -875,6 +877,11 @@ impl<D> SemanticModel<D> {
             .declaration(reference.source)
             .ok_or(ResolutionError::InvalidStorage)?;
         Ok(Diagnostic {
+            payload: (code.category() == sysml_contract::DiagnosticCategory::Unresolved).then(
+                || crate::diagnostics::DiagnosticPayload::UnresolvedReference {
+                    authored_target: self.authored_path(reference.path).into_boxed_str(),
+                },
+            ),
             message: code.describe().into(),
             code,
             severity,

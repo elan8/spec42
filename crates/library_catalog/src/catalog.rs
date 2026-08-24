@@ -91,7 +91,7 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> CatalogResult<Li
         &kpar_libraries,
     );
 
-    let root_digest = hash_package_roots(&package_roots, &stdlib.roots);
+    let root_digest = hash_package_roots(&package_roots, &stdlib.roots)?;
 
     Ok(LibraryCatalog {
         root_digest,
@@ -371,7 +371,10 @@ fn merge_package_roots(
 /// or install directory alone is never sufficient identity for a mutable local library root;
 /// managed/embedded roots are content-addressed exactly the same way here so their digest also
 /// transitively commits every installed file.
-fn hash_package_roots(package_roots: &[PathBuf], stdlib_roots: &[PathBuf]) -> RootDigest {
+fn hash_package_roots(
+    package_roots: &[PathBuf],
+    stdlib_roots: &[PathBuf],
+) -> CatalogResult<RootDigest> {
     let mut library_root_groups: Vec<Vec<SourceManifestEntry>> = Vec::new();
     for (slot, root) in package_roots.iter().enumerate() {
         let role = if stdlib_roots.contains(root) {
@@ -379,21 +382,27 @@ fn hash_package_roots(package_roots: &[PathBuf], stdlib_roots: &[PathBuf]) -> Ro
         } else {
             SourceRole::Library
         };
-        library_root_groups.push(scan_library_root(root, slot as u32, role));
+        library_root_groups.push(scan_library_root(root, slot as u32, role)?);
     }
-    SourceManifest::new(Vec::new(), library_root_groups).root_digest()
+    Ok(SourceManifest::new(Vec::new(), library_root_groups).root_digest())
 }
 
-fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceManifestEntry> {
+fn scan_library_root(
+    root: &Path,
+    slot: u32,
+    role: SourceRole,
+) -> CatalogResult<Vec<SourceManifestEntry>> {
     let mut entries = Vec::new();
     if !root.exists() {
-        return entries;
+        return Ok(entries);
     }
-    for entry in walkdir::WalkDir::new(root)
-        .follow_links(false)
-        .into_iter()
-        .filter_map(Result::ok)
-    {
+    for entry in walkdir::WalkDir::new(root).follow_links(false).into_iter() {
+        let entry = entry.map_err(|error| {
+            CatalogError(format!(
+                "cannot completely scan library root {}: {error}",
+                root.display()
+            ))
+        })?;
         if !entry.file_type().is_file() {
             continue;
         }
@@ -401,14 +410,23 @@ fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceMani
         if !sysml_query::source::is_sysml_like(path) {
             continue;
         }
-        let Ok(bytes) = std::fs::read(path) else {
-            continue;
-        };
+        let bytes = std::fs::read(path).map_err(|error| {
+            CatalogError(format!(
+                "cannot read library source {} while computing root identity: {error}",
+                path.display()
+            ))
+        })?;
         let relative_path = path
             .strip_prefix(root)
-            .ok()
-            .map(|relative| relative.to_string_lossy().replace('\\', "/"))
-            .unwrap_or_else(|| path.display().to_string());
+            .map_err(|error| {
+                CatalogError(format!(
+                    "library source {} is not under configured root {}: {error}",
+                    path.display(),
+                    root.display()
+                ))
+            })?
+            .to_string_lossy()
+            .replace('\\', "/");
         let uri = format!("file://{}", path.display());
         entries.push(SourceManifestEntry {
             uri,
@@ -420,7 +438,7 @@ fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceMani
             relative_path: Some(relative_path),
         });
     }
-    entries
+    Ok(entries)
 }
 
 fn canonicalize_lossy(path: &Path) -> PathBuf {
@@ -438,4 +456,42 @@ pub fn resolve_kpar_libraries_for_test(
     request: &HostLibraryRequest,
 ) -> CatalogResult<Vec<KparLibraryComponent>> {
     resolve_kpar_libraries(request)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn root_digest_commits_configured_precedence_for_colliding_relative_paths() {
+        let temp = tempfile::tempdir().unwrap();
+        let first = temp.path().join("first");
+        let second = temp.path().join("second");
+        std::fs::create_dir_all(&first).unwrap();
+        std::fs::create_dir_all(&second).unwrap();
+        std::fs::write(first.join("collision.sysml"), "package First;").unwrap();
+        std::fs::write(second.join("collision.sysml"), "package Second;").unwrap();
+
+        let forward = hash_package_roots(&[first.clone(), second.clone()], &[]).unwrap();
+        let reverse = hash_package_roots(&[second, first], &[]).unwrap();
+        assert_ne!(forward, reverse);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unreadable_source_makes_catalog_identity_fail() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("unreadable.sysml");
+        std::fs::write(&source, "package Hidden;").unwrap();
+        std::fs::set_permissions(&source, std::fs::Permissions::from_mode(0o000)).unwrap();
+        let result = hash_package_roots(&[temp.path().to_path_buf()], &[]);
+        std::fs::set_permissions(&source, std::fs::Permissions::from_mode(0o600)).unwrap();
+
+        assert!(
+            result.is_err(),
+            "unreadable bytes must not be silently omitted"
+        );
+    }
 }

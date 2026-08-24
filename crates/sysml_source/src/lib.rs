@@ -47,6 +47,8 @@ pub struct SourceDocument {
     digest: ContentDigest,
     content: Arc<str>,
     path_hint: Option<Box<str>>,
+    library_root_slot: Option<u32>,
+    library_relative_path: Option<Box<str>>,
 }
 
 impl SourceDocument {
@@ -82,6 +84,17 @@ impl SourceDocument {
         self.path_hint.as_deref()
     }
 
+    /// Configured precedence slot and root-relative path for a library document.
+    ///
+    /// These are semantic identity inputs, unlike `path_hint`, and are assigned by the library
+    /// closure authority that knows the ordered root configuration.
+    pub fn library_location(&self) -> Option<(u32, &str)> {
+        Some((
+            self.library_root_slot?,
+            self.library_relative_path.as_deref()?,
+        ))
+    }
+
     /// The same document under a different provenance. Identity (URI and digest) is unchanged,
     /// so a memoised parse of this document still applies.
     pub fn with_kind(&self, kind: SourceKind) -> Self {
@@ -95,6 +108,19 @@ impl SourceDocument {
     pub fn with_path_hint(&self, path_hint: impl Into<Box<str>>) -> Self {
         Self {
             path_hint: Some(path_hint.into()),
+            ..self.clone()
+        }
+    }
+
+    /// Attach the configured library-root identity owned by the closure authority.
+    pub fn with_library_location(
+        &self,
+        root_slot: u32,
+        relative_path: impl Into<Box<str>>,
+    ) -> Self {
+        Self {
+            library_root_slot: Some(root_slot),
+            library_relative_path: Some(relative_path.into()),
             ..self.clone()
         }
     }
@@ -195,11 +221,29 @@ pub fn normalize_uri(uri: &Url) -> Url {
     lowercase_drive_letter(normalized)
 }
 
-/// Whether `candidate` lies under any of `roots` by URI prefix.
+/// Whether `candidate` lies under any of `roots` by URL authority and path segments.
+///
+/// This is lexical rather than filesystem-based so it also works for unsaved documents beneath
+/// a root that does not exist yet. A root matches itself and descendants, but never a sibling
+/// whose last common path segment merely starts with the same characters.
 pub fn uri_under_any(candidate: &Url, roots: &[Url]) -> bool {
-    roots
-        .iter()
-        .any(|root| candidate.as_str().starts_with(root.as_str()))
+    roots.iter().any(|root| {
+        if candidate.scheme() != root.scheme()
+            || candidate.username() != root.username()
+            || candidate.password() != root.password()
+            || candidate.host_str() != root.host_str()
+            || candidate.port_or_known_default() != root.port_or_known_default()
+        {
+            return false;
+        }
+
+        let root_path = root.path().trim_end_matches('/');
+        candidate.path() == root_path
+            || candidate
+                .path()
+                .strip_prefix(root_path)
+                .is_some_and(|suffix| suffix.starts_with('/'))
+    })
 }
 
 /// A filesystem path as a normalised `file://` URL. Directories get a trailing slash so they can
@@ -440,6 +484,8 @@ impl SourceAuthority {
             digest: ContentDigest::of_bytes(content.as_bytes()),
             content,
             path_hint: None,
+            library_root_slot: None,
+            library_relative_path: None,
         }
     }
 
@@ -681,5 +727,29 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let uri = Url::from_file_path(temp.path().join("Unsaved.sysml")).unwrap();
         assert_eq!(normalize_uri(&uri), uri);
+    }
+
+    #[test]
+    fn uri_containment_uses_path_segment_boundaries() {
+        let root = Url::parse("file:///workspace/library").unwrap();
+        let child = Url::parse("file:///workspace/library/nested/Model.sysml").unwrap();
+        let sibling_prefix = Url::parse("file:///workspace/library-copy/Model.sysml").unwrap();
+
+        assert!(uri_under_any(&root, std::slice::from_ref(&root)));
+        assert!(uri_under_any(&child, std::slice::from_ref(&root)));
+        assert!(!uri_under_any(&sibling_prefix, &[root]));
+    }
+
+    #[test]
+    fn uri_containment_does_not_require_the_root_to_exist() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let missing_root = temp.path().join("future-library");
+        let root = path_to_file_url(&missing_root).unwrap();
+        let child = Url::from_file_path(missing_root.join("nested/Model.sysml")).unwrap();
+        let sibling =
+            Url::from_file_path(temp.path().join("future-library-old/Model.sysml")).unwrap();
+
+        assert!(uri_under_any(&child, std::slice::from_ref(&root)));
+        assert!(!uri_under_any(&sibling, &[root]));
     }
 }

@@ -9,10 +9,7 @@ use tracing::{info, warn};
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::session::state::ServerState;
-use crate::session::{
-    parse_scanned_documents, parse_scanned_entries, scan_sysml_files, RuntimeConfig,
-    WorkspaceHandle,
-};
+use crate::session::{parse_scanned_documents, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
 use crate::views::dto::SemanticIndexReadyNotificationDto;
 use sysml_query::publication::RelinkToken;
 

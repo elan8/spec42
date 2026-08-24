@@ -140,13 +140,15 @@ impl LibraryClosureAuthority {
 
     fn package_index(&self, roots: &[LibraryRoot]) -> Result<Arc<PackageIndex>, SourceError> {
         let mut listed = Vec::new();
-        for root in roots {
+        for (slot, root) in roots.iter().enumerate() {
             let report = self
                 .source
                 .list(std::slice::from_ref(&root.path), root.kind)?;
-            listed.extend(report.documents);
+            listed.extend(report.documents.into_iter().map(|document| {
+                let relative = document.path_hint().unwrap_or("").to_owned();
+                document.with_library_location(slot as u32, relative)
+            }));
         }
-        listed.sort_by(|left, right| left.uri().as_str().cmp(right.uri().as_str()));
         let key = listing_key(&listed);
         if let Some((cached_key, index)) = self.index.lock().unwrap().as_ref() {
             if *cached_key == key {
@@ -198,6 +200,13 @@ fn listing_key(listed: &[SourceDocument]) -> blake3::Hash {
         hasher.update(uri);
         hasher.update(&[document.kind() as u8]);
         hasher.update(document.digest().as_bytes());
+        if let Some((slot, relative_path)) = document.library_location() {
+            hasher.update(&(slot as u64 + 1).to_le_bytes());
+            hasher.update(&(relative_path.len() as u64).to_le_bytes());
+            hasher.update(relative_path.as_bytes());
+        } else {
+            hasher.update(&0_u64.to_le_bytes());
+        }
     }
     hasher.finalize()
 }

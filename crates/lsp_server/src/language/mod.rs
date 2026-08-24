@@ -151,19 +151,28 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
     vec![TextEdit { range, new_text }]
 }
 
-pub fn suggest_wrap_in_package(source: &str, uri: &Url) -> Option<CodeAction> {
+pub fn suggest_wrap_in_package(
+    source: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
+    uri: &Url,
+) -> Option<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_wrap_in_package(source, &path).map(|s| wrap_refactor_action(s, uri))
+    language_service::suggest_wrap_in_package(source, parsed, &path)
+        .map(|s| wrap_refactor_action(s, uri))
 }
 
 pub fn suggest_create_definition_for_unresolved_type_quick_fix(
     source: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
+    model: &sysml_query::resolved_slice::PublishedModel,
     uri: &Url,
     diagnostic: &Diagnostic,
 ) -> Option<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
     language_service::suggest_create_definition_for_unresolved_type_quick_fix(
         source,
+        parsed,
+        model,
         &path,
         DiagnosticLine {
             line: diagnostic.range.start.line,
@@ -174,12 +183,16 @@ pub fn suggest_create_definition_for_unresolved_type_quick_fix(
 
 pub fn suggest_create_matching_part_def_quick_fix(
     source: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
+    model: &sysml_query::resolved_slice::PublishedModel,
     uri: &Url,
     diagnostic: &Diagnostic,
 ) -> Option<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
     language_service::suggest_create_matching_part_def_quick_fix(
         source,
+        parsed,
+        model,
         &path,
         DiagnosticLine {
             line: diagnostic.range.start.line,
@@ -204,19 +217,26 @@ pub fn suggest_explicit_redefinition_quick_fix(
     .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
 }
 
-pub fn suggest_create_verification_case(source: &str, uri: &Url, line: u32) -> Option<CodeAction> {
+pub fn suggest_create_verification_case(
+    source: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
+    model: &sysml_query::resolved_slice::PublishedModel,
+    uri: &Url,
+    line: u32,
+) -> Option<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_verification_case(source, &path, line)
+    language_service::suggest_create_verification_case(source, parsed, model, &path, line)
         .map(|s| wrap_refactor_action(s, uri))
 }
 
 pub fn suggest_create_usage_from_definition(
     source: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
     uri: &Url,
     line: u32,
 ) -> Option<CodeAction> {
     let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_usage_from_definition(source, &path, line)
+    language_service::suggest_create_usage_from_definition(source, parsed, &path, line)
         .map(|suggestion| wrap_refactor_action(suggestion, uri))
 }
 
@@ -314,31 +334,16 @@ pub fn suggest_open_library_view_quick_fix(diagnostic: &Diagnostic) -> CodeActio
 }
 
 fn library_search_symbol_from_diagnostic(diagnostic: &Diagnostic) -> Option<String> {
-    let message = diagnostic.message.as_str();
-    for quote in ['\'', '`', '"'] {
-        let Some(start) = message.find(quote) else {
-            continue;
-        };
-        let rest = &message[start + quote.len_utf8()..];
-        let Some(end) = rest.find(quote) else {
-            continue;
-        };
-        let candidate = rest[..end].trim();
-        if candidate
-            .chars()
-            .all(|ch| ch.is_alphanumeric() || ch == '_' || ch == ':')
-            && !candidate.is_empty()
-        {
-            return Some(
-                candidate
-                    .rsplit("::")
-                    .next()
-                    .unwrap_or(candidate)
-                    .to_string(),
-            );
-        }
-    }
-    None
+    diagnostic
+        .data
+        .as_ref()?
+        .get("unresolvedReference")?
+        .get("authoredTarget")?
+        .as_str()?
+        .rsplit("::")
+        .next()
+        .filter(|name| !name.is_empty())
+        .map(str::to_string)
 }
 
 pub fn suggest_search_library_for_symbol_quick_fix(diagnostic: &Diagnostic) -> Option<CodeAction> {
@@ -362,7 +367,29 @@ pub fn suggest_search_library_for_symbol_quick_fix(diagnostic: &Diagnostic) -> O
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::Arc;
     use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
+
+    fn action_context(
+        source: &str,
+        uri: &Url,
+    ) -> (
+        sysml_query::syntax::ParsedSource,
+        Arc<sysml_query::resolved_slice::PublishedModel>,
+    ) {
+        let services = sysml_query::Services::default();
+        let document = services.source.admit_url(
+            uri.clone(),
+            source,
+            sysml_query::source::SourceKind::Workspace,
+        );
+        let parsed = services.syntax.parse(&document);
+        let model = services
+            .publication
+            .publish(&[document], std::iter::empty())
+            .expect("publication");
+        (parsed, model)
+    }
 
     #[test]
     fn test_position_to_byte_offset() {
@@ -549,14 +576,16 @@ mod tests {
     #[test]
     fn test_suggest_wrap_in_package_empty() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        let action = suggest_wrap_in_package("", &uri);
+        let (parsed, _) = action_context("", &uri);
+        let action = suggest_wrap_in_package("", &parsed, &uri);
         assert!(action.is_none());
     }
 
     #[test]
     fn test_suggest_wrap_in_package_named_package() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        let action = suggest_wrap_in_package("package P { }", &uri);
+        let (parsed, _) = action_context("package P { }", &uri);
+        let action = suggest_wrap_in_package("package P { }", &parsed, &uri);
         assert!(action.is_none());
     }
 
@@ -566,7 +595,8 @@ mod tests {
         // When source is a single top-level part def, sysml-v2-parser may parse it as one anonymous package
         // with one member, in which case we suggest "Wrap in package".
         let source = "part def X { }";
-        if let Some(action) = suggest_wrap_in_package(source, &uri) {
+        let (parsed, _) = action_context(source, &uri);
+        if let Some(action) = suggest_wrap_in_package(source, &parsed, &uri) {
             assert!(action.title.contains("Wrap"));
             let edit = action.edit.expect("has edit");
             let doc_edits = edit.document_changes.as_ref().expect("document_changes");
@@ -601,8 +631,10 @@ mod tests {
             tags: None,
             data: None,
         };
+        let (parsed, model) = action_context(source, &uri);
         let action =
-            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
+                .expect("action");
         let edit = action.edit.expect("has edit");
         let doc_edits = edit.document_changes.expect("document changes");
         let edits = match doc_edits {
@@ -642,8 +674,10 @@ mod tests {
             tags: None,
             data: None,
         };
+        let (parsed, model) = action_context(source, &uri);
         let action =
-            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
+                .expect("action");
         let edit = action.edit.expect("has edit");
         let doc_edits = edit.document_changes.expect("document changes");
         let edits = match doc_edits {
@@ -672,8 +706,10 @@ mod tests {
             tags: None,
             data: None,
         };
+        let (parsed, model) = action_context(source, &uri);
         let action =
-            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
+                .expect("action");
         let edit = action.edit.expect("has edit");
         let doc_edits = edit.document_changes.expect("document changes");
         let edits = match doc_edits {
@@ -705,7 +741,9 @@ mod tests {
             tags: None,
             data: None,
         };
-        let action = suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic);
+        let (parsed, model) = action_context(source, &uri);
+        let action =
+            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic);
         assert!(action.is_none());
     }
 
@@ -726,9 +764,15 @@ mod tests {
             tags: None,
             data: None,
         };
-        let action =
-            suggest_create_definition_for_unresolved_type_quick_fix(source, &uri, &diagnostic)
-                .expect("action");
+        let (parsed, model) = action_context(source, &uri);
+        let action = suggest_create_definition_for_unresolved_type_quick_fix(
+            source,
+            &parsed,
+            &model,
+            &uri,
+            &diagnostic,
+        )
+        .expect("action");
         assert_eq!(action.title, "Create `part def Vehicle`");
         let edit = action.edit.expect("has edit");
         let doc_edits = edit.document_changes.expect("document changes");
@@ -760,9 +804,15 @@ mod tests {
             tags: None,
             data: None,
         };
-        let action =
-            suggest_create_definition_for_unresolved_type_quick_fix(source, &uri, &diagnostic)
-                .expect("action");
+        let (parsed, model) = action_context(source, &uri);
+        let action = suggest_create_definition_for_unresolved_type_quick_fix(
+            source,
+            &parsed,
+            &model,
+            &uri,
+            &diagnostic,
+        )
+        .expect("action");
         assert_eq!(action.title, "Create `port def CommandPort`");
         let edit = action.edit.expect("has edit");
         let doc_edits = edit.document_changes.expect("document changes");
@@ -834,7 +884,9 @@ mod tests {
             message: "Type reference 'ScalarValues::Real' could not be resolved.".to_string(),
             related_information: None,
             tags: None,
-            data: None,
+            data: Some(serde_json::json!({
+                "unresolvedReference": { "authoredTarget": "ScalarValues::Real" }
+            })),
         };
         let action = suggest_search_library_for_symbol_quick_fix(&diagnostic).expect("action");
         let command = action.command.expect("command");

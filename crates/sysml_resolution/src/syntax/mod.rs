@@ -79,6 +79,17 @@ mod tests {
         assert!(!parsed.is_clean());
         assert!(parsed.first_error().is_some());
     }
+
+    #[test]
+    fn file_imports_publish_the_literal_and_its_exact_range() {
+        let parsed = parse("import 'file:///tmp/model.sysml';\n");
+        let imports = parsed.imports();
+        let target = imports[0].file_target.expect("file target");
+        assert_eq!(target.value, "file:///tmp/model.sysml");
+        assert_eq!(target.range.start_line, 0);
+        assert_eq!(target.range.start_character, 8);
+        assert_eq!(target.range.end_character, 31);
+    }
 }
 
 mod token_ranges;
@@ -166,6 +177,58 @@ impl ParsedSource {
         cursor::occurrences_of(self.source(), name)
     }
 
+    /// Short names recovered from declaration-shaped syntax, for search-only indexing of a
+    /// document that was deliberately excluded from semantic publication.
+    ///
+    /// These are parser-recovery facts, never resolved symbols. The explicit provenance prevents
+    /// a consumer from presenting a partial recovered tree as settled model meaning.
+    pub fn recovered_short_names(&self) -> Vec<RecoveredShortName> {
+        let mut out = Vec::new();
+        let mut seen = std::collections::HashSet::new();
+        for (line_index, line) in self.source().lines().enumerate() {
+            let mut cursor = 0;
+            while let Some(open_offset) = line[cursor..].find('<') {
+                let start = cursor + open_offset + 1;
+                let Some(close_offset) = line[start..].find('>') else {
+                    break;
+                };
+                let end = start + close_offset;
+                cursor = end + 1;
+                let name = &line[start..end];
+                let valid = name
+                    .chars()
+                    .next()
+                    .is_some_and(|ch| ch.is_ascii_alphabetic() || ch == '_')
+                    && name
+                        .chars()
+                        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '\'' | '-'));
+                if !valid || seen.contains(name) {
+                    continue;
+                }
+                let start_character = line[..start].chars().count() as u32;
+                let expected = SyntaxRange {
+                    start_line: line_index as u32,
+                    start_character,
+                    end_line: line_index as u32,
+                    end_character: start_character + name.chars().count() as u32,
+                };
+                // The token query excludes comments and string literals. Recovery scanning stays
+                // beside the parser and cannot turn presentation text into a search fact.
+                if !self.occurrences_of(name).contains(&expected) {
+                    continue;
+                }
+                out.push(RecoveredShortName {
+                    name: name.to_string(),
+                    declaration_name: None,
+                    range: expected,
+                    provenance: SyntaxRecoveryProvenance::ParserRecovery,
+                });
+                seen.insert(name.to_string());
+            }
+        }
+        out
+    }
+
     /// Every `import` the source writes, in source order, with its range and owning package.
     pub fn imports(&self) -> Vec<SyntaxImport<'_>> {
         imports::imports(self.inner())
@@ -198,6 +261,19 @@ impl ParsedSource {
     pub fn closure_facts(&self) -> SyntaxClosureFacts {
         closure_targets::closure_facts(self.inner())
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SyntaxRecoveryProvenance {
+    ParserRecovery,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecoveredShortName {
+    pub name: String,
+    pub declaration_name: Option<String>,
+    pub range: SyntaxRange,
+    pub provenance: SyntaxRecoveryProvenance,
 }
 
 /// What library-closure resolution asks of a source, answered from one parsed tree.
@@ -357,8 +433,16 @@ pub struct SyntaxImport<'p> {
     pub target: &'p str,
     pub scope: ImportScope,
     pub range: SyntaxRange,
+    /// A file-URI literal target and its exact authored range, when this import names one.
+    pub file_target: Option<SyntaxFileImport<'p>>,
     /// The qualified name of the package the import is written in, if any.
     pub owner_package: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SyntaxFileImport<'p> {
+    pub value: &'p str,
+    pub range: SyntaxRange,
 }
 
 impl SyntaxImport<'_> {
@@ -389,7 +473,17 @@ pub struct SyntaxOutlineNode {
     pub head_range: SyntaxRange,
     /// The braced body, `{` to `}`, when the declaration has one.
     pub body_range: Option<SyntaxRange>,
+    /// Whether a case declaration's body contains an authored subject member.
+    pub has_case_subject: bool,
     pub children: Vec<SyntaxOutlineNode>,
+}
+
+impl SyntaxOutlineNode {
+    /// The authored simple type name, when the type reference is not qualified.
+    pub fn simple_typed_by(&self) -> Option<&str> {
+        let target = self.typed_by.as_deref()?;
+        (!target.contains("::")).then(|| target.trim_start_matches('~'))
+    }
 }
 
 impl SyntaxOutlineNode {
@@ -404,6 +498,7 @@ impl SyntaxOutlineNode {
             selection_range: range,
             head_range: range,
             body_range: None,
+            has_case_subject: false,
             children: Vec::new(),
         }
     }
@@ -531,5 +626,29 @@ mod outline_query_tests {
             "the innermost declaration is the one the cursor is in"
         );
         assert!(parsed.declaration_at(99).is_none());
+    }
+
+    #[test]
+    fn recovered_short_names_have_explicit_provenance_and_exact_ranges() {
+        let parsed = parse("package Demo {\n  action <s> act;\n}\n@@@");
+        assert!(!parsed.is_clean(), "fixture must exercise parser recovery");
+        let names = parsed.recovered_short_names();
+        assert_eq!(names.len(), 1);
+        assert_eq!(names[0].name, "s");
+        assert_eq!(names[0].declaration_name, None);
+        assert_eq!(
+            names[0].provenance,
+            SyntaxRecoveryProvenance::ParserRecovery
+        );
+        assert_eq!(names[0].range.start_line, 1);
+        assert_eq!(names[0].range.start_character, 10);
+        assert_eq!(names[0].range.end_character, 11);
+    }
+
+    #[test]
+    fn angle_brackets_in_recovery_text_are_not_short_name_facts() {
+        let parsed = parse("package Demo { // <comment>\n}\n@@@");
+        assert!(!parsed.is_clean());
+        assert!(parsed.recovered_short_names().is_empty());
     }
 }

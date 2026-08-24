@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{ImportShape, PackageBody, PackageBodyElement, RootEle
 use sysml_v2_parser::{Node, ParsedDocument};
 
 use super::token_util::{qualified_identification_name, span_to_source_range};
-use super::{ImportScope, SyntaxImport, SyntaxRange};
+use super::{ImportScope, SyntaxFileImport, SyntaxImport, SyntaxRange};
 
 pub(super) fn imports(document: &ParsedDocument) -> Vec<SyntaxImport<'_>> {
     let mut out = Vec::new();
@@ -96,8 +96,45 @@ fn push_import<'p>(
         target,
         scope: scope_of(&import.value.target.shape),
         range: import_range(document, &import.span),
+        file_target: file_target(document, target, &import.span),
         owner_package: owner.map(str::to_string),
     });
+}
+
+fn file_target<'p>(
+    document: &'p ParsedDocument,
+    target: &'p str,
+    span: &sysml_v2_parser::Span,
+) -> Option<SyntaxFileImport<'p>> {
+    let value = target.trim_matches(['\'', '"']);
+    if !value.starts_with("file://") {
+        return None;
+    }
+    let import_range = import_range(document, span);
+    for (line_offset, line) in document
+        .source
+        .as_str()
+        .lines()
+        .skip(import_range.start_line as usize)
+        .take((import_range.end_line - import_range.start_line + 1) as usize)
+        .enumerate()
+    {
+        let Some(byte_start) = line.find(value) else {
+            continue;
+        };
+        let start_character = line[..byte_start].chars().count() as u32;
+        let line = import_range.start_line + line_offset as u32;
+        return Some(SyntaxFileImport {
+            value,
+            range: SyntaxRange {
+                start_line: line,
+                start_character,
+                end_line: line,
+                end_character: start_character + value.chars().count() as u32,
+            },
+        });
+    }
+    None
 }
 
 /// The shape the author wrote, as a scope rather than as the suffix that spells it.

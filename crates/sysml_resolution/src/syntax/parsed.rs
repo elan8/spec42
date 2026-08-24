@@ -161,6 +161,9 @@ impl ParsedSource {
 #[derive(Default)]
 struct MemoState {
     map: HashMap<ContentDigest, ParsedSource>,
+    /// Digests currently being parsed outside the lock. Waiters for the same digest sleep until
+    /// the sole parser publishes its result; unrelated digests continue in parallel.
+    in_flight: HashSet<ContentDigest>,
     /// Digests looked up or inserted since the last sweep. A revision the host parsed but has
     /// not yet admitted survives the next sweep because of this.
     touched: HashSet<ContentDigest>,
@@ -168,12 +171,20 @@ struct MemoState {
 
 /// The only place the parser is called for admitted documents.
 ///
-/// One lock guards the memo and it is never held across a parse: a miss parses outside the lock
-/// and inserts afterwards. Two threads missing on the same digest both parse and the later insert
-/// wins, which costs one redundant parse and changes nothing observable.
-#[derive(Default)]
+/// One lock guards the memo and it is never held across a parse. Per-digest single-flight ensures
+/// concurrent misses share the one parse while unrelated revisions may parse in parallel.
 pub struct SyntaxAuthority {
     state: Mutex<MemoState>,
+    parsed: std::sync::Condvar,
+}
+
+impl Default for SyntaxAuthority {
+    fn default() -> Self {
+        Self {
+            state: Mutex::new(MemoState::default()),
+            parsed: std::sync::Condvar::new(),
+        }
+    }
 }
 
 impl std::fmt::Debug for SyntaxAuthority {
@@ -202,16 +213,26 @@ impl SyntaxAuthority {
     }
 
     fn parse_with_digest(&self, digest: ContentDigest, content: &str) -> ParsedSource {
-        {
+        loop {
             let mut state = self.lock();
             state.touched.insert(digest);
             if let Some(hit) = state.map.get(&digest) {
                 return hit.clone();
             }
+            if state.in_flight.insert(digest) {
+                break;
+            }
+            drop(
+                self.parsed
+                    .wait(state)
+                    .unwrap_or_else(std::sync::PoisonError::into_inner),
+            );
         }
         let parsed = ParsedSource::parse_text(content.to_owned(), digest);
         let mut state = self.lock();
         state.map.insert(digest, parsed.clone());
+        state.in_flight.remove(&digest);
+        self.parsed.notify_all();
         parsed
     }
 
@@ -262,6 +283,38 @@ mod tests {
         let first = authority.parse(&document("memory://t/a.sysml", "package A;"));
         let second = authority.parse(&document("memory://t/b.sysml", "package A;"));
         assert!(Arc::ptr_eq(&first.0, &second.0));
+        assert_eq!(authority.memo_len(), 1);
+    }
+
+    #[test]
+    fn concurrent_misses_share_one_parse_allocation() {
+        let authority = Arc::new(SyntaxAuthority::new());
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let content = format!(
+            "package Shared {{ {} }}",
+            (0..2_000)
+                .map(|index| format!("part p{index};"))
+                .collect::<String>()
+        );
+        let handles = (0..8)
+            .map(|index| {
+                let authority = Arc::clone(&authority);
+                let barrier = Arc::clone(&barrier);
+                let content = content.clone();
+                std::thread::spawn(move || {
+                    let document = document(&format!("memory://t/{index}.sysml"), &content);
+                    barrier.wait();
+                    authority.parse(&document)
+                })
+            })
+            .collect::<Vec<_>>();
+        let parsed = handles
+            .into_iter()
+            .map(|handle| handle.join().expect("parse worker"))
+            .collect::<Vec<_>>();
+        assert!(parsed
+            .windows(2)
+            .all(|pair| Arc::ptr_eq(&pair[0].0, &pair[1].0)));
         assert_eq!(authority.memo_len(), 1);
     }
 

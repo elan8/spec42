@@ -61,6 +61,7 @@ mod tests {
             source: "spec42".to_string(),
             code: code.to_string(),
             message: "message".to_string(),
+            unresolved_reference_target: None,
             related_information: Vec::new(),
         }
     }

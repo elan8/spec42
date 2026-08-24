@@ -53,6 +53,11 @@ fn assert_schedules_agree(sources: &[(String, String, SourceKind)]) {
         render(&parallel),
         "the sequential and parallel schedules render identically"
     );
+    assert_eq!(
+        sequential.all_elements(),
+        parallel.all_elements(),
+        "whole-publication traversal order must not reveal the construction schedule"
+    );
 }
 
 fn collect_sources(directory: &Path, into: &mut Vec<PathBuf>) {

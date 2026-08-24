@@ -32,7 +32,7 @@ impl RefSink {
 }
 
 /// An arena-backed type reference, as authored.
-fn reference_text(
+pub(super) fn reference_text(
     document: &ParsedRoot,
     reference: Option<sysml_v2_parser::QualifiedReferenceId>,
 ) -> Option<String> {

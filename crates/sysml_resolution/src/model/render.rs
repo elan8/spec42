@@ -23,7 +23,6 @@ use crate::lower::facts::PortionKind;
 use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
 #[cfg(test)]
 use crate::lower::storage::SemanticModelStorage;
-use crate::model::resolver::PublicationCompleteness;
 use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SemanticModel;
@@ -40,6 +39,7 @@ use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
 use crate::TextRange;
 use source_identity::SourceRole;
+use sysml_contract::PublicationCompleteness;
 
 use std::fmt;
 

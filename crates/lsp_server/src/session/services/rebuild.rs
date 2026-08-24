@@ -36,17 +36,22 @@ pub(crate) fn index_library_paths_for_search(
     if library_paths.is_empty() {
         return 0;
     }
-    let (entries, _) = scan_sysml_files(library_paths.to_vec());
+    let (entries, _) = scan_sysml_files(library_paths.to_vec(), &state.services().source);
     if entries.is_empty() {
         return 0;
     }
-    let parsed_entries = parse_scanned_entries(entries, false, state.services());
+    let parsed_entries = parse_scanned_documents(entries, false, state.services());
     let mut indexed = 0usize;
     for entry in parsed_entries {
         let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);
         if state.index().contains_key(&uri_norm) {
             continue;
         }
+        let symbols =
+            library_search::search_symbols_from_recovered_short_names(&entry.parsed, &uri_norm)
+                .into_iter()
+                .map(library_search::RecoverySearchSymbol::into_search_only_symbol)
+                .collect::<Vec<_>>();
         state.index_mut().insert(
             uri_norm.clone(),
             IndexEntry {
@@ -55,10 +60,6 @@ pub(crate) fn index_library_paths_for_search(
                 admitted_to_publication: false,
             },
         );
-        let symbols =
-            library_search::recover_short_name_search_symbols(entry.document.content(), &uri_norm)
-                .into_iter()
-                .map(library_search::RecoverySearchSymbol::into_search_only_symbol);
         state.symbol_table_mut().extend(symbols);
         indexed += 1;
     }
@@ -85,7 +86,7 @@ pub(crate) fn rebuild_all_document_links(
     for (uri, index_entry) in state.index() {
         if !index_entry.admitted_to_publication {
             all_symbols.extend(
-                library_search::recover_short_name_search_symbols(index_entry.content(), uri)
+                library_search::search_symbols_from_recovered_short_names(&index_entry.parsed, uri)
                     .into_iter()
                     .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );
@@ -154,7 +155,7 @@ pub(crate) fn rebuild_publication_inputs_staged(
     for (uri, index_entry) in index {
         if !index_entry.admitted_to_publication {
             all_symbols.extend(
-                library_search::recover_short_name_search_symbols(index_entry.content(), uri)
+                library_search::search_symbols_from_recovered_short_names(&index_entry.parsed, uri)
                     .into_iter()
                     .map(library_search::RecoverySearchSymbol::into_search_only_symbol),
             );

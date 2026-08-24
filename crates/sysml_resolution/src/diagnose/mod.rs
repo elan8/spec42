@@ -58,6 +58,7 @@ impl<D> SemanticModel<D> {
                 let range =
                     parse_error_range(parsed, error).ok_or(ResolutionError::InvalidStorage)?;
                 diagnostics.push(Diagnostic {
+                    payload: None,
                     // The parser owns both the code and the sentence; neither is re-derived here.
                     message: error.message.as_str().into(),
                     subject: None,
@@ -93,6 +94,7 @@ impl<D> SemanticModel<D> {
             {
                 let code = unsupported_construct_code(record.family);
                 diagnostics.push(Diagnostic {
+                    payload: None,
                     message: code.describe().into(),
                     subject: None,
                     code,
@@ -133,6 +135,14 @@ impl<D> SemanticModel<D> {
                     }
                 }
                 diagnostics.push(Diagnostic {
+                    payload: (code.category() == sysml_contract::DiagnosticCategory::Unresolved)
+                        .then(
+                            || crate::diagnostics::DiagnosticPayload::UnresolvedReference {
+                                authored_target: self
+                                    .authored_path(reference.path)
+                                    .into_boxed_str(),
+                            },
+                        ),
                     message: code.describe().into(),
                     subject: self.symbol_id(reference.source),
                     code,

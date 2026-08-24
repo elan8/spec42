@@ -47,7 +47,8 @@ pub fn parse_failure_diagnostics(
         .collect()
 }
 
-/// Editor-oriented parse through the syntax service: always a document, diagnostics additive.
+/// Test-only convenience. Production parsing is always threaded through the host's `Services`.
+#[cfg(test)]
 pub fn parse_for_editor(text: &str) -> sysml_query::syntax::ParsedSource {
     sysml_query::syntax::SyntaxService::new().parse_text(text)
 }
@@ -158,7 +159,7 @@ pub fn parse_perf_logging_enabled_from_value(
 
 /// Development-only override: include library paths in the debounced workspace-wide
 /// diagnostics sweep (normally excluded — see `publish_workspace_diagnostics`'s comment
-/// and `docs/engineering/PERFORMANCE-GUARDRAILS.md`). Maps to the VS Code setting
+/// and `DEVELOPMENT.md`'s performance checks). Maps to the VS Code setting
 /// `spec42.development.diagnoseLibraryPaths`.
 pub fn parse_diagnose_library_paths_from_value(
     value: Option<&serde_json::Value>,

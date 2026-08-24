@@ -129,6 +129,7 @@ use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
 #[cfg(test)]
 use spec42_constraint_manifest::LibrarySpecializationPredicate;
+use sysml_contract::PublicationCompleteness;
 #[cfg(test)]
 use sysml_v2_parser::ast::Span;
 
@@ -198,14 +199,6 @@ pub(crate) type ResolvedSemanticModel = SemanticModel<SettledDiagnostics>;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PublicationPhase {
     Resolved,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum PublicationCompleteness {
-    Complete,
-    ParseRecovery,
-    UnsupportedSyntax,
-    NonConverged,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

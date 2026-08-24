@@ -20,7 +20,9 @@ pub fn semantic_to_lsp_diagnostic(diagnostic: SemanticDiagnostic) -> Diagnostic 
         message: diagnostic.message,
         related_information: map_related_information(&diagnostic.related_information),
         tags: None,
-        data: None,
+        data: diagnostic.unresolved_reference_target.map(|authored_target| {
+            serde_json::json!({ "unresolvedReference": { "authoredTarget": authored_target } })
+        }),
     }
 }
 

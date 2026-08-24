@@ -232,7 +232,7 @@ impl PublicationAuthority {
 /// order. Digests rather than bytes, so a warm publication hashes a few kilobytes, not the corpus.
 fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> blake3::Hash {
     let mut digest = blake3::Hasher::new();
-    digest.update(b"spec42-library-stratum-v2\0");
+    digest.update(b"spec42-library-stratum-v3\0");
     for document in documents {
         let identity = document.uri().as_str().as_bytes();
         digest.update(&(identity.len() as u64).to_le_bytes());
@@ -244,6 +244,13 @@ fn library_key<'a>(documents: impl IntoIterator<Item = &'a SourceDocument>) -> b
             SourceKind::External => 3,
         }]);
         digest.update(document.digest().as_bytes());
+        if let Some((slot, relative_path)) = document.library_location() {
+            digest.update(&(slot as u64 + 1).to_le_bytes());
+            digest.update(&(relative_path.len() as u64).to_le_bytes());
+            digest.update(relative_path.as_bytes());
+        } else {
+            digest.update(&0_u64.to_le_bytes());
+        }
     }
     digest.finalize()
 }
@@ -310,6 +317,45 @@ mod tests {
         let changed_role = library.with_kind(SourceKind::Library);
         authority.publish(&[changed_role], []).unwrap();
         assert_ne!(cached_key(&authority), initial);
+    }
+
+    #[test]
+    fn publication_identity_commits_library_root_precedence_and_relative_path() {
+        let authority = authority();
+        let first = document(
+            "memory://roots/first/collision.sysml",
+            "package Collision { part def First; }",
+            SourceKind::Library,
+        );
+        let second = document(
+            "memory://roots/second/collision.sysml",
+            "package Collision { part def Second; }",
+            SourceKind::Library,
+        );
+        let ordered = authority
+            .prepare(
+                &[
+                    first.with_library_location(0, "collision.sysml"),
+                    second.with_library_location(1, "collision.sysml"),
+                ],
+                [],
+            )
+            .unwrap()
+            .identity()
+            .clone();
+        let reordered = authority
+            .prepare(
+                &[
+                    first.with_library_location(1, "collision.sysml"),
+                    second.with_library_location(0, "collision.sysml"),
+                ],
+                [],
+            )
+            .unwrap()
+            .identity()
+            .clone();
+
+        assert_ne!(ordered.source_digest(), reordered.source_digest());
     }
 
     #[test]

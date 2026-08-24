@@ -211,22 +211,24 @@ pub(crate) fn code_action(
     diagnostics: &[Diagnostic],
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content().to_owned())
-    {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
+    let text = entry.content();
+    let parsed = &entry.parsed;
+    let model = state.published_model();
     let mut actions = Vec::new();
-    if let Some(action) = suggest_wrap_in_package(&text, &uri) {
+    if let Some(action) = suggest_wrap_in_package(text, parsed, &uri) {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
-    if let Some(action) = suggest_create_verification_case(&text, &uri, range.start.line) {
+    if let Some(action) =
+        suggest_create_verification_case(text, parsed, model, &uri, range.start.line)
+    {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
-    if let Some(action) = suggest_create_usage_from_definition(&text, &uri, range.start.line) {
+    if let Some(action) = suggest_create_usage_from_definition(text, parsed, &uri, range.start.line)
+    {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
     for diagnostic in diagnostics {
@@ -236,7 +238,7 @@ pub(crate) fn code_action(
         );
         if is_untyped_part_usage {
             if let Some(action) =
-                suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
+                suggest_create_matching_part_def_quick_fix(text, parsed, model, &uri, diagnostic)
             {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
@@ -258,7 +260,7 @@ pub(crate) fn code_action(
             {
                 let model = state.published_model();
                 for action in
-                    suggest_qualify_ambiguous_name_quick_fixes(&text, &uri, diagnostic, model)
+                    suggest_qualify_ambiguous_name_quick_fixes(text, &uri, diagnostic, model)
                 {
                     actions.push(CodeActionOrCommand::CodeAction(action));
                 }
@@ -269,15 +271,14 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions =
-                suggest_add_import_quick_fixes(&text, &uri, diagnostic, state.published_model());
+            let import_actions = suggest_add_import_quick_fixes(text, &uri, diagnostic, model);
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
-            if let Some(mut action) =
-                suggest_create_definition_for_unresolved_type_quick_fix(&text, &uri, diagnostic)
-            {
+            if let Some(mut action) = suggest_create_definition_for_unresolved_type_quick_fix(
+                text, parsed, model, &uri, diagnostic,
+            ) {
                 if has_imports {
                     action.is_preferred = Some(false);
                 }

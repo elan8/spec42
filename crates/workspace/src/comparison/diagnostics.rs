@@ -249,6 +249,7 @@ mod tests {
             source: source.to_string(),
             code: "semantic.example".to_string(),
             message: "example".to_string(),
+            unresolved_reference_target: None,
             related_information: Vec::new(),
         }
     }

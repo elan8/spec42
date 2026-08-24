@@ -45,5 +45,7 @@ pub struct SemanticDiagnostic {
     pub source: String,
     pub code: String,
     pub message: String,
+    /// Typed action context from the semantic authority, when the rule publishes one.
+    pub unresolved_reference_target: Option<String>,
     pub related_information: Vec<DiagnosticRelatedInfo>,
 }

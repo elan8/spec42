@@ -94,8 +94,8 @@ pub use inspection::{
     AnnotationForm, AuthoredValue, DerivedElementOwner, Documentation,
     ElementDerivedDocumentationCollection, ElementInspection, ElementInspectionAt, ElementModifier,
     ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound,
-    MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance, RelationshipTarget,
-    SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt, RelationshipProvenance,
+    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
@@ -200,6 +200,8 @@ pub struct SourceInput {
     payload: SourcePayload,
     kind: SourceKind,
     content_digest: ContentDigest,
+    library_root_slot: Option<u32>,
+    library_relative_path: Option<Box<str>>,
 }
 
 impl SourceInput {
@@ -218,17 +220,24 @@ impl SourceInput {
             payload: SourcePayload::Text(content),
             kind,
             content_digest,
+            library_root_slot: None,
+            library_relative_path: None,
         }
     }
 
     /// Admit a document the build will parse through the syntax authority's memo. The identity
     /// is known now; the tree is fetched (a memo hit, or one parse) when the request is built.
     pub fn pending(identity: impl Into<Box<str>>, document: sysml_source::SourceDocument) -> Self {
+        let library_location = document
+            .library_location()
+            .map(|(slot, path)| (slot, Box::<str>::from(path)));
         Self {
             identity: identity.into(),
             content_digest: document.digest(),
             kind: document.kind(),
             payload: SourcePayload::Pending(document),
+            library_root_slot: library_location.as_ref().map(|(slot, _)| *slot),
+            library_relative_path: library_location.map(|(_, path)| path),
         }
     }
 
@@ -244,6 +253,8 @@ impl SourceInput {
             content_digest: parsed.digest(),
             payload: SourcePayload::Parsed(parsed),
             kind,
+            library_root_slot: None,
+            library_relative_path: None,
         }
     }
 }
@@ -380,9 +391,23 @@ fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
         role: source_role(source.kind),
         content_digest: source.content_digest,
         byte_len: source.payload.byte_len(),
-        library_root_slot: None,
-        relative_path: None,
+        library_root_slot: source.library_root_slot,
+        relative_path: source.library_relative_path.as_deref().map(str::to_owned),
     }
+}
+
+fn source_manifest(entries: impl IntoIterator<Item = SourceManifestEntry>) -> SourceManifest {
+    let mut workspace = Vec::new();
+    let mut roots: Vec<Vec<SourceManifestEntry>> = Vec::new();
+    for entry in entries {
+        if let Some(slot) = entry.library_root_slot {
+            roots.resize_with(slot as usize + 1, Vec::new);
+            roots[slot as usize].push(entry);
+        } else {
+            workspace.push(entry);
+        }
+    }
+    SourceManifest::new(workspace, roots)
 }
 
 /// A library that has been parsed and solved once, ready to be reused.
@@ -401,14 +426,6 @@ pub struct LibraryStratum {
     manifest_entries: Vec<SourceManifestEntry>,
     identities: std::collections::BTreeSet<Box<str>>,
 }
-
-// SAFETY: the same invariant `PublishedResolution` states. A stratum is fully constructed before
-// it is shared and exposes only shared reads; its parsed documents own immutable source and AST
-// storage whose only interior mutation is `OnceLock`-backed source line indexing. The auto-trait
-// solver overflows on the parser's deeply recursive owned AST enum, so the boundary states this
-// rather than deriving it.
-unsafe impl Send for LibraryStratum {}
-unsafe impl Sync for LibraryStratum {}
 
 impl LibraryStratum {
     fn contains(&self, identity: &str) -> bool {
@@ -491,8 +508,8 @@ impl BuildRequest {
             return Err(BuildFailure::DuplicateSourceIdentity);
         }
         let semantic_contract_version = semantic_contract_version.into();
-        let entries = sources.iter().map(manifest_entry).collect();
-        let source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
+        let entries = sources.iter().map(manifest_entry).collect::<Vec<_>>();
+        let source_digest = source_manifest(entries).root_digest();
         Ok(Self {
             sources,
             schedule,
@@ -546,7 +563,7 @@ impl BuildRequest {
         }
         let mut entries = library.manifest_entries.clone();
         entries.extend(request.sources.iter().map(manifest_entry));
-        request.identity.source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
+        request.identity.source_digest = source_manifest(entries).root_digest();
         request.library = Some(library);
         Ok(request)
     }
@@ -623,14 +640,6 @@ pub struct PublishedResolution {
     identity: PublicationIdentity,
     model: ResolvedSemanticModel,
 }
-
-// SAFETY: a publication is fully constructed before this type is created and exposes only shared
-// queries. Its parser documents own immutable source/AST storage; the only interior mutation is
-// `OnceLock`-backed source line indexing, whose implementation is thread-safe. The parser AST is a
-// deeply recursive owned enum for which rustc's auto-trait solver overflows in downstream async
-// hosts, so the publication boundary states the invariant explicitly.
-unsafe impl Send for PublishedResolution {}
-unsafe impl Sync for PublishedResolution {}
 
 pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure> {
     build_measured(request).map(|(publication, _)| publication)
@@ -931,6 +940,17 @@ impl PublishedResolution {
     /// Elements of `search.kind` authored in `search.source`, in canonical source order.
     pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.search_elements(search)
+    }
+
+    /// Whether an element of `kind` with the exact authored `name` exists anywhere in this
+    /// immutable publication.
+    pub fn named_element_exists(&self, kind: ElementKind, name: &str) -> QueryOutcome<bool> {
+        self.model.named_element_exists(kind, name)
+    }
+
+    /// Every declared element, in canonical source order and with authored-source provenance.
+    pub fn all_elements(&self) -> QueryOutcome<Box<[PublishedElement]>> {
+        self.model.all_elements()
     }
 
     /// Workspace-authored satisfy statements in canonical declaration order.
@@ -1271,6 +1291,14 @@ pub struct RawStorageIsNotPublic;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn publication_owners_derive_send_and_sync() {
+        fn assert_send_sync<T: Send + Sync>() {}
+
+        assert_send_sync::<PublishedResolution>();
+        assert_send_sync::<LibraryStratum>();
+    }
 
     // --- Canonical element identity ---------------------------------------------------------
 

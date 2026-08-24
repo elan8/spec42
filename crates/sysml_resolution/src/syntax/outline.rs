@@ -9,6 +9,42 @@ use sysml_v2_parser::ast::{
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
 
+fn braced_extent(range: SyntaxRange, braced: bool) -> Option<SyntaxRange> {
+    braced.then_some(range)
+}
+
+fn case_definition_node(
+    document: &sysml_v2_parser::ParsedDocument,
+    range: SyntaxRange,
+    identification: &sysml_v2_parser::ast::Identification,
+    body: &sysml_v2_parser::ast::UseCaseDefBody,
+    kind: SyntaxOutlineKind,
+) -> Option<SyntaxOutlineNode> {
+    use sysml_v2_parser::ast::UseCaseDefBodyElement as Element;
+    let name = identification_name(document, identification);
+    if name.is_empty() {
+        return None;
+    }
+    let (braced, has_case_subject) = match body {
+        sysml_v2_parser::ast::UseCaseDefBody::Semicolon { .. } => (false, false),
+        sysml_v2_parser::ast::UseCaseDefBody::Brace { elements, .. } => (
+            true,
+            elements
+                .iter()
+                .any(|node| matches!(node.value, Element::SubjectDecl(_) | Element::SubjectRef(_))),
+        ),
+    };
+    Some(SyntaxOutlineNode {
+        name,
+        kind,
+        body_range: braced_extent(range, braced),
+        has_case_subject,
+        range,
+        selection_range: range,
+        ..SyntaxOutlineNode::bare(range)
+    })
+}
+
 use super::token_util::{
     declaration_name_text, identification_name, qualified_identification_name,
     span_to_source_range as span_to_range,
@@ -278,6 +314,7 @@ fn outline_symbol_from_element(
                 selection_range: range,
                 head_range,
                 body_range,
+                has_case_subject: false,
                 children,
                 ..SyntaxOutlineNode::bare(range)
             })
@@ -306,6 +343,7 @@ fn outline_symbol_from_element(
                 selection_range: range,
                 head_range,
                 body_range,
+                has_case_subject: false,
                 children,
             })
         }
@@ -329,9 +367,53 @@ fn outline_symbol_from_element(
                 selection_range: range,
                 head_range,
                 body_range,
+                has_case_subject: false,
                 children,
             })
         }
+        PBE::ItemDef(p) => {
+            let name = identification_name(document, &p.identification);
+            if name.is_empty() {
+                return None;
+            }
+            let braced = matches!(p.body, sysml_v2_parser::ast::AttributeBody::Brace { .. });
+            Some(SyntaxOutlineNode {
+                name,
+                short_name: declaration_name_text(document, p.identification.short_name),
+                kind: SyntaxOutlineKind::ItemDef,
+                body_range: braced_extent(range, braced),
+                range,
+                selection_range: range,
+                ..SyntaxOutlineNode::bare(range)
+            })
+        }
+        PBE::ItemUsage(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            kind: SyntaxOutlineKind::ItemUsage,
+            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            range,
+            selection_range: range,
+            ..SyntaxOutlineNode::bare(range)
+        }),
+        PBE::PortUsage(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            kind: SyntaxOutlineKind::PortUsage,
+            typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
+            range,
+            selection_range: range,
+            ..SyntaxOutlineNode::bare(range)
+        }),
+        PBE::Ref(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, p.value.name).unwrap_or_default(),
+            kind: SyntaxOutlineKind::Ref,
+            typed_by: super::closure_targets::typing_target_display(
+                document,
+                p.value.typing.as_deref(),
+            ),
+            range,
+            selection_range: range,
+            ..SyntaxOutlineNode::bare(range)
+        }),
         PBE::PortDef(p) => {
             let name = identification_name(document, &p.identification);
             if name.is_empty() {
@@ -465,6 +547,62 @@ fn outline_symbol_from_element(
             range,
             selection_range: range,
             children: vec![],
+            ..SyntaxOutlineNode::bare(range)
+        }),
+        PBE::RequirementDef(p) => {
+            let name = identification_name(document, &p.identification);
+            if name.is_empty() {
+                return None;
+            }
+            let braced = matches!(
+                p.body,
+                sysml_v2_parser::ast::RequirementDefBody::Brace { .. }
+            );
+            Some(SyntaxOutlineNode {
+                name,
+                kind: SyntaxOutlineKind::RequirementDef,
+                body_range: braced_extent(range, braced),
+                range,
+                selection_range: range,
+                ..SyntaxOutlineNode::bare(range)
+            })
+        }
+        PBE::RequirementUsage(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            kind: SyntaxOutlineKind::RequirementUsage,
+            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            range,
+            selection_range: range,
+            ..SyntaxOutlineNode::bare(range)
+        }),
+        PBE::AnalysisCaseDef(p) => case_definition_node(
+            document,
+            range,
+            &p.identification,
+            &p.body,
+            SyntaxOutlineKind::AnalysisDef,
+        ),
+        PBE::VerificationCaseDef(p) => case_definition_node(
+            document,
+            range,
+            &p.identification,
+            &p.body,
+            SyntaxOutlineKind::VerificationDef,
+        ),
+        PBE::AnalysisCaseUsage(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
+            kind: SyntaxOutlineKind::AnalysisUsage,
+            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            range,
+            selection_range: range,
+            ..SyntaxOutlineNode::bare(range)
+        }),
+        PBE::VerificationCaseUsage(p) => Some(SyntaxOutlineNode {
+            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
+            kind: SyntaxOutlineKind::VerificationUsage,
+            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            range,
+            selection_range: range,
             ..SyntaxOutlineNode::bare(range)
         }),
         PBE::ViewDef(p) => {
@@ -601,6 +739,10 @@ fn outline_symbols_from_part_usage_body(
                     name: declaration_name_text(document, n.name).unwrap_or_default(),
                     short_name: declaration_name_text(document, n.short_name),
                     kind: SyntaxOutlineKind::PartUsage,
+                    typed_by: super::closure_targets::typing_target_display(
+                        document,
+                        n.typing.as_deref(),
+                    ),
                     range,
                     selection_range: range,
                     head_range,
@@ -612,6 +754,10 @@ fn outline_symbols_from_part_usage_body(
             PUBE::PortUsage(n) => out.push(SyntaxOutlineNode {
                 name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::PortUsage,
+                typed_by: super::closure_targets::typing_target_display(
+                    document,
+                    n.typing.as_deref(),
+                ),
                 range,
                 selection_range: range,
                 children: vec![],
@@ -620,6 +766,10 @@ fn outline_symbols_from_part_usage_body(
             PUBE::Ref(n) => out.push(SyntaxOutlineNode {
                 name: declaration_name_text(document, n.value.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::Ref,
+                typed_by: super::closure_targets::typing_target_display(
+                    document,
+                    n.value.typing.as_deref(),
+                ),
                 range,
                 selection_range: range,
                 children: vec![],

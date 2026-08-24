@@ -1,18 +1,108 @@
 use language_service::{
-    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
-    suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
-    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
-    suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
-    WorkspaceSnapshot,
+    suggest_add_import_quick_fixes,
+    suggest_add_missing_case_subject_quick_fix as suggest_missing_subject,
+    suggest_create_definition_for_unresolved_type_quick_fix as suggest_definition,
+    suggest_create_matching_part_def_quick_fix as suggest_matching_part,
+    suggest_create_usage_from_definition as suggest_usage,
+    suggest_create_verification_case as suggest_verification,
+    suggest_explicit_redefinition_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
+    suggest_wrap_in_package as suggest_wrap, DiagnosticLine, WorkspaceSnapshot,
 };
 
-use crate::support::{document, multi_doc, workspace_from_docs};
+use crate::support::{document, multi_doc, single_doc, workspace_from_docs};
 
 const PATH: &str = "test.sysml";
 
 fn diagnostic_line(line: u32) -> DiagnosticLine {
     DiagnosticLine { line }
+}
+
+fn with_document<T>(source: &str, f: impl FnOnce(&dyn WorkspaceSnapshot, &url::Url) -> T) -> T {
+    let workspace = single_doc(PATH, source);
+    let uri = workspace
+        .index_uris()
+        .into_iter()
+        .next()
+        .expect("document URI");
+    f(&workspace, &uri)
+}
+
+fn suggest_wrap_in_package(
+    source: &str,
+    path: &str,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        let parsed = workspace.parsed(uri)?;
+        suggest_wrap(source, &parsed, path)
+    })
+}
+
+fn suggest_create_matching_part_def_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_matching_part(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            diagnostic,
+        )
+    })
+}
+
+fn suggest_create_definition_for_unresolved_type_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_definition(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            diagnostic,
+        )
+    })
+}
+
+fn suggest_create_verification_case(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_verification(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            line,
+        )
+    })
+}
+
+fn suggest_add_missing_case_subject_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_missing_subject(source, &workspace.parsed(uri)?, path, diagnostic)
+    })
+}
+
+fn suggest_create_usage_from_definition(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_usage(source, &workspace.parsed(uri)?, path, line)
+    })
 }
 
 #[test]
@@ -72,6 +162,33 @@ fn suggest_create_matching_part_def_noop_for_typed_usage() {
     assert!(
         suggest_create_matching_part_def_quick_fix(source, PATH, diagnostic_line(2),).is_none()
     );
+}
+
+#[test]
+fn suggest_create_matching_part_def_reuses_definition_from_another_document() {
+    let source = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
+    let workspace = multi_doc(&[
+        (PATH, source),
+        ("definitions.sysml", "package Q { part def Display { } }"),
+    ]);
+    let uri = workspace
+        .index_uris()
+        .into_iter()
+        .find(|uri| uri.path().ends_with(PATH))
+        .expect("source URI");
+    let suggestion = suggest_matching_part(
+        source,
+        &workspace.parsed(&uri).expect("parsed source"),
+        workspace.published_model().expect("publication"),
+        PATH,
+        diagnostic_line(2),
+    )
+    .expect("quick fix");
+    assert_eq!(suggestion.edits.len(), 1);
+    assert!(suggestion.edits[0]
+        .replacement
+        .trim()
+        .ends_with("part display : Display;"));
 }
 
 #[test]

@@ -117,6 +117,10 @@ pub struct Diagnostic {
     pub(crate) origin: DiagnosticOrigin,
     /// A stable owner-produced sentence. Presentation only.
     pub(crate) message: Box<str>,
+    /// Machine-readable context owned by the rule that produced this diagnostic.
+    ///
+    /// Consumers use this for actions; presentation text remains presentation-only.
+    pub(crate) payload: Option<DiagnosticPayload>,
     /// The element the diagnostic is about, where one exists.
     ///
     /// Absent for a parse error, an unsupported construct, and any other diagnostic whose subject
@@ -152,6 +156,10 @@ impl Diagnostic {
         &self.message
     }
 
+    pub fn payload(&self) -> Option<&DiagnosticPayload> {
+        self.payload.as_ref()
+    }
+
     /// The element the diagnostic is about, where one exists.
     pub fn subject(&self) -> Option<SymbolId> {
         self.subject
@@ -178,6 +186,21 @@ impl Diagnostic {
     /// from the code declaration while presenting one typed diagnostic contract to consumers.
     pub fn category(&self) -> DiagnosticCategory {
         self.code.category()
+    }
+}
+
+/// Typed context a consumer may act on without parsing diagnostic prose.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagnosticPayload {
+    /// The authored path whose resolution failed.
+    UnresolvedReference { authored_target: Box<str> },
+}
+
+impl DiagnosticPayload {
+    pub fn unresolved_reference_target(&self) -> &str {
+        match self {
+            Self::UnresolvedReference { authored_target } => authored_target,
+        }
     }
 }
 

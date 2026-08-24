@@ -1,6 +1,9 @@
 //! Neutral quick-fix text edit suggesters.
 
-use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
+use sysml_query::resolved_slice::{
+    ElementKind, PublishedModel, QueryOutcome, TextPosition, TextRange,
+};
+use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind, SyntaxOutlineNode};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
@@ -69,63 +72,41 @@ fn to_pascal_case(name: &str) -> String {
     }
 }
 
-fn find_block_end(lines: &[&str], start_line: usize) -> Option<usize> {
-    let mut depth = 0i32;
-    let mut seen_open = false;
-    for (idx, line) in lines.iter().enumerate().skip(start_line) {
-        for ch in line.chars() {
-            match ch {
-                '{' => {
-                    depth += 1;
-                    seen_open = true;
-                }
-                '}' if seen_open => {
-                    depth -= 1;
-                    if depth == 0 {
-                        return Some(idx);
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    None
+fn declaration_extent(node: &SyntaxOutlineNode) -> Option<(usize, usize)> {
+    node.body_range
+        .map(|body| (node.range.start_line as usize, body.end_line as usize))
 }
 
-fn is_definition_container_line(trimmed: &str) -> bool {
-    (trimmed.starts_with("package ")
-        || trimmed.starts_with("part def ")
-        || trimmed.starts_with("item def ")
-        || trimmed.starts_with("requirement def "))
-        && trimmed.contains('{')
+fn contexts(
+    parsed: &ParsedSource,
+    line: u32,
+) -> (Option<SyntaxOutlineNode>, Option<SyntaxOutlineNode>) {
+    let enclosing = parsed.enclosing_declarations(line);
+    let package = enclosing
+        .iter()
+        .rev()
+        .find(|node| {
+            matches!(
+                node.kind,
+                SyntaxOutlineKind::Package | SyntaxOutlineKind::LibraryPackage
+            )
+        })
+        .cloned();
+    let container = enclosing
+        .iter()
+        .rev()
+        .find(|node| node.body_range.is_some())
+        .cloned();
+    (package, container)
 }
 
-fn find_insertion_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
-    for start in (0..=target_line).rev() {
-        let trimmed = lines[start].trim();
-        if !is_definition_container_line(trimmed) {
-            continue;
-        }
-        let end = find_block_end(lines, start)?;
-        if start <= target_line && target_line <= end {
-            return Some((start, end));
-        }
+fn any_outline_node(parsed: &ParsedSource, predicate: impl Fn(&SyntaxOutlineNode) -> bool) -> bool {
+    fn visit(nodes: &[SyntaxOutlineNode], predicate: &impl Fn(&SyntaxOutlineNode) -> bool) -> bool {
+        nodes
+            .iter()
+            .any(|node| predicate(node) || visit(&node.children, predicate))
     }
-    None
-}
-
-fn find_package_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
-    for start in (0..=target_line).rev() {
-        let trimmed = lines[start].trim();
-        if !(trimmed.starts_with("package ") && trimmed.contains('{')) {
-            continue;
-        }
-        let end = find_block_end(lines, start)?;
-        if start <= target_line && target_line <= end {
-            return Some((start, end));
-        }
-    }
-    None
+    visit(&parsed.outline(), &predicate)
 }
 
 fn leading_indent(line: &str) -> String {
@@ -148,12 +129,12 @@ fn member_indent_in_range(lines: &[&str], start: usize, end: usize) -> Option<St
 /// Where to insert a new definition and which leading whitespace to use.
 fn resolve_definition_insert_site(
     lines: &[&str],
-    target_line: usize,
     container_start: usize,
     container_end: usize,
+    package_extent: Option<(usize, usize)>,
     usage_line: &str,
 ) -> (usize, usize, usize, String) {
-    if let Some((pkg_start, pkg_end)) = find_package_context(lines, target_line) {
+    if let Some((pkg_start, pkg_end)) = package_extent {
         let insert_line = if container_start > pkg_start && container_start < pkg_end {
             container_start
         } else {
@@ -188,103 +169,67 @@ fn resolve_definition_insert_site(
     }
 }
 
-fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &str) -> bool {
-    let needle = format!("part def {}", type_name);
-    lines
-        .iter()
-        .take(end + 1)
-        .skip(start)
-        .any(|line| line.trim().starts_with(&needle))
-}
-
-fn has_matching_definition(
-    lines: &[&str],
-    start: usize,
-    end: usize,
-    definition_keyword: &str,
-    type_name: &str,
-) -> bool {
-    let needle = format!("{definition_keyword} {type_name}");
-    lines
-        .iter()
-        .take(end + 1)
-        .skip(start)
-        .any(|line| line.trim().starts_with(&needle))
+fn has_matching_definition(model: &PublishedModel, kind: SyntaxOutlineKind, name: &str) -> bool {
+    let kind = match kind {
+        SyntaxOutlineKind::PartDef => ElementKind::PartDefinition,
+        SyntaxOutlineKind::PortDef => ElementKind::PortDefinition,
+        SyntaxOutlineKind::AttributeDef => ElementKind::AttributeDefinition,
+        SyntaxOutlineKind::ItemDef => ElementKind::ItemDefinition,
+        SyntaxOutlineKind::RequirementDef => ElementKind::RequirementDefinition,
+        SyntaxOutlineKind::VerificationDef => ElementKind::VerificationCaseDefinition,
+        _ => return false,
+    };
+    matches!(
+        model.inspection().named_element_exists(kind, name),
+        QueryOutcome::Resolved(true)
+    )
 }
 
 fn definition_uses_brace_body(definition_keyword: &str) -> bool {
     matches!(definition_keyword, "part def" | "requirement def")
 }
 
-fn parse_simple_unresolved_type_usage(raw_line: &str) -> Option<(&'static str, String)> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    let (usage_keyword, definition_keyword) =
-        if trimmed.starts_with("part ") && !trimmed.starts_with("part def ") {
-            ("part", "part def")
-        } else if trimmed.starts_with("port ") && !trimmed.starts_with("port def ") {
-            ("port", "port def")
-        } else if trimmed.starts_with("attribute ") && !trimmed.starts_with("attribute def ") {
-            ("attribute", "attribute def")
-        } else if trimmed.starts_with("item ") && !trimmed.starts_with("item def ") {
-            ("item", "item def")
-        } else if trimmed.starts_with("requirement ") && !trimmed.starts_with("requirement def ") {
-            ("requirement", "requirement def")
-        } else if trimmed.starts_with("ref ") {
-            ("ref", "part def")
-        } else {
-            return None;
-        };
-    let after_keyword = trimmed.strip_prefix(usage_keyword)?.trim_start();
-    // Prefer a typing colon that is not part of `:>` / `:>>`.
-    let colon = after_keyword
-        .char_indices()
-        .find(|(idx, ch)| {
-            *ch == ':'
-                && !after_keyword[*idx..].starts_with(":>")
-                && !after_keyword[*idx..].starts_with(":>>")
-        })
-        .map(|(idx, _)| idx)?;
-    let after_colon = after_keyword[colon + 1..].trim_start();
-    let type_part = after_colon
-        .split(|ch: char| ch == ';' || ch == '{' || ch == '=' || ch.is_whitespace())
-        .next()?
-        .trim()
-        .trim_start_matches('~');
-    if type_part.is_empty()
-        || type_part.contains("::")
-        || type_part.contains('<')
-        || type_part.contains('>')
-    {
-        return None;
-    }
-    Some((definition_keyword, type_part.to_string()))
+fn definition_for_usage(
+    node: &SyntaxOutlineNode,
+) -> Option<(SyntaxOutlineKind, &'static str, String)> {
+    let (kind, keyword) = match node.kind {
+        SyntaxOutlineKind::PartUsage | SyntaxOutlineKind::Ref => {
+            (SyntaxOutlineKind::PartDef, "part def")
+        }
+        SyntaxOutlineKind::PortUsage => (SyntaxOutlineKind::PortDef, "port def"),
+        SyntaxOutlineKind::AttributeUsage => (SyntaxOutlineKind::AttributeDef, "attribute def"),
+        SyntaxOutlineKind::ItemUsage => (SyntaxOutlineKind::ItemDef, "item def"),
+        SyntaxOutlineKind::RequirementUsage => {
+            (SyntaxOutlineKind::RequirementDef, "requirement def")
+        }
+        _ => return None,
+    };
+    Some((kind, keyword, node.simple_typed_by()?.to_string()))
 }
 
 fn suggest_create_definition_impl(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
     let target_line = diagnostic.line as usize;
     let lines: Vec<&str> = source.lines().collect();
     let raw_line = *lines.get(target_line)?;
-    let (definition_keyword, type_name) = parse_simple_unresolved_type_usage(raw_line)?;
-    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
+    let declaration = parsed.declaration_at(diagnostic.line)?;
+    let (definition_kind, definition_keyword, type_name) = definition_for_usage(&declaration)?;
+    let (package, container) = contexts(parsed, diagnostic.line);
+    let (container_start, container_end) = declaration_extent(&container?)?;
     let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
         &lines,
-        target_line,
         container_start,
         container_end,
+        package.as_ref().and_then(declaration_extent),
         raw_line,
     );
-    if has_matching_definition(
-        &lines,
-        search_start,
-        search_end,
-        definition_keyword,
-        &type_name,
-    ) {
+    let _ = (search_start, search_end);
+    if has_matching_definition(model, definition_kind, &type_name) {
         return None;
     }
     let body = if definition_uses_brace_body(definition_keyword) {
@@ -352,25 +297,31 @@ fn rewrite_implicit_redefinition_line(raw_line: &str) -> Option<String> {
 
 fn suggest_create_matching_part_def_impl(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
     let target_line = diagnostic.line as usize;
     let lines: Vec<&str> = source.lines().collect();
     let raw_line = *lines.get(target_line)?;
+    // This diagnostic exists precisely when the parser could not publish a typed usage node.
+    // Recover only the authored name; container and existence decisions remain typed queries.
     let usage_name = parse_untyped_part_usage_name(raw_line)?;
     let type_name = to_pascal_case(&usage_name);
-    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
+    let (package, container) = contexts(parsed, diagnostic.line);
+    let (container_start, container_end) = declaration_extent(&container?)?;
     let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
         &lines,
-        target_line,
         container_start,
         container_end,
+        package.as_ref().and_then(declaration_extent),
         raw_line,
     );
 
     let mut edits = Vec::new();
-    if !has_matching_part_def(&lines, search_start, search_end, &type_name) {
+    let _ = (search_start, search_end);
+    if !has_matching_definition(model, SyntaxOutlineKind::PartDef, &type_name) {
         edits.push(TextEditDto {
             path: path.to_string(),
             range: line_insert_range(insert_line as u32),
@@ -410,51 +361,31 @@ fn suggest_explicit_redefinition_impl(
     ))
 }
 
-fn parse_requirement_name(raw_line: &str) -> Option<(String, bool)> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    let (rest, is_def) = if let Some(rest) = trimmed.strip_prefix("requirement def ") {
-        (rest, true)
-    } else {
-        (trimmed.strip_prefix("requirement ")?, false)
-    };
-    let name = rest
-        .split(|ch: char| ch == ';' || ch == '{' || ch == ':' || ch.is_whitespace())
-        .next()?
-        .trim();
-    if name.is_empty() || name.contains("::") {
-        return None;
-    }
-    Some((name.to_string(), is_def))
-}
-
 fn suggest_create_verification_case_impl(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     line: u32,
 ) -> Option<TextEditSuggestion> {
     let target_line = line as usize;
     let lines: Vec<&str> = source.lines().collect();
     let raw_line = *lines.get(target_line)?;
-    let (req_name, _) = parse_requirement_name(raw_line)?;
-    let verify_name = format!("Verify{}", to_pascal_case(&req_name));
-    let (search_start, search_end) =
-        find_package_context(&lines, target_line).unwrap_or((0, lines.len().saturating_sub(1)));
-    if has_matching_definition(
-        &lines,
-        search_start,
-        search_end,
-        "verification def",
-        &verify_name,
-    ) {
+    if !parsed.is_clean() {
         return None;
     }
-    let insert_line = if raw_line.contains('{') {
-        find_block_end(&lines, target_line)?.saturating_add(1)
-    } else {
-        target_line + 1
-    };
-    let indent = if let Some((pkg_start, pkg_end)) = find_package_context(&lines, target_line) {
+    let declaration = parsed.declaration_at(line)?;
+    if declaration.kind != SyntaxOutlineKind::RequirementDef {
+        return None;
+    }
+    let req_name = declaration.name;
+    let verify_name = format!("Verify{}", to_pascal_case(&req_name));
+    if has_matching_definition(model, SyntaxOutlineKind::VerificationDef, &verify_name) {
+        return None;
+    }
+    let insert_line = declaration.range.end_line as usize + 1;
+    let (package, _) = contexts(parsed, line);
+    let indent = if let Some((pkg_start, pkg_end)) = package.as_ref().and_then(declaration_extent) {
         member_indent_in_range(&lines, pkg_start, pkg_end).unwrap_or_else(|| "  ".to_string())
     } else {
         leading_indent(raw_line)
@@ -479,36 +410,30 @@ fn suggest_create_verification_case_impl(
     ))
 }
 
-fn parse_case_header(raw_line: &str) -> bool {
-    let trimmed = raw_line.split("//").next().unwrap_or("").trim_start();
-    [
-        "verification def ",
-        "verification ",
-        "analysis def ",
-        "analysis ",
-    ]
-    .iter()
-    .any(|prefix| trimmed.starts_with(prefix) && trimmed.contains('{'))
-}
-
 fn suggest_add_missing_case_subject_impl(
     source: &str,
+    parsed: &ParsedSource,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
     let lines: Vec<&str> = source.lines().collect();
     let case_line = diagnostic.line as usize;
     let header = *lines.get(case_line)?;
-    if !parse_case_header(header) {
+    if !parsed.is_clean() {
         return None;
     }
-    let block_end = find_block_end(&lines, case_line)?;
-    if lines
-        .iter()
-        .take(block_end)
-        .skip(case_line + 1)
-        .any(|line| line.trim_start().starts_with("subject "))
-    {
+    let declaration = parsed.declaration_at(diagnostic.line)?;
+    if !matches!(
+        declaration.kind,
+        SyntaxOutlineKind::VerificationDef
+            | SyntaxOutlineKind::VerificationUsage
+            | SyntaxOutlineKind::AnalysisDef
+            | SyntaxOutlineKind::AnalysisUsage
+    ) {
+        return None;
+    }
+    let (_, block_end) = declaration_extent(&declaration)?;
+    if declaration.has_case_subject {
         return None;
     }
     let indent = member_indent_in_range(&lines, case_line, block_end).unwrap_or_else(|| {
@@ -546,76 +471,38 @@ fn lower_camel_case(name: &str) -> Option<String> {
     Some(first.to_ascii_lowercase().to_string() + chars.as_str())
 }
 
-fn parse_definition_header(raw_line: &str) -> Option<(&'static str, String)> {
-    let trimmed = raw_line.split("//").next().unwrap_or("").trim();
-    for (definition_keyword, usage_keyword) in [
-        ("requirement def ", "requirement"),
-        ("verification def ", "verification"),
-        ("viewpoint def ", "viewpoint"),
-        ("constraint def ", "constraint"),
-        ("connection def ", "connection"),
-        ("interface def ", "interface"),
-        ("rendering def ", "rendering"),
-        ("occurrence def ", "occurrence"),
-        ("attribute def ", "attribute"),
-        ("analysis def ", "analysis"),
-        ("use case def ", "use case"),
-        ("action def ", "action"),
-        ("state def ", "state"),
-        ("part def ", "part"),
-        ("item def ", "item"),
-        ("port def ", "port"),
-        ("calc def ", "calc"),
-    ] {
-        let Some(rest) = trimmed.strip_prefix(definition_keyword) else {
-            continue;
-        };
-        let name = rest
-            .split(|ch: char| {
-                ch == ';' || ch == '{' || ch == ':' || ch == '[' || ch.is_whitespace()
-            })
-            .next()?
-            .trim();
-        if name.is_empty() || name.contains("::") || name.starts_with('\'') {
-            return None;
-        }
-        return Some((usage_keyword, name.to_string()));
-    }
-    None
-}
-
 fn suggest_create_usage_from_definition_impl(
     source: &str,
+    parsed: &ParsedSource,
     path: &str,
     line: u32,
 ) -> Option<TextEditSuggestion> {
     let lines: Vec<&str> = source.lines().collect();
     let definition_line = line as usize;
     let raw_line = *lines.get(definition_line)?;
-    let (usage_keyword, definition_name) = parse_definition_header(raw_line)?;
-    let usage_name = lower_camel_case(&definition_name)?;
-    let insert_line = if raw_line.contains('{') {
-        find_block_end(&lines, definition_line)?.saturating_add(1)
-    } else if raw_line.trim_end().ends_with(';') {
-        definition_line + 1
-    } else {
+    if !parsed.is_clean() {
         return None;
+    }
+    let declaration = parsed.declaration_at(line)?;
+    let usage_kind = match declaration.kind {
+        SyntaxOutlineKind::PartDef => SyntaxOutlineKind::PartUsage,
+        SyntaxOutlineKind::PortDef => SyntaxOutlineKind::PortUsage,
+        SyntaxOutlineKind::ItemDef => SyntaxOutlineKind::ItemUsage,
+        SyntaxOutlineKind::AttributeDef => SyntaxOutlineKind::AttributeUsage,
+        SyntaxOutlineKind::RequirementDef => SyntaxOutlineKind::RequirementUsage,
+        SyntaxOutlineKind::AnalysisDef => SyntaxOutlineKind::AnalysisUsage,
+        SyntaxOutlineKind::VerificationDef => SyntaxOutlineKind::VerificationUsage,
+        _ => return None,
     };
-    let (search_start, search_end) =
-        find_package_context(&lines, definition_line).unwrap_or((0, lines.len().saturating_sub(1)));
-    let existing_prefix = format!("{usage_keyword} {usage_name} ");
-    if lines
-        .iter()
-        .take(search_end + 1)
-        .skip(search_start)
-        .any(|line| {
-            let trimmed = line.trim_start();
-            trimmed.starts_with(&existing_prefix)
-                && trimmed
-                    .split_once(':')
-                    .is_some_and(|(_, target)| target.trim_start().starts_with(&definition_name))
-        })
-    {
+    let usage_keyword = usage_kind.keyword();
+    let definition_name = declaration.name;
+    let usage_name = lower_camel_case(&definition_name)?;
+    let insert_line = declaration.range.end_line as usize + 1;
+    if any_outline_node(parsed, |node| {
+        node.kind == usage_kind
+            && node.name == usage_name
+            && node.typed_by.as_deref() == Some(definition_name.as_str())
+    }) {
         return None;
     }
     let indent = leading_indent(raw_line);
@@ -629,9 +516,12 @@ fn suggest_create_usage_from_definition_impl(
     ))
 }
 
-pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSuggestion> {
+pub fn suggest_wrap_in_package(
+    source: &str,
+    parsed: &ParsedSource,
+    path: &str,
+) -> Option<TextEditSuggestion> {
     // An unparseable document is not a document with one anonymous package.
-    let parsed = sysml_query::syntax::SyntaxService::new().parse_text(source);
     if !parsed.is_clean() || !parsed.declares_single_anonymous_package_with_members() {
         return None;
     }
@@ -653,18 +543,22 @@ pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSugge
 
 pub fn suggest_create_definition_for_unresolved_type_quick_fix(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
-    suggest_create_definition_impl(source, path, diagnostic)
+    suggest_create_definition_impl(source, parsed, model, path, diagnostic)
 }
 
 pub fn suggest_create_matching_part_def_quick_fix(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
-    suggest_create_matching_part_def_impl(source, path, diagnostic)
+    suggest_create_matching_part_def_impl(source, parsed, model, path, diagnostic)
 }
 
 pub fn suggest_explicit_redefinition_quick_fix(
@@ -677,26 +571,30 @@ pub fn suggest_explicit_redefinition_quick_fix(
 
 pub fn suggest_create_verification_case(
     source: &str,
+    parsed: &ParsedSource,
+    model: &PublishedModel,
     path: &str,
     line: u32,
 ) -> Option<TextEditSuggestion> {
-    suggest_create_verification_case_impl(source, path, line)
+    suggest_create_verification_case_impl(source, parsed, model, path, line)
 }
 
 pub fn suggest_add_missing_case_subject_quick_fix(
     source: &str,
+    parsed: &ParsedSource,
     path: &str,
     diagnostic: DiagnosticLine,
 ) -> Option<TextEditSuggestion> {
-    suggest_add_missing_case_subject_impl(source, path, diagnostic)
+    suggest_add_missing_case_subject_impl(source, parsed, path, diagnostic)
 }
 
 pub fn suggest_create_usage_from_definition(
     source: &str,
+    parsed: &ParsedSource,
     path: &str,
     line: u32,
 ) -> Option<TextEditSuggestion> {
-    suggest_create_usage_from_definition_impl(source, path, line)
+    suggest_create_usage_from_definition_impl(source, parsed, path, line)
 }
 
 /// Qualify an ambiguous simple name with each candidate qualified name.
