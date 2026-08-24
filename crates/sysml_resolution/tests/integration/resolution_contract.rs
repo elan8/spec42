@@ -5162,6 +5162,173 @@ fn action_argument_identities_are_owned_ordered_and_schedule_independent() {
 }
 
 #[test]
+fn action_input_parameters_select_control_roles_and_accept_optionals_exactly() {
+    let document = "memory://actions.sysml";
+    let sources = [(
+        document,
+        "package Actions { action def Procedure { if true { action thenStep; } else { action elseStep; } while true { action loopStep; } accept when true; } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let outcomes = |published: &PublishedResolution| {
+        let entries = settled(published.document_symbols(document));
+        let action = |kind| {
+            entries
+                .iter()
+                .find(|entry| {
+                    settled(published.element_details(entry.identity))
+                        .inspection
+                        .kind
+                        == kind
+                })
+                .expect("lowered action")
+                .identity
+        };
+        let if_action = action(ElementKind::IfActionUsage);
+        let while_action = action(ElementKind::WhileLoopActionUsage);
+        let accept = action(ElementKind::AcceptActionUsage);
+        (
+            if_action,
+            while_action,
+            accept,
+            [
+                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfArgument),
+                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfThenAction),
+                published.action_derived_fact(if_action, ActionDerivedFactCollection::IfElseAction),
+                published
+                    .action_derived_fact(while_action, ActionDerivedFactCollection::WhileArgument),
+                published
+                    .action_derived_fact(while_action, ActionDerivedFactCollection::LoopBodyAction),
+                published
+                    .action_derived_fact(while_action, ActionDerivedFactCollection::UntilArgument),
+                published.action_derived_fact(
+                    accept,
+                    ActionDerivedFactCollection::AcceptPayloadParameter,
+                ),
+                published.action_derived_fact(
+                    accept,
+                    ActionDerivedFactCollection::AcceptPayloadArgument,
+                ),
+                published.action_derived_fact(
+                    accept,
+                    ActionDerivedFactCollection::AcceptReceiverArgument,
+                ),
+            ],
+        )
+    };
+    let (if_action, while_action, accept, actual) = outcomes(&sequential);
+    assert_eq!(actual, outcomes(&parallel).3);
+    assert_eq!(actual, outcomes(&warm).3);
+    assert_eq!(
+        actual[0],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(
+            vec![ActionArgumentId {
+                action: if_action,
+                position: 1,
+            }]
+            .into_boxed_slice(),
+        ))
+    );
+    assert_eq!(
+        actual[3],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(
+            vec![ActionArgumentId {
+                action: while_action,
+                position: 1,
+            }]
+            .into_boxed_slice(),
+        ))
+    );
+    let value_name = |outcome: &QueryOutcome<ActionDerivedFactOutcome>| match outcome {
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(values)) if values.len() == 1 => {
+            sequential.qualified_name(values[0]).expect("action name")
+        }
+        other => panic!("expected one input action parameter, got {other:?}"),
+    };
+    assert_eq!(value_name(&actual[1]), "Actions::Procedure::::thenStep");
+    assert_eq!(value_name(&actual[2]), "Actions::Procedure::::elseStep");
+    assert_eq!(value_name(&actual[4]), "Actions::Procedure::::loopStep");
+    assert_eq!(
+        actual[5],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
+    );
+    assert_eq!(
+        actual[6],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Parameters(
+            vec![ActionInputParameterId {
+                action: accept,
+                position: 1,
+            }]
+            .into_boxed_slice(),
+        ))
+    );
+    assert!(matches!(
+        &actual[7],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(arguments))
+            if arguments.len() == 1 && arguments[0].action == accept && arguments[0].position == 1
+    ));
+    assert_eq!(
+        actual[8],
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
+    );
+
+    let ambiguous_body = detail_publication(
+        &[(
+            "memory://ambiguous.sysml",
+            "package Actions { action def Procedure { if true { action first; action second; } } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let if_action = settled(ambiguous_body.document_symbols("memory://ambiguous.sysml"))
+        .iter()
+        .find(|entry| {
+            settled(ambiguous_body.element_details(entry.identity))
+                .inspection
+                .kind
+                == ElementKind::IfActionUsage
+        })
+        .expect("if action")
+        .identity;
+    assert_eq!(
+        ambiguous_body.action_derived_fact(if_action, ActionDerivedFactCollection::IfThenAction),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(Box::new([]))),
+        "a multi-action branch must not be collapsed to an arbitrary input parameter"
+    );
+
+    let typed_accept = detail_publication(
+        &[(
+            "memory://typed-accept.sysml",
+            "package Actions { item def Signal; action def Procedure { accept payload : Signal; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let accept = settled(typed_accept.document_symbols("memory://typed-accept.sysml"))
+        .iter()
+        .find(|entry| {
+            settled(typed_accept.element_details(entry.identity))
+                .inspection
+                .kind
+                == ElementKind::AcceptActionUsage
+        })
+        .expect("typed accept action")
+        .identity;
+    assert!(matches!(
+        typed_accept.action_derived_fact(
+            accept,
+            ActionDerivedFactCollection::AcceptPayloadParameter,
+        ),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Parameters(parameters))
+            if parameters.len() == 1
+    ));
+    assert_eq!(
+        typed_accept
+            .action_derived_fact(accept, ActionDerivedFactCollection::AcceptPayloadArgument,),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Arguments(Box::new([])))
+    );
+}
+
+#[test]
 fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
     let published = detail_publication(
         &[ (

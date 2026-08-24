@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-input-parameter-identities"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Action input parameters are not published as ordered canonical identities for exact control and accept action derivations."
-
-[[issue]]
 id = "lowering-gap-action-owned-membership-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"

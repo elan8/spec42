@@ -172,10 +172,20 @@ pub(crate) struct DeclarationFacts {
     /// records the trigger shape on `TransitionAccept`; lowering publishes it on the synthesized
     /// accept action so generated rules never infer it from an owner name or reference spelling.
     pub(crate) is_trigger_action: Option<bool>,
+    /// Whether an `AcceptActionUsage`'s first input parameter owns an authored value expression.
+    /// Typed payload declarations still synthesize the required payload parameter, but have no
+    /// argument expression; shorthand/time triggers do.
+    pub(crate) accept_has_payload_argument: Option<bool>,
+    /// Whether an `AcceptActionUsage` has the optional receiver input parameter/argument authored
+    /// by a trailing `via` clause.
+    pub(crate) accept_has_receiver_argument: Option<bool>,
     /// Whether this `IfActionUsage` has its typed `elseAction` branch. The parser records this as
     /// `IfStmt::else_body`; lowering publishes the presence bit so generated specialization rules
     /// select their anchor without reconstructing control-flow syntax.
     pub(crate) has_else_action: Option<bool>,
+    /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
+    /// action selected by a control-action branch/body syntax production.
+    pub(crate) action_input_parameter_position: Option<u32>,
     /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
     ///
     /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the

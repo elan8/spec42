@@ -879,6 +879,36 @@ pub(crate) enum Visibility {
     Protected,
 }
 
+impl DeclarationKind {
+    /// Whether this canonical kind is `ActionUsage` or one of its concrete SysML subtypes.
+    pub(crate) const fn is_action_usage(self) -> bool {
+        matches!(
+            self,
+            Self::ActionUsage
+                | Self::AcceptActionUsage
+                | Self::StateUsage
+                | Self::CaseUsage
+                | Self::AnalysisCaseUsage
+                | Self::VerificationCaseUsage
+                | Self::UseCaseUsage
+                | Self::PerformActionUsage
+                | Self::Transition
+                | Self::Assign
+                | Self::While
+                | Self::Loop
+                | Self::If
+                | Self::ForLoop
+                | Self::Decide
+                | Self::Merge
+                | Self::Fork
+                | Self::Join
+                | Self::EntryActionBinding
+                | Self::DoActionBinding
+                | Self::ExitActionBinding
+        )
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum ReferenceKind {
     NamespaceImport,

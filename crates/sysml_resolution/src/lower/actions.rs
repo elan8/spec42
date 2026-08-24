@@ -336,6 +336,18 @@ impl SemanticModelBuilder {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let is_accept_action = node.value.accept.is_some();
+        let (accept_has_payload_argument, accept_has_receiver_argument) = node
+            .value
+            .accept
+            .as_ref()
+            .map(|accept| match accept {
+                TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
+                TransitionAccept::TimeTrigger(_, _) => (true, false),
+                TransitionAccept::Payload(_, via) => (false, via.is_some()),
+            })
+            .map_or((None, None), |(payload, receiver)| {
+                (Some(payload), Some(receiver))
+            });
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -362,6 +374,8 @@ impl SemanticModelBuilder {
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 is_trigger_action: is_accept_action.then_some(false),
+                accept_has_payload_argument,
+                accept_has_receiver_argument,
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1215,7 +1229,10 @@ impl SemanticModelBuilder {
             );
             self.lower_constraint_expression(document, declaration, family, condition)?;
         }
-        self.lower_action_def_body(document, declaration, body)
+        let body_start = self.declarations.len();
+        self.lower_action_def_body(document, declaration, body)?;
+        self.mark_single_action_input_parameter(declaration, body_start, 2);
+        Ok(())
     }
 
     /// Lowers an `if <condition> { ... } (else { ... })?` control node (BNF `IfStmt`) as its own
@@ -1256,11 +1273,44 @@ impl SemanticModelBuilder {
             self.constraint_expression_site(document, &node.condition.value),
         );
         self.lower_constraint_expression(document, declaration, family, &node.condition)?;
+        let then_start = self.declarations.len();
         self.lower_action_branch_body(document, declaration, &node.then_body)?;
+        self.mark_single_action_input_parameter(declaration, then_start, 2);
         if let Some(else_body) = &node.else_body {
+            let else_start = self.declarations.len();
             self.lower_action_branch_body(document, declaration, else_body)?;
+            self.mark_single_action_input_parameter(declaration, else_start, 3);
         }
         Ok(())
+    }
+
+    /// Marks the sole direct ActionUsage produced by one control branch/body as its canonical
+    /// input parameter. A branch with zero or multiple direct actions remains unmarked instead of
+    /// silently selecting one by traversal order.
+    fn mark_single_action_input_parameter(
+        &mut self,
+        owner: DeclarationId,
+        declaration_start: usize,
+        position: u32,
+    ) {
+        let mut candidates = self
+            .declarations
+            .iter()
+            .enumerate()
+            .skip(declaration_start)
+            .filter(|(_, declaration)| {
+                declaration.owner == Some(owner) && declaration.kind.is_action_usage()
+            })
+            .map(|(index, _)| index);
+        let Some(candidate) = candidates.next() else {
+            return;
+        };
+        if candidates.next().is_some() {
+            return;
+        }
+        if let Some(facts) = self.declaration_facts.get_mut(candidate) {
+            facts.action_input_parameter_position = Some(position);
+        }
     }
 
     /// Lowers one branch of an `if` control node (`ast::ActionBranchBody`). The grammar offers two
@@ -1346,7 +1396,10 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_action_def_body(document, declaration, &node.body.body)
+        let body_start = self.declarations.len();
+        self.lower_action_def_body(document, declaration, &node.body.body)?;
+        self.mark_single_action_input_parameter(declaration, body_start, 2);
+        Ok(())
     }
 
     /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::

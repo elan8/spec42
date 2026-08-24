@@ -124,7 +124,6 @@ pub enum ActionDerivedFactCollection {
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ActionDerivedFactPrerequisite {
-    OrderedInputParameterIdentity,
     OwnedMembershipIdentity,
     OrderedOwnedFeatureIdentity,
     ActionMetaclassIdentity,

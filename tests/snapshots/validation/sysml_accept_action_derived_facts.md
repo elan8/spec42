@@ -7,7 +7,6 @@ expectation=semantics
 rule_id=sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadArgument
 rule_id=sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadParameter
 rule_id=sysml-2.0:8.3.17.2:deriveAcceptActionUsageReceiverArgument
-blocked_by=lowering-gap-action-input-parameter-identities
 libraries=none
 ~~~
 # SOURCE
@@ -17,9 +16,9 @@ package Actions { action def Procedure { accept when true; } }
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadArgument") (source "Actions::Procedure") (outcome resolved))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadParameter") (source "Actions::Procedure") (outcome resolved))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsageReceiverArgument") (source "Actions::Procedure") (outcome resolved)))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadArgument") (source "Actions::Procedure::") (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsagePayloadParameter") (source "Actions::Procedure::") (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.2:deriveAcceptActionUsageReceiverArgument") (source "Actions::Procedure::") (outcome absent)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

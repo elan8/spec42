@@ -15,10 +15,22 @@ pub struct ActionArgumentId {
     pub position: u32,
 }
 
+/// Stable identity of one ordered input parameter owned by an action usage.
+///
+/// Like [`ActionArgumentId`], this is publication-scoped and uses the one-based position of the
+/// normative `ActionUsage::inputParameter(i)` operation. A parameter is not necessarily a named
+/// declaration in the surface syntax, so its identity cannot be replaced by a member symbol.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct ActionInputParameterId {
+    pub action: SymbolId,
+    pub position: u32,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ActionDerivedFactOutcome {
     Values(Box<[SymbolId]>),
     Arguments(Box<[ActionArgumentId]>),
+    Parameters(Box<[ActionInputParameterId]>),
     Unsupported {
         prerequisite: ActionDerivedFactPrerequisite,
     },

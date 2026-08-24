@@ -1540,23 +1540,93 @@ impl<D> SemanticModel<D> {
                 .into_boxed_slice(),
             ));
         }
+        let action_parameter =
+            |position| {
+                self.symbols(self.child_declarations(declaration).iter().copied().filter(
+                    |member| {
+                        self.storage
+                            .declaration_facts(*member)
+                            .is_some_and(|facts| {
+                                facts.action_input_parameter_position == Some(position)
+                            })
+                    },
+                ))
+            };
+        let expression_parameter = |position| {
+            self.resolved_outcome(ActionDerivedFactOutcome::Arguments(
+                vec![crate::ActionArgumentId {
+                    action: symbol,
+                    position,
+                }]
+                .into_boxed_slice(),
+            ))
+        };
+        match (collection, source_kind) {
+            (ActionDerivedFactCollection::IfArgument, Some(DeclarationKind::If))
+            | (ActionDerivedFactCollection::WhileArgument, Some(DeclarationKind::While)) => {
+                return expression_parameter(1);
+            }
+            (ActionDerivedFactCollection::IfThenAction, Some(DeclarationKind::If)) => {
+                return self
+                    .resolved_outcome(ActionDerivedFactOutcome::Values(action_parameter(2)));
+            }
+            (ActionDerivedFactCollection::IfElseAction, Some(DeclarationKind::If)) => {
+                return self
+                    .resolved_outcome(ActionDerivedFactOutcome::Values(action_parameter(3)));
+            }
+            (
+                ActionDerivedFactCollection::LoopBodyAction,
+                Some(DeclarationKind::While | DeclarationKind::Loop | DeclarationKind::ForLoop),
+            ) => {
+                return self
+                    .resolved_outcome(ActionDerivedFactOutcome::Values(action_parameter(2)));
+            }
+            (
+                ActionDerivedFactCollection::AcceptPayloadParameter,
+                Some(DeclarationKind::AcceptActionUsage),
+            ) => {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Parameters(
+                    vec![crate::ActionInputParameterId {
+                        action: symbol,
+                        position: 1,
+                    }]
+                    .into_boxed_slice(),
+                ));
+            }
+            (
+                ActionDerivedFactCollection::AcceptPayloadArgument,
+                Some(DeclarationKind::AcceptActionUsage),
+            ) => {
+                if self
+                    .storage
+                    .declaration_facts(declaration)
+                    .is_some_and(|facts| facts.accept_has_payload_argument == Some(true))
+                {
+                    return expression_parameter(1);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            (
+                ActionDerivedFactCollection::AcceptReceiverArgument,
+                Some(DeclarationKind::AcceptActionUsage),
+            ) => {
+                if self
+                    .storage
+                    .declaration_facts(declaration)
+                    .is_some_and(|facts| facts.accept_has_receiver_argument == Some(true))
+                {
+                    return expression_parameter(2);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            _ => {}
+        }
         let prerequisite = match collection {
             ActionDerivedFactCollection::AssignmentReferent => {
                 ActionDerivedFactPrerequisite::OwnedMembershipIdentity
             }
             ActionDerivedFactCollection::ForLoopVariable => {
                 ActionDerivedFactPrerequisite::OrderedOwnedFeatureIdentity
-            }
-            ActionDerivedFactCollection::LoopBodyAction
-            | ActionDerivedFactCollection::AcceptPayloadArgument
-            | ActionDerivedFactCollection::AcceptPayloadParameter
-            | ActionDerivedFactCollection::AcceptReceiverArgument
-            | ActionDerivedFactCollection::WhileArgument
-            | ActionDerivedFactCollection::UntilArgument
-            | ActionDerivedFactCollection::IfThenAction
-            | ActionDerivedFactCollection::IfElseAction
-            | ActionDerivedFactCollection::IfArgument => {
-                ActionDerivedFactPrerequisite::OrderedInputParameterIdentity
             }
             ActionDerivedFactCollection::TerminateOccurrenceArgument
             | ActionDerivedFactCollection::SendSenderArgument
@@ -1569,6 +1639,21 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::AssignmentTargetArgument
             | ActionDerivedFactCollection::ForLoopSeqArgument => {
                 return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            ActionDerivedFactCollection::AcceptPayloadArgument
+            | ActionDerivedFactCollection::AcceptReceiverArgument
+            | ActionDerivedFactCollection::WhileArgument
+            | ActionDerivedFactCollection::UntilArgument
+            | ActionDerivedFactCollection::IfArgument => {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            ActionDerivedFactCollection::AcceptPayloadParameter => {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Parameters(Box::new([])));
+            }
+            ActionDerivedFactCollection::LoopBodyAction
+            | ActionDerivedFactCollection::IfThenAction
+            | ActionDerivedFactCollection::IfElseAction => {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])));
             }
         };
         self.resolved_outcome(ActionDerivedFactOutcome::Unsupported { prerequisite })

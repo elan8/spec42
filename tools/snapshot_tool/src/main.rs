@@ -5640,6 +5640,20 @@ fn compare_action_derived_fact_observation(
             },
         ) if values.is_empty() => Ok(()),
         (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Arguments(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Parameters(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Values(values),
@@ -5650,6 +5664,13 @@ fn compare_action_derived_fact_observation(
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
                 value: ActionDerivedFactOutcome::Values(values),
+                expected: None,
+            },
+        ) if !values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Parameters(values),
                 expected: None,
             },
         ) if !values.is_empty() => Ok(()),
