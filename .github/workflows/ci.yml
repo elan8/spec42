@@ -155,13 +155,26 @@ jobs:
           cargo test -p server --test integration generator_cli
 
       - name: Sandboxed Rust generator smoke
+        id: repository-plugins
         run: |
           scripts/build-repository-generator-plugins.sh
+          # The committed diagram.wasm must be the bytes this job builds. A guest built on another
+          # host links a different precompiled wasm32 std and differs by a few bytes, so a local
+          # build can be a smoke check but not the source of the committed artifact: take it from
+          # the `repository-generator-plugins` artifact of a run on this branch instead.
           git diff --exit-code vscode/generators/diagram.wasm
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
           cargo run -p server --bin spec42 -- --no-stdlib generate generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
           cargo run -p server --bin spec42 -- --no-stdlib generate vscode/generators/diagram.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/diagram-generator-smoke -- general-view
           rg -q '"status": "incomplete"' target/diagram-generator-smoke/diagram.json
+      - name: Upload repository generator plugins
+        if: always() && steps.repository-plugins.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-generator-plugins
+          path: generator-plugins/target/wasm32-unknown-unknown/release/*.wasm
+          if-no-files-found: error
+          retention-days: 14
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates

@@ -34,3 +34,6 @@ cp \
   "$root/vscode/generators/diagram.wasm"
 
 echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
+echo "note: the committed diagram.wasm must be the bytes CI's ubuntu job builds (a guest links the"
+echo "      host toolchain's precompiled wasm32 std, so hosts differ by a few bytes); to refresh the"
+echo "      committed file, download the repository-generator-plugins artifact from a CI run."
