@@ -4,10 +4,9 @@
 
 #![allow(clippy::too_many_lines)]
 
-mod common;
 
 #[allow(unused_imports)]
-use common::*;
+use crate::common::*;
 #[allow(unused_imports)]
 use sysml_resolution::*;
 
