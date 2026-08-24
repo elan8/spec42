@@ -1138,6 +1138,38 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
     )
 }
 
+/// Whether a lowered Usage is an `ActionUsage` or one of its concrete SysML subtypes.
+///
+/// This is a metamodel predicate over canonical declaration kinds. It deliberately includes the
+/// state and case families (`StateUsage :> ActionUsage`, `CaseUsage :> ActionUsage`) and the
+/// syntax-specific action nodes that do not pass through the ordinary `action` production.
+pub(crate) fn is_action_usage_declaration(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::ActionUsage
+            | DeclarationKind::AcceptActionUsage
+            | DeclarationKind::StateUsage
+            | DeclarationKind::CaseUsage
+            | DeclarationKind::AnalysisCaseUsage
+            | DeclarationKind::VerificationCaseUsage
+            | DeclarationKind::UseCaseUsage
+            | DeclarationKind::PerformActionUsage
+            | DeclarationKind::Transition
+            | DeclarationKind::Assign
+            | DeclarationKind::While
+            | DeclarationKind::Loop
+            | DeclarationKind::If
+            | DeclarationKind::ForLoop
+            | DeclarationKind::Decide
+            | DeclarationKind::Merge
+            | DeclarationKind::Fork
+            | DeclarationKind::Join
+            | DeclarationKind::EntryActionBinding
+            | DeclarationKind::DoActionBinding
+            | DeclarationKind::ExitActionBinding
+    )
+}
+
 /// Whether a direct canonical member satisfies the exact selected `selectByKind` result.
 pub(crate) fn definition_usage_candidate_matches(
     collection: DefinitionUsageDerivedKind,

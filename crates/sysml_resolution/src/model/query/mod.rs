@@ -52,6 +52,7 @@ use crate::resolve::implied::type_derived_relationship_rule;
 use crate::resolve::implied::type_featuring_check_rule;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
+use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::LookupTarget;
@@ -1134,6 +1135,23 @@ impl<D> SemanticModel<D> {
         candidates
     }
 
+    /// The effective `Definition::usage` / `Usage::usage` collection.
+    ///
+    /// This is the sole owner of the owned-plus-inherited FeatureMembership closure filtered to
+    /// SysML Usage metaclasses. Definition/Usage projections and more-specific derivations such as
+    /// `ActionDefinition::action` consume this result instead of rebuilding the closure.
+    pub(crate) fn effective_usage_members(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        self.owned_feature_members(declaration)
+            .into_iter()
+            .chain(self.inherited_feature_members(declaration))
+            .filter(|member| {
+                self.storage
+                    .declaration(*member)
+                    .is_some_and(|member| is_usage_declaration(member.kind))
+            })
+            .collect()
+    }
+
     /// Whether one member of a Type belongs to the selected derived collection.
     pub(crate) fn type_derived_fact_selects(
         &self,
@@ -1314,18 +1332,14 @@ impl<D> SemanticModel<D> {
                         | DefinitionUsageDerivedKind::UsageDirectedUsage
                 );
                 let values = self.symbols(
-                    self.owned_feature_members(declaration)
+                    self.effective_usage_members(declaration)
                         .into_iter()
-                        .chain(self.inherited_feature_members(declaration))
                         .filter(|member| {
-                            self.storage
-                                .declaration(*member)
-                                .is_some_and(|member| is_usage_declaration(member.kind))
-                                && (!directed
-                                    || self
-                                        .storage
-                                        .declaration_facts(*member)
-                                        .is_some_and(|facts| facts.direction.is_some()))
+                            !directed
+                                || self
+                                    .storage
+                                    .declaration_facts(*member)
+                                    .is_some_and(|facts| facts.direction.is_some())
                         }),
                 );
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
@@ -1487,10 +1501,19 @@ impl<D> SemanticModel<D> {
             });
         };
         let _rule_id = rule.rule_id;
+        if collection == ActionDerivedFactCollection::ActionDefinitionAction {
+            let values = self.symbols(
+                self.effective_usage_members(declaration)
+                    .into_iter()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| is_action_usage_declaration(member.kind))
+                    }),
+            );
+            return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
+        }
         let prerequisite = match collection {
-            ActionDerivedFactCollection::ActionDefinitionAction => {
-                ActionDerivedFactPrerequisite::EffectiveUsageClosure
-            }
             ActionDerivedFactCollection::AssignmentReferent => {
                 ActionDerivedFactPrerequisite::OwnedMembershipIdentity
             }
@@ -1512,6 +1535,7 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::SendPayloadArgument => {
                 ActionDerivedFactPrerequisite::ActionMetaclassIdentity
             }
+            ActionDerivedFactCollection::ActionDefinitionAction => unreachable!(),
             _ => ActionDerivedFactPrerequisite::OrderedActionArgumentIdentity,
         };
         let _source_kind = self

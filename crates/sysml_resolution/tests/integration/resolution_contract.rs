@@ -5061,6 +5061,43 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
 }
 
 #[test]
+fn action_definition_action_selects_action_subtypes_from_the_effective_usage_closure() {
+    let sources = [(
+        "memory://actions.sysml",
+        "package Actions { action def Base { action inherited; action retained; part notAction; } action def Procedure specializes Base { action replacement :>> inherited; action step; state mode; } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution| {
+        let procedure = identity_of(published, "memory://actions.sysml", "Actions::Procedure");
+        published.action_derived_fact(
+            procedure,
+            ActionDerivedFactCollection::ActionDefinitionAction,
+        )
+    };
+    let values = match query(&sequential) {
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(values)) => values,
+        other => panic!("expected the effective ActionUsage collection, got {other:?}"),
+    };
+    let names = values
+        .iter()
+        .map(|value| sequential.qualified_name(*value).expect("qualified action"))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        names,
+        vec![
+            "Actions::Base::retained",
+            "Actions::Procedure::mode",
+            "Actions::Procedure::replacement",
+            "Actions::Procedure::step",
+        ]
+    );
+    assert_eq!(query(&sequential), query(&parallel));
+    assert_eq!(query(&sequential), query(&warm));
+}
+
+#[test]
 fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
     let published = detail_publication(
         &[ (

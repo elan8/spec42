@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-effective-usage-closure"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The canonical publication does not expose ActionDefinition effective usage closure required by deriveActionDefinitionAction."
-
-[[issue]]
 id = "lowering-gap-action-argument-identities"
 kind = "lowering_gap"
 owner = "spec42-semantic"
