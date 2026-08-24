@@ -300,8 +300,14 @@ pub(crate) fn literal_expression_value(
     match node {
         Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
         Expression::LiteralInteger(value) => Some(EvaluatedValue::Integer(*value)),
-        Expression::LiteralReal(text) => text.parse::<f64>().ok().map(EvaluatedValue::Real),
-        Expression::LiteralString(value) => Some(EvaluatedValue::String(value.clone())),
+        Expression::LiteralReal(literal) => parsed
+            .real_literal(*literal)?
+            .parse::<f64>()
+            .ok()
+            .map(EvaluatedValue::Real),
+        Expression::LiteralString(literal) => Some(EvaluatedValue::String(
+            parsed.decoded_string_literal(*literal)?.into_owned(),
+        )),
         Expression::Bracket { base, operands, .. } => {
             let magnitude = literal_expression_value(parsed, &base.value)?;
             let unit_text = quantity_unit_text(parsed, &operands.value)?;

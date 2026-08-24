@@ -6,10 +6,10 @@ use source_identity::ContentDigest;
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
-        BasicFeaturePrefix, DefinitionPrefix, Expression, FeaturePrefix, FeaturePrefixHead,
-        FeatureVariability, InOut, KermlClassifierKeyword, KermlFeatureKind, Multiplicity, Node,
-        OccurrencePortionKind as ParserOccurrencePortionKind, OccurrenceUsagePrefix,
-        QualifiedReferenceId, Span,
+        BasicFeaturePrefix, BasicUsagePrefix, DefinitionPrefix, Expression, FeaturePrefix,
+        FeaturePrefixHead, FeatureVariability, InOut, KermlClassifierKeyword, KermlFeatureKind,
+        Multiplicity, Node, OccurrencePortionKind as ParserOccurrencePortionKind,
+        OccurrenceUsagePrefix, QualifiedReferenceId, Span,
     },
     ParseError, ParsedDocument,
 };
@@ -36,6 +36,10 @@ pub(crate) struct AuthoredImportFacts {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) struct RelationshipFlags {
+    /// The authored target is a dotted feature chain (`a.b`, KerML `FeatureChain`), so it is
+    /// resolved segment by segment through each hop's type rather than as a `::` qualified
+    /// name. Set by `push_reference` from the parser's typed separators; never inferred from text.
+    pub(crate) dotted: bool,
     pub(crate) conjugated: bool,
     pub(crate) implied: bool,
     pub(crate) recursive: bool,
@@ -136,6 +140,10 @@ pub(crate) struct DeclarationModifiers {
     pub(crate) var: bool,
     /// KerML `member`.
     pub(crate) member: bool,
+    /// `parallel`, the state body modifier (`StateDefBody`/`StateUsageBody`, SysML BNF 1192:
+    /// `( isParallel ?= 'parallel' )?`), which is `StateDefinition::isParallel` /
+    /// `StateUsage::isParallel`.
+    pub(crate) parallel: bool,
     /// `ordered`, the collection modifier.
     pub(crate) ordered: bool,
     /// `nonunique`, the collection modifier.
@@ -320,17 +328,62 @@ pub(crate) fn definition_prefix_node_modifiers(
 /// authored keyword's span *is* the property. Callers add the multiplicity keyword facts on top
 /// through struct update syntax, since those come from `MultiplicityPart` rather than the prefix.
 pub(crate) fn occurrence_prefix_modifiers(prefix: &OccurrenceUsagePrefix) -> DeclarationModifiers {
-    let (is_abstract, variation) =
-        definition_prefix_node_modifiers(prefix.basic.ref_prefix.variance.as_ref());
+    let basic = prefix.basic();
+    let (is_abstract, variation) = definition_prefix_node_modifiers(
+        basic.and_then(|basic| basic.ref_prefix.variance.as_ref()),
+    );
     DeclarationModifiers {
         is_abstract,
         variation,
-        individual: prefix.individual_span.is_some(),
-        derived: prefix.basic.ref_prefix.derived_span.is_some(),
-        reference: prefix.basic.reference_span.is_some(),
-        constant: prefix.basic.ref_prefix.constant_span.is_some(),
+        individual: prefix.individual_span().is_some(),
+        derived: basic.is_some_and(|basic| basic.ref_prefix.derived_span.is_some()),
+        // `EndUsagePrefix` is the head alternative that excludes every basic slot, so `end` and
+        // `ref`/`derived`/`constant`/direction are never both recorded from one prefix.
+        end: prefix.end().is_some(),
+        reference: basic.is_some_and(|basic| basic.reference_span.is_some()),
+        constant: basic.is_some_and(|basic| basic.ref_prefix.constant_span.is_some()),
         ..DeclarationModifiers::default()
     }
+}
+
+/// The modifier facts of a bare `BasicUsagePrefix` (SysML BNF 281), for the productions that
+/// spell it without the surrounding `OccurrenceUsagePrefix`: `OwnedCrossFeature` and the basic
+/// alternative of `UnextendedUsagePrefix`.
+pub(crate) fn basic_usage_prefix_modifiers(prefix: &BasicUsagePrefix) -> DeclarationModifiers {
+    let (is_abstract, variation) =
+        definition_prefix_node_modifiers(prefix.ref_prefix.variance.as_ref());
+    DeclarationModifiers {
+        is_abstract,
+        variation,
+        derived: prefix.ref_prefix.derived_span.is_some(),
+        reference: prefix.reference_span.is_some(),
+        constant: prefix.ref_prefix.constant_span.is_some(),
+        ..DeclarationModifiers::default()
+    }
+}
+
+/// The authored `in`/`out`/`inout` direction of an `OccurrenceUsagePrefix`. Only the
+/// `BasicUsagePrefix` head has the slot; an `end`-headed prefix has no direction.
+pub(crate) fn occurrence_prefix_direction(
+    prefix: &OccurrenceUsagePrefix,
+) -> Option<ParameterDirection> {
+    direction_node_fact(
+        prefix
+            .basic()
+            .and_then(|basic| basic.ref_prefix.direction.as_ref()),
+    )
+}
+
+/// Whether an `OccurrenceUsagePrefix` authored the `variation` alternative of its
+/// `abstract | variation` slot, which is what makes the usage's typing a variation typing.
+pub(crate) fn occurrence_prefix_is_variation(prefix: &OccurrenceUsagePrefix) -> bool {
+    matches!(
+        prefix
+            .basic()
+            .and_then(|basic| basic.ref_prefix.variance.as_ref())
+            .map(|prefix| prefix.value),
+        Some(DefinitionPrefix::Variation)
+    )
 }
 
 /// The [`Node`]-wrapped spelling of [`direction_fact`], for the prefix components that carry the

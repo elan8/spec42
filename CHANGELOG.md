@@ -7,6 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `f52100f` -> `c1677e7`.** The 40-commit bump
+  (upstream "gaps wave 2", "corpus snapshot wave 3", the parser performance pass and the
+  span-backed authored-text migration) closes gaps
+  59, 64, 65, 67, 70, 72, 73, 75, 80 and 81 in `planning/UPSTREAM_PARSER_GAPS.md` and narrows 62,
+  66, 74 and 76, each re-probed at the new revision one spelling per document through `spec42
+  check`. It opens one gap, 82: a directed `in action body { ... }` parameter reaches the AST as
+  a plain `InOutDecl` with its `action` keyword consumed, so `validatePerformActionUsageReference`
+  deliberately does not report a `perform` of a parameter. Across the snapshot corpus 74 fixtures
+  reach `complete` (48 from `unsupported-syntax`, 26 from `parse-recovery`) and no fixture
+  regresses from `complete`. The standard library's last parse recoveries are gone, which is what
+  makes the next entry visible.
+
+- **The semantic boundary consumes parser AST v240 without recreating source facts.** Declaration
+  names, short names, string literals, comment bodies, opaque declaration text and fallback
+  operators are resolved through their owning `ParsedDocument` spans. Semantic names and literal
+  values are decoded once at lowering; authored comment bytes remain authored. The grammar-owned
+  implicit `objective` role is derived by objective-membership lowering rather than fabricated in
+  the syntax tree. Integer literals outside `i64` now remain explicit parser recovery instead of
+  silently becoming zero.
+
+- **The 94-document standard library publishes `unsupported-syntax` honestly, and 1,963 of its
+  unsupported members now lower.** Parser recovery in `Flows.sysml`/`Interfaces.sysml`/
+  `Items.sysml` had masked the library's unsupported syntax behind `parse-recovery`; with the bump
+  the completeness is the true one, and 94 library-admitting fixtures record it. The members that
+  lower: `:>> x = value;` in an attribute body (1,885, the ISQ quantity definitions), dotted
+  feature-chain targets of `subsets`/`references`/`crosses`/`redefines`/`chains`/`inverse of`
+  (resolved hop by hop through the member-access resolver, keeping their relationship kind),
+  `inverse of` (`featureInverting`), the declaration-led `flow f : T ... from a to b;` form in every
+  body that admits a flow, SysML `succession` usages in connection, occurrence, state, requirement
+  and part-usage bodies, and a usage's `intersects` clause. Seven library members remain
+  unsupported (`subclassifier` relationship declarations, `{true}` expression bodies, `return ref`,
+  a constraint's `return result = ...`, `satisfy requirement ... by that`, a transition with an
+  accept payload in a state body); each is named in the gaps document.
+
+- **The generator API treats an unsupported-syntax publication the way it already treated parser
+  recovery.** `satisfy_relationships` and `requirement_verifications` returned an error for a
+  publication whose only defect was unsupported syntax in an admitted library, while every other
+  query and the crate's own `outcome` helper handed the settled values over with the incomplete
+  flag set; a requirement's typing likewise collapsed to `Unsupported` instead of the wire's
+  `Recovered*` family. All three now follow the same policy, `SatisfyRelationship::recovered` and
+  `RequirementVerification::recovered` are documented as "the publication is not complete", and
+  the generation fixtures are byte-identical to before the bump. No wire schema change.
+
+- **Nine constructs the bump unblocked now lower, and five validation rules fire on them.**
+  `end` on every occurrence-usage family (`end part`, `end [1] part bead : TireBead;`, `end
+  theCauses [*] occurrence theCause :> causes;`) publishes the `end` modifier and the owned cross
+  feature as a `ReferenceUsage`; `#Tag` extension keywords on any usage, `ref` declaration or
+  enumerated value lower as `metadataAnnotation` references, and the keyword-less `#Tag <name>`
+  `ExtendedUsage` is its own `DeclarationKind::ExtendedUsage` (`ElementKind::Usage`); a
+  `MetadataBody`'s nested definition, alias and import members lower; `include use case v : V;`
+  declares a nested use case; `require constraint c : C;` keeps its typing; a `perform <path>;`
+  target is a `referenceSubsetting` reference; a named connector end (`connect bead references
+  t.bead to ...`) is a positional end declaration; `end derived x : T;` / `end in x : T;` carry
+  their `RefPrefix`; a state definition's or usage's `parallel` body modifier is the `parallel`
+  modifier fact; and a classifier's `conjugates A` / `~ A` clause is a `conjugation` reference,
+  which `deriveTypeOwnedConjugator` now answers. `::>`/`references`, `crosses`, `inverse of` and
+  a usage's `intersects` clause resolve through the subsetting pass instead of settling as
+  `unsupported_reference`.
+
+  New diagnostics: `end_feature_has_direction` (KerML `validateFeatureEndNoDirection`),
+  `metadata_body_feature_invalid` (`validateMetadataFeatureBody`), `port_owned_usage_composite`
+  and `port_nested_usage_composite` (SysML `validatePortDefinitionOwnedUsagesNotComposite` /
+  `validatePortUsageNestedUsagesNotComposite`, over a canonical `usage_is_composite` fact that
+  follows the Pilot: a usage is composite unless `ref`, `end`, attribute-like or a reference
+  usage) and `parallel_state_substate_transition` (`validateStateDefinitionParallelSubactions` /
+  `validateStateUsageParallelSubactions`); `end_feature_invalid_restrictions` also covers
+  `portion`. The KerML end-feature fixtures author their violating side in SysML's
+  `DefaultReferenceUsage` spelling, the one production in either language that puts a `RefPrefix`
+  beside `end`. Fourteen validation fixtures came off `blocked_by`; the two whose violating side has
+  no concrete-syntax spelling at all (a second `conjugates` clause, a `var` end feature) are now
+  `by_construction` fixtures blocked on `abstract_syntax_coverage_gap` issues, and the fixtures
+  whose remaining blocker is semantic rather than syntactic name it (`lowering-gap-kerml-relationship-declarations`,
+  `lowering-gap-state-usage-specialization-facts`, `semantic-trigger-invocation-argument-typing`,
+  `semantic-feature-chaining-rules`, `parser-gap-66-subsetting-clause-count`).
+
 - **The snapshot tool builds each fixture once.** The per-fixture sequential/parallel
   construction lanes are gone; that invariant is proven once by the authority's own
   `construction_schedule_parity` test over the examples corpus. `cargo snapshot check` runs the

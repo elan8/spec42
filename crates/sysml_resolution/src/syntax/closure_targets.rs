@@ -471,12 +471,15 @@ fn push_optional_typing_reference(
 /// an arena identity, and a package key built from it belongs to the document that owns it. The
 /// callers here key packages by simple name, so a qualified declaration yields no key -- the same
 /// answer the old `Option<String>` field gave, now stated rather than incidental.
-pub(crate) fn package_declared_name(identification: &QualifiedIdentification) -> Option<String> {
+pub(crate) fn package_declared_name(
+    document: &sysml_v2_parser::ParsedDocument,
+    identification: &QualifiedIdentification,
+) -> Option<String> {
     identification
         .simple_name()
-        .map(str::trim)
+        .and_then(|name| document.decoded_declaration_name(name))
+        .map(|name| name.trim().to_string())
         .filter(|name| !name.is_empty())
-        .map(str::to_string)
 }
 
 /// Qualified names of packages declared in a parsed SysML document (includes nested packages).
@@ -494,9 +497,9 @@ pub(crate) fn for_each_package_in_parsed(
 ) {
     for element in &parsed.elements {
         match &element.value {
-            RootElement::Package(package) => visit_package_tree(package, None, &mut visit),
+            RootElement::Package(package) => visit_package_tree(parsed, package, None, &mut visit),
             RootElement::LibraryPackage(package) => {
-                visit_library_package_tree(package, None, &mut visit)
+                visit_library_package_tree(parsed, package, None, &mut visit)
             }
             _ => {}
         }
@@ -504,11 +507,12 @@ pub(crate) fn for_each_package_in_parsed(
 }
 
 pub(crate) fn visit_package_tree(
+    document: &ParsedRoot,
     package: &Node<Package>,
     parent: Option<&str>,
     visit: &mut impl FnMut(String, &PackageBody),
 ) {
-    let Some(name) = package_declared_name(&package.value.identification) else {
+    let Some(name) = package_declared_name(document, &package.value.identification) else {
         return;
     };
     let qualified = match parent {
@@ -516,15 +520,21 @@ pub(crate) fn visit_package_tree(
         None => name,
     };
     visit(qualified.clone(), &package.value.body);
-    walk_nested_packages(&package.value.body, Some(qualified.as_str()), visit);
+    walk_nested_packages(
+        document,
+        &package.value.body,
+        Some(qualified.as_str()),
+        visit,
+    );
 }
 
 pub(crate) fn visit_library_package_tree(
+    document: &ParsedRoot,
     package: &Node<LibraryPackage>,
     parent: Option<&str>,
     visit: &mut impl FnMut(String, &PackageBody),
 ) {
-    let Some(name) = package_declared_name(&package.value.identification) else {
+    let Some(name) = package_declared_name(document, &package.value.identification) else {
         return;
     };
     let qualified = match parent {
@@ -532,10 +542,16 @@ pub(crate) fn visit_library_package_tree(
         None => name,
     };
     visit(qualified.clone(), &package.value.body);
-    walk_nested_packages(&package.value.body, Some(qualified.as_str()), visit);
+    walk_nested_packages(
+        document,
+        &package.value.body,
+        Some(qualified.as_str()),
+        visit,
+    );
 }
 
 pub(crate) fn walk_nested_packages(
+    document: &ParsedRoot,
     body: &PackageBody,
     parent: Option<&str>,
     visit: &mut impl FnMut(String, &PackageBody),
@@ -545,9 +561,11 @@ pub(crate) fn walk_nested_packages(
     };
     for member in elements {
         match &member.value {
-            PackageBodyElement::Package(nested) => visit_package_tree(nested, parent, visit),
+            PackageBodyElement::Package(nested) => {
+                visit_package_tree(document, nested, parent, visit)
+            }
             PackageBodyElement::LibraryPackage(nested) => {
-                visit_library_package_tree(nested, parent, visit)
+                visit_library_package_tree(document, nested, parent, visit)
             }
             _ => {}
         }

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.14:validatePerformActionUsageReference
-blocked_by=parser-gap-72-perform-action-usage
 type=file
 ~~~
 # SOURCE
@@ -40,7 +39,13 @@ package Actions {
         (severity warning)
         (code "perform_target_invalid_kind")
         (source "semantic")
-        (range (start 14 8) (end 14 30))
+        (range (start 14 16) (end 14 29))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_perform_action_usage_reference.md")
+            (range (start 4 8) (end 4 30))
+          )
+        )
       )
     )
   )
@@ -52,16 +57,16 @@ package Actions {
   (document "memory://snapshot/sysml_perform_action_usage_reference.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 9 8) (end 10 4))
-      )
-      (diagnostic
         (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 9 8) (end 10 4))
+        (code "perform_target_invalid_kind")
+        (source "semantic")
+        (range (start 14 16) (end 14 29))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_perform_action_usage_reference.md")
+            (range (start 4 8) (end 4 30))
+          )
+        )
       )
     )
   )
@@ -70,23 +75,35 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:e61bf85f22395bfc50dfab9841fecfe1d395a79dc0c0c53bcd213897a02c0ddd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e61bf85f22395bfc50dfab9841fecfe1d395a79dc0c0c53bcd213897a02c0ddd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Bad"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Library::comp")))))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Good"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Library::doIt")))))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Library::comp")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Library::doIt")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt")))))
     (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind featureTyping) (ordinal 0))
       (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component")))))
   )
   (relationships
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Good"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt"))) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library"))) (provenance implied))
   )
@@ -97,8 +114,14 @@ package Actions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Bad")))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component")))
       (subtype (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Good")))
     )
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp")))
       (featured-by (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library")))
@@ -114,6 +137,16 @@ package Actions {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_perform_action_usage_reference.md") (range (start 14 16) (end 14 29)) (probe (position 14 16))
+    (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "Library::comp")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_perform_action_usage_reference.md") (range (start 9 16) (end 9 29)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Good")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "Library::doIt")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::doIt")))))
+    )
+  )
   (query (document "memory://snapshot/sysml_perform_action_usage_reference.md") (range (start 4 20) (end 4 29)) (probe (position 4 20))
     (reference (id (source (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component")))))

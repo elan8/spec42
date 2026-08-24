@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.2:validateAcceptActionUsageParameters
-blocked_by=parser-gap-76-action-body-members
 type=file
 ~~~
 # SOURCE
@@ -38,12 +37,6 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_accept_action_usage_parameters.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 7 8) (end 8 4))
-      )
     )
   )
 )
@@ -51,14 +44,16 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:917ff83da8bd8210ece5c1b649632edc73bc8e1cb57bd3a5ab3673fa55ebd464") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:917ff83da8bd8210ece5c1b649632edc73bc8e1cb57bd3a5ab3673fa55ebd464") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
   )
@@ -67,6 +62,9 @@ package Actions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_accept_action_usage_parameters.md") (qualified-name "Actions::Act")))
+    )
 )
 ~~~
 # NAVIGATION

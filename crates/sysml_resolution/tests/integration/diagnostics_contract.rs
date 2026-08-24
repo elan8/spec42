@@ -94,49 +94,36 @@ fn constraint_unsupported_expression_shape_still_falls_through_to_diagnostic() {
 }
 
 #[test]
-fn occurrence_definition_member_body_construct_stays_explicitly_unsupported() {
-    let request = sysml_resolution::BuildRequest::new(
-        vec![sysml_resolution::SourceInput::new(
-            "memory://test/enum.sysml",
-            "package Demo {\n\
-             \toccurrence def Occ {\n\
-             \t\tsuccession first x then y;\n\
-             \t}\n\
-             }\n"
-            .to_string(),
-            sysml_resolution::SourceKind::Workspace,
-        )],
-        sysml_resolution::ConstructionSchedule::Sequential,
-        "test-contract-v1",
-    )
-    .unwrap();
-    let published = sysml_resolution::build(request).unwrap();
-    let mut output = String::new();
-    published
-        .debug()
-        .write_diagnostics_sexpr(&mut output)
-        .unwrap();
+fn occurrence_definition_member_succession_lowers() {
+    // A SysML `succession` usage in an occurrence definition body lowers as a `Succession`
+    // declaration with both ends as `succession` references, rather than reporting
+    // `unsupported_occurrence_definition_member`.
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \toccurrence def Occ {\n\
+         \t\toccurrence x;\n\
+         \t\toccurrence y;\n\
+         \t\tsuccession first x then y;\n\
+         \t}\n\
+         }\n",
+    );
     assert!(
-        output.contains("unsupported_occurrence_definition_member"),
-        "expected the succession usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+        !output.contains("unsupported_occurrence_definition_member"),
+        "expected the succession usage to lower rather than stay unsupported, got:\n{output}"
+    );
+    assert!(
+        output.contains("(kind succession)"),
+        "expected a succession declaration under Occ, got:\n{output}"
     );
 }
 
 #[test]
-fn calc_def_body_kinded_parameter_is_recovered_by_the_pinned_parser() {
-    // Regression pin, not desired behavior. Through `49bdf3f` a directed KerML-kinded
-    // parameter in a calc-shaped body reached the AST as a `KermlFeature` and lowered under
-    // the kind its keyword names (`expr` -> `kerml-expression`) with its direction as a
-    // declaration fact. At the pinned `f52100fd` the new `in`/`out`/`inout` branch of
-    // `parser/constraint.rs` commits to the `InOutDecl` parameter parser and no longer falls
-    // back to the KerML feature route, so the member is dropped to parse recovery and nothing
-    // is published for it. See planning/UPSTREAM_PARSER_GAPS.md gap 81. The regression is
-    // scoped to the SysML `calc`/`constraint`-shaped bodies that route through that branch:
-    // the same spelling in a KerML `function`/`behavior` body still parses and lowers, which
-    // is why `tests/snapshots/sysml.library/control_functions.md` is unaffected.
-    //
-    // This pins the loss so it stays visible: the publication must say `parse-recovery`
-    // rather than silently publishing a partial model that looks complete.
+fn calc_def_body_kinded_parameter_lowers_under_its_keyword_kind() {
+    // A directed KerML-kinded parameter in a calc-shaped body (`in expr p : Boolean = a;`)
+    // reaches the AST as a `KermlFeature` again at the pinned `c1677e7` (the `f52100f`
+    // regression recorded as planning/UPSTREAM_PARSER_GAPS.md gap 81 is closed) and lowers under
+    // the kind its keyword names, with its direction as a declaration fact, in a complete
+    // publication.
     let output = build_semantic_sexpr(
         "package Demo {\n\
          \tcalc def C {\n\
@@ -146,26 +133,24 @@ fn calc_def_body_kinded_parameter_is_recovered_by_the_pinned_parser() {
          }\n",
     );
     assert!(
-        output.contains("(completeness parse-recovery)"),
-        "expected the kinded parameter to be reported as parse recovery, got:\n{output}"
+        output.contains("(completeness complete)"),
+        "expected a complete publication for the kinded parameter, got:\n{output}"
     );
     assert!(
-        !output.contains("(qualified-name \"Demo::C::p\")"),
-        "expected no declaration for the recovered parameter p, got:\n{output}"
+        output.contains("(qualified-name \"Demo::C::p\"))) (kind kerml-expression)"),
+        "expected the kinded parameter p to lower as a kerml-expression, got:\n{output}"
     );
     assert!(
         output.contains("(qualified-name \"Demo::C::a\")"),
-        "expected the plain directed parameter a to still lower, got:\n{output}"
+        "expected the plain directed parameter a to lower, got:\n{output}"
     );
 }
 
 #[test]
-fn calc_def_body_kinded_parameter_redefinition_is_recovered_by_the_pinned_parser() {
+fn calc_def_body_kinded_parameter_redefinition_lowers_with_its_body() {
     // The redefinition-only spelling of the same production (`in bool redefines onOccurrence
     // { ... }`, the shape Kernel Semantic Library `Observation.kerml` authors in a KerML
-    // function body) is lost the same way in a `calc def` body at the pinned revision,
-    // including its nested body. See the sibling test above and
-    // planning/UPSTREAM_PARSER_GAPS.md gap 81.
+    // function body) lowers in a `calc def` body too, including its nested body.
     let output = build_semantic_sexpr(
         "package Demo {\n\
          \tcalc def C {\n\
@@ -177,13 +162,12 @@ fn calc_def_body_kinded_parameter_redefinition_is_recovered_by_the_pinned_parser
          }\n",
     );
     assert!(
-        output.contains("(completeness parse-recovery)"),
-        "expected the kinded redefinition to be reported as parse recovery, got:\n{output}"
+        output.contains("(completeness complete)"),
+        "expected a complete publication for the kinded redefinition, got:\n{output}"
     );
     assert!(
-        !output.contains("kerml-boolean-expression"),
-        "expected no kerml-boolean-expression declaration for the recovered member, got:\n\
-         {output}"
+        output.contains("(kind kerml-boolean-expression)"),
+        "expected a kerml-boolean-expression declaration for the member, got:\n{output}"
     );
 }
 

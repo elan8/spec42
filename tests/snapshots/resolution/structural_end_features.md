@@ -33,19 +33,19 @@ package Ends {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "end_feature_invalid_prefix")
         (source "parser")
         (range (start 6 8) (end 7 8))
       )
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "end_feature_invalid_prefix")
         (source "parser")
         (range (start 7 8) (end 8 8))
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "end_feature_invalid_prefix")
         (source "parser")
         (range (start 8 8) (end 9 4))
       )

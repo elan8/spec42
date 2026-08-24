@@ -297,7 +297,7 @@ probe element_facts.md 24 32
           (declaration (range (start 5 4) (end 10 5)))
           (membership (kind owning) (visibility public) (provenance default))
           (modifiers "abstract")
-          (documentation (form doc) (text " A chassis. "))
+          (documentation (form doc) (text TextId(6)))
           (incoming (kind "specialization") (peer "Facts::Trailer") (provenance authored))
           (incoming (kind "typeFeaturing") (peer "Facts::Chassis::spare") (provenance implied))
           (incoming (kind "typeFeaturing") (peer "Facts::Chassis::wheels") (provenance implied))

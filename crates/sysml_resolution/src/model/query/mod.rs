@@ -1185,13 +1185,37 @@ impl<D> SemanticModel<D> {
             TypeDerivedFactCollection::Multiplicity => {
                 Some(TypeDerivedFactPrerequisite::MultiplicityIdentity)
             }
-            TypeDerivedFactCollection::OwnedConjugator => {
-                Some(TypeDerivedFactPrerequisite::ConjugationRelationshipIdentity)
-            }
             _ => None,
         };
         if let Some(prerequisite) = unavailable {
             return self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite });
+        }
+        if collection == TypeDerivedFactCollection::OwnedConjugator {
+            // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10); the
+            // lowering sources it at the conjugated type, so the authored reference *is* the
+            // owned relationship and its settled target is `originalType`.
+            let values = self
+                .storage
+                .references
+                .iter()
+                .enumerate()
+                .filter(|(_, reference)| {
+                    reference.source == declaration && reference.kind == ReferenceKind::Conjugation
+                })
+                .filter_map(|(index, _)| {
+                    let id = AuthoredReferenceId::from_index(index).ok()?;
+                    match self.resolution.outcome(id)? {
+                        ResolutionStatus::Resolved(target) => {
+                            Some(TypeDerivedFactValue::Conjugator {
+                                original_type: self.symbol_id(target)?,
+                            })
+                        }
+                        _ => None,
+                    }
+                })
+                .collect::<Vec<_>>();
+            return self
+                .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
         let inherited = self.inherited_feature_members(declaration);
         let members = match collection {

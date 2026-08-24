@@ -97,6 +97,8 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::MetadataUsage => ElementKind::MetadataUsage,
         // `#keyword def X` has no more specific type than `Definition`.
         DeclarationKind::ExtendedDefinition => ElementKind::Definition,
+        // `#keyword x` has no more specific type than `Usage`.
+        DeclarationKind::ExtendedUsage => ElementKind::Usage,
 
         DeclarationKind::ReferenceUsage => ElementKind::ReferenceUsage,
         // `DefaultReferenceUsage : ReferenceUsage`; the only difference is whether `ref` was typed.
@@ -255,6 +257,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::MetadataDefinition
         | DeclarationKind::MetadataUsage
         | DeclarationKind::ExtendedDefinition
+        | DeclarationKind::ExtendedUsage
         | DeclarationKind::ReferenceUsage
         | DeclarationKind::DefaultReferenceUsage
         | DeclarationKind::PerformActionUsage
@@ -441,6 +444,7 @@ mod tests {
         DeclarationKind::ForLoopVariable,
         DeclarationKind::Dependency,
         DeclarationKind::ExtendedDefinition,
+        DeclarationKind::ExtendedUsage,
         DeclarationKind::IndividualDefinition,
         DeclarationKind::BareConnect,
         DeclarationKind::PerformParameterBinding,

@@ -21,13 +21,17 @@
 
 use crate::check::conformance;
 use crate::diagnose::document_range;
+use crate::index::expressions::conforms;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::ParameterDirection;
+use crate::model::element_kind::element_kind;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
+use crate::resolve::is_usage_declaration;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
 use crate::type_query::Conformance;
@@ -35,6 +39,7 @@ use crate::type_query::SpecializationScope;
 use crate::Diagnostic;
 use crate::DiagnosticCode;
 use crate::DiagnosticSeverity;
+use sysml_contract::ElementKind;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.
@@ -46,6 +51,22 @@ pub(crate) fn is_connection_like(kind: DeclarationKind) -> bool {
             | DeclarationKind::FlowDefinition
             | DeclarationKind::AllocationDefinition
     )
+}
+
+/// Whether a lowered declaration is a KerML `Feature` (including every SysML usage), so a
+/// feature-only rule skips the namespaces, types, imports and annotations sharing its owner.
+pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
+    is_usage_declaration(kind)
+        || matches!(
+            element_kind(kind),
+            ElementKind::Feature
+                | ElementKind::Step
+                | ElementKind::Expression
+                | ElementKind::BooleanExpression
+                | ElementKind::Connector
+                | ElementKind::BindingConnector
+                | ElementKind::Invariant
+        )
 }
 
 /// Whether a connection-like definition is binary, so its end count is fixed at two.
@@ -156,6 +177,156 @@ impl<D> SemanticModel<D> {
                 .is_some_and(|value| value.kind == DeclarationKind::KermlEnd)
     }
 
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureBody`: every feature owned by a metadata feature
+    /// redefines a feature of the metaclass the metadata feature is typed by. As in the Pilot's
+    /// `checkMetadataBodyFeature`, a body member with no redefinition at all fails outright;
+    /// when the metadata feature's own typing is settled, a redefinition whose target's owner the
+    /// metaclass does not specialize fails too. The model-level-evaluability half of the clause
+    /// is not decided here.
+    fn collect_metadata_body_features(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        if kind != DeclarationKind::MetadataUsage {
+            return Ok(());
+        }
+        let metaclass = self
+            .settled_targets(id, &[ReferenceKind::FeatureTyping])
+            .first()
+            .copied();
+        for member in self.child_declarations(id).iter().copied() {
+            let Some(member_kind) = self.kind_of(member) else {
+                continue;
+            };
+            if !is_feature_declaration(member_kind) {
+                continue;
+            }
+            let redefined = self.settled_targets(member, &[ReferenceKind::Redefinition]);
+            let has_redefinition = !self
+                .authored_references(member, &[ReferenceKind::Redefinition])
+                .is_empty();
+            // An authored redefinition that did not settle is reported by resolution; deciding
+            // the owner half over an unsettled target would report the same defect twice.
+            let redefines_metaclass_feature = has_redefinition
+                && match metaclass {
+                    None => true,
+                    Some(metaclass) => {
+                        redefined.is_empty()
+                            || redefined.iter().any(|target| {
+                                self.storage
+                                    .declaration(*target)
+                                    .and_then(|target| target.owner)
+                                    .is_some_and(|owner| conforms(&self.types, metaclass, owner))
+                            })
+                    }
+                };
+            if !redefines_metaclass_feature {
+                diagnostics.push(self.declaration_diagnostic(
+                    member,
+                    DiagnosticCode::MetadataBodyFeatureInvalid,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+        }
+        Ok(())
+    }
+
+    /// SysML 8.3.12.5 `validatePortDefinitionOwnedUsagesNotComposite` and 8.3.12.6
+    /// `validatePortUsageNestedUsagesNotComposite`: every non-port usage a port definition owns
+    /// or a port usage nests is referential.
+    fn collect_port_member_composition(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let code = match kind {
+            DeclarationKind::PortDefinition => DiagnosticCode::PortOwnedUsageComposite,
+            DeclarationKind::PortUsage => DiagnosticCode::PortNestedUsageComposite,
+            _ => return Ok(()),
+        };
+        for member in self.child_declarations(id).iter().copied() {
+            let Some(member_kind) = self.kind_of(member) else {
+                continue;
+            };
+            if member_kind == DeclarationKind::PortUsage || !self.usage_is_composite(member) {
+                continue;
+            }
+            diagnostics.push(self.declaration_diagnostic(
+                member,
+                code.clone(),
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
+    }
+
+    /// SysML 8.3.18.5 `validateStateDefinitionParallelSubactions` and 8.3.18.6
+    /// `validateStateUsageParallelSubactions`: a parallel state owns no transition or succession.
+    /// Reported at each offending member, as the Pilot's `checkTransitionUsage` does.
+    fn collect_parallel_state_subactions(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        facts: &DeclarationFacts,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        if !matches!(
+            kind,
+            DeclarationKind::StateDefinition | DeclarationKind::StateUsage
+        ) || !facts.modifiers.parallel
+        {
+            return Ok(());
+        }
+        for member in self.child_declarations(id).iter().copied() {
+            if matches!(
+                self.kind_of(member),
+                Some(DeclarationKind::Transition | DeclarationKind::Succession)
+            ) {
+                diagnostics.push(self.declaration_diagnostic(
+                    member,
+                    DiagnosticCode::ParallelStateSubstateTransition,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+        }
+        Ok(())
+    }
+
+    /// SysML `Usage::isComposite`, the canonical composition fact of one lowered usage.
+    ///
+    /// A SysML usage is composite by default (`UsageImpl` in the Pilot); `ref` (`isReference`)
+    /// and `end` make it referential, an attribute or enumeration usage is always referential
+    /// (`AttributeUsage` sets `isComposite = false`), and a `ReferenceUsage` is referential by
+    /// its metaclass. KerML features are composite only when authored `composite`.
+    pub(crate) fn usage_is_composite(&self, declaration: DeclarationId) -> bool {
+        let Some(kind) = self.kind_of(declaration) else {
+            return false;
+        };
+        let Some(facts) = self.storage.declaration_facts(declaration) else {
+            return false;
+        };
+        if !is_usage_declaration(kind) {
+            return facts.modifiers.composite;
+        }
+        if matches!(
+            kind,
+            DeclarationKind::AttributeUsage
+                | DeclarationKind::EnumerationUsage
+                | DeclarationKind::EnumerationLiteral
+                | DeclarationKind::ReferenceUsage
+                | DeclarationKind::DefaultReferenceUsage
+                | DeclarationKind::ParameterUsage
+                | DeclarationKind::SubjectUsage
+                | DeclarationKind::PerformParameterBinding
+        ) {
+            return false;
+        }
+        !facts.modifiers.reference && !facts.modifiers.end && !self.is_end_feature(declaration)
+    }
+
     /// Appends every structural feature-conformance diagnostic authored in `document`.
     pub(crate) fn collect_structural_conformance(
         &self,
@@ -185,17 +356,15 @@ impl<D> SemanticModel<D> {
                 .declaration_facts(id)
                 .ok_or(ResolutionError::InvalidStorage)?;
 
-            // KerML 8.3.3.3.1: an end feature is neither derived, abstract nor composite.
-            //
-            // The same clause also forbids a direction on an end feature, which this publication
-            // does not report: the pinned parser accepts no spelling that authors both. `in end
-            // feature x : T;`, `end in feature x : T;` and SysML's `end in port x : T;` are all
-            // rejected before semantics sees them (planning/UPSTREAM_PARSER_GAPS.md, Gap 59), so
-            // the rule would be a code that can never fire.
+            // KerML 8.3.3.3.4 `validateFeatureEndNotDerivedAbstractCompositeOrPortion`. KerML's
+            // own `EndFeaturePrefix` spells only `const? end`, so the textual spelling that
+            // reaches this rule is SysML's `DefaultReferenceUsage` (`end derived x : T;`),
+            // lowered by `lower_end_decl` with the same modifier facts.
             if self.is_end_feature(id)
                 && (facts.modifiers.derived
                     || facts.modifiers.is_abstract
-                    || facts.modifiers.composite)
+                    || facts.modifiers.composite
+                    || facts.modifiers.portion)
             {
                 diagnostics.push(self.declaration_diagnostic(
                     id,
@@ -203,6 +372,18 @@ impl<D> SemanticModel<D> {
                     DiagnosticSeverity::Warning,
                 )?);
             }
+            // KerML 8.3.3.3.4 `validateFeatureEndNoDirection`, reachable through the same SysML
+            // spelling (`end in x : T;`).
+            if self.is_end_feature(id) && facts.direction.is_some() {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::EndFeatureHasDirection,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+            self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
+            self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
+            self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
 
             // An abstract declaration is deliberately incomplete, so its end count states nothing.
             if !is_connection_like(declaration.kind) || facts.modifiers.is_abstract {

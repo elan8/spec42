@@ -52,6 +52,10 @@ use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use sysml_v2_parser::ast::CommentBody;
+use sysml_v2_parser::ast::DeclarationName;
+use sysml_v2_parser::ast::ReferenceSeparator;
+use sysml_v2_parser::ast::StringLiteral;
 use sysml_v2_parser::ast::{
     AliasBody, AliasDef, AnnotatingMember, CommentAnnotation, Dependency, DocComment, ExposeMember,
     Expression, ExtendedDefinition, FeatureValue, FeatureValueKind as ParserFeatureValueKind,
@@ -277,15 +281,83 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Interns an optional authored `<shortName>` prefix, treating an empty spelling as absent.
+    /// Interns an optional authored declaration name or `<shortName>`, decoding it through the
+    /// owning document (`ParsedDocument::decoded_declaration_name`): the parser carries names
+    /// as source spans, and an escaped unrestricted name decodes to its `NAME` value here. An
+    /// absent or empty spelling is `None`.
+    pub(crate) fn intern_declaration_name(
+        &mut self,
+        document: DocumentIdx,
+        name: Option<DeclarationName>,
+    ) -> Result<Option<NameId>, ConstructionError> {
+        let Some(name) = name else {
+            return Ok(None);
+        };
+        let parsed = Arc::clone(
+            &self
+                .documents
+                .get(document.index())
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .parsed,
+        );
+        let decoded = parsed
+            .decoded_declaration_name(name)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        self.intern_declared_name(decoded.as_ref())
+    }
+
+    /// Interns the decoded contents of an optional authored string literal through its owning
+    /// document. The semantic model stores the value, while the parser remains the source-fidelity
+    /// owner for quotes and escapes.
+    pub(crate) fn intern_string_literal(
+        &mut self,
+        document: DocumentIdx,
+        literal: Option<StringLiteral>,
+    ) -> Result<Option<NameId>, ConstructionError> {
+        let Some(literal) = literal else {
+            return Ok(None);
+        };
+        let parsed = Arc::clone(
+            &self
+                .documents
+                .get(document.index())
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .parsed,
+        );
+        let decoded = parsed
+            .decoded_string_literal(literal)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        self.intern_declared_name(decoded.as_ref())
+    }
+
+    /// Interns the authored bytes of a regular-comment body. Normalized comment text is a
+    /// separate parser query; documentation publication has historically preserved the authored
+    /// body and continues to do so across the span-backed AST migration.
+    pub(crate) fn intern_comment_body(
+        &mut self,
+        document: DocumentIdx,
+        body: CommentBody,
+    ) -> Result<NameId, ConstructionError> {
+        let parsed = Arc::clone(
+            &self
+                .documents
+                .get(document.index())
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .parsed,
+        );
+        let text = parsed
+            .comment_body(body)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        self.intern_name(text)
+    }
+
+    /// Interns an optional authored `<shortName>` prefix; see `intern_declaration_name`.
     pub(crate) fn intern_short_name(
         &mut self,
-        short_name: Option<&String>,
+        document: DocumentIdx,
+        short_name: Option<DeclarationName>,
     ) -> Result<Option<NameId>, ConstructionError> {
-        match short_name {
-            Some(value) => self.intern_declared_name(value),
-            None => Ok(None),
-        }
+        self.intern_declaration_name(document, short_name)
     }
 
     /// Records a `doc /* ... */` body element against the declaration owning that body.
@@ -295,11 +367,12 @@ impl SemanticModelBuilder {
     /// for -- so there is nothing to bind it to.
     pub(crate) fn record_root_doc_comment(
         &mut self,
+        document: DocumentIdx,
         declaration: Option<DeclarationId>,
         node: &Node<DocComment>,
     ) -> Result<(), ConstructionError> {
         match declaration {
-            Some(declaration) => self.record_doc_comment(declaration, node),
+            Some(declaration) => self.record_doc_comment(document, declaration, node),
             None => Ok(()),
         }
     }
@@ -307,11 +380,12 @@ impl SemanticModelBuilder {
     /// Root-scope counterpart of `record_comment_annotation`; see `record_root_doc_comment`.
     pub(crate) fn record_root_comment_annotation(
         &mut self,
+        document: DocumentIdx,
         declaration: Option<DeclarationId>,
         node: &Node<CommentAnnotation>,
     ) -> Result<(), ConstructionError> {
         match declaration {
-            Some(declaration) => self.record_comment_annotation(declaration, node),
+            Some(declaration) => self.record_comment_annotation(document, declaration, node),
             None => Ok(()),
         }
     }
@@ -319,11 +393,12 @@ impl SemanticModelBuilder {
     /// Root-scope counterpart of `record_textual_representation`; see `record_root_doc_comment`.
     pub(crate) fn record_root_textual_representation(
         &mut self,
+        document: DocumentIdx,
         declaration: Option<DeclarationId>,
         node: &Node<TextualRepresentation>,
     ) -> Result<(), ConstructionError> {
         match declaration {
-            Some(declaration) => self.record_textual_representation(declaration, node),
+            Some(declaration) => self.record_textual_representation(document, declaration, node),
             None => Ok(()),
         }
     }
@@ -350,10 +425,12 @@ impl SemanticModelBuilder {
         member: &AnnotatingMember,
     ) -> Result<(), ConstructionError> {
         match member {
-            AnnotatingMember::Doc(node) => self.record_root_doc_comment(annotated, node),
-            AnnotatingMember::Comment(node) => self.record_root_comment_annotation(annotated, node),
+            AnnotatingMember::Doc(node) => self.record_root_doc_comment(document, annotated, node),
+            AnnotatingMember::Comment(node) => {
+                self.record_root_comment_annotation(document, annotated, node)
+            }
             AnnotatingMember::TextualRep(node) => {
-                self.record_root_textual_representation(annotated, node)
+                self.record_root_textual_representation(document, annotated, node)
             }
             AnnotatingMember::MetadataAnnotation(node) => match annotated {
                 Some(annotated) => self.lower_metadata_annotation(document, annotated, node),
@@ -368,11 +445,12 @@ impl SemanticModelBuilder {
     /// Records a `doc /* ... */` annotation against the declaration whose body it heads.
     pub(crate) fn record_doc_comment(
         &mut self,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<DocComment>,
     ) -> Result<(), ConstructionError> {
-        let locale = self.intern_short_name(node.value.locale.as_ref())?;
-        let text = self.intern_name(&node.value.text)?;
+        let locale = self.intern_string_literal(document, node.value.locale)?;
+        let text = self.intern_comment_body(document, node.value.body)?;
         self.push_documentation(
             declaration,
             AnnotationForm::Documentation,
@@ -386,11 +464,12 @@ impl SemanticModelBuilder {
     /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
     pub(crate) fn record_comment_annotation(
         &mut self,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<CommentAnnotation>,
     ) -> Result<(), ConstructionError> {
-        let locale = self.intern_short_name(node.value.locale.as_ref())?;
-        let text = self.intern_name(&node.value.text)?;
+        let locale = self.intern_string_literal(document, node.value.locale)?;
+        let text = self.intern_comment_body(document, node.value.body)?;
         self.push_documentation(
             declaration,
             AnnotationForm::Comment,
@@ -405,11 +484,12 @@ impl SemanticModelBuilder {
     /// heads.
     pub(crate) fn record_textual_representation(
         &mut self,
+        document: DocumentIdx,
         declaration: DeclarationId,
         node: &Node<TextualRepresentation>,
     ) -> Result<(), ConstructionError> {
-        let language = self.intern_declared_name(&node.value.language)?;
-        let text = self.intern_name(&node.value.text)?;
+        let language = self.intern_string_literal(document, node.value.language)?;
+        let text = self.intern_comment_body(document, node.value.body)?;
         self.push_documentation(
             declaration,
             AnnotationForm::TextualRepresentation,
@@ -522,6 +602,11 @@ impl SemanticModelBuilder {
         segments.clear();
         self.path_scratch = segments;
         let path = path?;
+        let dotted = reference
+            .segments
+            .iter()
+            .any(|segment| segment.separator_before == Some(ReferenceSeparator::Dot));
+        let flags = RelationshipFlags { dotted, ..flags };
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -982,8 +1067,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<Package>,
     ) -> Result<(), ConstructionError> {
-        let name = self.simple_name(&node.identification)?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.simple_name(document, &node.identification)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1010,8 +1095,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<LibraryPackage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.simple_name(&node.identification)?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.simple_name(document, &node.identification)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1042,8 +1127,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<NamespaceDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = self.simple_name(&node.identification)?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.simple_name(document, &node.identification)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1066,13 +1151,10 @@ impl SemanticModelBuilder {
 
     pub(crate) fn simple_name(
         &mut self,
+        document: DocumentIdx,
         identification: &QualifiedIdentification,
     ) -> Result<Option<NameId>, ConstructionError> {
-        identification
-            .simple_name()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()
+        self.intern_declaration_name(document, identification.simple_name())
     }
 
     pub(crate) fn lower_package_body(
@@ -1136,6 +1218,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::Import(node) => self.lower_import(document, owner, node)?,
             PackageBodyElement::PartDef(node) => self.lower_part_def(document, owner, node)?,
             PackageBodyElement::PartUsage(node) => self.lower_part_usage(document, owner, node)?,
+            PackageBodyElement::ExtendedUsage(node) => {
+                self.lower_extended_usage(document, owner, node)?
+            }
             PackageBodyElement::AttributeUsage(node) => {
                 self.lower_attribute_usage(document, owner, node)?
             }
@@ -1229,11 +1314,14 @@ impl SemanticModelBuilder {
                 self.lower_allocation_usage(document, owner, node)?
             }
             PackageBodyElement::FlowDef(node) => self.lower_flow_def(document, owner, node)?,
-            PackageBodyElement::FlowUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::FlowUsage(node) => match owner {
+                Some(owner) => self.lower_flow_usage(document, owner, node)?,
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::ConcernUsage(node) => {
                 self.lower_concern_usage(document, owner, node)?
             }
@@ -1599,6 +1687,77 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers the specialization clauses of a shared `UsageDeclaration` (SysML BNF 300:
+    /// `Identification? FeatureSpecializationPart?`): its `:` typing and every `:>`/`:>>`/`::>`/
+    /// `crosses`/`intersects` relationship, each through the same helper the keyworded usage
+    /// families use. The identification and multiplicity are declaration facts the caller records
+    /// when it mints the declaration, so they are not read here.
+    pub(crate) fn lower_usage_declaration_clauses(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        usage: &sysml_v2_parser::ast::UsageDeclaration,
+        variation: bool,
+        direction: Option<ParameterDirection>,
+    ) -> Result<(), ConstructionError> {
+        if let Some(relationship) = &usage.typing {
+            self.lower_typing_relationship_impl(
+                document,
+                declaration,
+                relationship,
+                variation,
+                direction,
+            )?;
+        }
+        if let Some((relationship, _)) = &usage.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        for relationship in [
+            usage.redefines.as_ref(),
+            usage.references.as_ref(),
+            usage.crosses.as_ref(),
+            usage.intersects.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a `UsageExtensionKeyword*` run (`#Tag`, SysML BNF 296: `PrefixMetadataMember`,
+    /// a `MetadataUsage` typed by the annotation) as one `MetadataAnnotation` reference per
+    /// keyword, sourced at the prefixed declaration -- the same reference `@Tag`
+    /// (`lower_metadata_annotation`) publishes, because both productions annotate their owner
+    /// with a metadata feature typed by the named metadata definition.
+    pub(crate) fn lower_usage_extension_keywords(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        keywords: &[Node<sysml_v2_parser::ast::UsageExtensionKeyword>],
+    ) -> Result<(), ConstructionError> {
+        for keyword in keywords {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(keyword.value.annotation)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::MetadataAnnotation,
+                document,
+                local: keyword.value.annotation,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
     /// Lowers a package-level `alias X for Y;` member into a declaration plus an authored
     /// `AliasBinding` reference for `Y`, following the Subclassification/typing lowering pattern
     /// above: `target` is already a structured `QualifiedReferenceId` (not a flattened string), so
@@ -1609,15 +1768,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<AliasDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1668,15 +1820,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<sysml_v2_parser::ast::IndividualDef>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1722,15 +1867,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ExtendedDefinition>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
         let (is_abstract, variation) =
             definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
@@ -1776,19 +1914,19 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<Dependency>,
     ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .as_ref()
-            .and_then(|identification| identification.name.as_deref())
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(
+        let name = self.intern_declaration_name(
+            document,
             node.value
                 .identification
                 .as_ref()
-                .and_then(|identification| identification.short_name.as_ref()),
+                .and_then(|identification| identification.name),
+        )?;
+        let short_name = self.intern_short_name(
+            document,
+            node.value
+                .identification
+                .as_ref()
+                .and_then(|identification| identification.short_name),
         )?;
         let declaration = self.push_typed_declaration(
             document,

@@ -7,7 +7,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.18.6:checkStateUsageExclusiveStateSpecialization
-blocked_by=parser-gap-80-state-usage-parallel-fact
+blocked_by=lowering-gap-state-usage-specialization-facts
 type=file
 libraries=standard
 ~~~
@@ -48,7 +48,7 @@ package StateUsageExclusiveSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:a81ebdb3fecffd4cc5e189974ecbbcf61d56db5fb80c503275b55085f90fe2f3") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a81ebdb3fecffd4cc5e189974ecbbcf61d56db5fb80c503275b55085f90fe2f3") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_exclusive_specialization.md") (qualified-name "StateUsageExclusiveSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_exclusive_specialization.md") (qualified-name "StateUsageExclusiveSpecialization::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

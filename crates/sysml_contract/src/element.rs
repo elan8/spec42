@@ -119,6 +119,7 @@ pub enum ElementModifier {
     Portion,
     Var,
     Member,
+    Parallel,
     Ordered,
     Nonunique,
 }
@@ -141,6 +142,7 @@ impl ElementModifier {
             Self::Portion => "portion",
             Self::Var => "var",
             Self::Member => "member",
+            Self::Parallel => "parallel",
             Self::Ordered => "ordered",
             Self::Nonunique => "nonunique",
         }

@@ -10,7 +10,8 @@ use sysml_v2_parser::ast::{
 };
 
 use super::token_util::{
-    identification_name, qualified_identification_name, span_to_source_range as span_to_range,
+    declaration_name_text, identification_name, qualified_identification_name,
+    span_to_source_range as span_to_range,
 };
 
 /// A node's true extent, resolved through the document's own position index.
@@ -282,7 +283,7 @@ fn outline_symbol_from_element(
             })
         }
         PBE::PartDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
@@ -295,7 +296,7 @@ fn outline_symbol_from_element(
             let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::PartDef,
                 typed_by: super::closure_targets::typing_target_display(
                     document,
@@ -317,8 +318,8 @@ fn outline_symbol_from_element(
             };
             let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
-                name: p.name.clone(),
-                short_name: p.short_name.clone(),
+                name: declaration_name_text(document, p.name).unwrap_or_default(),
+                short_name: declaration_name_text(document, p.short_name),
                 kind: SyntaxOutlineKind::PartUsage,
                 typed_by: super::closure_targets::typing_target_display(
                     document,
@@ -332,7 +333,7 @@ fn outline_symbol_from_element(
             })
         }
         PBE::PortDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
@@ -345,7 +346,7 @@ fn outline_symbol_from_element(
             let (head_range, body_range) = split_body(document, &p.body, range);
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::PortDef,
                 range,
                 selection_range: range,
@@ -356,13 +357,13 @@ fn outline_symbol_from_element(
             })
         }
         PBE::InterfaceDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::InterfaceDef,
                 range,
                 selection_range: range,
@@ -371,7 +372,7 @@ fn outline_symbol_from_element(
             })
         }
         PBE::AttributeDef(p) => Some(SyntaxOutlineNode {
-            name: p.name.clone(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::AttributeDef,
             range,
             selection_range: range,
@@ -382,11 +383,9 @@ fn outline_symbol_from_element(
         // where they used to be opaque `FeatureDecl`/`ClassifierDecl` raw text whose declared name
         // had to be recovered by re-scanning it. Same published symbol kinds, read from the node.
         PBE::KermlFeature(p) => {
-            if p.value.name.is_empty() {
-                return None;
-            }
+            let name = declaration_name_text(document, p.value.name)?;
             Some(SyntaxOutlineNode {
-                name: p.value.name.clone(),
+                name,
                 kind: SyntaxOutlineKind::FeatureDecl,
                 range,
                 selection_range: range,
@@ -395,13 +394,13 @@ fn outline_symbol_from_element(
             })
         }
         PBE::KermlClassifier(p) => {
-            let name = identification_name(&p.value.identification);
+            let name = identification_name(document, &p.value.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.value.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.value.identification.short_name),
                 kind: SyntaxOutlineKind::ClassifierDecl,
                 range,
                 selection_range: range,
@@ -410,7 +409,11 @@ fn outline_symbol_from_element(
             })
         }
         PBE::FeatureDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
+            let name = modeled_decl_name(
+                document.source.slice(&p.keyword_span).unwrap_or_default(),
+                document.opaque_text(p.text).unwrap_or_default(),
+                "_feature",
+            );
             if name.is_empty() {
                 return None;
             }
@@ -424,7 +427,11 @@ fn outline_symbol_from_element(
             })
         }
         PBE::ClassifierDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            let name = modeled_decl_name(
+                document.source.slice(&p.keyword_span).unwrap_or_default(),
+                document.opaque_text(p.text).unwrap_or_default(),
+                "_classifier",
+            );
             if name.is_empty() {
                 return None;
             }
@@ -438,13 +445,13 @@ fn outline_symbol_from_element(
             })
         }
         PBE::ActionDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::ActionDef,
                 range,
                 selection_range: range,
@@ -453,7 +460,7 @@ fn outline_symbol_from_element(
             })
         }
         PBE::ActionUsage(p) => Some(SyntaxOutlineNode {
-            name: p.name.clone(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::ActionUsage,
             range,
             selection_range: range,
@@ -461,13 +468,13 @@ fn outline_symbol_from_element(
             ..SyntaxOutlineNode::bare(range)
         }),
         PBE::ViewDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::ViewDef,
                 range,
                 selection_range: range,
@@ -476,13 +483,13 @@ fn outline_symbol_from_element(
             })
         }
         PBE::ViewpointDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::ViewpointDef,
                 range,
                 selection_range: range,
@@ -491,13 +498,13 @@ fn outline_symbol_from_element(
             })
         }
         PBE::RenderingDef(p) => {
-            let name = identification_name(&p.identification);
+            let name = identification_name(document, &p.identification);
             if name.is_empty() {
                 return None;
             }
             Some(SyntaxOutlineNode {
                 name,
-                short_name: p.identification.short_name.clone(),
+                short_name: declaration_name_text(document, p.identification.short_name),
                 kind: SyntaxOutlineKind::RenderingDef,
                 range,
                 selection_range: range,
@@ -506,7 +513,7 @@ fn outline_symbol_from_element(
             })
         }
         PBE::ViewUsage(p) => Some(SyntaxOutlineNode {
-            name: p.name.clone(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::ViewUsage,
             range,
             selection_range: range,
@@ -514,7 +521,7 @@ fn outline_symbol_from_element(
             ..SyntaxOutlineNode::bare(range)
         }),
         PBE::ViewpointUsage(p) => Some(SyntaxOutlineNode {
-            name: p.name.clone(),
+            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
             kind: SyntaxOutlineKind::ViewpointUsage,
             range,
             selection_range: range,
@@ -522,7 +529,7 @@ fn outline_symbol_from_element(
             ..SyntaxOutlineNode::bare(range)
         }),
         PBE::RenderingUsage(p) => Some(SyntaxOutlineNode {
-            name: p.name.clone(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::RenderingUsage,
             range,
             selection_range: range,
@@ -544,7 +551,7 @@ fn outline_symbols_from_part_def_body(
         let range = node_range(document, &node.span);
         match &node.value {
             PDBE::AttributeDef(n) => out.push(SyntaxOutlineNode {
-                name: n.name.clone(),
+                name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::AttributeDef,
                 range,
                 selection_range: range,
@@ -552,7 +559,7 @@ fn outline_symbols_from_part_def_body(
                 ..SyntaxOutlineNode::bare(range)
             }),
             PDBE::PortUsage(n) => out.push(SyntaxOutlineNode {
-                name: n.name.clone(),
+                name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,
@@ -575,7 +582,7 @@ fn outline_symbols_from_part_usage_body(
         let range = node_range(document, &node.span);
         match &node.value {
             PUBE::AttributeUsage(n) => out.push(SyntaxOutlineNode {
-                name: n.name.clone(),
+                name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::AttributeUsage,
                 range,
                 selection_range: range,
@@ -591,8 +598,8 @@ fn outline_symbols_from_part_usage_body(
                 };
                 let (head_range, body_range) = split_body(document, &n.body, range);
                 out.push(SyntaxOutlineNode {
-                    name: n.name.clone(),
-                    short_name: n.short_name.clone(),
+                    name: declaration_name_text(document, n.name).unwrap_or_default(),
+                    short_name: declaration_name_text(document, n.short_name),
                     kind: SyntaxOutlineKind::PartUsage,
                     range,
                     selection_range: range,
@@ -603,7 +610,7 @@ fn outline_symbols_from_part_usage_body(
                 });
             }
             PUBE::PortUsage(n) => out.push(SyntaxOutlineNode {
-                name: n.name.clone(),
+                name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,
@@ -611,7 +618,7 @@ fn outline_symbols_from_part_usage_body(
                 ..SyntaxOutlineNode::bare(range)
             }),
             PUBE::Ref(n) => out.push(SyntaxOutlineNode {
-                name: n.value.name.clone(),
+                name: declaration_name_text(document, n.value.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::Ref,
                 range,
                 selection_range: range,
@@ -634,7 +641,7 @@ fn outline_symbols_from_port_def_body(
         let range = node_range(document, &node.span);
         if let PDBE::PortUsage(n) = &node.value {
             out.push(SyntaxOutlineNode {
-                name: n.name.clone(),
+                name: declaration_name_text(document, n.name).unwrap_or_default(),
                 kind: SyntaxOutlineKind::PortUsage,
                 range,
                 selection_range: range,

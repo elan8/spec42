@@ -120,8 +120,11 @@ element_kinds! {
     RenderingUsage,
     MetadataDefinition,
     MetadataUsage,
-    /// A usage with no more specific keyword, including the `#keyword def` extended form.
+    /// A definition with no more specific keyword, including the `#keyword def` extended form.
     Definition,
+    /// A usage with no more specific keyword: the `#keyword <name>` extended usage form
+    /// (`ExtendedUsage`, SysML BNF 341), whose metaclass is the abstract `Usage` itself.
+    Usage,
     /// A referential feature: `ref x : T;`, a keyword-less binding, a parameter, a subject.
     ///
     /// The role-bearing cases carry a [`MembershipRole`].

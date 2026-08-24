@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.18.6:validateStateUsageParallelSubactions
-blocked_by=semantic-parallel-state-substate-transition
 type=file
 ~~~
 # SOURCE
@@ -50,6 +49,12 @@ package States {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_state_usage_parallel_subactions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "parallel_state_substate_transition")
+        (source "semantic")
+        (range (start 12 12) (end 12 45))
+      )
     )
   )
 )
@@ -61,11 +66,11 @@ package States {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad"))) (kind state) (membership (kind feature) (visibility default)) (facts (modifiers parallel)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (named (kind state) (name "bad")) (anonymous (kind transition) (ordinal 0))))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "left")) (transitionTarget (reference "right")))))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::left"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::bad::right"))) (kind state) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good"))) (kind state) (membership (kind feature) (visibility default)) (facts (modifiers parallel)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good::left"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder::good::right"))) (kind state) (membership (kind feature) (visibility default)))
   )

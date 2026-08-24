@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureChainingFeatureConformance
-blocked_by=lowering-kerml-feature-relationships
+blocked_by=semantic-feature-chaining-rules
 type=file
 ~~~
 # SOURCE
@@ -55,12 +55,6 @@ package Chains {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 11 28) (end 11 39))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 14 27) (end 14 42))
       )
     )
@@ -88,7 +82,7 @@ package Chains {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::good"))) (kind featureChaining) (ordinal 0))
       (authored-target "outer::inner")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing::inner")))))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::outer"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing")))))
@@ -100,6 +94,7 @@ package Chains {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing")))))
   )
   (relationships
+    (relationship (kind featureChaining) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::good"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing::inner"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::good"))) (kind featureChaining) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::outer"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::outer"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Other::unrelated"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Other::unrelated"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing::inner"))) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing::inner"))) (kind featureTyping) (ordinal 0)))
@@ -117,9 +112,6 @@ package Chains {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::bad")))
-      (featured-by (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder")))
-    )
-    (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::good")))
       (featured-by (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder")))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::outer")))
@@ -157,7 +149,7 @@ package Chains {
   )
   (query (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (range (start 11 28) (end 11 39)) (probe (position 11 28))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder::good"))) (kind featureChaining) (ordinal 0) (authored-target "outer::inner")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Thing::inner")))))
     )
   )
   (query (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (range (start 8 24) (end 8 29)) (probe (position 8 24))

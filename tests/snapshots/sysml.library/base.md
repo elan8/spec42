@@ -108,6 +108,12 @@ standard library package Base {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 13 50) (end 13 61))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 56 28) (end 56 49))
@@ -141,7 +147,7 @@ standard library package Base {
       (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")))))
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0))
       (authored-target "things::that")
-      (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")))))
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind subsetting) (ordinal 0))
       (authored-target "things")
       (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things")))))
@@ -175,7 +181,6 @@ standard library package Base {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind featureChaining) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind subsetting) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self"))) (kind featureTyping) (ordinal 0)))
@@ -203,6 +208,7 @@ standard library package Base {
       (subtype (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self")))
+      (featured-by (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")))
       (type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (provenance authored))
       (effective-type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (source direct))
       (effective-type (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/base.md") (qualified-name "Base::things"))))
@@ -268,7 +274,7 @@ standard library package Base {
   )
   (query (document "memory://snapshot/base.md") (range (start 13 50) (end 13 61)) (probe (position 13 50))
     (reference (id (source (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self"))) (kind featureChaining) (ordinal 0) (authored-target "things::that")
-      (outcome (status resolved) (target (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")))))
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/base.md") (range (start 13 36) (end 13 42)) (probe (position 13 36))

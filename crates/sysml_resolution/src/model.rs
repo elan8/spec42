@@ -693,6 +693,14 @@ pub(crate) enum DeclarationKind {
     /// `has_feature_keyword`/`body` shapes are not modeled as distinct facts here (multiplicity
     /// is unmodeled elsewhere in this codebase too, see `ParameterUsage`).
     DefaultReferenceUsage,
+    /// `#<keyword>+ <name> ...` (BNF `ExtendedUsage`, SysML 341: `UnextendedUsagePrefix
+    /// UsageExtensionKeyword+ Usage`), e.g. `#servicedd :>> serviceDiscovery : ServiceDiscoveryDD
+    /// { ... }`. The `#Tag` run stands in place of a kind keyword, so the metaclass is the abstract
+    /// `Usage` (the Pilot's `ExtendedUsage returns SysML::Usage`), not `ReferenceUsage`. Each
+    /// extension keyword lowers as a `MetadataAnnotation` reference sourced at the usage, exactly
+    /// as `@Tag` does; the `UsageDeclaration`'s clauses, value and `PartUsageBody` members are
+    /// lowered through the shared helpers every keyworded usage uses.
+    ExtendedUsage,
     /// A KerML connector member (`KermlConnectorMember`), e.g. `connector fixWheel :
     /// BikeWheelFixed from [1] rollsOn to [1] holdsWheel;` (KerML Spec Annex A-3-3). Mirrors
     /// `lower_connection_def`'s ownership/typing/end shape: ownership, membership, an optional
@@ -884,10 +892,20 @@ pub(crate) enum ReferenceKind {
     /// relationship after resolution; no consumer reconstructs it from source text.
     FeatureChaining,
     Subclassification,
+    /// KerML `Conjugation` (8.3.3.1.3): the source is the declared, conjugated type
+    /// (`conjugatedType`) and the target is the `originalType`, from a type declaration's
+    /// `ConjugationPart` (`classifier C conjugates A;` / `classifier C ~ A;`). Distinct from
+    /// the `~T` flag on a `FeatureTyping` (`RelationshipFlags::conjugated`), which types a
+    /// feature by the *conjugate* of `T` without declaring a conjugated type.
+    Conjugation,
     Subsetting,
     Redefinition,
     References,
     Crosses,
+    /// KerML `FeatureInverting` (8.3.3.3.5): `inverse of <feature chain>` on a feature
+    /// declaration. The source is the declared feature (`featureInverted`) and the target is the
+    /// `invertingFeature`.
+    FeatureInverting,
     Intersects,
     /// One target of a KerML `unions` header clause (`ast::KermlTypeRelationship` with
     /// `KermlTypeRelationshipKeyword::Unions`). KerML `Unioning`, a direct kind of `Relationship`

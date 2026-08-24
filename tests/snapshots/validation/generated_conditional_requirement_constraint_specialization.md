@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.20.4:checkConstraintUsageRequirementConstraintSpecialization
-blocked_by=parser-gap-74-require-constraint-membership
 type=file
 libraries=standard
 ~~~
@@ -30,12 +29,6 @@ package RequirementConstraintSpecialization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_requirement_body_element")
-        (source "parser")
-        (range (start 3 8) (end 4 4))
-      )
     )
   )
 )
@@ -43,17 +36,25 @@ package RequirementConstraintSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b1a68b8cf2a404247958e3b0861bb35b6edd976af841ee92df8fe67e1dc3da51") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b1a68b8cf2a404247958e3b0861bb35b6edd976af841ee92df8fe67e1dc3da51") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (kind require-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Bound")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Bound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (target (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound"))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (target (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints"))) (provenance implied))
   )
   (evaluation
   )
@@ -69,6 +70,7 @@ package RequirementConstraintSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -80,10 +82,35 @@ package RequirementConstraintSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
     )
+    (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit")))
+      (featured-by (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase")))
+      (type (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound")) (source direct))
+      (supertype (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck::constraints")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck::constraints")) (scopes any))
+    )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (range (start 3 35) (end 3 40)) (probe (position 3 35))
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::RequirementCase::limit"))) (kind featureTyping) (ordinal 0) (authored-target "Bound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound")))))
+    )
+  )
 )
 ~~~

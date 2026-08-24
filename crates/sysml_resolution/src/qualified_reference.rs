@@ -77,7 +77,6 @@ impl PublishedResolution {
             },
             None => self.qualified_reference_candidates(),
         };
-
         let mut named = entries
             .into_iter()
             .filter(|entry| {
