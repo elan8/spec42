@@ -1695,10 +1695,24 @@ impl<D> SemanticModel<D> {
                 .into_boxed_slice();
             return self.resolved_outcome(ActionDerivedFactOutcome::OwnedMembershipMembers(values));
         }
-        let prerequisite = match collection {
-            ActionDerivedFactCollection::ForLoopVariable => {
-                ActionDerivedFactPrerequisite::OrderedOwnedFeatureIdentity
+        if collection == ActionDerivedFactCollection::ForLoopVariable {
+            if source_kind != Some(DeclarationKind::ForLoop) {
+                return self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])));
             }
+            let values = self.symbols(self.child_declarations(declaration).iter().copied().filter(
+                |member| {
+                    self.storage
+                        .declaration(*member)
+                        .is_some_and(|member| member.kind == DeclarationKind::ForLoopVariable)
+                        && self
+                            .storage
+                            .declaration_facts(*member)
+                            .is_some_and(|facts| facts.owned_feature_position == Some(1))
+                },
+            ));
+            return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
+        }
+        let prerequisite = match collection {
             ActionDerivedFactCollection::TerminateOccurrenceArgument
             | ActionDerivedFactCollection::SendSenderArgument
             | ActionDerivedFactCollection::SendReceiverArgument
@@ -1727,6 +1741,7 @@ impl<D> SemanticModel<D> {
                 return self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])));
             }
             ActionDerivedFactCollection::AssignmentReferent => unreachable!(),
+            ActionDerivedFactCollection::ForLoopVariable => unreachable!(),
         };
         self.resolved_outcome(ActionDerivedFactOutcome::Unsupported { prerequisite })
     }

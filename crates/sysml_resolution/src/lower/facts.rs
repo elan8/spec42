@@ -205,6 +205,8 @@ pub(crate) struct DeclarationFacts {
     /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
     /// The two are distinct and both are needed.
     pub(crate) positional_end: Option<u32>,
+    /// One-based position among the owner's authored FeatureMemberships.
+    pub(crate) owned_feature_position: Option<u32>,
 }
 
 impl DeclarationFacts {

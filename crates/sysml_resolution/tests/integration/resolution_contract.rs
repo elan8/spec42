@@ -5162,6 +5162,46 @@ fn action_argument_identities_are_owned_ordered_and_schedule_independent() {
 }
 
 #[test]
+fn for_loop_variable_uses_canonical_owned_feature_order_and_exact_metaclass() {
+    let document = "memory://actions.sysml";
+    let sources = [(
+        document,
+        "package Actions { action def Procedure { for z in (1) { action alpha; } } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution| {
+        let for_loop = settled(published.document_symbols(document))
+            .iter()
+            .find(|entry| {
+                settled(published.element_details(entry.identity))
+                    .inspection
+                    .kind
+                    == ElementKind::ForLoopActionUsage
+            })
+            .expect("for-loop action")
+            .identity;
+        published.action_derived_fact(for_loop, ActionDerivedFactCollection::ForLoopVariable)
+    };
+    let variable = identity_of(&sequential, document, "Actions::Procedure::::z");
+    assert_eq!(
+        query(&sequential),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(
+            vec![variable].into_boxed_slice(),
+        ))
+    );
+    assert_eq!(query(&sequential), query(&parallel));
+    assert_eq!(query(&sequential), query(&warm));
+
+    let procedure = identity_of(&sequential, document, "Actions::Procedure");
+    assert_eq!(
+        sequential.action_derived_fact(procedure, ActionDerivedFactCollection::ForLoopVariable,),
+        QueryOutcome::Resolved(ActionDerivedFactOutcome::Values(Box::new([])))
+    );
+}
+
+#[test]
 fn assignment_referent_preserves_its_non_feature_membership_identity() {
     let document = "memory://actions.sysml";
     let sources = [(

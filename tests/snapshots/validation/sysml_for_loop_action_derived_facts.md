@@ -5,7 +5,6 @@ source_expectation=accepted
 rule_family=derive
 expectation=semantics
 rule_id=sysml-2.0:8.3.17.9:deriveForLoopActionUsageLoopVariable
-blocked_by=lowering-gap-action-owned-feature-order
 libraries=none
 ~~~
 # SOURCE
@@ -14,7 +13,7 @@ package Actions { action def Procedure { for item in (1) { action step; } } }
 ~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
-(fixture-semantics (action-derived-fact (rule_id "sysml-2.0:8.3.17.9:deriveForLoopActionUsageLoopVariable") (source "Actions::Procedure") (target "Actions::Procedure::item") (outcome resolved)))
+(fixture-semantics (action-derived-fact (rule_id "sysml-2.0:8.3.17.9:deriveForLoopActionUsageLoopVariable") (source "Actions::Procedure::") (target "Actions::Procedure::::item") (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

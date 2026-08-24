@@ -114,6 +114,9 @@ pub(crate) struct SemanticModelBuilder {
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
     /// by one walker, so the counter is the authored position.
     pub(crate) next_positional_end_ordinals: BTreeMap<DeclarationId, u32>,
+    /// Counts each owner's authored FeatureMemberships in lowering order. The resulting one-based
+    /// position is the canonical ordered `ownedFeature` fact consumed after publication.
+    pub(crate) next_owned_feature_ordinals: BTreeMap<DeclarationId, u32>,
     /// Counts each declaration's authored unit tokens, so each carries the order it was written
     /// in rather than the order the table happened to be filled.
     pub(crate) next_unit_token_ordinals: BTreeMap<DeclarationId, u32>,
@@ -565,6 +568,13 @@ impl SemanticModelBuilder {
             (kind, visibility, None, span),
             |(kind, visibility, role, span)| (kind, visibility, Some(role), span),
         );
+        if kind == MembershipKind::Feature {
+            if let Some(owner) = self.declarations[member.index()].owner {
+                let ordinal = self.next_owned_feature_ordinals.entry(owner).or_insert(0);
+                *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+                self.declaration_facts[member.index()].owned_feature_position = Some(*ordinal);
+            }
+        }
         self.memberships.push(MembershipRecord {
             member,
             kind,

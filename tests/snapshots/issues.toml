@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-action-owned-feature-order"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ForLoopActionUsage does not publish its ordered owned Feature collection and ReferenceUsage role as a canonical fact."
-
-[[issue]]
 id = "lowering-gap-action-anonymous-metaclass-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
