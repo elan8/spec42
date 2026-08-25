@@ -105,6 +105,7 @@ impl SourceProvider for FileSystemDocumentProvider {
         if workspace_root.exists() {
             let workspace =
                 FilesystemProvider::new(vec![workspace_root.clone()], SourceKind::Workspace)
+                    .within_project_boundary(true)
                     .load(authority)?;
             merge(&mut report, workspace);
         }
@@ -173,7 +174,7 @@ fn canonicalize_or_self(path: &Path) -> PathBuf {
 }
 
 fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathBuf {
-    workspace_root.map(Path::to_path_buf).unwrap_or_else(|| {
+    let fallback = workspace_root.map(Path::to_path_buf).unwrap_or_else(|| {
         if target.is_dir() {
             target.to_path_buf()
         } else {
@@ -182,5 +183,8 @@ fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathB
                 .map(Path::to_path_buf)
                 .unwrap_or_else(|| PathBuf::from("."))
         }
-    })
+    });
+    sysml_query::source::discover_project_boundary(target, &fallback)
+        .map(|boundary| boundary.project_root().to_path_buf())
+        .unwrap_or(fallback)
 }

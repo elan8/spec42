@@ -13,6 +13,7 @@ mod dependency_guardrails;
 mod document_changes;
 mod host_errors;
 mod library_source_resolution;
+mod project_dependencies;
 mod resource_limits;
 mod semantic_ownership_guardrails;
 mod skip_guardrails;

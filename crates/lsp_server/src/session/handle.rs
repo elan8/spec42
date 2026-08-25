@@ -9,6 +9,7 @@
 //! This is the publication boundary for the live workspace: document and configuration updates
 //! enter through its named methods, and readers consume its immutable snapshots.
 
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
 use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
@@ -211,12 +212,27 @@ impl PreparedDocumentEdit {
 pub(crate) struct WorkspaceHandle {
     actor: SessionActor<ServerState>,
     snapshot: SnapshotHandle<ServerState>,
+    diagnostics_debounce_generation: Arc<AtomicU64>,
 }
 
 impl WorkspaceHandle {
     pub(crate) fn spawn(initial: ServerState) -> Self {
         let (actor, snapshot) = SessionActor::spawn(initial);
-        Self { actor, snapshot }
+        Self {
+            actor,
+            snapshot,
+            diagnostics_debounce_generation: Arc::new(AtomicU64::new(0)),
+        }
+    }
+
+    pub(crate) fn next_diagnostics_debounce_generation(&self) -> u64 {
+        self.diagnostics_debounce_generation
+            .fetch_add(1, Ordering::SeqCst)
+            + 1
+    }
+
+    pub(crate) fn is_current_diagnostics_debounce_generation(&self, generation: u64) -> bool {
+        self.diagnostics_debounce_generation.load(Ordering::SeqCst) == generation
     }
 
     /// Latest published snapshot. Non-blocking, never awaits — the whole point.
@@ -357,14 +373,36 @@ impl WorkspaceHandle {
 
     pub(crate) async fn ingest_startup_scan(
         &self,
-        entries: Vec<ParsedScanEntry>,
+        mut entries: Vec<ParsedScanEntry>,
     ) -> Result<Vec<(Url, Option<String>)>, MutatePanicked> {
         self.actor
             .mutate(move |s| {
+                // Editor text is authoritative for open documents. A startup or manifest-change
+                // rescan may have read an older saved revision from disk while didOpen/didChange
+                // was already published; never replace that revision at the scan barrier.
+                entries.retain(|entry| {
+                    let uri = crate::common::util::normalize_file_uri(&entry.uri);
+                    !s.open_in_editor.contains(&uri)
+                });
                 let results =
                     crate::session::services::ingest_parsed_scan_entries_batch(s, entries);
                 s.session.invalidate_inputs();
                 results
+            })
+            .await
+    }
+
+    pub(crate) async fn adopt_open_documents(
+        &self,
+        documents: Vec<(Url, crate::session::state::IndexEntry)>,
+    ) -> Result<(), MutatePanicked> {
+        self.actor
+            .mutate(move |state| {
+                for (uri, entry) in documents {
+                    state.open_in_editor.insert(uri.clone());
+                    state.index.insert(uri, entry);
+                }
+                state.session.invalidate_inputs();
             })
             .await
     }

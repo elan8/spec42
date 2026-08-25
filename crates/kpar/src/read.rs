@@ -28,6 +28,7 @@ pub struct MaterializedProject {
 
 #[derive(Debug, Clone)]
 struct MaterializationPlan {
+    project_file: Vec<u8>,
     source_files: Vec<(String, Vec<u8>)>,
 }
 
@@ -201,6 +202,10 @@ impl KparArchive {
     fn materialization_plan(&self) -> Result<MaterializationPlan> {
         self.verify_checksums()?;
         let entries = read_zip_entries(&self.bytes)?;
+        let project_file = entries
+            .get(PROJECT_FILE)
+            .cloned()
+            .ok_or(KparError::MissingFile(PROJECT_FILE))?;
 
         let mut paths: Vec<(String, String)> = if self.meta.index.is_empty() {
             entries
@@ -262,6 +267,7 @@ impl KparArchive {
             planned.push((logical_path, bytes.clone()));
         }
         Ok(MaterializationPlan {
+            project_file,
             source_files: planned,
         })
     }
@@ -281,6 +287,11 @@ fn publish_materialization(destination_root: &Path, plan: &MaterializationPlan) 
             path: parent.display().to_string(),
             source,
         })?;
+    let staged_project = staging.path().join(PROJECT_FILE);
+    fs::write(&staged_project, &plan.project_file).map_err(|source| KparError::Io {
+        path: staged_project.display().to_string(),
+        source,
+    })?;
     for (logical_path, bytes) in &plan.source_files {
         let staged_path = staging.path().join(logical_path);
         if let Some(parent) = staged_path.parent() {
@@ -533,6 +544,15 @@ mod tests {
         let materialized = materialize(&bytes, &dest).expect("materialize");
         assert_eq!(materialized.project.name, "test-lib");
         assert!(dest.join("domain/example.sysml").is_file());
+        let restored_project: Project = serde_json::from_slice(
+            &fs::read(dest.join(PROJECT_FILE)).expect("restored project metadata"),
+        )
+        .expect("parse restored project metadata");
+        assert_eq!(restored_project, materialized.project);
+        assert!(
+            !dest.join(META_FILE).exists(),
+            "archive metadata must not masquerade as workspace metadata"
+        );
     }
 
     #[test]

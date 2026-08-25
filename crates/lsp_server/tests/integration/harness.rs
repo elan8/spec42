@@ -13,9 +13,20 @@ pub fn server_binary_path() -> std::path::PathBuf {
 }
 
 pub fn spawn_server() -> Child {
+    spawn_server_with_env(&[])
+}
+
+pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> Child {
     let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
-    Command::new(&server_path)
+    let mut command = Command::new(&server_path);
+    for (name, value) in env {
+        command.env(name, value);
+        if *name == "SPEC42_LSP_TEST_STDLIB" {
+            command.env("SPEC42_LIBRARY_FULL_SCAN", "1");
+        }
+    }
+    command
         // Keep debug diagnostics enabled during integration tests.
         .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())

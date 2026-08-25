@@ -27,7 +27,8 @@ pub(crate) fn scan_sysml_files(
             Err(_) => summary.roots_skipped_non_file += 1,
         }
     }
-    let provider = FilesystemProvider::new(paths, SourceKind::Workspace);
+    let provider =
+        FilesystemProvider::new(paths, SourceKind::Workspace).within_project_boundary(true);
     let report = match source.load(&provider) {
         Ok(report) => report,
         Err(error) => {

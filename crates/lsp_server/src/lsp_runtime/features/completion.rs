@@ -90,10 +90,7 @@ fn map_completion_item(dto: CompletionItemDto) -> CompletionItem {
     }
 }
 
-pub(crate) fn completion_resolve(
-    _state: &ServerState,
-    mut item: CompletionItem,
-) -> Result<CompletionItem> {
+pub(crate) fn completion_resolve(mut item: CompletionItem) -> Result<CompletionItem> {
     let Some(data) = item.data.as_ref() else {
         return Ok(item);
     };

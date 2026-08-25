@@ -17,6 +17,7 @@ mod generation;
 mod harness;
 mod hover;
 mod lifecycle;
+mod project_workspaces;
 mod quality_gates;
 mod references;
 mod rename;

@@ -10,7 +10,9 @@ use crate::engine::HostEngineMetadata;
 use crate::error::{map_provider_error, WorkspaceError, WorkspaceResult};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
-use library_catalog::LibraryCatalog;
+use library_catalog::{
+    resolve_project_dependency_admission, LibraryCatalog, ProjectDependencyResolution,
+};
 use sysml_query::resolved_slice::PublishedModel;
 
 use crate::snapshot::metadata::HostArtifactMetadata;
@@ -32,6 +34,7 @@ pub struct HostWorkspaceSnapshot {
     library_urls: Vec<Url>,
     library_paths: Vec<PathBuf>,
     workspace_root: PathBuf,
+    project_dependencies: Vec<ProjectDependencyResolution>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -73,6 +76,11 @@ impl HostWorkspaceSnapshot {
 
     pub fn workspace_root(&self) -> &Path {
         &self.workspace_root
+    }
+
+    /// Resolution of every dependency authored by this snapshot's `.project.json`.
+    pub fn project_dependencies(&self) -> &[ProjectDependencyResolution] {
+        &self.project_dependencies
     }
 
     pub fn validation(&self) -> ValidationState<'_> {
@@ -130,28 +138,45 @@ pub(crate) fn build_workspace_snapshot(
     context: &HostContext,
 ) -> WorkspaceResult<HostWorkspaceSnapshot> {
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
+    let workspace_root =
+        resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
+    let admission = resolve_project_dependency_admission(&workspace_root, catalog)
+        .map_err(WorkspaceError::unresolved_library_environment)?;
+    let project_dependencies = admission.resolutions;
     // A batch snapshot is all-or-nothing: a file the provider could not admit is an error here,
     // not a warning.
     let loaded = engine
         .source()
         .load(&provider)
         .and_then(|report| report.require_complete());
-    let documents = match loaded {
+    let mut documents = match loaded {
         Err(_error) if context.cancellation.is_cancelled() => {
             return Err(WorkspaceError::cancelled());
         }
         Err(error) => return Err(map_provider_error(error)),
         Ok(documents) => documents,
     };
+    if admission.manifest_present {
+        documents.retain(|document| {
+            if !document.kind().is_library() {
+                return true;
+            }
+            let Ok(path) = document.uri().to_file_path() else {
+                return false;
+            };
+            admission
+                .selected_candidate_roots
+                .iter()
+                .any(|root| path.starts_with(root))
+        });
+    }
     let total_bytes = documents.iter().map(|doc| doc.byte_len() as u64).sum();
     context.enforce_document_limits(documents.len(), total_bytes)?;
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
-    let workspace_root =
-        resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
     let target_files = discover_target_files(&request.targets)?;
 
-    let library_paths = engine.package_roots().to_vec();
+    let library_paths = admission.library_roots;
     let library_urls = library_paths
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
@@ -204,6 +229,7 @@ pub(crate) fn build_workspace_snapshot(
         library_urls,
         library_paths,
         workspace_root,
+        project_dependencies,
     })
 }
 

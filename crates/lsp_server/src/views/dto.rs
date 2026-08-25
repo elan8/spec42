@@ -280,6 +280,9 @@ pub struct SysmlClearCacheResultDto {
 pub struct SysmlLibrarySearchParamsDto {
     pub query: String,
     pub limit: Option<usize>,
+    /// Owning document URI used to select a project publication in monorepo workspaces.
+    #[serde(default)]
+    pub project_uri: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]

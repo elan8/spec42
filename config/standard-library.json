@@ -2,5 +2,17 @@
   "version": "2026-04",
   "repo": "Systems-Modeling/SysML-v2-Release",
   "format": "kpar",
-  "contentPath": "sysml.library.kpar"
+  "contentPath": "sysml.library.kpar",
+  "projects": [
+    { "archive": "Kernel_Semantic_Library-1.0.0.kpar", "name": "Kernel Semantic Library", "version": "1.0.0", "resources": ["https://www.omg.org/spec/KerML/20250201/Semantic-Library.kpar"] },
+    { "archive": "Kernel_Data_Type_Library-1.0.0.kpar", "name": "Kernel Data Type Library", "version": "1.0.0", "resources": ["https://www.omg.org/spec/KerML/20250201/Data-Type-Library.kpar"] },
+    { "archive": "Kernel_Function_Library-1.0.0.kpar", "name": "Kernel Function Library", "version": "1.0.0", "resources": ["https://www.omg.org/spec/KerML/20250201/Function-Library.kpar"] },
+    { "archive": "SysML_Systems_Library-2.0.0.kpar", "name": "SysML Systems Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Systems-Library.kpar"] },
+    { "archive": "SysML_Quantities_and_Units_Library-2.0.0.kpar", "name": "SysML Quantities and Units Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Quantities-and-Units-Library.kpar", "https://www.omg.org/spec/KerML/20250201/Quantities-and-Units-Library.kpar"] },
+    { "archive": "SysML_Analysis_Library-2.0.0.kpar", "name": "SysML Analysis Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Analysis-Library.kpar"] },
+    { "archive": "SysML_Cause_and_Effect_Library-2.0.0.kpar", "name": "SysML Cause and Effect Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Cause-and-Effect-Library.kpar"] },
+    { "archive": "SysML_Geometry_Library-2.0.0.kpar", "name": "SysML Geometry Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Geometry-Library.kpar"] },
+    { "archive": "SysML_Metadata_Library-2.0.0.kpar", "name": "SysML Metadata Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Metadata-Library.kpar"] },
+    { "archive": "SysML_Requirement_Derivation_Library-2.0.0.kpar", "name": "SysML Requirement Derivation Library", "version": "2.0.0", "resources": ["https://www.omg.org/spec/SysML/20250201/Requirement-Derivation-Library.kpar"] }
+  ]
 }

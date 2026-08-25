@@ -40,6 +40,7 @@ fn empty_cli() -> Cli {
         library_paths: vec![],
         stdlib_path: None,
         kpar_library_paths: Vec::new(),
+        project_libraries: Vec::new(),
         disabled_kpar_libraries: Vec::new(),
         no_stdlib: false,
         stdio: false,

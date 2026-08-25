@@ -1,7 +1,7 @@
 use super::*;
 
 pub(crate) async fn initialize(
-    handle: &WorkspaceHandle,
+    projects: &ProjectRegistry,
     config: &Arc<Spec42Config>,
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
@@ -49,10 +49,9 @@ pub(crate) async fn initialize(
             diagnose_library_paths,
         })
         .expect("initialize called twice");
-    handle
-        .set_startup_config(roots, library_paths, standard_library_paths.clone())
-        .await
-        .ok();
+    projects
+        .configure(roots, library_paths, standard_library_paths)
+        .await;
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
             name: server_name.to_string(),
@@ -63,6 +62,25 @@ pub(crate) async fn initialize(
 }
 
 pub(crate) async fn initialized(
+    client: &Client,
+    projects: &ProjectRegistry,
+    server_name: &str,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+) {
+    for (root, error) in projects.admission_errors() {
+        client
+            .log_message(
+                MessageType::ERROR,
+                format!("SysML project {} was not admitted: {error}", root.display()),
+            )
+            .await;
+    }
+    for handle in projects.handles() {
+        initialized_handle(client, &handle, server_name, runtime_config).await;
+    }
+}
+
+async fn initialized_handle(
     client: &Client,
     handle: &WorkspaceHandle,
     server_name: &str,

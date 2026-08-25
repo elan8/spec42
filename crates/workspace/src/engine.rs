@@ -33,6 +33,7 @@ pub struct EngineBuilder {
     no_stdlib: bool,
     stdlib_path_override: Option<PathBuf>,
     kpar_library_path_overrides: BTreeMap<String, PathBuf>,
+    project_library_paths: BTreeMap<String, PathBuf>,
     disabled_kpar_libraries: BTreeSet<String>,
     library_paths: Vec<PathBuf>,
     extra_library_paths: Vec<PathBuf>,
@@ -126,6 +127,16 @@ impl EngineBuilder {
         self
     }
 
+    pub fn project_library_path(
+        mut self,
+        resource: impl Into<String>,
+        path: impl Into<PathBuf>,
+    ) -> Self {
+        self.project_library_paths
+            .insert(resource.into(), path.into());
+        self
+    }
+
     pub fn disable_kpar_library(mut self, id: impl Into<String>) -> Self {
         self.disabled_kpar_libraries.insert(id.into());
         self
@@ -178,6 +189,7 @@ impl EngineBuilder {
             no_stdlib: self.no_stdlib,
             stdlib_path_override: self.stdlib_path_override,
             kpar_library_path_overrides: self.kpar_library_path_overrides,
+            project_library_paths: self.project_library_paths,
             disabled_kpar_libraries: self.disabled_kpar_libraries,
             library_paths: self.library_paths,
             standard_library: self.standard_library,
@@ -210,6 +222,7 @@ impl EngineBuilder {
             .extra_library_paths(request.extra_library_paths)
             .standard_library_config(request.standard_library);
         builder.kpar_library_path_overrides = request.kpar_library_path_overrides;
+        builder.project_library_paths = request.project_library_paths;
         builder.disabled_kpar_libraries = request.disabled_kpar_libraries;
         if let Some(path) = request.stdlib_path_override {
             builder = builder.standard_library_path(path);

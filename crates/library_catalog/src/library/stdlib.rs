@@ -18,6 +18,15 @@ pub const DEFAULT_STDLIB_CONTENT_PATH: &str = env!("SPEC42_STDLIB_CONTENT_PATH")
 pub const DEFAULT_STDLIB_FORMAT: &str = env!("SPEC42_STDLIB_FORMAT");
 /// Recorded in `metadata.toml` when the tree was materialized from the binary-embedded zip.
 pub const EMBEDDED_STDLIB_REPO: &str = "embedded";
+include!(concat!(env!("OUT_DIR"), "/stdlib_projects_registry.rs"));
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct StandardLibraryProjectConfig {
+    pub archive: String,
+    pub name: String,
+    pub version: String,
+    pub resources: Vec<String>,
+}
 
 /// Minimal zip produced by `build.rs` (`bundled-sysml-kpar/*.kpar`). Empty when `embed-stdlib` is disabled.
 #[cfg(feature = "embed-stdlib")]
@@ -34,6 +43,8 @@ pub struct StandardLibraryConfig {
     pub content_path: String,
     #[serde(default = "default_stdlib_format")]
     pub format: String,
+    #[serde(default)]
+    pub projects: Vec<StandardLibraryProjectConfig>,
 }
 
 fn default_stdlib_format() -> String {
@@ -53,6 +64,8 @@ impl Default for StandardLibraryConfig {
             repo: DEFAULT_STDLIB_REPO.to_string(),
             content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
             format: DEFAULT_STDLIB_FORMAT.to_string(),
+            projects: serde_json::from_str(STDLIB_PROJECTS_JSON)
+                .expect("generated standard-library project config"),
         }
     }
 }

@@ -2,11 +2,12 @@
 //!
 //! The template is a small, tool-neutral multi-file model: a root system definition,
 //! baseline configuration, requirements, domain types, and a README with the matching
-//! Spec42 validation command. It intentionally contains no project manifest so the
-//! workspace can be used with ordinary files and folders.
+//! Spec42 validation command. A project manifest is generated from the target directory name.
 
 use std::fs;
 use std::path::{Path, PathBuf};
+
+use kpar::Project;
 
 struct TemplateFile {
     relative_path: &'static str,
@@ -44,13 +45,13 @@ pub struct ScaffoldResult {
     pub files_written: usize,
 }
 
-/// Create the starter workspace in a new or empty directory.
+/// Initialize a project in a new, empty, or existing model directory.
 ///
-/// The directory is checked before any file is written, so this operation never
-/// overwrites an existing workspace file. A non-empty directory is rejected to
-/// prevent a partial scaffold from being mixed into an unrelated project.
-pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
-    match fs::symlink_metadata(root) {
+/// New and empty directories receive the starter workspace. An existing non-empty directory is
+/// promoted by adding only `.project.json`. Existing files, including an existing manifest, are
+/// never overwritten.
+pub fn scaffold(root: &Path, usage: Vec<kpar::ProjectUsage>) -> Result<ScaffoldResult, String> {
+    let populate_starter = match fs::symlink_metadata(root) {
         Ok(metadata) if !metadata.file_type().is_dir() => {
             return Err(format!(
                 "cannot initialize {}: target exists and is not a directory",
@@ -60,21 +61,25 @@ pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
         Ok(_) => {
             let mut entries = fs::read_dir(root)
                 .map_err(|error| format!("cannot inspect {}: {error}", root.display()))?;
-            if entries.next().is_some() {
-                return Err(format!(
-                    "cannot initialize {}: target directory is not empty; existing files are never overwritten",
-                    root.display()
-                ));
-            }
+            entries.next().is_none()
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             fs::create_dir_all(root)
                 .map_err(|error| format!("cannot create {}: {error}", root.display()))?;
+            true
         }
         Err(error) => return Err(format!("cannot inspect {}: {error}", root.display())),
+    };
+
+    let project_path = root.join(kpar::PROJECT_FILE);
+    if project_path.exists() {
+        return Ok(ScaffoldResult {
+            root: root.to_path_buf(),
+            files_written: 0,
+        });
     }
 
-    for template in FILES {
+    for template in FILES.iter().filter(|_| populate_starter) {
         let destination = root.join(template.relative_path);
         if destination.exists() {
             return Err(format!(
@@ -85,7 +90,7 @@ pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
         }
     }
 
-    for template in FILES {
+    for template in FILES.iter().filter(|_| populate_starter) {
         let destination = root.join(template.relative_path);
         let parent = destination
             .parent()
@@ -96,8 +101,52 @@ pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
             .map_err(|error| format!("cannot write {}: {error}", destination.display()))?;
     }
 
+    let mut project = Project {
+        name: project_name(root),
+        version: "0.1.0".into(),
+        description: None,
+        license: None,
+        publisher: None,
+        maintainer: Vec::new(),
+        website: None,
+        topic: Vec::new(),
+        usage,
+    };
+    if project.validate_identity().is_err() {
+        project.name = "model".into();
+    }
+    let mut project_json = serde_json::to_string_pretty(&project)
+        .map_err(|error| format!("cannot serialize {}: {error}", project_path.display()))?;
+    project_json.push('\n');
+    fs::write(&project_path, project_json)
+        .map_err(|error| format!("cannot write {}: {error}", project_path.display()))?;
+
     Ok(ScaffoldResult {
         root: root.to_path_buf(),
-        files_written: FILES.len(),
+        files_written: 1 + if populate_starter { FILES.len() } else { 0 },
     })
+}
+
+fn project_name(root: &Path) -> String {
+    let candidate = root
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("model");
+    let normalized = candidate
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() || matches!(character, '-' | '_' | '.') {
+                character
+            } else {
+                '-'
+            }
+        })
+        .collect::<String>()
+        .trim_matches(['.', '-', ' '])
+        .to_string();
+    if normalized.is_empty() {
+        "model".into()
+    } else {
+        normalized
+    }
 }

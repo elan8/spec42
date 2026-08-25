@@ -128,10 +128,18 @@ fn run_bundle(args: &BundleArgs) -> Result<ExitCode, String> {
     }
     let project_path = args.directory.join(kpar::PROJECT_FILE);
     let project_bytes = std::fs::read(&project_path).map_err(|error| {
-        format!(
-            "bundle requires {} as the project metadata authority: {error}",
-            project_path.display()
-        )
+        if error.kind() == std::io::ErrorKind::NotFound {
+            format!(
+                "bundle requires {} as the project metadata authority: {error}. Run `spec42 init {}` to create it",
+                project_path.display(),
+                args.directory.display()
+            )
+        } else {
+            format!(
+                "bundle requires {} as the project metadata authority: {error}",
+                project_path.display()
+            )
+        }
     })?;
     let project: kpar::Project = serde_json::from_slice(&project_bytes).map_err(|error| {
         format!(
@@ -195,7 +203,9 @@ fn run_unbundle(args: &UnbundleArgs) -> Result<ExitCode, String> {
 }
 
 fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
-    let scaffold = starter_workspace::scaffold(&args.path)?;
+    let engine = build_engine(cli)?;
+    let usage = library_catalog::manifest_usages_for_standard_library(engine.library_catalog())?;
+    let scaffold = starter_workspace::scaffold(&args.path, usage)?;
     let validation_args = CheckArgs {
         path: scaffold.root.clone(),
         workspace_root: Some(scaffold.root.clone()),
@@ -228,6 +238,7 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let config = Arc::new(
         lsp_server::default_server_config()
             .with_services(engine.services().clone())
+            .with_project_library_catalog(engine.library_catalog().clone())
             .with_default_library_paths(environment.library_paths.clone())
             .with_standard_library_paths(environment.stdlib_roots.clone())
             .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(

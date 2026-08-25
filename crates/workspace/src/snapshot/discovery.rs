@@ -16,24 +16,48 @@ pub fn resolve_workspace_root(
     targets: &[PathBuf],
     workspace_root: Option<&Path>,
 ) -> WorkspaceResult<PathBuf> {
-    if let Some(root) = workspace_root {
-        return normalize_existing_path(root);
-    }
     let first = targets.first().ok_or_else(|| {
         WorkspaceError::unresolved_library_environment("No target path was provided.")
     })?;
-    if first.is_dir() {
-        return normalize_existing_path(first);
-    }
-    normalize_existing_path(first)?
-        .parent()
-        .map(Path::to_path_buf)
-        .ok_or_else(|| {
+    let first = normalize_existing_path(first)?;
+    let ceiling = match workspace_root {
+        Some(root) => normalize_existing_path(root)?,
+        None if first.is_dir() => first.clone(),
+        None => first.parent().map(Path::to_path_buf).ok_or_else(|| {
             WorkspaceError::unresolved_library_environment(format!(
                 "Could not infer a workspace root from target file {}.",
                 first.display()
             ))
-        })
+        })?,
+    };
+    let boundary =
+        sysml_query::source::discover_project_boundary(&first, &ceiling).ok_or_else(|| {
+            WorkspaceError::unresolved_library_environment(format!(
+                "Target {} is outside workspace root {}.",
+                first.display(),
+                ceiling.display()
+            ))
+        })?;
+    let root = boundary.project_root().to_path_buf();
+    for target in targets.iter().skip(1) {
+        let target = normalize_existing_path(target)?;
+        let target_boundary = sysml_query::source::discover_project_boundary(&target, &ceiling)
+            .ok_or_else(|| {
+                WorkspaceError::unresolved_library_environment(format!(
+                    "Target {} is outside workspace root {}.",
+                    target.display(),
+                    ceiling.display()
+                ))
+            })?;
+        if target_boundary.project_root() != root {
+            return Err(WorkspaceError::unresolved_library_environment(format!(
+                "Targets belong to different SysML projects: {} and {}.",
+                root.display(),
+                target_boundary.project_root().display()
+            )));
+        }
+    }
+    Ok(root)
 }
 
 pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf>> {
@@ -65,4 +89,41 @@ fn normalize_existing_path(path: &Path) -> WorkspaceResult<PathBuf> {
         )));
     }
     Ok(std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn explicit_workspace_is_a_ceiling_for_nearest_project_discovery() {
+        let temp = tempfile::tempdir().unwrap();
+        let repo = temp.path();
+        let project = repo.join("models/vehicle");
+        std::fs::create_dir_all(project.join("src")).unwrap();
+        std::fs::write(project.join(".project.json"), "{}").unwrap();
+        let source = project.join("src/Vehicle.sysml");
+        std::fs::write(&source, "package Vehicle;").unwrap();
+
+        assert_eq!(
+            resolve_workspace_root(&[source], Some(repo)).unwrap(),
+            std::fs::canonicalize(project).unwrap()
+        );
+    }
+
+    #[test]
+    fn targets_from_distinct_manifest_projects_are_rejected() {
+        let temp = tempfile::tempdir().unwrap();
+        let mut targets = Vec::new();
+        for name in ["a", "b"] {
+            let project = temp.path().join(name);
+            std::fs::create_dir(&project).unwrap();
+            std::fs::write(project.join(".project.json"), "{}").unwrap();
+            let source = project.join("Model.sysml");
+            std::fs::write(&source, "package Model;").unwrap();
+            targets.push(source);
+        }
+        let error = resolve_workspace_root(&targets, Some(temp.path())).unwrap_err();
+        assert!(error.to_string().contains("different SysML projects"));
+    }
 }

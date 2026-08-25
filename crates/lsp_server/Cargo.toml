@@ -15,6 +15,7 @@ default = []
 [dependencies]
 session_actor = { path = "../session_actor" }
 language_service = { path = "../language_service" }
+library_catalog = { path = "../library_catalog", default-features = false }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
 spec42-generator-protocol = { path = "../generator_protocol" }

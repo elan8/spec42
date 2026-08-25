@@ -7,6 +7,7 @@ mod generation;
 mod hierarchy;
 mod lifecycle;
 mod navigation;
+mod project_registry;
 mod references_resolver;
 mod symbols;
 
@@ -20,7 +21,7 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::session::state::ServerState;
-use crate::session::{RuntimeConfig, WorkspaceHandle};
+use crate::session::RuntimeConfig;
 use crate::views::dto;
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
@@ -29,10 +30,11 @@ use generation::{
     DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
     StateTransitionViewsParams, StateTransitionViewsResult,
 };
+use project_registry::ProjectRegistry;
 
 struct Backend {
     client: Client,
-    handle: WorkspaceHandle,
+    projects: ProjectRegistry,
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
@@ -47,7 +49,7 @@ struct Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         documents::initialize(
-            &self.handle,
+            &self.projects,
             &self.config,
             &self.server_name,
             &self.runtime_config,
@@ -59,7 +61,7 @@ impl LanguageServer for Backend {
     async fn initialized(&self, _: InitializedParams) {
         documents::initialized(
             &self.client,
-            &self.handle,
+            &self.projects,
             &self.server_name,
             &self.runtime_config,
         )
@@ -71,51 +73,120 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        documents::did_open(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        let uri = params.text_document.uri.clone();
+        let mut handles = self.projects.handles_admitting_library_uri(&uri);
+        if handles.is_empty() {
+            let Some(handle) = self.projects.handle_for_uri(&uri).await else {
+                return;
+            };
+            if let Some(error) = self.projects.admission_error_for_uri(&uri) {
+                self.client.log_message(MessageType::ERROR, error).await;
+                return;
+            }
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_open(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        documents::did_change(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        let mut handles = self
+            .projects
+            .handles_admitting_library_uri(&params.text_document.uri);
+        if handles.is_empty() {
+            let Some(handle) = self
+                .projects
+                .handle_for_uri(&params.text_document.uri)
+                .await
+            else {
+                return;
+            };
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_change(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        documents::did_close(&self.client, &self.handle, params).await;
+        let mut handles = self
+            .projects
+            .handles_admitting_library_uri(&params.text_document.uri);
+        if handles.is_empty() {
+            let Some(handle) = self
+                .projects
+                .existing_handle_for_uri(&params.text_document.uri)
+            else {
+                return;
+            };
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_close(&self.client, &handle, params.clone()).await;
+        }
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
-        documents::did_change_watched_files(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        for change in params.changes {
+            if change
+                .uri
+                .to_file_path()
+                .ok()
+                .and_then(|path| path.file_name().map(|name| name == ".project.json"))
+                .unwrap_or(false)
+            {
+                self.projects.rediscover().await;
+                documents::initialized(
+                    &self.client,
+                    &self.projects,
+                    &self.server_name,
+                    &self.runtime_config,
+                )
+                .await;
+                continue;
+            }
+            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+                continue;
+            };
+            documents::did_change_watched_files(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                DidChangeWatchedFilesParams {
+                    changes: vec![change],
+                },
+            )
+            .await;
+        }
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
-        documents::did_change_configuration(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        for handle in self.projects.handles() {
+            documents::did_change_configuration(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
@@ -124,7 +195,7 @@ impl LanguageServer for Backend {
             .text_document
             .uri
             .clone();
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&hover_uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -139,7 +210,7 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -154,12 +225,11 @@ impl LanguageServer for Backend {
     }
 
     async fn completion_resolve(&self, params: CompletionItem) -> Result<CompletionItem> {
-        let state = self.handle.snapshot();
-        features::completion_resolve(&state, params)
+        features::completion_resolve(params)
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::signature_help(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -171,7 +241,7 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -186,7 +256,7 @@ impl LanguageServer for Backend {
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -202,7 +272,7 @@ impl LanguageServer for Backend {
     }
 
     async fn document_link(&self, params: DocumentLinkParams) -> Result<Option<Vec<DocumentLink>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::document_link(&state, params.text_document.uri)
     }
 
@@ -210,7 +280,7 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentHighlightParams,
     ) -> Result<Option<Vec<DocumentHighlight>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -228,7 +298,7 @@ impl LanguageServer for Backend {
         &self,
         params: SelectionRangeParams,
     ) -> Result<Option<Vec<SelectionRange>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::selection_range(&state, params.text_document.uri, params.positions)
     }
 
@@ -236,7 +306,7 @@ impl LanguageServer for Backend {
         &self,
         params: TextDocumentPositionParams,
     ) -> Result<Option<PrepareRenameResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -251,7 +321,7 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -270,12 +340,12 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentSymbolParams,
     ) -> Result<Option<DocumentSymbolResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::document_symbol(&state, params.text_document.uri)
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> Result<Option<Vec<FoldingRange>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::folding_range(&state, params.text_document.uri)
     }
 
@@ -284,17 +354,39 @@ impl LanguageServer for Backend {
         &self,
         params: WorkspaceSymbolParams,
     ) -> Result<Option<Vec<SymbolInformation>>> {
-        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        features::workspace_symbol(&state, params.query, perf_logging_enabled)
+        let mut symbols = Vec::new();
+        for handle in self.projects.handles() {
+            let state = handle.snapshot();
+            if let Some(mut project_symbols) =
+                features::workspace_symbol(&state, params.query.clone(), perf_logging_enabled)?
+            {
+                symbols.append(&mut project_symbols);
+            }
+        }
+        symbols.sort_by(|left, right| {
+            (
+                left.location.uri.as_str(),
+                left.location.range.start.line,
+                left.location.range.start.character,
+                left.name.as_str(),
+            )
+                .cmp(&(
+                    right.location.uri.as_str(),
+                    right.location.range.start.line,
+                    right.location.range.start.character,
+                    right.name.as_str(),
+                ))
+        });
+        Ok(Some(symbols))
     }
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::code_action(
             &state,
             params.text_document.uri,
@@ -304,7 +396,7 @@ impl LanguageServer for Backend {
     }
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let runtime_config = self
             .runtime_config
             .get()
@@ -318,12 +410,12 @@ impl LanguageServer for Backend {
     }
 
     async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::inlay_hint(&state, params.text_document.uri, params.range)
     }
 
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::formatting(&state, params.text_document.uri, params.options)
     }
 
@@ -331,7 +423,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -358,7 +450,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -386,7 +478,7 @@ impl LanguageServer for Backend {
         &self,
         params: LinkedEditingRangeParams,
     ) -> Result<Option<LinkedEditingRanges>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::linked_editing_range(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -398,7 +490,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchyPrepareParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::prepare_type_hierarchy(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -410,7 +502,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySupertypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.item.uri)?;
         features::supertypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
 
@@ -418,27 +510,62 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.item.uri)?;
         features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
 }
 
 impl Backend {
+    fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
+        if let Some(error) = self.projects.admission_error_for_uri(uri) {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(error));
+        }
+        self.projects
+            .existing_handle_for_uri(uri)
+            .map(|handle| handle.snapshot())
+            .ok_or_else(|| {
+                tower_lsp::jsonrpc::Error::invalid_params(
+                    "document URI is outside the configured workspace projects",
+                )
+            })
+    }
     async fn sysml_feature_inspector(
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-        let state = self.handle.snapshot();
+        let (uri, _) = crate::views::parse_sysml_feature_inspector_params(&params)?;
+        let state = self.state_for_uri(&uri)?;
         sysml_feature_inspector_result(&state, params)
     }
 
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
-        let state = self.handle.snapshot();
-        Ok(sysml_server_stats_result(&state, self.start_time))
+        let mut result = dto::SysmlServerStatsDto {
+            uptime: self.start_time.elapsed().as_secs(),
+            memory: dto::SysmlServerMemoryDto { rss: 0 },
+            caches: dto::SysmlServerCachesDto {
+                documents: 0,
+                symbol_tables: 0,
+                semantic_tokens: 0,
+            },
+        };
+        for handle in self.projects.handles() {
+            let project = sysml_server_stats_result(&handle.snapshot(), self.start_time);
+            result.caches.documents += project.caches.documents;
+            result.caches.symbol_tables += project.caches.symbol_tables;
+            result.caches.semantic_tokens += project.caches.semantic_tokens;
+        }
+        Ok(result)
     }
 
     async fn sysml_clear_cache(&self) -> Result<dto::SysmlClearCacheResultDto> {
-        let (documents, symbol_tables) = self.handle.clear_cache_state().await.unwrap_or((0, 0));
+        let mut documents = 0;
+        let mut symbol_tables = 0;
+        for handle in self.projects.handles() {
+            let (handle_documents, handle_symbols) =
+                handle.clear_cache_state().await.unwrap_or((0, 0));
+            documents += handle_documents;
+            symbol_tables += handle_symbols;
+        }
         Ok(dto::SysmlClearCacheResultDto {
             documents,
             symbol_tables,
@@ -450,7 +577,7 @@ impl Backend {
         let model_uri = Url::parse(&params.model_uri).map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
         })?;
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&model_uri)?;
         if !state
             .index
             .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
@@ -492,7 +619,7 @@ impl Backend {
         let model_uri = Url::parse(&params.model_uri).map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
         })?;
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&model_uri)?;
         if !state
             .index
             .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
@@ -523,7 +650,7 @@ impl Backend {
         let model_uri = Url::parse(&params.model_uri).map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
         })?;
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&model_uri)?;
         if !state
             .index
             .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
@@ -554,8 +681,24 @@ impl Backend {
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlLibrarySearchResultDto> {
-        let state = self.handle.snapshot();
-        sysml_library_search_result(&state, params)
+        let request: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params.clone())
+            .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        if let Some(project_uri) = request.project_uri {
+            let uri = Url::parse(&project_uri).map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "invalid library-search project URI: {error}"
+                ))
+            })?;
+            let state = self.state_for_uri(&uri)?;
+            return sysml_library_search_result(&state, params);
+        }
+        let handles = self.projects.handles();
+        if handles.len() != 1 {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "sysml/librarySearch requires project provenance in a multi-project workspace",
+            ));
+        }
+        sysml_library_search_result(&handles[0].snapshot(), params)
     }
 
     async fn custom_rpc_method(
@@ -593,7 +736,10 @@ fn make_custom_rpc_handler(
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
-    let handle = WorkspaceHandle::spawn(ServerState::new(config.services.clone()));
+    let projects = ProjectRegistry::new(
+        config.services.clone(),
+        config.project_library_catalog.clone(),
+    );
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
@@ -603,7 +749,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
 
     let mut builder = LspService::build(move |client| Backend {
         client,
-        handle: handle.clone(),
+        projects: projects.clone(),
         config: Arc::clone(&service_config),
         start_time,
         server_name: server_name.clone(),
