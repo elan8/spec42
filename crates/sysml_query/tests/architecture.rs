@@ -1115,7 +1115,9 @@ fn host_crates_keep_their_declared_dependency_sets() {
         set(&[
             "directories",
             "kpar",
+            "semver",
             "serde",
+            "serde_json",
             "sysml_query",
             "tempfile",
             "toml",

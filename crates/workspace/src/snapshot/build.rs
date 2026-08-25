@@ -10,7 +10,9 @@ use crate::engine::HostEngineMetadata;
 use crate::error::{map_provider_error, WorkspaceError, WorkspaceResult};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
-use library_catalog::LibraryCatalog;
+use library_catalog::{
+    resolve_project_manifest_dependencies, LibraryCatalog, ProjectDependencyResolution,
+};
 use sysml_query::resolved_slice::PublishedModel;
 
 use crate::snapshot::metadata::HostArtifactMetadata;
@@ -32,6 +34,7 @@ pub struct HostWorkspaceSnapshot {
     library_urls: Vec<Url>,
     library_paths: Vec<PathBuf>,
     workspace_root: PathBuf,
+    project_dependencies: Vec<ProjectDependencyResolution>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -73,6 +76,11 @@ impl HostWorkspaceSnapshot {
 
     pub fn workspace_root(&self) -> &Path {
         &self.workspace_root
+    }
+
+    /// Resolution of every dependency authored by this snapshot's `.project.json`.
+    pub fn project_dependencies(&self) -> &[ProjectDependencyResolution] {
+        &self.project_dependencies
     }
 
     pub fn validation(&self) -> ValidationState<'_> {
@@ -130,28 +138,73 @@ pub(crate) fn build_workspace_snapshot(
     context: &HostContext,
 ) -> WorkspaceResult<HostWorkspaceSnapshot> {
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
+    let workspace_root =
+        resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
+    let manifest_present = workspace_root.join(library_catalog::PROJECT_FILE).is_file();
+    let project_dependencies = resolve_manifest_dependencies(&workspace_root, catalog)?;
+    let selected_dependency_roots = project_dependencies
+        .iter()
+        .filter_map(|resolution| match resolution {
+            ProjectDependencyResolution::Satisfied { package_roots, .. } => Some(package_roots),
+            _ => None,
+        })
+        .flatten()
+        .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
+        .collect::<Vec<_>>();
     // A batch snapshot is all-or-nothing: a file the provider could not admit is an error here,
     // not a warning.
     let loaded = engine
         .source()
         .load(&provider)
         .and_then(|report| report.require_complete());
-    let documents = match loaded {
+    let mut documents = match loaded {
         Err(_error) if context.cancellation.is_cancelled() => {
             return Err(WorkspaceError::cancelled());
         }
         Err(error) => return Err(map_provider_error(error)),
         Ok(documents) => documents,
     };
+    if manifest_present {
+        let candidate_roots = catalog
+            .dependency_candidates
+            .iter()
+            .flat_map(|candidate| candidate.package_roots.iter())
+            .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
+            .collect::<Vec<_>>();
+        documents.retain(|document| {
+            let Ok(path) = document.uri().to_file_path() else {
+                return true;
+            };
+            !candidate_roots.iter().any(|root| path.starts_with(root))
+                || selected_dependency_roots
+                    .iter()
+                    .any(|root| path.starts_with(root))
+        });
+    }
     let total_bytes = documents.iter().map(|doc| doc.byte_len() as u64).sum();
     context.enforce_document_limits(documents.len(), total_bytes)?;
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
-    let workspace_root =
-        resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
     let target_files = discover_target_files(&request.targets)?;
 
-    let library_paths = engine.package_roots().to_vec();
+    let mut library_paths = engine.package_roots().to_vec();
+    if manifest_present {
+        let candidate_roots = catalog
+            .dependency_candidates
+            .iter()
+            .flat_map(|candidate| candidate.package_roots.iter())
+            .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
+            .collect::<Vec<_>>();
+        library_paths.retain(|root| {
+            let canonical = root.canonicalize().unwrap_or_else(|_| root.clone());
+            !candidate_roots.contains(&canonical)
+        });
+        for root in selected_dependency_roots {
+            if !library_paths.contains(&root) {
+                library_paths.push(root);
+            }
+        }
+    }
     let library_urls = library_paths
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
@@ -204,7 +257,37 @@ pub(crate) fn build_workspace_snapshot(
         library_urls,
         library_paths,
         workspace_root,
+        project_dependencies,
     })
+}
+
+fn resolve_manifest_dependencies(
+    workspace_root: &Path,
+    catalog: &LibraryCatalog,
+) -> WorkspaceResult<Vec<ProjectDependencyResolution>> {
+    let manifest_path = workspace_root.join(library_catalog::PROJECT_FILE);
+    if !manifest_path.is_file() {
+        return Ok(Vec::new());
+    }
+    let resolutions =
+        resolve_project_manifest_dependencies(&manifest_path, &catalog.dependency_candidates)
+            .map_err(WorkspaceError::unresolved_library_environment)?;
+    let failures: Vec<_> = resolutions
+        .iter()
+        .filter(|resolution| !matches!(resolution, ProjectDependencyResolution::Satisfied { .. }))
+        .collect();
+    if !failures.is_empty() {
+        let states = serde_json::to_string(&failures).map_err(|error| {
+            WorkspaceError::internal_invariant_failure(format!(
+                "Could not serialize project dependency states: {error}"
+            ))
+        })?;
+        return Err(WorkspaceError::unresolved_library_environment(format!(
+            "Project dependencies from {} were not satisfied: {states}. Spec42 does not fetch dependency resources implicitly.",
+            manifest_path.display()
+        )));
+    }
+    Ok(resolutions)
 }
 
 pub(crate) fn init_validation_report(

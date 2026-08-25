@@ -28,6 +28,8 @@ pub struct KparLibraryConfig {
     pub format: String,
     #[serde(default)]
     pub artifact: Option<String>,
+    #[serde(default)]
+    pub resource: Option<String>,
 }
 
 impl KparLibraryConfig {
@@ -45,6 +47,7 @@ impl KparLibraryConfig {
             content_path: entry.content_path.to_string(),
             format: entry.format.to_string(),
             artifact: entry.artifact.map(str::to_string),
+            resource: entry.resource.map(str::to_string),
         }
     }
 }
@@ -489,6 +492,7 @@ mod tests {
             content_path: String::new(),
             format: "kpar".to_string(),
             artifact: Some("elan8-domain-libraries-0.3.0.kpar".to_string()),
+            resource: None,
         };
         let install = managed_install_path(&paths, &config);
         assert!(

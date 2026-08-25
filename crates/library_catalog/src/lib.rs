@@ -7,12 +7,18 @@
 //! library-closure service's question, not this crate's; this crate reads no SysML.
 
 pub mod catalog;
+pub mod dependencies;
 pub mod library;
 
 pub use catalog::{
     resolve_library_catalog, HostConfigFile, HostLibraryRequest, KparLibraryComponent,
     LibraryCatalog, StdlibComponent,
 };
+pub use dependencies::{
+    resolve_project_dependencies, resolve_project_manifest_dependencies,
+    ProjectDependencyCandidate, ProjectDependencyResolution,
+};
+pub use kpar::PROJECT_FILE;
 pub use library::{
     bundle::LibraryBundleConfig,
     managed::{
@@ -22,7 +28,7 @@ pub use library::{
     resolve_explicit_library_path,
     stdlib::{
         project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
-        StandardLibraryPaths, StandardLibraryStatus,
+        StandardLibraryPaths, StandardLibraryProjectConfig, StandardLibraryStatus,
     },
     LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
     ResolvedExplicitLibrary,

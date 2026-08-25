@@ -14,7 +14,7 @@ use crate::views::dto::SemanticIndexReadyNotificationDto;
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
-use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
+use super::lifecycle::{project_boundary_for_uri, scan_roots, workspace_roots_from_initialize};
 
 static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;

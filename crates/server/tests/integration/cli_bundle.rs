@@ -1,5 +1,5 @@
 use std::fs;
-use std::io::Cursor;
+use std::io::{Cursor, Read};
 use std::process::Command;
 
 use tempfile::tempdir;
@@ -46,6 +46,11 @@ fn bundle_and_unbundle_use_project_metadata_defaults_end_to_end() {
         zip::CompressionMethod::Stored,
         "--no-compress must store source entries without ZIP compression"
     );
+    let mut archived_project = Vec::new();
+    zip.by_name(".project.json")
+        .expect("project archive entry")
+        .read_to_end(&mut archived_project)
+        .expect("read project archive entry");
     let archive_bytes = fs::read(&archive).expect("read initial archive");
     let duplicate_bundle = Command::new(binary)
         .current_dir(temp.path())
@@ -72,6 +77,42 @@ fn bundle_and_unbundle_use_project_metadata_defaults_end_to_end() {
             .is_file(),
         "unbundle default destination must use the archive project name"
     );
+    let unpacked_project = temp.path().join("example-library").join(".project.json");
+    assert_eq!(
+        fs::read(&unpacked_project).expect("unbundled project metadata"),
+        archived_project,
+        "unbundle must restore the archive's project metadata"
+    );
+    assert!(
+        !temp
+            .path()
+            .join("example-library")
+            .join(".meta.json")
+            .exists(),
+        "archive-specific metadata must not be restored as workspace configuration"
+    );
+
+    let rebundled_archive = temp.path().join("rebundled.kpar");
+    let rebundled_directory = temp.path().join("example-library");
+    let rebundled = Command::new(binary)
+        .current_dir(temp.path())
+        .args([
+            "bundle",
+            rebundled_directory
+                .to_str()
+                .expect("utf-8 unbundled directory"),
+            "-o",
+            rebundled_archive.to_str().expect("utf-8 archive path"),
+        ])
+        .output()
+        .expect("rebundle unbundled project");
+    assert!(
+        rebundled.status.success(),
+        "rebundling the unbundled project failed: {}",
+        String::from_utf8_lossy(&rebundled.stderr)
+    );
+    assert!(rebundled_archive.is_file());
+
     let duplicate_unbundle = Command::new(binary)
         .current_dir(temp.path())
         .args(["unbundle", archive.to_str().expect("utf-8 archive")])

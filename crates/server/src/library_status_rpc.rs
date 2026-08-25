@@ -240,6 +240,7 @@ mod tests {
             content_path: String::new(),
             format: "kpar".to_string(),
             artifact: Some("elan8-method-libraries-0.2.0.kpar".to_string()),
+            resource: None,
         };
         let paths = kpar_library_paths_from_data_dir(std::path::Path::new("/tmp/data"), "method");
         let component = KparLibraryComponent {

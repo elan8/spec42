@@ -20,6 +20,7 @@ use crate::library::{
         StandardLibraryPaths, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
     },
 };
+use crate::ProjectDependencyCandidate;
 use crate::{CatalogError, CatalogResult};
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -75,6 +76,9 @@ pub struct LibraryCatalog {
     pub package_roots: Vec<PathBuf>,
     pub stdlib: StdlibComponent,
     pub kpar_libraries: Vec<KparLibraryComponent>,
+    /// Installed projects with authoritative resource identities that may satisfy KPAR usages.
+    /// This is empty for an installation whose provisioning contract does not declare identity.
+    pub dependency_candidates: Vec<ProjectDependencyCandidate>,
     pub standard_library: StandardLibraryConfig,
     pub standard_library_paths: StandardLibraryPaths,
 }
@@ -92,15 +96,66 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> CatalogResult<Li
     );
 
     let root_digest = hash_package_roots(&package_roots, &stdlib.roots)?;
+    let mut dependency_candidates =
+        stdlib_dependency_candidates(&stdlib, &request.standard_library);
+    dependency_candidates.extend(kpar_dependency_candidates(&kpar_libraries));
 
     Ok(LibraryCatalog {
         root_digest,
         package_roots,
         stdlib,
         kpar_libraries,
+        dependency_candidates,
         standard_library: request.standard_library.clone(),
         standard_library_paths,
     })
+}
+
+fn kpar_dependency_candidates(
+    libraries: &[KparLibraryComponent],
+) -> Vec<ProjectDependencyCandidate> {
+    libraries
+        .iter()
+        .filter_map(|library| {
+            Some(ProjectDependencyCandidate {
+                resource: library.config.resource.clone()?,
+                project_name: library.config.display_name.clone(),
+                version: library.config.version.clone(),
+                package_roots: vec![library.path.clone()?],
+            })
+        })
+        .collect()
+}
+
+/// The KPAR schema has no self-resource field, so identities and archive/root bindings come from
+/// the selected standard-library configuration. No display-name or filename inference occurs.
+fn stdlib_dependency_candidates(
+    stdlib: &StdlibComponent,
+    config: &StandardLibraryConfig,
+) -> Vec<ProjectDependencyCandidate> {
+    config
+        .projects
+        .iter()
+        .filter_map(|project| {
+            let root_name = project.archive.strip_suffix(".kpar")?;
+            let root = stdlib
+                .roots
+                .iter()
+                .find(|root| root.file_name().and_then(|name| name.to_str()) == Some(root_name))?;
+            Some(
+                project
+                    .resources
+                    .iter()
+                    .map(move |resource| ProjectDependencyCandidate {
+                        resource: resource.clone(),
+                        project_name: project.name.clone(),
+                        version: project.version.clone(),
+                        package_roots: vec![root.clone()],
+                    }),
+            )
+        })
+        .flatten()
+        .collect()
 }
 
 fn resolve_stdlib_component(
@@ -238,6 +293,7 @@ fn resolve_kpar_libraries(
             content_path: String::new(),
             format: "kpar".to_string(),
             artifact: None,
+            resource: None,
         };
         components.push(KparLibraryComponent {
             id: id.clone(),
@@ -475,6 +531,66 @@ mod tests {
         let forward = hash_package_roots(&[first.clone(), second.clone()], &[]).unwrap();
         let reverse = hash_package_roots(&[second, first], &[]).unwrap();
         assert_ne!(forward, reverse);
+    }
+
+    #[test]
+    fn bundled_stdlib_dependency_mapping_has_no_missing_pinned_roots() {
+        let roots = [
+            "Kernel_Semantic_Library-1.0.0",
+            "Kernel_Data_Type_Library-1.0.0",
+            "Kernel_Function_Library-1.0.0",
+            "SysML_Systems_Library-2.0.0",
+            "SysML_Quantities_and_Units_Library-2.0.0",
+            "SysML_Analysis_Library-2.0.0",
+            "SysML_Cause_and_Effect_Library-2.0.0",
+            "SysML_Geometry_Library-2.0.0",
+            "SysML_Metadata_Library-2.0.0",
+            "SysML_Requirement_Derivation_Library-2.0.0",
+        ]
+        .map(PathBuf::from)
+        .to_vec();
+        let candidates = stdlib_dependency_candidates(
+            &StdlibComponent {
+                path: Some(PathBuf::from("stdlib")),
+                roots,
+                source: Some("bundled".into()),
+                used_legacy_vscode_fallback: false,
+            },
+            &StandardLibraryConfig::default(),
+        );
+        assert_eq!(candidates.len(), 11, "pinned mapping and roots drifted");
+        assert!(candidates
+            .iter()
+            .all(|candidate| candidate.package_roots.len() == 1));
+    }
+
+    #[test]
+    fn explicitly_provisioned_stdlib_uses_its_declared_project_resources() {
+        let root = PathBuf::from("Custom_Library-3.0.0");
+        let stdlib = StdlibComponent {
+            path: Some(PathBuf::from("custom")),
+            roots: vec![root.clone()],
+            source: Some("flag".into()),
+            used_legacy_vscode_fallback: false,
+        };
+        let config = StandardLibraryConfig {
+            projects: vec![crate::StandardLibraryProjectConfig {
+                archive: "Custom_Library-3.0.0.kpar".into(),
+                name: "Custom Library".into(),
+                version: "3.0.0".into(),
+                resources: vec!["urn:example:custom-library".into()],
+            }],
+            ..StandardLibraryConfig::default()
+        };
+        assert_eq!(
+            stdlib_dependency_candidates(&stdlib, &config),
+            vec![ProjectDependencyCandidate {
+                resource: "urn:example:custom-library".into(),
+                project_name: "Custom Library".into(),
+                version: "3.0.0".into(),
+                package_roots: vec![root],
+            }]
+        );
     }
 
     #[cfg(unix)]

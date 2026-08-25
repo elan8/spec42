@@ -11,6 +11,18 @@ pub(crate) async fn did_open(
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
+    let project_boundary = {
+        let snap = handle.snapshot();
+        project_boundary_for_uri(&uri_norm, &snap.workspace_roots)
+    };
+    if let Some(boundary) = project_boundary {
+        tracing::debug!(
+            document = %uri_norm,
+            project_root = %boundary.project_root().display(),
+            manifest = ?boundary.project_manifest().map(|path| path.display().to_string()),
+            "resolved document project boundary"
+        );
+    }
     // Recorded before diagnostics are computed: an opened library file is an authoring surface,
     // and the publication only reports one it was told about.
     let _ = handle.set_document_open(uri_norm.clone(), true).await;

@@ -22,6 +22,15 @@ struct StdlibConfig {
     content_path: String,
     #[serde(default = "default_kpar_format")]
     format: String,
+    projects: Vec<StdlibProjectConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+struct StdlibProjectConfig {
+    archive: String,
+    name: String,
+    version: String,
+    resources: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -47,6 +56,8 @@ struct KparLibraryFile {
     format: String,
     #[serde(default)]
     artifact: Option<String>,
+    #[serde(default)]
+    resource: Option<String>,
     pack: PackConfig,
 }
 
@@ -61,6 +72,7 @@ fn main() {
 
 fn embed_stdlib() {
     let config = load_stdlib_config();
+    write_stdlib_project_registry(&config);
     println!("cargo:rustc-env=SPEC42_STDLIB_VERSION={}", config.version);
     println!("cargo:rustc-env=SPEC42_STDLIB_REPO={}", config.repo);
     println!(
@@ -116,12 +128,75 @@ fn embed_stdlib() {
         process::exit(1);
     };
 
+    validate_stdlib_projects(&config, &kpar_dir).unwrap_or_else(|e| {
+        eprintln!("workspace build: standard-library project config drift: {e}");
+        process::exit(1);
+    });
     embed_stdlib_from_kpar_dir(&kpar_dir, &out_zip).unwrap_or_else(|e| {
         eprintln!("workspace build: failed to embed standard library KPAR: {e}");
         process::exit(1);
     });
 
     let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+}
+
+fn validate_stdlib_projects(config: &StdlibConfig, directory: &Path) -> Result<(), String> {
+    let declared: std::collections::BTreeSet<_> = config
+        .projects
+        .iter()
+        .map(|project| project.archive.as_str())
+        .collect();
+    let actual: std::collections::BTreeSet<_> = fs::read_dir(directory)
+        .map_err(|error| format!("read {}: {error}", directory.display()))?
+        .flatten()
+        .filter_map(|entry| {
+            let path = entry.path();
+            (path.extension().and_then(|ext| ext.to_str()) == Some("kpar"))
+                .then(|| entry.file_name().to_string_lossy().into_owned())
+        })
+        .collect();
+    let actual_refs: std::collections::BTreeSet<_> = actual.iter().map(String::as_str).collect();
+    if declared != actual_refs {
+        return Err(format!(
+            "declared archives {declared:?}, actual archives {actual_refs:?}"
+        ));
+    }
+    for declared in &config.projects {
+        let archive = kpar::open_kpar_path(&directory.join(&declared.archive))
+            .map_err(|error| format!("{}: {error}", declared.archive))?;
+        if archive.project.name != declared.name || archive.project.version != declared.version {
+            return Err(format!(
+                "{} declares {} {}, archive contains {} {}",
+                declared.archive,
+                declared.name,
+                declared.version,
+                archive.project.name,
+                archive.project.version
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn write_stdlib_project_registry(config: &StdlibConfig) {
+    let out = PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR"))
+        .join("stdlib_projects_registry.rs");
+    let json = serde_json::to_string(
+        &config
+            .projects
+            .iter()
+            .map(|project| {
+                serde_json::json!({"archive": project.archive, "name": project.name,
+            "version": project.version, "resources": project.resources})
+            })
+            .collect::<Vec<_>>(),
+    )
+    .expect("serialize stdlib projects");
+    fs::write(
+        out,
+        format!("pub const STDLIB_PROJECTS_JSON: &str = r#\"{json}\"#;\n"),
+    )
+    .expect("write stdlib project registry");
 }
 
 fn embed_kpar_libraries() {
@@ -173,6 +248,7 @@ struct LibraryEntry {
     content_path: String,
     format: String,
     artifact: Option<String>,
+    resource: Option<String>,
     pack: PackConfig,
     config_path: PathBuf,
 }
@@ -231,6 +307,7 @@ fn load_library_configs(libraries_dir: &Path) -> Vec<LibraryEntry> {
             content_path: parsed.content_path,
             format: parsed.format,
             artifact: parsed.artifact,
+            resource: parsed.resource,
             pack: parsed.pack,
             config_path: path,
         });
@@ -375,12 +452,17 @@ fn write_registry(path: &Path, entries: &[LibraryEntry], include_archives: bool)
     out.push_str("    pub content_path: &'static str,\n");
     out.push_str("    pub format: &'static str,\n");
     out.push_str("    pub artifact: Option<&'static str>,\n");
+    out.push_str("    pub resource: Option<&'static str>,\n");
     out.push_str("    pub archive: &'static [u8],\n");
     out.push_str("}\n\n");
     out.push_str("pub static EMBEDDED_KPAR_LIBRARIES: &[EmbeddedKparLibrary] = &[\n");
     if include_archives {
         for entry in entries {
             let artifact = match &entry.artifact {
+                Some(value) => format!("Some(\"{}\")", escape_rust_str(value)),
+                None => "None".to_string(),
+            };
+            let resource = match &entry.resource {
                 Some(value) => format!("Some(\"{}\")", escape_rust_str(value)),
                 None => "None".to_string(),
             };
@@ -410,6 +492,7 @@ fn write_registry(path: &Path, entries: &[LibraryEntry], include_archives: bool)
                 escape_rust_str(&entry.format)
             ));
             out.push_str(&format!("        artifact: {artifact},\n"));
+            out.push_str(&format!("        resource: {resource},\n"));
             out.push_str(&format!(
                 "        archive: include_bytes!(concat!(env!(\"OUT_DIR\"), \"/{}.embedded.kpar\")),\n",
                 entry.id

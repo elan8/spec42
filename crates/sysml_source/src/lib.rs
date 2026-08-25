@@ -12,6 +12,71 @@
 use std::fmt;
 use std::fs;
 use std::path::{Path, PathBuf};
+
+/// The conventional KerML/SysML project manifest name.
+///
+/// This is a source-boundary convention, not a parsed KPAR contract: source discovery only needs
+/// to know whether the marker exists. KPAR remains the authority for its schema and contents.
+pub const PROJECT_MANIFEST_FILE: &str = ".project.json";
+
+/// The filesystem boundary owning a source file.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectBoundary {
+    root: PathBuf,
+    manifest: Option<PathBuf>,
+}
+
+impl ProjectBoundary {
+    pub fn project_root(&self) -> &Path {
+        &self.root
+    }
+
+    pub fn project_manifest(&self) -> Option<&Path> {
+        self.manifest.as_deref()
+    }
+
+    pub fn is_manifestless(&self) -> bool {
+        self.manifest.is_none()
+    }
+}
+
+/// Finds the nearest project manifest owning `source`, without walking above `ceiling`.
+///
+/// The ceiling is the host's admission boundary (an editor workspace folder or an explicit batch
+/// workspace root). If no manifest is found, the ceiling is returned as the manifestless fallback
+/// project. A nested manifest therefore owns its subtree instead of being absorbed by a parent.
+pub fn discover_project_boundary(source: &Path, ceiling: &Path) -> Option<ProjectBoundary> {
+    let source = canonicalize_or_self(source);
+    let ceiling = canonicalize_or_self(ceiling);
+    let mut current = if source.is_dir() {
+        source
+    } else {
+        source.parent()?.to_path_buf()
+    };
+    if !current.starts_with(&ceiling) {
+        return None;
+    }
+    loop {
+        let manifest = current.join(PROJECT_MANIFEST_FILE);
+        if manifest.is_file() {
+            return Some(ProjectBoundary {
+                root: current,
+                manifest: Some(manifest),
+            });
+        }
+        if current == ceiling {
+            return Some(ProjectBoundary {
+                root: ceiling,
+                manifest: None,
+            });
+        }
+        current = current.parent()?.to_path_buf();
+    }
+}
+
+fn canonicalize_or_self(path: &Path) -> PathBuf {
+    fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
+}
 use std::sync::Arc;
 
 pub use source_identity;
@@ -365,6 +430,7 @@ pub struct FilesystemProvider {
     kind: SourceKind,
     honor_ignore_rules: bool,
     max_files_per_root: Option<usize>,
+    respect_project_boundary: bool,
 }
 
 impl FilesystemProvider {
@@ -374,6 +440,7 @@ impl FilesystemProvider {
             kind,
             honor_ignore_rules: true,
             max_files_per_root: None,
+            respect_project_boundary: false,
         }
     }
 
@@ -387,6 +454,12 @@ impl FilesystemProvider {
     /// Cap the number of files admitted per root; files beyond it are counted as skipped.
     pub fn with_max_files_per_root(mut self, limit: Option<usize>) -> Self {
         self.max_files_per_root = limit;
+        self
+    }
+
+    /// Excludes sources owned by nested `.project.json` projects below each scan root.
+    pub fn within_project_boundary(mut self, enabled: bool) -> Self {
+        self.respect_project_boundary = enabled;
         self
     }
 
@@ -425,6 +498,12 @@ impl SourceProvider for FilesystemProvider {
             report.roots_scanned += 1;
             let mut admitted_here = 0usize;
             for path in self.walk(&root) {
+                if self.respect_project_boundary
+                    && discover_project_boundary(&path, &root)
+                        .is_some_and(|boundary| boundary.project_root() != root)
+                {
+                    continue;
+                }
                 report.candidate_files += 1;
                 if self
                     .max_files_per_root
@@ -737,6 +816,67 @@ mod tests {
             authority.discover(&[root.join("missing")]),
             Err(SourceError::PathNotFound { .. })
         ));
+    }
+
+    #[test]
+    fn nearest_manifest_owns_a_source_within_the_ceiling() {
+        let temp = tempfile::tempdir().unwrap();
+        let repo = temp.path();
+        let parent = repo.join("model");
+        let nested = parent.join("submodel");
+        fs::create_dir_all(nested.join("src")).unwrap();
+        fs::write(parent.join(PROJECT_MANIFEST_FILE), "{}").unwrap();
+        fs::write(nested.join(PROJECT_MANIFEST_FILE), "{}").unwrap();
+        let source = nested.join("src/Model.sysml");
+        fs::write(&source, "package Model;").unwrap();
+
+        let boundary = discover_project_boundary(&source, repo).unwrap();
+        assert_eq!(boundary.project_root(), fs::canonicalize(&nested).unwrap());
+        assert_eq!(
+            boundary.project_manifest(),
+            Some(
+                fs::canonicalize(nested.join(PROJECT_MANIFEST_FILE))
+                    .unwrap()
+                    .as_path()
+            )
+        );
+    }
+
+    #[test]
+    fn ceiling_is_the_manifestless_fallback_and_cannot_be_escaped() {
+        let temp = tempfile::tempdir().unwrap();
+        let repo = temp.path();
+        let workspace = repo.join("workspace");
+        fs::create_dir_all(workspace.join("scratch")).unwrap();
+        fs::write(repo.join(PROJECT_MANIFEST_FILE), "{}").unwrap();
+        let source = workspace.join("scratch/Model.sysml");
+        fs::write(&source, "package Model;").unwrap();
+
+        let boundary = discover_project_boundary(&source, &workspace).unwrap();
+        assert!(boundary.is_manifestless());
+        assert_eq!(
+            boundary.project_root(),
+            fs::canonicalize(&workspace).unwrap()
+        );
+        assert!(discover_project_boundary(&source, &repo.join("sibling")).is_none());
+    }
+
+    #[test]
+    fn project_scan_excludes_sources_owned_by_nested_manifests() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path();
+        fs::write(root.join("Root.sysml"), "package Root;").unwrap();
+        let nested = root.join("nested");
+        fs::create_dir(&nested).unwrap();
+        fs::write(nested.join(PROJECT_MANIFEST_FILE), "{}").unwrap();
+        fs::write(nested.join("Nested.sysml"), "package Nested;").unwrap();
+
+        let report = FilesystemProvider::new(vec![root.to_path_buf()], SourceKind::Workspace)
+            .within_project_boundary(true)
+            .load(&SourceAuthority::new())
+            .unwrap();
+        assert_eq!(report.documents.len(), 1);
+        assert!(report.documents[0].uri().path().ends_with("Root.sysml"));
     }
 
     #[cfg(unix)]

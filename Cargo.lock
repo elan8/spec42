@@ -1230,6 +1230,7 @@ version = "0.50.0"
 dependencies = [
  "directories",
  "kpar",
+ "semver",
  "serde",
  "serde_json",
  "sha2",
