@@ -42,7 +42,7 @@ pub struct SyntaxUnitLiteral<'p> {
 }
 
 fn continues_identifier(ch: char) -> bool {
-    ch.is_alphanumeric() || ch == '_' || ch == ':' || ch == '>'
+    ch.is_alphanumeric() || ch == '_' || ch == ':'
 }
 
 pub(super) fn token_at<'p>(
@@ -71,6 +71,12 @@ pub(super) fn token_at<'p>(
     // The cursor convention is character indices; a slice needs byte offsets into the same line,
     // so the two are converted here rather than by copying the token out of the source.
     let text = &line_text[char_to_byte(line_text, start)..char_to_byte(line_text, end)];
+    // `:` is admitted above only so a qualified name can remain one token. It is also an
+    // operator by itself, so require the scanned span to contain an actual identifier character.
+    // In particular, specialization operators (`:>`, `:>>`) are syntax, not lookup names.
+    if !text.chars().any(|ch| ch.is_alphanumeric() || ch == '_') {
+        return None;
+    }
     let range = SyntaxRange {
         start_line: line,
         start_character: start as u32,
@@ -293,6 +299,21 @@ mod tests {
         let parsed = parse("package P { part caf\u{00E9} : T; }");
         let token = parsed.token_at(0, 18).expect("token");
         assert_eq!(token.text, "caf\u{00E9}");
+    }
+
+    #[test]
+    fn specialization_operators_are_not_identifier_tokens() {
+        let parsed = parse("package P { part def Child :> Parent { part :>> member; } }");
+        let source = parsed.source();
+        for operator in [":>", ":>>"] {
+            let start = source.find(operator).expect("operator") as u32;
+            for offset in 0..operator.len() as u32 {
+                assert!(
+                    parsed.token_at(0, start + offset).is_none(),
+                    "{operator} at offset {offset} must not be a name token"
+                );
+            }
+        }
     }
 
     #[test]
