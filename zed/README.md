@@ -5,13 +5,13 @@ It is useful if you want lightweight editing, diagnostics, and navigation backed
 
 ## Current scope
 
-- `.sysml` language registration
+- `.sysml` and `.kerml` language registration
 - Tree-sitter grammar ([`tree-sitter-sysml`](https://gitlab.com/nomograph/tree-sitter-sysml)) pinned to `main` (2026 OMG constructs; see `extension.toml`)
 - Launching the existing `spec42` language server over stdio
 - Automatic download of the matching `spec42` release binary when Zed cannot find one locally
 - Forwarding Zed `lsp.spec42` settings to the server
 
-KerML support, snippets, custom queries, Model Explorer, and Model Visualizer features from the VS Code extension are intentionally out of scope for this first pass.
+Snippets, custom queries, Model Explorer, and Model Visualizer features from the VS Code extension are intentionally out of scope for this first pass.
 
 ## Best fit
 
