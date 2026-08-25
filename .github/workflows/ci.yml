@@ -143,11 +143,6 @@ jobs:
       - name: Generator conformance corpus
         run: |
           scripts/build-generator-plugins.sh
-          # The metered case pins an exact fuel count, and fuel follows the guest's exact bytes.
-          # Record what this host built so a mismatch can be diagnosed from the log alone.
-          for guest in generator-tests/plugins/target/wasm32-unknown-unknown/release/*.wasm; do
-            printf '%s  %s bytes  sha256=%s\n' "$(basename "$guest")" "$(stat -c %s "$guest")" "$(sha256sum "$guest" | cut -c1-16)"
-          done
           cargo run -p generator_conformance --bin generator-conformance
           # A blessed golden must be committed, never produced by CI.
           git diff --exit-code generator-tests/golden

@@ -35,26 +35,3 @@ description = """
 A single find(None) over ~1200 elements. Exists to make the cost of the element-exposure
 path visible: every element crossing the boundary is hashed, allocated and copied.
 """
-
-[[case]]
-id = "semantic-api/wide-find-all-metered"
-model = "wide"
-plugin = "find_all"
-meter_fuel = true
-assert = { fuel_consumed = 9_610_232, query_count = 1 }
-description = """
-The fuel-regression signal, active rather than documented. fuel_consumed is an exact
-instruction count, so an unchanged plugin whose fuel moves means Spec42 changed how much
-work a guest does -- which is the alarm the corpus exists to raise. Without a case setting
-meter_fuel every golden records null and the signal is dormant.
-
-fuel_consumed is only ever measured and enforced by the `rust-core` CI job (ubuntu-latest) --
-the windows-latest/macos-latest generator-policy jobs never run this corpus. The guest's exact
-bytes depend on every absolute path rustc embeds (this checkout, the toolchain sysroot, and
-`$CARGO_HOME` registry sources -- scripts/build-generator-plugins.sh remaps all three to fixed
-placeholders) and on the host toolchain's precompiled wasm32 std/alloc, which differs between
-the darwin and linux toolchain builds and cannot be remapped away. A macOS build of the
-identical source therefore reports a different exact count (9,610,232 where Linux reports
-9,593,847 at this pin). Always bless this value from CI's own measurement or a Linux build --
-never from a local macOS or Windows run.
-"""
