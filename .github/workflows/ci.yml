@@ -29,6 +29,7 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
+          targets: wasm32-unknown-unknown
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -117,7 +118,7 @@ jobs:
           name: semantic-evidence-coverage
           path: target/snapshot-report.json
       - name: Upload repository generator plugins
-        if: always() && steps.repository-plugins.outcome != 'skipped'
+        if: always() && steps.repository-plugins.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: repository-generator-plugins
