@@ -1,66 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-definition-usage-variant-membership-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Definition and Usage variantMembership results require addressable canonical VariantMembership identities rather than declaration-role reconstruction."
-
-[[issue]]
-id = "lowering-gap-definition-usage-effective-occurrence-time-variation-facts"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Usage mayTimeVary requires one canonical effective occurrence/library-specialization and portion fact family; direct modifiers and graph edges are insufficient."
-
-[[issue]]
-id = "lowering-gap-action-effective-usage-closure"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The canonical publication does not expose ActionDefinition effective usage closure required by deriveActionDefinitionAction."
-
-[[issue]]
-id = "lowering-gap-action-argument-identities"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Action argument expressions are not published as ordered canonical identities for exact Actions argument derivations."
-
-[[issue]]
-id = "lowering-gap-action-input-parameter-identities"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Action input parameters are not published as ordered canonical identities for exact control and accept action derivations."
-
-[[issue]]
-id = "lowering-gap-action-owned-membership-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "AssignmentActionUsage owned Membership facts are compact storage rather than addressable canonical identities."
-
-[[issue]]
-id = "lowering-gap-action-owned-feature-order"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ForLoopActionUsage does not publish its ordered owned Feature collection and ReferenceUsage role as a canonical fact."
-
-[[issue]]
-id = "lowering-gap-action-anonymous-metaclass-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Send and terminate action forms lack separately addressable canonical action identities and exact metaclass facts."
-
-[[issue]]
-id = "lowering-gap-specialization-cross-feature-projection"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The canonical model does not publish Feature.crossFeature and ownedCrossFeature as one comparable fact for checkFeatureCrossingSpecialization."
-
-[[issue]]
-id = "lowering-gap-specialization-feature-typing-metaclass-library-anchor"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Feature typing targets lack the required Class/Structure metaclass predicate and paired exact library anchor for the Feature object and occurrence specialization checks."
-
-[[issue]]
 id = "lowering-gap-specialization-owned-cross-feature-owner-types"
 kind = "lowering_gap"
 owner = "spec42-semantic"

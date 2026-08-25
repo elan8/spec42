@@ -50,10 +50,10 @@ pub const RESOLVED_CONTRACT: &str = sysml_contract::SEMANTIC_CONTRACT_VERSION.as
 /// authority chain stays linear: `sysml_source` has exactly one dependant.
 pub use sysml_contract::{
     DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
-    LibrarySpecializationAnchorBranch, MembershipRole, OccurrenceRole, PublicationCompleteness,
-    PublicationEvaluationPolicy, PublicationModelDigest, PublicationObstacle, QueryAnswer,
-    QueryOutcome, RequirementConstraintKind, StateSubactionKind, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange,
+    LibrarySpecializationAnchorBranch, MembershipId, MembershipRole, OccurrenceRole,
+    PublicationCompleteness, PublicationEvaluationPolicy, PublicationModelDigest,
+    PublicationObstacle, QueryAnswer, QueryOutcome, RequirementConstraintKind, StateSubactionKind,
+    SymbolId, SymbolToken, TextId, TextPosition, TextRange,
 };
 
 pub use sysml_source as source;
@@ -62,8 +62,9 @@ mod type_query;
 mod verification;
 
 pub use action_query::{
-    ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
-    ActionDerivedFactPrerequisite,
+    ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
+    ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
+    ActionOwnedMembershipKind, ActionOwnedMembershipMember,
 };
 pub use definition_usage_query::{
     DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
@@ -94,9 +95,10 @@ pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{
     AnnotationForm, AuthoredValue, DerivedElementOwner, Documentation,
     ElementDerivedDocumentationCollection, ElementInspection, ElementInspectionAt, ElementModifier,
-    ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound,
-    MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt, RelationshipProvenance,
-    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind, MembershipRelationship,
+    MultiplicityBound, MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt,
+    RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
+    VisibilityProvenance,
 };
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
@@ -801,6 +803,12 @@ impl PublishedResolution {
         self.model.inspect(symbol)
     }
 
+    /// Resolves a publication-scoped Membership identity to its canonical relationship facts and
+    /// endpoints.
+    pub fn membership(&self, membership: MembershipId) -> QueryOutcome<MembershipRelationship> {
+        self.model.membership(membership)
+    }
+
     /// The authored name of one element, borrowed from this publication.
     ///
     /// `None` where the element is anonymous. Results that identify elements carry the handle,
@@ -995,8 +1003,8 @@ impl PublishedResolution {
     }
 
     /// One exact Systems::DefinitionAndUsage derivation selected by the manifest-owned closed
-    /// kind. Direct owner/member projections are resolved from canonical facts; inherited,
-    /// variant, and time-variation predicates retain a typed unavailable-fact outcome.
+    /// kind. Direct owner/member and variant projections are resolved from canonical facts;
+    /// unavailable inherited and time-variation predicates retain typed prerequisite outcomes.
     pub fn definition_usage_derived(
         &self,
         symbol: SymbolId,

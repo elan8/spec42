@@ -24,25 +24,26 @@ pub use sysml_resolution::{
     ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
     ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
     ExpectedMeasurement, FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
-    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipKind, MembershipRole,
-    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
-    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, PublicationIdentity, PublicationModelDigest, PublicationObstacle,
-    PublishedDiagnostics, PublishedElement, QualifiedElementReference, QualifiedReferenceOutcome,
-    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
-    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
-    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
-    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
-    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
-    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
-    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
-    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
-    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
+    MembershipRelationship, MembershipRole, MultiplicityBound, MultiplicityFacts,
+    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
+    OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
+    PublicationModelDigest, PublicationObstacle, PublishedDiagnostics, PublishedElement,
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer,
+    QueryOutcome, RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
+    ReferenceAt, ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
+    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
+    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
+    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
+    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -590,6 +591,12 @@ impl InspectionQueries<'_> {
     /// Everything the publication knows about one element.
     pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
+    }
+
+    /// Resolves a canonical Membership relationship identity without substituting its member
+    /// element.
+    pub fn membership(&self, identity: MembershipId) -> QueryOutcome<MembershipRelationship> {
+        self.model.membership(identity)
     }
 
     /// The exact derived `Element::owner` fact, from the publication's canonical ownership

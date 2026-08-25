@@ -642,7 +642,7 @@ fn collect_symbol_candidates(
         _ => return,
     };
     if qualifier.is_some() {
-        match completion
+        if let sysml_query::resolved_slice::QueryAnswer::Resolved(extra) = completion
             .visible_members(
                 current_uri.as_str(),
                 sysml_query::resolved_slice::TextPosition {
@@ -653,10 +653,7 @@ fn collect_symbol_candidates(
             )
             .answer
         {
-            sysml_query::resolved_slice::QueryAnswer::Resolved(extra) => {
-                members.extend(extra.iter())
-            }
-            _ => {}
+            members.extend(extra.iter())
         }
     }
     members.sort_by_key(|a| a.symbol());

@@ -1005,6 +1005,8 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         | ElementKind::SatisfyRequirementUsage => Compartment::Requirements,
         ElementKind::ActionUsage
         | ElementKind::AcceptActionUsage
+        | ElementKind::SendActionUsage
+        | ElementKind::TerminateActionUsage
         | ElementKind::PerformActionUsage
         | ElementKind::AssignmentActionUsage
         | ElementKind::IfActionUsage

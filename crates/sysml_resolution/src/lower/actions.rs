@@ -22,9 +22,9 @@ use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
     ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
-    ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, AssignStmt,
-    ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression, FirstMergeBody,
-    FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
+    ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActionUsageKeyword,
+    AssignStmt, ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression,
+    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
     GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind, Node,
     Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
     PerformInOutBinding, SendPayload, Span, SuccessionUsage, TerminateStmt, ThenAction, ThenTarget,
@@ -336,11 +336,26 @@ impl SemanticModelBuilder {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let is_accept_action = node.value.accept.is_some();
+        let is_send_action = node.value.keyword == ActionUsageKeyword::Send;
+        let (accept_has_payload_argument, accept_has_receiver_argument) = node
+            .value
+            .accept
+            .as_ref()
+            .map(|accept| match accept {
+                TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
+                TransitionAccept::TimeTrigger(_, _) => (true, false),
+                TransitionAccept::Payload(_, via) => (false, via.is_some()),
+            })
+            .map_or((None, None), |(payload, receiver)| {
+                (Some(payload), Some(receiver))
+            });
         let declaration = self.push_typed_declaration(
             document,
             owner,
             if is_accept_action {
                 DeclarationKind::AcceptActionUsage
+            } else if is_send_action {
+                DeclarationKind::SendActionUsage
             } else {
                 DeclarationKind::ActionUsage
             },
@@ -362,6 +377,10 @@ impl SemanticModelBuilder {
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 is_trigger_action: is_accept_action.then_some(false),
+                accept_has_payload_argument,
+                accept_has_receiver_argument,
+                send_has_sender_argument: is_send_action.then_some(node.value.via.is_some()),
+                send_has_receiver_argument: is_send_action.then_some(node.value.to.is_some()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1215,7 +1234,10 @@ impl SemanticModelBuilder {
             );
             self.lower_constraint_expression(document, declaration, family, condition)?;
         }
-        self.lower_action_def_body(document, declaration, body)
+        let body_start = self.declarations.len();
+        self.lower_action_def_body(document, declaration, body)?;
+        self.mark_single_action_input_parameter(declaration, body_start, 2);
+        Ok(())
     }
 
     /// Lowers an `if <condition> { ... } (else { ... })?` control node (BNF `IfStmt`) as its own
@@ -1256,11 +1278,44 @@ impl SemanticModelBuilder {
             self.constraint_expression_site(document, &node.condition.value),
         );
         self.lower_constraint_expression(document, declaration, family, &node.condition)?;
+        let then_start = self.declarations.len();
         self.lower_action_branch_body(document, declaration, &node.then_body)?;
+        self.mark_single_action_input_parameter(declaration, then_start, 2);
         if let Some(else_body) = &node.else_body {
+            let else_start = self.declarations.len();
             self.lower_action_branch_body(document, declaration, else_body)?;
+            self.mark_single_action_input_parameter(declaration, else_start, 3);
         }
         Ok(())
+    }
+
+    /// Marks the sole direct ActionUsage produced by one control branch/body as its canonical
+    /// input parameter. A branch with zero or multiple direct actions remains unmarked instead of
+    /// silently selecting one by traversal order.
+    fn mark_single_action_input_parameter(
+        &mut self,
+        owner: DeclarationId,
+        declaration_start: usize,
+        position: u32,
+    ) {
+        let mut candidates = self
+            .declarations
+            .iter()
+            .enumerate()
+            .skip(declaration_start)
+            .filter(|(_, declaration)| {
+                declaration.owner == Some(owner) && declaration.kind.is_action_usage()
+            })
+            .map(|(index, _)| index);
+        let Some(candidate) = candidates.next() else {
+            return;
+        };
+        if candidates.next().is_some() {
+            return;
+        }
+        if let Some(facts) = self.declaration_facts.get_mut(candidate) {
+            facts.action_input_parameter_position = Some(position);
+        }
     }
 
     /// Lowers one branch of an `if` control node (`ast::ActionBranchBody`). The grammar offers two
@@ -1346,7 +1401,10 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_action_def_body(document, declaration, &node.body.body)
+        let body_start = self.declarations.len();
+        self.lower_action_def_body(document, declaration, &node.body.body)?;
+        self.mark_single_action_input_parameter(declaration, body_start, 2);
+        Ok(())
     }
 
     /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
@@ -1609,12 +1667,10 @@ impl SemanticModelBuilder {
     /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
     /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
     /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
-    /// `DeclarationDomain::Any` lexical lookup, sourced directly at `owner` (the enclosing action
-    /// def/usage declaration) -- unlike `Succession`/`Decide`, no anonymous nested-declaration
-    /// scope shift is needed because the terminated node/action is looked up in the terminate
-    /// statement's own enclosing scope, where sibling action names like `terminate c1;`'s `c1` are
-    /// actually declared. The bare `terminate;` form (no target) has nothing to resolve and is a
-    /// legitimate no-op, not an unsupported construct.
+    /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct anonymous
+    /// `TerminateActionUsage` identity; lexical resolution from that child still reaches sibling
+    /// declarations through its owner. A bare `terminate;` has an implicit self argument and no
+    /// authored reference, but retains the same action identity and argument position.
     pub(crate) fn lower_terminate_stmt(
         &mut self,
         document: DocumentIdx,
@@ -1622,10 +1678,24 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
     ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::TerminateActionUsage,
+            None,
+            node.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
         if let Some(target) = &node.value.target {
             self.lower_satisfy_operand(
                 document,
-                owner,
+                declaration,
                 family,
                 ReferenceKind::TerminateTarget,
                 target,

@@ -352,15 +352,17 @@ fn variant_with_an_unresolvable_target_stays_explicitly_unresolved() {
          }\n",
     );
     assert!(
-        output.contains("(kind variant)")
+        output.contains("(role variant)")
+            && output.contains("(kind subsetting)")
             && output.contains("(authored-target \"missingVariant\")")
             && output.contains("(status unresolved)"),
         "expected the unresolvable variant target to stay explicitly unresolved (not \
          fabricated), got:\n{output}"
     );
     assert!(
-        output
-            .contains("(authored-target \"manualTransmission\")\n      (outcome (status resolved)"),
+        output.contains(
+            "(authored-target \"manualTransmission\")\n      (outcome (status resolved)",
+        ),
         "expected the resolvable variant to still resolve independently, got:\n{output}"
     );
 }
@@ -1337,10 +1339,10 @@ fn element_details_over_recovery_produced_input_keep_their_recovery_outcome() {
 #[test]
 fn every_publication_obstacle_flows_through_value_and_non_value_query_answers() {
     let published = detail_publication(
-        &[((
+        &[(
             "memory://mixed.sysml",
             "package P { part def Wheel; constraint def C { ~x } part broken : ; }",
-        ))],
+        )],
         ConstructionSchedule::Sequential,
     );
     let completeness = published.completeness();

@@ -10,7 +10,9 @@
 //! type name, which throws away everything its own model knows. Rendering is a consumer's job.
 
 use crate::evaluation::EvaluationState;
-use crate::{ElementKind, MembershipRole, SourceLocation, SymbolId, TextId, TextRange};
+use crate::{
+    ElementKind, MembershipId, MembershipRole, SourceLocation, SymbolId, TextId, TextRange,
+};
 
 pub use sysml_contract::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
@@ -72,6 +74,16 @@ pub struct ElementRelationship {
     pub target: RelationshipTarget,
     /// Where the reference was written; `None` for an implied relationship.
     pub location: Option<SourceLocation>,
+}
+
+/// One canonical Membership relationship and its endpoints.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MembershipRelationship {
+    pub identity: MembershipId,
+    pub owning_namespace: Option<SymbolId>,
+    pub member: SymbolId,
+    pub facts: MembershipFacts,
+    pub role: Option<MembershipRole>,
 }
 
 /// Everything this crate knows about one element.

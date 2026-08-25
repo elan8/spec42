@@ -11,7 +11,7 @@ fn publish(source: &str) -> Arc<PublishedModel> {
     let services = Services::new();
     let document = services
         .source
-        .admit(DOCUMENT, source.to_string(), SourceKind::Workspace)
+        .admit(DOCUMENT, source, SourceKind::Workspace)
         .expect("source");
     services
         .publication

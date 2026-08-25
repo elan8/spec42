@@ -240,6 +240,16 @@ impl SemanticModelBuilder {
             });
             self.declaration_facts.push(DeclarationFacts {
                 short_name: relocation.optional_symbol(facts.short_name)?,
+                cross_feature_projection: facts
+                    .cross_feature_projection
+                    .map(|projection| {
+                        Ok::<_, ConstructionError>(super::facts::CrossFeatureProjection {
+                            cross_feature: relocation.declaration(projection.cross_feature)?,
+                            owned_cross_feature: relocation
+                                .declaration(projection.owned_cross_feature)?,
+                        })
+                    })
+                    .transpose()?,
                 ..facts.clone()
             });
         }
@@ -250,6 +260,7 @@ impl SemanticModelBuilder {
                 member: relocation.declaration(membership.member)?,
                 kind: membership.kind,
                 visibility: membership.visibility,
+                role: membership.role,
                 span: membership.span,
             });
         }

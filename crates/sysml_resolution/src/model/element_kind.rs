@@ -54,6 +54,8 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::ActionDefinition => ElementKind::ActionDefinition,
         DeclarationKind::ActionUsage => ElementKind::ActionUsage,
         DeclarationKind::AcceptActionUsage => ElementKind::AcceptActionUsage,
+        DeclarationKind::SendActionUsage => ElementKind::SendActionUsage,
+        DeclarationKind::TerminateActionUsage => ElementKind::TerminateActionUsage,
         // Identical element type; the entry/do/exit slot is a membership role.
         DeclarationKind::EntryActionBinding
         | DeclarationKind::DoActionBinding
@@ -229,6 +231,8 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::ActionDefinition
         | DeclarationKind::ActionUsage
         | DeclarationKind::AcceptActionUsage
+        | DeclarationKind::SendActionUsage
+        | DeclarationKind::TerminateActionUsage
         | DeclarationKind::StateDefinition
         | DeclarationKind::StateUsage
         | DeclarationKind::CalcDefinition
@@ -351,6 +355,8 @@ mod tests {
         DeclarationKind::ActionDefinition,
         DeclarationKind::ActionUsage,
         DeclarationKind::AcceptActionUsage,
+        DeclarationKind::SendActionUsage,
+        DeclarationKind::TerminateActionUsage,
         DeclarationKind::Succession,
         DeclarationKind::StateDefinition,
         DeclarationKind::StateUsage,

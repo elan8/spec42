@@ -90,7 +90,7 @@ mod tests {
         let services = Services::new();
         let source = services
             .source
-            .admit(uri.as_str(), input.to_string(), SourceKind::Workspace)
+            .admit(uri.as_str(), input, SourceKind::Workspace)
             .unwrap();
         let model = services.publication.publish(&[source], []).unwrap();
         let symbols = symbol_entries_for_uri(&model, &uri);

@@ -16,6 +16,7 @@ use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
+use crate::resolve::implied::{resolve_library_specialization_anchor, LibrarySpecializationAnchor};
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -336,6 +337,36 @@ pub(crate) struct TypeIndex {
     /// and the legacy check could only answer the first, which is why it fell silent whenever an
     /// ancestor declared any end at all.
     pub(crate) effective_ends: Box<[u32]>,
+    /// Source-role-verified anchors used together by the exact `Usage::mayTimeVary` derivation.
+    /// Keeping the family here makes every consumer use the same anchor identities and settled
+    /// specialization closure rather than reinterpreting rendered names or direct edges.
+    usage_time_variation_anchors: UsageTimeVariationAnchors,
+}
+
+#[derive(Debug)]
+struct UsageTimeVariationAnchors {
+    occurrence: LibrarySpecializationAnchor,
+    self_link: LibrarySpecializationAnchor,
+    happens_link: LibrarySpecializationAnchor,
+    action: LibrarySpecializationAnchor,
+}
+
+impl Default for UsageTimeVariationAnchors {
+    fn default() -> Self {
+        Self {
+            occurrence: LibrarySpecializationAnchor::Missing,
+            self_link: LibrarySpecializationAnchor::Missing,
+            happens_link: LibrarySpecializationAnchor::Missing,
+            action: LibrarySpecializationAnchor::Missing,
+        }
+    }
+}
+
+/// The exact result of the canonical effective fact family behind `Usage::mayTimeVary`.
+pub(crate) enum UsageTimeVariationOutcome {
+    Resolved(bool),
+    Unresolved,
+    Ambiguous,
 }
 
 /// A KerML type-relationship operator, as a set operation over what its operands classify.
@@ -561,7 +592,146 @@ impl TypeIndex {
             set_operands,
             authored_ends: authored_ends.into_boxed_slice(),
             effective_ends: effective_ends.into_boxed_slice(),
+            usage_time_variation_anchors: UsageTimeVariationAnchors {
+                occurrence: resolve_library_specialization_anchor(
+                    storage,
+                    "Occurrences::Occurrence",
+                ),
+                self_link: resolve_library_specialization_anchor(storage, "Links::SelfLink"),
+                happens_link: resolve_library_specialization_anchor(
+                    storage,
+                    "Occurrences::HappensLink",
+                ),
+                action: resolve_library_specialization_anchor(storage, "Actions::Action"),
+            },
         })
+    }
+
+    /// Derives SysML `Usage::mayTimeVary` from one dependency-complete effective fact family.
+    ///
+    /// The order preserves the normative conjunction's useful short circuits. In particular, a
+    /// package-owned Usage has no `owningType` and is definitively false even in a publication
+    /// that intentionally admitted no standard libraries.
+    pub(crate) fn usage_may_time_vary(
+        &self,
+        storage: &SemanticModelStorage,
+        usage: DeclarationId,
+    ) -> UsageTimeVariationOutcome {
+        let Some(declaration) = storage.declaration(usage) else {
+            return UsageTimeVariationOutcome::Unresolved;
+        };
+        let Some(owning_type) = declaration.owner.filter(|owner| {
+            storage.declaration(*owner).is_some_and(|owner| {
+                !matches!(
+                    owner.kind,
+                    crate::model::DeclarationKind::Namespace
+                        | crate::model::DeclarationKind::Package
+                        | crate::model::DeclarationKind::LibraryPackage
+                        | crate::model::DeclarationKind::Import
+                        | crate::model::DeclarationKind::Alias
+                )
+            })
+        }) else {
+            return UsageTimeVariationOutcome::Resolved(false);
+        };
+        match self
+            .specializes_library_anchor(owning_type, &self.usage_time_variation_anchors.occurrence)
+        {
+            UsageTimeVariationOutcome::Resolved(true) => {}
+            UsageTimeVariationOutcome::Resolved(false) => {
+                return UsageTimeVariationOutcome::Resolved(false)
+            }
+            other => return other,
+        }
+        let Some(facts) = storage.declaration_facts(usage) else {
+            return UsageTimeVariationOutcome::Unresolved;
+        };
+        if facts.modifiers.portion || facts.portion_kind.is_some() {
+            return UsageTimeVariationOutcome::Resolved(false);
+        }
+        for anchor in [
+            &self.usage_time_variation_anchors.self_link,
+            &self.usage_time_variation_anchors.happens_link,
+        ] {
+            match self.specializes_library_anchor(usage, anchor) {
+                UsageTimeVariationOutcome::Resolved(true) => {
+                    return UsageTimeVariationOutcome::Resolved(false)
+                }
+                UsageTimeVariationOutcome::Resolved(false) => {}
+                other => return other,
+            }
+        }
+        // `Usage::isComposite` is the complement of the canonical effective reference fact.
+        // Specialized ReferenceUsage productions carry their metaclass in the declaration kind,
+        // while occurrence-shaped `ref part`/`ref action` forms carry the authored prefix fact.
+        if !self.usage_is_reference(storage, usage).unwrap_or(false) {
+            match self.specializes_library_anchor(usage, &self.usage_time_variation_anchors.action)
+            {
+                UsageTimeVariationOutcome::Resolved(true) => {
+                    return UsageTimeVariationOutcome::Resolved(false)
+                }
+                UsageTimeVariationOutcome::Resolved(false) => {}
+                other => return other,
+            }
+        }
+        UsageTimeVariationOutcome::Resolved(true)
+    }
+
+    /// The effective SysML `Usage::isReference` fact shared by its own derivation and every
+    /// predicate, such as `mayTimeVary`, that consumes the complementary `isComposite` value.
+    pub(crate) fn usage_is_reference(
+        &self,
+        storage: &SemanticModelStorage,
+        usage: DeclarationId,
+    ) -> Option<bool> {
+        let declaration = storage.declaration(usage)?;
+        let facts = storage.declaration_facts(usage)?;
+        Some(
+            facts.modifiers.reference
+                || matches!(
+                    declaration.kind,
+                    crate::model::DeclarationKind::ReferenceUsage
+                        | crate::model::DeclarationKind::DefaultReferenceUsage
+                ),
+        )
+    }
+
+    fn specializes_library_anchor(
+        &self,
+        declaration: DeclarationId,
+        anchor: &LibrarySpecializationAnchor,
+    ) -> UsageTimeVariationOutcome {
+        match anchor {
+            LibrarySpecializationAnchor::Resolved(anchor) => UsageTimeVariationOutcome::Resolved(
+                declaration == *anchor
+                    || self.specialization.reaches(
+                        declaration,
+                        *anchor,
+                        ScopeBits::AnySpecialization,
+                    ),
+            ),
+            LibrarySpecializationAnchor::Missing => UsageTimeVariationOutcome::Unresolved,
+            LibrarySpecializationAnchor::Ambiguous(candidates) => {
+                let reaches = candidates
+                    .iter()
+                    .filter(|anchor| {
+                        declaration == **anchor
+                            || self.specialization.reaches(
+                                declaration,
+                                **anchor,
+                                ScopeBits::AnySpecialization,
+                            )
+                    })
+                    .count();
+                if reaches == 0 {
+                    UsageTimeVariationOutcome::Resolved(false)
+                } else if reaches == candidates.len() {
+                    UsageTimeVariationOutcome::Resolved(true)
+                } else {
+                    UsageTimeVariationOutcome::Ambiguous
+                }
+            }
+        }
     }
 
     /// The single featuring type of `declaration`, if its canonical fact row has one target.

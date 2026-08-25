@@ -1949,16 +1949,15 @@ fn variation_part_resolves_both_variant_members_to_sibling_declarations() {
          \t}\n\
          }\n",
     );
-    assert!(
-        output.matches("(kind variant)").count() >= 2,
-        "expected two variant relationship kinds, got:\n{output}"
+    assert_eq!(
+        output.matches("(role variant)").count(),
+        4,
+        "expected two effective and two authored VariantMembership roles, got:\n{output}"
     );
-    assert!(
-        output.contains(
-            "(kind variant) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::vehicle::transmission\""
-        ),
-        "expected both variant references to be sourced at the variation declaration \
-         itself (no anonymous nested-declaration shift), got:\n{output}"
+    assert_eq!(
+        output.matches("(kind subsetting)").count(),
+        6,
+        "expected each anonymous reference usage to author and publish a Subsetting, got:\n{output}"
     );
     assert!(
         output.contains("(authored-target \"manualTransmission\")")
@@ -2571,9 +2570,14 @@ fn requirement_def_variant_usage_resolves() {
     let sexpr = semantic_sexpr_for(
         "package P { requirement def R1; requirement def R2; requirement def choice { variant R1; variant R2; } }",
     );
+    assert_eq!(
+        sexpr.matches("(role variant)").count(),
+        4,
+        "expected two effective and two authored VariantMembership roles, got: {sexpr}"
+    );
     assert!(
-        sexpr.contains("(kind variant)"),
-        "expected a variant reference, got: {sexpr}"
+        sexpr.contains("(kind subsetting)"),
+        "expected the reference usages to subset their authored targets, got: {sexpr}"
     );
     assert!(
         !sexpr.contains("unsupported_requirement_definition_member"),
@@ -4747,11 +4751,10 @@ fn type_owned_end_feature_has_sequential_parallel_and_warm_parity() {
 }
 
 #[test]
-fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missing_fact_boundaries()
-{
+fn definition_usage_derivations_use_canonical_members_and_membership_identities() {
     let sources = [(
         "memory://definition-usage.sysml",
-        "package Model { part def Vehicle { part wheel; action service; } part vehicle; }",
+        "package Model { part def Vehicle { part wheel; action service; } part vehicle; part def Base; part external : Base; variation part def Choice { variant part first : Base; variant external; } variation part choice : Base { variant part second : Base; } }",
     )];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
@@ -4803,6 +4806,106 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
         QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
             if values.is_empty()
     ));
+    let choice = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::Choice",
+    );
+    let first = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::Choice::first",
+    );
+    let usage_choice = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::choice",
+    );
+    let second = identity_of(
+        &sequential,
+        "memory://definition-usage.sysml",
+        "Model::choice::second",
+    );
+    let definition_variants = match sequential
+        .definition_usage_derived(choice, DefinitionUsageDerivedKind::DefinitionVariant)
+        .answer
+    {
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+            if values.len() == 2 && values.contains(&first) =>
+        {
+            values
+        }
+        other => panic!("expected the typed and reference-form definition variants, got {other:?}"),
+    };
+    let reference_variant = definition_variants
+        .iter()
+        .copied()
+        .find(|variant| *variant != first)
+        .expect("reference-form variant usage");
+    assert!(matches!(
+        sequential.inspect(reference_variant).answer,
+        QueryAnswer::Resolved(ElementInspection {
+            kind: ElementKind::ReferenceUsage,
+            role: Some(MembershipRole::Variant),
+            ..
+        })
+    ));
+    let definition_memberships = match sequential
+        .definition_usage_derived(
+            choice,
+            DefinitionUsageDerivedKind::DefinitionVariantMembership,
+        )
+        .answer
+    {
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.len() == 2 =>
+        {
+            values
+        }
+        other => panic!("expected two definition VariantMemberships, got {other:?}"),
+    };
+    let definition_membership = definition_memberships
+        .iter()
+        .copied()
+        .find(|identity| {
+            matches!(
+                sequential.membership(*identity).answer,
+                QueryAnswer::Resolved(MembershipRelationship { member, .. }) if member == first
+            )
+        })
+        .expect("typed variant membership");
+    assert!(matches!(
+        sequential.membership(definition_membership).answer,
+        QueryAnswer::Resolved(MembershipRelationship {
+            owning_namespace: Some(owner),
+            member,
+            facts: MembershipFacts { kind: MembershipKind::Owning, .. },
+            role: Some(MembershipRole::Variant),
+            ..
+        }) if owner == choice && member == first
+    ));
+    let reference_membership = definition_memberships
+        .iter()
+        .copied()
+        .find(|identity| *identity != definition_membership)
+        .expect("reference-form variant membership");
+    assert!(matches!(
+        sequential.membership(reference_membership).answer,
+        QueryAnswer::Resolved(MembershipRelationship {
+            owning_namespace: Some(owner),
+            member,
+            facts: MembershipFacts { kind: MembershipKind::Owning, .. },
+            role: Some(MembershipRole::Variant),
+            ..
+        }) if owner == choice && member == reference_variant
+    ));
+    assert!(matches!(
+        sequential
+            .definition_usage_derived(usage_choice, DefinitionUsageDerivedKind::UsageVariant)
+            .answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Elements(values))
+            if values.as_ref() == [second]
+    ));
     assert!(matches!(
         sequential
             .definition_usage_derived(
@@ -4810,9 +4913,25 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
                 DefinitionUsageDerivedKind::DefinitionVariantMembership,
             )
             .answer,
-        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Unsupported {
-            prerequisite: DefinitionUsageDerivedPrerequisite::VariantMembershipIdentity,
-        })
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.is_empty()
+    ));
+    assert!(matches!(
+        sequential.definition_usage_derived(
+            usage_choice,
+            DefinitionUsageDerivedKind::UsageVariantMembership,
+        ).answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Memberships(values))
+            if values.len() == 1
+                && matches!(
+                    sequential.membership(values[0]).answer,
+                    QueryAnswer::Resolved(MembershipRelationship {
+                        owning_namespace: Some(owner),
+                        member,
+                        role: Some(MembershipRole::Variant),
+                        ..
+                    }) if owner == usage_choice && member == second
+                )
     ));
     let query = |published: &PublishedResolution| {
         let vehicle = identity_of(
@@ -4824,6 +4943,127 @@ fn definition_usage_derivations_use_canonical_direct_members_and_preserve_missin
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));
+    let variant_query = |published: &PublishedResolution| {
+        let choice = identity_of(
+            published,
+            "memory://definition-usage.sysml",
+            "Model::Choice",
+        );
+        published.definition_usage_derived(
+            choice,
+            DefinitionUsageDerivedKind::DefinitionVariantMembership,
+        )
+    };
+    assert_eq!(variant_query(&sequential), variant_query(&parallel));
+    assert_eq!(variant_query(&sequential), variant_query(&warm));
+}
+
+#[test]
+fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_parity() {
+    let publish = |schedule| {
+        build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://occurrences.sysml",
+                        "standard library package Occurrences { classifier Occurrence; classifier HappensLink; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://links.sysml",
+                        "standard library package Links { classifier SelfLink; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://actions.sysml",
+                        "standard library package Actions { action def Action; }".to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://model.sysml",
+                        "package Model { part def Owner specializes Occurrences::Occurrence { part ordinary; snapshot occurrence slice; action behavior : Actions::Action; ref selfLink : Links::SelfLink; ref happensLink : Occurrences::HappensLink; } }".to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                schedule,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap()
+    };
+    let sequential = publish(ConstructionSchedule::Sequential);
+    let parallel = publish(ConstructionSchedule::Parallel);
+    let warm = publish(ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution, name: &str| {
+        let usage = identity_of(published, "memory://model.sysml", name);
+        published.definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageMayTimeVary)
+    };
+    for (name, expected) in [
+        ("Model::Owner::ordinary", true),
+        ("Model::Owner::slice", false),
+        ("Model::Owner::behavior", false),
+        ("Model::Owner::selfLink", false),
+        ("Model::Owner::happensLink", false),
+    ] {
+        assert_eq!(
+            query(&sequential, name).answer,
+            QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+            "unexpected mayTimeVary result for {name}"
+        );
+        assert_eq!(query(&sequential, name), query(&parallel, name));
+        assert_eq!(query(&sequential, name), query(&warm, name));
+    }
+    for (name, expected) in [
+        ("Model::Owner::ordinary", false),
+        ("Model::Owner::selfLink", true),
+    ] {
+        let usage = identity_of(&sequential, "memory://model.sysml", name);
+        assert_eq!(
+            sequential
+                .definition_usage_derived(usage, DefinitionUsageDerivedKind::UsageIsReference,)
+                .answer,
+            QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(expected)),
+        );
+    }
+
+    let without_libraries = detail_publication(
+        &[(
+            "memory://model.sysml",
+            "package Model { part packageOwned; }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    assert_eq!(
+        query(&without_libraries, "Model::packageOwned").answer,
+        QueryAnswer::Resolved(DefinitionUsageDerivedOutcome::Boolean(false))
+    );
+
+    let missing_negative_anchors = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://occurrences.sysml",
+                    "standard library package Occurrences { classifier Occurrence; }".to_string(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    "package Model { part def Owner specializes Occurrences::Occurrence { part ordinary; } }".to_string(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        query(&missing_negative_anchors, "Model::Owner::ordinary").answer,
+        QueryAnswer::Unresolved,
+        "a missing standard-library anchor must not masquerade as a negative predicate"
+    );
 }
 
 #[test]

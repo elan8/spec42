@@ -624,14 +624,6 @@ impl ConstraintManifest {
                             "Feature",
                             SpecializationCheckKind::FeatureCrossing
                         ) | (
-                            "checkFeatureObjectSpecialization",
-                            "Feature",
-                            SpecializationCheckKind::FeatureObject
-                        ) | (
-                            "checkFeatureOccurrenceSpecialization",
-                            "Feature",
-                            SpecializationCheckKind::FeatureOccurrence
-                        ) | (
                             "checkFeatureOwnedCrossFeatureSpecialization",
                             "Feature",
                             SpecializationCheckKind::FeatureOwnedCrossFeature
@@ -1168,6 +1160,10 @@ pub enum LibrarySpecializationPredicate {
     OwnedEndFeaturesNotEmpty,
     /// `ownedTyping.type->exists(selectByKind(DataType))`.
     OwnedTypingDataType,
+    /// `ownedTyping.type->exists(selectByKind(Class))`.
+    OwnedTypingClass,
+    /// `ownedTyping.type->exists(selectByKind(Structure))`.
+    OwnedTypingStructure,
     /// `isEnd and owningType` is either an `Association` or `Connector`.
     EndOwnedByAssociationOrConnector,
     /// `association->exists(oclIsKindOf(AssociationStructure))` on a `Connector`.
@@ -1402,8 +1398,6 @@ pub struct RedefinitionCheckContract {
 #[serde(rename_all = "snake_case")]
 pub enum SpecializationCheckKind {
     FeatureCrossing,
-    FeatureObject,
-    FeatureOccurrence,
     FeatureOwnedCrossFeature,
     FeaturePortion,
     FeatureSubobject,

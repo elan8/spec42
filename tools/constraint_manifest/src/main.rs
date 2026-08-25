@@ -746,14 +746,6 @@ fn exact_specialization_check(constraint: &str, body: &str) -> Option<Specializa
             "47881c2d357962093cdbf0443dadd77640285876d021f6114451df24919f7345",
         ) => Some(SpecializationCheckKind::FeatureCrossing),
         (
-            "checkFeatureObjectSpecialization",
-            "1f2b529eb4ca82e07862f31cfe545dfdf957a1d13647f0b13ab3bdb7a52528ab",
-        ) => Some(SpecializationCheckKind::FeatureObject),
-        (
-            "checkFeatureOccurrenceSpecialization",
-            "630ce8c543298b5047aae6f40b0077429014535533ed623a643ee59d0f50595e",
-        ) => Some(SpecializationCheckKind::FeatureOccurrence),
-        (
             "checkFeatureOwnedCrossFeatureSpecialization",
             "f4b9efd26d1bda827b8c555bccce877c10449ce09b96447edb1f969825aac76c",
         ) => Some(SpecializationCheckKind::FeatureOwnedCrossFeature),
@@ -1108,16 +1100,23 @@ fn exact_connector_association_specialization(
 }
 
 /// Extract only the complete Feature category predicates whose direct source facts are already
-/// published by the lowering/resolution boundary. The remaining Feature category checks require
-/// a first-class metaclass-subtyping fact and deliberately remain outside this closed extractor.
+/// published by the lowering/resolution boundary.
 fn exact_feature_category_specialization(
     body: &str,
 ) -> Option<ConditionalLibrarySpecializationContract> {
     const DATA_VALUE: &str =
         "ownedTyping.type->exists(selectByKind(DataType)) implies specializesFromLibrary('";
+    const CLASS: &str =
+        "ownedTyping.type->exists(selectByKind(Class)) implies specializesFromLibrary('";
+    const STRUCTURE: &str =
+        "ownedTyping.type->exists(selectByKind(Structure)) implies specializesFromLibrary('";
     const END: &str = "isEnd and owningType <> null and (owningType.oclIsKindOf(Association) or owningType.oclIsKindOf(Connector)) implies specializesFromLibrary('";
     let predicate = if body.starts_with(DATA_VALUE) {
         LibrarySpecializationPredicate::OwnedTypingDataType
+    } else if body.starts_with(CLASS) {
+        LibrarySpecializationPredicate::OwnedTypingClass
+    } else if body.starts_with(STRUCTURE) {
+        LibrarySpecializationPredicate::OwnedTypingStructure
     } else if body.starts_with(END) {
         LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
     } else {
@@ -1125,8 +1124,10 @@ fn exact_feature_category_specialization(
     };
     let prefix = match predicate {
         LibrarySpecializationPredicate::OwnedTypingDataType => DATA_VALUE,
+        LibrarySpecializationPredicate::OwnedTypingClass => CLASS,
+        LibrarySpecializationPredicate::OwnedTypingStructure => STRUCTURE,
         LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector => END,
-        _ => unreachable!("feature category extractor owns only its two exact predicates"),
+        _ => unreachable!("feature category extractor owns only its exact predicates"),
     };
     let anchor = exact_library_anchor(body, prefix)?;
     Some(ConditionalLibrarySpecializationContract {
@@ -1759,6 +1760,28 @@ mod tests {
                 predicate: LibrarySpecializationPredicate::OwnedTypingDataType,
                 owner_metaclasses: Vec::new(),
                 anchor: "Base::dataValues".to_string(),
+                true_anchor: None,
+            })
+        );
+        assert_eq!(
+            exact_conditional_library_specialization(
+                "ownedTyping.type->exists(selectByKind(Class)) implies specializesFromLibrary('Occurrences::occurrences')"
+            ),
+            Some(ConditionalLibrarySpecializationContract {
+                predicate: LibrarySpecializationPredicate::OwnedTypingClass,
+                owner_metaclasses: Vec::new(),
+                anchor: "Occurrences::occurrences".to_string(),
+                true_anchor: None,
+            })
+        );
+        assert_eq!(
+            exact_conditional_library_specialization(
+                "ownedTyping.type->exists(selectByKind(Structure)) implies specializesFromLibrary('Objects::objects')"
+            ),
+            Some(ConditionalLibrarySpecializationContract {
+                predicate: LibrarySpecializationPredicate::OwnedTypingStructure,
+                owner_metaclasses: Vec::new(),
+                anchor: "Objects::objects".to_string(),
                 true_anchor: None,
             })
         );

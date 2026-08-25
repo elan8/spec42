@@ -292,7 +292,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::SatisfyTarget
                     | ReferenceKind::BindSource
                     | ReferenceKind::BindTarget
-                    | ReferenceKind::Variant
                     | ReferenceKind::IncludeUseCase
                     | ReferenceKind::ViewExpose
                     | ReferenceKind::InvocationCallee
@@ -971,7 +970,6 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::AllocateTarget
         | ReferenceKind::BindSource
         | ReferenceKind::BindTarget
-        | ReferenceKind::Variant
         | ReferenceKind::IncludeUseCase
         | ReferenceKind::MemberAccessOperand
         | ReferenceKind::InvocationCallee
@@ -1085,6 +1083,8 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::ItemUsage
             | DeclarationKind::ActionUsage
             | DeclarationKind::AcceptActionUsage
+            | DeclarationKind::SendActionUsage
+            | DeclarationKind::TerminateActionUsage
             | DeclarationKind::StateUsage
             | DeclarationKind::MetadataUsage
             | DeclarationKind::ConnectionUsage
@@ -1140,6 +1140,15 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
     )
 }
 
+/// Whether a lowered Usage is an `ActionUsage` or one of its concrete SysML subtypes.
+///
+/// This is a metamodel predicate over canonical declaration kinds. It deliberately includes the
+/// state and case families (`StateUsage :> ActionUsage`, `CaseUsage :> ActionUsage`) and the
+/// syntax-specific action nodes that do not pass through the ordinary `action` production.
+pub(crate) fn is_action_usage_declaration(kind: DeclarationKind) -> bool {
+    kind.is_action_usage()
+}
+
 /// Whether a direct canonical member satisfies the exact selected `selectByKind` result.
 pub(crate) fn definition_usage_candidate_matches(
     collection: DefinitionUsageDerivedKind,
@@ -1151,6 +1160,8 @@ pub(crate) fn definition_usage_candidate_matches(
             kind,
             DeclarationKind::ActionUsage
                 | DeclarationKind::AcceptActionUsage
+                | DeclarationKind::SendActionUsage
+                | DeclarationKind::TerminateActionUsage
                 | DeclarationKind::PerformActionUsage
                 | DeclarationKind::EntryActionBinding
                 | DeclarationKind::DoActionBinding

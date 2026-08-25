@@ -18,8 +18,7 @@ use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentIdx, MembershipKind, NameId,
     ReferenceKind, SymbolPathId, Visibility,
 };
-use crate::TextPosition;
-use crate::TextRange;
+use crate::{MembershipRole, TextPosition, TextRange};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AuthoredImportShape {
@@ -173,10 +172,24 @@ pub(crate) struct DeclarationFacts {
     /// records the trigger shape on `TransitionAccept`; lowering publishes it on the synthesized
     /// accept action so generated rules never infer it from an owner name or reference spelling.
     pub(crate) is_trigger_action: Option<bool>,
+    /// Whether an `AcceptActionUsage`'s first input parameter owns an authored value expression.
+    /// Typed payload declarations still synthesize the required payload parameter, but have no
+    /// argument expression; shorthand/time triggers do.
+    pub(crate) accept_has_payload_argument: Option<bool>,
+    /// Whether an `AcceptActionUsage` has the optional receiver input parameter/argument authored
+    /// by a trailing `via` clause.
+    pub(crate) accept_has_receiver_argument: Option<bool>,
+    /// Whether a `SendActionUsage` owns its optional sender argument (`via`).
+    pub(crate) send_has_sender_argument: Option<bool>,
+    /// Whether a `SendActionUsage` owns its optional receiver argument (`to`).
+    pub(crate) send_has_receiver_argument: Option<bool>,
     /// Whether this `IfActionUsage` has its typed `elseAction` branch. The parser records this as
     /// `IfStmt::else_body`; lowering publishes the presence bit so generated specialization rules
     /// select their anchor without reconstructing control-flow syntax.
     pub(crate) has_else_action: Option<bool>,
+    /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
+    /// action selected by a control-action branch/body syntax production.
+    pub(crate) action_input_parameter_position: Option<u32>,
     /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
     ///
     /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the
@@ -196,6 +209,21 @@ pub(crate) struct DeclarationFacts {
     /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
     /// The two are distinct and both are needed.
     pub(crate) positional_end: Option<u32>,
+    /// One-based position among the owner's authored FeatureMemberships.
+    pub(crate) owned_feature_position: Option<u32>,
+    /// The two independently named endpoints of KerML `Feature::crossFeature` and
+    /// `Feature::ownedCrossFeature()` when lowering an authored owned-cross feature.
+    ///
+    /// The Pilot's `addCrossingSpecialization` creates the implied CrossSubsetting whose second
+    /// chained feature is the owned cross feature. Publishing both identities here preserves that
+    /// transformation result without asking a validation consumer to reconstruct parser syntax.
+    pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct CrossFeatureProjection {
+    pub(crate) cross_feature: DeclarationId,
+    pub(crate) owned_cross_feature: DeclarationId,
 }
 
 impl DeclarationFacts {
@@ -702,6 +730,8 @@ pub(crate) struct MembershipRecord {
     pub(crate) member: DeclarationId,
     pub(crate) kind: MembershipKind,
     pub(crate) visibility: Visibility,
+    /// A role authored by the membership production rather than implied by the member metaclass.
+    pub(crate) role: Option<MembershipRole>,
     pub(crate) span: Span,
 }
 

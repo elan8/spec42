@@ -6,7 +6,6 @@ rule_family=derive
 expectation=semantics
 rule_id=sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression
 rule_id=sysml-2.0:8.3.17.5:deriveAssignmentUsageTargetArgument
-blocked_by=lowering-gap-action-argument-identities
 libraries=none
 ~~~
 # SOURCE
@@ -16,8 +15,8 @@ package Actions { action def Procedure { attribute target; assign target := 1; }
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression") (source "Actions::Procedure") (outcome resolved))
-  (action-derived-fact (rule_id "sysml-2.0:8.3.17.5:deriveAssignmentUsageTargetArgument") (source "Actions::Procedure") (outcome resolved)))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression") (source "Actions::Procedure::") (position 2) (outcome resolved))
+  (action-derived-fact (rule_id "sysml-2.0:8.3.17.5:deriveAssignmentUsageTargetArgument") (source "Actions::Procedure::") (position 1) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

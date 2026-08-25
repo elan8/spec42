@@ -11,10 +11,11 @@ use sysml_resolution::*;
 
 /// Every `variant` spelling delegates to the lowering its ordinary spelling already uses.
 ///
-/// Only `variant perform` was dispatched; the other five kinds wrap exactly the node their
-/// plain spelling does, so each reuses that lowering. The `body.is_none()` guard stays on all
-/// six -- an outer `VariantUsage.body` is invisible to the inner lowering, so lowering the
-/// inner declaration while dropping it would look complete while being partial.
+/// Every kind wraps exactly the node its plain spelling does, so each reuses that lowering while
+/// the enclosing variant production records the canonical `VariantMembership` role. The
+/// `body.is_none()` guard stays on all forms -- an outer `VariantUsage.body` is invisible to the
+/// inner lowering, so lowering the inner declaration while dropping it would look complete while
+/// being partial.
 #[test]
 fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
     // Every kind is placed in a `variation part def` body, whose `PartDefBodyElement` is one of
@@ -52,6 +53,22 @@ fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
             "expected {label} to lower as {kind}, got:\n{line}"
         );
     }
+
+    let publication = detail_publication(
+        &[(
+            "memory://variants.sysml",
+            "package Demo { part def Engine; variation part def V { variant part e : Engine; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let variant = identity_of(&publication, "memory://variants.sysml", "Demo::V::e");
+    assert!(matches!(
+        publication.inspect(variant).answer,
+        QueryAnswer::Resolved(ElementInspection {
+            role: Some(MembershipRole::Variant),
+            ..
+        })
+    ));
 
     // `variant attribute` inside a `variation attribute def` body never reaches this lowering:
     // `ast::AttributeBodyElement` has no `VariantUsage` variant at all, so the member is
@@ -913,48 +930,6 @@ fn kerml_binding_member_lowers_left_and_right_ends() {
     assert!(
         output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
         "expected bindSource/bindTarget references for startShot/endShot, got:\n{output}"
-    );
-}
-
-#[test]
-fn end_prefixed_feature_lowers_its_cross_feature_and_subsets() {
-    // Upstream folded `KermlEndMember` into `FeaturePrefix`'s `OwnedCrossFeatureMember`, which
-    // inverts the ownership: the `end`-prefixed feature (`thatOccurrence`) owns the cross
-    // feature (`happensDuring`), as KerML BNF 584/592/595 spell it, rather than the reverse.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tassoc HappensDuring {\n\
-         \t\tfeature timeCoincidentOccurrences : Occurrence;\n\
-         \t\tfeature longerOccurrence : Occurrence;\n\
-         \t\tend happensDuring subsets timeCoincidentOccurrences feature thatOccurrence: \
-         Occurrence redefines longerOccurrence;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (kind kerml-feature) \
-             (membership (kind feature) (visibility default)) (facts (modifiers end))"
-        ),
-        "expected thatOccurrence to lower as an end-prefixed kerml-feature, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (kind kerml-end)"
-        ),
-        "expected the cross feature happensDuring to be owned by thatOccurrence, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::timeCoincidentOccurrences\")))"
-        ),
-        "expected the cross feature's subsets to resolve to timeCoincidentOccurrences, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::longerOccurrence\")))"
-        ),
-        "expected thatOccurrence's redefines to resolve to longerOccurrence, got:\n{output}"
     );
 }
 

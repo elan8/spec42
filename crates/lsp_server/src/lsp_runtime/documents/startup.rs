@@ -207,13 +207,12 @@ pub(crate) async fn initialized(
         let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
 
         let relink_start = Instant::now();
-        let relink_metrics;
         let stale_retries = 0u32;
         let relink_used_fallback = false;
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
         let _ = handle.rebuild_publication().await;
-        relink_metrics = crate::session::services::RebuildAllDocumentLinksMetrics {
+        let relink_metrics = crate::session::services::RebuildAllDocumentLinksMetrics {
             total_ms: relink_start.elapsed().as_millis() as u32,
             ..Default::default()
         };

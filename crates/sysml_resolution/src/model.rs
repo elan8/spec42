@@ -103,6 +103,13 @@ pub(crate) enum DeclarationKind {
     /// semantic: ordinary action usages and accept actions share grammar infrastructure, but only
     /// the latter own the `isTriggerAction` specialization predicates.
     AcceptActionUsage,
+    /// An anonymous action usage lowered from the standalone `send` control-node production.
+    /// Its distinct metaclass identity owns the normative payload/sender/receiver argument order.
+    SendActionUsage,
+    /// An anonymous action usage lowered from a `terminate` control-node statement.
+    /// The statement is an action in the semantic model rather than a reference attached to its
+    /// enclosing action definition or usage.
+    TerminateActionUsage,
     /// An anonymous succession feature synthesized for a `first X then Y;` control-flow
     /// statement (BNF `FirstStmt`) found in an action def/usage body. Owned by the enclosing
     /// action def/usage declaration (mirroring `EndDecl`'s nested `ConnectionUsage` children),
@@ -879,6 +886,38 @@ pub(crate) enum Visibility {
     Protected,
 }
 
+impl DeclarationKind {
+    /// Whether this canonical kind is `ActionUsage` or one of its concrete SysML subtypes.
+    pub(crate) const fn is_action_usage(self) -> bool {
+        matches!(
+            self,
+            Self::ActionUsage
+                | Self::AcceptActionUsage
+                | Self::SendActionUsage
+                | Self::TerminateActionUsage
+                | Self::StateUsage
+                | Self::CaseUsage
+                | Self::AnalysisCaseUsage
+                | Self::VerificationCaseUsage
+                | Self::UseCaseUsage
+                | Self::PerformActionUsage
+                | Self::Transition
+                | Self::Assign
+                | Self::While
+                | Self::Loop
+                | Self::If
+                | Self::ForLoop
+                | Self::Decide
+                | Self::Merge
+                | Self::Fork
+                | Self::Join
+                | Self::EntryActionBinding
+                | Self::DoActionBinding
+                | Self::ExitActionBinding
+        )
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum ReferenceKind {
     NamespaceImport,
@@ -1070,24 +1109,6 @@ pub(crate) enum ReferenceKind {
     /// The authored `target` operand (the `to <target>` clause) of an `allocate <source> to
     /// <target>;` body element (`Allocate.target`), same shape and scope as `AllocateSource`.
     AllocateTarget,
-    /// The authored target of a `variant <name>;` member (`VariantUsage.reference`, BNF
-    /// `VariantUsageElement`'s untyped reference form) inside a `variation part`/`variation part
-    /// def` body, resolved through the same `DeclarationDomain::Any` lexical lookup as
-    /// `Succession`/`SatisfySource`: the referenced variant can be any owned sibling feature, not
-    /// just a Type (e.g. `part manualTransmission;` declared as a sibling of the enclosing
-    /// `vehicleFamily` part, referenced from `variant manualTransmission;` nested inside
-    /// `variation part transmission { ... }`). Sourced directly at the enclosing `variation`
-    /// declaration itself (no anonymous nested-declaration scope shift, unlike `Succession`/
-    /// `Satisfy`), since each `variant` member carries only a single operand -- a single-operand
-    /// shape rather than `Succession`'s paired-ends shape.
-    /// Multiple `variant` members owned by the same variation declaration become multiple
-    /// `Variant` references from that one source, distinguished by ordinal like any other
-    /// multi-target reference family (e.g. `Subclassification`'s multiple `:>` targets). The typed
-    /// inline form (`variant part name : Type { ... }`, `VariantUsage.typed`) introduces a new
-    /// usage rather than referencing an existing one -- out of scope, like `Satisfy`'s
-    /// `inline_requirement` form -- and left as an explicit unsupported-member diagnostic; so is
-    /// any optional nested body on the untyped reference form (`VariantUsage.body`).
-    Variant,
     /// The authored target of a view body's `expose <target>;` member (`ExposeMember.target`),
     /// resolved through the same `DeclarationDomain::Any` lexical lookup as `SatisfySource`: an
     /// exposed element can be any member, not just a Type. Sourced at the anonymous

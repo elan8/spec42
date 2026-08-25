@@ -27,6 +27,8 @@ use crate::ElementKind;
 use crate::ElementSearch;
 use crate::ElementSource;
 use crate::EvaluationState;
+use crate::MembershipId;
+use crate::MembershipRole;
 use crate::OccurrenceRole;
 use crate::QueryAnswer;
 use crate::QueryOutcome;
@@ -38,8 +40,8 @@ use source_identity::SourceRole;
 use crate::inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
-    MultiplicityBound, MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt,
-    RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
+    MembershipRelationship, MultiplicityBound, MultiplicityFacts, PortionKind, PublishedElement,
+    ReferenceAt, RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
     VisibilityProvenance,
 };
 
@@ -317,6 +319,39 @@ impl<D> SemanticModel<D> {
         })
     }
 
+    pub(crate) fn effective_membership_role(&self, id: DeclarationId) -> Option<MembershipRole> {
+        let membership = self.memberships.get(id)?;
+        membership.role.or_else(|| {
+            let declaration = self.storage.declaration(id)?;
+            let facts = self.storage.declaration_facts(id)?;
+            element_kind::membership_role_with_trigger(declaration.kind, facts.is_trigger_action)
+        })
+    }
+
+    pub(crate) fn membership(
+        &self,
+        identity: MembershipId,
+    ) -> QueryOutcome<MembershipRelationship> {
+        let Ok(member) = DeclarationId::from_index(identity.index()) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let Some(declaration) = self.storage.declaration(member) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let Some(facts) = self.membership_facts(member) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        self.resolved_outcome(MembershipRelationship {
+            identity,
+            owning_namespace: declaration.owner.and_then(|owner| self.symbol_id(owner)),
+            member: self
+                .symbol_id(member)
+                .expect("a membership member ranks in its own publication"),
+            facts,
+            role: self.effective_membership_role(member),
+        })
+    }
+
     pub(crate) fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
         slice_range(
             &self.facts.documentation_order,
@@ -584,10 +619,7 @@ impl<D> SemanticModel<D> {
         Some(ElementInspection {
             identity: self.symbol_id(id)?,
             kind: element_kind::element_kind(declaration.kind),
-            role: element_kind::membership_role_with_trigger(
-                declaration.kind,
-                facts.is_trigger_action,
-            ),
+            role: self.effective_membership_role(id),
             name: declaration
                 .name
                 .and_then(|name| self.storage.symbol(name))
