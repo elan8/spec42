@@ -44,6 +44,15 @@ pub enum HoverUnitOutcome {
     CatalogUnavailable,
 }
 
+/// A navigation destination attached to a label in the presentation-independent report.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HoverLink {
+    pub label: String,
+    pub uri: String,
+    pub line: u32,
+    pub character: u32,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HoverBlock {
     Context {
@@ -89,13 +98,14 @@ pub enum HoverBlock {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HoverReport {
     pub blocks: Vec<HoverBlock>,
+    pub links: Vec<HoverLink>,
 }
 
 pub fn render_hover_markdown(report: &HoverReport) -> String {
     report
         .blocks
         .iter()
-        .map(markdown_block)
+        .map(|block| markdown_block(block, &report.links))
         .collect::<Vec<_>>()
         .join("\n\n")
 }
@@ -107,14 +117,19 @@ pub fn render_hover_sexpr(report: &HoverReport) -> String {
         .map(sexpr_block)
         .map(|block| format!("\n  {block}"))
         .collect::<String>();
-    format!("(hover{body}\n)")
+    let links = report
+        .links
+        .iter()
+        .map(|link| format!("\n  {}", sexpr_link(link)))
+        .collect::<String>();
+    format!("(hover{body}{links}\n)")
 }
 
-fn markdown_block(block: &HoverBlock) -> String {
+fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
     match block {
         HoverBlock::Context { relation, subject } => subject.as_ref().map_or_else(
             || format!("**{}**", relation.label()),
-            |subject| format!("**{}** `{subject}`", relation.label()),
+            |subject| format!("**{}** {}", relation.label(), linked_code(subject, links)),
         ),
         HoverBlock::Identity {
             kind,
@@ -124,13 +139,13 @@ fn markdown_block(block: &HoverBlock) -> String {
         } => {
             let types = direct_types
                 .iter()
-                .map(|name| format!("`{name}`"))
+                .map(|name| linked_code(name, links))
                 .collect::<Vec<_>>()
                 .join(", ");
             format!(
                 "`{}` **{}**{}",
                 role.as_deref().unwrap_or(kind),
-                escape_markdown(name),
+                linked_text(name, links),
                 if types.is_empty() {
                     String::new()
                 } else {
@@ -138,18 +153,26 @@ fn markdown_block(block: &HoverBlock) -> String {
                 }
             )
         }
-        HoverBlock::QualifiedName(value) => format!("`{value}`"),
-        HoverBlock::Owner(value) => format!("In `{value}`"),
+        HoverBlock::QualifiedName(value) => linked_code(value, links),
+        HoverBlock::Owner(value) => format!("In {}", linked_code(value, links)),
         HoverBlock::InheritedType {
             type_name,
             inherited_from,
-        } => format!("Inherited type `{type_name}` from `{inherited_from}`"),
+        } => format!(
+            "Inherited type {} from {}",
+            linked_code(type_name, links),
+            linked_code(inherited_from, links)
+        ),
         HoverBlock::TypeResolution(value) => format!("Type resolution: **{value}**"),
         HoverBlock::Documentation(value) => escape_markdown(value),
-        HoverBlock::Source { identity, line } => format!(
-            "Defined in `{}:{line}`",
-            crate::source_display::source_identity_label(identity)
-        ),
+        HoverBlock::Source { identity, line } => {
+            let display = format!(
+                "{}:{line}",
+                crate::source_display::source_identity_label(identity)
+            );
+            let destination = markdown_destination(identity, line.saturating_sub(1));
+            format!("Defined in [{display}]({destination})")
+        }
         HoverBlock::Keyword {
             keyword,
             description,
@@ -188,9 +211,53 @@ fn markdown_block(block: &HoverBlock) -> String {
             "Candidates:{}",
             values
                 .iter()
-                .map(|value| format!("\n- `{value}`"))
+                .map(|value| format!("\n- {}", linked_code(value, links)))
                 .collect::<String>()
         ),
+    }
+}
+
+fn sexpr_link(link: &HoverLink) -> String {
+    format!(
+        "(link (label {}) (uri {}) (position {} {}))",
+        atom(&link.label),
+        atom(&link.uri),
+        link.line,
+        link.character
+    )
+}
+
+fn linked_code(label: &str, links: &[HoverLink]) -> String {
+    links.iter().find(|link| link.label == label).map_or_else(
+        || format!("`{label}`"),
+        |link| {
+            format!(
+                "[`{label}`]({})",
+                markdown_destination(&link.uri, link.line)
+            )
+        },
+    )
+}
+
+fn linked_text(label: &str, links: &[HoverLink]) -> String {
+    links.iter().find(|link| link.label == label).map_or_else(
+        || escape_markdown(label),
+        |link| {
+            format!(
+                "[{}]({})",
+                escape_markdown(label),
+                markdown_destination(&link.uri, link.line)
+            )
+        },
+    )
+}
+
+fn markdown_destination(identity: &str, zero_based_line: u32) -> String {
+    if let Ok(mut uri) = url::Url::parse(identity) {
+        uri.set_fragment(Some(&format!("L{}", zero_based_line + 1)));
+        uri.to_string()
+    } else {
+        format!("{identity}#L{}", zero_based_line + 1)
     }
 }
 
@@ -336,6 +403,7 @@ mod tests {
                 relation: HoverRelation::TypeOf,
                 subject: Some("P::car".into()),
             }],
+            links: vec![],
         };
         assert!(render_hover_markdown(&report).contains("**Type of**"));
         assert!(render_hover_sexpr(&report).contains("(relation \"Type of\")"));
@@ -349,6 +417,7 @@ mod tests {
                 identity: identity.into(),
                 line: 42,
             }],
+            links: vec![],
         };
         assert!(render_hover_sexpr(&report).contains(identity));
         assert!(render_hover_markdown(&report).contains("model.sysml:42"));
@@ -358,6 +427,7 @@ mod tests {
     fn candidate_markdown_is_a_compact_list() {
         let report = HoverReport {
             blocks: vec![HoverBlock::Candidates(vec!["A::T".into(), "B::T".into()])],
+            links: vec![],
         };
         assert_eq!(
             render_hover_markdown(&report),

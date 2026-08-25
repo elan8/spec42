@@ -51,7 +51,7 @@ fn file_uri_label(path: &str, limit: usize) -> String {
         .map(|segment| format!("/{segment}"))
         .unwrap_or_default();
     middle_elide(
-        &format!("{prefix}/…/{}", significant_path_suffix(path, 4)),
+        &format!("{prefix}/…/{}", significant_path_suffix(path, 2)),
         limit,
     )
 }
@@ -123,7 +123,7 @@ mod tests {
         let identity = "file:///Users/luke/Library/Application%20Support/io.Elan8.spec42/standard-library/versions/2026-04/kpar/Kernel_Data_Type_Library-1.0.0/ScalarValues.kerml";
         let label = source_identity_label_with_limit(identity, 72);
         assert!(label.contains('…'));
-        assert!(label.ends_with("2026-04/kpar/Kernel_Data_Type_Library-1.0.0/ScalarValues.kerml"));
+        assert!(label.ends_with("Kernel_Data_Type_Library-1.0.0/ScalarValues.kerml"));
         assert!(!label.starts_with("file://"));
     }
 

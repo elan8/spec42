@@ -9,7 +9,7 @@ use crate::completion::element_kind_label;
 use crate::dto::HoverResult;
 use crate::keywords::keyword_help;
 use crate::presentation_hover::{
-    render_hover_markdown, HoverBlock, HoverRelation, HoverReport, HoverResolutionState,
+    render_hover_markdown, HoverBlock, HoverLink, HoverRelation, HoverReport, HoverResolutionState,
     HoverUnitOutcome,
 };
 use crate::workspace::WorkspaceSnapshot;
@@ -76,6 +76,7 @@ fn hover_report_and_range(
                     description: help.description.to_string(),
                     syntax: help.syntax.map(str::to_string),
                 }],
+                links: vec![],
             },
             range,
         ));
@@ -174,16 +175,26 @@ fn element_hover_report(
         .filter_map(|entry| model.qualified_name(entry.element.identity))
         .collect::<Vec<_>>();
     let mut blocks = Vec::new();
+    let mut links = Vec::new();
     if let Some((relation, containing)) = context {
         if let Some(containing) = containing {
-            let subject = model
-                .qualified_name(containing.inspection.identity)
-                .or(containing.inspection.name.as_deref())
-                .unwrap_or("(anonymous)");
-            blocks.push(HoverBlock::Context {
-                relation,
-                subject: Some(subject.to_string()),
-            });
+            if containing.inspection.name.is_some() {
+                let subject = model
+                    .qualified_name(containing.inspection.identity)
+                    .or(containing.inspection.name.as_deref());
+                blocks.push(HoverBlock::Context {
+                    relation,
+                    subject: subject.map(str::to_string),
+                });
+                if let Some(subject) = subject {
+                    push_hover_link(model, &mut links, subject, containing.inspection.location);
+                }
+            } else {
+                blocks.push(HoverBlock::Context {
+                    relation,
+                    subject: None,
+                });
+            }
         } else {
             blocks.push(HoverBlock::Context {
                 relation,
@@ -200,11 +211,23 @@ fn element_hover_report(
             .map(|value| (*value).to_string())
             .collect(),
     });
+    push_hover_link(model, &mut links, name, element.location);
+    for entry in details
+        .effective_typing
+        .types
+        .iter()
+        .filter(|entry| entry.origin == EffectiveTypeOrigin::Direct)
+    {
+        if let Some(type_name) = model.qualified_name(entry.element.identity) {
+            push_hover_link(model, &mut links, type_name, entry.element.location);
+        }
+    }
 
     let qualified_name = model.qualified_name(element.identity);
     if let Some(qualified) = qualified_name {
         if qualified != name {
             blocks.push(HoverBlock::QualifiedName(qualified.to_string()));
+            push_hover_link(model, &mut links, qualified, element.location);
         }
     }
     if let Some(owner) = details
@@ -252,7 +275,27 @@ fn element_hover_report(
             });
         }
     }
-    HoverReport { blocks }
+    HoverReport { blocks, links }
+}
+
+fn push_hover_link(
+    model: &PublishedModel,
+    links: &mut Vec<HoverLink>,
+    label: &str,
+    location: sysml_query::resolved_slice::SourceLocation,
+) {
+    let Some(uri) = model.document_identity(location.document) else {
+        return;
+    };
+    let link = HoverLink {
+        label: label.to_string(),
+        uri: uri.to_string(),
+        line: location.range.start.line,
+        character: location.range.start.character,
+    };
+    if !links.contains(&link) {
+        links.push(link);
+    }
 }
 
 fn reference_context(kind: &str) -> Option<HoverRelation> {
@@ -292,6 +335,7 @@ fn state_report(
             token: token.to_string(),
             explanation: explanation.map(str::to_string),
         }],
+        links: vec![],
     }
 }
 
@@ -352,6 +396,7 @@ fn unit_hover_report(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> Hov
                 .to_string(),
             outcome,
         }],
+        links: vec![],
     }
 }
 

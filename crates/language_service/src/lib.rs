@@ -53,7 +53,7 @@ pub use library_search::{
 pub use navigation::{find_references, goto_definition, hover, hover_report};
 pub use outline::{document_symbols, folding_ranges};
 pub use presentation_hover::{
-    render_hover_markdown, render_hover_sexpr, HoverBlock, HoverRelation, HoverReport,
+    render_hover_markdown, render_hover_sexpr, HoverBlock, HoverLink, HoverRelation, HoverReport,
     HoverResolutionState, HoverUnitOutcome,
 };
 pub use rename::{apply_rename, prepare_rename, rename_target, RenameTarget};
