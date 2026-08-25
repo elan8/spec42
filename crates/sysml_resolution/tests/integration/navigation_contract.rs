@@ -1496,6 +1496,7 @@ fn element_details_at_a_position_answer_the_container_and_the_reference_separate
             .and_then(|details| details.inspection.name.as_deref()),
         Some("motor")
     );
+    assert_eq!(at.reference_kind, Some("featureTyping"));
     match &at.referenced {
         ReferencedDetails::Resolved(details) => {
             assert_eq!(details.inspection.name.as_deref(), Some("Engine"))
@@ -1511,6 +1512,7 @@ fn element_details_at_a_position_answer_the_container_and_the_reference_separate
             character: 8,
         },
     ));
+    assert_eq!(at.reference_kind, None);
     assert_eq!(at.referenced, ReferencedDetails::None);
 }
 

@@ -196,6 +196,7 @@ probe nested_declarations.md 2 24
           (outgoing (kind "typing") (peer "Outer::Vehicle") (provenance authored))
         )
       )
+      (reference-kind featureTyping)
       (referenced (status resolved)
         (element (kind "PartDefinition")
           (name "Vehicle")

@@ -42,7 +42,7 @@ pub struct SyntaxUnitLiteral<'p> {
 }
 
 fn continues_identifier(ch: char) -> bool {
-    ch.is_alphanumeric() || ch == '_' || ch == ':' || ch == '>'
+    ch.is_alphanumeric() || ch == '_' || ch == ':'
 }
 
 pub(super) fn token_at<'p>(
@@ -54,7 +54,9 @@ pub(super) fn token_at<'p>(
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
     let cursor = character as usize;
-    if chars.is_empty() || cursor > chars.len() {
+    // LSP positions identify the character under the cursor. Do not walk left from punctuation or
+    // end-of-line and accidentally turn hovering a delimiter into a hover for the preceding name.
+    if chars.is_empty() || cursor >= chars.len() || !continues_identifier(chars[cursor]) {
         return None;
     }
     let mut start = cursor;
@@ -71,6 +73,12 @@ pub(super) fn token_at<'p>(
     // The cursor convention is character indices; a slice needs byte offsets into the same line,
     // so the two are converted here rather than by copying the token out of the source.
     let text = &line_text[char_to_byte(line_text, start)..char_to_byte(line_text, end)];
+    // `:` is admitted above only so a qualified name can remain one token. It is also an
+    // operator by itself, so require the scanned span to contain an actual identifier character.
+    // In particular, specialization operators (`:>`, `:>>`) are syntax, not lookup names.
+    if !text.chars().any(|ch| ch.is_alphanumeric() || ch == '_') {
+        return None;
+    }
     let range = SyntaxRange {
         start_line: line,
         start_character: start as u32,
@@ -293,6 +301,32 @@ mod tests {
         let parsed = parse("package P { part caf\u{00E9} : T; }");
         let token = parsed.token_at(0, 18).expect("token");
         assert_eq!(token.text, "caf\u{00E9}");
+    }
+
+    #[test]
+    fn specialization_operators_are_not_identifier_tokens() {
+        let parsed = parse("package P { part def Child :> Parent { part :>> member; } }");
+        let source = parsed.source();
+        for operator in [":>", ":>>"] {
+            let start = source.find(operator).expect("operator") as u32;
+            for offset in 0..operator.len() as u32 {
+                assert!(
+                    parsed.token_at(0, start + offset).is_none(),
+                    "{operator} at offset {offset} must not be a name token"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn punctuation_does_not_select_the_preceding_identifier() {
+        let source = "package P { part foo : Bar; }";
+        let parsed = parse(source);
+        for punctuation in ['{', ';', '}'] {
+            let position = source.find(punctuation).expect("punctuation") as u32;
+            assert!(parsed.token_at(0, position).is_none(), "{punctuation}");
+        }
+        assert!(parsed.token_at(0, source.len() as u32).is_none());
     }
 
     #[test]

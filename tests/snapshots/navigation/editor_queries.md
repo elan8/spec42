@@ -140,6 +140,7 @@ probe editor_queries.md 10 17 rename=Base
           (outgoing (kind "typing") (peer "Types::Other") (provenance authored))
         )
       )
+      (reference-kind featureTyping)
       (referenced (status resolved)
         (element (kind "PartDefinition")
           (name "Other")

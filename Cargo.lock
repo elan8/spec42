@@ -2055,6 +2055,7 @@ dependencies = [
  "clap",
  "generator_api",
  "generator_host",
+ "language_service",
  "rayon",
  "serde",
  "serde_json",

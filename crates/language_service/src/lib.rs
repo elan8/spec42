@@ -13,8 +13,10 @@ pub mod library_search;
 pub mod lookup;
 pub mod navigation;
 mod outline;
+pub mod presentation_hover;
 pub mod references;
 pub mod rename;
+mod source_display;
 pub mod symbol;
 pub mod text;
 pub mod uri;
@@ -48,8 +50,12 @@ pub use library_search::{
     search_symbols_from_recovered_short_names, LibrarySearchItem, LibrarySearchPackage,
     LibrarySearchSource, RecoverySearchSymbol,
 };
-pub use navigation::{find_references, goto_definition, hover};
+pub use navigation::{find_references, goto_definition, hover, hover_report};
 pub use outline::{document_symbols, folding_ranges};
+pub use presentation_hover::{
+    render_hover_markdown, render_hover_sexpr, HoverBlock, HoverLink, HoverRelation, HoverReport,
+    HoverResolutionState, HoverUnitOutcome,
+};
 pub use rename::{apply_rename, prepare_rename, rename_target, RenameTarget};
 pub use symbol::{symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry};
 pub use text::{completion_prefix, line_prefix_at_position, position_to_byte_offset, utf16_len};

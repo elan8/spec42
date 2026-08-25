@@ -663,7 +663,7 @@ fn collect_symbol_candidates(
         if !prefix.is_empty() && !name.to_lowercase().contains(&prefix) {
             continue;
         }
-        let detail = Some(query_kind_label(member.kind()).to_string());
+        let detail = Some(element_kind_label(member.kind()).to_string());
         let documentation = Some(format!(
             "**{}**\n\nQualified name: `{}`",
             name,
@@ -781,7 +781,7 @@ fn element_kind_to_completion_kind(kind: ElementKind) -> CompletionItemKindDto {
 }
 
 /// The surface-syntax label shown in a completion item's detail text.
-fn query_kind_label(kind: ElementKind) -> &'static str {
+pub(crate) fn element_kind_label(kind: ElementKind) -> &'static str {
     match kind {
         ElementKind::PartDefinition => "part def",
         ElementKind::PortDefinition => "port def",
@@ -803,6 +803,27 @@ fn query_kind_label(kind: ElementKind) -> &'static str {
         ElementKind::ItemUsage => "item",
         ElementKind::AttributeUsage => "attribute",
         ElementKind::ActionUsage => "action",
+        ElementKind::ReferenceUsage => "ref",
+        ElementKind::Type => "type",
+        ElementKind::Classifier => "classifier",
+        ElementKind::Class => "class",
+        ElementKind::Structure => "struct",
+        ElementKind::Association => "assoc",
+        ElementKind::AssociationStructure => "assoc struct",
+        ElementKind::DataType => "datatype",
+        ElementKind::Metaclass => "metaclass",
+        ElementKind::Behavior => "behavior",
+        ElementKind::Function => "function",
+        ElementKind::Predicate => "predicate",
+        ElementKind::Interaction => "interaction",
+        ElementKind::Multiplicity => "multiplicity",
+        ElementKind::Feature => "feature",
+        ElementKind::Step => "step",
+        ElementKind::Expression => "expression",
+        ElementKind::BooleanExpression => "boolean expression",
+        ElementKind::Connector => "connector",
+        ElementKind::BindingConnector => "binding connector",
+        ElementKind::Invariant => "invariant",
         other => other.as_str(),
     }
 }

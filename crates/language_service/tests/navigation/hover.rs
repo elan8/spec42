@@ -8,7 +8,7 @@ fn hover_inspects_a_declared_element_from_the_publication() {
     let workspace = single_doc("test.sysml", content);
     let position = position_for_within(content, "part def X", "X");
     let result = hover(&workspace, "test.sysml", position).expect("hover");
-    assert!(result.contents.contains("part definition"));
+    assert!(result.contents.contains("`part def`"));
     assert!(result.contents.contains("P::X"));
 }
 
@@ -18,7 +18,7 @@ fn hover_inspects_the_typed_reference_target() {
     let workspace = single_doc("test.sysml", content);
     let position = position_for_within(content, ": Vehicle", "Vehicle");
     let result = hover(&workspace, "test.sysml", position).expect("hover");
-    assert!(result.contents.contains("part definition"));
+    assert!(result.contents.contains("`part def`"));
     assert!(result.contents.contains("P::Vehicle"));
 }
 
@@ -36,7 +36,7 @@ fn hover_reports_cross_document_target_location() {
         .expect("text");
     let position = position_for_within(content, ": Vehicle", "Vehicle");
     let result = hover(&workspace, "use.sysml", position).expect("hover");
-    assert!(result.contents.contains("Defined in:"));
+    assert!(result.contents.contains("Defined in"));
     assert!(result.contents.contains("defs.sysml"));
 }
 
@@ -47,4 +47,21 @@ fn hover_on_keyword_prefers_the_containing_typed_element() {
     let position = position_for(content, "package");
     let result = hover(&workspace, "test.sysml", position).expect("hover");
     assert!(result.contents.contains("package"));
+}
+
+#[test]
+fn hover_on_specialization_operator_returns_nothing() {
+    let content = "package P { part def Base; part def Child :> Base { part :>> member; } }";
+    let workspace = single_doc("test.sysml", content);
+
+    for operator in [":>", ":>>"] {
+        for offset in 0..operator.len() {
+            let mut position = position_for(content, operator);
+            position.character += offset as u32;
+            assert!(
+                hover(&workspace, "test.sysml", position).is_none(),
+                "{operator} at offset {offset} must not produce hover"
+            );
+        }
+    }
 }
