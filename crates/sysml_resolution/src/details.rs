@@ -166,6 +166,12 @@ pub enum ReferencedDetails {
 pub struct ElementDetailsAt {
     /// The innermost element whose declaration contains the position.
     pub containing: Option<ElementDetails>,
+    /// The canonical kind of the authored reference covering the position, when there is one.
+    ///
+    /// This is published by the semantic owner rather than reconstructed by editor consumers
+    /// from punctuation or from the kind of a resolved target. It remains present when resolution
+    /// is ambiguous, unsupported, incomplete, or unresolved.
+    pub reference_kind: Option<&'static str>,
     /// What a reference at the position resolves to, with its own outcome.
     pub referenced: ReferencedDetails,
 }

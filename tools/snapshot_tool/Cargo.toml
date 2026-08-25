@@ -19,4 +19,5 @@ tempfile = "3"
 spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../constraint_manifest" }
 generator_api = { path = "../../crates/generator_api" }
 generator_host = { path = "../../crates/generator_host" }
+language_service = { path = "../../crates/language_service" }
 sysml_query = { path = "../../crates/sysml_query" }

@@ -21,6 +21,9 @@ use std::sync::{Arc, OnceLock};
 use clap::{Parser, Subcommand};
 use generator_api::{ArtifactLimits, DiagramSemanticReference, GeneratorModelView, QueryLimits};
 use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
+use language_service::{
+    hover_report, render_hover_markdown, render_hover_sexpr, InMemoryWorkspace,
+};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 #[cfg(test)]
@@ -90,6 +93,12 @@ enum ReportFormat {
 struct SourceDocument {
     name: String,
     text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct EditorProbes {
+    queries: Vec<EditorProbe>,
+    hover: BTreeSet<usize>,
 }
 
 /// Which libraries a fixture admits alongside its authored `SOURCE` documents.
@@ -2634,10 +2643,16 @@ fn regenerate_snapshot(
                 path.display()
             )
         })?;
+    let hover_workspace = InMemoryWorkspace::from_documents_and_publication(
+        source_documents.clone(),
+        Arc::clone(&canonical_model),
+    )
+    .map_err(|error| format!("{}: hover workspace failed: {error}", path.display()))?;
     let canonical = render_owned_sections(
         &canonical_model,
         &documents,
         &source_documents,
+        &hover_workspace,
         &probes,
         &qualified_reference_probes,
     )?;
@@ -2689,11 +2704,22 @@ fn regenerate_snapshot(
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    let fixture = if probes.is_empty() {
+    let fixture = if probes.queries.is_empty() {
         fixture
     } else {
         replace_or_insert_section(&fixture, "EDITOR RESULTS", &canonical.editor_queries)
             .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    };
+    let fixture = if probes.hover.is_empty() {
+        fixture
+    } else {
+        replace_or_insert_section(&fixture, "HOVER RESULTS", &canonical.hover_reports)
+            .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    };
+    let fixture = if probes.hover.is_empty() {
+        fixture
+    } else {
+        replace_or_insert_raw_section(&fixture, "HOVER MARKDOWN", &canonical.hover_markdown)
     };
     let fixture = if qualified_reference_probes.is_empty() {
         fixture
@@ -6728,6 +6754,8 @@ struct OwnedSections {
     diagnostics: String,
     navigation: String,
     editor_queries: String,
+    hover_reports: String,
+    hover_markdown: String,
     qualified_references: String,
 }
 
@@ -6735,7 +6763,8 @@ fn render_owned_sections(
     model: &PublishedModel,
     documents: &[SourceDocument],
     source_documents: &[QuerySourceDocument],
-    probes: &[EditorProbe],
+    hover_workspace: &InMemoryWorkspace,
+    probes: &EditorProbes,
     qualified_reference_probes: &[QualifiedReferenceProbe],
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
@@ -6755,8 +6784,9 @@ fn render_owned_sections(
     let mut editor_queries = String::new();
     model
         .debug()
-        .write_editor_queries_sexpr(probes, &mut editor_queries)
+        .write_editor_queries_sexpr(&probes.queries, &mut editor_queries)
         .map_err(|error| format!("editor-query rendering failed: {error}"))?;
+    let (hover_reports, hover_markdown) = render_hover_probes(hover_workspace, probes)?;
     let mut qualified_references = String::new();
     model
         .debug()
@@ -6771,8 +6801,61 @@ fn render_owned_sections(
         diagnostics,
         navigation,
         editor_queries,
+        hover_reports,
+        hover_markdown,
         qualified_references,
     })
+}
+
+fn render_hover_probes(
+    workspace: &InMemoryWorkspace,
+    probes: &EditorProbes,
+) -> Result<(String, String), String> {
+    if probes.hover.is_empty() {
+        return Ok((String::new(), String::new()));
+    }
+    let mut reports = String::from("(hover-reports\n");
+    let mut markdown = String::new();
+    for index in probes.hover.iter().copied() {
+        let probe = probes
+            .queries
+            .get(index)
+            .ok_or_else(|| format!("hover probe index {index} is out of bounds"))?;
+        let path = probe
+            .document
+            .strip_prefix("memory://snapshot/")
+            .unwrap_or(&probe.document);
+        write!(
+            reports,
+            "  (probe (document {:?}) (position {} {})",
+            probe.document, probe.position.line, probe.position.character
+        )
+        .map_err(|error| error.to_string())?;
+        writeln!(
+            markdown,
+            "## {path}:{}:{}",
+            probe.position.line, probe.position.character
+        )
+        .map_err(|error| error.to_string())?;
+        markdown.push_str("~~~markdown\n");
+        match hover_report(workspace, path, probe.position) {
+            Some(report) => {
+                reports.push_str(" (status available)\n");
+                for line in render_hover_sexpr(&report).lines() {
+                    writeln!(reports, "    {line}").map_err(|error| error.to_string())?;
+                }
+                reports.push_str("  )\n");
+                markdown.push_str(&render_hover_markdown(&report));
+                markdown.push('\n');
+            }
+            None => {
+                reports.push_str(" (status none))\n");
+            }
+        }
+        markdown.push_str("~~~\n");
+    }
+    reports.push_str(")\n");
+    Ok((reports, markdown))
 }
 
 /// Rejects an owned section whose S-expression does not close.
@@ -6819,6 +6902,7 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
     ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
+        ensure_balanced("HOVER RESULTS", &sections.hover_reports)?;
         ensure_balanced(
             "QUALIFIED REFERENCE RESULTS",
             &sections.qualified_references,
@@ -7285,14 +7369,18 @@ fn parse_editor_probes(
     fixture: &str,
     documents: &[SourceDocument],
     fallback_name: &str,
-) -> Result<Vec<EditorProbe>, String> {
+) -> Result<EditorProbes, String> {
     let Some(section) = raw_section(fixture, "EDITOR QUERIES") else {
-        return Ok(Vec::new());
+        return Ok(EditorProbes {
+            queries: Vec::new(),
+            hover: BTreeSet::new(),
+        });
     };
     let Some((text, _)) = fenced_block(section) else {
         return Err(format!("{fallback_name}: malformed EDITOR QUERIES fence"));
     };
     let mut probes = Vec::new();
+    let mut hover = BTreeSet::new();
     for (line_index, line) in text.lines().enumerate() {
         let line = line.trim();
         if line.is_empty() || line.starts_with('#') {
@@ -7323,11 +7411,18 @@ fn parse_editor_probes(
             .ok_or_else(|| format!("{fallback_name}: invalid probe character"))?;
         let mut qualifier = None;
         let mut rename_to = None;
+        let probe_index = probes.len();
         for option in fields {
             if let Some(value) = option.strip_prefix("qualifier=") {
                 qualifier = Some(value.to_string());
             } else if let Some(value) = option.strip_prefix("rename=") {
                 rename_to = Some(value.to_string());
+            } else if option == "hover" {
+                if !hover.insert(probe_index) {
+                    return Err(format!(
+                        "{fallback_name}: duplicate editor probe option {option:?}"
+                    ));
+                }
             } else {
                 return Err(format!(
                     "{fallback_name}: unknown editor probe option {option:?}"
@@ -7341,7 +7436,10 @@ fn parse_editor_probes(
             rename_to,
         });
     }
-    Ok(probes)
+    Ok(EditorProbes {
+        queries: probes,
+        hover,
+    })
 }
 
 fn parse_qualified_reference_probes(
@@ -7446,6 +7544,15 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
     Some(updated)
 }
 
+fn replace_or_insert_raw_section(fixture: &str, name: &str, replacement: &str) -> String {
+    if let Some(updated) = replace_raw_section(fixture, name, replacement) {
+        return updated;
+    }
+    let mut updated = fixture.trim_end_matches('\n').to_string();
+    write!(updated, "\n# {name}\n{replacement}").expect("writing to String cannot fail");
+    updated
+}
+
 /// Canonical top-level Markdown order. SOURCE is authored; the other sections are owned by this
 /// runner. Canonicalization drops sections outside this ownership contract.
 const SECTION_ORDER: &[&str] = &[
@@ -7460,6 +7567,8 @@ const SECTION_ORDER: &[&str] = &[
     "TYPES",
     "NAVIGATION",
     "EDITOR RESULTS",
+    "HOVER RESULTS",
+    "HOVER MARKDOWN",
     "QUALIFIED REFERENCE RESULTS",
     "GENERATED",
 ];
@@ -9274,6 +9383,36 @@ mod tests {
                 },
             ]
         );
+    }
+
+    #[test]
+    fn parses_hover_as_an_editor_probe_projection() {
+        let fixture = "# SOURCE\n## model.sysml\n~~~sysml\npackage Example {}\n~~~\n# EDITOR QUERIES\n~~~text\nprobe model.sysml 0 8 hover\nprobe model.sysml 0 16 rename=Renamed\n~~~\n";
+        let parsed = parse_editor_probes(
+            fixture,
+            &[SourceDocument {
+                name: "model.sysml".to_string(),
+                text: "package Example {}".to_string(),
+            }],
+            "fixture.md",
+        )
+        .unwrap();
+
+        assert_eq!(parsed.queries.len(), 2);
+        assert_eq!(parsed.hover, BTreeSet::from([0]));
+        assert_eq!(parsed.queries[1].rename_to.as_deref(), Some("Renamed"));
+    }
+
+    #[test]
+    fn canonicalizes_hover_projection_sections_after_editor_results() {
+        let fixture = "# HOVER MARKDOWN\nrendered\n# SOURCE\nsource\n# HOVER RESULTS\nreport\n# META\nmeta\n# EDITOR RESULTS\neditor\n";
+        let canonical = canonicalize_sections(fixture);
+        let editor = canonical.find("# EDITOR RESULTS").unwrap();
+        let report = canonical.find("# HOVER RESULTS").unwrap();
+        let markdown = canonical.find("# HOVER MARKDOWN").unwrap();
+
+        assert!(editor < report && report < markdown);
+        assert_eq!(canonicalize_sections(&canonical), canonical);
     }
 
     #[test]

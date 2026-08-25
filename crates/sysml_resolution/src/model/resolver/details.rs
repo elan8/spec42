@@ -345,30 +345,33 @@ impl<D> SemanticModel<D> {
             .innermost_containing(position)
             .and_then(|id| self.details(id));
 
-        let referenced = leaf_ranges_containing(&positions.references, position)
-            .next()
-            .map_or(ReferencedDetails::None, |reference_id| {
-                match self.resolution.outcome(reference_id) {
-                    Some(ResolutionStatus::Resolved(target)) => self
-                        .details(target)
-                        .map_or(ReferencedDetails::Unresolved, |details| {
-                            ReferencedDetails::Resolved(Box::new(details))
-                        }),
-                    Some(ResolutionStatus::Ambiguous(candidates)) => ReferencedDetails::Ambiguous(
-                        self.resolution
-                            .ambiguous_candidates(candidates)
-                            .iter()
-                            .filter_map(|candidate| self.details(*candidate))
-                            .collect(),
-                    ),
-                    Some(ResolutionStatus::Unsupported) => ReferencedDetails::Unsupported,
-                    Some(ResolutionStatus::NonConverged) => ReferencedDetails::Incomplete,
-                    Some(ResolutionStatus::Unresolved) | None => ReferencedDetails::Unresolved,
-                }
-            });
+        let reference_id = leaf_ranges_containing(&positions.references, position).next();
+        let reference_kind = reference_id.map(|reference_id| {
+            crate::model::render::reference_kind(self.storage.references[reference_id.index()].kind)
+        });
+        let referenced = reference_id.map_or(ReferencedDetails::None, |reference_id| {
+            match self.resolution.outcome(reference_id) {
+                Some(ResolutionStatus::Resolved(target)) => self
+                    .details(target)
+                    .map_or(ReferencedDetails::Unresolved, |details| {
+                        ReferencedDetails::Resolved(Box::new(details))
+                    }),
+                Some(ResolutionStatus::Ambiguous(candidates)) => ReferencedDetails::Ambiguous(
+                    self.resolution
+                        .ambiguous_candidates(candidates)
+                        .iter()
+                        .filter_map(|candidate| self.details(*candidate))
+                        .collect(),
+                ),
+                Some(ResolutionStatus::Unsupported) => ReferencedDetails::Unsupported,
+                Some(ResolutionStatus::NonConverged) => ReferencedDetails::Incomplete,
+                Some(ResolutionStatus::Unresolved) | None => ReferencedDetails::Unresolved,
+            }
+        });
 
         self.resolved_outcome(ElementDetailsAt {
             containing,
+            reference_kind,
             referenced,
         })
     }

@@ -1209,6 +1209,9 @@ fn write_details_at_outcome(
                 }
                 None => writeln!(output, "      (containing (status none))")?,
             }
+            if let Some(kind) = at.reference_kind {
+                writeln!(output, "      (reference-kind {kind})")?;
+            }
             write_referenced_details(model, output, &at.referenced)?;
         }
         _ => writeln!(output, "      (status {})", outcome_status(outcome))?,

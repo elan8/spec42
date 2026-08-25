@@ -54,7 +54,9 @@ pub(super) fn token_at<'p>(
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
     let cursor = character as usize;
-    if chars.is_empty() || cursor > chars.len() {
+    // LSP positions identify the character under the cursor. Do not walk left from punctuation or
+    // end-of-line and accidentally turn hovering a delimiter into a hover for the preceding name.
+    if chars.is_empty() || cursor >= chars.len() || !continues_identifier(chars[cursor]) {
         return None;
     }
     let mut start = cursor;
@@ -314,6 +316,17 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn punctuation_does_not_select_the_preceding_identifier() {
+        let source = "package P { part foo : Bar; }";
+        let parsed = parse(source);
+        for punctuation in ['{', ';', '}'] {
+            let position = source.find(punctuation).expect("punctuation") as u32;
+            assert!(parsed.token_at(0, position).is_none(), "{punctuation}");
+        }
+        assert!(parsed.token_at(0, source.len() as u32).is_none());
     }
 
     #[test]

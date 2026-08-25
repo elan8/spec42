@@ -434,10 +434,8 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
         .or_else(|| hover_json["result"]["contents"].as_str())
         .expect("hover should return contents");
     assert!(
-        contents.contains("reference usage")
-            && contents.contains("communication")
-            && contents.contains("**Role:** `subject`")
-            && contents.contains("**Container:** `DronePackage::Drone::VideoLatencyReq`"),
+        contents.contains("`subject` **communication**")
+            && contents.contains("DronePackage::Drone::VideoLatencyReq::communication"),
         "hover should render the publication-owned subject declaration and role: {}",
         contents
     );
@@ -525,10 +523,10 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
         .as_str()
         .or_else(|| hover_json["result"]["contents"].as_str())
         .expect("hover should return contents");
-    assert!(contents.contains("reference usage") && contents.contains("**Role:** `subject`"));
+    assert!(contents.contains("`subject` **drone**"));
     assert!(
-        contents.contains("**Container:** `DronePackage::MaxAltitudeAGLReq`")
-            && contents.contains("**Declared type:** `DronePackage::SurveillanceQuadrotorDrone`"),
+        contents.contains("DronePackage::MaxAltitudeAGLReq::drone")
+            && contents.contains("DronePackage::SurveillanceQuadrotorDrone"),
         "hover should include typed parent and declaration context: {}",
         contents
     );
@@ -746,11 +744,8 @@ fn lsp_hover_includes_semantic_context_fields() {
     let (line, character) = position_for_within(content, "part engine : Engine;", "engine");
     let contents = hover_contents(&mut session, uri, line as u32, character as u32);
     assert!(
-        contents.contains("Qualified name")
-            && contents.contains("Demo::vehicle::engine")
-            && contents.contains("Declared type")
-            && contents.contains("Engine")
-            && contents.contains("Container"),
+        contents.contains("`part` **engine**: `Demo::Engine`")
+            && contents.contains("`Demo::vehicle::engine`"),
         "expected richer semantic hover fields: {}",
         contents
     );
@@ -771,7 +766,7 @@ fn lsp_hover_returns_unresolved_reference_fallback() {
     let (line, character) = position_for_within(content, "MissingType", "MissingType");
     let contents = hover_contents(&mut session, uri, line as u32, character as u32);
     assert!(
-        contents.contains("Unresolved reference") && contents.contains("MissingType"),
+        contents.contains("Unresolved type reference") && contents.contains("MissingType"),
         "expected unresolved hover fallback: {}",
         contents
     );

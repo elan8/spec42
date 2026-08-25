@@ -119,6 +119,7 @@ probe ambiguous_import_candidates.md 5 18
           (effective-typing (outcome ambiguous))
         )
       )
+      (reference-kind featureTyping)
       (referenced (status ambiguous)
         (element (kind "PartDefinition")
           (name "Thing")

@@ -28,7 +28,7 @@ Use the VS Code extension when you want the fuller `spec42` experience, includin
 1. Build the server binary from the repository root:
 
    ```powershell
-   cargo build --release -p spec42
+   cargo build --release -p server --bin spec42
    ```
 
 2. Install the WebAssembly target if needed:

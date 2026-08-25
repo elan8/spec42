@@ -25,9 +25,10 @@ observed through those sections. This keeps formatting-only movement from obscur
 
 The canonical top-level section order is `META`, `SOURCE`, authored `EXPECTED DIAGNOSTICS` and
 `EXPECTED SEMANTICS`, `DIAGNOSTICS`, `SMG`, `TYPES`, `NAVIGATION`, with optional editor-query
-sections and `GENERATED` last.
+sections, `HOVER MARKDOWN`, and `GENERATED` last.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
-Every generated section uses a canonical `sexpr` fence.
+Semantic and reporting-result sections use canonical `sexpr` fences. `HOVER MARKDOWN` is the
+dedicated renderer projection and contains one labelled `markdown` fence per requested probe.
 Only sections in this contract are retained during normalization. Unknown or future sections
 should be added to the explicit ordering table before they become part of the corpus contract.
 
@@ -80,6 +81,21 @@ package Model {}
 
 The parser/updater unit tests cover only Markdown mechanics. Semantic behavior belongs in the
 checked-in source snapshots and their canonical S-expression sections.
+
+## Editor and hover probes
+
+`EDITOR QUERIES` uses zero-based line and UTF-16 character positions. A normal probe exercises the
+canonical editor queries. Add the `hover` option to also append the presentation-independent
+`hover-report` for that occurrence in `HOVER RESULTS` and generate its exact renderer output in
+`HOVER MARKDOWN`:
+
+```text
+probe model.sysml 4 9 hover
+```
+
+The report and Markdown are produced from the same typed `HoverReport`; snapshots therefore expose
+both semantic/presentation structure and the text an editor receives without maintaining parallel
+hover implementations. A probe with no hover records `(status none)` and an empty Markdown fence.
 
 ## Validation expectations
 

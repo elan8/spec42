@@ -267,6 +267,7 @@ probe element_facts.md 24 32
           (outgoing (kind "typing") (peer "Facts::Wheel") (provenance authored))
         )
       )
+      (reference-kind featureTyping)
       (referenced (status resolved)
         (element (kind "PartDefinition")
           (name "Wheel")
