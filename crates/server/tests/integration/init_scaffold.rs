@@ -27,7 +27,8 @@ fn scaffold_creates_a_workspace_that_current_check_validates() {
     with_isolated_data_dir(|| {
         let temp = TempDir::new().expect("temp directory");
         let root = temp.path().join("starter");
-        let result = starter_workspace::scaffold(&root).expect("scaffold starter workspace");
+        let result =
+            starter_workspace::scaffold(&root, Vec::new()).expect("scaffold starter workspace");
 
         assert_eq!(result.files_written, 6);
         assert!(root.join("README.md").is_file());
@@ -69,7 +70,7 @@ fn scaffold_promotes_nonempty_target_without_changing_existing_files() {
     let existing = root.join("keep.sysml");
     fs::write(&existing, "package Keep;\n").expect("write existing file");
 
-    let result = starter_workspace::scaffold(&root).expect("promote existing model");
+    let result = starter_workspace::scaffold(&root, Vec::new()).expect("promote existing model");
 
     assert_eq!(result.files_written, 1);
     assert_eq!(
@@ -89,7 +90,8 @@ fn scaffold_never_overwrites_an_existing_manifest() {
     let authored = br#"{"name":"authored","version":"9.8.7"}"#;
     fs::write(&manifest, authored).expect("write authored manifest");
 
-    let result = starter_workspace::scaffold(&root).expect("existing project is initialized");
+    let result =
+        starter_workspace::scaffold(&root, Vec::new()).expect("existing project is initialized");
 
     assert_eq!(result.files_written, 0);
     assert_eq!(fs::read(manifest).expect("read manifest"), authored);
@@ -119,6 +121,21 @@ fn init_cli_promotes_an_existing_model_and_preserves_its_manifest_on_repeat() {
     );
     let manifest = root.join(".project.json");
     assert!(manifest.is_file());
+    let initialized: kpar::Project =
+        serde_json::from_slice(&fs::read(&manifest).expect("read initialized manifest"))
+            .expect("parse initialized manifest");
+    assert!(
+        !initialized.usage.is_empty(),
+        "default init must pin the resolved bundled libraries"
+    );
+    assert!(initialized
+        .usage
+        .iter()
+        .all(|usage| usage.version_constraint.is_some()));
+    assert!(initialized.usage.iter().any(|usage| {
+        usage.resource == "https://www.omg.org/spec/SysML/20250201/Systems-Library.kpar"
+            && usage.version_constraint.as_deref() == Some("2.0.0")
+    }));
 
     let authored = br#"{"name":"authored","version":"9.8.7"}"#;
     fs::write(&manifest, authored).expect("replace with authored manifest");

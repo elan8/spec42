@@ -203,7 +203,9 @@ fn run_unbundle(args: &UnbundleArgs) -> Result<ExitCode, String> {
 }
 
 fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
-    let scaffold = starter_workspace::scaffold(&args.path)?;
+    let engine = build_engine(cli)?;
+    let usage = library_catalog::manifest_usages_for_standard_library(engine.library_catalog())?;
+    let scaffold = starter_workspace::scaffold(&args.path, usage)?;
     let validation_args = CheckArgs {
         path: scaffold.root.clone(),
         workspace_root: Some(scaffold.root.clone()),

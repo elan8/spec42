@@ -632,15 +632,24 @@ mod tests {
             config_no_stdlib: false,
             extra_library_paths: Vec::new(),
         };
-        let catalog = resolve_library_catalog(&request).unwrap();
+        let mut catalog = resolve_library_catalog(&request).unwrap();
         let provided = catalog
             .dependency_candidates
             .iter()
             .find(|candidate| candidate.resource == resource)
+            .cloned()
             .unwrap();
         assert_eq!(provided.project_name, "Alternative-Standard-Library");
         assert_eq!(provided.version, "9.0.0");
         assert!(provided.package_roots.iter().all(|root| root.is_dir()));
+        catalog.stdlib.roots = provided.package_roots.clone();
+        assert_eq!(
+            crate::manifest_usages_for_standard_library(&catalog).unwrap(),
+            vec![ProjectUsage {
+                resource: resource.into(),
+                version_constraint: Some("9.0.0".into()),
+            }]
+        );
 
         let mut candidates = vec![ProjectDependencyCandidate {
             resource: resource.into(),

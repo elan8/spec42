@@ -4,7 +4,7 @@
 //! authoritative resource identities of locally installed or bundled projects. In particular,
 //! display names, archive filenames, and install paths are not treated as resource identities.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -65,6 +65,81 @@ pub struct ProjectDependencyAdmission {
     pub library_roots: Vec<PathBuf>,
     pub candidate_roots: Vec<PathBuf>,
     pub selected_candidate_roots: Vec<PathBuf>,
+}
+
+/// Convert the resolved standard-library component into authored, exact-version usages.
+///
+/// This is used when promoting a manifestless model into a reproducible project. Every standard
+/// library root must have KPAR resource/version provenance; otherwise a manifest could not pin the
+/// component and creation fails instead of silently dropping that input. Other catalog libraries
+/// remain ordinary dependencies and are not implicitly added to a new project.
+pub fn manifest_usages_for_standard_library(
+    catalog: &LibraryCatalog,
+) -> Result<Vec<ProjectUsage>, String> {
+    let canonical = |root: &PathBuf| root.canonicalize().unwrap_or_else(|_| root.clone());
+    let standard_roots = catalog
+        .stdlib
+        .roots
+        .iter()
+        .map(canonical)
+        .collect::<BTreeSet<_>>();
+    let standard_candidates = catalog
+        .dependency_candidates
+        .iter()
+        .filter(|candidate| {
+            candidate
+                .package_roots
+                .iter()
+                .map(canonical)
+                .any(|root| standard_roots.contains(&root))
+        })
+        .collect::<Vec<_>>();
+    let identified_roots = standard_candidates
+        .iter()
+        .flat_map(|candidate| candidate.package_roots.iter())
+        .map(canonical)
+        .collect::<BTreeSet<_>>();
+    let unidentified = standard_roots
+        .iter()
+        .filter(|root| !identified_roots.contains(*root))
+        .cloned()
+        .collect::<Vec<_>>();
+    if !unidentified.is_empty() {
+        return Err(format!(
+            "Cannot create a reproducible project manifest because these admitted library roots have no KPAR resource identity: {}",
+            unidentified
+                .iter()
+                .map(|root| root.display().to_string())
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
+    }
+
+    let mut identities = BTreeMap::<(String, String), usize>::new();
+    for candidate in standard_candidates {
+        *identities
+            .entry((candidate.resource.clone(), candidate.version.clone()))
+            .or_default() += 1;
+    }
+    let duplicates = identities
+        .iter()
+        .filter(|(_, count)| **count > 1)
+        .map(|((resource, version), _)| format!("{resource}@{version}"))
+        .collect::<Vec<_>>();
+    if !duplicates.is_empty() {
+        return Err(format!(
+            "Cannot create a reproducible project manifest because dependency candidates are ambiguous: {}",
+            duplicates.join(", ")
+        ));
+    }
+
+    Ok(identities
+        .into_keys()
+        .map(|(resource, version)| ProjectUsage {
+            resource,
+            version_constraint: Some(version),
+        })
+        .collect())
 }
 
 /// Resolve every authored usage without network access or implicit substitution.

@@ -246,7 +246,9 @@ The standard library has no privileged dependency semantics. Its bundled KPAR co
 resource/version candidates; its only special property is host convenience: a manifestless project
 receives the bundled catalog defaults. A manifest that selects a different standard-library version
 must be supplied a matching local KPAR and resolves it through the same operation as every other
-library. Provisioning is explicit and local-only; project loading never fetches a dependency.
+library. `spec42 init` turns that convenience into an explicit project by writing exact usages for
+the resolved standard-library KPAR resources; it never infers them from paths or names. Provisioning
+is explicit and local-only; project loading never fetches a dependency.
 
 The batch host performs admission before publishing a snapshot. The editor host keeps one
 `PublicationSession` per project root, routes every document-scoped request by URI, and applies the

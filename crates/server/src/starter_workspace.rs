@@ -50,7 +50,7 @@ pub struct ScaffoldResult {
 /// New and empty directories receive the starter workspace. An existing non-empty directory is
 /// promoted by adding only `.project.json`. Existing files, including an existing manifest, are
 /// never overwritten.
-pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
+pub fn scaffold(root: &Path, usage: Vec<kpar::ProjectUsage>) -> Result<ScaffoldResult, String> {
     let populate_starter = match fs::symlink_metadata(root) {
         Ok(metadata) if !metadata.file_type().is_dir() => {
             return Err(format!(
@@ -110,7 +110,7 @@ pub fn scaffold(root: &Path) -> Result<ScaffoldResult, String> {
         maintainer: Vec::new(),
         website: None,
         topic: Vec::new(),
-        usage: Vec::new(),
+        usage,
     };
     if project.validate_identity().is_err() {
         project.name = "model".into();
