@@ -89,6 +89,16 @@ fn hover_request_not_blocked_by_concurrent_relink() {
         elapsed < NOT_BLOCKED_BOUND,
         "hover must not block behind a concurrent relink; took {elapsed:?}: {hover_resp}"
     );
+    let hover_json: serde_json::Value =
+        serde_json::from_str(&hover_resp).expect("parse hover response");
+    let contents = hover_json["result"]["contents"]["value"]
+        .as_str()
+        .or_else(|| hover_json["result"]["contents"].as_str())
+        .unwrap_or_default();
+    assert!(
+        !contents.contains("Unresolved"),
+        "an in-flight first publication must report loading, not a settled resolution failure: {contents}"
+    );
 
     let _ = child.kill();
 }

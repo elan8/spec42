@@ -25,6 +25,7 @@ impl HoverRelation {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HoverResolutionState {
+    Loading,
     Unresolved,
     Ambiguous,
     Unsupported,
@@ -219,6 +220,7 @@ fn markdown_block(
             explanation,
         } => {
             let state = match state {
+                HoverResolutionState::Loading => "Loading",
                 HoverResolutionState::Unresolved => "Unresolved",
                 HoverResolutionState::Ambiguous => "Ambiguous",
                 HoverResolutionState::Unsupported => "Unsupported",
@@ -358,6 +360,7 @@ fn sexpr_block(block: &HoverBlock) -> String {
         } => format!(
             "(resolution (state {}) (subject {}) (token {}){})",
             atom(match state {
+                HoverResolutionState::Loading => "loading",
                 HoverResolutionState::Unresolved => "unresolved",
                 HoverResolutionState::Ambiguous => "ambiguous",
                 HoverResolutionState::Unsupported => "unsupported",

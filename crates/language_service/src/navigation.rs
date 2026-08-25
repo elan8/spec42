@@ -52,6 +52,17 @@ fn hover_report_and_range(
         TextPosition::new(token.range.start_line, token.range.start_character),
         TextPosition::new(token.range.end_line, token.range.end_character),
     );
+    if !workspace.supports_semantic_queries() {
+        return Some((
+            state_report(
+                HoverResolutionState::Loading,
+                "workspace semantics",
+                token.simple_name(),
+                Some("Spec42 is indexing this workspace; semantic hover will be available after the first publication is ready."),
+            ),
+            range,
+        ));
+    }
     if let Some(report) = unit_literal_hover_report(workspace, &uri_norm, position) {
         return Some((report, range));
     }
