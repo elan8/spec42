@@ -611,25 +611,22 @@ probe model.sysml 11 16 hover
       (identity (kind "part def") (name "Vehicle") (direct-types))
       (qualified-name "DomainTypes::Vehicle")
       (documentation "Moves *people* through [the domain].")
-      (link (label "Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
-      (link (label "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
+      (destination (labels "Vehicle" "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
     )
   )
   (probe (document "memory://snapshot/domain.sysml") (position 4 14) (status available)
     (hover
       (identity (kind "part def") (name "Véhicule") (direct-types))
       (qualified-name "DomainTypes::Véhicule")
-      (link (label "Véhicule") (uri "memory://snapshot/domain.sysml") (position 4 14))
-      (link (label "DomainTypes::Véhicule") (uri "memory://snapshot/domain.sysml") (position 4 14))
+      (destination (labels "Véhicule" "DomainTypes::Véhicule") (uri "memory://snapshot/domain.sysml") (position 4 14))
     )
   )
   (probe (document "memory://snapshot/model.sysml") (position 4 9) (status available)
     (hover
       (identity (kind "part") (name "car") (direct-types "DomainTypes::Vehicle"))
       (qualified-name "Model::car")
-      (link (label "car") (uri "memory://snapshot/model.sysml") (position 4 9))
-      (link (label "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
-      (link (label "Model::car") (uri "memory://snapshot/model.sysml") (position 4 9))
+      (destination (labels "car" "Model::car") (uri "memory://snapshot/model.sysml") (position 4 9))
+      (destination (labels "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
     )
   )
   (probe (document "memory://snapshot/model.sysml") (position 4 28) (status available)
@@ -639,9 +636,8 @@ probe model.sysml 11 16 hover
       (qualified-name "DomainTypes::Vehicle")
       (documentation "Moves *people* through [the domain].")
       (source (identity "memory://snapshot/domain.sysml") (line 2))
-      (link (label "Model::car") (uri "memory://snapshot/model.sysml") (position 4 9))
-      (link (label "Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
-      (link (label "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
+      (destination (labels "Model::car") (uri "memory://snapshot/model.sysml") (position 4 9))
+      (destination (labels "Vehicle" "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
     )
   )
   (probe (document "memory://snapshot/model.sysml") (position 5 17) (status available)
@@ -653,6 +649,9 @@ probe model.sysml 11 16 hover
     (hover
       (resolution (state "ambiguous") (subject "type reference") (token "Vehicle"))
       (candidates "DomainTypes::Vehicle" "Rail::Vehicle" "Road::Vehicle")
+      (destination (labels "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
+      (destination (labels "Rail::Vehicle") (uri "memory://snapshot/rail.sysml") (position 1 13))
+      (destination (labels "Road::Vehicle") (uri "memory://snapshot/road.sysml") (position 1 13))
     )
   )
   (probe (document "memory://snapshot/model.sysml") (position 4 35) (status none))
@@ -662,18 +661,16 @@ probe model.sysml 11 16 hover
       (identity (kind "attribute") (name "availability") (direct-types "DomainTypes::RecordAvailabilityState"))
       (qualified-name "DomainTypes::ExternalRecordReference::availability")
       (source (identity "memory://snapshot/domain.sysml") (line 10))
-      (link (label "availability") (uri "memory://snapshot/domain.sysml") (position 9 18))
-      (link (label "DomainTypes::RecordAvailabilityState") (uri "memory://snapshot/domain.sysml") (position 5 13))
-      (link (label "DomainTypes::ExternalRecordReference::availability") (uri "memory://snapshot/domain.sysml") (position 9 18))
+      (destination (labels "availability" "DomainTypes::ExternalRecordReference::availability") (uri "memory://snapshot/domain.sysml") (position 9 18))
+      (destination (labels "DomainTypes::RecordAvailabilityState") (uri "memory://snapshot/domain.sysml") (position 5 13))
     )
   )
   (probe (document "memory://snapshot/model.sysml") (position 11 16) (status available)
     (hover
       (identity (kind "ref") (role "subject") (name "drone") (direct-types "DomainTypes::Vehicle"))
       (qualified-name "Model::MaxAltitudeAGLReq::drone")
-      (link (label "drone") (uri "memory://snapshot/model.sysml") (position 11 16))
-      (link (label "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
-      (link (label "Model::MaxAltitudeAGLReq::drone") (uri "memory://snapshot/model.sysml") (position 11 16))
+      (destination (labels "drone" "Model::MaxAltitudeAGLReq::drone") (uri "memory://snapshot/model.sysml") (position 11 16))
+      (destination (labels "DomainTypes::Vehicle") (uri "memory://snapshot/domain.sysml") (position 1 13))
     )
   )
 )
@@ -683,7 +680,7 @@ probe model.sysml 11 16 hover
 ~~~markdown
 `part def` **[Vehicle](memory://snapshot/domain.sysml#L2)**
 
-[`DomainTypes::Vehicle`](memory://snapshot/domain.sysml#L2)
+`DomainTypes::Vehicle`
 
 Moves \*people\* through \[the domain\]\.
 ~~~
@@ -691,13 +688,13 @@ Moves \*people\* through \[the domain\]\.
 ~~~markdown
 `part def` **[Véhicule](memory://snapshot/domain.sysml#L5)**
 
-[`DomainTypes::Véhicule`](memory://snapshot/domain.sysml#L5)
+`DomainTypes::Véhicule`
 ~~~
 ## model.sysml:4:9
 ~~~markdown
 `part` **[car](memory://snapshot/model.sysml#L5)**: [`DomainTypes::Vehicle`](memory://snapshot/domain.sysml#L2)
 
-[`Model::car`](memory://snapshot/model.sysml#L5)
+`Model::car`
 ~~~
 ## model.sysml:4:28
 ~~~markdown
@@ -705,11 +702,11 @@ Moves \*people\* through \[the domain\]\.
 
 `part def` **[Vehicle](memory://snapshot/domain.sysml#L2)**
 
-[`DomainTypes::Vehicle`](memory://snapshot/domain.sysml#L2)
+`DomainTypes::Vehicle`
 
 Moves \*people\* through \[the domain\]\.
 
-Defined in [memory://snapshot/domain.sysml:2](memory://snapshot/domain.sysml#L2)
+Defined in memory://snapshot/domain.sysml:2
 ~~~
 ## model.sysml:5:17
 ~~~markdown
@@ -722,9 +719,9 @@ Spec42 could not resolve this name in the current scope and admitted imports.
 **Ambiguous type reference** `Vehicle`
 
 Candidates:
-- `DomainTypes::Vehicle`
-- `Rail::Vehicle`
-- `Road::Vehicle`
+- [`DomainTypes::Vehicle`](memory://snapshot/domain.sysml#L2)
+- [`Rail::Vehicle`](memory://snapshot/rail.sysml#L2)
+- [`Road::Vehicle`](memory://snapshot/road.sysml#L2)
 ~~~
 ## model.sysml:4:35
 ~~~markdown
@@ -735,13 +732,13 @@ Candidates:
 
 `attribute` **[availability](memory://snapshot/domain.sysml#L10)**: [`DomainTypes::RecordAvailabilityState`](memory://snapshot/domain.sysml#L6)
 
-[`DomainTypes::ExternalRecordReference::availability`](memory://snapshot/domain.sysml#L10)
+`DomainTypes::ExternalRecordReference::availability`
 
-Defined in [memory://snapshot/domain.sysml:10](memory://snapshot/domain.sysml#L10)
+Defined in memory://snapshot/domain.sysml:10
 ~~~
 ## model.sysml:11:16
 ~~~markdown
 `subject` **[drone](memory://snapshot/model.sysml#L12)**: [`DomainTypes::Vehicle`](memory://snapshot/domain.sysml#L2)
 
-[`Model::MaxAltitudeAGLReq::drone`](memory://snapshot/model.sysml#L12)
+`Model::MaxAltitudeAGLReq::drone`
 ~~~

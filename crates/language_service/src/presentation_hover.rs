@@ -47,7 +47,7 @@ pub enum HoverUnitOutcome {
 /// A navigation destination attached to a label in the presentation-independent report.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HoverLink {
-    pub label: String,
+    pub labels: Vec<String>,
     pub uri: String,
     pub line: u32,
     pub character: u32,
@@ -102,10 +102,11 @@ pub struct HoverReport {
 }
 
 pub fn render_hover_markdown(report: &HoverReport) -> String {
+    let mut used_destinations = std::collections::BTreeSet::new();
     report
         .blocks
         .iter()
-        .map(|block| markdown_block(block, &report.links))
+        .map(|block| markdown_block(block, &report.links, &mut used_destinations))
         .collect::<Vec<_>>()
         .join("\n\n")
 }
@@ -125,11 +126,21 @@ pub fn render_hover_sexpr(report: &HoverReport) -> String {
     format!("(hover{body}{links}\n)")
 }
 
-fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
+fn markdown_block(
+    block: &HoverBlock,
+    links: &[HoverLink],
+    used_destinations: &mut std::collections::BTreeSet<usize>,
+) -> String {
     match block {
         HoverBlock::Context { relation, subject } => subject.as_ref().map_or_else(
             || format!("**{}**", relation.label()),
-            |subject| format!("**{}** {}", relation.label(), linked_code(subject, links)),
+            |subject| {
+                format!(
+                    "**{}** {}",
+                    relation.label(),
+                    linked_code(subject, links, used_destinations)
+                )
+            },
         ),
         HoverBlock::Identity {
             kind,
@@ -139,13 +150,13 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
         } => {
             let types = direct_types
                 .iter()
-                .map(|name| linked_code(name, links))
+                .map(|name| linked_code(name, links, used_destinations))
                 .collect::<Vec<_>>()
                 .join(", ");
             format!(
                 "`{}` **{}**{}",
                 role.as_deref().unwrap_or(kind),
-                linked_text(name, links),
+                linked_text(name, links, used_destinations),
                 if types.is_empty() {
                     String::new()
                 } else {
@@ -153,15 +164,15 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
                 }
             )
         }
-        HoverBlock::QualifiedName(value) => linked_code(value, links),
-        HoverBlock::Owner(value) => format!("In {}", linked_code(value, links)),
+        HoverBlock::QualifiedName(value) => linked_code(value, links, used_destinations),
+        HoverBlock::Owner(value) => format!("In {}", linked_code(value, links, used_destinations)),
         HoverBlock::InheritedType {
             type_name,
             inherited_from,
         } => format!(
             "Inherited type {} from {}",
-            linked_code(type_name, links),
-            linked_code(inherited_from, links)
+            linked_code(type_name, links, used_destinations),
+            linked_code(inherited_from, links, used_destinations)
         ),
         HoverBlock::TypeResolution(value) => format!("Type resolution: **{value}**"),
         HoverBlock::Documentation(value) => escape_markdown(value),
@@ -170,8 +181,21 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
                 "{}:{line}",
                 crate::source_display::source_identity_label(identity)
             );
-            let destination = markdown_destination(identity, line.saturating_sub(1));
-            format!("Defined in [{display}]({destination})")
+            let linked = links
+                .iter()
+                .enumerate()
+                .find(|(_, link)| link.uri == *identity && link.line.saturating_add(1) == *line);
+            if let Some((index, link)) =
+                linked.filter(|(index, _)| used_destinations.insert(*index))
+            {
+                let _ = index;
+                format!(
+                    "Defined in [{display}]({})",
+                    markdown_destination(&link.uri, link.line)
+                )
+            } else {
+                format!("Defined in {display}")
+            }
         }
         HoverBlock::Keyword {
             keyword,
@@ -185,7 +209,9 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
                 .as_ref()
                 .map_or_else(String::new, |syntax| format!("\n\nSyntax: {syntax}"))
         ),
-        HoverBlock::UnitLiteral { authored, outcome } => unit_markdown(authored, outcome),
+        HoverBlock::UnitLiteral { authored, outcome } => {
+            unit_markdown(authored, outcome, links, used_destinations)
+        }
         HoverBlock::Resolution {
             state,
             subject,
@@ -211,7 +237,7 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
             "Candidates:{}",
             values
                 .iter()
-                .map(|value| format!("\n- {}", linked_code(value, links)))
+                .map(|value| format!("\n- {}", linked_code(value, links, used_destinations)))
                 .collect::<String>()
         ),
     }
@@ -219,37 +245,55 @@ fn markdown_block(block: &HoverBlock, links: &[HoverLink]) -> String {
 
 fn sexpr_link(link: &HoverLink) -> String {
     format!(
-        "(link (label {}) (uri {}) (position {} {}))",
-        atom(&link.label),
+        "(destination (labels{}) (uri {}) (position {} {}))",
+        atoms(&link.labels),
         atom(&link.uri),
         link.line,
         link.character
     )
 }
 
-fn linked_code(label: &str, links: &[HoverLink]) -> String {
-    links.iter().find(|link| link.label == label).map_or_else(
-        || format!("`{label}`"),
-        |link| {
-            format!(
-                "[`{label}`]({})",
-                markdown_destination(&link.uri, link.line)
-            )
-        },
-    )
+fn linked_code(
+    label: &str,
+    links: &[HoverLink],
+    used: &mut std::collections::BTreeSet<usize>,
+) -> String {
+    links
+        .iter()
+        .enumerate()
+        .find(|(_, link)| link.labels.iter().any(|candidate| candidate == label))
+        .filter(|(index, _)| used.insert(*index))
+        .map_or_else(
+            || format!("`{label}`"),
+            |(_, link)| {
+                format!(
+                    "[`{label}`]({})",
+                    markdown_destination(&link.uri, link.line)
+                )
+            },
+        )
 }
 
-fn linked_text(label: &str, links: &[HoverLink]) -> String {
-    links.iter().find(|link| link.label == label).map_or_else(
-        || escape_markdown(label),
-        |link| {
-            format!(
-                "[{}]({})",
-                escape_markdown(label),
-                markdown_destination(&link.uri, link.line)
-            )
-        },
-    )
+fn linked_text(
+    label: &str,
+    links: &[HoverLink],
+    used: &mut std::collections::BTreeSet<usize>,
+) -> String {
+    links
+        .iter()
+        .enumerate()
+        .find(|(_, link)| link.labels.iter().any(|candidate| candidate == label))
+        .filter(|(index, _)| used.insert(*index))
+        .map_or_else(
+            || escape_markdown(label),
+            |(_, link)| {
+                format!(
+                    "[{}]({})",
+                    escape_markdown(label),
+                    markdown_destination(&link.uri, link.line)
+                )
+            },
+        )
 }
 
 fn markdown_destination(identity: &str, zero_based_line: u32) -> String {
@@ -328,17 +372,30 @@ fn sexpr_block(block: &HoverBlock) -> String {
     }
 }
 
-fn unit_markdown(authored: &str, outcome: &HoverUnitOutcome) -> String {
+fn unit_markdown(
+    authored: &str,
+    outcome: &HoverUnitOutcome,
+    links: &[HoverLink],
+    used: &mut std::collections::BTreeSet<usize>,
+) -> String {
     let mut lines = vec![format!("**Unit literal** `[{authored}]`"), String::new()];
     match outcome {
         HoverUnitOutcome::Resolved { unit, dimensions } => {
-            lines.push(format!("*{unit}*"));
-            lines.extend(dimensions.iter().map(|dimension| format!("Measured in `{dimension}`")));
+            lines.push(linked_text(unit, links, used));
+            lines.extend(
+                dimensions
+                    .iter()
+                    .map(|dimension| format!("Measured in {}", linked_code(dimension, links, used))),
+            );
         }
         HoverUnitOutcome::UnknownSymbol => lines.push("No unit with this symbol is declared in the admitted measurement catalog.".into()),
         HoverUnitOutcome::Ambiguous(candidates) => {
             lines.push("Several admitted units carry this symbol:".into());
-            lines.extend(candidates.iter().map(|candidate| format!("- `{candidate}`")));
+            lines.extend(
+                candidates
+                    .iter()
+                    .map(|candidate| format!("- {}", linked_code(candidate, links, used))),
+            );
         }
         HoverUnitOutcome::UnsupportedExpression => lines.push("This is a unit expression rather than a single unit symbol, which Spec42 does not decompose.".into()),
         HoverUnitOutcome::CatalogUnavailable => lines.push("No measurement catalog is admitted to this workspace, so unit symbols cannot be resolved.".into()),

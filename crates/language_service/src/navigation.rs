@@ -123,17 +123,22 @@ fn contextual_hover_report(
                 None,
             );
             if !candidates.is_empty() {
-                report.blocks.push(HoverBlock::Candidates(
-                    candidates
-                        .iter()
-                        .map(|candidate| {
-                            model
-                                .qualified_name(candidate.inspection.identity)
-                                .unwrap_or("(anonymous)")
-                                .to_string()
-                        })
-                        .collect(),
-                ));
+                let names = candidates
+                    .iter()
+                    .map(|candidate| {
+                        let name = model
+                            .qualified_name(candidate.inspection.identity)
+                            .unwrap_or("(anonymous)");
+                        push_hover_link(
+                            model,
+                            &mut report.links,
+                            name,
+                            candidate.inspection.location,
+                        );
+                        name.to_string()
+                    })
+                    .collect();
+                report.blocks.push(HoverBlock::Candidates(names));
             }
             Some(report)
         }
@@ -240,18 +245,25 @@ fn element_hover_report(
             .is_some_and(|(qualified_owner, _)| qualified_owner == owner);
         if !owner_is_qualified_prefix {
             blocks.push(HoverBlock::Owner(owner.to_string()));
+            if let Some(entry) = details.owner.as_ref() {
+                push_hover_link(model, &mut links, owner, entry.location);
+            }
         }
     }
     for effective in details.effective_typing.types.iter() {
-        if let EffectiveTypeOrigin::Inherited(origin) = &effective.origin {
+        if let EffectiveTypeOrigin::Inherited(origin_symbol) = &effective.origin {
             let type_name = model
                 .qualified_name(effective.element.identity)
                 .unwrap_or("(anonymous)");
-            let origin = model.qualified_name(*origin).unwrap_or("(anonymous)");
+            let origin = model
+                .qualified_name(*origin_symbol)
+                .unwrap_or("(anonymous)");
             blocks.push(HoverBlock::InheritedType {
                 type_name: type_name.to_string(),
                 inherited_from: origin.to_string(),
             });
+            push_hover_link(model, &mut links, type_name, effective.element.location);
+            push_symbol_link(model, &mut links, origin, *origin_symbol);
         }
     }
     if details.effective_typing.outcome != RelationshipOutcome::Resolved
@@ -288,13 +300,32 @@ fn push_hover_link(
         return;
     };
     let link = HoverLink {
-        label: label.to_string(),
+        labels: vec![label.to_string()],
         uri: uri.to_string(),
         line: location.range.start.line,
         character: location.range.start.character,
     };
-    if !links.contains(&link) {
+    if let Some(existing) = links.iter_mut().find(|existing| {
+        existing.uri == link.uri
+            && existing.line == link.line
+            && existing.character == link.character
+    }) {
+        if !existing.labels.iter().any(|existing| existing == label) {
+            existing.labels.push(label.to_string());
+        }
+    } else {
         links.push(link);
+    }
+}
+
+fn push_symbol_link(
+    model: &PublishedModel,
+    links: &mut Vec<HoverLink>,
+    label: &str,
+    symbol: SymbolId,
+) {
+    if let QueryAnswer::Resolved(element) = model.inspection().inspect(symbol).answer {
+        push_hover_link(model, links, label, element.location);
     }
 }
 
@@ -388,7 +419,7 @@ fn unit_hover_report(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> Hov
         UnitResolution::UnsupportedExpression => HoverUnitOutcome::UnsupportedExpression,
         UnitResolution::CatalogUnavailable => HoverUnitOutcome::CatalogUnavailable,
     };
-    HoverReport {
+    let mut report = HoverReport {
         blocks: vec![HoverBlock::UnitLiteral {
             authored: model
                 .and_then(|model| model.text(unit.authored))
@@ -397,7 +428,30 @@ fn unit_hover_report(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> Hov
             outcome,
         }],
         links: vec![],
+    };
+    if let Some(model) = model {
+        match &unit.resolution {
+            UnitResolution::Resolved(resolved) => {
+                if let Some(label) = model.qualified_name(resolved.unit) {
+                    push_symbol_link(model, &mut report.links, label, resolved.unit);
+                }
+                for symbol in resolved.dimensions.iter().copied() {
+                    if let Some(label) = model.qualified_name(symbol) {
+                        push_symbol_link(model, &mut report.links, label, symbol);
+                    }
+                }
+            }
+            UnitResolution::Ambiguous(candidates) => {
+                for symbol in candidates.iter().copied() {
+                    if let Some(label) = model.qualified_name(symbol) {
+                        push_symbol_link(model, &mut report.links, label, symbol);
+                    }
+                }
+            }
+            _ => {}
+        }
     }
+    report
 }
 
 /// The settled evaluation of the element a cursor position identifies.
