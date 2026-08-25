@@ -2082,7 +2082,7 @@ impl SemanticModelBuilder {
                 if self.next_membership_override.is_some() {
                     return Err(ConstructionError::InvalidMembership);
                 }
-                return Ok(());
+                Ok(())
             }
             VariantUsageForm::Reference { reference, body } => {
                 let declaration = self.push_typed_declaration(
@@ -2122,7 +2122,7 @@ impl SemanticModelBuilder {
                     span,
                     import: None,
                 })?;
-                return Ok(());
+                Ok(())
             }
         }
     }

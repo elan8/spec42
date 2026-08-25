@@ -229,22 +229,13 @@ impl<D> SemanticModel<D> {
             .collect::<Vec<_>>();
         affected.sort_by(|left, right| left.identity.cmp(&right.identity));
         let affected = affected.into_boxed_slice();
-        if unsettled_dependency {
-            if self
+        if unsettled_dependency
+            && self
                 .metadata
                 .completeness
                 .contains(crate::PublicationObstacle::NonConverged)
-            {
-                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Incomplete)
-            } else if self
-                .metadata
-                .completeness
-                .contains(crate::PublicationObstacle::UnsupportedSyntax)
-            {
-                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Resolved(affected))
-            } else {
-                QueryOutcome::new(self.metadata.completeness, QueryAnswer::Resolved(affected))
-            }
+        {
+            QueryOutcome::new(self.metadata.completeness, QueryAnswer::Incomplete)
         } else {
             self.resolved_outcome(affected)
         }
@@ -730,14 +721,6 @@ impl ResolvedSemanticModel {
         position: TextPosition,
         qualifier: Option<&str>,
     ) -> QueryOutcome<VisibleMembers<'_>> {
-        let recovered = self
-            .metadata
-            .completeness
-            .contains(crate::PublicationObstacle::ParseRecovery);
-        let unsupported = self
-            .metadata
-            .completeness
-            .contains(crate::PublicationObstacle::UnsupportedSyntax);
         if self
             .metadata
             .completeness
@@ -784,13 +767,7 @@ impl ResolvedSemanticModel {
             }
         }
         let members = self.visible_member_records(&ids);
-        if recovered {
-            self.query_outcome(QueryAnswer::Resolved(members))
-        } else if unsupported {
-            self.query_outcome(QueryAnswer::Resolved(members))
-        } else {
-            self.query_outcome(QueryAnswer::Resolved(members))
-        }
+        self.query_outcome(QueryAnswer::Resolved(members))
     }
 
     /// The declarations a completion request can see, ordered and filtered once.
@@ -1762,22 +1739,22 @@ impl<D> SemanticModel<D> {
             ActionDerivedFactCollection::AssignmentValueExpression
             | ActionDerivedFactCollection::AssignmentTargetArgument
             | ActionDerivedFactCollection::ForLoopSeqArgument => {
-                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+                self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])))
             }
             ActionDerivedFactCollection::AcceptPayloadArgument
             | ActionDerivedFactCollection::AcceptReceiverArgument
             | ActionDerivedFactCollection::WhileArgument
             | ActionDerivedFactCollection::UntilArgument
             | ActionDerivedFactCollection::IfArgument => {
-                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+                self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])))
             }
             ActionDerivedFactCollection::AcceptPayloadParameter => {
-                return self.resolved_outcome(ActionDerivedFactOutcome::Parameters(Box::new([])));
+                self.resolved_outcome(ActionDerivedFactOutcome::Parameters(Box::new([])))
             }
             ActionDerivedFactCollection::LoopBodyAction
             | ActionDerivedFactCollection::IfThenAction
             | ActionDerivedFactCollection::IfElseAction => {
-                return self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
             }
             ActionDerivedFactCollection::AssignmentReferent => unreachable!(),
             ActionDerivedFactCollection::ForLoopVariable => unreachable!(),
@@ -1909,14 +1886,17 @@ impl<D> SemanticModel<D> {
         };
         let _normative_rule = (rule.rule_id, rule.metaclass);
         if kind == SpecializationCheckKind::FeatureCrossing {
-            let outcome = self
+            let outcome = if self
                 .storage
                 .declaration_facts
                 .iter()
                 .filter_map(|facts| facts.cross_feature_projection)
                 .all(|projection| projection.cross_feature == projection.owned_cross_feature)
-                .then_some(SpecializationCheckOutcome::Satisfied)
-                .unwrap_or(SpecializationCheckOutcome::Violated);
+            {
+                SpecializationCheckOutcome::Satisfied
+            } else {
+                SpecializationCheckOutcome::Violated
+            };
             return self.resolved_outcome(outcome);
         }
         let prerequisite = match kind {

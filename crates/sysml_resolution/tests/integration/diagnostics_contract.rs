@@ -1339,10 +1339,10 @@ fn element_details_over_recovery_produced_input_keep_their_recovery_outcome() {
 #[test]
 fn every_publication_obstacle_flows_through_value_and_non_value_query_answers() {
     let published = detail_publication(
-        &[((
+        &[(
             "memory://mixed.sysml",
             "package P { part def Wheel; constraint def C { ~x } part broken : ; }",
-        ))],
+        )],
         ConstructionSchedule::Sequential,
     );
     let completeness = published.completeness();
