@@ -4,13 +4,19 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`lukewilliamboswell/sysml-v2-parser@c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056`. Every gap below was
+`lukewilliamboswell/sysml-v2-parser@34fd6c4976dc299c3ceb27bf4dc3f15170078408`. Every gap below was
 re-exercised against that exact revision, one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
 `sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. New
 upstream work must be based on the full pinned identity, not an abbreviated revision or the old
 `sysml-v2-parser-next` dependency alias.
+
+The bump from `c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056` (12 upstream commits in the parser
+speculation-removal performance series) leaves the open gaps below unchanged. Corpus regeneration
+newly retains the `#Safety feature z1 : T;` extended usage in
+`kerml/coverage_features_advanced.md` as an explicit `unsupported_package_member` rather than
+omitting that unsupported semantic member.
 
 The bump from `f52100fd71b5950fba6a8e9ba2760f1a1887ce34` (40 upstream commits: the "gaps wave 2"
 and "corpus snapshot wave 3" work, the parser performance pass and the span-backed authored-text
@@ -78,18 +84,18 @@ workflow.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
-  `unexpected_keyword_in_scope` at `c1677e7`, while `flow a.y to b.x1;` and `redefines
+  `unexpected_keyword_in_scope` at `34fd6c4`, while `flow a.y to b.x1;` and `redefines
   predecessors [0];` reach typed nodes. The KerML message declaration cannot be authored in a
   `classifier`, `struct`, `class` or `behavior` body.
 
 - Gap 62. KerML flow declarations parse and lower, including the declaration-led form (see
   "Lowering that the bump unblocked"). What remains is the *at-most-one-payload* rule's violating
   side: `behavior M { flow of Thing of Thing from source to target; }` is
-  `recovered_calc_body_element` at `c1677e7`, so KerML 8.3.4.9.2 `validateFlowPayloadFeature` has
+  `recovered_calc_body_element` at `34fd6c4`, so KerML 8.3.4.9.2 `validateFlowPayloadFeature` has
   no authorable violation and `tests/snapshots/validation/kerml_flow_payload_feature.md` stays
   blocked.
 
-- Gap 66. Clause *count* is unobservable. At `c1677e7` `feature two crosses source crosses
+- Gap 66. Clause *count* is unobservable. At `34fd6c4` `feature two crosses source crosses
   target;` parses, and both targets now lower and resolve as `crossSubsetting` references (the
   `unsupported_reference` they used to settle as is gone: reference and cross subsetting joined
   the subsetting resolution pass). What the AST cannot express is that the author wrote two
@@ -101,7 +107,7 @@ workflow.
   blocked on `parser-gap-66-subsetting-clause-count`.
 
 - Gap 69. Unchanged: a binding connector with an end-feature body is `unexpected_keyword_in_scope`
-  at `c1677e7`, so `kerml_binding_connector_is_binary.md`, `kerml_connector_binary_specialization.md`
+  at `34fd6c4`, so `kerml_binding_connector_is_binary.md`, `kerml_connector_binary_specialization.md`
   and `generated_conditional_binary_connector_specialization.md` stay blocked.
 
 - Gap 74. Narrowed. The declared `require constraint c : C;` / `assume constraint a : A;` parse in
@@ -110,7 +116,7 @@ workflow.
   `sysml_requirement_constraint_membership_is_composite.md` and
   `generated_requirement_constraint_derived_facts_parser_gap.md` are unblocked. What remains is the
   owner rule's violating side: `part def H { require constraint c : C; }` is
-  `unexpected_keyword_in_scope` at `c1677e7`, so
+  `unexpected_keyword_in_scope` at `34fd6c4`, so
   `validateRequirementConstraintMembershipOwningType` cannot be authored and
   `sysml_requirement_constraint_membership_owning_type.md` stays blocked.
 
@@ -118,20 +124,20 @@ workflow.
   body and lower through `lower_accept_trigger`; the three trigger-argument fixtures now wait on a
   semantic rule (`semantic-trigger-invocation-argument-typing`) and the accept derived-fact
   fixtures on the action-parameter identity gap. `action def P { action a1; action a2; if true
-  then a1 else a2; }` is still `recovered_action_body_element` at `c1677e7`, so
+  then a1 else a2; }` is still `recovered_action_body_element` at `34fd6c4`, so
   `sysml_if_action_usage_parameters.md` stays blocked.
 
 - Gap 77. Unchanged: `transition aTransition first start accept apayload : Anything via receiver
   then done;` in a state body and a `transition` member in an action body are
-  `recovered_state_body_element` and `unexpected_keyword_in_scope` respectively at `c1677e7`.
+  `recovered_state_body_element` and `unexpected_keyword_in_scope` respectively at `34fd6c4`.
 
-- Gap 78. Unchanged. Probed one spelling per document at `c1677e7`: `abstract variation part def
+- Gap 78. Unchanged. Probed one spelling per document at `34fd6c4`: `abstract variation part def
   Good;` is `recovered_package_body_element`, `abstract variation part good : Base;` is
   `recovered_part_def_body_element`, and `attribute def X { abstract variation attribute a; }` is
   `unsupported_grammar_form`; the bare `variation` spellings parse. Seven fixtures stay blocked.
 
 - Gap 79. Unchanged: `expose` in a package body is `recovered_package_body_element`, and `verify`
-  / `render` in a part-definition body are `unexpected_keyword_in_scope` at `c1677e7`.
+  / `render` in a part-definition body are `unexpected_keyword_in_scope` at `34fd6c4`.
 
 - Gap 82. **Regression at the pinned revision**, visible only now that `perform <path>;` resolves
   its target. `src/parser/action.rs`'s `in_out_decl_inner` consumes an `action` keyword after the
@@ -181,7 +187,7 @@ standalone `subclassifier C specializes B;` declaration, which is a spec42 lower
 Not upstream gaps: the parser carries these typed facts, and the remaining work is
 `sysml_resolution` lowering. Recorded so the coverage they represent stays visible rather than
 disappearing with the gap entries they closed. Each was re-checked against the owning lowering
-at pinned `c1677e7`; entries whose lowering has since landed were removed.
+at pinned `34fd6c4`; entries whose lowering has since landed were removed.
 
 - **KerML explicit relationship declarations.** `ast::KermlRelationshipDecl`
   (`PackageBodyElement::KermlRelationship`) models `subtype`/`subclassifier`/`typing`/`subset`/

@@ -102,6 +102,12 @@ package FeatureAdvancedCoverage {
         (range (start 15 24) (end 15 33))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 11))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")

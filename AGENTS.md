@@ -147,6 +147,11 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 - Run focused checks while iterating, then the broader checks appropriate to the affected area. Fix
   failures caused by the change; record unrelated failures and continue independent checks where
   practical.
+- Before opening or updating a pull request, run `scripts/minici.sh`, the repository's local
+  pre-push entry point for the platform-independent Rust-core CI checks. If its documented local
+  prerequisites are unavailable, report that explicitly and do not claim that all checks pass;
+  distinguish the script's coverage from the CI-only packaging and cross-platform jobs in
+  `.github/workflows/ci.yml`.
 - Establish correctness and equivalence before optimizing. Measure representative workloads and
   preserve deterministic correctness under both cold and warm conditions.
 - Review architectural changes adversarially. Look for a second source of truth, downstream
