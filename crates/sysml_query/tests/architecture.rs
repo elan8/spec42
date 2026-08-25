@@ -1150,6 +1150,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "generator_host",
             "glob",
             "language_service",
+            "library_catalog",
             "petgraph",
             "rayon",
             "serde",

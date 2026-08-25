@@ -9,10 +9,10 @@ use std::sync::Arc;
 
 pub use sysml_resolution::source::source_identity as identity;
 pub use sysml_resolution::source::{
-    discover_project_boundary, is_sysml_like, normalize_line_endings, normalize_uri,
-    path_to_file_url, uri_under_any, ContentDigest, FilesystemProvider, InMemoryProvider,
-    ProjectBoundary, RootDigest, SkippedSource, SourceAuthority, SourceDocument, SourceError,
-    SourceKind, SourceLoadReport, SourceProvider, Url, PROJECT_MANIFEST_FILE,
+    discover_project_boundary, discover_project_roots, is_sysml_like, normalize_line_endings,
+    normalize_uri, path_to_file_url, uri_under_any, ContentDigest, FilesystemProvider,
+    InMemoryProvider, ProjectBoundary, RootDigest, SkippedSource, SourceAuthority, SourceDocument,
+    SourceError, SourceKind, SourceLoadReport, SourceProvider, Url, PROJECT_MANIFEST_FILE,
 };
 
 /// Handle on the source authority. Cheap to clone; all clones share one authority.

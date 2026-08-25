@@ -1300,6 +1300,7 @@ dependencies = [
  "generator_host",
  "glob",
  "language_service",
+ "library_catalog",
  "petgraph",
  "rayon",
  "serde",

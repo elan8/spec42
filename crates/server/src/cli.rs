@@ -16,6 +16,9 @@ pub struct Cli {
     /// extra KPAR library instead of overriding one.
     #[arg(long = "kpar-library-path", global = true, value_name = "ID=PATH")]
     pub kpar_library_paths: Vec<String>,
+    /// Bind an authored project resource identity to a local KPAR archive (repeatable).
+    #[arg(long = "project-library", global = true, value_name = "RESOURCE=PATH")]
+    pub project_libraries: Vec<String>,
     /// Disable a registered KPAR library by id (repeatable): `--disable-kpar-library domain`.
     #[arg(long = "disable-kpar-library", global = true, value_name = "ID")]
     pub disabled_kpar_libraries: Vec<String>,
@@ -468,6 +471,19 @@ mod tests {
                 "domain=C:/libs/domain".to_string(),
                 "method=C:/libs/method".to_string(),
             ]
+        );
+    }
+
+    #[test]
+    fn project_library_flag_preserves_authored_resource_mapping() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "--project-library",
+            "https://example.test/stdlib=/opt/libs/stdlib-9.kpar",
+        ]);
+        assert_eq!(
+            cli.project_libraries,
+            vec!["https://example.test/stdlib=/opt/libs/stdlib-9.kpar"]
         );
     }
 

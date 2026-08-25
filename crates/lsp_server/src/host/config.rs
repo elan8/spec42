@@ -93,6 +93,9 @@ pub struct Spec42Config {
     /// The one set of services this host publishes through, shared with the engine that embeds
     /// it so the two never hold separate memos or library strata.
     pub services: sysml_query::Services,
+    /// The resolved library catalog used to enforce `.project.json` dependency admission for
+    /// each independently published editor project.
+    pub project_library_catalog: Option<Arc<library_catalog::LibraryCatalog>>,
     /// Optional library roots supplied by the host (e.g. materialized standard library), merged
     /// before client `libraryPaths` during LSP initialize / configuration.
     pub default_library_paths: Vec<PathBuf>,
@@ -110,6 +113,10 @@ impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
             .field("services", &"shared")
+            .field(
+                "project_library_catalog",
+                &self.project_library_catalog.is_some(),
+            )
             .field("default_library_paths", &self.default_library_paths)
             .field("standard_library_paths", &self.standard_library_paths)
             .field("capability_augmenters", &self.capability_augmenters.len())
@@ -129,6 +136,14 @@ impl Spec42Config {
 
     pub fn with_services(mut self, services: sysml_query::Services) -> Self {
         self.services = services;
+        self
+    }
+
+    pub fn with_project_library_catalog(
+        mut self,
+        catalog: library_catalog::LibraryCatalog,
+    ) -> Self {
+        self.project_library_catalog = Some(Arc::new(catalog));
         self
     }
 

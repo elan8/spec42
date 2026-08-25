@@ -1,4 +1,3 @@
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -15,8 +14,8 @@ use crate::views::dto::SemanticIndexReadyNotificationDto;
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
 use super::lifecycle::{project_boundary_for_uri, scan_roots, workspace_roots_from_initialize};
+use super::project_registry::ProjectRegistry;
 
-static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
 
 fn schedule_workspace_diagnostics_republish(
@@ -24,13 +23,13 @@ fn schedule_workspace_diagnostics_republish(
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
+    let generation = handle.next_diagnostics_debounce_generation();
     let client = client.clone();
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
-        if WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
+        if !handle.is_current_diagnostics_debounce_generation(generation) {
             return;
         }
         let lifecycle = handle.snapshot().session.lifecycle();

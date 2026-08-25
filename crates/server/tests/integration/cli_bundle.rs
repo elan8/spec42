@@ -142,5 +142,7 @@ fn bundle_rejects_a_directory_without_project_metadata() {
         .expect("run bundle");
 
     assert!(!result.status.success());
-    assert!(String::from_utf8_lossy(&result.stderr).contains(".project.json"));
+    let stderr = String::from_utf8_lossy(&result.stderr);
+    assert!(stderr.contains(".project.json"), "{stderr}");
+    assert!(stderr.contains("spec42 init"), "{stderr}");
 }

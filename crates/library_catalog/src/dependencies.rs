@@ -13,6 +13,8 @@ use kpar::{Project, ProjectUsage};
 use semver::{Version, VersionReq};
 use serde::Serialize;
 
+use crate::LibraryCatalog;
+
 /// One installed project that may satisfy a `.project.json` usage.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ProjectDependencyCandidate {
@@ -53,6 +55,16 @@ pub enum ProjectDependencyResolution {
         version_constraint: Option<String>,
         matching_versions: Vec<String>,
     },
+}
+
+/// Complete local library admission for one project boundary.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectDependencyAdmission {
+    pub manifest_present: bool,
+    pub resolutions: Vec<ProjectDependencyResolution>,
+    pub library_roots: Vec<PathBuf>,
+    pub candidate_roots: Vec<PathBuf>,
+    pub selected_candidate_roots: Vec<PathBuf>,
 }
 
 /// Resolve every authored usage without network access or implicit substitution.
@@ -100,6 +112,77 @@ pub fn resolve_project_manifest_dependencies(
         )
     })?;
     Ok(resolve_project_dependencies(&project, candidates))
+}
+
+/// Resolve the exact library roots admitted for one filesystem project.
+///
+/// Manifestless projects retain catalog defaults. Manifest projects admit only roots selected by
+/// authored, satisfied usages; unidentified generic paths are not implicit dependencies. Any
+/// unresolved authored usage fails explicitly and never falls back to bundled defaults.
+pub fn resolve_project_dependency_admission(
+    project_root: &Path,
+    catalog: &LibraryCatalog,
+) -> Result<ProjectDependencyAdmission, String> {
+    let manifest_path = project_root.join(kpar::PROJECT_FILE);
+    if !manifest_path.is_file() {
+        return Ok(ProjectDependencyAdmission {
+            manifest_present: false,
+            resolutions: Vec::new(),
+            library_roots: catalog.package_roots.clone(),
+            candidate_roots: Vec::new(),
+            selected_candidate_roots: Vec::new(),
+        });
+    }
+
+    let resolutions =
+        resolve_project_manifest_dependencies(&manifest_path, &catalog.dependency_candidates)?;
+    let failures = resolutions
+        .iter()
+        .filter(|resolution| !matches!(resolution, ProjectDependencyResolution::Satisfied { .. }))
+        .collect::<Vec<_>>();
+    if !failures.is_empty() {
+        let states = serde_json::to_string(&failures)
+            .map_err(|error| format!("Could not serialize project dependency states: {error}"))?;
+        return Err(format!(
+            "Project dependencies from {} were not satisfied: {states}. Spec42 does not fetch dependency resources implicitly.",
+            manifest_path.display()
+        ));
+    }
+
+    let canonical = |root: &PathBuf| root.canonicalize().unwrap_or_else(|_| root.clone());
+    let mut candidate_roots = catalog
+        .dependency_candidates
+        .iter()
+        .flat_map(|candidate| candidate.package_roots.iter())
+        .map(canonical)
+        .collect::<Vec<_>>();
+    candidate_roots.sort();
+    candidate_roots.dedup();
+    let mut selected_candidate_roots = resolutions
+        .iter()
+        .filter_map(|resolution| match resolution {
+            ProjectDependencyResolution::Satisfied { package_roots, .. } => Some(package_roots),
+            _ => None,
+        })
+        .flatten()
+        .map(canonical)
+        .collect::<Vec<_>>();
+    selected_candidate_roots.sort();
+    selected_candidate_roots.dedup();
+
+    // A manifest-bearing project is reproducible only when every admitted library has an
+    // authored resource identity. Generic configured paths have no identity by which a usage can
+    // select them, so they remain available to manifestless workspaces but are not silently
+    // injected here.
+    let library_roots = selected_candidate_roots.clone();
+
+    Ok(ProjectDependencyAdmission {
+        manifest_present: true,
+        resolutions,
+        library_roots,
+        candidate_roots,
+        selected_candidate_roots,
+    })
 }
 
 fn resolve_usage(

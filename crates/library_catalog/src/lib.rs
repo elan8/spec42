@@ -15,8 +15,9 @@ pub use catalog::{
     LibraryCatalog, StdlibComponent,
 };
 pub use dependencies::{
-    resolve_project_dependencies, resolve_project_manifest_dependencies,
-    ProjectDependencyCandidate, ProjectDependencyResolution,
+    resolve_project_dependencies, resolve_project_dependency_admission,
+    resolve_project_manifest_dependencies, ProjectDependencyAdmission, ProjectDependencyCandidate,
+    ProjectDependencyResolution,
 };
 pub use kpar::PROJECT_FILE;
 pub use library::{

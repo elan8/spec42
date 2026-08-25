@@ -74,6 +74,33 @@ pub fn discover_project_boundary(source: &Path, ceiling: &Path) -> Option<Projec
     }
 }
 
+/// Discovers manifest project roots below editor discovery ceilings using the same ignore and
+/// symlink policy as filesystem source admission. Returned roots are canonical and sorted.
+pub fn discover_project_roots(ceilings: &[PathBuf]) -> Vec<PathBuf> {
+    let mut roots = Vec::new();
+    for ceiling in ceilings {
+        let mut builder = ignore::WalkBuilder::new(ceiling);
+        // `.project.json` is intentionally hidden by name, so hidden-file suppression must be
+        // disabled while gitignore and explicit ignore rules remain authoritative.
+        builder.follow_links(false).require_git(false).hidden(false);
+        roots.extend(
+            builder
+                .build()
+                .filter_map(Result::ok)
+                // Ignore rules decide which directories are traversed. The manifest itself is
+                // then probed by contract name so a broad hidden-file ignore cannot erase a
+                // project boundary while its containing directory remains admitted.
+                .filter(|entry| entry.file_type().is_some_and(|kind| kind.is_dir()))
+                .map(ignore::DirEntry::into_path)
+                .filter(|directory| directory.join(PROJECT_MANIFEST_FILE).is_file())
+                .map(|directory| canonicalize_or_self(&directory)),
+        );
+    }
+    roots.sort();
+    roots.dedup();
+    roots
+}
+
 fn canonicalize_or_self(path: &Path) -> PathBuf {
     fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
 }
