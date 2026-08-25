@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `c1677e7` -> `34fd6c4`.** The 12-commit upstream
+  speculation-removal performance series preserves the existing parser-gap inventory; snapshot
+  regeneration now reports the retained `#Safety feature z1 : T;` extended usage explicitly as an
+  unsupported package member.
+
 - **Bumped the pinned `sysml-v2-parser` revision `f52100f` -> `c1677e7`.** The 40-commit bump
   (upstream "gaps wave 2", "corpus snapshot wave 3", the parser performance pass and the
   span-backed authored-text migration) closes gaps
