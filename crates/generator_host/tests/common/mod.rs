@@ -18,7 +18,7 @@ pub fn published_model_view(source: &str) -> Arc<GeneratorModelView> {
         .admit_memory(
             "generator-host-tests",
             "model.sysml",
-            source.to_owned(),
+            source,
             SourceKind::Workspace,
         )
         .expect("in-memory source document");

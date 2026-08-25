@@ -29,11 +29,15 @@ RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-pat
   --release \
   --target wasm32-unknown-unknown
 
-cp \
-  "$root/generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm" \
-  "$root/vscode/generators/diagram.wasm"
+if [[ "${SPEC42_PACKAGE_REPOSITORY_GENERATORS:-1}" == "1" ]]; then
+  cp \
+    "$root/generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm" \
+    "$root/vscode/generators/diagram.wasm"
 
-echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
-echo "note: the committed diagram.wasm must be the bytes CI's ubuntu job builds (a guest links the"
-echo "      host toolchain's precompiled wasm32 std, so hosts differ by a few bytes); to refresh the"
-echo "      committed file, download the repository-generator-plugins artifact from a CI run."
+  echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
+  echo "note: the committed diagram.wasm must be the bytes CI's ubuntu job builds (a guest links the"
+  echo "      host toolchain's precompiled wasm32 std, so hosts differ by a few bytes); to refresh the"
+  echo "      committed file, download the repository-generator-plugins artifact from a CI run."
+else
+  echo "repository plugins built without refreshing packaged artifacts"
+fi

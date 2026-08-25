@@ -85,9 +85,9 @@ fn diagnostic_fanout(state: &ServerState, changed_uri: &Url) -> Vec<Url> {
     let mut diagnostic_uris = state
         .published_model()
         .dependencies()
-        .workspace_documents_affected_by(workspace_uris, &changed_uri)
+        .workspace_documents_affected_by(workspace_uris, changed_uri)
         .into_uris();
-    if !diagnostic_uris.contains(&changed_uri) {
+    if !diagnostic_uris.contains(changed_uri) {
         diagnostic_uris.push(changed_uri.clone());
     }
     diagnostic_uris
