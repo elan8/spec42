@@ -1674,6 +1674,22 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         };
         let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
             Some(reference.source())
+        } else if reference.kind() == ReferenceKind::ConnectorEnd
+            && source.owner.is_some_and(|owner| {
+                declarations
+                    .get(owner.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlConnector)
+            })
+        {
+            // KerML 8.2.3.5.2 resolves the ReferenceSubsetting of an end Feature in the
+            // owningNamespace of its Connector. The end itself is the semantic relationship
+            // source, but neither it nor the Connector's owned end names form the lookup scope.
+            // Starting at the Connector's owner also prevents `from self references self` from
+            // resolving the target back to the newly declared end Feature.
+            source
+                .owner
+                .and_then(|connector| declarations.get(connector.index()))
+                .and_then(|connector| connector.owner)
         } else {
             source.owner
         };

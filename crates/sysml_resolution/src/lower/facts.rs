@@ -200,10 +200,11 @@ pub(crate) struct DeclarationFacts {
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///
     /// Present only on a declaration lowered from an `end` member of a connection/interface/
-    /// occurrence definition body, and it is what makes a connector end *positional*: KerML orders
-    /// a connector's ends, and the source/target distinction of a binary connection-like
-    /// definition is that order and nothing else. An `end` member's declared label is optional and
-    /// carries no ordering, so recovering the position from a name would be a guess.
+    /// occurrence definition body or a named inline KerML/SysML connector end, and it is what makes
+    /// a connector end *positional*: KerML orders a connector's ends, and the source/target
+    /// distinction of a binary connection-like definition is that order and nothing else. An end's
+    /// declared label is optional and carries no ordering, so recovering the position from a name
+    /// would be a guess.
     ///
     /// Absent on every other declaration, including a feature carrying the `end` modifier prefix:
     /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.

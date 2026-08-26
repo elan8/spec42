@@ -183,7 +183,7 @@ package InterconnectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:37a6bd0bc8f192cd13c9a6f041f6d00a8bd992ec38c9cf30ba1da770e4607f11",
+  "modelDigest": "blake3:5bfdd6848fea2d73fbf2248136cf4d62a53a19f670b41f08223bc0f9015455bf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",

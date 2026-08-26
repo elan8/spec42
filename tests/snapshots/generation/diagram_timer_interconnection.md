@@ -4495,7 +4495,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:d6727f3615ddc1bced54ee883f979c55e0cae0511c7f60be91a4f1e93ba31adf",
+  "modelDigest": "blake3:62e31d8d09cb0b2c925e8084b0aecc8b311422946a9bc00da74599a1f6c7134a",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimer.sysml",

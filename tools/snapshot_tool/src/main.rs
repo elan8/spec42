@@ -345,6 +345,7 @@ enum SemanticRelationshipKind {
     Redefinition,
     FeatureChaining,
     TypeFeaturing,
+    ConnectorEnd,
     NamespaceImport,
     Unioning,
     Intersecting,
@@ -361,12 +362,13 @@ impl SemanticRelationshipKind {
             "redefinition" => Ok(Self::Redefinition),
             "feature_chaining" => Ok(Self::FeatureChaining),
             "type_featuring" => Ok(Self::TypeFeaturing),
+            "connector_end" => Ok(Self::ConnectorEnd),
             "unioning" => Ok(Self::Unioning),
             "intersecting" => Ok(Self::Intersecting),
             "differencing" => Ok(Self::Differencing),
             "disjoining" => Ok(Self::Disjoining),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, unioning, intersecting, differencing, or disjoining)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, or disjoining)"
             )),
         }
     }
@@ -379,6 +381,7 @@ impl SemanticRelationshipKind {
             Self::Redefinition => "redefinition",
             Self::FeatureChaining => "featureChaining",
             Self::TypeFeaturing => "typeFeaturing",
+            Self::ConnectorEnd => "connectorEnd",
             Self::NamespaceImport => "namespaceImport",
             Self::Unioning => "unioning",
             Self::Intersecting => "intersecting",
