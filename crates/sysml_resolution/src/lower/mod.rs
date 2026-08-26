@@ -1,6 +1,5 @@
 //! Phase 2: lowering. Authored facts derived from parsed trees, and nothing else.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::AdmittedDocument;
 use crate::lower::facts::AnnotationForm;
@@ -27,6 +26,7 @@ use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
+use crate::lower::facts::MemberAccessNarrowing;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionKind;
@@ -72,7 +72,7 @@ use sysml_v2_parser::ast::{
     Import, ImportShape, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
     NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, QualifiedIdentification,
     QualifiedReferenceId, RelationshipBodyElement, RootElement, Span, SubsettingKind,
-    SubsettingRelationship, TextualRepresentation, VariantTypedUsage, VariantUsage,
+    SubsettingRelationship, TextualRepresentation, TypeCheckKind, VariantTypedUsage, VariantUsage,
     VariantUsageForm, Visibility as ParserVisibility,
 };
 use sysml_v2_parser::{ParseError, ParsedDocument};
@@ -870,13 +870,14 @@ impl SemanticModelBuilder {
             ordinal: authored_ordinal,
             import,
             flags,
+            member_access_narrowings: Box::default(),
             span,
         });
         Ok(id)
     }
 
     /// Pushes one `ReferenceKind::MemberAccessOperand` reference for a flattened dotted
-    /// feature-chain (`flatten_member_access_chain`'s output): `chain` is the ordered list of
+    /// feature-chain: `chain` is the ordered list of
     /// parser `QualifiedReferenceId`s from the root segment outward (a bare `FeatureRef`/
     /// `FeatureChainRef` flattens to a one-entry chain). Builds one combined `SymbolPathId` by
     /// concatenating every chain entry's own segments in order -- mirroring `push_reference`'s
@@ -899,6 +900,87 @@ impl SemanticModelBuilder {
             chain,
             span,
         )
+    }
+
+    /// Lowers a member-access expression without erasing authored `as Type` narrowing.
+    ///
+    /// The flattened path remains the canonical sequence of authored feature names. Each cast is
+    /// also an ordinary typed `TypeCheckTarget` reference and the member-access fact records the
+    /// exact segment boundary at which that resolved type becomes the scope for later hops.
+    pub(crate) fn push_member_access_expression(
+        &mut self,
+        source: DeclarationId,
+        document: DocumentIdx,
+        node: &Node<Expression>,
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
+        fn collect(
+            node: &Node<Expression>,
+            chain: &mut Vec<QualifiedReferenceId>,
+            casts: &mut Vec<(usize, QualifiedReferenceId)>,
+        ) -> bool {
+            match &node.value {
+                Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                    chain.push(*target);
+                    true
+                }
+                Expression::MemberAccess { base, member, .. } => {
+                    if !collect(base, chain, casts) {
+                        return false;
+                    }
+                    chain.push(*member);
+                    true
+                }
+                Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
+                    [only] => collect(&only.expression, chain, casts),
+                    _ => false,
+                },
+                Expression::TypeCheck {
+                    kind,
+                    operand: Some(operand),
+                    type_name,
+                } => {
+                    if !collect(operand, chain, casts) {
+                        return false;
+                    }
+                    if *kind == TypeCheckKind::As {
+                        casts.push((chain.len(), *type_name));
+                    }
+                    true
+                }
+                _ => false,
+            }
+        }
+
+        let mut chain = Vec::new();
+        let mut casts = Vec::new();
+        if !collect(node, &mut chain, &mut casts) || chain.is_empty() {
+            return Ok(None);
+        }
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let mut narrowings = Vec::with_capacity(casts.len());
+        for (chain_entry_count, target) in casts {
+            let segment_count =
+                chain[..chain_entry_count]
+                    .iter()
+                    .try_fold(0usize, |count, local| {
+                        let reference = parsed
+                            .qualified_reference(*local)
+                            .ok_or(ConstructionError::InvalidParserReference)?;
+                        count
+                            .checked_add(reference.segments.len())
+                            .ok_or(ConstructionError::Capacity)
+                    })?;
+            let target_reference =
+                self.push_type_check_target_reference_id(document, source, target)?;
+            narrowings.push(MemberAccessNarrowing {
+                segment_count: u32::try_from(segment_count)
+                    .map_err(|_| ConstructionError::Capacity)?,
+                target: target_reference,
+            });
+        }
+        let reference = self.push_member_access_reference(source, document, &chain, node.span)?;
+        self.references[reference.index()].member_access_narrowings = narrowings.into_boxed_slice();
+        Ok(Some(reference))
     }
 
     pub(crate) fn push_member_access_reference_with_kind(
@@ -958,6 +1040,7 @@ impl SemanticModelBuilder {
             ordinal: authored_ordinal,
             import: None,
             flags: RelationshipFlags::default(),
+            member_access_narrowings: Box::default(),
             span,
         });
         Ok(id)
@@ -968,7 +1051,7 @@ impl SemanticModelBuilder {
     /// qualified name (`FeatureRef`/`FeatureChainRef`) resolves through the same
     /// `DeclarationDomain::Any` lexical lookup fixed point every other operand kind uses; a dotted
     /// chain (`MemberAccess`, e.g. a callee like `SysML::sum`) resolves through the same
-    /// `flatten_member_access_chain`/`push_member_access_reference` path `ExpressionOperand`'s own
+    /// typed member-access lowering path `ExpressionOperand`'s own
     /// `MemberAccess` arm uses (publishing `ReferenceKind::MemberAccessOperand`, not
     /// `InvocationCallee`, matching that shared path's existing "one kind per algorithm" trade-off
     /// -- see `ReferenceKind::MemberAccessOperand`'s doc comment). Any other callee shape (e.g. an
@@ -996,9 +1079,7 @@ impl SemanticModelBuilder {
                 self.push_invocation(declaration, document, reference, argument_count, span)
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(callee) {
-                    self.push_member_access_reference(declaration, document, &chain, callee.span)?;
-                }
+                self.push_member_access_expression(declaration, document, callee)?;
                 Ok(())
             }
             _ => Ok(()),
@@ -1071,6 +1152,16 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         target: QualifiedReferenceId,
     ) -> Result<(), ConstructionError> {
+        self.push_type_check_target_reference_id(document, declaration, target)?;
+        Ok(())
+    }
+
+    fn push_type_check_target_reference_id(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(target)
@@ -1085,8 +1176,7 @@ impl SemanticModelBuilder {
             flags: RelationshipFlags::default(),
             span,
             import: None,
-        })?;
-        Ok(())
+        })
     }
 
     pub(crate) fn push_expression_operand_reference(

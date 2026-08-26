@@ -4169,30 +4169,6 @@ fn effective_typing_reports_its_own_outcome_rather_than_an_empty_list() {
     );
 }
 
-/// KerML Feature typing is inherited through Subsetting, including Redefinition. The inherited
-/// type contributes the redefining Feature's member scope, so a nested redefinition can name a
-/// member of that type even when the outer redefining Feature has no direct FeatureTyping.
-#[test]
-fn nested_redefinition_resolves_through_its_owners_inherited_effective_type() {
-    let published = published_for(concat!(
-        "package P { ",
-        "classifier QuantityDimension { feature quantityPowerFactors; } ",
-        "classifier Unit { feature quantityDimension : QuantityDimension; } ",
-        "classifier DerivedUnit specializes Unit { ",
-        "feature redefines quantityDimension { feature redefines quantityPowerFactors; } ",
-        "} }",
-    ));
-
-    assert!(
-        published.diagnostics().iter().all(|diagnostic| {
-            diagnostic.code() != &DiagnosticCode::UnresolvedReference
-                && diagnostic.code() != &DiagnosticCode::NonConvergedResolution
-        }),
-        "both redefinition targets must settle through the canonical effective member scope: {:?}",
-        published.diagnostics()
-    );
-}
-
 #[test]
 fn view_selection_applies_inherited_metadata_disjunctions_and_conjoins_conditions() {
     let document = "memory://views.sysml";

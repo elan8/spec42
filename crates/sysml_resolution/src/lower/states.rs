@@ -1,6 +1,5 @@
 //! Phase 2 lowering — state machines: state definitions and usages, transitions, entry/do/exit actions.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::DeclarationFacts;
@@ -632,9 +631,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::StateDefinitionMember,

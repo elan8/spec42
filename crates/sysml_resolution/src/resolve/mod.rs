@@ -47,6 +47,9 @@ pub(crate) trait ResolutionReferenceFact {
     fn kind(&self) -> ReferenceKind;
     fn path(&self) -> SymbolPathId;
     fn flags(&self) -> RelationshipFlags;
+    fn member_access_narrowings(&self) -> &[crate::lower::facts::MemberAccessNarrowing] {
+        &[]
+    }
 }
 
 impl ResolutionReferenceFact for AuthoredReference {
@@ -64,6 +67,10 @@ impl ResolutionReferenceFact for AuthoredReference {
 
     fn flags(&self) -> RelationshipFlags {
         self.flags
+    }
+
+    fn member_access_narrowings(&self) -> &[crate::lower::facts::MemberAccessNarrowing] {
+        &self.member_access_narrowings
     }
 }
 
@@ -575,6 +582,43 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
+        // Settle aliases against the already-complete import, subclassification, and typing
+        // scopes before entering the mutually recursive subsetting/redefinition solver. Most
+        // aliases are package members and are final here; only an unresolved alias nested in a
+        // Type needs another evaluation when that Type's relationship-derived ancestry changes.
+        for index in alias_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                &references[index],
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+        let cyclic_alias_sources =
+            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+        for index in alias_slots.iter().copied() {
+            if cyclic_alias_sources.contains(&references[index].source()) {
+                outcomes[index] = ResolutionStatus::NonConverged;
+            }
+        }
+
         // A Feature's supertypes include its FeatureTyping, Subsetting, and Redefinition generals.
         // Since Subsetting and Redefinition themselves use that inherited member scope, settle the
         // specialization closure and those two relationship families together at a deterministic
@@ -600,6 +644,24 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     .get(current.index())
                     .ok_or(ResolutionError::InvalidStorage)?
                     .owner;
+            }
+        }
+        // An alias can consume inherited names only when it is nested in a Type. Top-level and
+        // package aliases use direct/imported namespace lookup, so adding all their package owner
+        // chains would expand the scoped inherited-name index without changing any lookup.
+        for index in &alias_slots {
+            let mut owner = declarations
+                .get(references[*index].source().index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            while let Some(current) = owner {
+                let declaration = declarations
+                    .get(current.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if DeclarationDomain::Type.accepts(declaration.kind) {
+                    relationship_scopes.insert(current);
+                }
+                owner = declaration.owner;
             }
         }
         // Qualified relationship targets can traverse a named intermediate Feature. Add every
@@ -666,11 +728,13 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 }
             };
         add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
-        let mut settled_specialization_closures = None;
+        let mut settled_specialization_closures: Option<Vec<Box<[DeclarationId]>>> = None;
+        let mut aliases_require_full_resolution = false;
         for _ in 0..relationship_pass_limit {
             let previous = subsetting_slots
                 .iter()
                 .chain(&redefinition_slots)
+                .chain(&alias_slots)
                 .filter_map(|index| match outcomes[*index] {
                     ResolutionStatus::Resolved(target) => Some((
                         references[*index].source(),
@@ -686,6 +750,37 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 &outcomes,
                 provisional_relationships,
             )?;
+            let alias_scope_changed = |source: DeclarationId| -> Result<bool, ResolutionError> {
+                let Some(previous) = settled_specialization_closures.as_ref() else {
+                    return Ok(true);
+                };
+                let mut scope = declarations
+                    .get(source.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .owner;
+                while let Some(current) = scope {
+                    if previous.get(current.index()) != specialization_closures.get(current.index())
+                    {
+                        return Ok(true);
+                    }
+                    scope = declarations
+                        .get(current.index())
+                        .ok_or(ResolutionError::InvalidStorage)?
+                        .owner;
+                }
+                Ok(false)
+            };
+            let mut aliases_to_resolve = Vec::new();
+            for index in alias_slots.iter().copied() {
+                if aliases_require_full_resolution
+                    || (!matches!(
+                        outcomes[index],
+                        ResolutionStatus::Resolved(_) | ResolutionStatus::NonConverged
+                    ) && alias_scope_changed(references[index].source())?)
+                {
+                    aliases_to_resolve.push(index);
+                }
+            }
             inherited_names = build_inherited_name_index_for_scopes(
                 declarations,
                 &direct_names,
@@ -693,6 +788,45 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 Some(&relationship_scopes),
             )?;
             settled_specialization_closures = Some(specialization_closures);
+            aliases_require_full_resolution = false;
+
+            // KerML AliasMember is a Membership of the aliased memberElement, not a semantic
+            // wrapper around it. Resolve aliases inside this same fixed point so specialization
+            // scope can traverse an alias target on the following pass. This also covers aliases
+            // nested in typed/redefined Features without depending on source order.
+            for index in aliases_to_resolve {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                outcomes[index] = resolve_reference(
+                    declarations,
+                    paths,
+                    reference,
+                    DeclarationDomain::Any,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
+            let cyclic_alias_sources =
+                detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+            for index in alias_slots.iter().copied() {
+                if cyclic_alias_sources.contains(&references[index].source()) {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                }
+            }
 
             for index in subsetting_slots.iter().chain(&redefinition_slots).copied() {
                 work.downstream_evaluations = work
@@ -727,6 +861,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             let current = subsetting_slots
                 .iter()
                 .chain(&redefinition_slots)
+                .chain(&alias_slots)
                 .filter_map(|index| match outcomes[*index] {
                     ResolutionStatus::Resolved(target) => Some((
                         references[*index].source(),
@@ -749,6 +884,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     break;
                 }
                 effective_names = next_effective_names;
+                aliases_require_full_resolution = true;
                 add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
                 direct_names = build_direct_name_index(
                     declarations,
@@ -794,7 +930,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 .iter()
                 .chain(&connector_end_slots)
                 .chain(&succession_slots)
-                .chain(&alias_slots)
                 .copied()
             {
                 work.downstream_evaluations = work
@@ -824,6 +959,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         declarations,
                         paths,
                         reference,
+                        &outcomes,
                         indexes,
                         scratch,
                     )?
@@ -838,25 +974,17 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     )?
                 };
             }
-            // Alias bindings form a functional graph. Detect cycles only after their targets have
-            // settled against the complete local scope.
-            let cyclic_alias_sources =
-                detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
-            for index in alias_slots.iter().copied() {
-                if cyclic_alias_sources.contains(&references[index].source()) {
-                    outcomes[index] = ResolutionStatus::NonConverged;
-                }
-            }
             // Dotted member access consumes the final effective member scope.
             for index in member_access_slots.iter().copied() {
                 work.downstream_evaluations = work
                     .downstream_evaluations
                     .checked_add(1)
                     .ok_or(ResolutionError::Capacity)?;
-                outcomes[index] = resolve_member_access_reference(
+                let outcome = resolve_member_access_reference(
                     declarations,
                     paths,
                     &references[index],
+                    &outcomes,
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
@@ -871,6 +999,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         work: &mut work,
                     },
                 )?;
+                outcomes[index] = outcome;
             }
         }
     }
@@ -1095,7 +1224,7 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, implied, |kind| {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, false, |kind| {
         kind == ReferenceKind::Subclassification
     })
 }
@@ -1103,14 +1232,17 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
 /// Computes the full Type-generalization closure used by inherited-membership lookup after all
 /// authored specialization families have settled. KerML 8.3.1.8 defines `Type::supertypes` from
 /// every owned Specialization, not only Subclassification: FeatureTyping, Subsetting, and
-/// Redefinition therefore contribute the visible members of their general Types too.
+/// Redefinition therefore contribute the visible members of their general Types too. AliasMember
+/// transparency is represented by giving an alias a traversal row to its `memberElement` while
+/// linking each specialization source directly to the ultimate non-alias target. AliasBinding is
+/// therefore a lookup bridge here, not a competing authored Type-generalization fact.
 fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, implied, |kind| {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, true, |kind| {
         matches!(
             kind,
             ReferenceKind::Subclassification
@@ -1126,10 +1258,29 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
+    expand_alias_targets: bool,
     includes: impl Fn(ReferenceKind) -> bool,
 ) -> Result<AncestorClosures, ResolutionError> {
+    let mut alias_targets = std::collections::BTreeMap::new();
+    if expand_alias_targets {
+        for (index, reference) in references.iter().enumerate() {
+            if reference.kind() == ReferenceKind::AliasBinding {
+                if let ResolutionStatus::Resolved(target) = outcomes[index] {
+                    alias_targets.insert(reference.source(), target);
+                }
+            }
+        }
+    }
     let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
         vec![Default::default(); declarations.len()];
+    if expand_alias_targets {
+        for (source, target) in &alias_targets {
+            direct_parents
+                .get_mut(source.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .insert(*target);
+        }
+    }
     for (index, reference) in references.iter().enumerate() {
         if !includes(reference.kind()) {
             continue;
@@ -1138,7 +1289,32 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
             let slot = direct_parents
                 .get_mut(reference.source().index())
                 .ok_or(ResolutionError::InvalidStorage)?;
-            slot.insert(target);
+            if expand_alias_targets
+                && declarations
+                    .get(target.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
+            {
+                let mut current = target;
+                let mut visited = std::collections::BTreeSet::new();
+                while declarations
+                    .get(current.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
+                    && visited.insert(current)
+                {
+                    let Some(next) = alias_targets.get(&current).copied() else {
+                        break;
+                    };
+                    current = next;
+                }
+                if declarations
+                    .get(current.index())
+                    .is_some_and(|declaration| declaration.kind != DeclarationKind::Alias)
+                {
+                    slot.insert(current);
+                }
+            } else {
+                slot.insert(target);
+            }
         }
     }
     for relationship in implied {
@@ -1868,6 +2044,7 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     paths: &SymbolPathArena,
     reference: &R,
+    outcomes: &[ResolutionStatus],
     indexes: ResolutionIndexes<'_>,
     scratch: ResolutionScratch<'_>,
 ) -> Result<ResolutionStatus, ResolutionError> {
@@ -1897,7 +2074,29 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         scratch.candidates,
         scratch.work,
     )?;
-    for segment in &segments[1..] {
+    for (segment_index, segment) in segments.iter().enumerate().skip(1) {
+        for narrowing in reference
+            .member_access_narrowings()
+            .iter()
+            .filter(|narrowing| narrowing.segment_count as usize == segment_index)
+        {
+            scratch.candidates.clear();
+            match outcomes.get(narrowing.target.index()) {
+                Some(ResolutionStatus::Resolved(target)) => scratch.candidates.push(*target),
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    return Ok(ResolutionStatus::Ambiguous(*range));
+                }
+                Some(ResolutionStatus::NonConverged) => {
+                    return Ok(ResolutionStatus::NonConverged);
+                }
+                Some(ResolutionStatus::Unsupported) => {
+                    return Ok(ResolutionStatus::Unsupported);
+                }
+                Some(ResolutionStatus::Unresolved) | None => {
+                    return Ok(ResolutionStatus::Unresolved);
+                }
+            }
+        }
         if scratch.candidates.len() != 1 {
             // Zero candidates (Unresolved) or more than one (Ambiguous) -- either way the chain
             // cannot continue past this hop; publish that outcome directly rather than silently

@@ -1,6 +1,5 @@
 //! Phase 2 lowering — requirements, cases, viewpoints, concerns, and their satisfaction members.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
@@ -525,7 +524,7 @@ impl SemanticModelBuilder {
     /// `DeclarationDomain::Any` lexical lookup. A dotted feature-chain path
     /// (`Expression::MemberAccess`/`Expression::FeatureChainRef`, e.g. `f.a`) resolves as a
     /// `ReferenceKind::MemberAccessOperand` reference instead, through the same
-    /// `flatten_member_access_chain`/`push_member_access_reference` path `lower_connector_end`
+    /// typed member-access lowering path `lower_connector_end`
     /// uses -- this is also `Bind`'s (`lower_bind`) operand path, since it shares this helper, so
     /// `bind f.a = a.g;` resolves both dotted operands the same way `connect f.a to a.g;` does.
     /// Also supports `Expression::Invocation`/`Expression::Constructor` (reference resolution
@@ -559,9 +558,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
             }

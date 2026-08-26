@@ -810,7 +810,17 @@ pub(crate) struct AuthoredReference {
     pub(crate) ordinal: u32,
     pub(crate) import: Option<AuthoredImportFacts>,
     pub(crate) flags: RelationshipFlags,
+    /// Typed cast boundaries inside a flattened member-access path. After `segment_count`
+    /// segments, subsequent member lookup starts from the resolved cast target rather than the
+    /// operand's pre-cast type.
+    pub(crate) member_access_narrowings: Box<[MemberAccessNarrowing]>,
     pub(crate) span: Span,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MemberAccessNarrowing {
+    pub(crate) segment_count: u32,
+    pub(crate) target: AuthoredReferenceId,
 }
 
 /// One explicitly declared KerML relationship whose source and target are both authored names.

@@ -14,8 +14,8 @@ the semantic model is incomplete and must not be treated as successful compilati
 ## Current blockers
 
 The normal user-facing check now admits each source identity once with its configured standard-
-library provenance and reaches semantic validation. The remaining report contains 22 diagnostics:
-9 `unresolved_reference`, 7 `missing_library_anchor`, 4 `ambiguous_reference`, and one each of
+library provenance and reaches semantic validation. The remaining report contains 16 diagnostics:
+7 `missing_library_anchor`, 4 `ambiguous_reference`, 3 `unresolved_reference`, and one each of
 `duplicate_connection` and `redefinition_end_mismatch`. There are no parser diagnostics in the
 current run: the remaining failure is in semantic construction and checking, not syntax acceptance
 or source admission.

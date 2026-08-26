@@ -1,7 +1,6 @@
 //! Phase 2 lowering — constraints, calculations, expressions, filters, and unit tokens.
 
 use crate::evaluate::classify::classify_filter_predicate;
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::evaluate::classify::is_arithmetic_operator;
 use crate::evaluate::classify::is_comparison_operator;
 use crate::evaluate::classify::is_logical_operator;
@@ -109,9 +108,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
@@ -262,9 +262,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
@@ -470,9 +471,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 }
                 Ok(())

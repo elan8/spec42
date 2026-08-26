@@ -1,6 +1,5 @@
 //! Phase 2 lowering — connectivity: ports, connections, interfaces, bindings, allocations.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
@@ -584,7 +583,7 @@ impl SemanticModelBuilder {
     /// resolves as an authored `ConnectorEnd` reference through the same shared lexical lookup as
     /// `AliasBinding`. A dotted feature-chain path (`Expression::MemberAccess`, e.g. `t.bead`)
     /// resolves as a `ReferenceKind::MemberAccessOperand` reference instead (see its doc comment
-    /// for the algorithm), through `flatten_member_access_chain`/`push_member_access_reference`.
+    /// for the algorithm), through the typed member-access lowering path.
     /// Any other expression shape is left as an explicit `unsupported_connection_definition_member`
     /// diagnostic rather than a fabricated or partial resolution.
     pub(crate) fn lower_connector_end(
@@ -638,14 +637,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(&node.value.expression) {
-                    self.push_member_access_reference(
-                        owner,
-                        document,
-                        &chain,
-                        node.value.expression.span,
-                    )?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, &node.value.expression)?
+                    .is_none()
+                {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::ConnectionDefinitionMember,
@@ -1007,9 +1002,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::InterfaceDefinitionMember,

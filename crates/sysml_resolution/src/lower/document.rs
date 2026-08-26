@@ -300,6 +300,17 @@ impl SemanticModelBuilder {
                 ordinal: reference.ordinal,
                 import: reference.import,
                 flags: reference.flags,
+                member_access_narrowings: reference
+                    .member_access_narrowings
+                    .iter()
+                    .map(|narrowing| {
+                        Ok(crate::lower::facts::MemberAccessNarrowing {
+                            segment_count: narrowing.segment_count,
+                            target: relocation.reference(narrowing.target)?,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, ConstructionError>>()?
+                    .into_boxed_slice(),
                 span: reference.span,
             });
         }
