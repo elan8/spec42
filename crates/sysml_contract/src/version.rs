@@ -60,4 +60,4 @@ impl PartialEq<SemanticContractVersion> for str {
 /// asserts the literal, so a bump is a visible diff in a test rather than a silent widening of
 /// what an old artefact appears to be compatible with.
 pub const SEMANTIC_CONTRACT_VERSION: SemanticContractVersion =
-    SemanticContractVersion("binary-connection-owned-ends-v28");
+    SemanticContractVersion("positional-end-redefinition-v29");

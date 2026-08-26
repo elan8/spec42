@@ -136,7 +136,7 @@ package SequenceNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:8775b0a8d0cad4687f8fcc8b97ca09830d6318a37a398d8e4bb7c285be6a527c",
+  "modelDigest": "blake3:fb96dffc659d00bf694a718fc07c667ee262a3d7da147f63c9dcf485526384f6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved.md",

@@ -265,7 +265,7 @@ package StateExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:da784b13c6bf65257e4d8c36c2267b8bce19c89f624274c366fb0fe77aef2a6f",
+  "modelDigest": "blake3:640bb9efa9690d28ba4c8c1c97805bdf83a4eed82ddfb3ae2a7316a7d95ec16c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",

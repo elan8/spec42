@@ -1705,10 +1705,16 @@ impl<D> SemanticModel<D> {
             // KerML 8.4.4.5 specifies implicit redefinition for the parameters of a specializing
             // behavior, so a specializing function restating `in v : T` or `return u : T = ...` is
             // the authored way to give a body, not a silent override.
-            if matches!(
-                declaration.kind,
-                DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
-            ) {
+            let is_parameter = self
+                .storage
+                .declaration_facts(source)
+                .is_some_and(|facts| facts.direction.is_some());
+            if is_parameter
+                || matches!(
+                    declaration.kind,
+                    DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
+                )
+            {
                 continue;
             }
             let Some(value) = self

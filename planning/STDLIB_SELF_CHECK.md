@@ -14,11 +14,10 @@ the semantic model is incomplete and must not be treated as successful compilati
 ## Current blockers
 
 The normal user-facing check now admits each source identity once with its configured standard-
-library provenance and reaches semantic validation. The remaining report contains 3 diagnostics:
-one each of `unresolved_reference`, `duplicate_connection`, and
-`redefinition_end_mismatch`. There are no parser diagnostics in the
-current run: the remaining failure is in semantic construction and checking, not syntax acceptance
-or source admission.
+library provenance and reaches semantic validation. The remaining report contains 2 diagnostics:
+one each of `duplicate_connection` and `redefinition_end_mismatch`. There are no parser diagnostics
+in the current run: the remaining failure is in semantic construction and checking, not syntax
+acceptance or source admission.
 
 The diagnostic categories describe active work, not an acceptance contract. Fixes should add
 narrow tests at the owning semantic layer; remove a category from this document when it is no

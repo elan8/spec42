@@ -20,6 +20,7 @@ use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::implied::detect_cyclic_alias_bindings;
 use crate::resolve::implied::synthesize_implied_alias_bindings;
 use crate::resolve::implied::synthesize_implied_redefinitions;
+use crate::resolve::implied::synthesize_positional_end_redefinitions;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::build_direct_name_index;
 use crate::resolve::names::build_effective_import_indexes;
@@ -745,11 +746,44 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     _ => None,
                 })
                 .collect::<Vec<_>>();
+            // Same-name implicit Redefinitions are semantic Specializations too. Derive the
+            // current pass's exact owner-local edges before building inherited scope so nested
+            // body references can consume their enclosing Feature's inherited members in this
+            // pass. The derivation is indexed by direct owner/name and bounded by the same solver
+            // pass limit; it is not a recursive query from each nested reference.
+            let mut pass_provisional_relationships = provisional_relationships.to_vec();
+            pass_provisional_relationships.extend(
+                synthesize_implied_redefinitions(
+                    declarations,
+                    membership_records,
+                    references,
+                    &direct_names,
+                    &outcomes,
+                )?
+                .into_vec(),
+            );
+            pass_provisional_relationships.extend(
+                synthesize_positional_end_redefinitions(
+                    declarations,
+                    declaration_facts,
+                    references,
+                    &outcomes,
+                )?
+                .into_vec(),
+            );
+            pass_provisional_relationships.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            pass_provisional_relationships.dedup();
             let (specialization_closures, _) = build_specialization_ancestor_closures(
                 declarations,
                 references,
                 &outcomes,
-                provisional_relationships,
+                &pass_provisional_relationships,
             )?;
             let alias_scope_changed = |source: DeclarationId| -> Result<bool, ResolutionError> {
                 let Some(previous) = settled_specialization_closures.as_ref() else {
@@ -1010,10 +1044,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .map_err(|_| ResolutionError::Capacity)?;
     }
 
-    // The implied-redefinition family reads only settled Subclassification outcomes and the
-    // already-built owner-scoped direct-name index above; it is not mutually recursive with the
-    // import/typing fixed point above and therefore runs once, after that fixed point settles,
-    // rather than joining it as another per-pass family.
+    // Publish the same canonical implied-redefinition derivation used provisionally by the
+    // relationship fixed point above. The provisional edges were isolated pass inputs; only this
+    // settled result enters the publication.
     let implied_relationships = if converged {
         let mut implied = synthesize_implied_redefinitions(
             declarations,
@@ -1023,6 +1056,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             &outcomes,
         )?
         .into_vec();
+        implied.extend(
+            synthesize_positional_end_redefinitions(
+                declarations,
+                declaration_facts,
+                references,
+                &outcomes,
+            )?
+            .into_vec(),
+        );
         let cyclic_alias_sources =
             detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
         implied.extend(
@@ -1034,6 +1076,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?
             .into_vec(),
         );
+        implied.sort_by_key(|relationship| {
+            (
+                relationship.kind,
+                relationship.source.0,
+                relationship.target.0,
+            )
+        });
+        implied.dedup();
         implied.into_boxed_slice()
     } else {
         Box::default()
