@@ -4,6 +4,7 @@
 //! Walking and reading are the source authority's; this type only decides *which* roots are in
 //! play and what provenance each one carries.
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
@@ -119,6 +120,7 @@ impl SourceProvider for FileSystemDocumentProvider {
                 let kind = library_source_kind(&library_root, &standard_library_paths);
                 merge(&mut report, authority.list(&[library_root], kind)?);
             }
+            coalesce_source_identities(&mut report)?;
             return Ok(report);
         }
 
@@ -149,7 +151,46 @@ impl SourceProvider for FileSystemDocumentProvider {
             .library
             .resolve(&workspace, &roots, &options)?;
         report.documents.extend(closure.documents);
+        coalesce_source_identities(&mut report)?;
         Ok(report)
+    }
+}
+
+/// An enclosing workspace root may contain a configured library root. Both scans then encounter
+/// the same physical source, but the configured library root owns its provenance. Coalesce that
+/// overlap before publication while rejecting a source that changed between the two reads.
+fn coalesce_source_identities(report: &mut SourceLoadReport) -> Result<(), SourceError> {
+    let mut positions = HashMap::with_capacity(report.documents.len());
+    let mut documents = Vec::with_capacity(report.documents.len());
+
+    for document in report.documents.drain(..) {
+        let Some(&position) = positions.get(document.uri()) else {
+            positions.insert(document.uri().clone(), documents.len());
+            documents.push(document);
+            continue;
+        };
+        let existing: &mut sysml_query::source::SourceDocument = &mut documents[position];
+        if existing.digest() != document.digest() {
+            return Err(SourceError::Provider(format!(
+                "source identity {} changed while overlapping workspace and library roots were loaded",
+                document.uri()
+            )));
+        }
+        if source_kind_precedence(document.kind()) > source_kind_precedence(existing.kind()) {
+            *existing = document;
+        }
+    }
+
+    report.documents = documents;
+    Ok(())
+}
+
+fn source_kind_precedence(kind: SourceKind) -> u8 {
+    match kind {
+        SourceKind::External => 0,
+        SourceKind::Workspace => 1,
+        SourceKind::Library => 2,
+        SourceKind::StandardLibrary => 3,
     }
 }
 
@@ -187,4 +228,31 @@ fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathB
     sysml_query::source::discover_project_boundary(target, &fallback)
         .map(|boundary| boundary.project_root().to_path_buf())
         .unwrap_or(fallback)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn configured_library_provenance_owns_an_overlapping_workspace_source() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let library = temp.path().join("stdlib");
+        std::fs::create_dir(&library).expect("library directory");
+        std::fs::write(library.join("Base.kerml"), "package Base;").expect("library source");
+
+        let services = Services::new();
+        let provider = FileSystemDocumentProvider::from_paths_with_standard_library(
+            temp.path(),
+            Some(temp.path()),
+            std::slice::from_ref(&library),
+            std::slice::from_ref(&library),
+            services.clone(),
+        )
+        .with_full_library_scan(true);
+
+        let report = services.source.load(&provider).expect("overlapping load");
+        assert_eq!(report.documents.len(), 1);
+        assert_eq!(report.documents[0].kind(), SourceKind::StandardLibrary);
+    }
 }
