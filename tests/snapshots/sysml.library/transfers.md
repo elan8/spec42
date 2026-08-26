@@ -794,12 +794,6 @@ standard library package Transfers {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 264 26) (end 264 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 267 76) (end 267 88))
       )
       (diagnostic
@@ -954,7 +948,7 @@ standard library package Transfers {
       (outcome (status resolved) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")))))
     (reference (id (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0))
       (authored-target "acceptedTransfer::payload")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer::payload")))))
     (reference (id (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::acceptedTransfer"))) (kind featureTyping) (ordinal 0))
       (authored-target "MessageTransfer")
       (outcome (status resolved) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::MessageTransfer")))))
@@ -1358,6 +1352,7 @@ standard library package Transfers {
   (relationships
     (relationship (kind succession) (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::acceptedTransfer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind bindSource) (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindSource) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer::payload"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::acceptedTransfer"))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::MessageTransfer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::AcceptPerformance::acceptedTransfer"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer"))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer"))) (kind specialization) (ordinal 0)))
     (relationship (kind disjoining) (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer"))) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::MessageTransfer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer"))) (kind disjoining) (ordinal 0)))
@@ -1884,7 +1879,7 @@ standard library package Transfers {
   )
   (query (document "memory://snapshot/transfers.md") (range (start 264 26) (end 264 50)) (probe (position 264 26))
     (reference (id (source (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0) (authored-target "acceptedTransfer::payload")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer::payload")))))
     )
   )
   (query (document "memory://snapshot/transfers.md") (range (start 261 34) (end 261 49)) (probe (position 261 34))

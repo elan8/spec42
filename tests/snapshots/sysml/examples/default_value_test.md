@@ -30,12 +30,6 @@ package DefaultValueTest {
   (document "memory://snapshot/default_value_test.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 12 28) (end 12 29))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -79,7 +73,7 @@ package DefaultValueTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")))))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "n")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n")))))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind featureTyping) (ordinal 0))
       (authored-target "V")
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")))))
@@ -90,6 +84,7 @@ package DefaultValueTest {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (kind specialization) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (provenance implied))
@@ -98,6 +93,7 @@ package DefaultValueTest {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (target (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -107,7 +103,7 @@ package DefaultValueTest {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 10)))
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 20)))
-    (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 20)))
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 20)))
   )
 )
@@ -130,6 +126,7 @@ package DefaultValueTest {
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n")))
       (featured-by (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")))
       (supertype (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (subtype (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)))))
@@ -144,6 +141,8 @@ package DefaultValueTest {
     )
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1")))
       (type (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")) (provenance authored))
@@ -181,7 +180,7 @@ package DefaultValueTest {
   )
   (query (document "memory://snapshot/default_value_test.md") (range (start 12 28) (end 12 29)) (probe (position 12 28))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "n")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n")))))
     )
   )
   (query (document "memory://snapshot/default_value_test.md") (range (start 7 11) (end 7 12)) (probe (position 7 11))

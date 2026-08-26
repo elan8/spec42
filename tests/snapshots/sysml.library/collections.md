@@ -232,12 +232,6 @@ standard library package Collections {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 74 36) (end 74 44))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 117 21) (end 117 29))
@@ -315,7 +309,7 @@ standard library package Collections {
       (outcome (status resolved) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::flattenedSize")))))
     (reference (id (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
       (authored-target "elements")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::OrderedCollection::elements")))))
     (reference (id (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
       (authored-target "size")
       (outcome (status unresolved)))
@@ -407,6 +401,7 @@ standard library package Collections {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array"))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::OrderedCollection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array"))) (kind specialization) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::flattenedSize"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::OrderedCollection::elements"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "flattenedSize")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::dimensions"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "flattenedSize")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "rank")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::dimensions"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "rank")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Bag"))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Bag"))) (kind specialization) (ordinal 0)))
@@ -609,7 +604,7 @@ standard library package Collections {
   )
   (query (document "memory://snapshot/collections.md") (range (start 74 36) (end 74 44)) (probe (position 74 36))
     (reference (id (source (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "elements")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::OrderedCollection::elements")))))
     )
   )
   (query (document "memory://snapshot/collections.md") (range (start 74 31) (end 74 35)) (probe (position 74 31))

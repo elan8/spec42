@@ -38,12 +38,6 @@ package 'Action Decomposition' {
 (fixture-diagnostics
   (document "memory://snapshot/15_action_decomposition.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 18 27) (end 18 38))
-      )
     )
   )
 )
@@ -108,7 +102,7 @@ package 'Action Decomposition' {
       (outcome (status resolved) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus::image")))))
     (reference (id (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0))
       (authored-target "shoot::image")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot::image")))))
     (reference (id (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus"))) (kind featureTyping) (ordinal 0))
       (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus")))))
@@ -125,6 +119,7 @@ package 'Action Decomposition' {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture::scene"))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture"))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind flowSource) (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
+    (relationship (kind flowTarget) (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus"))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot"))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus::image"))) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus"))) (provenance implied))
@@ -300,7 +295,7 @@ package 'Action Decomposition' {
   )
   (query (document "memory://snapshot/15_action_decomposition.md") (range (start 18 27) (end 18 38)) (probe (position 18 27))
     (reference (id (source (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot::image")))))
     )
   )
   (query (document "memory://snapshot/15_action_decomposition.md") (range (start 13 17) (end 13 22)) (probe (position 13 17))

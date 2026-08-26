@@ -67,12 +67,6 @@ package Q {
         (range (start 23 20) (end 23 21))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 26 6) (end 26 11))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -136,7 +130,7 @@ package Q {
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F")))))
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0))
       (authored-target "b::f::a")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0))
       (authored-target "c::aa")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::c::aa")))))
@@ -180,6 +174,7 @@ package Q {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind flowSource) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
     (relationship (kind flowTarget) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::c::aa"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::b"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (named (kind part) (name "b")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (named (kind part) (name "b")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
@@ -359,7 +354,7 @@ package Q {
   )
   (query (document "memory://snapshot/feature_path_test.md") (range (start 26 6) (end 26 11)) (probe (position 26 6))
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0) (authored-target "b::f::a")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
     )
   )
   (query (document "memory://snapshot/feature_path_test.md") (range (start 26 15) (end 26 19)) (probe (position 26 15))

@@ -476,123 +476,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
-        for index in alias_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in connector_end_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in succession_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in state_binding_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        // Alias bindings form a functional graph (each alias has at most one outgoing edge, its
-        // own resolved target). A cycle (`alias A for B; alias B for A;`) is detected explicitly,
-        // bounded by declaration count, and published as a typed `NonConverged` outcome on each
-        // implicated alias's own `AliasBinding` reference -- mirroring the Subclassification
-        // ancestor-closure cycle handling above -- rather than looping or panicking.
-        let cyclic_alias_sources =
-            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
-        for index in alias_slots.iter().copied() {
-            if cyclic_alias_sources.contains(&references[index].source()) {
-                outcomes[index] = ResolutionStatus::NonConverged;
-            }
-        }
-
         // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
         // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
         // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
@@ -827,6 +710,69 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 declarations.len(),
                 None,
             )?;
+            // KerML 8.2.3.5.3 local resolution includes a Type's inherited memberships. These
+            // ordinary Any-domain references have no role in settling imports, ancestry, or
+            // effective typing, so resolve them exactly once against the final canonical scope.
+            // This is one indexed pass over authored references, not a query-time search. Dotted
+            // spellings are feature chains and therefore use the same type-directed hop resolver
+            // as expression member access.
+            for index in state_binding_slots
+                .iter()
+                .chain(&connector_end_slots)
+                .chain(&succession_slots)
+                .chain(&alias_slots)
+                .copied()
+            {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                    continue;
+                }
+                let indexes = ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                };
+                let scratch = ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                };
+                outcomes[index] = if reference.flags().dotted {
+                    resolve_member_access_reference(
+                        declarations,
+                        paths,
+                        reference,
+                        indexes,
+                        scratch,
+                    )?
+                } else {
+                    resolve_reference(
+                        declarations,
+                        paths,
+                        reference,
+                        DeclarationDomain::Any,
+                        indexes,
+                        scratch,
+                    )?
+                };
+            }
+            // Alias bindings form a functional graph. Detect cycles only after their targets have
+            // settled against the complete local scope.
+            let cyclic_alias_sources =
+                detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+            for index in alias_slots.iter().copied() {
+                if cyclic_alias_sources.contains(&references[index].source()) {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                }
+            }
             // Dotted member access consumes the final effective member scope.
             for index in member_access_slots.iter().copied() {
                 work.downstream_evaluations = work

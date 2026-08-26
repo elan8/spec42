@@ -1842,6 +1842,27 @@ fn bind_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
     );
 }
 
+/// KerML 8.2.3.5.3 makes inherited memberships part of local name resolution. Binding operands
+/// are ordinary feature references, so they must consume the final inherited scope rather than
+/// the pre-inheritance provisional scope used to settle imports.
+#[test]
+fn binding_operands_resolve_inherited_effective_members() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tpart def Base { part left; part right; }\n\
+         \tpart def Derived :> Base { bind left = right; }\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
+        "expected both inherited binding endpoints to be published, got:\n{output}"
+    );
+    assert!(
+        !output.contains("(status unresolved)") && !output.contains("(status ambiguous"),
+        "expected inherited binding operands to resolve, got:\n{output}"
+    );
+}
+
 #[test]
 fn connect_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
     // Companion regression to the `bind` test above: `connect a.b to c.d;` with dotted
