@@ -255,6 +255,7 @@ impl SemanticModelBuilder {
         {
             return Err(ConstructionError::InvalidIdentity);
         }
+        let contributes_owned_end = facts.modifiers.end || facts.positional_end.is_some();
         let id = DeclarationId::from_index(self.declarations.len())?;
         let anonymous_ordinal = if name.is_none() {
             let ordinal = self
@@ -276,6 +277,14 @@ impl SemanticModelBuilder {
             span,
         });
         self.declaration_facts.push(facts);
+        if contributes_owned_end {
+            if let Some(count) = owner
+                .and_then(|owner| self.declaration_facts.get_mut(owner.index()))
+                .and_then(|owner_facts| owner_facts.owned_end_feature_count.as_mut())
+            {
+                *count = count.checked_add(1).ok_or(ConstructionError::Capacity)?;
+            }
+        }
         debug_assert_eq!(self.declarations.len(), self.declaration_facts.len());
         Ok(id)
     }

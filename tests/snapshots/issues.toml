@@ -199,12 +199,6 @@ owner = "spec42-libraries"
 summary = "The canonical standard library does not publish the Views::Viewpoint, Views::viewpoints, or Actions::Action::join anchors required by these generated specialization rules."
 
 [[issue]]
-id = "library-gap-conditional-binary-specialization-anchors"
-kind = "library_gap"
-owner = "spec42-libraries"
-summary = "The canonical standard library does not publish the exact uppercase binary definition anchors Connections::BinaryConnections and Interfaces::BinaryInterface required by the pinned conditional specialization rules."
-
-[[issue]]
 id = "library-gap-flow-end-specialization-anchors"
 kind = "library_gap"
 owner = "spec42-libraries"

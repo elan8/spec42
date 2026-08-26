@@ -391,11 +391,19 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         body: &ConnectionDefBody,
     ) -> Result<(), ConstructionError> {
+        self.declaration_facts
+            .get_mut(declaration.index())
+            .ok_or(ConstructionError::InvalidMembership)?
+            .owned_end_feature_count = Some(0);
         if let ConnectionDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
                     ConnectionDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
+                        self.declaration_facts
+                            .get_mut(declaration.index())
+                            .ok_or(ConstructionError::InvalidMembership)?
+                            .owned_end_feature_count = None;
                     }
                     ConnectionDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,

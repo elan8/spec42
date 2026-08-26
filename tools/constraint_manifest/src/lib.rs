@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 // Schema 17 preserves typed provenance for official corrections to erroneous library-anchor
 // spellings in the pinned normative constraints.
 // The committed manifest is refreshed only at the coordinated publication barrier.
-pub const SCHEMA_VERSION: u32 = 17;
+pub const SCHEMA_VERSION: u32 = 18;
 
 /// Closed identity of every specification the manifest admits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -90,6 +90,7 @@ pub struct LibraryAnchorCorrection {
 pub enum LibraryAnchorCorrectionIssue {
     Kerml11_207,
     Kerml11_205,
+    Sysml21_348,
 }
 
 impl ConstraintManifest {
@@ -175,6 +176,11 @@ impl ConstraintManifest {
                     "Performances::Performance::subperformance",
                     "Performances::Performance::subperformances",
                     LibraryAnchorCorrectionIssue::Kerml11_205,
+                ) | (
+                    "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization",
+                    "Connections::BinaryConnections",
+                    "Connections::BinaryConnection",
+                    LibraryAnchorCorrectionIssue::Sysml21_348,
                 )
             );
             if !source_matches || !exact_correction {
@@ -187,6 +193,7 @@ impl ConstraintManifest {
         for rule_id in [
             "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization",
             "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization",
+            "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization",
         ] {
             if self.find_rule(rule_id).is_some() && !corrected_rules.contains(rule_id) {
                 return Err(format!(
@@ -2225,7 +2232,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .join("../..")
             .join("specifications/constraint_manifest.toml");
         let mut manifest = ConstraintManifest::load_toml(&manifest_path).unwrap();
-        assert_eq!(manifest.library_anchor_corrections.len(), 2);
+        assert_eq!(manifest.library_anchor_corrections.len(), 3);
         assert_eq!(
             manifest.library_anchor_corrections[0].issue,
             LibraryAnchorCorrectionIssue::Kerml11_207
@@ -2233,6 +2240,10 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
         assert_eq!(
             manifest.library_anchor_corrections[1].issue,
             LibraryAnchorCorrectionIssue::Kerml11_205
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[2].issue,
+            LibraryAnchorCorrectionIssue::Sysml21_348
         );
 
         let removed = manifest.library_anchor_corrections.pop().unwrap();

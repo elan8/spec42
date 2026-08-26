@@ -167,6 +167,14 @@ fn official_library_anchor_corrections(
                         LibraryAnchorCorrectionIssue::Kerml11_205,
                     )
                 }
+                "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
+                    if contract.anchor == "Connections::BinaryConnections" =>
+                {
+                    (
+                        "Connections::BinaryConnection",
+                        LibraryAnchorCorrectionIssue::Sysml21_348,
+                    )
+                }
                 _ => return None,
             };
             Some(LibraryAnchorCorrection {

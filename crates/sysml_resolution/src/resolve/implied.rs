@@ -1982,8 +1982,10 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
         LibrarySpecializationPredicate::HasElseActionBranch => {
             declaration.kind == DeclarationKind::If && facts.has_else_action.is_some()
         }
-        LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo
-        | LibrarySpecializationPredicate::ConnectorEndCountIsTwo
+        LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo => {
+            facts.owned_end_feature_count == Some(2)
+        }
+        LibrarySpecializationPredicate::ConnectorEndCountIsTwo
         | LibrarySpecializationPredicate::AssociationEndCountIsTwo
         | LibrarySpecializationPredicate::EndFeatureCountIsTwo => {
             positional_end_count(storage, source) == 2

@@ -190,12 +190,14 @@ pub(crate) struct DeclarationFacts {
     /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
     /// action selected by a control-action branch/body syntax production.
     pub(crate) action_input_parameter_position: Option<u32>,
-    /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
+    /// The number of directly owned end Features when the owning construct's complete authored
+    /// end collection is known during lowering.
     ///
-    /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the
-    /// only flow-use form this lowering admits. It is intentionally absent for unsupported named
-    /// or typed flow forms, so generated specialization predicates cannot turn an incomplete
-    /// lowering into a positive result.
+    /// For a connection body this includes every supported authored end form: a positional
+    /// `EndDecl` and a Feature carrying the `end` modifier. For an anonymous `FlowUsage`, KerML's
+    /// `ownedEndFeatures` collection is represented by its two typed `from`/`to` endpoints. It is
+    /// intentionally absent when recovery makes the authored collection incomplete, so generated
+    /// specialization predicates cannot turn a partial lowering into a positive result.
     pub(crate) owned_end_feature_count: Option<u32>,
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///

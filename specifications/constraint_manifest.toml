@@ -1,4 +1,4 @@
-schema_version = 17
+schema_version = 18
 
 [[library_anchor_corrections]]
 rule_id = "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization"
@@ -11,6 +11,12 @@ rule_id = "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization"
 source_anchor = "Performances::Performance::subperformance"
 corrected_anchor = "Performances::Performance::subperformances"
 issue = "kerml11_205"
+
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
+source_anchor = "Connections::BinaryConnections"
+corrected_anchor = "Connections::BinaryConnection"
+issue = "sysml21_348"
 
 [[specifications]]
 name = "KerML"
