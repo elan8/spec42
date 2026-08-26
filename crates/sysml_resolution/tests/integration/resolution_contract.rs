@@ -322,6 +322,27 @@ fn every_short_name_carrying_declaration_publishes_it() {
 }
 
 #[test]
+fn a_declared_short_name_is_a_namespace_relative_resolution_name() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tattribute <isq> quantities {\n\
+         \t\tattribute L = 1;\n\
+         \t}\n\
+         \tattribute x = isq.L;\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"isq::L\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::quantities::L\")))))"
+        ),
+        "expected the declared short name `isq` to resolve as an alias for `quantities`, \
+         got:\n{output}"
+    );
+}
+
+#[test]
 fn attribute_typed_by_an_enum_def_resolves_its_feature_typing_reference() {
     let output = build_semantic_sexpr(
         "package Demo {\n\

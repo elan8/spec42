@@ -123,6 +123,7 @@ impl Lowered {
             .map(|library| library.outcomes.as_ref());
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &storage.declarations,
+            Some(&storage.declaration_facts),
             &storage.memberships,
             &storage.paths,
             &storage.references,

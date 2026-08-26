@@ -1328,6 +1328,7 @@ mod tests {
     ) -> (NameIndex, NameIndex, MembershipIndex, ResolutionResults) {
         resolve_dense(
             &fixture.declarations,
+            None,
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
@@ -3186,6 +3187,7 @@ mod tests {
         let fixture = cross_file_fixture(false);
         let (_, _, _memberships, resolution) = resolve_dense_with_limit(
             &fixture.declarations,
+            None,
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,

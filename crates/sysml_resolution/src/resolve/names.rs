@@ -2,6 +2,7 @@
 
 use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -370,6 +371,7 @@ pub(crate) fn extend_inherited_names_with_effective_types(
 
 pub(crate) fn build_direct_name_index(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     public_only: Option<&MembershipIndex>,
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
@@ -387,6 +389,18 @@ pub(crate) fn build_direct_name_index(
                 NameKey {
                     owner: declaration.owner,
                     name,
+                },
+                declaration_id,
+            ));
+        }
+        if let Some(short_name) = declaration_facts
+            .and_then(|facts| facts.get(index))
+            .and_then(|facts| facts.short_name)
+        {
+            entries.push((
+                NameKey {
+                    owner: declaration.owner,
+                    name: short_name,
                 },
                 declaration_id,
             ));

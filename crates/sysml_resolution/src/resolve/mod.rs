@@ -8,6 +8,7 @@ pub(crate) mod results;
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::intern::SymbolPathArena;
@@ -65,6 +66,7 @@ impl ResolutionReferenceFact for AuthoredReference {
 
 pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
@@ -85,6 +87,7 @@ pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
         .max(1);
     resolve_dense_with_limit(
         declarations,
+        declaration_facts,
         memberships,
         paths,
         references,
@@ -95,6 +98,7 @@ pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
 
 pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
@@ -103,8 +107,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
-    let direct_names = build_direct_name_index(declarations, None)?;
-    let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
+    let direct_names = build_direct_name_index(declarations, declaration_facts, None)?;
+    let exported_names =
+        build_direct_name_index(declarations, declaration_facts, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
     // A settled library's outcomes are installed before the first pass and its references are then
     // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
@@ -1586,16 +1591,15 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
 /// The root segment resolves through `DeclarationDomain::Any` lexical lookup, beginning in the
 /// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
 /// constraint/calc expression reach its own parameters without changing the enclosing-scope result
-/// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
-/// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
-/// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
-/// time this runs has already been extended from canonical effective typing
+/// for sources that own no declarations. Each subsequent segment first uses the previous segment's
+/// directly owned members, then its effective-type members when no direct member shadows them.
+/// The latter reuses `inherited_names`, which by the time this runs has already been extended from
+/// canonical effective typing
 /// (`extend_inherited_names_with_effective_types`): `inherited_names.candidates(Some(usage), name)`
 /// contains every name owned (directly or by inheritance) by every effective type of `usage`.
-/// This is exactly "member of the previously resolved segment's type."
 ///
 /// If the root segment does not resolve to exactly one candidate, or any subsequent segment finds
-/// no owned-by-type member, the whole chain publishes `Unresolved`; if an intermediate or final
+/// no direct-or-typed member, the whole chain publishes `Unresolved`; if an intermediate or final
 /// segment is ambiguous, the whole chain publishes `Ambiguous`. The chain never partially resolves
 /// -- there is no way to publish "the first two segments resolved but the third didn't."
 pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
@@ -1641,7 +1645,10 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         let candidate = scratch.candidates[0];
         scratch.next_candidates.clear();
         record_lookup(scratch.work)?;
-        if let Some(inherited) = indexes.inherited_names {
+        let direct = indexes.direct_names.candidates(Some(candidate), *segment);
+        if !direct.is_empty() {
+            scratch.next_candidates.extend_from_slice(direct);
+        } else if let Some(inherited) = indexes.inherited_names {
             scratch
                 .next_candidates
                 .extend_from_slice(inherited.candidates(Some(candidate), *segment));

@@ -111,12 +111,6 @@ package 'User Keyword Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 22 16) (end 22 36))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 25 2) (end 25 12))
@@ -228,7 +222,7 @@ package 'User Keyword Example' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "device::battery::power")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power")))))
   )
   (relationships
     (relationship (kind connectorEnd) (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::battery old"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0)))
@@ -237,6 +231,7 @@ package 'User Keyword Example' {
     (relationship (kind connectorEnd) (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device shutoff"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 1))))) (kind connectorEnd) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device"))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::minPower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery"))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power"))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure"))) (provenance implied))
@@ -414,7 +409,7 @@ package 'User Keyword Example' {
   )
   (query (document "memory://snapshot/41_user_keyword_example.md") (range (start 22 16) (end 22 36)) (probe (position 22 16))
     (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "device::battery::power")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power")))))
     )
   )
 )
