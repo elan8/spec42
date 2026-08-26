@@ -1868,18 +1868,6 @@ package SimpleVehicleModel{
         (range (start 278 16) (end 278 57))
       )
       (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 278 47) (end 278 56))
-        (related-information
-          (related
-            (uri "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
-            (range (start 274 16) (end 274 48))
-          )
-        )
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

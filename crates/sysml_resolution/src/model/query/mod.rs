@@ -3133,8 +3133,8 @@ impl<D> SemanticModel<D> {
             .any(|operand| self.set_inclusion(specific, operand, scope, visiting))
     }
 
-    /// KerML §7.4.12: every type of the general feature must be conformed to by some type of the
-    /// specific feature.
+    /// KerML §8.3.3.3.10: the co-domain (intersection of the types) of the specific Feature must
+    /// specialize the co-domain of the general Feature.
     ///
     /// An untyped side conforms: a feature that declares no typing of its own takes the other's,
     /// so there is nothing to violate. Effective types are used rather than declared ones, so a
@@ -3160,47 +3160,32 @@ impl<D> SemanticModel<D> {
         specific: DeclarationId,
         general: DeclarationId,
     ) -> Conformance {
-        // The specific side contributes only the typings it does not owe to the general side.
-        // Counting an inherited typing would make the rule vacuous: every redefining feature
-        // inherits the redefined feature's type, so that type would always be there to satisfy
-        // the check, and a feature retyped to something unrelated would still pass.
-        let specific_types = self
-            .types
-            .effective_types(specific)
-            .iter()
-            .filter(|(_, source)| match source {
-                types::EffectiveTypeSource::Direct => true,
-                // Discard a typing the specific side inherited along a chain that runs *through*
-                // the general side: the general side has that typing too, so it cannot be the
-                // thing that fails to conform to it.
-                //
-                // The test is that `general` reaches `from`, not the reverse. `trueEvaluations
-                // subsets booleanEvaluations subsets evaluations` inherits `Evaluation` from
-                // `evaluations`, and `evaluations` is an ancestor of the general side rather than
-                // a descendant, so asking whether `evaluations` reaches `booleanEvaluations`
-                // answered no and kept a typing both sides share. The rule then demanded that
-                // `Evaluation` conform to `BooleanEvaluation` -- the general side's own narrower
-                // typing -- and reported the Kernel Semantic Library's own declarations as
-                // incompatible.
-                types::EffectiveTypeSource::Inherited(from) => {
-                    *from != general
-                        && !self.types.specialization().reaches(
-                            general,
-                            *from,
-                            types::ScopeBits::FeatureSpecialization,
-                        )
-                }
-            })
-            .map(|(target, _)| *target)
-            .collect::<Vec<_>>();
+        // A Feature's co-domain is the intersection of all its effective types. Direct typing
+        // adds another constraint; it does not replace a type inherited through Subsetting.
+        // Consequently the inherited types are normative inputs to this comparison. Removing the
+        // type inherited through `general` changes intersection semantics into replacement
+        // semantics and incorrectly rejects Features that subset/redefine multiple generals.
+        let specific_types = self.types.effective_types(specific);
         let general_types = self.types.effective_types(general);
         if specific_types.is_empty() || general_types.is_empty() {
             return Conformance::Conforms;
         }
         let mut obstacle = None;
         for (general_type, _) in general_types {
+            // Effective-type rows are canonicalized by type identity first. A type inherited
+            // through this very Subsetting/Redefinition is therefore the common case, and a
+            // logarithmic exact-membership probe avoids repeatedly traversing the specialization
+            // graph before considering the genuinely narrower intersection members below.
+            let exact =
+                specific_types.partition_point(|(specific_type, _)| specific_type < general_type);
+            if specific_types
+                .get(exact)
+                .is_some_and(|(specific_type, _)| specific_type == general_type)
+            {
+                continue;
+            }
             let mut satisfied = false;
-            for specific_type in &specific_types {
+            for (specific_type, _) in specific_types {
                 match self.conformance(
                     *specific_type,
                     *general_type,

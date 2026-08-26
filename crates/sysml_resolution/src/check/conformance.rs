@@ -692,8 +692,8 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// KerML §7.4.12 and §8.4.3.4: a specializing feature's types and multiplicity must not admit
-    /// what the feature it specializes excludes.
+    /// KerML §8.3.3.3.10 and §8.4.3.4: a specializing feature's co-domain and multiplicity must
+    /// not admit what the feature it specializes excludes.
     pub(crate) fn check_reference_conformance(
         &self,
         reference: &AuthoredReference,

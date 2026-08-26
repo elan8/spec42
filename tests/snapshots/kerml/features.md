@@ -103,18 +103,6 @@ package Features {
       )
       (diagnostic
         (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 17 19) (end 17 20))
-        (related-information
-          (related
-            (uri "memory://snapshot/features.md")
-            (range (start 7 1) (end 7 48))
-          )
-        )
-      )
-      (diagnostic
-        (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 35 5) (end 36 1))

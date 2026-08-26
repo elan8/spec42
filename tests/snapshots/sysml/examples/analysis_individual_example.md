@@ -305,18 +305,6 @@ package AnalysisIndividualExample {
         (range (start 51 14) (end 51 24))
       )
       (diagnostic
-        (severity error)
-        (code "redefinition_type_incompatible")
-        (source "semantic")
-        (range (start 85 25) (end 85 40))
-        (related-information
-          (related
-            (uri "memory://snapshot/analysis_individual_example.md")
-            (range (start 58 6) (end 61 10))
-          )
-        )
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

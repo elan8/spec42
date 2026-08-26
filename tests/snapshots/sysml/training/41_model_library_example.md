@@ -71,64 +71,16 @@ library package 'Model Library Example' {
         (range (start 9 26) (end 9 30))
       )
       (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 12 52) (end 12 62))
-        (related-information
-          (related
-            (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 1) (end 6 57))
-          )
-        )
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 15 23) (end 15 28))
       )
       (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 18 56) (end 18 66))
-        (related-information
-          (related
-            (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 1) (end 6 57))
-          )
-        )
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 20 38) (end 20 64))
-      )
-      (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 29 27) (end 29 37))
-        (related-information
-          (related
-            (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 28 2) (end 28 28))
-          )
-        )
-      )
-      (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 30 29) (end 30 39))
-        (related-information
-          (related
-            (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 28 2) (end 28 28))
-          )
-        )
       )
     )
   )

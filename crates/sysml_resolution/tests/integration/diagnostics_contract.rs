@@ -937,22 +937,6 @@ fn a_cyclic_hierarchy_yields_no_conformance_answer() {
 }
 
 #[test]
-fn feature_typing_conformance_rejects_an_unrelated_type() {
-    let published = publication_for(&[(
-        "memory://types.sysml",
-        "package P { part def T; part def U; part def A { part x : T; } part def B :> A { part y : U :>> x; } }",
-    )]);
-    let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
-    let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
-
-    assert_eq!(
-        conformance(published.feature_typing_conforms(specific, general)),
-        Conformance::DoesNotConform,
-        "U neither is nor specializes T"
-    );
-}
-
-#[test]
 fn view_selection_keeps_unresolved_and_unsupported_predicates_explicit() {
     let document = "memory://views.sysml";
     let published = detail_publication(
