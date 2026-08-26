@@ -39,7 +39,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5e7f1b5383712b62518016a40e253c0c1948a688a47e122fed5815232e331c9") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5e7f1b5383712b62518016a40e253c0c1948a688a47e122fed5815232e331c9") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

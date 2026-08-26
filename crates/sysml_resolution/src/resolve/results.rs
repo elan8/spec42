@@ -80,6 +80,13 @@ pub(crate) enum ConstructorExpressionProjectionStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum ConstructorExpressionSpecializationStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct ConstructorExpressionProjection {
     pub(crate) expression: DeclarationId,
@@ -102,6 +109,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) index_expression_array_anchor: Option<LibrarySpecializationAnchor>,
     pub(crate) constructor_expression_projection_status: ConstructorExpressionProjectionStatus,
     pub(crate) constructor_expression_projections: Box<[ConstructorExpressionProjection]>,
+    pub(crate) constructor_expression_specialization_status:
+        ConstructorExpressionSpecializationStatus,
+    pub(crate) constructor_expression_anchor: Option<LibrarySpecializationAnchor>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -165,11 +175,15 @@ impl ResolutionResults {
         implied_relationships: Box<[ImpliedRelationship]>,
         constructor_expression_projections: Box<[ConstructorExpressionProjection]>,
         constructor_expression_projection_status: ConstructorExpressionProjectionStatus,
+        constructor_expression_specialization_status: ConstructorExpressionSpecializationStatus,
+        constructor_expression_anchor: Option<LibrarySpecializationAnchor>,
     ) -> Self {
         Self {
             implied_relationships,
             constructor_expression_projections,
             constructor_expression_projection_status,
+            constructor_expression_specialization_status,
+            constructor_expression_anchor,
             ..self
         }
     }

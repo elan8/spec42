@@ -36,7 +36,7 @@ package Model { part def Vehicle { attribute mass; } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:41bf27828561975f0a540d094ba86916d00b093f1be8cc9483447f2b71dd3e25") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:41bf27828561975f0a540d094ba86916d00b093f1be8cc9483447f2b71dd3e25") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_owner.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_owner.md") (qualified-name "Model::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

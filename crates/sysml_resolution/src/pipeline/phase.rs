@@ -225,6 +225,8 @@ impl Lowered {
                 implied.into_boxed_slice(),
                 synthesis.projections,
                 synthesis.status,
+                synthesis.specialization_status,
+                Some(synthesis.anchor),
             )
         };
         let mut completeness = PublicationCompleteness::Complete;

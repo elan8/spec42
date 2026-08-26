@@ -284,7 +284,7 @@ package Kinds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:52269aa301feb81e58572ed1b2b8bb57ba6b38713201a9bb9a302d0d0ffc03bb") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:52269aa301feb81e58572ed1b2b8bb57ba6b38713201a9bb9a302d0d0ffc03bb") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Brake"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Braking")))))

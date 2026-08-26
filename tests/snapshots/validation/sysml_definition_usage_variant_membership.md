@@ -44,7 +44,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1f0786faa77e0f44ac25d18c7af515d4f87dc4af70492e811c80c1654c4955e7") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1f0786faa77e0f44ac25d18c7af515d4f87dc4af70492e811c80c1654c4955e7") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

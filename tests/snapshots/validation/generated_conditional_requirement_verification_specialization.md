@@ -38,7 +38,7 @@ package RequirementVerificationSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:f1756d70be373e96029d343d6c0b26ada3c50aa43c53d9d4931405ed0c600cb1") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:f1756d70be373e96029d343d6c0b26ada3c50aa43c53d9d4931405ed0c600cb1") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_verification_specialization.md") (qualified-name "RequirementVerificationSpecialization::Limit"))) (kind requirement-def) (membership (kind owning) (visibility default)))

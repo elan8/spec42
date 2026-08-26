@@ -45,7 +45,7 @@ package VehicleRequirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d83884a2c832875438b5c0a347e9e6aed46b36c320e42b730340af8eb6bb7686") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d83884a2c832875438b5c0a347e9e6aed46b36c320e42b730340af8eb6bb7686") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_instances_csv.md") (qualified-name "VehicleRequirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_instances_csv.md") (qualified-name "VehicleRequirements::LowBatteryWarning"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text "Definition of battery warning."))))

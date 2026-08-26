@@ -827,7 +827,7 @@ standard library package Transfers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0443af57b8b05ed7d9f38e992d07bcea4a0faa7fc342ee027ba05614ecd1859c") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0443af57b8b05ed7d9f38e992d07bcea4a0faa7fc342ee027ba05614ecd1859c") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * This package defines the transfer interactions used to type flows.\n     "))))
     (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

@@ -103,7 +103,7 @@ package 'Variation Usages' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f72db2988c66ac92287bce6752db25cdb9612daf9e3c836aeb1851610af1e0ec") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f72db2988c66ac92287bce6752db25cdb9612daf9e3c836aeb1851610af1e0ec") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (path (named (kind package) (name "Variation Usages")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Variation Definitions") (import (shape namespace) (recursive false))))))

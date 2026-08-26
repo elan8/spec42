@@ -66,7 +66,7 @@ package '15_04-Logical Expressions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:031290a29b10c4622d040a83e6bc04b0e4b6eed91bbbed2db901bf7e91f277af") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:031290a29b10c4622d040a83e6bc04b0e4b6eed91bbbed2db901bf7e91f277af") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (path (named (kind package) (name "15_04-Logical Expressions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

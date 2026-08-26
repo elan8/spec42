@@ -53,7 +53,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b334534dbc7b63cb757ddf50e194529d2cf2061612c490d8e15d34e811e2ef5") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b334534dbc7b63cb757ddf50e194529d2cf2061612c490d8e15d34e811e2ef5") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))

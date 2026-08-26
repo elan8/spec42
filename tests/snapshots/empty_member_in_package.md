@@ -19,7 +19,7 @@ package MyPkg {;}
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:744031c731b0ec3646fe31804d0ca7395a1ec1da006ae096a83fb05c4c3b2808") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:744031c731b0ec3646fe31804d0ca7395a1ec1da006ae096a83fb05c4c3b2808") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/empty_member_in_package.md") (qualified-name "MyPkg"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/empty_member_in_package.md") (path (named (kind package) (name "MyPkg")) (anonymous (kind default-reference) (ordinal 0))))) (kind default-reference) (membership (kind feature) (visibility default)))

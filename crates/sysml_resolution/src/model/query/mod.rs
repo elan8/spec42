@@ -2089,6 +2089,38 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::ConstructorExpression {
+            if matches!(
+                self.resolution.constructor_expression_specialization_status,
+                crate::resolve::results::ConstructorExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let Some(crate::resolve::implied::LibrarySpecializationAnchor::Resolved(anchor)) =
+                self.resolution.constructor_expression_anchor.as_ref()
+            else {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            };
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for constructor in self.storage.constructor_expressions.iter() {
+                match self.conformance(
+                    constructor.expression,
+                    *anchor,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2110,9 +2142,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::SelectExpressionResult
             | SpecializationCheckKind::IndexExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::ConstructorExpressionResult => unreachable!("handled above"),
-            SpecializationCheckKind::ConstructorExpression => {
-                SpecializationCheckPrerequisite::LibraryAnchorAndImpliedSpecialization
-            }
+            SpecializationCheckKind::ConstructorExpression => unreachable!("handled above"),
             SpecializationCheckKind::FeatureChainExpressionResult => {
                 SpecializationCheckPrerequisite::FeatureChainSourceTargetAndSubsetting
             }

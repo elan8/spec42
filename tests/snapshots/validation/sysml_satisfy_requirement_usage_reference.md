@@ -67,7 +67,7 @@ package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d31b68e8c76c8f6e57f30f215929a28e1d66bc57282bf41a3ad43a527a2320f8") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d31b68e8c76c8f6e57f30f215929a28e1d66bc57282bf41a3ad43a527a2320f8") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

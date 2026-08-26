@@ -11,7 +11,7 @@ use sysml_contract::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
 fn the_semantic_contract_version_is_the_value_every_publication_records() {
     assert_eq!(
         SEMANTIC_CONTRACT_VERSION.as_str(),
-        "constructor-expression-result-v8",
+        "constructor-expression-specialization-v9",
         "changing the semantic contract version invalidates every publication identity and every \
          serialised model; if that is intended, update this assertion in the same commit"
     );
@@ -24,7 +24,7 @@ fn the_version_displays_and_compares_as_the_recorded_string() {
         SEMANTIC_CONTRACT_VERSION.to_string(),
         SEMANTIC_CONTRACT_VERSION.as_str()
     );
-    assert!(SEMANTIC_CONTRACT_VERSION == *"constructor-expression-result-v8");
+    assert!(SEMANTIC_CONTRACT_VERSION == *"constructor-expression-specialization-v9");
     let same: SemanticContractVersion = SEMANTIC_CONTRACT_VERSION;
     assert_eq!(same, SEMANTIC_CONTRACT_VERSION);
 }

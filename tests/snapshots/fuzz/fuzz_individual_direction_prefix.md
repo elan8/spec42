@@ -19,7 +19,7 @@ in individual it;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a5029ee6d112b6f709d8ff90b211cc52c379dd08624880a6c94288864dc9ee28") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a5029ee6d112b6f709d8ff90b211cc52c379dd08624880a6c94288864dc9ee28") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_individual_direction_prefix.md") (qualified-name "it"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers individual) (direction in)))
   )

@@ -172,7 +172,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:306a35b0aba6539372db6281648a3d8fc090f7d18d7d03532edb303246c5bc09") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:306a35b0aba6539372db6281648a3d8fc090f7d18d7d03532edb303246c5bc09") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_value_expression_evaluation.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_value_expression_evaluation.md") (qualified-name "Values::Ampersand"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "integerLiteral")) (expressionOperand (reference "computed")) (expressionOperand (reference "computed")))))

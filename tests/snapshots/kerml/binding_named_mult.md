@@ -72,7 +72,7 @@ package BindingNamedMult {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:646e291c0e43444b0e1d47c6e4b0376ce33307d9f638fd9a8f7e21ed5ec55562") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:646e291c0e43444b0e1d47c6e4b0376ce33307d9f638fd9a8f7e21ed5ec55562") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (qualified-name "BindingNamedMult"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper expression))) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "startShot")) (bindTarget (reference "endShot")))))

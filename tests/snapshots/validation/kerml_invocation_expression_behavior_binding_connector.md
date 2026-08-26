@@ -43,7 +43,7 @@ package Invocations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3728447cfa2d95e490a9688e04555e3c9ec4e181484d142b5af41bf6b5f29dcb") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3728447cfa2d95e490a9688e04555e3c9ec4e181484d142b5af41bf6b5f29dcb") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_binding_connector.md") (qualified-name "Invocations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_binding_connector.md") (qualified-name "Invocations::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

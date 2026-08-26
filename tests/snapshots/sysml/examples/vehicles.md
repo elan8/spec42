@@ -145,7 +145,7 @@ package VehicleMasses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:646944c143f5e6564093651f47ba3ef3da45addc59d556f7e601081c71594bf9") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:646944c143f5e6564093651f47ba3ef3da45addc59d556f7e601081c71594bf9") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

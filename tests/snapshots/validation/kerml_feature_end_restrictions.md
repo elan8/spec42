@@ -73,7 +73,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7adff2768985094be47ecb59e3117f6d452c0c72f50f65aaf3ca1d7ceff3617b") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7adff2768985094be47ecb59e3117f6d452c0c72f50f65aaf3ca1d7ceff3617b") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind connection-def) (membership (kind owning) (visibility default)))

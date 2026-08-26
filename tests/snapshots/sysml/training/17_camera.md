@@ -103,7 +103,7 @@ package Camera {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9d3da3c4c2b2ce9785a4a68af1284a0f6a44e27c4e7d3fc7108f8423d0a23caa") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9d3da3c4c2b2ce9785a4a68af1284a0f6a44e27c4e7d3fc7108f8423d0a23caa") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false))))))

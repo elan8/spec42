@@ -744,7 +744,7 @@ package ChangingFeatureValuesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:1b16309b77b12c0982c6509289115fed74f4a3fa09a51862f25c9b739c277a4f") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:1b16309b77b12c0982c6509289115fed74f4a3fa09a51862f25c9b739c277a4f") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_8_changing_feature_values.md") (qualified-name "ChangingFeatureValuesExecution"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))
     (declaration (id (node (document "memory://snapshot/a_3_8_changing_feature_values.md") (path (named (kind package) (name "ChangingFeatureValuesExecution")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Atoms") (import (shape namespace) (recursive false))))))

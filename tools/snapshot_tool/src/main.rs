@@ -5476,9 +5476,9 @@ fn compare_specialization_check_observation(
             "semantic specialization check expectation for {:?} observed an incomplete publication",
             expectation.rule
         )),
-        SpecializationCheckObservation::Outcome(_) => Err(format!(
-            "semantic specialization check expectation for {:?} did not match its typed outcome",
-            expectation.rule
+        SpecializationCheckObservation::Outcome(actual) => Err(format!(
+            "semantic specialization check expectation for {:?} expected {:?}, observed {:?}",
+            expectation.rule, expected, actual
         )),
     }
 }

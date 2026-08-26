@@ -100,7 +100,7 @@ package '3e-Function-based Behavior-item' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e15004c9dabb0f4a944ea895d010630217938a8b5e667538a4af55dacfbcadf") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e15004c9dabb0f4a944ea895d010630217938a8b5e667538a4af55dacfbcadf") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (qualified-name "3e-Function-based Behavior-item"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3e_function_based_behavior_item.md") (path (named (kind package) (name "3e-Function-based Behavior-item")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))

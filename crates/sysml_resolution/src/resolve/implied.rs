@@ -20,6 +20,7 @@ use crate::resolve::effective_types::EffectiveTypes;
 use crate::resolve::names::NameIndex;
 use crate::resolve::results::ConstructorExpressionProjection;
 use crate::resolve::results::ConstructorExpressionProjectionStatus;
+use crate::resolve::results::ConstructorExpressionSpecializationStatus;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
@@ -909,6 +910,8 @@ pub(crate) struct ConstructorExpressionSynthesis {
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
     pub(crate) projections: Box<[ConstructorExpressionProjection]>,
     pub(crate) status: ConstructorExpressionProjectionStatus,
+    pub(crate) specialization_status: ConstructorExpressionSpecializationStatus,
+    pub(crate) anchor: LibrarySpecializationAnchor,
 }
 
 pub(crate) fn synthesize_constructor_expression_result_specializations(
@@ -918,7 +921,26 @@ pub(crate) fn synthesize_constructor_expression_result_specializations(
     let mut implied = Vec::new();
     let mut projections = Vec::new();
     let mut status = ConstructorExpressionProjectionStatus::Complete;
+    let anchor =
+        resolve_library_specialization_anchor(storage, "Performances::constructorEvaluations");
+    let mut specialization_status = match &anchor {
+        LibrarySpecializationAnchor::Resolved(_) => {
+            ConstructorExpressionSpecializationStatus::Complete
+        }
+        LibrarySpecializationAnchor::Missing | LibrarySpecializationAnchor::Ambiguous(_) => {
+            ConstructorExpressionSpecializationStatus::Unresolved
+        }
+    };
     for constructor in storage.constructor_expressions.iter() {
+        if let LibrarySpecializationAnchor::Resolved(anchor) = &anchor {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source: constructor.expression,
+                target: *anchor,
+            });
+        } else {
+            specialization_status = ConstructorExpressionSpecializationStatus::Unresolved;
+        }
         let mut references = storage
             .references
             .iter()
@@ -974,6 +996,8 @@ pub(crate) fn synthesize_constructor_expression_result_specializations(
         implied_relationships: implied.into_boxed_slice(),
         projections: projections.into_boxed_slice(),
         status,
+        specialization_status,
+        anchor,
     })
 }
 

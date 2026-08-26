@@ -40,7 +40,7 @@ package SequenceExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ef97e0a46425217f5384ee88c32bbbbdff557b35619ae5a8d01dfa961ac5a0c1") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ef97e0a46425217f5384ee88c32bbbbdff557b35619ae5a8d01dfa961ac5a0c1") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (qualified-name "SequenceExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_complete.md") (path (named (kind package) (name "SequenceExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -159,7 +159,7 @@ package SequenceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:5190fc49bc10502a3a9b4c9b99382cb207dbc54b9f70e3295330b4f193a0e579",
+  "modelDigest": "blake3:0879a50a13c6b9fd241a5c654ba0d6d037c620e4e6ba784d0768853b3d22717c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_complete.md",

@@ -116,7 +116,7 @@ probe model.sysml 11 16 hover
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a0a2d11b3f364a1879a233ec9e0dc14a9e38b05d3dd6c87003325adc49bde561") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a0a2d11b3f364a1879a233ec9e0dc14a9e38b05d3dd6c87003325adc49bde561") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::ExternalRecordReference"))) (kind item-def) (membership (kind owning) (visibility default)))

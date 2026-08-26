@@ -55,7 +55,7 @@ package Subsettings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcbc5eeb8f1cd26f302306170a4ec3f30c93f15f8147a20813227eec226e5a89") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcbc5eeb8f1cd26f302306170a4ec3f30c93f15f8147a20813227eec226e5a89") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_featuring_types.md") (qualified-name "Subsettings::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

@@ -255,7 +255,7 @@ package '15_19a-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Example declarations of a quantity and unit that are not specified in ISQ and SI ")) (comment (text "\n\t * The classification of materials into metals and alloys is grossly simplified and not exhaustive.\n\t * A more complete classification would include: ChemicalSubstance, PureMaterial, MixedMaterial,\n\t * Class, Ceramic, OrganicMaterial, AnorganicMaterial, Polymer, HybridMaterial, CompositeMaterial,\n\t * etc.\n\t ")) (comment (text "\n\t * Value properties bound to specifically constructed compound values.\n\t "))))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (path (named (kind package) (name "15_19a-Materials with Properties")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

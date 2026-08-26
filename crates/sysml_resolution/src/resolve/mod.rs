@@ -816,6 +816,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             index_expression_array_anchor: None,
             constructor_expression_projection_status: Default::default(),
             constructor_expression_projections: Box::default(),
+            constructor_expression_specialization_status: Default::default(),
+            constructor_expression_anchor: None,
             #[cfg(test)]
             work,
         },

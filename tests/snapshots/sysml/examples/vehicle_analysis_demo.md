@@ -898,7 +898,7 @@ package 'Vehicle Analysis Demo' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:eb40a694a564d325af4a54cd01459502344bc37ccf6688f758713c7b53aa958b") (contract-version "constructor-expression-result-v8"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:eb40a694a564d325af4a54cd01459502344bc37ccf6688f758713c7b53aa958b") (contract-version "constructor-expression-specialization-v9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (path (named (kind package) (name "Vehicle Analysis Demo")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

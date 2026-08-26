@@ -49,7 +49,7 @@ package TimerGrid {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6712ca894708512d790d5f15e84d6414ba497b94147da3d14a73d727cf11db8d") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6712ca894708512d790d5f15e84d6414ba497b94147da3d14a73d727cf11db8d") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (qualified-name "TimerGrid"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -4370,7 +4370,7 @@ package TimerGrid {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:0d1cda32ba49bdca3b1fd329808edb8a68f55e3c2547dea4fc44f04686645488",
+  "modelDigest": "blake3:dd0ebcdbcff100bd90d0120c3bda70f420b22f1cbd30a307a7569d89e54d3879",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_grid.md",
