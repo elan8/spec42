@@ -588,9 +588,16 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             }
         }
         // Qualified relationship targets can traverse a named intermediate Feature. Add every
-        // declaration whose authored long or short name occurs before the final segment; this is
-        // the dependency-complete owner set needed during settlement. The final publication index
-        // is still rebuilt without a filter after the relationships converge.
+        // declaration whose authored or effective long/short name occurs before the final
+        // segment. KerML 7.3.4.5 makes an unnamed redefining Feature's first redefined Feature its
+        // effective name and requires that implicit name to participate in resolution exactly as
+        // an authored name does. Omitting those declarations here makes paths such as
+        // `Mid::faces::edge` stop at an anonymous `:>> faces` redefinition.
+        //
+        // Only Redefinition sources can acquire a new effective name during this fixed point, so
+        // track that bounded candidate set rather than rescanning every declaration on every
+        // relationship pass. The final publication index is still rebuilt without a filter after
+        // the relationships converge.
         let mut relationship_intermediate_names = std::collections::BTreeSet::new();
         for index in subsetting_slots.iter().chain(&redefinition_slots) {
             let (segments, _) = paths
@@ -603,6 +610,13 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     .iter()
                     .copied(),
             );
+        }
+        let mut effective_scope_candidates = std::collections::BTreeSet::new();
+        for reference in references
+            .iter()
+            .filter(|reference| reference.kind() == ReferenceKind::Redefinition)
+        {
+            effective_scope_candidates.insert(reference.source());
         }
         for (index, declaration) in declarations.iter().enumerate() {
             let long_name_matches = declaration
@@ -618,6 +632,25 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 );
             }
         }
+        let add_matching_effective_scopes =
+            |names: &[EffectiveNameFacts],
+             scopes: &mut std::collections::BTreeSet<DeclarationId>| {
+                for declaration in effective_scope_candidates.iter().copied() {
+                    let Some(facts) = names.get(declaration.index()) else {
+                        continue;
+                    };
+                    if [facts.name, facts.short_name].into_iter().any(|outcome| {
+                        matches!(
+                            outcome,
+                            EffectiveNameOutcome::Resolved(name)
+                                if relationship_intermediate_names.contains(&name)
+                        )
+                    }) {
+                        scopes.insert(declaration);
+                    }
+                }
+            };
+        add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
         for _ in 0..relationship_pass_limit {
             let previous = subsetting_slots
                 .iter()
@@ -695,6 +728,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     break;
                 }
                 effective_names = next_effective_names;
+                add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
                 direct_names = build_direct_name_index(
                     declarations,
                     declaration_facts,
