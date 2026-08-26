@@ -59,7 +59,7 @@ package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:49d90ed86cc45ef04d03e54393b5df1da3407c6a64032a57881d4da3cde92222") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:49d90ed86cc45ef04d03e54393b5df1da3407c6a64032a57881d4da3cde92222") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Counted"))) (kind constraint-def) (membership (kind owning) (visibility default)))
@@ -68,7 +68,9 @@ package Constraints {
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unresolved"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "missing")))))
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unsupported"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (kind assert-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "limit")))))
   )
   (references
@@ -82,6 +84,8 @@ package Constraints {
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (target (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (target (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (target (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (target (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle"))) (provenance implied))
   )
   (evaluation
@@ -90,7 +94,7 @@ package Constraints {
     (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Ordered"))) (state evaluated) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unresolved"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unsupported"))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit"))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
     (evaluated (declaration (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (state evaluated) (value (kind integer) (integer 4)))
   )
 )
@@ -100,6 +104,11 @@ package Constraints {
 (types
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit")))
       (featured-by (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle")))
+      (supertype (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit")))
       (featured-by (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle")))

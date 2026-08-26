@@ -181,11 +181,10 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;

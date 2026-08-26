@@ -250,6 +250,10 @@ impl SemanticModelBuilder {
                         })
                     })
                     .transpose()?,
+                expression_result: facts
+                    .expression_result
+                    .map(|result| relocation.declaration(result))
+                    .transpose()?,
                 ..facts.clone()
             });
         }
@@ -295,6 +299,8 @@ impl SemanticModelBuilder {
         for record in lowered.feature_values.iter() {
             self.feature_values.push(FeatureValueRecord {
                 declaration: relocation.declaration(record.declaration)?,
+                value: relocation.declaration(record.value)?,
+                result: relocation.declaration(record.result)?,
                 kind: record.kind,
                 is_default: record.is_default,
                 has_operator: record.has_operator,

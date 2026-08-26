@@ -218,6 +218,8 @@ pub(crate) struct DeclarationFacts {
     /// chained feature is the owned cross feature. Publishing both identities here preserves that
     /// transformation result without asking a validation consumer to reconstruct parser syntax.
     pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
+    /// The canonical result Feature owned by this Expression.
+    pub(crate) expression_result: Option<DeclarationId>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -282,6 +284,8 @@ pub(crate) enum FeatureValueKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct FeatureValueRecord {
     pub(crate) declaration: DeclarationId,
+    pub(crate) value: DeclarationId,
+    pub(crate) result: DeclarationId,
     pub(crate) kind: FeatureValueKind,
     pub(crate) is_default: bool,
     pub(crate) has_operator: bool,

@@ -1928,6 +1928,38 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::FeatureValuation {
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for value in self.storage.feature_values.iter() {
+                match crate::resolve::implied::feature_valuation_specialization_applies(
+                    &self.storage,
+                    value,
+                ) {
+                    Ok(false) => continue,
+                    Err(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                    Ok(true) => {}
+                }
+                match self.conformance(
+                    value.declaration,
+                    value.result,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -1936,9 +1968,7 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::FeatureSuboccurrence => {
                 SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor
             }
-            SpecializationCheckKind::FeatureValuation => {
-                SpecializationCheckPrerequisite::FeatureValueEvaluationResults
-            }
+            SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
             SpecializationCheckKind::MetadataFeatureSemantic => {
                 SpecializationCheckPrerequisite::SemanticMetadataProjection
             }

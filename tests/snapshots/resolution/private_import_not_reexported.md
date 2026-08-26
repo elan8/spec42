@@ -56,7 +56,7 @@ package Client {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ebdcccea47dfd55a5eb90d724967cbca0dee26cd6cd8588b2b5644d3a78becb9") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ebdcccea47dfd55a5eb90d724967cbca0dee26cd6cd8588b2b5644d3a78becb9") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/Client.sysml") (qualified-name "Client"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Client.sysml") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Middle") (import (shape namespace) (recursive false))))))

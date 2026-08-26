@@ -55,7 +55,7 @@ package BooleanFilter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2bb87fede3aa64ee6307bdda748fe54fbdfb9ab3a530b563ae6a7a52ca1688a0") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2bb87fede3aa64ee6307bdda748fe54fbdfb9ab3a530b563ae6a7a52ca1688a0") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations::Allocating"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -132,7 +132,7 @@ standard library package ImageMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b83cf119754d6bc9559e41ab3d581375d06e0eb4db5deaf119afeb46265bdf4") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b83cf119754d6bc9559e41ab3d581375d06e0eb4db5deaf119afeb46265bdf4") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package provides attributive data and metadata to allow a model element to be\n\t * annotated with an image to be used in its graphical rendering or as a marker to\n\t * adorn graphical or textual renderings.\n\t "))))
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (path (named (kind library-package) (name "ImageMetadata")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

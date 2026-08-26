@@ -34,7 +34,7 @@ package TransitionUsageActionSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6ea0ffb352156fc029805613b2b12248fc99459ba6b055b2d61388a2d2b6680d") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6ea0ffb352156fc029805613b2b12248fc99459ba6b055b2d61388a2d2b6680d") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_action_specialization_lowering_gap.md") (qualified-name "TransitionUsageActionSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_action_specialization_lowering_gap.md") (qualified-name "TransitionUsageActionSpecialization::Decision"))) (kind action-def) (membership (kind owning) (visibility default)))

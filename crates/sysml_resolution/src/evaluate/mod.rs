@@ -140,6 +140,15 @@ pub(crate) fn compute_evaluation(
         .filter(|(_, shape)| !matches!(shape, ExpressionEvalShape::Unsupported))
         .map(|(pending, _)| pending.declaration)
         .collect();
+    // Operand references resolve to the valued Feature, while evaluation is owned by its value
+    // Expression. This projection is the one canonical bridge between those identity domains;
+    // the fixed point never duplicates an outcome onto the Feature.
+    let value_expression_by_feature: std::collections::BTreeMap<DeclarationId, DeclarationId> =
+        storage
+            .feature_values
+            .iter()
+            .map(|value| (value.declaration, value.value))
+            .collect();
 
     let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
         Default::default();
@@ -166,11 +175,17 @@ pub(crate) fn compute_evaluation(
             let mut resolve_operand = |ordinal: u32| -> Option<EvaluatedValue> {
                 match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
                     None => Some(EvaluatedValue::UnresolvedOperand),
-                    Some(target) => match outcomes.get(&target) {
-                        Some(value) => Some(value.clone()),
-                        None if has_fact.contains(&target) => None,
-                        None => Some(EvaluatedValue::NonConstant),
-                    },
+                    Some(target) => {
+                        let target = value_expression_by_feature
+                            .get(&target)
+                            .copied()
+                            .unwrap_or(target);
+                        match outcomes.get(&target) {
+                            Some(value) => Some(value.clone()),
+                            None if has_fact.contains(&target) => None,
+                            None => Some(EvaluatedValue::NonConstant),
+                        }
+                    }
                 }
             };
             if let Some(value) = fold_eval_node_pending(tree, &mut resolve_operand) {

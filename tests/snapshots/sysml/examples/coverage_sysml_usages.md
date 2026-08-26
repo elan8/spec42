@@ -147,7 +147,7 @@ part def Vehicle {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b68cc5a4af517e91ba754c3a7f6da52bf395f73b90d104d39b2ff390db98f263") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b68cc5a4af517e91ba754c3a7f6da52bf395f73b90d104d39b2ff390db98f263") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "DataPort"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -157,7 +157,9 @@ part def Vehicle {
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (kind enum) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Color")))))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::event1"))) (kind occurrence) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::nextEvent"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::optionA"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::optionB"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
@@ -230,6 +232,7 @@ part def Vehicle {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::event1"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::nextEvent"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::out1"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::payload"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
@@ -248,7 +251,7 @@ part def Vehicle {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::weights"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (state literal) (value (kind integer) (integer 100)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 100)))
   )
 )
 ~~~
@@ -279,6 +282,9 @@ part def Vehicle {
     )
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass")))
       (featured-by (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::nextEvent")))
       (featured-by (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle")))

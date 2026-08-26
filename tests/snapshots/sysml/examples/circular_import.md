@@ -45,7 +45,7 @@ package CircularImport {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8c4b284f8e0a4d416e032c64662e080818082d0d65a9a506c140a2a4b8ce6af7") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8c4b284f8e0a4d416e032c64662e080818082d0d65a9a506c140a2a4b8ce6af7") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P1"))) (kind package) (membership (kind owning) (visibility default)))

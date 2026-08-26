@@ -45,7 +45,7 @@ package Events {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:54deefe830e92e740caf3ddfb58b5c09f4aa61da520f105132bcc5ec3df10da0") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:54deefe830e92e740caf3ddfb58b5c09f4aa61da520f105132bcc5ec3df10da0") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_event_occurrence_usage_is_reference.md") (qualified-name "Events"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_event_occurrence_usage_is_reference.md") (qualified-name "Events::Performing"))) (kind action-def) (membership (kind owning) (visibility default)))

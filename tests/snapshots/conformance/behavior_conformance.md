@@ -130,7 +130,7 @@ package Behavior {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:39aaa8d2f87b6729b3a6a98cdefab1758af92ed95dcb18833372ed5ac2be218b") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:39aaa8d2f87b6729b3a6a98cdefab1758af92ed95dcb18833372ed5ac2be218b") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AcceptsAnIncompatiblePayload"))) (kind action-def) (membership (kind owning) (visibility default)))

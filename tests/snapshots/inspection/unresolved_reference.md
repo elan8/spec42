@@ -44,13 +44,15 @@ probe unresolved_reference.md 5 25
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38022cec3cfb7d58c5189fdcdabd099c6cdb469ebccd33e1fd8ae2448d0d4571") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38022cec3cfb7d58c5189fdcdabd099c6cdb469ebccd33e1fd8ae2448d0d4571") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Known")))))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::missing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Absent")))))
-    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "undefinedName")))))
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "undefinedName")))))
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind featureTyping) (ordinal 0))
@@ -59,15 +61,17 @@ probe unresolved_reference.md 5 25
     (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::missing"))) (kind featureTyping) (ordinal 0))
       (authored-target "Absent")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind expressionOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "undefinedName")
       (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (target (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (target (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -81,6 +85,13 @@ probe unresolved_reference.md 5 25
       (type (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (provenance authored))
       (effective-type (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (source direct))
       (supertype (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size")))
+      (supertype (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size")) (scopes any feature))
     )
 )
 ~~~
@@ -98,7 +109,7 @@ probe unresolved_reference.md 5 25
     )
   )
   (query (document "memory://snapshot/unresolved_reference.md") (range (start 5 21) (end 5 34)) (probe (position 5 21))
-    (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind expressionOperand) (ordinal 0) (authored-target "undefinedName")
+    (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "undefinedName")
       (outcome (status unresolved)))
     )
   )
@@ -191,15 +202,14 @@ probe unresolved_reference.md 5 25
     (inspection
       (status resolved)
       (containing
-        (element (kind "AttributeUsage")
-          (name "size")
-          (qualified-name "Broken::size")
-          (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration))
-          (declaration (range (start 5 4) (end 5 39)))
-          (membership (kind feature) (visibility public) (provenance default))
-          (value (kind bind) (default false) (operator true))
+        (element (kind "Expression")
+          (qualified-name "Broken::size::")
+          (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 21) (end 5 38)) (role Declaration))
+          (declaration (range (start 5 21) (end 5 38)))
+          (membership (kind owning) (visibility private) (provenance default))
           (evaluation unresolved-operand)
           (relationship (kind "expressionOperand") (provenance authored) (authored "undefinedName") (target unresolved))
+          (incoming (kind "typeFeaturing") (peer "Broken::size::::") (provenance implied))
         )
       )
       (reference-kind expressionOperand)
@@ -213,6 +223,7 @@ probe unresolved_reference.md 5 25
     (symbol (kind "PartUsage") (name "missing") (qualified-name "Broken::missing") (location (document "memory://snapshot/unresolved_reference.md") (range (start 3 9) (end 3 16)) (role Declaration)) (declaration (range (start 3 4) (end 3 26))))
     (symbol (kind "PartUsage") (name "known") (qualified-name "Broken::known") (location (document "memory://snapshot/unresolved_reference.md") (range (start 4 9) (end 4 14)) (role Declaration)) (declaration (range (start 4 4) (end 4 23))))
     (symbol (kind "AttributeUsage") (name "size") (qualified-name "Broken::size") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration)) (declaration (range (start 5 4) (end 5 39))))
+    (symbol (kind "Expression") (qualified-name "Broken::size::") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 21) (end 5 38)) (role Declaration)) (declaration (range (start 5 21) (end 5 38))))
   )
 )
 ~~~

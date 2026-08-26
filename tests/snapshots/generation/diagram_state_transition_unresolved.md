@@ -34,7 +34,7 @@ package StateNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:edb1aa4c77fcc00a34fbe53e16a0d799afb27614cf482e59544ca092b897b757") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:edb1aa4c77fcc00a34fbe53e16a0d799afb27614cf482e59544ca092b897b757") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_unresolved.md") (qualified-name "StateNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_unresolved.md") (path (named (kind package) (name "StateNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -123,7 +123,7 @@ package StateNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:1369d1381ccaca796e5d17527cae5ac8f8af73aa0d93f016d248681c4ac3d187",
+  "modelDigest": "blake3:d34be52be02d888fdf2843470791a41cc5440cb54980a93e33406aff0aec0e97",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_unresolved.md",

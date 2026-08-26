@@ -793,6 +793,7 @@ pub(crate) fn synthesize_implied_relationships(
     implied.extend(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );
+    implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -802,6 +803,50 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes `checkFeatureValuationSpecialization` (KerML 8.3.3.3.4): a non-default
+/// FeatureValue on an undirected Feature with no explicit specialization subsets the canonical
+/// result Feature of its owned value Expression.
+pub(crate) fn synthesize_feature_valuation_specializations(
+    storage: &SemanticModelStorage,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut implied = Vec::new();
+    for value in storage.feature_values.iter() {
+        if !feature_valuation_specialization_applies(storage, value)? {
+            continue;
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: value.declaration,
+            target: value.result,
+        });
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Canonical applicability predicate shared by synthesis and the exact rule query.
+pub(crate) fn feature_valuation_specialization_applies(
+    storage: &SemanticModelStorage,
+    value: &crate::lower::facts::FeatureValueRecord,
+) -> Result<bool, ResolutionError> {
+    let facts = storage
+        .declaration_facts(value.declaration)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    Ok(!value.is_default
+        && facts.direction.is_none()
+        && !storage.references.iter().any(|reference| {
+            reference.source == value.declaration
+                && matches!(
+                    reference.kind,
+                    ReferenceKind::Subclassification
+                        | ReferenceKind::FeatureTyping
+                        | ReferenceKind::Subsetting
+                        | ReferenceKind::Redefinition
+                )
+        }))
 }
 
 /// Synthesizes the FeatureTyping relationships required by

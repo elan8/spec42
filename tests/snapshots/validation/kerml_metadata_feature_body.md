@@ -58,7 +58,7 @@ package Metadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8afbe19b8ad7a430b0098e814bd52b017bc6054afcc85a81ef775e3035d85ace") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8afbe19b8ad7a430b0098e814bd52b017bc6054afcc85a81ef775e3035d85ace") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))

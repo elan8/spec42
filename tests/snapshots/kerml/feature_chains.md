@@ -124,11 +124,13 @@ package FeatureChains {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:48b26c0fd1f2ee265267ec9d5aa8c99bcbc717e80655b227e364c9b1741bccf9") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:48b26c0fd1f2ee265267ec9d5aa8c99bcbc717e80655b227e364c9b1741bccf9") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "f::a")))))
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "f::a")))))
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "F")))))
@@ -142,7 +144,7 @@ package FeatureChains {
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f::a")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (kind memberAccessOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "f::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a")))))
     (reference (id (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (kind featureTyping) (ordinal 0))
@@ -183,7 +185,7 @@ package FeatureChains {
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a")))))
   )
   (relationships
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (kind featureTyping) (ordinal 0)))
@@ -193,6 +195,8 @@ package FeatureChains {
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::f"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::f"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::g"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::g"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (target (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F"))) (provenance implied))
@@ -200,7 +204,7 @@ package FeatureChains {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-feature) (name "b")) (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::b"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~
@@ -213,6 +217,11 @@ package FeatureChains {
     )
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g")))
       (featured-by (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B")))
       (subtype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::b")) (scopes any))
@@ -270,7 +279,7 @@ package FeatureChains {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/feature_chains.md") (range (start 8 14) (end 8 17)) (probe (position 8 14))
-    (reference (id (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (kind memberAccessOperand) (ordinal 0) (authored-target "f::a")
+    (reference (id (source (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "f::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a")))))
     )
   )

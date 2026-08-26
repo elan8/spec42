@@ -214,6 +214,16 @@ impl DocumentIndex {
             .collect::<Vec<_>>();
         let mut declaration_identifiers: Vec<Option<TextRange>> =
             vec![None; storage.declarations.len()];
+        let mut synthetic_expression_results = vec![false; storage.declarations.len()];
+        for result in storage
+            .declaration_facts
+            .iter()
+            .filter_map(|facts| facts.expression_result)
+        {
+            if let Some(slot) = synthetic_expression_results.get_mut(result.index()) {
+                *slot = true;
+            }
+        }
         let mut declaration_order: Vec<DeclarationId> = match storage.declarations.len() {
             0 => Vec::new(),
             length => {
@@ -239,8 +249,14 @@ impl DocumentIndex {
                 }
                 *slot += 1;
             }
-            if let Ok(range) = document_range(storage, declaration.document, &declaration.span) {
-                spans[declaration.document.index()].push((range, id));
+            // A generated result Feature has no authored token or source extent distinct from its
+            // owning Expression. Keep its semantic span for diagnostics and identity, but do not
+            // let it win cursor containment over the authored value Expression.
+            if !synthetic_expression_results[index] {
+                if let Ok(range) = document_range(storage, declaration.document, &declaration.span)
+                {
+                    spans[declaration.document.index()].push((range, id));
+                }
             }
             let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
                 continue;

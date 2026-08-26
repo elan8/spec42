@@ -139,7 +139,6 @@ pub enum TypeFeaturingCheckOutcome {
 pub enum SpecializationCheckPrerequisite {
     RuleNotPublished,
     FeatureModifiersOwnerTypingAndLibraryAnchor,
-    FeatureValueEvaluationResults,
     SemanticMetadataProjection,
     ConnectorAssociationProjectionAndLibraryAnchor,
     StepOwnershipTypingAndLibraryAnchor,

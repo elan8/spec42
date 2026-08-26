@@ -40,7 +40,7 @@ package BrowserNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5efbf8a8e583816d4a27e602c74face2f1d5fbff01a1c05b701e5c6ecfc42860") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5efbf8a8e583816d4a27e602c74face2f1d5fbff01a1c05b701e5c6ecfc42860") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_browser_unresolved.md") (qualified-name "BrowserNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_browser_unresolved.md") (path (named (kind package) (name "BrowserNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -131,7 +131,7 @@ package BrowserNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c7d47b323ca28133a2537a3e968b4fe2aca9d686457183b01b0f2315bfd821e3",
+  "modelDigest": "blake3:81d586e717afb296d770a4d1e4c3e7224f361de76007cea3c1608e942ca42623",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_unresolved.md",

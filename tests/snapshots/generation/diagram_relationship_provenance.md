@@ -47,14 +47,16 @@ package ProvenanceExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56ac1a41cff3d325151b7648ffcd7b27b65db0d0e4328768cadbb494f8c7cde4") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56ac1a41cff3d325151b7648ffcd7b27b65db0d0e4328768cadbb494f8c7cde4") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Base::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
-    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GeneralView")))))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Child")))))
   )
@@ -86,11 +88,15 @@ package ProvenanceExample {
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (target (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Base::mass"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (target (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (target (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::selected"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass"))) (state literal) (value (kind integer) (integer 1200)))
+    (evaluated (declaration (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 1200)))
   )
 )
 ~~~
@@ -124,10 +130,27 @@ package ProvenanceExample {
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass")))
       (featured-by (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child")))
       (supertype (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Base::mass")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::Child::mass")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (provenance authored))
@@ -186,7 +209,7 @@ package ProvenanceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a5536420464748c4b94f72798bb7c1845a86cb5765f5884e48069493a9af5426",
+  "modelDigest": "blake3:ac9f7b2306807a7ee54c8a124e9ff90a54d204d5e198b596a5117bfe7be82730",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",
@@ -198,6 +221,10 @@ package ProvenanceExample {
     },
     {
       "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/performances.md",
       "sourceDomain": "standard-library"
     }
   ],
@@ -227,6 +254,15 @@ package ProvenanceExample {
         39,
         3,
         43
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        3,
+        46,
+        3,
+        50
       ]
     },
     {
@@ -263,6 +299,16 @@ package ProvenanceExample {
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "ProvenanceExample::Child::mass::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "ProvenanceExample::Child::mass::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "ProvenanceExample::selected"
     },
     {
@@ -271,9 +317,33 @@ package ProvenanceExample {
       "qualifiedName": "Base::dataValues"
     },
     {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Base::things"
+    },
+    {
       "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "Parts::Part"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "Performances::evaluations"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "ProvenanceExample::Child::mass",
+      "source": 3,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "ProvenanceExample::Child::mass::",
+      "source": 3,
+      "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
@@ -295,6 +365,12 @@ package ProvenanceExample {
     },
     {
       "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "redefinition",
       "source": 3
@@ -308,15 +384,45 @@ package ProvenanceExample {
     {
       "kind": "relationship",
       "ordinal": 4,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
       "relationshipKind": "typeFeaturing",
       "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "containment",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "specializes",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "specializes",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typeFeaturing",
+      "source": 5
     }
   ],
   "selectedView": {
-    "reference": 4,
+    "reference": 6,
     "kind": "general-view",
     "name": "selected",
-    "source": 3
+    "source": 4
   },
   "completeness": {
     "status": "complete",
@@ -328,9 +434,25 @@ package ProvenanceExample {
         "kind": "containment",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 13,
         "source": 0,
         "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 16,
+        "source": 1,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 21,
+        "source": 2,
+        "target": 3
       }
     ],
     "exposedRoots": [
@@ -374,6 +496,30 @@ package ProvenanceExample {
         "typing": {
           "status": "absent"
         }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 11,
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 2,
+        "reference": 12,
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [
@@ -381,7 +527,7 @@ package ProvenanceExample {
         "kind": "specializes",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 14,
         "source": 0,
         "target": {
           "reference": 0,
@@ -392,10 +538,10 @@ package ProvenanceExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 9,
+        "reference": 15,
         "source": 0,
         "target": {
-          "reference": 6,
+          "reference": 9,
           "status": "resolved"
         }
       },
@@ -403,7 +549,7 @@ package ProvenanceExample {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 10,
+        "reference": 17,
         "source": 1,
         "target": {
           "reference": 1,
@@ -414,10 +560,21 @@ package ProvenanceExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 11,
+        "reference": 18,
         "source": 1,
         "target": {
-          "reference": 5,
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 19,
+        "source": 1,
+        "target": {
+          "node": 3,
           "status": "resolved"
         }
       },
@@ -425,10 +582,43 @@ package ProvenanceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 12,
+        "reference": 20,
         "source": 1,
         "target": {
           "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 22,
+        "source": 2,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 23,
+        "source": 3,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 24,
+        "source": 3,
+        "target": {
+          "node": 2,
           "status": "resolved"
         }
       }

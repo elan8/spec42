@@ -161,7 +161,7 @@ assoc JustOutsideOf specializes OutsideOf {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:634c1786fddee30481cb57e559058cc765b2b1be390bafa18eb8fae1980af62f") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:634c1786fddee30481cb57e559058cc765b2b1be390bafa18eb8fae1980af62f") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "HappensLink")))))
     (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::shorterOccurrence"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (redefinition (reference "sourceOccurrence")) (crossSubsetting (reference "longerOccurrence::timeEnclosedOccurrences")))))

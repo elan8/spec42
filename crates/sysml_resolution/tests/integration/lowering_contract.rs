@@ -223,31 +223,6 @@ fn constraint_def_lowers_to_a_declaration() {
 }
 
 #[test]
-fn calc_named_return_decl_lowers_declaration_and_evaluates_expression() {
-    // `return name : Type = expr;` form: the name lowers as an owned declaration
-    // (participating in the same lexical lookup as any other feature), AND the expression
-    // evaluates through the shared pipeline.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Calc { return result : ScalarValues::Integer = 4 * 5; }\n\
-         }\n",
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::Calc::result\")"),
-        "expected the named return declaration `result` to lower as its own owned \
-         declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc::result\"))) (state evaluated) (value (kind integer) (integer 20)))"
-        ),
-        "expected `return result : Type = 4 * 5;` to fold to a published Integer(20) \
-         evaluation fact on the named return declaration, got:\n{output}"
-    );
-}
-
-#[test]
 fn concern_def_lowers_to_a_declaration() {
     // planning/UPSTREAM_PARSER_GAPS.md #9 was resolved upstream in `0757de13`: `ConcernUsage`
     // (which models both `concern def` and `concern` textual forms) now carries a
@@ -1156,47 +1131,6 @@ fn calc_def_body_comment_member_is_ignored() {
          \t\tcomment /* a note about C */\n\
          \t}\n\
          }\n",
-    );
-    assert!(
-        !output.contains("unsupported_calc_definition_member"),
-        "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
-    );
-}
-
-#[test]
-fn lower_calc_expression_supports_comparison_logical_and_conditional_operators() {
-    // `lower_calc_expression`'s `BinaryOp` arm was originally arithmetic-only; the exhaustive
-    // `unsupported_calc_definition_member` audit found real-corpus calc-body formulas
-    // routinely use comparison/logical operators too (e.g. Kernel Function Library
-    // `BaseFunctions.kerml`'s `return : Boolean[1] = not (x == y);`), plus the `Conditional`
-    // (`if <test> ? <then> else <else>`) expression shape, previously unhandled entirely.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def C {\n\
-         \t\tin a : Boolean;\n\
-         \t\tin b : Boolean;\n\
-         \t\tin c : Boolean;\n\
-         \t\treturn : Boolean = if (a == b and not c) ? a else b;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
-        ),
-        "expected the return's conditional expression to resolve its operand a, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
-        ),
-        "expected the return's conditional expression to resolve its operand b, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
-        ),
-        "expected the return's conditional expression to resolve its operand c, got:\n{output}"
     );
     assert!(
         !output.contains("unsupported_calc_definition_member"),

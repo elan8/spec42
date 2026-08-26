@@ -49,7 +49,7 @@ package TimerBrowser {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:951676c6738e60498b9c8818f69f6de23ddcc2da16e318c7240429543b2aea15") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:951676c6738e60498b9c8818f69f6de23ddcc2da16e318c7240429543b2aea15") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (qualified-name "TimerBrowser"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (path (named (kind package) (name "TimerBrowser")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -109,9 +109,13 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::ampere") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQElectromagnetism::electricPower") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (kind port-def) (membership (kind owning) (visibility default)) (documentation (doc (text " DC power source; e.g. 3xAAA = 4.5 V, max 0.5 A. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "electricPower") (direction out)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean") (direction in)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::incrementPressed"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean") (direction in)))))
@@ -196,22 +200,30 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Captures user input; debounces buttons. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::output"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonInputPort")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Piezo or similar; has only +/- terminals; buzzes when power is applied. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::duration"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DurationValue")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Transistor or FET; switches battery power to buzzer when MCU GPIO is high. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::ctrlIn"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BuzzerCommandPort") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Segment LCD glass; COM/SEG from MCU LCD controller; shows MM:SS. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DisplayCommandPort") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::format"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::lcdIn"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LcdSegmentDrivePort") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Battery-powered kitchen timer; PCB with MCU, display, buttons, buzzer driver; buzzer off-board. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::mcu::pwr")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "battery::powerOut")) (memberAccessOperand (reference "pcb::display::pwr")))))
@@ -229,7 +241,9 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::flashSize"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::lcdDrive"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LcdSegmentDrivePort")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryOutlet") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "maxCurrent")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerStateMachine")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::TimerPCB"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " PCB assembly; display and buttons mounted on board; MCU and buzzer driver. "))))
@@ -921,9 +935,17 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::incrementPressed"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort"))) (provenance implied))
@@ -1034,6 +1056,9 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::duration"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::duration"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer"))) (provenance implied))
@@ -1042,6 +1067,9 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1054,6 +1082,9 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::cmd"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1068,6 +1099,9 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "KitchenTimer")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
@@ -1107,6 +1141,9 @@ package TimerBrowser {
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::timerMode"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller"))) (provenance implied))
@@ -1132,22 +1169,22 @@ package TimerBrowser {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_timer_browser.md") (path (named (kind package) (name "TimerBrowser")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_timer_browser.md") (qualified-name "TimerBrowser::selected"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.5))) (unit "A")))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 4.5))) (unit "V")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.5))) (unit "A")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 4.5))) (unit "V")))
     (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerAccuracyConstraint"))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.001))) (unit "A")))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.05))) (unit "A")))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.001))) (unit "A")))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.01))) (unit "A")))
-    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.02))) (unit "A")))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (ordinal 0) (authored "A") (start 10 30) (end 10 31) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (ordinal 0) (authored "V") (start 9 27) (end 9 28) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::volt"))) (dimension (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "A") (start 41 54) (end 41 55) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "A") (start 47 53) (end 47 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "A") (start 26 56) (end 26 57) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "A") (start 35 53) (end 35 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
-    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "A") (start 19 53) (end 19 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.001))) (unit "A")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.05))) (unit "A")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.001))) (unit "A")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.01))) (unit "A")))
+    (evaluated (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.02))) (unit "A")))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 10 30) (end 10 31) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "V") (start 9 27) (end 9 28) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::volt"))) (dimension (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 41 54) (end 41 55) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 47 53) (end 47 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 26 56) (end 26 57) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 35 53) (end 35 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+    (unit (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "A") (start 19 53) (end 19 54) (outcome (status resolved) (unit (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::ampere"))) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit")))))
     (measurement (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (status required) (dimension (node (document "memory://snapshot/sysml.library/isq_mechanics.md") (qualified-name "ISQMechanics::PowerUnit"))))
     (measurement (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::capacity"))) (status required) (dimension (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::ElectricChargeUnit"))))
     (measurement (declaration (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeEstimate::loadCurrent"))) (status required) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::ElectricCurrentUnit"))))
@@ -1796,6 +1833,7 @@ package TimerBrowser {
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
@@ -1805,6 +1843,22 @@ package TimerBrowser {
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
@@ -1832,10 +1886,27 @@ package TimerBrowser {
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -2744,9 +2815,25 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer")))
@@ -2797,9 +2884,25 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver")))
@@ -2861,9 +2964,25 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display")))
@@ -2937,9 +3056,25 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer")))
@@ -3227,9 +3362,25 @@ package TimerBrowser {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::pwr")))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Microcontroller")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Microcontroller::ramSize")))
@@ -4219,7 +4370,7 @@ package TimerBrowser {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f473f41a6840beb64652c4f6f99ed016dd7947d4a39b1cb8d393cf7271fa7b6c",
+  "modelDigest": "blake3:7480da01692d064434e88aa626cecd53b0b46b8b7edd5953905f04eba07601af",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_browser.md",
@@ -4267,6 +4418,10 @@ package TimerBrowser {
     },
     {
       "uri": "memory://snapshot/sysml.library/parts.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/performances.md",
       "sourceDomain": "standard-library"
     },
     {
@@ -4790,10 +4945,28 @@ package TimerBrowser {
     {
       "document": 3,
       "range": [
+        9,
+        22,
+        9,
+        29
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
         10,
         12,
         10,
         22
+      ]
+    },
+    {
+      "document": 3,
+      "range": [
+        10,
+        25,
+        10,
+        32
       ]
     },
     {
@@ -5105,6 +5278,15 @@ package TimerBrowser {
     {
       "document": 4,
       "range": [
+        19,
+        47,
+        19,
+        55
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
         20,
         16,
         20,
@@ -5172,6 +5354,15 @@ package TimerBrowser {
         36,
         26,
         46
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        26,
+        49,
+        26,
+        58
       ]
     },
     {
@@ -5285,6 +5476,15 @@ package TimerBrowser {
     {
       "document": 4,
       "range": [
+        35,
+        47,
+        35,
+        55
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
         40,
         7,
         40,
@@ -5339,6 +5539,15 @@ package TimerBrowser {
     {
       "document": 4,
       "range": [
+        41,
+        47,
+        41,
+        56
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
         46,
         12,
         46,
@@ -5388,6 +5597,15 @@ package TimerBrowser {
         34,
         47,
         44
+      ]
+    },
+    {
+      "document": 4,
+      "range": [
+        47,
+        47,
+        47,
+        55
       ]
     },
     {
@@ -6016,12 +6234,32 @@ package TimerBrowser {
     {
       "document": 3,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::::"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerPorts::BatteryOutlet::power"
     },
     {
       "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::::"
     },
     {
       "document": 3,
@@ -6131,6 +6369,16 @@ package TimerBrowser {
     {
       "document": 4,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Buzzer"
     },
     {
@@ -6147,6 +6395,16 @@ package TimerBrowser {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Buzzer::pwr::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Buzzer::pwr::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Buzzer::pwr::::::"
     },
     {
       "document": 4,
@@ -6172,6 +6430,16 @@ package TimerBrowser {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::::"
     },
     {
       "document": 4,
@@ -6202,6 +6470,16 @@ package TimerBrowser {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Display::pwr::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Display::pwr::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Display::pwr::::::"
     },
     {
       "document": 4,
@@ -6276,6 +6554,16 @@ package TimerBrowser {
     {
       "document": 4,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Microcontroller::pwr::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Microcontroller::pwr::::::"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Microcontroller::ramSize"
     },
     {
@@ -6329,6 +6617,11 @@ package TimerBrowser {
       "qualifiedName": "Base::dataValues"
     },
     {
+      "document": 6,
+      "kind": "qualified-name",
+      "qualifiedName": "Base::things"
+    },
+    {
       "document": 7,
       "kind": "qualified-name",
       "qualifiedName": "Connections::connections"
@@ -6371,25 +6664,30 @@ package TimerBrowser {
     {
       "document": 12,
       "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
+      "qualifiedName": "Performances::evaluations"
     },
     {
       "document": 13,
+      "kind": "qualified-name",
+      "qualifiedName": "Ports::ports"
+    },
+    {
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Boolean"
     },
     {
-      "document": 13,
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Real"
     },
     {
-      "document": 13,
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::String"
     },
     {
-      "document": 14,
+      "document": 15,
       "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
@@ -6458,100 +6756,198 @@ package TimerBrowser {
     },
     {
       "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent",
+      "source": 58,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::",
+      "source": 58,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage",
+      "source": 56,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::",
+      "source": 56,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr",
-      "source": 115,
+      "source": 120,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::",
+      "source": 122,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::",
+      "source": 122,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr",
-      "source": 121,
+      "source": 127,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr::",
+      "source": 129,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr::::",
+      "source": 129,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn",
-      "source": 97,
+      "source": 100,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::",
+      "source": 102,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::",
+      "source": 102,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Display::pwr",
-      "source": 109,
+      "source": 113,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerStructure::Display::pwr::",
+      "source": 115,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerStructure::Display::pwr::::",
+      "source": 115,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 157,
+      "source": 164,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 160,
+      "source": 167,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 163,
+      "source": 170,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 166,
+      "source": 173,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 169,
+      "source": 176,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Microcontroller::pwr",
-      "source": 89,
+      "source": 91,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Expression",
+      "ownerQualifiedName": "KitchenTimerStructure::Microcontroller::pwr::",
+      "source": 93,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "KitchenTimerStructure::Microcontroller::pwr::::",
+      "source": 93,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
-      "source": 131,
+      "source": 138,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
-      "source": 134,
+      "source": 141,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
-      "source": 137,
+      "source": 144,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::TimerPCB",
-      "source": 140,
+      "source": 147,
       "sourceDomain": "workspace"
     },
     {
@@ -6562,43 +6958,43 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "ordinal": 120,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 133,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 134,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 135,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 136,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "ordinal": 137,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
+      "ordinal": 138,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -6616,110 +7012,98 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 27,
       "relationshipKind": "initialState",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 67,
       "relationshipKind": "initialState",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 68,
       "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "ordinal": 41,
       "relationshipKind": "containment",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
+      "ordinal": 96,
       "relationshipKind": "specializes",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 97,
       "relationshipKind": "transitionSource",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 87,
+      "ordinal": 98,
       "relationshipKind": "transitionTarget",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 88,
+      "ordinal": 99,
       "relationshipKind": "transitionTrigger",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "ordinal": 100,
       "relationshipKind": "typeFeaturing",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 101,
       "relationshipKind": "specializes",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 91,
+      "ordinal": 102,
       "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 70,
       "relationshipKind": "specializes",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 52,
       "relationshipKind": "transition",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 71,
       "relationshipKind": "typeFeaturing",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 69,
       "relationshipKind": "typing",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 62,
       "relationshipKind": "specializes",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "transition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "transition",
       "source": 17
     },
     {
@@ -6730,2331 +7114,2997 @@ package TimerBrowser {
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "containment",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "specializes",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "transitionSource",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "transitionTarget",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "transitionTrigger",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "typeFeaturing",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "specializes",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 98,
-      "relationshipKind": "typeFeaturing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "specializes",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "transition",
-      "source": 20
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 43,
       "relationshipKind": "transition",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "typing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "specializes",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "transition",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "transition",
-      "source": 21
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 63,
       "relationshipKind": "typeFeaturing",
-      "source": 21
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 61,
       "relationshipKind": "typing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "containment",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "specializes",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "transitionSource",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "transitionTarget",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "transitionTrigger",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "typeFeaturing",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "specializes",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "containment",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 113,
-      "relationshipKind": "specializes",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 114,
-      "relationshipKind": "transitionSource",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 115,
-      "relationshipKind": "transitionTarget",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 116,
-      "relationshipKind": "transitionTrigger",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 117,
-      "relationshipKind": "typeFeaturing",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 118,
-      "relationshipKind": "specializes",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 119,
-      "relationshipKind": "typeFeaturing",
-      "source": 25
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 44,
       "relationshipKind": "containment",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "specializes",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "transitionSource",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 108,
-      "relationshipKind": "transitionTarget",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 109,
-      "relationshipKind": "transitionTrigger",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 110,
-      "relationshipKind": "typeFeaturing",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 111,
-      "relationshipKind": "specializes",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 112,
-      "relationshipKind": "typeFeaturing",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "containment",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "specializes",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "transitionSource",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "transitionTarget",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "transitionTrigger",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "specializes",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "typeFeaturing",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "containment",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "specializes",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "transitionSource",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "transitionTarget",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "transitionTrigger",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "typeFeaturing",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "specializes",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "containment",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 99,
-      "relationshipKind": "specializes",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 100,
-      "relationshipKind": "transitionSource",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "transitionTarget",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 102,
-      "relationshipKind": "transitionTrigger",
-      "source": 32
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 103,
-      "relationshipKind": "typeFeaturing",
-      "source": 32
+      "relationshipKind": "specializes",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 104,
-      "relationshipKind": "specializes",
-      "source": 33
+      "relationshipKind": "transitionSource",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 105,
-      "relationshipKind": "typeFeaturing",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 162,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 198,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 223,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 242,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 255,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 294,
-      "relationshipKind": "specializes",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 163,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 199,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 224,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 243,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 256,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 295,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 159,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 195,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 220,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 239,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 252,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 291,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 158,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 194,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 219,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 238,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 251,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 290,
-      "relationshipKind": "typing",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 160,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 196,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 221,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 240,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 253,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 292,
-      "relationshipKind": "specializes",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 161,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 197,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 222,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 241,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 254,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 293,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typeFeaturing",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 178,
-      "relationshipKind": "typeFeaturing",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "typing",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 177,
-      "relationshipKind": "typing",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 180,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 179,
-      "relationshipKind": "typing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 174,
-      "relationshipKind": "typeFeaturing",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "typing",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 173,
-      "relationshipKind": "typing",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "typeFeaturing",
-      "source": 42
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 176,
-      "relationshipKind": "typeFeaturing",
-      "source": 42
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "typing",
-      "source": 42
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 175,
-      "relationshipKind": "typing",
-      "source": 42
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "typeFeaturing",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 172,
-      "relationshipKind": "typeFeaturing",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typing",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 171,
-      "relationshipKind": "typing",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "typeFeaturing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 233,
-      "relationshipKind": "typeFeaturing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 232,
-      "relationshipKind": "typing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 125,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 189,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 124,
-      "relationshipKind": "typing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 188,
-      "relationshipKind": "typing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 208,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "typing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 207,
-      "relationshipKind": "typing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 297,
-      "relationshipKind": "specializes",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 298,
-      "relationshipKind": "typeFeaturing",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 296,
-      "relationshipKind": "typing",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 300,
-      "relationshipKind": "specializes",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 301,
-      "relationshipKind": "typeFeaturing",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 299,
-      "relationshipKind": "typing",
-      "source": 52
+      "relationshipKind": "transitionTarget",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 106,
-      "relationshipKind": "containment",
-      "source": 53
+      "relationshipKind": "transitionTrigger",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 107,
-      "relationshipKind": "containment",
-      "source": 53
+      "relationshipKind": "typeFeaturing",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 108,
-      "relationshipKind": "containment",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 287,
       "relationshipKind": "specializes",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 288,
-      "relationshipKind": "specializes",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 289,
-      "relationshipKind": "typeFeaturing",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 286,
-      "relationshipKind": "typing",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 303,
-      "relationshipKind": "specializes",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 304,
-      "relationshipKind": "typeFeaturing",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 302,
-      "relationshipKind": "typing",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 168,
-      "relationshipKind": "specializes",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 169,
-      "relationshipKind": "specializes",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 170,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 167,
-      "relationshipKind": "typing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "containment",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "containment",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "containment",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "containment",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 155,
-      "relationshipKind": "specializes",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 156,
-      "relationshipKind": "specializes",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 157,
-      "relationshipKind": "typeFeaturing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 154,
-      "relationshipKind": "typing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 164,
-      "relationshipKind": "redefinition",
-      "source": 58
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 165,
-      "relationshipKind": "specializes",
-      "source": 58
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 166,
-      "relationshipKind": "typeFeaturing",
-      "source": 58
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 261,
-      "relationshipKind": "specializes",
-      "source": 60
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 262,
-      "relationshipKind": "typeFeaturing",
-      "source": 60
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 260,
-      "relationshipKind": "typing",
-      "source": 60
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "containment",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "containment",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "containment",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "containment",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 248,
-      "relationshipKind": "specializes",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 249,
-      "relationshipKind": "specializes",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 250,
-      "relationshipKind": "typeFeaturing",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 247,
-      "relationshipKind": "typing",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 257,
-      "relationshipKind": "redefinition",
-      "source": 62
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 258,
-      "relationshipKind": "specializes",
-      "source": 62
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 259,
-      "relationshipKind": "typeFeaturing",
-      "source": 62
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 89,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 235,
-      "relationshipKind": "specializes",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 236,
-      "relationshipKind": "specializes",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 237,
-      "relationshipKind": "typeFeaturing",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 234,
-      "relationshipKind": "typing",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 229,
-      "relationshipKind": "specializes",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 230,
-      "relationshipKind": "specializes",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 231,
-      "relationshipKind": "typeFeaturing",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 228,
-      "relationshipKind": "typing",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "containment",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "containment",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "containment",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "containment",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 216,
-      "relationshipKind": "specializes",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 217,
-      "relationshipKind": "specializes",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 218,
-      "relationshipKind": "typeFeaturing",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 215,
-      "relationshipKind": "typing",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 225,
-      "relationshipKind": "redefinition",
-      "source": 67
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 226,
-      "relationshipKind": "specializes",
-      "source": 67
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 227,
-      "relationshipKind": "typeFeaturing",
-      "source": 67
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "containment",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 185,
-      "relationshipKind": "specializes",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 186,
-      "relationshipKind": "specializes",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 187,
-      "relationshipKind": "typeFeaturing",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 184,
-      "relationshipKind": "typing",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 210,
-      "relationshipKind": "specializes",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 211,
-      "relationshipKind": "typeFeaturing",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 209,
-      "relationshipKind": "typing",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "containment",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 204,
-      "relationshipKind": "specializes",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 205,
-      "relationshipKind": "specializes",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 206,
-      "relationshipKind": "typeFeaturing",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 203,
-      "relationshipKind": "typing",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 191,
-      "relationshipKind": "specializes",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 192,
-      "relationshipKind": "specializes",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 193,
-      "relationshipKind": "typeFeaturing",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 190,
-      "relationshipKind": "typing",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 200,
-      "relationshipKind": "redefinition",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 201,
-      "relationshipKind": "specializes",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 202,
-      "relationshipKind": "typeFeaturing",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 263,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 264,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 267,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 268,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 271,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 272,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 275,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 276,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 279,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 280,
-      "relationshipKind": "memberAccessOperand",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 265,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 269,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 273,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 277,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 281,
-      "relationshipKind": "specializes",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 266,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 270,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 274,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 278,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 282,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "containment",
-      "source": 76
+      "source": 19
     },
     {
       "kind": "relationship",
       "ordinal": 109,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 110,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 111,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 284,
-      "relationshipKind": "specializes",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 285,
       "relationshipKind": "typeFeaturing",
-      "source": 76
+      "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 283,
-      "relationshipKind": "typing",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "containment",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 98,
-      "relationshipKind": "containment",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 245,
+      "ordinal": 65,
       "relationshipKind": "specializes",
-      "source": 77
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 246,
+      "ordinal": 46,
+      "relationshipKind": "transition",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "transition",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
       "relationshipKind": "typeFeaturing",
-      "source": 77
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 244,
+      "ordinal": 64,
       "relationshipKind": "typing",
-      "source": 77
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 73,
+      "relationshipKind": "specializes",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "transition",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "transition",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "typeFeaturing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
+      "relationshipKind": "typing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
       "relationshipKind": "containment",
-      "source": 78
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "specializes",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "transitionSource",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 84,
+      "relationshipKind": "transitionTarget",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "transitionTrigger",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "typeFeaturing",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "specializes",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 53,
       "relationshipKind": "containment",
-      "source": 78
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "containment",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 124,
       "relationshipKind": "specializes",
-      "source": 78
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 78
+      "ordinal": 125,
+      "relationshipKind": "transitionSource",
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typing",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "specializes",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "specializes",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typing",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "specializes",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "specializes",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "typeFeaturing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 133,
-      "relationshipKind": "specializes",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 134,
-      "relationshipKind": "typeFeaturing",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 132,
-      "relationshipKind": "typing",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 121,
-      "relationshipKind": "specializes",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 122,
-      "relationshipKind": "specializes",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 123,
-      "relationshipKind": "typeFeaturing",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 120,
-      "relationshipKind": "typing",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 130,
-      "relationshipKind": "specializes",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 131,
-      "relationshipKind": "typeFeaturing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 129,
-      "relationshipKind": "typing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "containment",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "specializes",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "specializes",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typeFeaturing",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typing",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "specializes",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "specializes",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "redefinition",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "specializes",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "typeFeaturing",
-      "source": 87
+      "ordinal": 126,
+      "relationshipKind": "transitionTarget",
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 127,
-      "relationshipKind": "specializes",
-      "source": 88
+      "relationshipKind": "transitionTrigger",
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 128,
       "relationshipKind": "typeFeaturing",
-      "source": 88
+      "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 126,
-      "relationshipKind": "typing",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "containment",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 129,
       "relationshipKind": "specializes",
-      "source": 89
+      "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 130,
       "relationshipKind": "typeFeaturing",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "typing",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 135,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 136,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 139,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 140,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 143,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 144,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 147,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 148,
-      "relationshipKind": "memberAccessOperand",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 137,
-      "relationshipKind": "specializes",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 141,
-      "relationshipKind": "specializes",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 145,
-      "relationshipKind": "specializes",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 149,
-      "relationshipKind": "specializes",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 138,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 142,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 146,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 150,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "containment",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 152,
-      "relationshipKind": "specializes",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 153,
-      "relationshipKind": "typeFeaturing",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 151,
-      "relationshipKind": "typing",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "containment",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "containment",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 88,
-      "relationshipKind": "containment",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 213,
-      "relationshipKind": "specializes",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 214,
-      "relationshipKind": "typeFeaturing",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 212,
-      "relationshipKind": "typing",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "containment",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "containment",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "containment",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "containment",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 182,
-      "relationshipKind": "specializes",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 183,
-      "relationshipKind": "typeFeaturing",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 181,
-      "relationshipKind": "typing",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "containment",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "containment",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "containment",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "containment",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "containment",
-      "source": 95
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "containment",
-      "source": 95
+      "source": 25
     },
     {
       "kind": "relationship",
       "ordinal": 50,
       "relationshipKind": "containment",
-      "source": 95
+      "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "containment",
-      "source": 95
+      "ordinal": 117,
+      "relationshipKind": "specializes",
+      "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 118,
+      "relationshipKind": "transitionSource",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 119,
+      "relationshipKind": "transitionTarget",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 120,
+      "relationshipKind": "transitionTrigger",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "specializes",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
+      "relationshipKind": "typeFeaturing",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
       "relationshipKind": "containment",
-      "source": 95
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "specializes",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "transitionSource",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "transitionTarget",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "transitionTrigger",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 79,
+      "relationshipKind": "typeFeaturing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "specializes",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "specializes",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "transitionSource",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "transitionTarget",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "transitionTrigger",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "typeFeaturing",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "specializes",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "typeFeaturing",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "containment",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 110,
+      "relationshipKind": "specializes",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 111,
+      "relationshipKind": "transitionSource",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
+      "relationshipKind": "transitionTarget",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
+      "relationshipKind": "transitionTrigger",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "specializes",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "typeFeaturing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 105,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 118,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 127,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 145,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 177,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 224,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 260,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 290,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 311,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 361,
+      "relationshipKind": "specializes",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 178,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 225,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 261,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 291,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 312,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 362,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 179,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 226,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 262,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 292,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 313,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 363,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 119,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 128,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 146,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 180,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 227,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 263,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 293,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 314,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 364,
+      "relationshipKind": "specializes",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 181,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 228,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 264,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 294,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 315,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 365,
+      "relationshipKind": "specializes",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 182,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 229,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 265,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 295,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 316,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 366,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 170,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 217,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 253,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 283,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 304,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 354,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 169,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 216,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 252,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 282,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 303,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 353,
+      "relationshipKind": "typing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 102,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 124,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 142,
+      "relationshipKind": "containment",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 171,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 218,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 254,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 284,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 305,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 355,
+      "relationshipKind": "specializes",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 172,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 219,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 255,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 285,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 306,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 356,
+      "relationshipKind": "subsetting",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 173,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 220,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 256,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 286,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 307,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 357,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 6,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 125,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 143,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 174,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 221,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 257,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 287,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 308,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 358,
+      "relationshipKind": "specializes",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 175,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 222,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 258,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 288,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 309,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 359,
+      "relationshipKind": "specializes",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 176,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 223,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 259,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 289,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 310,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 360,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
+      "relationshipKind": "typeFeaturing",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 200,
+      "relationshipKind": "typeFeaturing",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "typing",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 199,
+      "relationshipKind": "typing",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "typeFeaturing",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 202,
+      "relationshipKind": "typeFeaturing",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "typing",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 201,
+      "relationshipKind": "typing",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "typeFeaturing",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 196,
+      "relationshipKind": "typeFeaturing",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "typing",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 195,
+      "relationshipKind": "typing",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "typeFeaturing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 198,
+      "relationshipKind": "typeFeaturing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "typing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 197,
+      "relationshipKind": "typing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "typeFeaturing",
+      "source": 47
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 194,
+      "relationshipKind": "typeFeaturing",
+      "source": 47
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "typing",
+      "source": 47
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 193,
+      "relationshipKind": "typing",
+      "source": 47
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "typeFeaturing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 277,
+      "relationshipKind": "typeFeaturing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "typing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 276,
+      "relationshipKind": "typing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 136,
+      "relationshipKind": "typeFeaturing",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 211,
+      "relationshipKind": "typeFeaturing",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 135,
+      "relationshipKind": "typing",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 210,
+      "relationshipKind": "typing",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "typeFeaturing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 241,
+      "relationshipKind": "typeFeaturing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "typing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 240,
+      "relationshipKind": "typing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 368,
+      "relationshipKind": "specializes",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 369,
+      "relationshipKind": "typeFeaturing",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 367,
+      "relationshipKind": "typing",
+      "source": 55
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 371,
+      "relationshipKind": "specializes",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 372,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 370,
+      "relationshipKind": "typing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 140,
+      "relationshipKind": "containment",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 141,
+      "relationshipKind": "containment",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 144,
+      "relationshipKind": "containment",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 350,
+      "relationshipKind": "specializes",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 351,
+      "relationshipKind": "specializes",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 352,
+      "relationshipKind": "typeFeaturing",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 349,
+      "relationshipKind": "typing",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 374,
+      "relationshipKind": "specializes",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 375,
+      "relationshipKind": "typeFeaturing",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 373,
+      "relationshipKind": "typing",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "containment",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "containment",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "containment",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 79,
+      "relationshipKind": "containment",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "containment",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 190,
+      "relationshipKind": "specializes",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 191,
+      "relationshipKind": "specializes",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 192,
+      "relationshipKind": "typeFeaturing",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 189,
+      "relationshipKind": "typing",
+      "source": 60
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "containment",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "containment",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "containment",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
+      "relationshipKind": "containment",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 166,
+      "relationshipKind": "specializes",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 167,
+      "relationshipKind": "specializes",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 168,
+      "relationshipKind": "typeFeaturing",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 165,
+      "relationshipKind": "typing",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 73,
+      "relationshipKind": "containment",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 183,
+      "relationshipKind": "redefinition",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 184,
+      "relationshipKind": "specializes",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 185,
+      "relationshipKind": "typeFeaturing",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "containment",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 186,
+      "relationshipKind": "specializes",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 187,
+      "relationshipKind": "specializes",
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 188,
+      "relationshipKind": "typeFeaturing",
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 324,
+      "relationshipKind": "specializes",
+      "source": 66
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 325,
+      "relationshipKind": "typeFeaturing",
+      "source": 66
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 323,
+      "relationshipKind": "typing",
+      "source": 66
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "containment",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
+      "relationshipKind": "containment",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 126,
+      "relationshipKind": "containment",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 129,
+      "relationshipKind": "containment",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 300,
+      "relationshipKind": "specializes",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 301,
+      "relationshipKind": "specializes",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 302,
+      "relationshipKind": "typeFeaturing",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 299,
+      "relationshipKind": "typing",
+      "source": 67
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 130,
+      "relationshipKind": "containment",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 317,
+      "relationshipKind": "redefinition",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 318,
+      "relationshipKind": "specializes",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 319,
+      "relationshipKind": "typeFeaturing",
+      "source": 68
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 131,
+      "relationshipKind": "containment",
+      "source": 69
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 320,
+      "relationshipKind": "specializes",
+      "source": 69
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 321,
+      "relationshipKind": "specializes",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 322,
+      "relationshipKind": "typeFeaturing",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
+      "relationshipKind": "containment",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "containment",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 117,
+      "relationshipKind": "containment",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 279,
+      "relationshipKind": "specializes",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 280,
+      "relationshipKind": "specializes",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 281,
+      "relationshipKind": "typeFeaturing",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 278,
+      "relationshipKind": "typing",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 111,
+      "relationshipKind": "containment",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 273,
+      "relationshipKind": "specializes",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 274,
+      "relationshipKind": "specializes",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 275,
+      "relationshipKind": "typeFeaturing",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 272,
+      "relationshipKind": "typing",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 100,
+      "relationshipKind": "containment",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "containment",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 104,
+      "relationshipKind": "containment",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 107,
+      "relationshipKind": "containment",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 249,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 250,
+      "relationshipKind": "specializes",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 251,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 248,
+      "relationshipKind": "typing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 108,
+      "relationshipKind": "containment",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 266,
+      "relationshipKind": "redefinition",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 267,
+      "relationshipKind": "specializes",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 268,
+      "relationshipKind": "typeFeaturing",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 109,
+      "relationshipKind": "containment",
+      "source": 76
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 269,
+      "relationshipKind": "specializes",
+      "source": 76
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 270,
+      "relationshipKind": "specializes",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 271,
+      "relationshipKind": "typeFeaturing",
+      "source": 77
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "containment",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 207,
+      "relationshipKind": "specializes",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 208,
+      "relationshipKind": "specializes",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 209,
+      "relationshipKind": "typeFeaturing",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 206,
+      "relationshipKind": "typing",
+      "source": 79
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 243,
+      "relationshipKind": "specializes",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 244,
+      "relationshipKind": "typeFeaturing",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 242,
+      "relationshipKind": "typing",
+      "source": 80
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 96,
+      "relationshipKind": "containment",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 237,
+      "relationshipKind": "specializes",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 238,
+      "relationshipKind": "specializes",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 239,
+      "relationshipKind": "typeFeaturing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 236,
+      "relationshipKind": "typing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "containment",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "containment",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "containment",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "containment",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 213,
+      "relationshipKind": "specializes",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 214,
+      "relationshipKind": "specializes",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 215,
+      "relationshipKind": "typeFeaturing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 212,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "containment",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 230,
+      "relationshipKind": "redefinition",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 231,
+      "relationshipKind": "specializes",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 232,
+      "relationshipKind": "typeFeaturing",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 233,
+      "relationshipKind": "specializes",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 234,
+      "relationshipKind": "specializes",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 235,
+      "relationshipKind": "typeFeaturing",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 326,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 327,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 330,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 331,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 334,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 335,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 338,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 339,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 342,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 343,
+      "relationshipKind": "memberAccessOperand",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 328,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 332,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 336,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 340,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 344,
+      "relationshipKind": "specializes",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 329,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 333,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 337,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 341,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 345,
+      "relationshipKind": "typeFeaturing",
+      "source": 87
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 139,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 147,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 148,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 149,
+      "relationshipKind": "containment",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 347,
+      "relationshipKind": "specializes",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 348,
+      "relationshipKind": "typeFeaturing",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 346,
+      "relationshipKind": "typing",
+      "source": 88
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "containment",
+      "source": 89
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 132,
+      "relationshipKind": "containment",
+      "source": 89
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 297,
+      "relationshipKind": "specializes",
+      "source": 89
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 298,
+      "relationshipKind": "typeFeaturing",
+      "source": 89
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 296,
+      "relationshipKind": "typing",
+      "source": 89
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "containment",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "specializes",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "typeFeaturing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "containment",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "specializes",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "specializes",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "typeFeaturing",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "typing",
+      "source": 92
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "containment",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "specializes",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "specializes",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "typeFeaturing",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "typing",
+      "source": 93
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 144,
+      "relationshipKind": "specializes",
+      "source": 94
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 145,
+      "relationshipKind": "typeFeaturing",
+      "source": 94
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 143,
+      "relationshipKind": "typing",
+      "source": 94
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "containment",
+      "source": 95
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 132,
       "relationshipKind": "specializes",
       "source": 95
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 133,
+      "relationshipKind": "specializes",
+      "source": 95
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 134,
       "relationshipKind": "typeFeaturing",
       "source": 95
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 131,
       "relationshipKind": "typing",
       "source": 95
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 141,
+      "relationshipKind": "specializes",
+      "source": 96
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 142,
+      "relationshipKind": "typeFeaturing",
+      "source": 96
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 140,
+      "relationshipKind": "typing",
+      "source": 96
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 97
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "specializes",
+      "source": 97
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "specializes",
+      "source": 97
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
+      "source": 97
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "typing",
+      "source": 97
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "containment",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "containment",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "specializes",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "specializes",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "typeFeaturing",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typing",
+      "source": 98
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 99
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "redefinition",
+      "source": 99
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "specializes",
+      "source": 99
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "typeFeaturing",
+      "source": 99
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "containment",
+      "source": 100
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "specializes",
+      "source": 100
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "specializes",
+      "source": 101
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "typeFeaturing",
+      "source": 101
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 138,
+      "relationshipKind": "specializes",
+      "source": 102
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 139,
+      "relationshipKind": "typeFeaturing",
+      "source": 102
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 137,
+      "relationshipKind": "typing",
+      "source": 102
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "containment",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "specializes",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "typeFeaturing",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "typing",
+      "source": 103
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 146,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 147,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 150,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 151,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 154,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 155,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 158,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 159,
+      "relationshipKind": "memberAccessOperand",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 148,
+      "relationshipKind": "specializes",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 152,
+      "relationshipKind": "specializes",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 156,
+      "relationshipKind": "specializes",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 160,
+      "relationshipKind": "specializes",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 149,
+      "relationshipKind": "typeFeaturing",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 153,
+      "relationshipKind": "typeFeaturing",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 157,
+      "relationshipKind": "typeFeaturing",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 161,
+      "relationshipKind": "typeFeaturing",
+      "source": 105
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
+      "relationshipKind": "containment",
+      "source": 106
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "containment",
+      "source": 106
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 163,
+      "relationshipKind": "specializes",
+      "source": 106
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 164,
+      "relationshipKind": "typeFeaturing",
+      "source": 106
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 162,
+      "relationshipKind": "typing",
+      "source": 106
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "containment",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 110,
+      "relationshipKind": "containment",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
+      "relationshipKind": "containment",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 246,
+      "relationshipKind": "specializes",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 247,
+      "relationshipKind": "typeFeaturing",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 245,
+      "relationshipKind": "typing",
+      "source": 107
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "containment",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 84,
+      "relationshipKind": "containment",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "containment",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 97,
+      "relationshipKind": "containment",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 204,
+      "relationshipKind": "specializes",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 205,
+      "relationshipKind": "typeFeaturing",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 203,
+      "relationshipKind": "typing",
+      "source": 108
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "specializes",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "typeFeaturing",
+      "source": 109
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "typing",
+      "source": 109
     }
   ],
   "selectedView": {
@@ -9071,713 +10121,905 @@ package TimerBrowser {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 151,
+        "navigation": 158,
         "provenance": "implied",
-        "reference": 135,
+        "reference": 165,
         "source": 0,
         "target": 6
       },
       {
         "kind": "containment",
-        "navigation": 123,
+        "navigation": 130,
         "provenance": "implied",
-        "reference": 435,
+        "reference": 569,
         "source": 6,
-        "target": 23
+        "target": 33
       },
       {
         "kind": "containment",
-        "navigation": 87,
+        "navigation": 89,
         "provenance": "implied",
-        "reference": 540,
-        "source": 23,
-        "target": 26
+        "reference": 679,
+        "source": 33,
+        "target": 36
       },
       {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 476,
-        "source": 26,
-        "target": 29
+        "reference": 610,
+        "source": 36,
+        "target": 43
       },
       {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 477,
-        "source": 26,
-        "target": 28
+        "reference": 611,
+        "source": 36,
+        "target": 40
       },
       {
         "kind": "containment",
         "navigation": 56,
-        "provenance": "implied",
-        "reference": 478,
-        "source": 26,
-        "target": 27
-      },
-      {
-        "kind": "containment",
-        "navigation": 89,
         "provenance": "authored",
-        "reference": 479,
-        "source": 26,
-        "target": 30
+        "reference": 332,
+        "source": 40,
+        "target": 41
       },
       {
         "kind": "containment",
-        "navigation": 79,
-        "provenance": "implied",
-        "reference": 541,
-        "source": 23,
-        "target": 31
-      },
-      {
-        "kind": "containment",
-        "navigation": 59,
-        "provenance": "implied",
-        "reference": 446,
-        "source": 31,
-        "target": 32
-      },
-      {
-        "kind": "containment",
-        "navigation": 61,
-        "provenance": "implied",
-        "reference": 447,
-        "source": 31,
-        "target": 33
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 360,
+        "source": 41,
+        "target": 42
       },
       {
         "kind": "containment",
         "navigation": 57,
         "provenance": "implied",
-        "reference": 448,
-        "source": 31,
-        "target": 34
-      },
-      {
-        "kind": "containment",
-        "navigation": 65,
-        "provenance": "implied",
-        "reference": 449,
-        "source": 31,
-        "target": 35
-      },
-      {
-        "kind": "containment",
-        "navigation": 63,
-        "provenance": "implied",
-        "reference": 450,
-        "source": 31,
-        "target": 36
-      },
-      {
-        "kind": "containment",
-        "navigation": 83,
-        "provenance": "implied",
-        "reference": 542,
-        "source": 23,
+        "reference": 612,
+        "source": 36,
         "target": 37
       },
       {
         "kind": "containment",
-        "navigation": 69,
-        "provenance": "implied",
-        "reference": 471,
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 262,
         "source": 37,
         "target": 38
       },
       {
         "kind": "containment",
-        "navigation": 85,
-        "provenance": "implied",
-        "reference": 543,
-        "source": 23,
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 290,
+        "source": 38,
         "target": 39
       },
       {
         "kind": "containment",
-        "navigation": 71,
-        "provenance": "implied",
-        "reference": 455,
-        "source": 39,
-        "target": 40
-      },
-      {
-        "kind": "containment",
         "navigation": 91,
-        "provenance": "implied",
-        "reference": 544,
-        "source": 23,
-        "target": 41
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "provenance": "implied",
-        "reference": 490,
-        "source": 41,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 9,
-        "provenance": "implied",
-        "reference": 491,
-        "source": 41,
-        "target": 60
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "provenance": "implied",
-        "reference": 492,
-        "source": 41,
-        "target": 58
-      },
-      {
-        "kind": "initial-state",
-        "navigation": 4,
         "provenance": "authored",
-        "reference": 145,
-        "source": 58,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 11,
-        "provenance": "implied",
-        "reference": 493,
-        "source": 41,
-        "target": 61
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "provenance": "implied",
-        "reference": 494,
-        "source": 41,
-        "target": 62
-      },
-      {
-        "kind": "containment",
-        "navigation": 29,
-        "provenance": "implied",
-        "reference": 495,
-        "source": 41,
-        "target": 56
-      },
-      {
-        "kind": "transition",
-        "navigation": 30,
-        "provenance": "implied",
-        "reference": 180,
-        "source": 62,
-        "target": 60
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 208,
-        "source": 56,
-        "target": 57
-      },
-      {
-        "kind": "containment",
-        "navigation": 34,
-        "provenance": "implied",
-        "reference": 496,
-        "source": 41,
-        "target": 42
-      },
-      {
-        "kind": "transition",
-        "navigation": 35,
-        "provenance": "implied",
-        "reference": 181,
-        "source": 62,
-        "target": 61
-      },
-      {
-        "kind": "containment",
-        "navigation": 33,
-        "provenance": "authored",
-        "reference": 184,
-        "source": 42,
-        "target": 43
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "provenance": "implied",
-        "reference": 497,
-        "source": 41,
+        "reference": 613,
+        "source": 36,
         "target": 44
       },
       {
-        "kind": "transition",
-        "navigation": 15,
-        "provenance": "implied",
-        "reference": 161,
-        "source": 59,
-        "target": 62
-      },
-      {
         "kind": "containment",
-        "navigation": 13,
+        "navigation": 93,
         "provenance": "authored",
-        "reference": 216,
+        "reference": 618,
         "source": 44,
         "target": 45
       },
       {
         "kind": "containment",
-        "navigation": 24,
-        "provenance": "implied",
-        "reference": 498,
-        "source": 41,
+        "navigation": 93,
+        "provenance": "authored",
+        "reference": 622,
+        "source": 45,
         "target": 46
-      },
-      {
-        "kind": "transition",
-        "navigation": 25,
-        "provenance": "implied",
-        "reference": 162,
-        "source": 59,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 148,
-        "source": 46,
-        "target": 47
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "provenance": "implied",
-        "reference": 499,
-        "source": 41,
-        "target": 48
-      },
-      {
-        "kind": "transition",
-        "navigation": 20,
-        "provenance": "implied",
-        "reference": 163,
-        "source": 59,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 48,
-        "target": 49
-      },
-      {
-        "kind": "containment",
-        "navigation": 39,
-        "provenance": "implied",
-        "reference": 500,
-        "source": 41,
-        "target": 50
-      },
-      {
-        "kind": "transition",
-        "navigation": 40,
-        "provenance": "implied",
-        "reference": 175,
-        "source": 60,
-        "target": 62
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 224,
-        "source": 50,
-        "target": 51
-      },
-      {
-        "kind": "containment",
-        "navigation": 44,
-        "provenance": "implied",
-        "reference": 501,
-        "source": 41,
-        "target": 52
-      },
-      {
-        "kind": "transition",
-        "navigation": 45,
-        "provenance": "implied",
-        "reference": 176,
-        "source": 60,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 43,
-        "provenance": "authored",
-        "reference": 200,
-        "source": 52,
-        "target": 53
-      },
-      {
-        "kind": "containment",
-        "navigation": 49,
-        "provenance": "implied",
-        "reference": 502,
-        "source": 41,
-        "target": 54
-      },
-      {
-        "kind": "transition",
-        "navigation": 50,
-        "provenance": "implied",
-        "reference": 157,
-        "source": 61,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 48,
-        "provenance": "authored",
-        "reference": 192,
-        "source": 54,
-        "target": 55
       },
       {
         "kind": "containment",
         "navigation": 81,
         "provenance": "implied",
-        "reference": 545,
-        "source": 23,
-        "target": 24
-      },
-      {
-        "kind": "containment",
-        "navigation": 67,
-        "provenance": "implied",
-        "reference": 463,
-        "source": 24,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 77,
-        "provenance": "implied",
-        "reference": 546,
-        "source": 23,
-        "target": 64
-      },
-      {
-        "kind": "containment",
-        "navigation": 75,
-        "provenance": "implied",
-        "reference": 547,
-        "source": 23,
-        "target": 65
-      },
-      {
-        "kind": "containment",
-        "navigation": 73,
-        "provenance": "implied",
-        "reference": 548,
-        "source": 23,
-        "target": 63
-      },
-      {
-        "kind": "containment",
-        "navigation": 131,
-        "provenance": "implied",
-        "reference": 436,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 134,
-        "provenance": "implied",
-        "reference": 437,
-        "source": 6,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 137,
-        "provenance": "implied",
-        "reference": 438,
-        "source": 6,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 140,
-        "provenance": "implied",
-        "reference": 439,
-        "source": 6,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 127,
-        "provenance": "implied",
-        "reference": 440,
-        "source": 6,
-        "target": 66
-      },
-      {
-        "kind": "containment",
-        "navigation": 113,
-        "provenance": "implied",
-        "reference": 522,
-        "source": 66,
-        "target": 67
-      },
-      {
-        "kind": "containment",
-        "navigation": 53,
-        "provenance": "implied",
-        "reference": 331,
-        "source": 67,
-        "target": 70
-      },
-      {
-        "kind": "containment",
-        "navigation": 55,
-        "provenance": "implied",
-        "reference": 332,
-        "source": 67,
-        "target": 69
-      },
-      {
-        "kind": "containment",
-        "navigation": 56,
-        "provenance": "implied",
-        "reference": 333,
-        "source": 67,
-        "target": 68
-      },
-      {
-        "kind": "containment",
-        "navigation": 115,
-        "provenance": "authored",
-        "reference": 334,
-        "source": 67,
-        "target": 71
-      },
-      {
-        "kind": "containment",
-        "navigation": 111,
-        "provenance": "implied",
-        "reference": 523,
-        "source": 66,
-        "target": 72
-      },
-      {
-        "kind": "containment",
-        "navigation": 59,
-        "provenance": "implied",
-        "reference": 322,
-        "source": 72,
-        "target": 73
+        "reference": 680,
+        "source": 33,
+        "target": 47
       },
       {
         "kind": "containment",
         "navigation": 61,
         "provenance": "implied",
-        "reference": 323,
-        "source": 72,
-        "target": 74
-      },
-      {
-        "kind": "containment",
-        "navigation": 57,
-        "provenance": "implied",
-        "reference": 324,
-        "source": 72,
-        "target": 75
-      },
-      {
-        "kind": "containment",
-        "navigation": 65,
-        "provenance": "implied",
-        "reference": 325,
-        "source": 72,
-        "target": 76
+        "reference": 580,
+        "source": 47,
+        "target": 48
       },
       {
         "kind": "containment",
         "navigation": 63,
         "provenance": "implied",
-        "reference": 326,
-        "source": 72,
-        "target": 77
+        "reference": 581,
+        "source": 47,
+        "target": 49
       },
       {
         "kind": "containment",
-        "navigation": 125,
+        "navigation": 59,
         "provenance": "implied",
-        "reference": 441,
-        "source": 6,
-        "target": 78
-      },
-      {
-        "kind": "containment",
-        "navigation": 103,
-        "provenance": "implied",
-        "reference": 533,
-        "source": 78,
-        "target": 79
+        "reference": 582,
+        "source": 47,
+        "target": 50
       },
       {
         "kind": "containment",
         "navigation": 67,
         "provenance": "implied",
-        "reference": 379,
-        "source": 79,
-        "target": 80
+        "reference": 583,
+        "source": 47,
+        "target": 51
       },
       {
         "kind": "containment",
-        "navigation": 107,
+        "navigation": 65,
         "provenance": "implied",
-        "reference": 534,
-        "source": 78,
-        "target": 81
+        "reference": 584,
+        "source": 47,
+        "target": 52
       },
       {
         "kind": "containment",
-        "navigation": 53,
+        "navigation": 85,
         "provenance": "implied",
-        "reference": 392,
-        "source": 81,
-        "target": 84
-      },
-      {
-        "kind": "containment",
-        "navigation": 55,
-        "provenance": "implied",
-        "reference": 393,
-        "source": 81,
-        "target": 83
-      },
-      {
-        "kind": "containment",
-        "navigation": 56,
-        "provenance": "implied",
-        "reference": 394,
-        "source": 81,
-        "target": 82
-      },
-      {
-        "kind": "containment",
-        "navigation": 109,
-        "provenance": "authored",
-        "reference": 395,
-        "source": 81,
-        "target": 85
-      },
-      {
-        "kind": "containment",
-        "navigation": 105,
-        "provenance": "implied",
-        "reference": 535,
-        "source": 78,
-        "target": 86
-      },
-      {
-        "kind": "containment",
-        "navigation": 69,
-        "provenance": "implied",
-        "reference": 387,
-        "source": 86,
-        "target": 87
-      },
-      {
-        "kind": "containment",
-        "navigation": 101,
-        "provenance": "implied",
-        "reference": 536,
-        "source": 78,
-        "target": 88
-      },
-      {
-        "kind": "containment",
-        "navigation": 129,
-        "provenance": "implied",
-        "reference": 442,
-        "source": 6,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 95,
-        "provenance": "implied",
-        "reference": 527,
-        "source": 11,
-        "target": 16
-      },
-      {
-        "kind": "containment",
-        "navigation": 53,
-        "provenance": "implied",
-        "reference": 368,
-        "source": 16,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 55,
-        "provenance": "implied",
-        "reference": 369,
-        "source": 16,
-        "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 56,
-        "provenance": "implied",
-        "reference": 370,
-        "source": 16,
-        "target": 17
-      },
-      {
-        "kind": "containment",
-        "navigation": 97,
-        "provenance": "authored",
-        "reference": 371,
-        "source": 16,
-        "target": 20
-      },
-      {
-        "kind": "containment",
-        "navigation": 93,
-        "provenance": "implied",
-        "reference": 528,
-        "source": 11,
-        "target": 21
+        "reference": 681,
+        "source": 33,
+        "target": 53
       },
       {
         "kind": "containment",
         "navigation": 71,
         "provenance": "implied",
+        "reference": 605,
+        "source": 53,
+        "target": 54
+      },
+      {
+        "kind": "containment",
+        "navigation": 87,
+        "provenance": "implied",
+        "reference": 682,
+        "source": 33,
+        "target": 55
+      },
+      {
+        "kind": "containment",
+        "navigation": 73,
+        "provenance": "implied",
+        "reference": 589,
+        "source": 55,
+        "target": 56
+      },
+      {
+        "kind": "containment",
+        "navigation": 94,
+        "provenance": "implied",
+        "reference": 683,
+        "source": 33,
+        "target": 57
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "provenance": "implied",
+        "reference": 629,
+        "source": 57,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "provenance": "implied",
+        "reference": 630,
+        "source": 57,
+        "target": 76
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "provenance": "implied",
+        "reference": 631,
+        "source": 57,
+        "target": 74
+      },
+      {
+        "kind": "initial-state",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 175,
+        "source": 74,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "provenance": "implied",
+        "reference": 632,
+        "source": 57,
+        "target": 77
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "provenance": "implied",
+        "reference": 633,
+        "source": 57,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 29,
+        "provenance": "implied",
+        "reference": 634,
+        "source": 57,
+        "target": 72
+      },
+      {
+        "kind": "transition",
+        "navigation": 30,
+        "provenance": "implied",
+        "reference": 210,
+        "source": 78,
+        "target": 76
+      },
+      {
+        "kind": "containment",
+        "navigation": 28,
+        "provenance": "authored",
+        "reference": 238,
+        "source": 72,
+        "target": 73
+      },
+      {
+        "kind": "containment",
+        "navigation": 34,
+        "provenance": "implied",
+        "reference": 635,
+        "source": 57,
+        "target": 58
+      },
+      {
+        "kind": "transition",
+        "navigation": 35,
+        "provenance": "implied",
+        "reference": 211,
+        "source": 78,
+        "target": 77
+      },
+      {
+        "kind": "containment",
+        "navigation": 33,
+        "provenance": "authored",
+        "reference": 214,
+        "source": 58,
+        "target": 59
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "provenance": "implied",
+        "reference": 636,
+        "source": 57,
+        "target": 60
+      },
+      {
+        "kind": "transition",
+        "navigation": 15,
+        "provenance": "implied",
+        "reference": 191,
+        "source": 75,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 13,
+        "provenance": "authored",
+        "reference": 246,
+        "source": 60,
+        "target": 61
+      },
+      {
+        "kind": "containment",
+        "navigation": 24,
+        "provenance": "implied",
+        "reference": 637,
+        "source": 57,
+        "target": 62
+      },
+      {
+        "kind": "transition",
+        "navigation": 25,
+        "provenance": "implied",
+        "reference": 192,
+        "source": 75,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 178,
+        "source": 62,
+        "target": 63
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "provenance": "implied",
+        "reference": 638,
+        "source": 57,
+        "target": 64
+      },
+      {
+        "kind": "transition",
+        "navigation": 20,
+        "provenance": "implied",
+        "reference": 193,
+        "source": 75,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 196,
+        "source": 64,
+        "target": 65
+      },
+      {
+        "kind": "containment",
+        "navigation": 39,
+        "provenance": "implied",
+        "reference": 639,
+        "source": 57,
+        "target": 66
+      },
+      {
+        "kind": "transition",
+        "navigation": 40,
+        "provenance": "implied",
+        "reference": 205,
+        "source": 76,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 254,
+        "source": 66,
+        "target": 67
+      },
+      {
+        "kind": "containment",
+        "navigation": 44,
+        "provenance": "implied",
+        "reference": 640,
+        "source": 57,
+        "target": 68
+      },
+      {
+        "kind": "transition",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 206,
+        "source": 76,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 43,
+        "provenance": "authored",
+        "reference": 230,
+        "source": 68,
+        "target": 69
+      },
+      {
+        "kind": "containment",
+        "navigation": 49,
+        "provenance": "implied",
+        "reference": 641,
+        "source": 57,
+        "target": 70
+      },
+      {
+        "kind": "transition",
+        "navigation": 50,
+        "provenance": "implied",
+        "reference": 187,
+        "source": 77,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "authored",
+        "reference": 222,
+        "source": 70,
+        "target": 71
+      },
+      {
+        "kind": "containment",
+        "navigation": 83,
+        "provenance": "implied",
+        "reference": 684,
+        "source": 33,
+        "target": 34
+      },
+      {
+        "kind": "containment",
+        "navigation": 69,
+        "provenance": "implied",
+        "reference": 597,
+        "source": 34,
+        "target": 35
+      },
+      {
+        "kind": "containment",
+        "navigation": 79,
+        "provenance": "implied",
+        "reference": 685,
+        "source": 33,
+        "target": 80
+      },
+      {
+        "kind": "containment",
+        "navigation": 77,
+        "provenance": "implied",
+        "reference": 686,
+        "source": 33,
+        "target": 81
+      },
+      {
+        "kind": "containment",
+        "navigation": 75,
+        "provenance": "implied",
+        "reference": 687,
+        "source": 33,
+        "target": 79
+      },
+      {
+        "kind": "containment",
+        "navigation": 138,
+        "provenance": "implied",
+        "reference": 570,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 141,
+        "provenance": "implied",
+        "reference": 571,
+        "source": 6,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 144,
+        "provenance": "implied",
+        "reference": 572,
+        "source": 6,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 147,
+        "provenance": "implied",
+        "reference": 573,
+        "source": 6,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 134,
+        "provenance": "implied",
+        "reference": 574,
+        "source": 6,
+        "target": 82
+      },
+      {
+        "kind": "containment",
+        "navigation": 118,
+        "provenance": "implied",
+        "reference": 661,
+        "source": 82,
+        "target": 83
+      },
+      {
+        "kind": "containment",
+        "navigation": 53,
+        "provenance": "implied",
+        "reference": 445,
+        "source": 83,
+        "target": 90
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "provenance": "implied",
+        "reference": 446,
+        "source": 83,
+        "target": 87
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 333,
+        "source": 87,
+        "target": 88
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 361,
+        "source": 88,
+        "target": 89
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "provenance": "implied",
+        "reference": 447,
+        "source": 83,
+        "target": 84
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 263,
+        "source": 84,
+        "target": 85
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 291,
+        "source": 85,
+        "target": 86
+      },
+      {
+        "kind": "containment",
+        "navigation": 120,
+        "provenance": "authored",
+        "reference": 448,
+        "source": 83,
+        "target": 91
+      },
+      {
+        "kind": "containment",
+        "navigation": 122,
+        "provenance": "authored",
+        "reference": 453,
+        "source": 91,
+        "target": 92
+      },
+      {
+        "kind": "containment",
+        "navigation": 122,
+        "provenance": "authored",
+        "reference": 457,
+        "source": 92,
+        "target": 93
+      },
+      {
+        "kind": "containment",
+        "navigation": 116,
+        "provenance": "implied",
+        "reference": 662,
+        "source": 82,
+        "target": 94
+      },
+      {
+        "kind": "containment",
+        "navigation": 61,
+        "provenance": "implied",
+        "reference": 436,
+        "source": 94,
+        "target": 95
+      },
+      {
+        "kind": "containment",
+        "navigation": 63,
+        "provenance": "implied",
+        "reference": 437,
+        "source": 94,
+        "target": 96
+      },
+      {
+        "kind": "containment",
+        "navigation": 59,
+        "provenance": "implied",
+        "reference": 438,
+        "source": 94,
+        "target": 97
+      },
+      {
+        "kind": "containment",
+        "navigation": 67,
+        "provenance": "implied",
+        "reference": 439,
+        "source": 94,
+        "target": 98
+      },
+      {
+        "kind": "containment",
+        "navigation": 65,
+        "provenance": "implied",
+        "reference": 440,
+        "source": 94,
+        "target": 99
+      },
+      {
+        "kind": "containment",
+        "navigation": 132,
+        "provenance": "implied",
+        "reference": 575,
+        "source": 6,
+        "target": 100
+      },
+      {
+        "kind": "containment",
+        "navigation": 107,
+        "provenance": "implied",
+        "reference": 672,
+        "source": 100,
+        "target": 101
+      },
+      {
+        "kind": "containment",
+        "navigation": 69,
+        "provenance": "implied",
+        "reference": 508,
+        "source": 101,
+        "target": 102
+      },
+      {
+        "kind": "containment",
+        "navigation": 111,
+        "provenance": "implied",
+        "reference": 673,
+        "source": 100,
+        "target": 103
+      },
+      {
+        "kind": "containment",
+        "navigation": 53,
+        "provenance": "implied",
+        "reference": 521,
+        "source": 103,
+        "target": 110
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "provenance": "implied",
+        "reference": 522,
+        "source": 103,
+        "target": 107
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 334,
+        "source": 107,
+        "target": 108
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 362,
+        "source": 108,
+        "target": 109
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "provenance": "implied",
+        "reference": 523,
+        "source": 103,
+        "target": 104
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 264,
+        "source": 104,
+        "target": 105
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 292,
+        "source": 105,
+        "target": 106
+      },
+      {
+        "kind": "containment",
+        "navigation": 113,
+        "provenance": "authored",
+        "reference": 524,
+        "source": 103,
+        "target": 111
+      },
+      {
+        "kind": "containment",
+        "navigation": 115,
+        "provenance": "authored",
+        "reference": 529,
+        "source": 111,
+        "target": 112
+      },
+      {
+        "kind": "containment",
+        "navigation": 115,
+        "provenance": "authored",
+        "reference": 533,
+        "source": 112,
+        "target": 113
+      },
+      {
+        "kind": "containment",
+        "navigation": 109,
+        "provenance": "implied",
+        "reference": 674,
+        "source": 100,
+        "target": 114
+      },
+      {
+        "kind": "containment",
+        "navigation": 71,
+        "provenance": "implied",
+        "reference": 516,
+        "source": 114,
+        "target": 115
+      },
+      {
+        "kind": "containment",
+        "navigation": 105,
+        "provenance": "implied",
+        "reference": 675,
+        "source": 100,
+        "target": 116
+      },
+      {
+        "kind": "containment",
+        "navigation": 136,
+        "provenance": "implied",
+        "reference": 576,
+        "source": 6,
+        "target": 11
+      },
+      {
+        "kind": "containment",
+        "navigation": 98,
+        "provenance": "implied",
+        "reference": 666,
+        "source": 11,
+        "target": 20
+      },
+      {
+        "kind": "containment",
+        "navigation": 53,
+        "provenance": "implied",
+        "reference": 492,
+        "source": 20,
+        "target": 27
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "provenance": "implied",
+        "reference": 493,
+        "source": 20,
+        "target": 24
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 335,
+        "source": 24,
+        "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
         "reference": 363,
+        "source": 25,
+        "target": 26
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "provenance": "implied",
+        "reference": 494,
+        "source": 20,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 265,
         "source": 21,
         "target": 22
       },
       {
         "kind": "containment",
-        "navigation": 99,
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 293,
+        "source": 22,
+        "target": 23
+      },
+      {
+        "kind": "containment",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 495,
+        "source": 20,
+        "target": 28
+      },
+      {
+        "kind": "containment",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 500,
+        "source": 28,
+        "target": 29
+      },
+      {
+        "kind": "containment",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 504,
+        "source": 29,
+        "target": 30
+      },
+      {
+        "kind": "containment",
+        "navigation": 96,
         "provenance": "implied",
-        "reference": 529,
+        "reference": 667,
+        "source": 11,
+        "target": 31
+      },
+      {
+        "kind": "containment",
+        "navigation": 73,
+        "provenance": "implied",
+        "reference": 487,
+        "source": 31,
+        "target": 32
+      },
+      {
+        "kind": "containment",
+        "navigation": 103,
+        "provenance": "implied",
+        "reference": 668,
         "source": 11,
         "target": 12
       },
@@ -9785,185 +11027,297 @@ package TimerBrowser {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 356,
+        "reference": 480,
         "source": 12,
-        "target": 15
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 357,
+        "reference": 481,
         "source": 12,
-        "target": 14
+        "target": 16
       },
       {
         "kind": "containment",
         "navigation": 56,
+        "provenance": "authored",
+        "reference": 336,
+        "source": 16,
+        "target": 17
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 364,
+        "source": 17,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
         "provenance": "implied",
-        "reference": 358,
+        "reference": 482,
         "source": 12,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 155,
-        "provenance": "implied",
-        "reference": 136,
-        "source": 0,
-        "target": 89
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 266,
+        "source": 13,
+        "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 119,
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 294,
+        "source": 14,
+        "target": 15
+      },
+      {
+        "kind": "containment",
+        "navigation": 162,
         "provenance": "implied",
-        "reference": 430,
-        "source": 89,
-        "target": 90
+        "reference": 166,
+        "source": 0,
+        "target": 117
+      },
+      {
+        "kind": "containment",
+        "navigation": 125,
+        "provenance": "implied",
+        "reference": 564,
+        "source": 117,
+        "target": 118
       },
       {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 345,
-        "source": 90,
-        "target": 93
+        "reference": 464,
+        "source": 118,
+        "target": 125
       },
       {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 346,
-        "source": 90,
-        "target": 92
+        "reference": 465,
+        "source": 118,
+        "target": 122
       },
       {
         "kind": "containment",
         "navigation": 56,
-        "provenance": "implied",
-        "reference": 347,
-        "source": 90,
-        "target": 91
-      },
-      {
-        "kind": "containment",
-        "navigation": 121,
         "provenance": "authored",
-        "reference": 348,
-        "source": 90,
-        "target": 94
+        "reference": 337,
+        "source": 122,
+        "target": 123
       },
       {
         "kind": "containment",
-        "navigation": 117,
-        "provenance": "implied",
-        "reference": 431,
-        "source": 89,
-        "target": 95
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 365,
+        "source": 123,
+        "target": 124
       },
       {
         "kind": "containment",
-        "navigation": 157,
+        "navigation": 57,
         "provenance": "implied",
-        "reference": 137,
+        "reference": 466,
+        "source": 118,
+        "target": 119
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 267,
+        "source": 119,
+        "target": 120
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 295,
+        "source": 120,
+        "target": 121
+      },
+      {
+        "kind": "containment",
+        "navigation": 127,
+        "provenance": "authored",
+        "reference": 467,
+        "source": 118,
+        "target": 126
+      },
+      {
+        "kind": "containment",
+        "navigation": 129,
+        "provenance": "authored",
+        "reference": 472,
+        "source": 126,
+        "target": 127
+      },
+      {
+        "kind": "containment",
+        "navigation": 129,
+        "provenance": "authored",
+        "reference": 476,
+        "source": 127,
+        "target": 128
+      },
+      {
+        "kind": "containment",
+        "navigation": 123,
+        "provenance": "implied",
+        "reference": 565,
+        "source": 117,
+        "target": 129
+      },
+      {
+        "kind": "containment",
+        "navigation": 164,
+        "provenance": "implied",
+        "reference": 167,
         "source": 0,
         "target": 1
       },
       {
         "kind": "containment",
-        "navigation": 160,
+        "navigation": 167,
         "provenance": "implied",
-        "reference": 138,
+        "reference": 168,
         "source": 0,
         "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 163,
+        "navigation": 170,
         "provenance": "implied",
-        "reference": 139,
+        "reference": 169,
         "source": 0,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 166,
+        "navigation": 173,
         "provenance": "implied",
-        "reference": 140,
+        "reference": 170,
         "source": 0,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 169,
+        "navigation": 176,
         "provenance": "implied",
-        "reference": 141,
+        "reference": 171,
         "source": 0,
         "target": 5
       },
       {
         "kind": "containment",
-        "navigation": 153,
+        "navigation": 160,
         "provenance": "implied",
-        "reference": 142,
+        "reference": 172,
         "source": 0,
-        "target": 96
+        "target": 130
       },
       {
         "kind": "containment",
-        "navigation": 149,
+        "navigation": 156,
         "provenance": "implied",
-        "reference": 423,
-        "source": 96,
-        "target": 97
+        "reference": 557,
+        "source": 130,
+        "target": 131
       },
       {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 312,
-        "source": 97,
-        "target": 100
+        "reference": 426,
+        "source": 131,
+        "target": 138
       },
       {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 313,
-        "source": 97,
-        "target": 99
+        "reference": 427,
+        "source": 131,
+        "target": 135
       },
       {
         "kind": "containment",
         "navigation": 56,
-        "provenance": "implied",
-        "reference": 314,
-        "source": 97,
-        "target": 98
+        "provenance": "authored",
+        "reference": 338,
+        "source": 135,
+        "target": 136
       },
       {
         "kind": "containment",
-        "navigation": 143,
-        "provenance": "implied",
-        "reference": 424,
-        "source": 96,
-        "target": 103
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 366,
+        "source": 136,
+        "target": 137
       },
       {
         "kind": "containment",
-        "navigation": 145,
+        "navigation": 57,
         "provenance": "implied",
-        "reference": 425,
-        "source": 96,
-        "target": 101
+        "reference": 428,
+        "source": 131,
+        "target": 132
       },
       {
         "kind": "containment",
-        "navigation": 147,
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 268,
+        "source": 132,
+        "target": 133
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 296,
+        "source": 133,
+        "target": 134
+      },
+      {
+        "kind": "containment",
+        "navigation": 150,
         "provenance": "implied",
-        "reference": 426,
-        "source": 96,
-        "target": 102
+        "reference": 558,
+        "source": 130,
+        "target": 141
+      },
+      {
+        "kind": "containment",
+        "navigation": 152,
+        "provenance": "implied",
+        "reference": 559,
+        "source": 130,
+        "target": 139
+      },
+      {
+        "kind": "containment",
+        "navigation": 154,
+        "provenance": "implied",
+        "reference": 560,
+        "source": 130,
+        "target": 140
       }
     ],
     "exposedRoots": [
@@ -9982,8 +11336,8 @@ package TimerBrowser {
             "kind": "parts",
             "members": [
               6,
-              89,
-              96
+              117,
+              130
             ],
             "provenance": "inherited"
           },
@@ -10010,7 +11364,7 @@ package TimerBrowser {
           "types": [
             {
               "label": "KitchenTimer",
-              "reference": 74
+              "reference": 86
             }
           ]
         }
@@ -10021,8 +11375,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 125,
-        "source": 157,
+        "reference": 153,
+        "source": 164,
         "typing": {
           "status": "absent"
         }
@@ -10033,8 +11387,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 126,
-        "source": 160,
+        "reference": 154,
+        "source": 167,
         "typing": {
           "status": "absent"
         }
@@ -10045,8 +11399,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 127,
-        "source": 163,
+        "reference": 155,
+        "source": 170,
         "typing": {
           "status": "absent"
         }
@@ -10057,8 +11411,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 128,
-        "source": 166,
+        "reference": 156,
+        "source": 173,
         "typing": {
           "status": "absent"
         }
@@ -10069,8 +11423,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 129,
-        "source": 169,
+        "reference": 157,
+        "source": 176,
         "typing": {
           "status": "absent"
         }
@@ -10081,9 +11435,9 @@ package TimerBrowser {
             "kind": "parts",
             "members": [
               11,
-              23,
-              66,
-              78
+              33,
+              82,
+              100
             ],
             "provenance": "inherited"
           },
@@ -10102,14 +11456,14 @@ package TimerBrowser {
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 78,
-        "source": 151,
+        "reference": 90,
+        "source": 158,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "TimerPCB",
-              "reference": 90
+              "reference": 104
             }
           ]
         }
@@ -10120,8 +11474,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 131,
-        "source": 131,
+        "reference": 161,
+        "source": 138,
         "typing": {
           "status": "absent"
         }
@@ -10132,8 +11486,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 132,
-        "source": 134,
+        "reference": 162,
+        "source": 141,
         "typing": {
           "status": "absent"
         }
@@ -10144,8 +11498,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 133,
-        "source": 137,
+        "reference": 163,
+        "source": 144,
         "typing": {
           "status": "absent"
         }
@@ -10156,8 +11510,8 @@ package TimerBrowser {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 134,
-        "source": 140,
+        "reference": 164,
+        "source": 147,
         "typing": {
           "status": "absent"
         }
@@ -10168,8 +11522,8 @@ package TimerBrowser {
             "kind": "ports",
             "members": [
               12,
-              16,
-              21
+              20,
+              31
             ],
             "provenance": "inherited"
           }
@@ -10178,14 +11532,14 @@ package TimerBrowser {
         "name": "buzzerDriver",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 93,
-        "source": 129,
+        "reference": 107,
+        "source": 136,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "BuzzerDriver",
-              "reference": 63
+              "reference": 71
             }
           ]
         }
@@ -10196,8 +11550,8 @@ package TimerBrowser {
             "kind": "attributes",
             "members": [
               13,
-              14,
-              15
+              16,
+              19
             ],
             "provenance": "inherited"
           }
@@ -10206,8 +11560,8 @@ package TimerBrowser {
         "name": "buzzerPwrOut",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 64,
-        "source": 99,
+        "reference": 72,
+        "source": 103,
         "typing": {
           "status": "resolved",
           "types": [
@@ -10225,7 +11579,31 @@ package TimerBrowser {
         "notationRole": "usage",
         "owner": 12,
         "reference": 35,
-        "source": 56,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 13,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 14,
+        "reference": 138,
+        "source": 58,
         "typing": {
           "status": "absent"
         }
@@ -10236,8 +11614,32 @@ package TimerBrowser {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 12,
-        "reference": 37,
+        "reference": 39,
         "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 16,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 17,
+        "reference": 140,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -10248,14 +11650,14 @@ package TimerBrowser {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 12,
-        "reference": 36,
+        "reference": 38,
         "source": 53,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "electricPower",
-              "reference": 103
+              "reference": 118
             }
           ]
         }
@@ -10265,16 +11667,16 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              20
+              28
             ],
             "provenance": "direct"
           },
           {
             "kind": "attributes",
             "members": [
-              17,
-              18,
-              19
+              21,
+              24,
+              27
             ],
             "provenance": "inherited"
           }
@@ -10283,8 +11685,8 @@ package TimerBrowser {
         "name": "pwrIn",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 66,
-        "source": 95,
+        "reference": 74,
+        "source": 98,
         "typing": {
           "status": "resolved",
           "types": [
@@ -10300,9 +11702,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
-        "owner": 16,
+        "owner": 20,
         "reference": 35,
-        "source": 56,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 21,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 22,
+        "reference": 138,
+        "source": 58,
         "typing": {
           "status": "absent"
         }
@@ -10312,9 +11738,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
-        "owner": 16,
-        "reference": 37,
+        "owner": 20,
+        "reference": 39,
         "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 24,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 25,
+        "reference": 140,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -10324,15 +11774,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
-        "owner": 16,
-        "reference": 36,
+        "owner": 20,
+        "reference": 38,
         "source": 53,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "electricPower",
-              "reference": 103
+              "reference": 118
             }
           ]
         }
@@ -10342,12 +11792,36 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 16,
-        "reference": 123,
-        "source": 97,
+        "owner": 20,
+        "reference": 147,
+        "source": 100,
         "typing": {
           "status": "partial",
           "types": []
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 28,
+        "reference": 148,
+        "source": 102,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 29,
+        "reference": 149,
+        "source": 102,
+        "typing": {
+          "status": "absent"
         }
       },
       {
@@ -10355,7 +11829,7 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              22
+              32
             ],
             "provenance": "inherited"
           }
@@ -10364,14 +11838,14 @@ package TimerBrowser {
         "name": "ctrlIn",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 65,
-        "source": 93,
+        "reference": 73,
+        "source": 96,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "BuzzerCommandPort",
-              "reference": 44
+              "reference": 48
             }
           ]
         }
@@ -10381,15 +11855,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
-        "owner": 21,
-        "reference": 45,
-        "source": 71,
+        "owner": 31,
+        "reference": 49,
+        "source": 73,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10399,27 +11873,27 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              63,
-              64,
-              65
+              79,
+              80,
+              81
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              24,
-              26,
-              31,
-              37,
-              39
+              34,
+              36,
+              47,
+              53,
+              55
             ],
             "provenance": "inherited"
           },
           {
             "kind": "states",
             "members": [
-              41
+              57
             ],
             "provenance": "inherited"
           }
@@ -10428,14 +11902,14 @@ package TimerBrowser {
         "name": "mcu",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 95,
-        "source": 123,
+        "reference": 109,
+        "source": 130,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Microcontroller",
-              "reference": 79
+              "reference": 91
             }
           ]
         }
@@ -10445,7 +11919,7 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              25
+              35
             ],
             "provenance": "inherited"
           }
@@ -10453,15 +11927,15 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 83,
-        "source": 81,
+        "owner": 33,
+        "reference": 95,
+        "source": 83,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "DisplayCommandPort",
-              "reference": 46
+              "reference": 50
             }
           ]
         }
@@ -10471,15 +11945,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
-        "owner": 24,
-        "reference": 47,
-        "source": 67,
+        "owner": 34,
+        "reference": 51,
+        "source": 69,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "String",
-              "reference": 110
+              "reference": 126
             }
           ]
         }
@@ -10489,16 +11963,16 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              30
+              44
             ],
             "provenance": "direct"
           },
           {
             "kind": "attributes",
             "members": [
-              27,
-              28,
-              29
+              37,
+              40,
+              43
             ],
             "provenance": "inherited"
           }
@@ -10506,9 +11980,9 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 86,
-        "source": 87,
+        "owner": 33,
+        "reference": 98,
+        "source": 89,
         "typing": {
           "status": "resolved",
           "types": [
@@ -10524,9 +11998,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
-        "owner": 26,
+        "owner": 36,
         "reference": 35,
-        "source": 56,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 37,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 38,
+        "reference": 138,
+        "source": 58,
         "typing": {
           "status": "absent"
         }
@@ -10536,9 +12034,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
-        "owner": 26,
-        "reference": 37,
+        "owner": 36,
+        "reference": 39,
         "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 40,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 41,
+        "reference": 140,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -10548,15 +12070,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
-        "owner": 26,
-        "reference": 36,
+        "owner": 36,
+        "reference": 38,
         "source": 53,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "electricPower",
-              "reference": 103
+              "reference": 118
             }
           ]
         }
@@ -10566,12 +12088,36 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 26,
-        "reference": 130,
-        "source": 89,
+        "owner": 36,
+        "reference": 158,
+        "source": 91,
         "typing": {
           "status": "partial",
           "types": []
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 44,
+        "reference": 159,
+        "source": 93,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 45,
+        "reference": 160,
+        "source": 93,
+        "typing": {
+          "status": "absent"
         }
       },
       {
@@ -10579,11 +12125,11 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              32,
-              33,
-              34,
-              35,
-              36
+              48,
+              49,
+              50,
+              51,
+              52
             ],
             "provenance": "inherited"
           }
@@ -10591,15 +12137,15 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 80,
-        "source": 79,
+        "owner": 33,
+        "reference": 92,
+        "source": 81,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "ButtonInputPort",
-              "reference": 38
+              "reference": 42
             }
           ]
         }
@@ -10609,15 +12155,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
-        "owner": 31,
-        "reference": 43,
-        "source": 59,
+        "owner": 47,
+        "reference": 47,
+        "source": 61,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10627,15 +12173,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
-        "owner": 31,
-        "reference": 41,
-        "source": 61,
+        "owner": 47,
+        "reference": 45,
+        "source": 63,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10645,15 +12191,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
-        "owner": 31,
-        "reference": 42,
-        "source": 57,
+        "owner": 47,
+        "reference": 46,
+        "source": 59,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10663,15 +12209,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
-        "owner": 31,
-        "reference": 39,
-        "source": 65,
+        "owner": 47,
+        "reference": 43,
+        "source": 67,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10681,15 +12227,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
-        "owner": 31,
-        "reference": 40,
-        "source": 63,
+        "owner": 47,
+        "reference": 44,
+        "source": 65,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10699,7 +12245,7 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              38
+              54
             ],
             "provenance": "inherited"
           }
@@ -10707,15 +12253,15 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 85,
-        "source": 83,
+        "owner": 33,
+        "reference": 97,
+        "source": 85,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "LcdSegmentDrivePort",
-              "reference": 48
+              "reference": 52
             }
           ]
         }
@@ -10725,15 +12271,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
-        "owner": 37,
-        "reference": 49,
-        "source": 69,
+        "owner": 53,
+        "reference": 53,
+        "source": 71,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "String",
-              "reference": 110
+              "reference": 126
             }
           ]
         }
@@ -10743,7 +12289,7 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              40
+              56
             ],
             "provenance": "inherited"
           }
@@ -10751,15 +12297,15 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 81,
-        "source": 85,
+        "owner": 33,
+        "reference": 93,
+        "source": 87,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "BuzzerCommandPort",
-              "reference": 44
+              "reference": 48
             }
           ]
         }
@@ -10769,15 +12315,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
-        "owner": 39,
-        "reference": 45,
-        "source": 71,
+        "owner": 55,
+        "reference": 49,
+        "source": 73,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Boolean",
-              "reference": 108
+              "reference": 124
             }
           ]
         }
@@ -10787,10 +12333,10 @@ package TimerBrowser {
           {
             "kind": "states",
             "members": [
-              59,
-              60,
-              61,
-              62
+              75,
+              76,
+              77,
+              78
             ],
             "provenance": "inherited"
           }
@@ -10798,9 +12344,9 @@ package TimerBrowser {
         "metaclass": "StateUsage",
         "name": "timerMode",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 89,
-        "source": 91,
+        "owner": 33,
+        "reference": 103,
+        "source": 94,
         "typing": {
           "status": "resolved",
           "types": [
@@ -10816,7 +12362,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              43
+              59
             ],
             "provenance": "direct"
           }
@@ -10824,7 +12370,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 22,
         "source": 34,
         "typing": {
@@ -10836,8 +12382,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 42,
-        "reference": 115,
+        "owner": 58,
+        "reference": 131,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -10848,7 +12394,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              45
+              61
             ],
             "provenance": "direct"
           }
@@ -10856,7 +12402,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 30,
         "source": 14,
         "typing": {
@@ -10868,8 +12414,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 44,
-        "reference": 119,
+        "owner": 60,
+        "reference": 135,
         "source": 13,
         "typing": {
           "status": "absent"
@@ -10880,7 +12426,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              47
+              63
             ],
             "provenance": "direct"
           }
@@ -10888,7 +12434,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 14,
         "source": 24,
         "typing": {
@@ -10900,8 +12446,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 46,
-        "reference": 113,
+        "owner": 62,
+        "reference": 129,
         "source": 23,
         "typing": {
           "status": "absent"
@@ -10912,7 +12458,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              49
+              65
             ],
             "provenance": "direct"
           }
@@ -10920,7 +12466,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 18,
         "source": 19,
         "typing": {
@@ -10932,8 +12478,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 48,
-        "reference": 114,
+        "owner": 64,
+        "reference": 130,
         "source": 18,
         "typing": {
           "status": "absent"
@@ -10944,7 +12490,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              51
+              67
             ],
             "provenance": "direct"
           }
@@ -10952,7 +12498,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 32,
         "source": 39,
         "typing": {
@@ -10964,8 +12510,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 50,
-        "reference": 120,
+        "owner": 66,
+        "reference": 136,
         "source": 38,
         "typing": {
           "status": "absent"
@@ -10976,7 +12522,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              53
+              69
             ],
             "provenance": "direct"
           }
@@ -10984,7 +12530,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 26,
         "source": 44,
         "typing": {
@@ -10996,8 +12542,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 52,
-        "reference": 117,
+        "owner": 68,
+        "reference": 133,
         "source": 43,
         "typing": {
           "status": "absent"
@@ -11008,7 +12554,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              55
+              71
             ],
             "provenance": "direct"
           }
@@ -11016,7 +12562,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 24,
         "source": 49,
         "typing": {
@@ -11028,8 +12574,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 54,
-        "reference": 116,
+        "owner": 70,
+        "reference": 132,
         "source": 48,
         "typing": {
           "status": "absent"
@@ -11040,7 +12586,7 @@ package TimerBrowser {
           {
             "kind": "actions",
             "members": [
-              57
+              73
             ],
             "provenance": "direct"
           }
@@ -11048,7 +12594,7 @@ package TimerBrowser {
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 28,
         "source": 29,
         "typing": {
@@ -11060,8 +12606,8 @@ package TimerBrowser {
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 56,
-        "reference": 118,
+        "owner": 72,
+        "reference": 134,
         "source": 28,
         "typing": {
           "status": "absent"
@@ -11072,8 +12618,8 @@ package TimerBrowser {
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 41,
-        "reference": 112,
+        "owner": 57,
+        "reference": 128,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -11084,7 +12630,7 @@ package TimerBrowser {
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 17,
         "source": 5,
         "typing": {
@@ -11102,7 +12648,7 @@ package TimerBrowser {
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 20,
         "source": 9,
         "typing": {
@@ -11120,7 +12666,7 @@ package TimerBrowser {
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 16,
         "source": 11,
         "typing": {
@@ -11138,7 +12684,7 @@ package TimerBrowser {
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 57,
         "reference": 21,
         "source": 7,
         "typing": {
@@ -11156,15 +12702,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 82,
-        "source": 73,
+        "owner": 33,
+        "reference": 94,
+        "source": 75,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "FrequencyValue",
-              "reference": 104
+              "reference": 119
             }
           ]
         }
@@ -11174,15 +12720,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "ramSize",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 88,
-        "source": 77,
+        "owner": 33,
+        "reference": 102,
+        "source": 79,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 109
+              "reference": 125
             }
           ]
         }
@@ -11192,15 +12738,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "flashSize",
         "notationRole": "usage",
-        "owner": 23,
-        "reference": 84,
-        "source": 75,
+        "owner": 33,
+        "reference": 96,
+        "source": 77,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "Real",
-              "reference": 109
+              "reference": 125
             }
           ]
         }
@@ -11210,8 +12756,8 @@ package TimerBrowser {
           {
             "kind": "ports",
             "members": [
-              67,
-              72
+              83,
+              94
             ],
             "provenance": "inherited"
           }
@@ -11220,487 +12766,13 @@ package TimerBrowser {
         "name": "buttons",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 92,
-        "source": 127,
+        "reference": 106,
+        "source": 134,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "ButtonInterface",
-              "reference": 55
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              71
-            ],
-            "provenance": "direct"
-          },
-          {
-            "kind": "attributes",
-            "members": [
-              68,
-              69,
-              70
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 66,
-        "reference": 57,
-        "source": 113,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "BatteryOutlet",
-              "reference": 34
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "maxCurrent",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 35,
-        "source": 56,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "voltage",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 37,
-        "source": 55,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "power",
-        "notationRole": "reference-usage",
-        "owner": 67,
-        "reference": 36,
-        "source": 53,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 103
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 121,
-        "source": 115,
-        "typing": {
-          "status": "partial",
-          "types": []
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              73,
-              74,
-              75,
-              76,
-              77
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "output",
-        "notationRole": "usage",
-        "owner": 66,
-        "reference": 56,
-        "source": 111,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "ButtonInputPort",
-              "reference": 38
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "stopPressed",
-        "notationRole": "reference-usage",
-        "owner": 72,
-        "reference": 43,
-        "source": 59,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Boolean",
-              "reference": 108
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "resetPressed",
-        "notationRole": "reference-usage",
-        "owner": 72,
-        "reference": 41,
-        "source": 61,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Boolean",
-              "reference": 108
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "startPressed",
-        "notationRole": "reference-usage",
-        "owner": 72,
-        "reference": 42,
-        "source": 57,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Boolean",
-              "reference": 108
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "decrementPressed",
-        "notationRole": "reference-usage",
-        "owner": 72,
-        "reference": 39,
-        "source": 65,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Boolean",
-              "reference": 108
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "incrementPressed",
-        "notationRole": "reference-usage",
-        "owner": 72,
-        "reference": 40,
-        "source": 63,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Boolean",
-              "reference": 108
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              88
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              79,
-              81,
-              86
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "display",
-        "notationRole": "usage",
-        "owner": 6,
-        "reference": 94,
-        "source": 125,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Display",
-              "reference": 68
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              80
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "cmd",
-        "notationRole": "usage",
-        "owner": 78,
-        "reference": 69,
-        "source": 103,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DisplayCommandPort",
-              "reference": 46
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "displayValue",
-        "notationRole": "reference-usage",
-        "owner": 79,
-        "reference": 47,
-        "source": 67,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "String",
-              "reference": 110
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              85
-            ],
-            "provenance": "direct"
-          },
-          {
-            "kind": "attributes",
-            "members": [
-              82,
-              83,
-              84
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 78,
-        "reference": 72,
-        "source": 107,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "BatteryOutlet",
-              "reference": 34
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "maxCurrent",
-        "notationRole": "usage",
-        "owner": 81,
-        "reference": 35,
-        "source": 56,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "voltage",
-        "notationRole": "usage",
-        "owner": 81,
-        "reference": 37,
-        "source": 55,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "power",
-        "notationRole": "reference-usage",
-        "owner": 81,
-        "reference": 36,
-        "source": 53,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 103
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 81,
-        "reference": 124,
-        "source": 109,
-        "typing": {
-          "status": "partial",
-          "types": []
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              87
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "lcdIn",
-        "notationRole": "usage",
-        "owner": 78,
-        "reference": 71,
-        "source": 105,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "LcdSegmentDrivePort",
-              "reference": 48
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "comSegDrive",
-        "notationRole": "reference-usage",
-        "owner": 86,
-        "reference": 49,
-        "source": 69,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "String",
-              "reference": 110
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "format",
-        "notationRole": "usage",
-        "owner": 78,
-        "reference": 70,
-        "source": 101,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "String",
-              "reference": 110
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              95
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              90
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "buzzer",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 77,
-        "source": 155,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Buzzer",
               "reference": 59
             }
           ]
@@ -11711,16 +12783,16 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              94
+              91
             ],
             "provenance": "direct"
           },
           {
             "kind": "attributes",
             "members": [
-              91,
-              92,
-              93
+              84,
+              87,
+              90
             ],
             "provenance": "inherited"
           }
@@ -11728,9 +12800,9 @@ package TimerBrowser {
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 89,
+        "owner": 82,
         "reference": 61,
-        "source": 119,
+        "source": 118,
         "typing": {
           "status": "resolved",
           "types": [
@@ -11746,9 +12818,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
-        "owner": 90,
+        "owner": 83,
         "reference": 35,
-        "source": 56,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 84,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 85,
+        "reference": 138,
+        "source": 58,
         "typing": {
           "status": "absent"
         }
@@ -11758,9 +12854,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
-        "owner": 90,
-        "reference": 37,
+        "owner": 83,
+        "reference": 39,
         "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 87,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 88,
+        "reference": 140,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -11770,15 +12890,15 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
-        "owner": 90,
-        "reference": 36,
+        "owner": 83,
+        "reference": 38,
         "source": 53,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "electricPower",
-              "reference": 103
+              "reference": 118
             }
           ]
         }
@@ -11788,9 +12908,9 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 90,
-        "reference": 122,
-        "source": 121,
+        "owner": 83,
+        "reference": 141,
+        "source": 120,
         "typing": {
           "status": "partial",
           "types": []
@@ -11798,18 +12918,144 @@ package TimerBrowser {
       },
       {
         "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "duration",
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 91,
+        "reference": 142,
+        "source": 122,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 92,
+        "reference": 143,
+        "source": 122,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              95,
+              96,
+              97,
+              98,
+              99
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "output",
         "notationRole": "usage",
-        "owner": 89,
+        "owner": 82,
         "reference": 60,
-        "source": 117,
+        "source": 116,
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "DurationValue",
-              "reference": 100
+              "label": "ButtonInputPort",
+              "reference": 42
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "stopPressed",
+        "notationRole": "reference-usage",
+        "owner": 94,
+        "reference": 47,
+        "source": 61,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 124
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "resetPressed",
+        "notationRole": "reference-usage",
+        "owner": 94,
+        "reference": 45,
+        "source": 63,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 124
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "startPressed",
+        "notationRole": "reference-usage",
+        "owner": 94,
+        "reference": 46,
+        "source": 59,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 124
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "decrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 94,
+        "reference": 43,
+        "source": 67,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 124
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "incrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 94,
+        "reference": 44,
+        "source": 65,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 124
             }
           ]
         }
@@ -11819,32 +13065,32 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              101,
-              102,
-              103
+              116
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              97
+              101,
+              103,
+              114
             ],
             "provenance": "inherited"
           }
         ],
         "metaclass": "PartUsage",
-        "name": "battery",
+        "name": "display",
         "notationRole": "usage",
-        "owner": 0,
-        "reference": 76,
-        "source": 153,
+        "owner": 6,
+        "reference": 108,
+        "source": 132,
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "Battery",
-              "reference": 50
+              "label": "Display",
+              "reference": 78
             }
           ]
         }
@@ -11854,19 +13100,70 @@ package TimerBrowser {
           {
             "kind": "attributes",
             "members": [
-              98,
-              99,
-              100
+              102
             ],
             "provenance": "inherited"
           }
         ],
         "metaclass": "PortUsage",
-        "name": "powerOut",
+        "name": "cmd",
         "notationRole": "usage",
-        "owner": 96,
-        "reference": 53,
-        "source": 149,
+        "owner": 100,
+        "reference": 79,
+        "source": 107,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 50
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "displayValue",
+        "notationRole": "reference-usage",
+        "owner": 101,
+        "reference": 51,
+        "source": 69,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 126
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              111
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              104,
+              107,
+              110
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 100,
+        "reference": 82,
+        "source": 111,
         "typing": {
           "status": "resolved",
           "types": [
@@ -11882,9 +13179,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
-        "owner": 97,
+        "owner": 103,
         "reference": 35,
-        "source": 56,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 104,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 105,
+        "reference": 138,
+        "source": 58,
         "typing": {
           "status": "absent"
         }
@@ -11894,9 +13215,33 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
-        "owner": 97,
-        "reference": 37,
+        "owner": 103,
+        "reference": 39,
         "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 107,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 108,
+        "reference": 140,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -11906,15 +13251,480 @@ package TimerBrowser {
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
-        "owner": 97,
-        "reference": 36,
+        "owner": 103,
+        "reference": 38,
         "source": 53,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "electricPower",
-              "reference": 103
+              "reference": 118
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 103,
+        "reference": 150,
+        "source": 113,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 111,
+        "reference": 151,
+        "source": 115,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 112,
+        "reference": 152,
+        "source": 115,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              115
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "lcdIn",
+        "notationRole": "usage",
+        "owner": 100,
+        "reference": 81,
+        "source": 109,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 52
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "comSegDrive",
+        "notationRole": "reference-usage",
+        "owner": 114,
+        "reference": 53,
+        "source": 71,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 126
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "format",
+        "notationRole": "usage",
+        "owner": 100,
+        "reference": 80,
+        "source": 105,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 126
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              129
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              118
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "buzzer",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 89,
+        "source": 162,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Buzzer",
+              "reference": 65
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              126
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              119,
+              122,
+              125
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 117,
+        "reference": 67,
+        "source": 125,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 34
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 118,
+        "reference": 35,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 119,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 120,
+        "reference": 138,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 118,
+        "reference": 39,
+        "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 122,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 123,
+        "reference": 140,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 118,
+        "reference": 38,
+        "source": 53,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 118
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 118,
+        "reference": 144,
+        "source": 127,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 126,
+        "reference": 145,
+        "source": 129,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 127,
+        "reference": 146,
+        "source": 129,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "duration",
+        "notationRole": "usage",
+        "owner": 117,
+        "reference": 66,
+        "source": 123,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DurationValue",
+              "reference": 115
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              139,
+              140,
+              141
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              131
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "battery",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 88,
+        "source": 160,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Battery",
+              "reference": 54
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              132,
+              135,
+              138
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "powerOut",
+        "notationRole": "usage",
+        "owner": 130,
+        "reference": 57,
+        "source": 156,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 34
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 131,
+        "reference": 35,
+        "source": 57,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 132,
+        "reference": 137,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 133,
+        "reference": 138,
+        "source": 58,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 131,
+        "reference": 39,
+        "source": 55,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 135,
+        "reference": 139,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 136,
+        "reference": 140,
+        "source": 56,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 131,
+        "reference": 38,
+        "source": 53,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 118
             }
           ]
         }
@@ -11924,15 +13734,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
-        "owner": 96,
-        "reference": 52,
-        "source": 145,
+        "owner": 130,
+        "reference": 56,
+        "source": 152,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "ElectricPotentialDifferenceValue",
-              "reference": 102
+              "reference": 117
             }
           ]
         }
@@ -11942,15 +13752,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
-        "owner": 96,
-        "reference": 54,
-        "source": 147,
+        "owner": 130,
+        "reference": 58,
+        "source": 154,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "DurationValue",
-              "reference": 100
+              "reference": 115
             }
           ]
         }
@@ -11960,15 +13770,15 @@ package TimerBrowser {
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
-        "owner": 96,
-        "reference": 51,
-        "source": 143,
+        "owner": 130,
+        "reference": 55,
+        "source": 150,
         "typing": {
           "status": "resolved",
           "types": [
             {
               "label": "ElectricChargeValue",
-              "reference": 101
+              "reference": 116
             }
           ]
         }
@@ -11979,10 +13789,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 174,
         "source": 0,
         "target": {
-          "reference": 74,
+          "reference": 86,
           "status": "resolved"
         }
       },
@@ -11990,21 +13800,21 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 143,
+        "reference": 173,
         "source": 0,
         "target": {
-          "reference": 106,
+          "reference": 121,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 152,
+        "navigation": 159,
         "provenance": "authored",
-        "reference": 445,
+        "reference": 579,
         "source": 6,
         "target": {
-          "reference": 90,
+          "reference": 104,
           "status": "resolved"
         }
       },
@@ -12012,10 +13822,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 443,
+        "reference": 577,
         "source": 6,
         "target": {
-          "reference": 106,
+          "reference": 121,
           "status": "resolved"
         }
       },
@@ -12023,21 +13833,21 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 444,
+        "reference": 578,
         "source": 6,
         "target": {
-          "reference": 74,
+          "reference": 86,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 124,
+        "navigation": 131,
         "provenance": "authored",
-        "reference": 551,
-        "source": 23,
+        "reference": 690,
+        "source": 33,
         "target": {
-          "reference": 79,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -12045,10 +13855,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 549,
-        "source": 23,
+        "reference": 688,
+        "source": 33,
         "target": {
-          "reference": 106,
+          "reference": 121,
           "status": "resolved"
         }
       },
@@ -12056,19 +13866,19 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 550,
-        "source": 23,
+        "reference": 689,
+        "source": 33,
         "target": {
-          "reference": 90,
+          "reference": 104,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 88,
+        "navigation": 90,
         "provenance": "authored",
-        "reference": 483,
-        "source": 26,
+        "reference": 617,
+        "source": 36,
         "target": {
           "reference": 34,
           "status": "resolved"
@@ -12078,10 +13888,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 480,
-        "source": 26,
+        "reference": 614,
+        "source": 36,
         "target": {
-          "reference": 105,
+          "reference": 120,
           "status": "resolved"
         }
       },
@@ -12089,10 +13899,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 481,
-        "source": 26,
+        "reference": 615,
+        "source": 36,
         "target": {
-          "reference": 107,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -12100,10 +13910,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 482,
-        "source": 26,
+        "reference": 616,
+        "source": 36,
         "target": {
-          "reference": 79,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -12111,10 +13921,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 253,
-        "source": 29,
+        "reference": 325,
+        "source": 43,
         "target": {
-          "reference": 103,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -12122,8 +13932,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 246,
-        "source": 29,
+        "reference": 318,
+        "source": 43,
         "target": {
           "reference": 34,
           "status": "resolved"
@@ -12133,10 +13943,21 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 260,
-        "source": 28,
+        "reference": 339,
+        "source": 40,
         "target": {
-          "reference": 98,
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 346,
+        "source": 40,
+        "target": {
+          "node": 42,
           "status": "resolved"
         }
       },
@@ -12144,8 +13965,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 267,
-        "source": 28,
+        "reference": 353,
+        "source": 40,
         "target": {
           "reference": 34,
           "status": "resolved"
@@ -12155,10 +13976,21 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 232,
-        "source": 27,
+        "reference": 367,
+        "source": 41,
         "target": {
-          "reference": 98,
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 374,
+        "source": 42,
+        "target": {
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -12166,21 +13998,87 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 239,
-        "source": 27,
+        "reference": 381,
+        "source": 42,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 269,
+        "source": 37,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 276,
+        "source": 37,
+        "target": {
+          "node": 39,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 37,
         "target": {
           "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 297,
+        "source": 38,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 304,
+        "source": 39,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 311,
+        "source": 39,
+        "target": {
+          "node": 38,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": 90,
+        "navigation": 92,
         "provenance": "authored",
-        "reference": 484,
-        "source": 30,
+        "reference": 619,
+        "source": 44,
         "target": {
-          "node": 27,
+          "node": 37,
           "status": "resolved"
         }
       },
@@ -12188,10 +14086,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 485,
-        "source": 30,
+        "reference": 620,
+        "source": 44,
         "target": {
-          "reference": 98,
+          "reference": 112,
           "status": "resolved"
         }
       },
@@ -12199,21 +14097,54 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 486,
-        "source": 30,
+        "reference": 621,
+        "source": 44,
         "target": {
-          "node": 26,
+          "node": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 623,
+        "source": 45,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 624,
+        "source": 46,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 625,
+        "source": 46,
+        "target": {
+          "node": 45,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 80,
+        "navigation": 82,
         "provenance": "authored",
-        "reference": 454,
-        "source": 31,
+        "reference": 588,
+        "source": 47,
         "target": {
-          "reference": 38,
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -12221,10 +14152,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 451,
-        "source": 31,
+        "reference": 585,
+        "source": 47,
         "target": {
-          "reference": 105,
+          "reference": 120,
           "status": "resolved"
         }
       },
@@ -12232,10 +14163,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 452,
-        "source": 31,
+        "reference": 586,
+        "source": 47,
         "target": {
-          "reference": 107,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -12243,32 +14174,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 453,
-        "source": 31,
+        "reference": 587,
+        "source": 47,
         "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
-        "reference": 292,
-        "source": 32,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 290,
-        "source": 32,
-        "target": {
-          "reference": 38,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -12276,10 +14185,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 62,
         "provenance": "authored",
-        "reference": 284,
-        "source": 33,
+        "reference": 406,
+        "source": 48,
         "target": {
-          "reference": 108,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -12287,54 +14196,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 282,
-        "source": 33,
+        "reference": 404,
+        "source": 48,
         "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 58,
-        "provenance": "authored",
-        "reference": 288,
-        "source": 34,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 286,
-        "source": 34,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 66,
-        "provenance": "authored",
-        "reference": 276,
-        "source": 35,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 274,
-        "source": 35,
-        "target": {
-          "reference": 38,
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -12342,10 +14207,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 64,
         "provenance": "authored",
-        "reference": 280,
-        "source": 36,
+        "reference": 398,
+        "source": 49,
         "target": {
-          "reference": 108,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -12353,43 +14218,21 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 278,
-        "source": 36,
+        "reference": 396,
+        "source": 49,
         "target": {
-          "reference": 38,
+          "reference": 42,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 84,
+        "navigation": 60,
         "provenance": "authored",
-        "reference": 475,
-        "source": 37,
+        "reference": 402,
+        "source": 50,
         "target": {
-          "reference": 48,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 472,
-        "source": 37,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 473,
-        "source": 37,
-        "target": {
-          "reference": 107,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -12397,21 +14240,21 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 474,
-        "source": 37,
+        "reference": 400,
+        "source": 50,
         "target": {
-          "reference": 79,
+          "reference": 42,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 70,
+        "navigation": 68,
         "provenance": "authored",
-        "reference": 304,
-        "source": 38,
+        "reference": 390,
+        "source": 51,
         "target": {
-          "reference": 110,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -12419,10 +14262,32 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 302,
-        "source": 38,
+        "reference": 388,
+        "source": 51,
         "target": {
-          "reference": 48,
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 66,
+        "provenance": "authored",
+        "reference": 394,
+        "source": 52,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 392,
+        "source": 52,
+        "target": {
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -12430,10 +14295,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 86,
         "provenance": "authored",
-        "reference": 459,
-        "source": 39,
+        "reference": 609,
+        "source": 53,
         "target": {
-          "reference": 44,
+          "reference": 52,
           "status": "resolved"
         }
       },
@@ -12441,10 +14306,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 456,
-        "source": 39,
+        "reference": 606,
+        "source": 53,
         "target": {
-          "reference": 105,
+          "reference": 120,
           "status": "resolved"
         }
       },
@@ -12452,10 +14317,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 457,
-        "source": 39,
+        "reference": 607,
+        "source": 53,
         "target": {
-          "reference": 107,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -12463,10 +14328,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 458,
-        "source": 39,
+        "reference": 608,
+        "source": 53,
         "target": {
-          "reference": 79,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -12474,10 +14339,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 72,
         "provenance": "authored",
-        "reference": 296,
-        "source": 40,
+        "reference": 418,
+        "source": 54,
         "target": {
-          "reference": 108,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -12485,19 +14350,85 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 294,
-        "source": 40,
+        "reference": 416,
+        "source": 54,
         "target": {
-          "reference": 44,
+          "reference": 52,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 92,
+        "navigation": 88,
         "provenance": "authored",
-        "reference": 505,
-        "source": 41,
+        "reference": 593,
+        "source": 55,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 590,
+        "source": 55,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 591,
+        "source": 55,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 592,
+        "source": 55,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 74,
+        "provenance": "authored",
+        "reference": 410,
+        "source": 56,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 408,
+        "source": 56,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 95,
+        "provenance": "authored",
+        "reference": 644,
+        "source": 57,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -12507,10 +14438,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 503,
-        "source": 41,
+        "reference": 642,
+        "source": 57,
         "target": {
-          "reference": 111,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -12518,10 +14449,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 504,
-        "source": 41,
+        "reference": 643,
+        "source": 57,
         "target": {
-          "reference": 79,
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -12529,8 +14460,8 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 165,
-        "source": 59,
+        "reference": 195,
+        "source": 75,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -12540,10 +14471,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 160,
-        "source": 59,
+        "reference": 190,
+        "source": 75,
         "target": {
-          "reference": 111,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -12551,8 +14482,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 164,
-        "source": 59,
+        "reference": 194,
+        "source": 75,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -12562,8 +14493,8 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 178,
-        "source": 60,
+        "reference": 208,
+        "source": 76,
         "target": {
           "reference": 7,
           "status": "resolved"
@@ -12573,10 +14504,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 174,
-        "source": 60,
+        "reference": 204,
+        "source": 76,
         "target": {
-          "reference": 111,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -12584,8 +14515,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 177,
-        "source": 60,
+        "reference": 207,
+        "source": 76,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -12595,10 +14526,10 @@ package TimerBrowser {
         "kind": "initialState",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 146,
-        "source": 58,
+        "reference": 176,
+        "source": 74,
         "target": {
-          "node": 59,
+          "node": 75,
           "status": "resolved"
         }
       },
@@ -12606,8 +14537,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 147,
-        "source": 58,
+        "reference": 177,
+        "source": 74,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -12617,8 +14548,8 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 159,
-        "source": 61,
+        "reference": 189,
+        "source": 77,
         "target": {
           "reference": 4,
           "status": "resolved"
@@ -12628,10 +14559,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 156,
-        "source": 61,
+        "reference": 186,
+        "source": 77,
         "target": {
-          "reference": 111,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -12639,8 +14570,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 158,
-        "source": 61,
+        "reference": 188,
+        "source": 77,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -12650,10 +14581,263 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 183,
-        "source": 62,
+        "reference": 213,
+        "source": 78,
         "target": {
           "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 209,
+        "source": 78,
+        "target": {
+          "reference": 127,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 212,
+        "source": 78,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 239,
+        "source": 72,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 30,
+        "provenance": "authored",
+        "reference": 240,
+        "source": 72,
+        "target": {
+          "node": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 241,
+        "source": 72,
+        "target": {
+          "node": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 31,
+        "provenance": "authored",
+        "reference": 242,
+        "source": 72,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 72,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 244,
+        "source": 73,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 73,
+        "target": {
+          "node": 72,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 215,
+        "source": 58,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 35,
+        "provenance": "authored",
+        "reference": 216,
+        "source": 58,
+        "target": {
+          "node": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 37,
+        "provenance": "authored",
+        "reference": 217,
+        "source": 58,
+        "target": {
+          "node": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 218,
+        "source": 58,
+        "target": {
+          "reference": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 219,
+        "source": 58,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 220,
+        "source": 59,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 221,
+        "source": 59,
+        "target": {
+          "node": 58,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 247,
+        "source": 60,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 248,
+        "source": 60,
+        "target": {
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 17,
+        "provenance": "authored",
+        "reference": 249,
+        "source": 60,
+        "target": {
+          "node": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 250,
+        "source": 60,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 60,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 61,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 253,
+        "source": 61,
+        "target": {
+          "node": 60,
           "status": "resolved"
         }
       },
@@ -12669,10 +14853,43 @@ package TimerBrowser {
         }
       },
       {
+        "kind": "transitionSource",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 180,
+        "source": 62,
+        "target": {
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 27,
+        "provenance": "authored",
+        "reference": 181,
+        "source": 62,
+        "target": {
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 182,
+        "source": 62,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 182,
+        "reference": 183,
         "source": 62,
         "target": {
           "reference": 12,
@@ -12683,318 +14900,32 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 209,
-        "source": 56,
+        "reference": 184,
+        "source": 63,
         "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 210,
-        "source": 56,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 32,
-        "provenance": "authored",
-        "reference": 211,
-        "source": 56,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 31,
-        "provenance": "authored",
-        "reference": 212,
-        "source": 56,
-        "target": {
-          "reference": 11,
+          "reference": 110,
           "status": "resolved"
         }
       },
       {
         "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 213,
-        "source": 56,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 214,
-        "source": 57,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 215,
-        "source": 57,
-        "target": {
-          "node": 56,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
         "reference": 185,
-        "source": 42,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 35,
-        "provenance": "authored",
-        "reference": 186,
-        "source": 42,
+        "source": 63,
         "target": {
           "node": 62,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 37,
-        "provenance": "authored",
-        "reference": 187,
-        "source": 42,
-        "target": {
-          "node": 61,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 36,
-        "provenance": "authored",
-        "reference": 188,
-        "source": 42,
-        "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 189,
-        "source": 42,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 190,
-        "source": 43,
+        "reference": 197,
+        "source": 64,
         "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 191,
-        "source": 43,
-        "target": {
-          "node": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 217,
-        "source": 44,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 15,
-        "provenance": "authored",
-        "reference": 218,
-        "source": 44,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 17,
-        "provenance": "authored",
-        "reference": 219,
-        "source": 44,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 220,
-        "source": 44,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 221,
-        "source": 44,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 222,
-        "source": 45,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 223,
-        "source": 45,
-        "target": {
-          "node": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 149,
-        "source": 46,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 150,
-        "source": 46,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 27,
-        "provenance": "authored",
-        "reference": 151,
-        "source": 46,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 152,
-        "source": 46,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 153,
-        "source": 46,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 154,
-        "source": 47,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 155,
-        "source": 47,
-        "target": {
-          "node": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 167,
-        "source": 48,
-        "target": {
-          "reference": 97,
+          "reference": 111,
           "status": "resolved"
         }
       },
@@ -13002,10 +14933,10 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 168,
-        "source": 48,
+        "reference": 198,
+        "source": 64,
         "target": {
-          "node": 59,
+          "node": 75,
           "status": "resolved"
         }
       },
@@ -13013,10 +14944,10 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 169,
-        "source": 48,
+        "reference": 199,
+        "source": 64,
         "target": {
-          "node": 59,
+          "node": 75,
           "status": "resolved"
         }
       },
@@ -13024,8 +14955,8 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 170,
-        "source": 48,
+        "reference": 200,
+        "source": 64,
         "target": {
           "reference": 6,
           "status": "resolved"
@@ -13035,8 +14966,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 171,
-        "source": 48,
+        "reference": 201,
+        "source": 64,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -13046,10 +14977,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 172,
-        "source": 49,
+        "reference": 202,
+        "source": 65,
         "target": {
-          "reference": 96,
+          "reference": 110,
           "status": "resolved"
         }
       },
@@ -13057,10 +14988,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 173,
-        "source": 49,
+        "reference": 203,
+        "source": 65,
         "target": {
-          "node": 48,
+          "node": 64,
           "status": "resolved"
         }
       },
@@ -13068,10 +14999,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 225,
-        "source": 50,
+        "reference": 255,
+        "source": 66,
         "target": {
-          "reference": 97,
+          "reference": 111,
           "status": "resolved"
         }
       },
@@ -13079,10 +15010,10 @@ package TimerBrowser {
         "kind": "transitionSource",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 226,
-        "source": 50,
+        "reference": 256,
+        "source": 66,
         "target": {
-          "node": 60,
+          "node": 76,
           "status": "resolved"
         }
       },
@@ -13090,10 +15021,10 @@ package TimerBrowser {
         "kind": "transitionTarget",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 227,
-        "source": 50,
+        "reference": 257,
+        "source": 66,
         "target": {
-          "node": 62,
+          "node": 78,
           "status": "resolved"
         }
       },
@@ -13101,8 +15032,8 @@ package TimerBrowser {
         "kind": "transitionTrigger",
         "navigation": 41,
         "provenance": "authored",
-        "reference": 228,
-        "source": 50,
+        "reference": 258,
+        "source": 66,
         "target": {
           "reference": 10,
           "status": "resolved"
@@ -13112,8 +15043,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 229,
-        "source": 50,
+        "reference": 259,
+        "source": 66,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -13123,228 +15054,8 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 230,
-        "source": 51,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 231,
-        "source": 51,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 201,
-        "source": 52,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 45,
-        "provenance": "authored",
-        "reference": 202,
-        "source": 52,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 47,
-        "provenance": "authored",
-        "reference": 203,
-        "source": 52,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 46,
-        "provenance": "authored",
-        "reference": 204,
-        "source": 52,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 205,
-        "source": 52,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 206,
-        "source": 53,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 207,
-        "source": 53,
-        "target": {
-          "node": 52,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 193,
-        "source": 54,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 50,
-        "provenance": "authored",
-        "reference": 194,
-        "source": 54,
-        "target": {
-          "node": 61,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 52,
-        "provenance": "authored",
-        "reference": 195,
-        "source": 54,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 51,
-        "provenance": "authored",
-        "reference": 196,
-        "source": 54,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 197,
-        "source": 54,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 198,
-        "source": 55,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 199,
-        "source": 55,
-        "target": {
-          "node": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 82,
-        "provenance": "authored",
-        "reference": 467,
-        "source": 24,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 464,
-        "source": 24,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 465,
-        "source": 24,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 466,
-        "source": 24,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 68,
-        "provenance": "authored",
-        "reference": 300,
-        "source": 25,
+        "reference": 260,
+        "source": 67,
         "target": {
           "reference": 110,
           "status": "resolved"
@@ -13354,406 +15065,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 298,
-        "source": 25,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 78,
-        "provenance": "authored",
-        "reference": 489,
-        "source": 64,
-        "target": {
-          "reference": 109,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 487,
-        "source": 64,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 488,
-        "source": 64,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 76,
-        "provenance": "authored",
-        "reference": 470,
-        "source": 65,
-        "target": {
-          "reference": 109,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 468,
-        "source": 65,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 469,
-        "source": 65,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 74,
-        "provenance": "authored",
-        "reference": 462,
-        "source": 63,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 460,
-        "source": 63,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 461,
-        "source": 63,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 132,
-        "provenance": "authored",
-        "reference": 506,
-        "source": 7,
-        "target": {
-          "node": 72,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 133,
-        "provenance": "authored",
-        "reference": 507,
-        "source": 7,
-        "target": {
-          "node": 31,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 514,
-        "source": 7,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 518,
-        "source": 7,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 135,
-        "provenance": "authored",
-        "reference": 508,
-        "source": 8,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 136,
-        "provenance": "authored",
-        "reference": 509,
-        "source": 8,
-        "target": {
-          "node": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 515,
-        "source": 8,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 519,
-        "source": 8,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 138,
-        "provenance": "authored",
-        "reference": 510,
-        "source": 9,
-        "target": {
-          "node": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 139,
-        "provenance": "authored",
-        "reference": 511,
-        "source": 9,
-        "target": {
-          "node": 86,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 516,
-        "source": 9,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 520,
-        "source": 9,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 141,
-        "provenance": "authored",
-        "reference": 512,
-        "source": 10,
-        "target": {
-          "node": 39,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 142,
-        "provenance": "authored",
-        "reference": 513,
-        "source": 10,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 517,
-        "source": 10,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 521,
-        "source": 10,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 128,
-        "provenance": "authored",
-        "reference": 526,
-        "source": 66,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 524,
-        "source": 66,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 525,
-        "source": 66,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 114,
-        "provenance": "authored",
-        "reference": 338,
-        "source": 67,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 335,
-        "source": 67,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 336,
-        "source": 67,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 337,
-        "source": 67,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 254,
-        "source": 70,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 70,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 261,
-        "source": 69,
+        "source": 67,
         "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 268,
-        "source": 69,
-        "target": {
-          "reference": 34,
+          "node": 66,
           "status": "resolved"
         }
       },
@@ -13761,10 +15076,43 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
+        "reference": 231,
+        "source": 68,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 232,
+        "source": 68,
+        "target": {
+          "node": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 47,
+        "provenance": "authored",
         "reference": 233,
         "source": 68,
         "target": {
-          "reference": 98,
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 234,
+        "source": 68,
+        "target": {
+          "reference": 8,
           "status": "resolved"
         }
       },
@@ -13772,19 +15120,30 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 240,
+        "reference": 235,
         "source": 68,
         "target": {
-          "reference": 34,
+          "reference": 12,
           "status": "resolved"
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": 116,
-        "provenance": "authored",
-        "reference": 339,
-        "source": 71,
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 236,
+        "source": 69,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 237,
+        "source": 69,
         "target": {
           "node": 68,
           "status": "resolved"
@@ -13794,10 +15153,538 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
+        "reference": 223,
+        "source": 70,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 224,
+        "source": 70,
+        "target": {
+          "node": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 52,
+        "provenance": "authored",
+        "reference": 225,
+        "source": 70,
+        "target": {
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 51,
+        "provenance": "authored",
+        "reference": 226,
+        "source": 70,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 227,
+        "source": 70,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 228,
+        "source": 71,
+        "target": {
+          "reference": 110,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 229,
+        "source": 71,
+        "target": {
+          "node": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 84,
+        "provenance": "authored",
+        "reference": 601,
+        "source": 34,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 598,
+        "source": 34,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 599,
+        "source": 34,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 600,
+        "source": 34,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 70,
+        "provenance": "authored",
+        "reference": 414,
+        "source": 35,
+        "target": {
+          "reference": 126,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 412,
+        "source": 35,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 80,
+        "provenance": "authored",
+        "reference": 628,
+        "source": 80,
+        "target": {
+          "reference": 125,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 626,
+        "source": 80,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 627,
+        "source": 80,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 78,
+        "provenance": "authored",
+        "reference": 604,
+        "source": 81,
+        "target": {
+          "reference": 125,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 602,
+        "source": 81,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 603,
+        "source": 81,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 76,
+        "provenance": "authored",
+        "reference": 596,
+        "source": 79,
+        "target": {
+          "reference": 119,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 594,
+        "source": 79,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 595,
+        "source": 79,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 139,
+        "provenance": "authored",
+        "reference": 645,
+        "source": 7,
+        "target": {
+          "node": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 140,
+        "provenance": "authored",
+        "reference": 646,
+        "source": 7,
+        "target": {
+          "node": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 653,
+        "source": 7,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 657,
+        "source": 7,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 142,
+        "provenance": "authored",
+        "reference": 647,
+        "source": 8,
+        "target": {
+          "node": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 143,
+        "provenance": "authored",
+        "reference": 648,
+        "source": 8,
+        "target": {
+          "node": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 654,
+        "source": 8,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 658,
+        "source": 8,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 145,
+        "provenance": "authored",
+        "reference": 649,
+        "source": 9,
+        "target": {
+          "node": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 146,
+        "provenance": "authored",
+        "reference": 650,
+        "source": 9,
+        "target": {
+          "node": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 655,
+        "source": 9,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 659,
+        "source": 9,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 148,
+        "provenance": "authored",
+        "reference": 651,
+        "source": 10,
+        "target": {
+          "node": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 149,
+        "provenance": "authored",
+        "reference": 652,
+        "source": 10,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 656,
+        "source": 10,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 660,
+        "source": 10,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 135,
+        "provenance": "authored",
+        "reference": 665,
+        "source": 82,
+        "target": {
+          "reference": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 663,
+        "source": 82,
+        "target": {
+          "reference": 121,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 664,
+        "source": 82,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 119,
+        "provenance": "authored",
+        "reference": 452,
+        "source": 83,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 449,
+        "source": 83,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 450,
+        "source": 83,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 451,
+        "source": 83,
+        "target": {
+          "reference": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 326,
+        "source": 90,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 319,
+        "source": 90,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 340,
-        "source": 71,
+        "source": 87,
         "target": {
-          "reference": 98,
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 347,
+        "source": 87,
+        "target": {
+          "node": 89,
           "status": "resolved"
         }
       },
@@ -13805,21 +15692,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 341,
-        "source": 71,
+        "reference": 354,
+        "source": 87,
         "target": {
-          "node": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 112,
-        "provenance": "authored",
-        "reference": 330,
-        "source": 72,
-        "target": {
-          "reference": 38,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -13827,10 +15703,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 327,
-        "source": 72,
+        "reference": 368,
+        "source": 88,
         "target": {
-          "reference": 105,
+          "reference": 122,
           "status": "resolved"
         }
       },
@@ -13838,197 +15714,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 328,
-        "source": 72,
+        "reference": 375,
+        "source": 89,
         "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 329,
-        "source": 72,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
-        "reference": 293,
-        "source": 73,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 291,
-        "source": 73,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 62,
-        "provenance": "authored",
-        "reference": 285,
-        "source": 74,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 283,
-        "source": 74,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 58,
-        "provenance": "authored",
-        "reference": 289,
-        "source": 75,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 287,
-        "source": 75,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 66,
-        "provenance": "authored",
-        "reference": 277,
-        "source": 76,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 275,
-        "source": 76,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 64,
-        "provenance": "authored",
-        "reference": 281,
-        "source": 77,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 279,
-        "source": 77,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 126,
-        "provenance": "authored",
-        "reference": 539,
-        "source": 78,
-        "target": {
-          "reference": 68,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 537,
-        "source": 78,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 538,
-        "source": 78,
-        "target": {
-          "reference": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 383,
-        "source": 79,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 380,
-        "source": 79,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 381,
-        "source": 79,
-        "target": {
-          "reference": 107,
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -14037,9 +15726,251 @@ package TimerBrowser {
         "navigation": null,
         "provenance": "implied",
         "reference": 382,
-        "source": 79,
+        "source": 89,
         "target": {
-          "reference": 68,
+          "node": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 270,
+        "source": 84,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 277,
+        "source": 84,
+        "target": {
+          "node": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 284,
+        "source": 84,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 298,
+        "source": 85,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 305,
+        "source": 86,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 312,
+        "source": 86,
+        "target": {
+          "node": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 121,
+        "provenance": "authored",
+        "reference": 454,
+        "source": 91,
+        "target": {
+          "node": 84,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 455,
+        "source": 91,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 456,
+        "source": 91,
+        "target": {
+          "node": 83,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 458,
+        "source": 92,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 459,
+        "source": 93,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 460,
+        "source": 93,
+        "target": {
+          "node": 92,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 117,
+        "provenance": "authored",
+        "reference": 444,
+        "source": 94,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 441,
+        "source": 94,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 442,
+        "source": 94,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 443,
+        "source": 94,
+        "target": {
+          "reference": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 62,
+        "provenance": "authored",
+        "reference": 407,
+        "source": 95,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 405,
+        "source": 95,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 64,
+        "provenance": "authored",
+        "reference": 399,
+        "source": 96,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 397,
+        "source": 96,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 60,
+        "provenance": "authored",
+        "reference": 403,
+        "source": 97,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 401,
+        "source": 97,
+        "target": {
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -14047,10 +15978,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 68,
         "provenance": "authored",
-        "reference": 301,
-        "source": 80,
+        "reference": 391,
+        "source": 98,
         "target": {
-          "reference": 110,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -14058,10 +15989,65 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 299,
-        "source": 80,
+        "reference": 389,
+        "source": 98,
         "target": {
-          "reference": 46,
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 66,
+        "provenance": "authored",
+        "reference": 395,
+        "source": 99,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 393,
+        "source": 99,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 133,
+        "provenance": "authored",
+        "reference": 678,
+        "source": 100,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 676,
+        "source": 100,
+        "target": {
+          "reference": 121,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 677,
+        "source": 100,
+        "target": {
+          "reference": 104,
           "status": "resolved"
         }
       },
@@ -14069,10 +16055,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 108,
         "provenance": "authored",
-        "reference": 399,
-        "source": 81,
+        "reference": 512,
+        "source": 101,
         "target": {
-          "reference": 34,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -14080,10 +16066,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 396,
-        "source": 81,
+        "reference": 509,
+        "source": 101,
         "target": {
-          "reference": 105,
+          "reference": 120,
           "status": "resolved"
         }
       },
@@ -14091,10 +16077,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 397,
-        "source": 81,
+        "reference": 510,
+        "source": 101,
         "target": {
-          "reference": 107,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -14102,153 +16088,10 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 398,
-        "source": 81,
+        "reference": 511,
+        "source": 101,
         "target": {
-          "reference": 68,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 255,
-        "source": 84,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 248,
-        "source": 84,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 262,
-        "source": 83,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 269,
-        "source": 83,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 234,
-        "source": 82,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 241,
-        "source": 82,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 110,
-        "provenance": "authored",
-        "reference": 400,
-        "source": 85,
-        "target": {
-          "node": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 401,
-        "source": 85,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 402,
-        "source": 85,
-        "target": {
-          "node": 81,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 106,
-        "provenance": "authored",
-        "reference": 391,
-        "source": 86,
-        "target": {
-          "reference": 48,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 388,
-        "source": 86,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 389,
-        "source": 86,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 390,
-        "source": 86,
-        "target": {
-          "reference": 68,
+          "reference": 78,
           "status": "resolved"
         }
       },
@@ -14256,10 +16099,10 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 70,
         "provenance": "authored",
-        "reference": 305,
-        "source": 87,
+        "reference": 415,
+        "source": 102,
         "target": {
-          "reference": 110,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -14267,21 +16110,21 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 303,
-        "source": 87,
+        "reference": 413,
+        "source": 102,
         "target": {
-          "reference": 48,
+          "reference": 50,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 102,
+        "navigation": 112,
         "provenance": "authored",
-        "reference": 386,
-        "source": 88,
+        "reference": 528,
+        "source": 103,
         "target": {
-          "reference": 110,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -14289,10 +16132,835 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 384,
-        "source": 88,
+        "reference": 525,
+        "source": 103,
         "target": {
-          "reference": 98,
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 526,
+        "source": 103,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 527,
+        "source": 103,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 327,
+        "source": 110,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 320,
+        "source": 110,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 341,
+        "source": 107,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 348,
+        "source": 107,
+        "target": {
+          "node": 109,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 355,
+        "source": 107,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 369,
+        "source": 108,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 376,
+        "source": 109,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 383,
+        "source": 109,
+        "target": {
+          "node": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 271,
+        "source": 104,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 278,
+        "source": 104,
+        "target": {
+          "node": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 285,
+        "source": 104,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 299,
+        "source": 105,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 306,
+        "source": 106,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 313,
+        "source": 106,
+        "target": {
+          "node": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 114,
+        "provenance": "authored",
+        "reference": 530,
+        "source": 111,
+        "target": {
+          "node": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 531,
+        "source": 111,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 532,
+        "source": 111,
+        "target": {
+          "node": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 534,
+        "source": 112,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 535,
+        "source": 113,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 536,
+        "source": 113,
+        "target": {
+          "node": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 110,
+        "provenance": "authored",
+        "reference": 520,
+        "source": 114,
+        "target": {
+          "reference": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 517,
+        "source": 114,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 518,
+        "source": 114,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 519,
+        "source": 114,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 72,
+        "provenance": "authored",
+        "reference": 419,
+        "source": 115,
+        "target": {
+          "reference": 126,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 417,
+        "source": 115,
+        "target": {
+          "reference": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 106,
+        "provenance": "authored",
+        "reference": 515,
+        "source": 116,
+        "target": {
+          "reference": 126,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 513,
+        "source": 116,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 514,
+        "source": 116,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 137,
+        "provenance": "authored",
+        "reference": 671,
+        "source": 11,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 669,
+        "source": 11,
+        "target": {
+          "reference": 121,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 670,
+        "source": 11,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 99,
+        "provenance": "authored",
+        "reference": 499,
+        "source": 20,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 496,
+        "source": 20,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 497,
+        "source": 20,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 498,
+        "source": 20,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 328,
+        "source": 27,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 321,
+        "source": 27,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 342,
+        "source": 24,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 349,
+        "source": 24,
+        "target": {
+          "node": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 356,
+        "source": 24,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 370,
+        "source": 25,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 377,
+        "source": 26,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 384,
+        "source": 26,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 272,
+        "source": 21,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 279,
+        "source": 21,
+        "target": {
+          "node": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 286,
+        "source": 21,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 300,
+        "source": 22,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 307,
+        "source": 23,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 314,
+        "source": 23,
+        "target": {
+          "node": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 501,
+        "source": 28,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 502,
+        "source": 28,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 503,
+        "source": 28,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 505,
+        "source": 29,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 506,
+        "source": 30,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 507,
+        "source": 30,
+        "target": {
+          "node": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 97,
+        "provenance": "authored",
+        "reference": 491,
+        "source": 31,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 488,
+        "source": 31,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 489,
+        "source": 31,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 490,
+        "source": 31,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 74,
+        "provenance": "authored",
+        "reference": 411,
+        "source": 32,
+        "target": {
+          "reference": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 409,
+        "source": 32,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 486,
+        "source": 12,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 483,
+        "source": 12,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 484,
+        "source": 12,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 485,
+        "source": 12,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 329,
+        "source": 19,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 322,
+        "source": 19,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 343,
+        "source": 16,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 350,
+        "source": 16,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 357,
+        "source": 16,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 371,
+        "source": 17,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 378,
+        "source": 18,
+        "target": {
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -14301,20 +16969,9 @@ package TimerBrowser {
         "navigation": null,
         "provenance": "implied",
         "reference": 385,
-        "source": 88,
+        "source": 18,
         "target": {
-          "reference": 68,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 130,
-        "provenance": "authored",
-        "reference": 532,
-        "source": 11,
-        "target": {
-          "reference": 63,
+          "node": 17,
           "status": "resolved"
         }
       },
@@ -14322,10 +16979,21 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 530,
-        "source": 11,
+        "reference": 273,
+        "source": 13,
         "target": {
-          "reference": 106,
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 280,
+        "source": 13,
+        "target": {
+          "node": 15,
           "status": "resolved"
         }
       },
@@ -14333,19 +17001,173 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 531,
-        "source": 11,
+        "reference": 287,
+        "source": 13,
         "target": {
-          "reference": 90,
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 301,
+        "source": 14,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 308,
+        "source": 15,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 315,
+        "source": 15,
+        "target": {
+          "node": 14,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 96,
+        "navigation": 163,
         "provenance": "authored",
-        "reference": 375,
-        "source": 16,
+        "reference": 568,
+        "source": 117,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 566,
+        "source": 117,
+        "target": {
+          "reference": 121,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 567,
+        "source": 117,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 126,
+        "provenance": "authored",
+        "reference": 471,
+        "source": 118,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 468,
+        "source": 118,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 469,
+        "source": 118,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 470,
+        "source": 118,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 330,
+        "source": 125,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 323,
+        "source": 125,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 344,
+        "source": 122,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 351,
+        "source": 122,
+        "target": {
+          "node": 124,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 358,
+        "source": 122,
         "target": {
           "reference": 34,
           "status": "resolved"
@@ -14356,9 +17178,9 @@ package TimerBrowser {
         "navigation": null,
         "provenance": "implied",
         "reference": 372,
-        "source": 16,
+        "source": 123,
         "target": {
-          "reference": 105,
+          "reference": 122,
           "status": "resolved"
         }
       },
@@ -14366,10 +17188,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 373,
-        "source": 16,
+        "reference": 379,
+        "source": 124,
         "target": {
-          "reference": 107,
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -14377,21 +17199,32 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 374,
-        "source": 16,
+        "reference": 386,
+        "source": 124,
         "target": {
-          "reference": 63,
+          "node": 123,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 256,
-        "source": 19,
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 274,
+        "source": 119,
         "target": {
-          "reference": 103,
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 281,
+        "source": 119,
+        "target": {
+          "node": 121,
           "status": "resolved"
         }
       },
@@ -14399,8 +17232,8 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 249,
-        "source": 19,
+        "reference": 288,
+        "source": 119,
         "target": {
           "reference": 34,
           "status": "resolved"
@@ -14410,868 +17243,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 263,
-        "source": 18,
+        "reference": 302,
+        "source": 120,
         "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 270,
-        "source": 18,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 235,
-        "source": 17,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 242,
-        "source": 17,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 98,
-        "provenance": "authored",
-        "reference": 376,
-        "source": 20,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 377,
-        "source": 20,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 378,
-        "source": 20,
-        "target": {
-          "node": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 94,
-        "provenance": "authored",
-        "reference": 367,
-        "source": 21,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 364,
-        "source": 21,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 365,
-        "source": 21,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 366,
-        "source": 21,
-        "target": {
-          "reference": 63,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 72,
-        "provenance": "authored",
-        "reference": 297,
-        "source": 22,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 295,
-        "source": 22,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 362,
-        "source": 12,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 359,
-        "source": 12,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 360,
-        "source": 12,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 361,
-        "source": 12,
-        "target": {
-          "reference": 63,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 257,
-        "source": 15,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 15,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 264,
-        "source": 14,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 271,
-        "source": 14,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 236,
-        "source": 13,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 243,
-        "source": 13,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 156,
-        "provenance": "authored",
-        "reference": 434,
-        "source": 89,
-        "target": {
-          "reference": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 432,
-        "source": 89,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 433,
-        "source": 89,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 352,
-        "source": 90,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 349,
-        "source": 90,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 350,
-        "source": 90,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 351,
-        "source": 90,
-        "target": {
-          "reference": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 258,
-        "source": 93,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 251,
-        "source": 93,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 265,
-        "source": 92,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 272,
-        "source": 92,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 237,
-        "source": 91,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 244,
-        "source": 91,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 122,
-        "provenance": "authored",
-        "reference": 353,
-        "source": 94,
-        "target": {
-          "node": 91,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 354,
-        "source": 94,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 355,
-        "source": 94,
-        "target": {
-          "node": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 118,
-        "provenance": "authored",
-        "reference": 344,
-        "source": 95,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 342,
-        "source": 95,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 343,
-        "source": 95,
-        "target": {
-          "reference": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 158,
-        "provenance": "authored",
-        "reference": 403,
-        "source": 1,
-        "target": {
-          "node": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 159,
-        "provenance": "authored",
-        "reference": 404,
-        "source": 1,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 413,
-        "source": 1,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 418,
-        "source": 1,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 161,
-        "provenance": "authored",
-        "reference": 405,
-        "source": 2,
-        "target": {
-          "node": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 162,
-        "provenance": "authored",
-        "reference": 406,
-        "source": 2,
-        "target": {
-          "node": 81,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 414,
-        "source": 2,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 419,
-        "source": 2,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 164,
-        "provenance": "authored",
-        "reference": 407,
-        "source": 3,
-        "target": {
-          "node": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 165,
-        "provenance": "authored",
-        "reference": 408,
-        "source": 3,
-        "target": {
-          "node": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 415,
-        "source": 3,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 420,
-        "source": 3,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 167,
-        "provenance": "authored",
-        "reference": 409,
-        "source": 4,
-        "target": {
-          "node": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 168,
-        "provenance": "authored",
-        "reference": 410,
-        "source": 4,
-        "target": {
-          "node": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 416,
-        "source": 4,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 421,
-        "source": 4,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 170,
-        "provenance": "authored",
-        "reference": 411,
-        "source": 5,
-        "target": {
-          "node": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 171,
-        "provenance": "authored",
-        "reference": 412,
-        "source": 5,
-        "target": {
-          "node": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 417,
-        "source": 5,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 422,
-        "source": 5,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 154,
-        "provenance": "authored",
-        "reference": 429,
-        "source": 96,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 427,
-        "source": 96,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 428,
-        "source": 96,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 150,
-        "provenance": "authored",
-        "reference": 318,
-        "source": 97,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 315,
-        "source": 97,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 316,
-        "source": 97,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 317,
-        "source": 97,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
-        "reference": 259,
-        "source": 100,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 100,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 266,
-        "source": 99,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 99,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 238,
-        "source": 98,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 245,
-        "source": 98,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 144,
-        "provenance": "authored",
-        "reference": 308,
-        "source": 103,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 306,
-        "source": 103,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 307,
-        "source": 103,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 146,
-        "provenance": "authored",
-        "reference": 311,
-        "source": 101,
-        "target": {
-          "reference": 102,
+          "reference": 122,
           "status": "resolved"
         }
       },
@@ -15280,9 +17255,9 @@ package TimerBrowser {
         "navigation": null,
         "provenance": "implied",
         "reference": 309,
-        "source": 101,
+        "source": 121,
         "target": {
-          "reference": 98,
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -15290,21 +17265,21 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 310,
-        "source": 101,
+        "reference": 316,
+        "source": 121,
         "target": {
-          "reference": 50,
+          "node": 120,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 148,
+        "kind": "redefinition",
+        "navigation": 128,
         "provenance": "authored",
-        "reference": 321,
-        "source": 102,
+        "reference": 473,
+        "source": 126,
         "target": {
-          "reference": 100,
+          "node": 119,
           "status": "resolved"
         }
       },
@@ -15312,10 +17287,10 @@ package TimerBrowser {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 319,
-        "source": 102,
+        "reference": 474,
+        "source": 126,
         "target": {
-          "reference": 98,
+          "reference": 112,
           "status": "resolved"
         }
       },
@@ -15323,10 +17298,626 @@ package TimerBrowser {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 320,
-        "source": 102,
+        "reference": 475,
+        "source": 126,
         "target": {
-          "reference": 50,
+          "node": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 477,
+        "source": 127,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 478,
+        "source": 128,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 479,
+        "source": 128,
+        "target": {
+          "node": 127,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 124,
+        "provenance": "authored",
+        "reference": 463,
+        "source": 129,
+        "target": {
+          "reference": 115,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 461,
+        "source": 129,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 462,
+        "source": 129,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 165,
+        "provenance": "authored",
+        "reference": 537,
+        "source": 1,
+        "target": {
+          "node": 131,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 166,
+        "provenance": "authored",
+        "reference": 538,
+        "source": 1,
+        "target": {
+          "node": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 547,
+        "source": 1,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 552,
+        "source": 1,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 168,
+        "provenance": "authored",
+        "reference": 539,
+        "source": 2,
+        "target": {
+          "node": 131,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 169,
+        "provenance": "authored",
+        "reference": 540,
+        "source": 2,
+        "target": {
+          "node": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 548,
+        "source": 2,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 553,
+        "source": 2,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 171,
+        "provenance": "authored",
+        "reference": 541,
+        "source": 3,
+        "target": {
+          "node": 131,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 172,
+        "provenance": "authored",
+        "reference": 542,
+        "source": 3,
+        "target": {
+          "node": 83,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 549,
+        "source": 3,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 554,
+        "source": 3,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 174,
+        "provenance": "authored",
+        "reference": 543,
+        "source": 4,
+        "target": {
+          "node": 131,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 175,
+        "provenance": "authored",
+        "reference": 544,
+        "source": 4,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 550,
+        "source": 4,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 555,
+        "source": 4,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 177,
+        "provenance": "authored",
+        "reference": 545,
+        "source": 5,
+        "target": {
+          "node": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 178,
+        "provenance": "authored",
+        "reference": 546,
+        "source": 5,
+        "target": {
+          "node": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 551,
+        "source": 5,
+        "target": {
+          "reference": 114,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 556,
+        "source": 5,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 161,
+        "provenance": "authored",
+        "reference": 563,
+        "source": 130,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 561,
+        "source": 130,
+        "target": {
+          "reference": 121,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 562,
+        "source": 130,
+        "target": {
+          "reference": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 157,
+        "provenance": "authored",
+        "reference": 432,
+        "source": 131,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 429,
+        "source": 131,
+        "target": {
+          "reference": 120,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 430,
+        "source": 131,
+        "target": {
+          "reference": 123,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 431,
+        "source": 131,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 331,
+        "source": 138,
+        "target": {
+          "reference": 118,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 324,
+        "source": 138,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 345,
+        "source": 135,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 352,
+        "source": 135,
+        "target": {
+          "node": 137,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 359,
+        "source": 135,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 373,
+        "source": 136,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 380,
+        "source": 137,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 387,
+        "source": 137,
+        "target": {
+          "node": 136,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 275,
+        "source": 132,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 282,
+        "source": 132,
+        "target": {
+          "node": 134,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 289,
+        "source": 132,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 303,
+        "source": 133,
+        "target": {
+          "reference": 122,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 310,
+        "source": 134,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 317,
+        "source": 134,
+        "target": {
+          "node": 133,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 151,
+        "provenance": "authored",
+        "reference": 422,
+        "source": 141,
+        "target": {
+          "reference": 116,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 420,
+        "source": 141,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 421,
+        "source": 141,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 153,
+        "provenance": "authored",
+        "reference": 425,
+        "source": 139,
+        "target": {
+          "reference": 117,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 423,
+        "source": 139,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 424,
+        "source": 139,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 155,
+        "provenance": "authored",
+        "reference": 435,
+        "source": 140,
+        "target": {
+          "reference": 115,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 433,
+        "source": 140,
+        "target": {
+          "reference": 112,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 434,
+        "source": 140,
+        "target": {
+          "reference": 54,
           "status": "resolved"
         }
       }

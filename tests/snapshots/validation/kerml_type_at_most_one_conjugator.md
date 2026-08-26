@@ -34,7 +34,7 @@ package Conjugations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cad8d5d9e688108014f1146152415f348c54c29e02f4bed8c578ead6a0c2bcd8") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cad8d5d9e688108014f1146152415f348c54c29e02f4bed8c578ead6a0c2bcd8") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_at_most_one_conjugator.md") (qualified-name "Conjugations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_at_most_one_conjugator.md") (qualified-name "Conjugations::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

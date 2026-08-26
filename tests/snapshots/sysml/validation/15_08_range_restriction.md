@@ -73,7 +73,7 @@ package '15_08-Range Restriction' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a23013531728ed48d4775509e224cbd04a0426ce5db9318477f567c43e3d0c1") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a23013531728ed48d4775509e224cbd04a0426ce5db9318477f567c43e3d0c1") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

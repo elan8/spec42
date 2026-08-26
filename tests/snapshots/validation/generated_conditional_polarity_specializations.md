@@ -40,7 +40,7 @@ package PolaritySpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7dec7a827c025f625714fd835574591f505ee5c0f4872d3535fd3d1348ee8211") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7dec7a827c025f625714fd835574591f505ee5c0f4872d3535fd3d1348ee8211") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_polarity_specializations.md") (qualified-name "PolaritySpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_polarity_specializations.md") (qualified-name "PolaritySpecializations::NegativeAssert"))) (kind assert-constraint) (membership (kind feature) (visibility default)))

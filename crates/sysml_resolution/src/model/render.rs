@@ -428,6 +428,7 @@ pub(crate) fn write_declaration_facts(
         && facts.multiplicity.is_none()
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
+        && facts.expression_result.is_none()
     {
         return Ok(());
     }
@@ -465,6 +466,11 @@ pub(crate) fn write_declaration_facts(
         output.write_str(") (owned-cross-feature ")?;
         write_node_identity(model, projection.owned_cross_feature, output)?;
         output.write_str("))")?;
+    }
+    if let Some(result) = facts.expression_result {
+        output.write_str(" (expression-result ")?;
+        write_node_identity(model, result, output)?;
+        output.write_char(')')?;
     }
     output.write_char(')')
 }
@@ -577,6 +583,11 @@ pub(crate) fn write_feature_values(
         // Deliberately not `(value ...)`: that head is already the evaluation section's computed
         // value, and this is the authored spelling of the value clause.
         write!(output, " (feature-value (kind {kind})")?;
+        output.write_str(" (value ")?;
+        write_node_identity(model, record.value, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, record.result, output)?;
+        output.write_char(')')?;
         if record.is_default {
             output.write_str(" (default true)")?;
         }

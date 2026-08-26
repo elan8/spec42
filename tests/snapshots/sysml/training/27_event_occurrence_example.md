@@ -47,7 +47,7 @@ package 'Event Occurrence Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:da535832be0b11f483e1f8407c97f16accae2b8c4bfc9d742e736ce9b64407ae") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:da535832be0b11f483e1f8407c97f16accae2b8c4bfc9d742e736ce9b64407ae") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::CruiseController"))) (kind part-def) (membership (kind owning) (visibility default)))

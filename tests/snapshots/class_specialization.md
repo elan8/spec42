@@ -25,7 +25,7 @@ class B :> A { }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:70cd1d0dc28ee204383a65ad77622c9dea4ae28b3f1ad23f51ab5625c6d08f7a") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:70cd1d0dc28ee204383a65ad77622c9dea4ae28b3f1ad23f51ab5625c6d08f7a") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/class_specialization.md") (qualified-name "B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A")))))
   )

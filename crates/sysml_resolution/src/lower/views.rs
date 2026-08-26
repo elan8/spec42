@@ -327,11 +327,10 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]

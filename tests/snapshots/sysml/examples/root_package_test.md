@@ -32,7 +32,7 @@ package P3 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:715b36879e2e779b906bfe60e084538accfe4fac2c0e01e818b920aeaef52bea") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:715b36879e2e779b906bfe60e084538accfe4fac2c0e01e818b920aeaef52bea") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/root_package_test.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "P2") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1"))) (kind package) (membership (kind owning) (visibility default)))

@@ -83,6 +83,12 @@ pub(crate) mod states;
 pub(crate) mod storage;
 pub(crate) mod views;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureValueEndpoints {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
     pub(crate) documents: Vec<AdmittedDocument>,
@@ -508,34 +514,69 @@ impl SemanticModelBuilder {
         )
     }
 
-    /// Records the authored spelling of a `FeatureValue` clause.
+    /// Constructs the canonical value Expression and result Feature for a `FeatureValue` clause.
     pub(crate) fn record_feature_value(
         &mut self,
+        document: DocumentIdx,
         declaration: DeclarationId,
         value: &Node<FeatureValue>,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<FeatureValueEndpoints, ConstructionError> {
         let kind = match value.value.kind {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
+        let expression = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::KermlExpression,
+            None,
+            value.value.expression.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            expression,
+            MembershipKind::Owning,
+            Visibility::Default,
+            value.value.expression.span,
+        )?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            value.value.expression.span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            result,
+            MembershipKind::Feature,
+            Visibility::Default,
+            value.value.expression.span,
+        )?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
+            endpoints,
             kind,
             value.value.is_default,
             value.value.has_operator,
             value.value.span,
-        )
+        )?;
+        Ok(endpoints)
     }
 
     /// Records the authored feature value spelling of one declaration.
     ///
-    /// The value *expression* itself keeps travelling the existing operand-reference and
-    /// evaluation-classification path; this fact records only which of the five authored spellings
-    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written, which no other fact
-    /// preserves.
+    /// The record preserves both canonical endpoints and which of the five authored spellings
+    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written.
     pub(crate) fn push_feature_value(
         &mut self,
         declaration: DeclarationId,
+        endpoints: FeatureValueEndpoints,
         kind: FeatureValueKind,
         is_default: bool,
         has_operator: bool,
@@ -546,6 +587,8 @@ impl SemanticModelBuilder {
         }
         self.feature_values.push(FeatureValueRecord {
             declaration,
+            value: endpoints.expression,
+            result: endpoints.result,
             kind,
             is_default,
             has_operator,

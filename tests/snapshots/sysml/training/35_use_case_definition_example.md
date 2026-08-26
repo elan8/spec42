@@ -52,7 +52,7 @@ package 'Use Case Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:22a22d3f68546489437cb3d1d3d78bc12c017b4a16cd8038fb540e8059e3a556") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:22a22d3f68546489437cb3d1d3d78bc12c017b4a16cd8038fb540e8059e3a556") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (kind use-case-def) (membership (kind owning) (visibility default)))

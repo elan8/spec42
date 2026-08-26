@@ -34,7 +34,7 @@ state def SD {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5b6a0353f334c3fa5f401057c487dc98fcaf34b96326f5cd040c65cb6a8c5596") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5b6a0353f334c3fa5f401057c487dc98fcaf34b96326f5cd040c65cb6a8c5596") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/step_usage_in_body.md") (qualified-name "SD"))) (kind state-def) (membership (kind owning) (visibility default)))
   )

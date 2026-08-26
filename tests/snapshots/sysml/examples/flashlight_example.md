@@ -185,7 +185,7 @@ package 'Flashlight Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9b8ab1161eecd0481a5c0f8019a54cfb066665aecc09781b67b1cbaf10bdbf2b") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9b8ab1161eecd0481a5c0f8019a54cfb066665aecc09781b67b1cbaf10bdbf2b") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light"))) (kind attribute-def) (membership (kind owning) (visibility default)))

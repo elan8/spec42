@@ -34,7 +34,7 @@ package StateExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:aab42d851e2e58d57f22ee31c4d1530c5657248959ede0fdc4f57c110ca50024") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:aab42d851e2e58d57f22ee31c4d1530c5657248959ede0fdc4f57c110ca50024") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -237,7 +237,7 @@ package StateExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:3f727b4f57c23f3efe86f1ac0839c541b294f5ea0c9a7167b698b1bdd90dc0d9",
+  "modelDigest": "blake3:3035ddbd8f1d952284826039330f4fd7cf15951c597332ab78d53a5c9ad57c79",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",

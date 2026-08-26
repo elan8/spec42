@@ -44,7 +44,7 @@ package GeneratedAbstractSpecializationMetaclasses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fa544b5d78e51504f0567ad9ec24950e0d369d1eb654cf3e41a93b3716109a23") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fa544b5d78e51504f0567ad9ec24950e0d369d1eb654cf3e41a93b3716109a23") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses::LiteralValues"))) (kind kerml-expression) (membership (kind feature) (visibility default)))

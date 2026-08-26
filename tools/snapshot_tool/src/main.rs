@@ -1175,9 +1175,6 @@ fn parse_specialization_check_prerequisite(
         "feature_modifiers_owner_typing_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor)
         }
-        "feature_value_evaluation_results" => {
-            Ok(SpecializationCheckPrerequisite::FeatureValueEvaluationResults)
-        }
         "semantic_metadata_projection" => {
             Ok(SpecializationCheckPrerequisite::SemanticMetadataProjection)
         }

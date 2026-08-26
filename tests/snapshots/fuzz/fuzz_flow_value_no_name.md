@@ -57,11 +57,13 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6dc68fefb70a074b0c037f34f251cf4f9e3d4d84de07bfba423957f8759c84f8") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6dc68fefb70a074b0c037f34f251cf4f9e3d4d84de07bfba423957f8759c84f8") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle")))))
-    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0))))) (kind flow) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "tank::fuelSupply")) (flowTarget (reference "eng::engineFuelPort")) (flowPayloadType (reference "Fuel")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0))))) (kind flow) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "tank::fuelSupply")) (flowTarget (reference "eng::engineFuelPort")) (flowPayloadType (reference "Fuel")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine")))))
   )
   (references
@@ -83,6 +85,8 @@ package P {
   )
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng"))) (target (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (provenance implied))
   )
   (evaluation
@@ -94,6 +98,11 @@ package P {
 (types
     (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle")))
+      (supertype (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (path (named (kind package) (name "P")) (named (kind part) (name "vehicle")) (anonymous (kind flow) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng")))
       (featured-by (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle")))

@@ -51,7 +51,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0901f26312779071a67b3b90aec10cb735e504347908bcc635f5757b73311a68") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0901f26312779071a67b3b90aec10cb735e504347908bcc635f5757b73311a68") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Feed"))) (kind connection-def) (membership (kind owning) (visibility default)))

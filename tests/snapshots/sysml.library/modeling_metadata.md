@@ -233,7 +233,7 @@ standard library package ModelingMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1513457131ae76b88df938ef59e30a9de01feed8375e8c86d36f8be7ac526d43") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1513457131ae76b88df938ef59e30a9de01feed8375e8c86d36f8be7ac526d43") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains definitions of metadata generally useful for annotating models.\n\t "))))
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

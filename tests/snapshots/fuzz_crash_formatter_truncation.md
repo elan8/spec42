@@ -90,13 +90,15 @@ package MassRollup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:d01b79e670c8f3d078b774f56d534315ffd26e912cbd2c14601ae5e673801b1c") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:d01b79e670c8f3d078b774f56d534315ffd26e912cbd2c14601ae5e673801b1c") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass")))))
-    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true) (operator false)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass")) (expressionOperand (reference "sLmpleMass")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (default true) (operator false)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "sLmpleMass")))))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassedThing")))))
   )
   (references
@@ -109,7 +111,7 @@ package MassRollup2 {
     (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::mass")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind expressionOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "sLmpleMass")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind featureTyping) (ordinal 0))
@@ -120,9 +122,10 @@ package MassRollup2 {
     (relationship (kind typing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -137,6 +140,9 @@ package MassRollup2 {
     )
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass")))
       (featured-by (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing")))
       (type (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")) (provenance authored))
@@ -164,7 +170,7 @@ package MassRollup2 {
     )
   )
   (query (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (range (start 5 43) (end 5 53)) (probe (position 5 43))
-    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind expressionOperand) (ordinal 0) (authored-target "sLmpleMass")
+    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "sLmpleMass")
       (outcome (status unresolved)))
     )
   )

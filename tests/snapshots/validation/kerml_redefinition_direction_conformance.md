@@ -60,7 +60,7 @@ package Redefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8510ceccbf57bac9beb20013acd138d9198d3a524e9f86810b6bc720a9401dab") (contract-version "owned-cross-feature-typing-v4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8510ceccbf57bac9beb20013acd138d9198d3a524e9f86810b6bc720a9401dab") (contract-version "feature-value-expression-results-v5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_direction_conformance.md") (qualified-name "Redefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_direction_conformance.md") (qualified-name "Redefinitions::Base"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
