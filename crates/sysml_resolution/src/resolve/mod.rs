@@ -27,6 +27,7 @@ use crate::resolve::names::build_inherited_name_index;
 use crate::resolve::names::build_inherited_name_index_for_scopes;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
+use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
@@ -1892,10 +1893,9 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
     let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
-    // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
-    // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
-    // Redefinition excludes owned
-    // first-scope candidates".
+    // KerML Redefinition relates a Feature to a different, inherited Feature. The Pilot's
+    // `KerMLScope` therefore starts a redefinition search with inherited members and excludes the
+    // redefining Feature itself.
     //
     // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
     // shape the KerML abstract-syntax library uses throughout to narrow an inherited feature --
@@ -1931,7 +1931,30 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         } else {
             DeclarationDomain::Any
         };
-        let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
+        // A nested redefinition can explicitly qualify through its enclosing Feature, as in
+        // `ref :>> base::edges` inside a redefining `base`. That qualifier denotes the inherited
+        // `base`, not the enclosing redefining Feature. Detect this from canonical direct-name
+        // identity and begin at the enclosing Type's inherited tier. This is a constant number of
+        // indexed lookups; it does not recursively query the candidate graph.
+        let qualified_redefinition_owner =
+            if reference.kind() == ReferenceKind::Redefinition && segments.len() > 1 {
+                source.owner.and_then(|owner| {
+                    declarations
+                        .get(owner.index())
+                        .and_then(|owner_declaration| owner_declaration.owner)
+                        .filter(|grandowner| {
+                            indexes
+                                .direct_names
+                                .candidates(Some(*grandowner), segments[0])
+                                .contains(&owner)
+                        })
+                })
+            } else {
+                None
+            };
+        let lexical_scope = if let Some(owner) = qualified_redefinition_owner {
+            Some(owner)
+        } else if reference.kind() == ReferenceKind::ExpressionOperand {
             Some(reference.source())
         } else if reference.kind() == ReferenceKind::ConnectorEnd
             && source.owner.is_some_and(|owner| {
@@ -1960,6 +1983,11 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             LookupTarget {
                 domain: first_segment_domain,
                 excluded,
+                first_scope: if qualified_redefinition_owner.is_some() {
+                    FirstScopePolicy::InheritedOnly
+                } else {
+                    FirstScopePolicy::OwnedThenInherited
+                },
             },
             scratch.candidates,
             scratch.work,
@@ -2070,6 +2098,7 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         LookupTarget {
             domain: DeclarationDomain::Any,
             excluded: None,
+            first_scope: FirstScopePolicy::OwnedThenInherited,
         },
         scratch.candidates,
         scratch.work,

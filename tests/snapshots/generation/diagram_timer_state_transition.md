@@ -5099,7 +5099,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:eb7dce1c6ebd2e6998bf5d13d923076b7a38137a4b6dd4ffc04aab37eeae548d",
+  "modelDigest": "blake3:2cc15f638b9e5035330138055a8ea48124e9b0c4f6f4a206b302cb27ebbba25d",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml",

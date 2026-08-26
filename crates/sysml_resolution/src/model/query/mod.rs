@@ -55,6 +55,7 @@ use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
 use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
+use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::requirement_derived_membership_role;
 use crate::resolve::requirement_derived_source_matches;
@@ -638,6 +639,7 @@ impl<D> SemanticModel<D> {
             LookupTarget {
                 domain: DeclarationDomain::Any,
                 excluded: None,
+                first_scope: FirstScopePolicy::OwnedThenInherited,
             },
             &mut candidates,
             &mut work,

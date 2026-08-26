@@ -600,6 +600,15 @@ pub(crate) struct LookupTarget {
     pub(crate) domain: DeclarationDomain,
     /// A declaration that is not in its own scope for this reference, if any.
     pub(crate) excluded: Option<DeclarationId>,
+    /// Redefinition is scoped from the general Types of the redefining Feature, not from its
+    /// owned memberships. Other reference kinds use ordinary owned-before-inherited lookup.
+    pub(crate) first_scope: FirstScopePolicy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum FirstScopePolicy {
+    OwnedThenInherited,
+    InheritedOnly,
 }
 
 pub(crate) fn lookup_lexical_into(
@@ -611,7 +620,11 @@ pub(crate) fn lookup_lexical_into(
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,
 ) -> Result<(), ResolutionError> {
-    let LookupTarget { domain, excluded } = target;
+    let LookupTarget {
+        domain,
+        excluded,
+        first_scope,
+    } = target;
     let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
         let compatible = raw
             .iter()
@@ -642,15 +655,18 @@ pub(crate) fn lookup_lexical_into(
         true
     };
     let mut filtered = Vec::new();
+    let mut is_first_scope = true;
     loop {
         record_lookup(work)?;
-        let mut direct = indexes.direct_names.candidates(owner, name);
-        if visible(direct, &mut filtered) {
-            direct = &filtered;
-        }
-        if !direct.is_empty() {
-            select_tier(direct, candidates);
-            return Ok(());
+        if !is_first_scope || first_scope == FirstScopePolicy::OwnedThenInherited {
+            let mut direct = indexes.direct_names.candidates(owner, name);
+            if visible(direct, &mut filtered) {
+                direct = &filtered;
+            }
+            if !direct.is_empty() {
+                select_tier(direct, candidates);
+                return Ok(());
+            }
         }
         if let Some(inherited) = indexes.inherited_names {
             record_lookup(work)?;
@@ -675,5 +691,6 @@ pub(crate) fn lookup_lexical_into(
             .get(current.index())
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
+        is_first_scope = false;
     }
 }
