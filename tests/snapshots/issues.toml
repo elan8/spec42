@@ -211,12 +211,6 @@ owner = "spec42-libraries"
 summary = "The canonical standard library does not publish the exact Flows::flows and Transfers::flowTransfers declarations required by the pinned FlowUsage and Flow owned-end specialization rules."
 
 [[issue]]
-id = "library-gap-step-subperformance-specialization-anchor"
-kind = "library_gap"
-owner = "spec42-libraries"
-summary = "The canonical standard library publishes Performances::Performance::subperformances, but not the exact singular Performances::Performance::subperformance anchor required by checkStepSubperformanceSpecialization."
-
-[[issue]]
 id = "lowering-gap-feature-category-metaclass-predicates"
 kind = "lowering_gap"
 owner = "spec42-semantic"

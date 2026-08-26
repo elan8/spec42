@@ -1734,7 +1734,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                     continue;
                 }
                 implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
                     source,
                     target: *anchor,
                 });
@@ -1761,7 +1761,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                     continue;
                 }
                 implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
                     source,
                     target: *anchor,
                 });
@@ -1771,6 +1771,82 @@ pub(crate) fn synthesize_generated_library_specializations(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Dependency-complete unconditional library edges needed while authored names are resolving.
+///
+/// These are provisional solver inputs, not a second published relationship store. The final
+/// synthesis below re-evaluates necessity against settled authored ancestry and publishes the
+/// canonical implied set. Conditional rules wait for their typed prerequisites; they are not
+/// guessed into this pre-resolution set.
+pub(crate) fn provisional_unconditional_library_specializations(
+    storage: &SemanticModelStorage,
+    anchor_facts: &LibrarySpecializationAnchorFacts,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut implied = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
+            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
+        {
+            for rule in library_specialization_rules(metaclass) {
+                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+                    anchor_facts.outcome(rule.rule_id)
+                else {
+                    continue;
+                };
+                if source == *anchor {
+                    continue;
+                }
+                implied.push(ImpliedRelationship {
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
+                    source,
+                    target: *anchor,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// The concrete specialization relationship required by the source and target metaclasses.
+///
+/// KerML Table 10 does not make every `specializesFromLibrary` constraint a
+/// Subclassification: Feature-to-Feature specialization is Subsetting, while Classifier-to-
+/// Classifier specialization is Subclassification. A Feature specialized by a Classifier is
+/// typed by it. Keeping that distinction on the canonical edge is what lets feature inheritance
+/// and effective typing consume the generated rule without a private reinterpretation.
+fn implied_library_specialization_kind(
+    storage: &SemanticModelStorage,
+    source: DeclarationId,
+    target: DeclarationId,
+) -> Result<ReferenceKind, ResolutionError> {
+    let source = storage
+        .declaration(source)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let target = storage
+        .declaration(target)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    match (
+        crate::resolve::is_feature_declaration(source.kind),
+        crate::resolve::is_feature_declaration(target.kind),
+    ) {
+        (true, true) => Ok(ReferenceKind::Subsetting),
+        (true, false) => Ok(ReferenceKind::FeatureTyping),
+        (false, false) => Ok(ReferenceKind::Subclassification),
+        // A Classifier cannot specialize a Feature with one direct relationship. The only
+        // normative form needing that shape specializes the Classifier by the Feature's types and
+        // is synthesized by its dedicated metadata rule, not this one-anchor contract.
+        (false, true) => Err(ResolutionError::InvalidStorage),
+    }
 }
 
 /// Evaluates only the exact predicate vocabulary emitted by the pinned-manifest extractor.

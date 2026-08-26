@@ -32,6 +32,7 @@ use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
 use crate::resolve::results::EffectiveNameFacts;
 use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -66,13 +67,19 @@ impl ResolutionReferenceFact for AuthoredReference {
     }
 }
 
+#[derive(Clone, Copy, Default)]
+pub(crate) struct ResolutionStartingState<'a> {
+    pub provisional_relationships: &'a [ImpliedRelationship],
+    pub settled_outcomes: Option<&'a [ResolutionStatus]>,
+}
+
 pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
-    seed: Option<&[ResolutionStatus]>,
+    starting_state: ResolutionStartingState<'_>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let supported_import_count = references
         .iter()
@@ -94,7 +101,7 @@ pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
         paths,
         references,
         pass_limit,
-        seed,
+        starting_state,
     )
 }
 
@@ -105,8 +112,12 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
-    seed: Option<&[ResolutionStatus]>,
+    starting_state: ResolutionStartingState<'_>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
+    let ResolutionStartingState {
+        provisional_relationships,
+        settled_outcomes: seed,
+    } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
@@ -493,8 +504,12 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
         // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
         // set, and a specialization cycle is detected explicitly rather than looped forever.
-        let (ancestor_closures, cyclic_ancestry) =
-            build_ancestor_closures(declarations, references, &outcomes)?;
+        let (ancestor_closures, cyclic_ancestry) = build_ancestor_closures_with_implied(
+            declarations,
+            references,
+            &outcomes,
+            provisional_relationships,
+        )?;
         inherited_names =
             build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?;
 
@@ -651,6 +666,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 }
             };
         add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
+        let mut settled_specialization_closures = None;
         for _ in 0..relationship_pass_limit {
             let previous = subsetting_slots
                 .iter()
@@ -664,14 +680,19 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     _ => None,
                 })
                 .collect::<Vec<_>>();
-            let (specialization_closures, _) =
-                build_specialization_ancestor_closures(declarations, references, &outcomes)?;
+            let (specialization_closures, _) = build_specialization_ancestor_closures(
+                declarations,
+                references,
+                &outcomes,
+                provisional_relationships,
+            )?;
             inherited_names = build_inherited_name_index_for_scopes(
                 declarations,
                 &direct_names,
                 &specialization_closures,
                 Some(&relationship_scopes),
             )?;
+            settled_specialization_closures = Some(specialization_closures);
 
             for index in subsetting_slots.iter().chain(&redefinition_slots).copied() {
                 work.downstream_evaluations = work
@@ -755,10 +776,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             converged = false;
             solver_status = SolverStatus::NonConverged;
         } else {
-            let (specialization_closures, _) =
-                build_specialization_ancestor_closures(declarations, references, &outcomes)?;
+            // The converged relationship pass just built this closure from the same settled
+            // outcomes. Reuse that immutable result at the barrier instead of repeating the
+            // whole transitive closure over every authored and provisional specialization edge.
+            let specialization_closures = settled_specialization_closures
+                .as_deref()
+                .ok_or(ResolutionError::InvalidStorage)?;
             inherited_names =
-                build_inherited_name_index(declarations, &direct_names, &specialization_closures)?;
+                build_inherited_name_index(declarations, &direct_names, specialization_closures)?;
             // KerML 8.2.3.5.3 local resolution includes a Type's inherited memberships. These
             // ordinary Any-domain references have no role in settling imports, ancestry, or
             // effective typing, so resolve them exactly once against the final canonical scope.
@@ -1061,7 +1086,16 @@ pub(crate) fn build_ancestor_closures<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, |kind| {
+    build_ancestor_closures_with_implied(declarations, references, outcomes, &[])
+}
+
+fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, |kind| {
         kind == ReferenceKind::Subclassification
     })
 }
@@ -1074,8 +1108,9 @@ fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
     outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, |kind| {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, |kind| {
         matches!(
             kind,
             ReferenceKind::Subclassification
@@ -1090,6 +1125,7 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
     outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
     includes: impl Fn(ReferenceKind) -> bool,
 ) -> Result<AncestorClosures, ResolutionError> {
     let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
@@ -1104,6 +1140,18 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
                 .ok_or(ResolutionError::InvalidStorage)?;
             slot.insert(target);
         }
+    }
+    for relationship in implied {
+        if !includes(relationship.kind) {
+            continue;
+        }
+        let slot = direct_parents
+            .get_mut(relationship.source.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if relationship.target.index() >= declarations.len() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        slot.insert(relationship.target);
     }
 
     let mut dependants = vec![Vec::new(); declarations.len()];
@@ -1413,6 +1461,7 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
         || matches!(
             crate::model::element_kind::element_kind(kind),
             sysml_contract::ElementKind::Feature
+                | sysml_contract::ElementKind::Multiplicity
                 | sysml_contract::ElementKind::Step
                 | sysml_contract::ElementKind::Expression
                 | sysml_contract::ElementKind::BooleanExpression

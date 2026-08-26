@@ -47,7 +47,7 @@ package OccurrenceUsageSuboccurrenceSpecialization {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container::child"))) (target (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container::child"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container::child"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
   )
   (evaluation
   )
@@ -65,10 +65,12 @@ package OccurrenceUsageSuboccurrenceSpecialization {
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container::child")))
       (featured-by (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
     )
 )
 ~~~

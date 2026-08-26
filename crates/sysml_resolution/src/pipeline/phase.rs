@@ -122,13 +122,22 @@ impl Lowered {
         let seed = library
             .filter(|library| library.admits(&storage))
             .map(|library| library.outcomes.as_ref());
+        let library_anchors = library_specialization_anchors(&storage);
+        let provisional_library_specializations =
+            crate::resolve::implied::provisional_unconditional_library_specializations(
+                &storage,
+                &library_anchors,
+            )?;
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &storage.declarations,
             Some(&storage.declaration_facts),
             &storage.memberships,
             &storage.paths,
             &storage.references,
-            seed,
+            crate::resolve::ResolutionStartingState {
+                provisional_relationships: &provisional_library_specializations,
+                settled_outcomes: seed,
+            },
         )?;
         let authored_relationships = storage
             .relationship_declarations
@@ -156,7 +165,6 @@ impl Lowered {
         // relationships are settled here, before every index and diagnostic consumer below. The
         // lookup is owned by semantic construction: neither a renderer nor a validation rule gets
         // to rediscover `Parts::Part` from text or a display path.
-        let library_anchors = library_specialization_anchors(&storage);
         let implied = synthesize_implied_relationships(&storage, &resolution, &library_anchors)?;
         let resolution = resolution.settle(implied, library_anchors);
         // Owned cross-feature typing depends on the owning end's effective types, including types

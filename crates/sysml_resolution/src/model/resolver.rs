@@ -1341,7 +1341,7 @@ mod tests {
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
-            None,
+            crate::resolve::ResolutionStartingState::default(),
         )
         .unwrap()
     }
@@ -3292,7 +3292,7 @@ mod tests {
             &fixture.paths,
             &fixture.references,
             1,
-            None,
+            crate::resolve::ResolutionStartingState::default(),
         )
         .unwrap();
         assert_eq!(resolution.solver_status, SolverStatus::NonConverged);

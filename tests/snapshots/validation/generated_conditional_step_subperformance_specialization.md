@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization
-blocked_by=library-gap-step-subperformance-specialization-anchor
 type=file
 libraries=standard
 ~~~
@@ -58,7 +57,7 @@ package StepSubperformanceSpecialization {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent::child"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent::child"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent::child"))) (target (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent"))) (provenance implied))
   )
   (evaluation
@@ -75,12 +74,15 @@ package StepSubperformanceSpecialization {
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent::child")))
       (featured-by (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
 )
 ~~~

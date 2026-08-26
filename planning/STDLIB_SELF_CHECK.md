@@ -13,20 +13,12 @@ the semantic model is incomplete and must not be treated as successful compilati
 
 ## Current blockers
 
-Two distinct problems are currently visible with the pinned standard library.
-
-1. A normal check of the materialized standard-library directory fails during request construction
-   with `internal_invariant_failure: RequestConstruction: DuplicateSourceIdentity`. The directory
-   being checked and the automatically admitted bundled library contribute the same source
-   identities.
-   Checking an owning input must not admit a second copy of that input; fix this at library
-   admission/request construction rather than suppressing the invariant.
-2. Disabling automatic standard-library admission lets the canonical pipeline process the bundled
-   sources, but semantic validation does not pass. The current report includes
-   `ambiguous_reference`, `redefinition_type_incompatible`, `subsetting_type_incompatible`,
-   `specialization_cycle`, and many `unresolved_reference` diagnostics. There are no parser
-   diagnostics in the current run: the remaining failure is in semantic construction and checking,
-   not basic syntax acceptance.
+The normal user-facing check now admits each source identity once with its configured standard-
+library provenance and reaches semantic validation. The remaining report contains 28 diagnostics:
+14 `unresolved_reference`, 7 `missing_library_anchor`, 4 `ambiguous_reference`, and one each of
+`analysis_evaluation_unresolved`, `duplicate_connection`, and `redefinition_end_mismatch`. There
+are no parser diagnostics in the current run: the remaining failure is in semantic construction
+and checking, not syntax acceptance or source admission.
 
 The diagnostic categories describe active work, not an acceptance contract. Fixes should add
 narrow tests at the owning semantic layer; remove a category from this document when it is no
@@ -44,16 +36,10 @@ target/debug/spec42 stdlib status
 stdlib_dir="$(target/debug/spec42 stdlib path)"
 ```
 
-First exercise the user-facing command. This currently demonstrates the duplicate-source blocker:
+Exercise the user-facing command and retain its machine-readable report:
 
 ```sh
-target/debug/spec42 check "$stdlib_dir"
-```
-
-Then isolate semantic self-checking from automatic admission and retain a machine-readable report:
-
-```sh
-target/debug/spec42 --no-stdlib check "$stdlib_dir" --format json \
+target/debug/spec42 check "$stdlib_dir" --format json \
   > /tmp/spec42-stdlib-self-check.json
 self_check_status=$?
 printf 'self-check exit status: %s\n' "$self_check_status"
