@@ -320,49 +320,37 @@ pub(crate) fn build_inherited_name_index(
 }
 
 /// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)
-/// with entries reachable only by first following a usage's own settled `FeatureTyping` reference
-/// to its type: for every declaration `usage` whose `FeatureTyping` reference resolved to `target`,
-/// every name directly owned by `target` and every name already reachable in `target`'s own
-/// ancestor-scoped `inherited_names` entry becomes a candidate for `(usage, name)` here too. This
-/// lets an explicit `:>>`/`:>` reference owned by a plain usage (which has no Subclassification
-/// ancestors of its own) reach a member owned by an ancestor of the usage's *type* -- for example
-/// `need : Need { attribute :>> status = ...; }` reaching `ManagedRequirement::status` through
-/// `Need`'s own ancestor closure. Must run after `typing_slots` has resolved, since it reads their
-/// settled outcomes; the original entries are preserved unchanged, so plain type-owned
-/// Subclassification lookups (Subsetting/Redefinition owned directly by a def) are unaffected.
-pub(crate) fn extend_inherited_names_with_usage_typing<R: ResolutionReferenceFact>(
+/// with entries reachable through each declaration's canonical effective types. Effective typing
+/// includes direct FeatureTyping and typing inherited transitively through Subsetting and
+/// Redefinition. Every name directly owned by an effective type, or inherited by that type, becomes
+/// a candidate for the declaration's member scope. The original Subclassification-derived entries
+/// are preserved unchanged.
+pub(crate) fn extend_inherited_names_with_effective_types(
     direct_names: &NameIndex,
     inherited_names: NameIndex,
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-    typing_slots: &[usize],
+    effective_types: &crate::resolve::effective_types::EffectiveTypes,
+    declaration_count: usize,
+    scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries: Vec<(NameKey, DeclarationId)> = Vec::new();
-    for &index in typing_slots {
-        let ResolutionStatus::Resolved(target) = outcomes[index] else {
+    for index in 0..declaration_count {
+        let usage = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if scope_filter.is_some_and(|filter| !filter.contains(&usage)) {
             continue;
-        };
-        let usage = references[index].source();
-        for (name, candidates) in direct_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
-            }
         }
-        for (name, candidates) in inherited_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
+        for &(target, _) in effective_types.row(usage) {
+            for source in [direct_names, &inherited_names] {
+                for (name, candidates) in source.entries_for_owner(Some(target)) {
+                    for &candidate in candidates {
+                        entries.push((
+                            NameKey {
+                                owner: Some(usage),
+                                name,
+                            },
+                            candidate,
+                        ));
+                    }
+                }
             }
         }
     }

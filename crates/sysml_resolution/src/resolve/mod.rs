@@ -23,7 +23,7 @@ use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::build_direct_name_index;
 use crate::resolve::names::build_effective_import_indexes;
 use crate::resolve::names::build_inherited_name_index;
-use crate::resolve::names::extend_inherited_names_with_usage_typing;
+use crate::resolve::names::extend_inherited_names_with_effective_types;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
 use crate::resolve::names::LookupTarget;
@@ -320,8 +320,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         })
         .collect();
     // `MemberAccessOperand` (a dotted feature-chain access, e.g. `t.bead`, `f.a`) must run after
-    // `typing_slots` has resolved and `inherited_names` has been extended with usage-typing entries
-    // below (`extend_inherited_names_with_usage_typing`), because its interior segments are looked
+    // effective typing has settled and `inherited_names` has been extended with effective-type
+    // entries below (`extend_inherited_names_with_effective_types`), because its interior segments are looked
     // up as members of each hop's resolved *type*, not the hop's own declaration -- exactly the
     // index that extension builds. It cannot join `state_binding_slots` above, which runs before
     // that extension exists.
@@ -415,7 +415,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         exported_imports = next_exported_imports;
     }
 
-    let solver_status = if converged {
+    let mut solver_status = if converged {
         SolverStatus::Converged
     } else {
         for index in import_slots
@@ -653,114 +653,162 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
-        // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
-        // target through the usage's own ancestor closure -- a plain usage has no Subclassification
-        // ancestors of its own. Instead, the target must be reached
-        // by first following the usage's own settled `FeatureTyping` reference to its type, then
-        // searching that type's directly-owned members and its already-computed ancestor closure
-        // (built above from Subclassification, independently of this step). This is why it runs
-        // only now, after `typing_slots` has converged -- unlike the Subclassification-based
-        // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
-        // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
-        // reached only via `Need -> UserRequirement -> ManagedRequirement`.
-        inherited_names = extend_inherited_names_with_usage_typing(
-            &direct_names,
-            inherited_names,
-            references,
-            &outcomes,
-            &typing_slots,
-        )?;
-
-        // `MemberAccessOperand` (dotted feature-chain access, e.g. `t.bead`) resolves its root
-        // segment through the same `DeclarationDomain::Any` lexical lookup every other operand
-        // kind uses, then chases each subsequent segment as a member owned (directly or through
-        // inheritance) by the *type* of the previously resolved segment, via the just-extended
-        // `inherited_names` index -- see `resolve_member_access_reference`'s own doc comment.
-        for index in member_access_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_member_access_reference(
-                declarations,
-                paths,
-                &references[index],
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in subsetting_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
+        // Effective Feature typing includes types inherited through Subsetting and Redefinition,
+        // not only directly-authored FeatureTyping. Since those relationships themselves use the
+        // effective member scope, settle the two together at a deterministic pass barrier. This
+        // is required for nested redefinitions such as `:>> quantityDimension { :>>
+        // quantityPowerFactors = ...; }`: the outer redefinition first inherits
+        // `QuantityDimension`, which makes the inner redefinition's target visible on the next
+        // pass. The canonical effective-type derivation is shared with the published type index.
+        let relationship_pass_limit = declarations
+            .len()
+            .checked_add(1)
+            .ok_or(ResolutionError::Capacity)?;
+        let mut relationships_converged = false;
+        let mut relationship_scopes = std::collections::BTreeSet::new();
+        for index in subsetting_slots.iter().chain(&redefinition_slots) {
+            let mut owner = declarations
+                .get(references[*index].source().index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            while let Some(current) = owner {
+                relationship_scopes.insert(current);
+                owner = declarations
+                    .get(current.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .owner;
             }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
         }
-
-        for index in redefinition_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
+        let mut settled_effective_types = None;
+        for _ in 0..relationship_pass_limit {
+            let previous = subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .filter_map(|index| match outcomes[*index] {
+                    ResolutionStatus::Resolved(target) => Some((
+                        references[*index].source(),
+                        target,
+                        references[*index].kind(),
+                    )),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            let edges = references
+                .iter()
+                .enumerate()
+                .filter_map(|(index, reference)| {
+                    let ResolutionStatus::Resolved(target) = outcomes[index] else {
+                        return None;
+                    };
+                    Some((reference.source(), target, reference.kind()))
+                });
+            let effective_types =
+                crate::resolve::effective_types::derive_effective_types_from_edges(
+                    declarations.len(),
+                    edges,
+                )?;
+            inherited_names = extend_inherited_names_with_effective_types(
+                &direct_names,
+                build_inherited_name_index(&direct_names, &ancestor_closures)?,
+                &effective_types,
+                declarations.len(),
+                Some(&relationship_scopes),
             )?;
+            settled_effective_types = Some(effective_types);
+
+            for index in subsetting_slots.iter().chain(&redefinition_slots).copied() {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                    continue;
+                }
+                outcomes[index] = resolve_reference(
+                    declarations,
+                    paths,
+                    reference,
+                    DeclarationDomain::Any,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
+            let current = subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .filter_map(|index| match outcomes[*index] {
+                    ResolutionStatus::Resolved(target) => Some((
+                        references[*index].source(),
+                        target,
+                        references[*index].kind(),
+                    )),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            if current == previous {
+                relationships_converged = true;
+                break;
+            }
+        }
+        if !relationships_converged {
+            for index in subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .chain(&member_access_slots)
+                .copied()
+            {
+                outcomes[index] = ResolutionStatus::NonConverged;
+            }
+            converged = false;
+            solver_status = SolverStatus::NonConverged;
+        } else {
+            inherited_names = extend_inherited_names_with_effective_types(
+                &direct_names,
+                build_inherited_name_index(&direct_names, &ancestor_closures)?,
+                settled_effective_types
+                    .as_ref()
+                    .ok_or(ResolutionError::InvalidStorage)?,
+                declarations.len(),
+                None,
+            )?;
+            // Dotted member access consumes the final effective member scope.
+            for index in member_access_slots.iter().copied() {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                outcomes[index] = resolve_member_access_reference(
+                    declarations,
+                    paths,
+                    &references[index],
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
         }
     }
     #[cfg(test)]
@@ -1485,7 +1533,7 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             // namespace" visibility rule governs whether a *wildcard* import/general lookup can
             // reach a name, not whether an explicit qualified reference that already names the
             // owner can reach its direct member). `direct_names` is therefore the right index
-            // here -- the same one `extend_inherited_names_with_usage_typing`'s inherited-member
+            // here -- the same one `extend_inherited_names_with_effective_types`'s inherited-member
             // traversal reads from for redefinition targets like `ManagedRequirement::status`
             // (owned by a Type, not a Package, yet still reachable). `exported_names` is reserved
             // for cross-file import propagation (`NamespaceImport`/`MembershipImport`), which is
@@ -1541,11 +1589,10 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
 /// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
 /// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
 /// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
-/// time this runs has already been extended with usage-typing entries
-/// (`extend_inherited_names_with_usage_typing`): for a declaration `usage` whose own `FeatureTyping`
-/// reference resolved to `target`, `inherited_names.candidates(Some(usage), name)` already contains
-/// every name owned (directly or by inheritance) by `target`. This is exactly "member of the
-/// previously resolved segment's type."
+/// time this runs has already been extended from canonical effective typing
+/// (`extend_inherited_names_with_effective_types`): `inherited_names.candidates(Some(usage), name)`
+/// contains every name owned (directly or by inheritance) by every effective type of `usage`.
+/// This is exactly "member of the previously resolved segment's type."
 ///
 /// If the root segment does not resolve to exactly one candidate, or any subsequent segment finds
 /// no owned-by-type member, the whole chain publishes `Unresolved`; if an intermediate or final

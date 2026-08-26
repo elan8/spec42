@@ -66,12 +66,6 @@ package 'Vehicle Decomposition' {
 (fixture-diagnostics
   (document "memory://snapshot/vehicle_decomposition.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 10 19) (end 10 21))
-      )
     )
   )
 )
@@ -179,7 +173,7 @@ package 'Vehicle Decomposition' {
       (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly::w")))))
     (reference (id (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "lb")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Wheel::lb")))))
     (reference (id (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb"))) (kind redefinition) (ordinal 0))
       (authored-target "Chassis Assembly::rb")
       (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly::rb")))))
@@ -210,6 +204,7 @@ package 'Vehicle Decomposition' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle Model 2")) (anonymous (kind ref) (ordinal 2))))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::lugBoltBR"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle Model 2")) (anonymous (kind ref) (ordinal 2))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs"))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly::w"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Wheel::lb"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb"))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly::rb"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::eng"))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::eng"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::eng::cyl"))) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Engine::cyl"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::eng::cyl"))) (kind redefinition) (ordinal 0)))
@@ -371,6 +366,9 @@ package 'Vehicle Decomposition' {
     )
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::LugBolt")) (source inherited) (from (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Wheel::lb"))))
+      (supertype (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::LugBolt")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Wheel::lb")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb")))
       (featured-by (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Vehicle::chs")))
@@ -461,6 +459,7 @@ package 'Vehicle Decomposition' {
       (type (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::LugBolt")) (provenance authored))
       (effective-type (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::LugBolt")) (source direct))
       (supertype (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::LugBolt")) (scopes any))
+      (subtype (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)))) (scopes any feature))
     )
 )
 ~~~
@@ -549,7 +548,7 @@ package 'Vehicle Decomposition' {
   )
   (query (document "memory://snapshot/vehicle_decomposition.md") (range (start 10 19) (end 10 21)) (probe (position 10 19))
     (reference (id (source (node (document "memory://snapshot/vehicle_decomposition.md") (path (named (kind package) (name "Vehicle Decomposition")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "chs")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "lb")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Wheel::lb")))))
     )
   )
   (query (document "memory://snapshot/vehicle_decomposition.md") (range (start 8 21) (end 8 43)) (probe (position 8 21))

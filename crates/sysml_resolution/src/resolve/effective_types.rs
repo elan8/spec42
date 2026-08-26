@@ -34,20 +34,13 @@ impl EffectiveTypes {
     }
 }
 
-/// Derives effective typing once from direct FeatureTyping and the transitive
-/// Subsetting/Redefinition closure.
-///
-/// Each pass reads a complete prior value and publishes a fresh next value. A declaration count
-/// bound is sufficient because every successful pass adds at least one of the finite
-/// `(declaration, type, origin)` facts; cycles therefore converge without scheduling dependence.
-pub(crate) fn derive_effective_types(
-    storage: &SemanticModelStorage,
-    resolution: &ResolutionResults,
+pub(crate) fn derive_effective_types_from_edges(
+    count: usize,
+    edges: impl IntoIterator<Item = (DeclarationId, DeclarationId, ReferenceKind)>,
 ) -> Result<EffectiveTypes, ResolutionError> {
-    let count = storage.declarations.len();
     let mut direct = vec![std::collections::BTreeSet::new(); count];
     let mut generals = vec![std::collections::BTreeSet::new(); count];
-    let mut edge = |source: DeclarationId, target: DeclarationId, kind: ReferenceKind| {
+    for (source, target, kind) in edges {
         let Some(direct_row) = direct.get_mut(source.index()) else {
             return Err(ResolutionError::InvalidStorage);
         };
@@ -63,16 +56,6 @@ pub(crate) fn derive_effective_types(
             }
             _ => {}
         }
-        Ok(())
-    };
-    for (index, reference) in storage.references.iter().enumerate() {
-        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        if let Some(ResolutionStatus::Resolved(target)) = resolution.outcome(id) {
-            edge(reference.source, target, reference.kind)?;
-        }
-    }
-    for relationship in resolution.implied_relationships.iter() {
-        edge(relationship.source, relationship.target, relationship.kind)?;
     }
 
     let mut rows = direct
@@ -84,31 +67,48 @@ pub(crate) fn derive_effective_types(
                 .collect::<std::collections::BTreeSet<_>>()
         })
         .collect::<Vec<_>>();
-    for _ in 0..count {
-        let mut next = rows.clone();
-        for (source, source_generals) in generals.iter().enumerate() {
-            for general in source_generals {
-                let Some(inherited) = rows.get(general.index()) else {
-                    return Err(ResolutionError::InvalidStorage);
-                };
-                let Some(next_row) = next.get_mut(source) else {
-                    return Err(ResolutionError::InvalidStorage);
-                };
-                next_row.extend(inherited.iter().map(|(target, origin)| {
-                    (
-                        *target,
-                        EffectiveTypeSource::Inherited(match origin {
-                            EffectiveTypeSource::Direct => *general,
-                            EffectiveTypeSource::Inherited(from) => *from,
-                        }),
-                    )
-                }));
+    let mut dependants = vec![Vec::new(); count];
+    for (source, source_generals) in generals.iter().enumerate() {
+        let source = DeclarationId::from_index(source).map_err(|_| ResolutionError::Capacity)?;
+        for general in source_generals {
+            let Some(row) = dependants.get_mut(general.index()) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            row.push(source);
+        }
+    }
+    for row in &mut dependants {
+        row.sort_unstable();
+        row.dedup();
+    }
+
+    // Propagate only newly discovered facts along the reverse Subsetting/Redefinition graph.
+    // Each finite `(declaration, type, provenance)` fact enters the queue once, so cycles converge
+    // without cloning every declaration's complete row on every depth pass.
+    let mut queue = std::collections::VecDeque::new();
+    for (source, row) in rows.iter().enumerate() {
+        let source = DeclarationId::from_index(source).map_err(|_| ResolutionError::Capacity)?;
+        queue.extend(row.iter().map(|fact| (source, *fact)));
+    }
+    while let Some((general, (target, origin))) = queue.pop_front() {
+        let inherited = (
+            target,
+            EffectiveTypeSource::Inherited(match origin {
+                EffectiveTypeSource::Direct => general,
+                EffectiveTypeSource::Inherited(from) => from,
+            }),
+        );
+        let Some(general_dependants) = dependants.get(general.index()) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        for source in general_dependants {
+            let Some(row) = rows.get_mut(source.index()) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if row.insert(inherited) {
+                queue.push_back((*source, inherited));
             }
         }
-        if next == rows {
-            break;
-        }
-        rows = next;
     }
     Ok(EffectiveTypes {
         rows: rows
@@ -117,4 +117,26 @@ pub(crate) fn derive_effective_types(
             .collect::<Vec<_>>()
             .into_boxed_slice(),
     })
+}
+
+/// Derives effective typing once from direct FeatureTyping and the transitive
+/// Subsetting/Redefinition closure.
+///
+/// The shared worklist derivation is also used while those relationships settle, so published and
+/// intermediate member scopes cannot disagree about effective typing.
+pub(crate) fn derive_effective_types(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<EffectiveTypes, ResolutionError> {
+    let mut edges = Vec::new();
+    for (index, reference) in storage.references.iter().enumerate() {
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if let Some(ResolutionStatus::Resolved(target)) = resolution.outcome(id) {
+            edges.push((reference.source, target, reference.kind));
+        }
+    }
+    for relationship in resolution.implied_relationships.iter() {
+        edges.push((relationship.source, relationship.target, relationship.kind));
+    }
+    derive_effective_types_from_edges(storage.declarations.len(), edges)
 }
