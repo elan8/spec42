@@ -10,6 +10,7 @@ use crate::lower::facts::AuthoredImportFacts;
 use crate::lower::facts::AuthoredImportShape;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::CanonicalDocument;
 use crate::lower::facts::ConstructorExpressionRecord;
@@ -106,6 +107,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) declaration_facts: Vec<DeclarationFacts>,
     pub(crate) memberships: Vec<MembershipRecord>,
     pub(crate) references: Vec<AuthoredReference>,
+    pub(crate) relationship_declarations: Vec<AuthoredRelationshipDeclaration>,
     pub(crate) documentation: Vec<DocumentationRecord>,
     pub(crate) feature_values: Vec<FeatureValueRecord>,
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
@@ -1278,6 +1280,7 @@ impl SemanticModelBuilder {
             declaration_facts: self.declaration_facts.into_boxed_slice(),
             memberships: self.memberships.into_boxed_slice(),
             references: self.references.into_boxed_slice(),
+            relationship_declarations: self.relationship_declarations.into_boxed_slice(),
             documentation: self.documentation.into_boxed_slice(),
             feature_values: self.feature_values.into_boxed_slice(),
             operator_expressions: self.operator_expressions.into_boxed_slice(),
@@ -1623,9 +1626,12 @@ impl SemanticModelBuilder {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
                 }
             },
-            PackageBodyElement::KermlRelationship(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
+            PackageBodyElement::KermlRelationship(node) => match owner {
+                Some(owner) => self.lower_kerml_relationship_decl(document, owner, node)?,
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
+            },
             PackageBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                 document,
                 owner,

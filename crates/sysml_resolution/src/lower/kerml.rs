@@ -6,6 +6,7 @@ use crate::lower::facts::kerml_classifier_kind;
 use crate::lower::facts::kerml_feature_kind;
 use crate::lower::facts::kerml_feature_prefix_modifiers;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::PendingReference;
@@ -22,11 +23,78 @@ use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     FeaturePrefixHead, FeatureRelationshipPart, KermlBindingMember, KermlClassifierDecl,
     KermlConnectorEnd, KermlConnectorMember, KermlFeature, KermlInvariantMember,
-    KermlSuccessionMember, KermlTypeRelationship, KermlTypeRelationshipKeyword,
-    MembershipKind as ParserMembershipKind, Node, OwnedCrossFeature,
+    KermlRelationshipDecl, KermlRelationshipKeyword, KermlSuccessionMember, KermlTypeRelationship,
+    KermlTypeRelationshipKeyword, MembershipKind as ParserMembershipKind, Node, OwnedCrossFeature,
 };
 
 impl SemanticModelBuilder {
+    /// Lowers the two independently-authored endpoints of a KerML relationship declaration.
+    /// Both names resolve from the enclosing lexical scope; the paired fact later publishes one
+    /// authored semantic edge between their settled declarations.
+    pub(crate) fn lower_kerml_relationship_decl(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlRelationshipDecl>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match node.value.keyword {
+            KermlRelationshipKeyword::Subtype | KermlRelationshipKeyword::Subclassifier => {
+                ReferenceKind::Subclassification
+            }
+            KermlRelationshipKeyword::Typing => ReferenceKind::FeatureTyping,
+            KermlRelationshipKeyword::Subset => ReferenceKind::Subsetting,
+            KermlRelationshipKeyword::Redefinition => ReferenceKind::Redefinition,
+            KermlRelationshipKeyword::Disjoint => ReferenceKind::Disjoining,
+            KermlRelationshipKeyword::Inverse => ReferenceKind::FeatureInverting,
+            KermlRelationshipKeyword::Conjugate => ReferenceKind::Conjugation,
+            KermlRelationshipKeyword::Featuring => ReferenceKind::TypeFeaturing,
+        };
+        let parsed = &self.documents[document.index()].parsed;
+        let source_span = parsed
+            .qualified_reference(node.value.source)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let target_span = parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let source = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.source,
+            flags: RelationshipFlags::default(),
+            span: source_span,
+            import: None,
+        })?;
+        let target = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span: target_span,
+            import: None,
+        })?;
+        self.relationship_declarations
+            .push(AuthoredRelationshipDeclaration {
+                kind,
+                source,
+                target,
+                span: node.span,
+            });
+        if node.value.identification.is_some() || node.value.body.is_some() {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::RelationshipBodyMember,
+                node.span,
+            );
+        }
+        Ok(())
+    }
+
     /// Lowers a bodied KerML classifier declaration (`KermlClassifierDecl`), mirroring
     /// `lower_class_def`: ownership, an optional `specializes` relationship, and owned-member
     /// structure. Its body shares the `CalcDefBody` grammar (parameters, `return` results,

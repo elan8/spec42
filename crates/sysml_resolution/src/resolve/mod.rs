@@ -315,10 +315,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DependencySupplier
                     | ReferenceKind::PerformParameterTarget
                     | ReferenceKind::FeatureChaining
+                    | ReferenceKind::ExplicitRelationshipEndpoint
             )
-            // A dotted `chains a.b` is a `FeatureChain`, resolved hop by hop below.
+            // Dotted feature chains are resolved hop by hop below.
             .then(|| {
-                !(reference.kind() == ReferenceKind::FeatureChaining && reference.flags().dotted)
+                !(matches!(
+                    reference.kind(),
+                    ReferenceKind::FeatureChaining | ReferenceKind::ExplicitRelationshipEndpoint
+                ) && reference.flags().dotted)
             })
             .unwrap_or(false)
             .then_some(index)
@@ -341,6 +345,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (matches!(
                 reference.kind(),
                 ReferenceKind::MemberAccessOperand
+                    | ReferenceKind::ExplicitRelationshipEndpoint
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
             ) || (reference.flags().dotted
@@ -894,6 +899,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             inherited_names,
             solver_status,
             implied_relationships,
+            authored_relationships: Box::default(),
             library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
             semantic_metadata_projections: Box::default(),
             semantic_metadata_projection_status: Default::default(),
@@ -1035,6 +1041,7 @@ pub(crate) fn supported_import_domain(
             Some(DeclarationDomain::Any)
         }
         ReferenceKind::NamespaceImport
+        | ReferenceKind::ExplicitRelationshipEndpoint
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport
         | ReferenceKind::FeatureTyping

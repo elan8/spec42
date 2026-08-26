@@ -138,5 +138,8 @@ pub(crate) fn derive_effective_types(
     for relationship in resolution.implied_relationships.iter() {
         edges.push((relationship.source, relationship.target, relationship.kind));
     }
+    for relationship in resolution.authored_relationships.iter() {
+        edges.push((relationship.source, relationship.target, relationship.kind));
+    }
     derive_effective_types_from_edges(storage.declarations.len(), edges)
 }

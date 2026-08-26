@@ -4257,6 +4257,40 @@ fn relationships_are_published_in_both_directions() {
     );
 }
 
+/// An explicit KerML relationship declaration authors both endpoints. It is not a relationship
+/// from the enclosing classifier, and neither endpoint keyword is lowered as an expression name.
+#[test]
+fn explicit_kerml_relationship_declarations_publish_paired_endpoints() {
+    let published = detail_publication(
+        &[(
+            "memory://relationships.kerml",
+            "package P { class C { feature general; feature specific; subset specific subsets general; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let specific = details_of(&published, "memory://relationships.kerml", "P::C::specific");
+    let general = details_of(&published, "memory://relationships.kerml", "P::C::general");
+    assert!(
+        specific.outgoing.iter().any(|relationship| {
+            relationship.kind == "subsetting"
+                && relationship.peer.name.as_deref() == Some("general")
+                && relationship.provenance == RelationshipProvenance::Authored
+        }),
+        "{:?}",
+        specific.outgoing
+    );
+    assert!(
+        general.incoming.iter().any(|relationship| {
+            relationship.kind == "subsetting"
+                && relationship.peer.name.as_deref() == Some("specific")
+                && relationship.provenance == RelationshipProvenance::Authored
+        }),
+        "{:?}",
+        general.incoming
+    );
+    assert!(published.diagnostics().is_empty());
+}
+
 /// Repetition and query order cannot change a published answer.
 #[test]
 fn repeated_and_reordered_element_detail_queries_return_identical_answers() {

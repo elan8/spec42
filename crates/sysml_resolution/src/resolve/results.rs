@@ -51,6 +51,15 @@ pub(crate) struct ImpliedRelationship {
     pub(crate) target: DeclarationId,
 }
 
+/// A settled relationship with an authored declaration site and two resolved authored endpoints.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct AuthoredRelationship {
+    pub(crate) kind: ReferenceKind,
+    pub(crate) source: DeclarationId,
+    pub(crate) target: DeclarationId,
+    pub(crate) declaration: crate::model::AuthoredReferenceId,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SemanticMetadataProjection {
     pub(crate) annotation: DeclarationId,
@@ -161,6 +170,7 @@ pub(crate) struct ResolutionResults {
     pub(crate) inherited_names: NameIndex,
     pub(crate) solver_status: SolverStatus,
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) authored_relationships: Box<[AuthoredRelationship]>,
     pub(crate) library_specialization_anchors: LibrarySpecializationAnchorFacts,
     pub(crate) semantic_metadata_projections: Box<[SemanticMetadataProjection]>,
     pub(crate) semantic_metadata_projection_status: SemanticMetadataProjectionStatus,
@@ -187,6 +197,16 @@ pub(crate) struct ResolutionResults {
 impl ResolutionResults {
     pub(crate) fn outcome(&self, id: AuthoredReferenceId) -> Option<ResolutionStatus> {
         self.outcomes.get(id.index()).copied()
+    }
+
+    pub(crate) fn settle_authored_relationships(
+        self,
+        authored_relationships: Box<[AuthoredRelationship]>,
+    ) -> Self {
+        Self {
+            authored_relationships,
+            ..self
+        }
     }
 
     pub(crate) fn ambiguous_candidates(&self, range: CandidateRange) -> &[DeclarationId] {

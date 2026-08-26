@@ -52,6 +52,7 @@ use crate::resolve::names::NameIndex;
 use crate::resolve::resolve_dense;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
+use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::SolverStatus;
 use sysml_contract::PublicationCompleteness;
 
@@ -129,6 +130,28 @@ impl Lowered {
             &storage.references,
             seed,
         )?;
+        let authored_relationships = storage
+            .relationship_declarations
+            .iter()
+            .filter_map(|relationship| {
+                let ResolutionStatus::Resolved(source) = resolution.outcome(relationship.source)?
+                else {
+                    return None;
+                };
+                let ResolutionStatus::Resolved(target) = resolution.outcome(relationship.target)?
+                else {
+                    return None;
+                };
+                Some(crate::resolve::results::AuthoredRelationship {
+                    kind: relationship.kind,
+                    source,
+                    target,
+                    declaration: relationship.source,
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        let resolution = resolution.settle_authored_relationships(authored_relationships);
         // `checkPartDefinitionSpecialization` is an implied semantic fact, so its anchor and
         // relationships are settled here, before every index and diagnostic consumer below. The
         // lookup is owned by semantic construction: neither a renderer nor a validation rule gets

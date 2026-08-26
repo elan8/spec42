@@ -721,6 +721,28 @@ pub(crate) fn write_relationships(
             reference.ordinal,
         )?;
     }
+    let mut authored = model
+        .resolution
+        .authored_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect::<Vec<_>>();
+    authored.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in authored {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance authored))")?;
+    }
     let mut implied: Vec<&ImpliedRelationship> = model
         .resolution
         .implied_relationships
@@ -1551,6 +1573,7 @@ pub(crate) fn visibility(value: Visibility) -> &'static str {
 
 pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
     match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => "explicitRelationshipEndpoint",
         ReferenceKind::NamespaceImport => "namespaceImport",
         ReferenceKind::MembershipImport => "membershipImport",
         ReferenceKind::FilterImport => "filterImport",
@@ -1620,6 +1643,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
 /// import kinds, which bring names into scope rather than relating two elements.
 pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
     match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => None,
         ReferenceKind::FeatureTyping => Some("typing"),
         ReferenceKind::TypeFeaturing => Some("typeFeaturing"),
         ReferenceKind::FeatureChaining => Some("featureChaining"),
@@ -1694,6 +1718,7 @@ mod tests {
             declaration_facts: Box::new([]),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),

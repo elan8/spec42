@@ -812,6 +812,17 @@ pub(crate) struct AuthoredReference {
     pub(crate) span: Span,
 }
 
+/// One explicitly declared KerML relationship whose source and target are both authored names.
+/// The endpoint references remain ordinary resolver inputs; this record is the canonical pairing
+/// that prevents either endpoint from being mistaken for a relationship from the enclosing type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct AuthoredRelationshipDeclaration {
+    pub(crate) kind: ReferenceKind,
+    pub(crate) source: AuthoredReferenceId,
+    pub(crate) target: AuthoredReferenceId,
+    pub(crate) span: Span,
+}
+
 pub(crate) struct PendingReference {
     pub(crate) source: DeclarationId,
     pub(crate) kind: ReferenceKind,

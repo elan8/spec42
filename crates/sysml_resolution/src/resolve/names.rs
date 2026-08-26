@@ -514,6 +514,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                 }
             }
             ReferenceKind::FilterImport
+            | ReferenceKind::ExplicitRelationshipEndpoint
             | ReferenceKind::FeatureTyping
             | ReferenceKind::TypeFeaturing
             | ReferenceKind::FeatureChaining

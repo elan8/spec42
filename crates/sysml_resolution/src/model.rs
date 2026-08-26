@@ -920,6 +920,9 @@ impl DeclarationKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum ReferenceKind {
+    /// One endpoint of an explicit KerML relationship declaration. The paired lowering fact owns
+    /// whether this reference is the relationship source or target and the relationship kind.
+    ExplicitRelationshipEndpoint,
     NamespaceImport,
     MembershipImport,
     FilterImport,

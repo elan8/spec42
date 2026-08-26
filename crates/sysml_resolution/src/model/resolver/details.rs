@@ -705,6 +705,25 @@ impl<D> SemanticModel<D> {
                 location: None,
             });
         }
+        for index in self.incoming_authored_relationship_indices(id) {
+            let relationship = &self.resolution.authored_relationships[*index as usize];
+            let Some(kind) = writer::relationship_kind(relationship.kind) else {
+                continue;
+            };
+            let Some(peer) = self.symbol_entry(relationship.source) else {
+                continue;
+            };
+            connected.push(ConnectedElement {
+                kind,
+                provenance: RelationshipProvenance::Authored,
+                peer,
+                location: self
+                    .storage
+                    .references
+                    .get(relationship.declaration.index())
+                    .and_then(|reference| self.reference_location(reference)),
+            });
+        }
         canonicalize(connected)
     }
 
@@ -745,6 +764,25 @@ impl<D> SemanticModel<D> {
                 provenance: RelationshipProvenance::Implied,
                 peer,
                 location: None,
+            });
+        }
+        for index in self.outgoing_authored_relationship_indices(id) {
+            let relationship = &self.resolution.authored_relationships[*index as usize];
+            let Some(kind) = writer::relationship_kind(relationship.kind) else {
+                continue;
+            };
+            let Some(peer) = self.symbol_entry(relationship.target) else {
+                continue;
+            };
+            connected.push(ConnectedElement {
+                kind,
+                provenance: RelationshipProvenance::Authored,
+                peer,
+                location: self
+                    .storage
+                    .references
+                    .get(relationship.declaration.index())
+                    .and_then(|reference| self.reference_location(reference)),
             });
         }
         canonicalize(connected)

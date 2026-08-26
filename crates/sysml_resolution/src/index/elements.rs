@@ -71,6 +71,10 @@ pub(crate) struct ElementFactIndex {
     /// element would be told nothing points at it when something does.
     pub(crate) incoming_implied: Box<[(u32, u32)]>,
     pub(crate) incoming_implied_order: Box<[u32]>,
+    pub(crate) authored_relationships: Box<[(u32, u32)]>,
+    pub(crate) authored_relationship_order: Box<[u32]>,
+    pub(crate) incoming_authored_relationships: Box<[(u32, u32)]>,
+    pub(crate) incoming_authored_relationship_order: Box<[u32]>,
     /// Per-declaration ranges into `child_order`: the declarations each one owns.
     ///
     /// Prebuilt because the alternative is a scan of every declaration in the publication per
@@ -160,6 +164,19 @@ impl ElementFactIndex {
                 .target
                 .index()
         });
+        let mut authored_relationship_order: Vec<u32> =
+            (0..resolution.authored_relationships.len() as u32).collect();
+        authored_relationship_order.sort_by_key(|index| {
+            resolution.authored_relationships[*index as usize]
+                .source
+                .index()
+        });
+        let mut incoming_authored_relationship_order = authored_relationship_order.clone();
+        incoming_authored_relationship_order.sort_by_key(|index| {
+            resolution.authored_relationships[*index as usize]
+                .target
+                .index()
+        });
 
         // Source order within an owner, so an inherited-feature list reads the way the author
         // wrote the type rather than the way lowering happened to visit it.
@@ -233,6 +250,21 @@ impl ElementFactIndex {
                     .map(|index| resolution.implied_relationships[*index as usize].target),
             ),
             incoming_implied_order: incoming_implied_order.into_boxed_slice(),
+            authored_relationships: ranges_by_declaration(
+                declarations,
+                authored_relationship_order
+                    .iter()
+                    .map(|index| resolution.authored_relationships[*index as usize].source),
+            ),
+            authored_relationship_order: authored_relationship_order.into_boxed_slice(),
+            incoming_authored_relationships: ranges_by_declaration(
+                declarations,
+                incoming_authored_relationship_order
+                    .iter()
+                    .map(|index| resolution.authored_relationships[*index as usize].target),
+            ),
+            incoming_authored_relationship_order: incoming_authored_relationship_order
+                .into_boxed_slice(),
             children: ranges_by_declaration(
                 declarations,
                 child_order.iter().filter_map(|id| {
@@ -636,6 +668,22 @@ impl<D> SemanticModel<D> {
         slice_range(
             &self.facts.incoming_implied_order,
             &self.facts.incoming_implied,
+            id,
+        )
+    }
+
+    pub(crate) fn outgoing_authored_relationship_indices(&self, id: DeclarationId) -> &[u32] {
+        slice_range(
+            &self.facts.authored_relationship_order,
+            &self.facts.authored_relationships,
+            id,
+        )
+    }
+
+    pub(crate) fn incoming_authored_relationship_indices(&self, id: DeclarationId) -> &[u32] {
+        slice_range(
+            &self.facts.incoming_authored_relationship_order,
+            &self.facts.incoming_authored_relationships,
             id,
         )
     }

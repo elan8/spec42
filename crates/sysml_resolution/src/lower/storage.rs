@@ -4,6 +4,7 @@ use crate::lower::facts::AdmittedDocument;
 use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::CanonicalDocument;
 use crate::lower::facts::ConstructorExpressionRecord;
@@ -35,6 +36,7 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) declaration_facts: Box<[DeclarationFacts]>,
     pub(crate) memberships: Box<[MembershipRecord]>,
     pub(crate) references: Box<[AuthoredReference]>,
+    pub(crate) relationship_declarations: Box<[AuthoredRelationshipDeclaration]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
     pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,

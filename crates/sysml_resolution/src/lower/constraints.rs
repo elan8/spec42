@@ -959,6 +959,9 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::ActionMember(node) => {
                         self.lower_action_def_body_element(document, declaration, node)?;
                     }
+                    CalcDefBodyElement::KermlRelationship(node) => {
+                        self.lower_kerml_relationship_decl(document, declaration, node)?;
+                    }
                     CalcDefBodyElement::Annotating(member) => {
                         self.lower_annotating_member(
                             document,
