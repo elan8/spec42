@@ -94,7 +94,7 @@ package Machines {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dff8c15c9f2a6b586b685035c900542641528f563e0d736025fcad8bbef61dfe") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dff8c15c9f2a6b586b685035c900542641528f563e0d736025fcad8bbef61dfe") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_machine_shape.md") (qualified-name "Machines"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_machine_shape.md") (qualified-name "Machines::GuardIsNotBoolean"))) (kind state-def) (membership (kind owning) (visibility default)))

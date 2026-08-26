@@ -57,7 +57,7 @@ package 'State Exhibition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:394e3aff4c70bccf48382dd297df0ea08aede2973f794ce5bf1cc3775328ad63") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:394e3aff4c70bccf48382dd297df0ea08aede2973f794ce5bf1cc3775328ad63") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Transition Actions") (import (shape namespace) (recursive false))))))

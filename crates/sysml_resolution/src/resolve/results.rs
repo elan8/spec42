@@ -73,6 +73,20 @@ pub(crate) enum ExpressionArgumentProjectionStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum ConstructorExpressionProjectionStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ConstructorExpressionProjection {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) instantiated_type: DeclarationId,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -86,6 +100,8 @@ pub(crate) struct ResolutionResults {
     pub(crate) select_expression_projection_status: ExpressionArgumentProjectionStatus,
     pub(crate) index_expression_projection_status: ExpressionArgumentProjectionStatus,
     pub(crate) index_expression_array_anchor: Option<LibrarySpecializationAnchor>,
+    pub(crate) constructor_expression_projection_status: ConstructorExpressionProjectionStatus,
+    pub(crate) constructor_expression_projections: Box<[ConstructorExpressionProjection]>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -140,6 +156,20 @@ impl ResolutionResults {
             select_expression_projection_status,
             index_expression_projection_status,
             index_expression_array_anchor,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_constructor_expressions(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        constructor_expression_projections: Box<[ConstructorExpressionProjection]>,
+        constructor_expression_projection_status: ConstructorExpressionProjectionStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            constructor_expression_projections,
+            constructor_expression_projection_status,
             ..self
         }
     }

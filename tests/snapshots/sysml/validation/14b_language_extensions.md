@@ -129,7 +129,7 @@ package '14b-Language-Extensions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:152669b1468ad742079f5087fb1f317a7e9f498a7e403168822e1ac070bdb05a") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:152669b1468ad742079f5087fb1f317a7e9f498a7e403168822e1ac070bdb05a") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions::LibraryModel"))) (kind package) (membership (kind owning) (visibility default)))

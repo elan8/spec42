@@ -32,7 +32,7 @@ package C {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f4f78350c7cde18e37c5cc680608d1513846fa38ba55c1115fdbcb368c96230f") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f4f78350c7cde18e37c5cc680608d1513846fa38ba55c1115fdbcb368c96230f") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "A"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "A::T"))) (kind part-def) (membership (kind owning) (visibility default)))

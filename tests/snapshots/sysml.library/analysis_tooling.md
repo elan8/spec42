@@ -82,7 +82,7 @@ standard library package AnalysisTooling {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6595af55a2fee28ca39506996d1152e7ba71496668136e4b9cfbd9b695a840bf") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6595af55a2fee28ca39506996d1152e7ba71496668136e4b9cfbd9b695a840bf") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains definitions for metadata annotations related\n\t * to analysis tool integration.\n\t "))))
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (path (named (kind library-package) (name "AnalysisTooling")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

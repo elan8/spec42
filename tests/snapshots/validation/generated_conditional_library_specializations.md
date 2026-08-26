@@ -44,7 +44,7 @@ package ConditionalSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:16f9fee4a0d6534062dafbdcad03d587adc1314197f40b277b427257413a6b0d") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:16f9fee4a0d6534062dafbdcad03d587adc1314197f40b277b427257413a6b0d") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Explicit"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::Life")))))

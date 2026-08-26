@@ -92,7 +92,7 @@ package '12b-Allocation' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:261b1fe02503a1a9e2b33fbf4d5de237fbcf031cd9d444a8b7ba78e92d92efdc") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:261b1fe02503a1a9e2b33fbf4d5de237fbcf031cd9d444a8b7ba78e92d92efdc") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (path (named (kind package) (name "12b-Allocation")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "LogicalModel") (import (shape namespace) (recursive false))))))

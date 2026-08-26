@@ -18,6 +18,8 @@ use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::build_ancestor_closures;
 use crate::resolve::effective_types::EffectiveTypes;
 use crate::resolve::names::NameIndex;
+use crate::resolve::results::ConstructorExpressionProjection;
+use crate::resolve::results::ConstructorExpressionProjectionStatus;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
@@ -901,6 +903,78 @@ pub(crate) struct OperatorExpressionSynthesis {
     pub(crate) select_status: ExpressionArgumentProjectionStatus,
     pub(crate) index_status: ExpressionArgumentProjectionStatus,
     pub(crate) array_anchor: Option<LibrarySpecializationAnchor>,
+}
+
+pub(crate) struct ConstructorExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[ConstructorExpressionProjection]>,
+    pub(crate) status: ConstructorExpressionProjectionStatus,
+}
+
+pub(crate) fn synthesize_constructor_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<ConstructorExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = ConstructorExpressionProjectionStatus::Complete;
+    for constructor in storage.constructor_expressions.iter() {
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == constructor.expression
+                    && reference.kind == ReferenceKind::InvocationCallee
+            });
+        let Some((index, _)) = references.next() else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(instantiated_type)) = resolution.outcome(id) else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(instantiated_type) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let kind = if crate::resolve::is_feature_declaration(target.kind) {
+            ReferenceKind::Subsetting
+        } else if crate::resolve::DeclarationDomain::Type.accepts(target.kind) {
+            ReferenceKind::FeatureTyping
+        } else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind,
+            source: constructor.result,
+            target: instantiated_type,
+        });
+        projections.push(ConstructorExpressionProjection {
+            expression: constructor.expression,
+            result: constructor.result,
+            instantiated_type,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(ConstructorExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
 }
 
 pub(crate) fn synthesize_operator_expression_result_specializations(

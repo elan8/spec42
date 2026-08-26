@@ -351,7 +351,7 @@ standard library package NaturalFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c27bff3fe13f4e866d3589f1aee7c06c6759dff40073f772db8b470754f266bf") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c27bff3fe13f4e866d3589f1aee7c06c6759dff40073f772db8b470754f266bf") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/natural_functions.md") (qualified-name "NaturalFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions on Natural values, including concrete specialization of the \n\t * general arithmetic and comparison operations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/natural_functions.md") (path (named (kind library-package) (name "NaturalFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

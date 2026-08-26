@@ -814,6 +814,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             select_expression_projection_status: Default::default(),
             index_expression_projection_status: Default::default(),
             index_expression_array_anchor: None,
+            constructor_expression_projection_status: Default::default(),
+            constructor_expression_projections: Box::default(),
             #[cfg(test)]
             work,
         },
@@ -1144,6 +1146,22 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::FinalState
             | DeclarationKind::PerformParameterBinding
     )
+}
+
+/// Whether a lowered declaration is a KerML `Feature` (including every SysML usage). This is the
+/// canonical metamodel-category predicate used by both resolution synthesis and structural checks.
+pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
+    is_usage_declaration(kind)
+        || matches!(
+            crate::model::element_kind::element_kind(kind),
+            sysml_contract::ElementKind::Feature
+                | sysml_contract::ElementKind::Step
+                | sysml_contract::ElementKind::Expression
+                | sysml_contract::ElementKind::BooleanExpression
+                | sysml_contract::ElementKind::Connector
+                | sysml_contract::ElementKind::BindingConnector
+                | sysml_contract::ElementKind::Invariant
+        )
 }
 
 /// Whether a lowered Usage is an `ActionUsage` or one of its concrete SysML subtypes.

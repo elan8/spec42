@@ -62,7 +62,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2ac66c3d094088d695b65a3898361493342d9c54b20d40fcdddd7a368074812c") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2ac66c3d094088d695b65a3898361493342d9c54b20d40fcdddd7a368074812c") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

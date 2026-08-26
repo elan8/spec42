@@ -2062,6 +2062,33 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::ConstructorExpressionResult {
+            if matches!(
+                self.resolution.constructor_expression_projection_status,
+                crate::resolve::results::ConstructorExpressionProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for constructor in self.resolution.constructor_expression_projections.iter() {
+                match self.conformance(
+                    constructor.result,
+                    constructor.instantiated_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2082,9 +2109,7 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::SelectExpressionResult
             | SpecializationCheckKind::IndexExpressionResult => unreachable!("handled above"),
-            SpecializationCheckKind::ConstructorExpressionResult => {
-                SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType
-            }
+            SpecializationCheckKind::ConstructorExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::ConstructorExpression => {
                 SpecializationCheckPrerequisite::LibraryAnchorAndImpliedSpecialization
             }

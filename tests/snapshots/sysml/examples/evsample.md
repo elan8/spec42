@@ -865,7 +865,7 @@ package EVSample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:421fcb90e6f0bfc15eca186560c63a0142814f1aee97d175a438f45c6371efe6") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:421fcb90e6f0bfc15eca186560c63a0142814f1aee97d175a438f45c6371efe6") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/evsample.md") (path (named (kind package) (name "EVSample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))

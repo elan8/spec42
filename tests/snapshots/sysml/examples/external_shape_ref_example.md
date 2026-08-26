@@ -151,7 +151,7 @@ package ExternalShapeRefExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b94e974af4b6326e15db5a4ea051a93c6015cbfcb56fe7b7aba8a2cd9a5706b6") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b94e974af4b6326e15db5a4ea051a93c6015cbfcb56fe7b7aba8a2cd9a5706b6") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

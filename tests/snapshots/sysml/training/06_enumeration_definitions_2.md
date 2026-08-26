@@ -104,7 +104,7 @@ package 'Enumeration Definitions-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0145d2f5251b644319fef2f379abcca21d2c4061201f2a805154b28f0b64957") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0145d2f5251b644319fef2f379abcca21d2c4061201f2a805154b28f0b64957") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

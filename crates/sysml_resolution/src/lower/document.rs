@@ -25,6 +25,7 @@ use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::AuthoredUnitToken;
+use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
@@ -62,6 +63,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
     pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
     pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
+    pub(crate) constructor_expressions: Box<[ConstructorExpressionRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,
@@ -103,6 +105,7 @@ pub(crate) fn lower_document(
         feature_values: builder.feature_values.into_boxed_slice(),
         operator_expressions: builder.operator_expressions.into_boxed_slice(),
         expression_arguments: builder.expression_arguments.into_boxed_slice(),
+        constructor_expressions: builder.constructor_expressions.into_boxed_slice(),
         metadata_annotations: builder.metadata_annotations.into_boxed_slice(),
         unsupported: builder.unsupported.into_boxed_slice(),
         recovery: builder.recovery.into_boxed_slice(),
@@ -340,6 +343,18 @@ impl SemanticModelBuilder {
                 result: relocation.declaration(record.result)?,
                 ordinal: record.ordinal,
             });
+        }
+
+        reserve(
+            &mut self.constructor_expressions,
+            lowered.constructor_expressions.len(),
+        )?;
+        for record in lowered.constructor_expressions.iter() {
+            self.constructor_expressions
+                .push(ConstructorExpressionRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    result: relocation.declaration(record.result)?,
+                });
         }
 
         reserve(

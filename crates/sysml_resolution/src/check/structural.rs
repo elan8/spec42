@@ -23,7 +23,6 @@ use crate::check::conformance;
 use crate::index::expressions::conforms;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::ParameterDirection;
-use crate::model::element_kind::element_kind;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
 use crate::model::DeclarationId;
@@ -31,6 +30,7 @@ use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
+use crate::resolve::is_feature_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
@@ -39,7 +39,6 @@ use crate::type_query::SpecializationScope;
 use crate::Diagnostic;
 use crate::DiagnosticCode;
 use crate::DiagnosticSeverity;
-use sysml_contract::ElementKind;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.
@@ -51,22 +50,6 @@ pub(crate) fn is_connection_like(kind: DeclarationKind) -> bool {
             | DeclarationKind::FlowDefinition
             | DeclarationKind::AllocationDefinition
     )
-}
-
-/// Whether a lowered declaration is a KerML `Feature` (including every SysML usage), so a
-/// feature-only rule skips the namespaces, types, imports and annotations sharing its owner.
-pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
-    is_usage_declaration(kind)
-        || matches!(
-            element_kind(kind),
-            ElementKind::Feature
-                | ElementKind::Step
-                | ElementKind::Expression
-                | ElementKind::BooleanExpression
-                | ElementKind::Connector
-                | ElementKind::BindingConnector
-                | ElementKind::Invariant
-        )
 }
 
 /// Whether a connection-like definition is binary, so its end count is fixed at two.

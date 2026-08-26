@@ -43,7 +43,7 @@ package Ambiguity {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3426ad3e994f3126b103aa9ac2d5d026343880ba3944adde16b9e86a4683efb6") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3426ad3e994f3126b103aa9ac2d5d026343880ba3944adde16b9e86a4683efb6") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local"))) (kind package) (membership (kind owning) (visibility default)))

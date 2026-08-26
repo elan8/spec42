@@ -38,7 +38,7 @@ package 'Documentation Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " This is documentation of the owning \n\t     * package.\n\t     "))))
     (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " This documentation of Automobile. "))))

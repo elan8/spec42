@@ -57,7 +57,7 @@ package Crossings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6bc84072f2c3ac4e93f3ce2526cef7122a8d64bbaea4c15c46a730488a68c82c") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6bc84072f2c3ac4e93f3ce2526cef7122a8d64bbaea4c15c46a730488a68c82c") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_cross_subsetting_crossing_feature.md") (qualified-name "Crossings::Binary"))) (kind kerml-association) (membership (kind owning) (visibility default)))

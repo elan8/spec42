@@ -55,7 +55,7 @@ package Filters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9dd6c8be56f2f31bf9d350df71652faa920cca447088740f08502e00f346868a") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9dd6c8be56f2f31bf9d350df71652faa920cca447088740f08502e00f346868a") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md") (qualified-name "Filters::Accepted"))) (kind package) (membership (kind owning) (visibility default)))

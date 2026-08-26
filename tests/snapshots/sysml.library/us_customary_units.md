@@ -4160,7 +4160,7 @@ standard library package <USCU> USCustomaryUnits {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35f83937bf17b4f645a080b4b04e4a0e91fd12adfe36f62bf490cb70b4b8f321") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35f83937bf17b4f645a080b4b04e4a0e91fd12adfe36f62bf490cb70b4b8f321") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/us_customary_units.md") (qualified-name "USCustomaryUnits"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (short-name "USCU") (modifiers standard)) (documentation (doc (text "\n\t * Measurement unit declarations generated from NIST SP811 Appendix B\n\t *\n\t * See https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8\n\t "))))
     (declaration (id (node (document "memory://snapshot/us_customary_units.md") (path (named (kind library-package) (name "USCustomaryUnits")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MeasurementReferences") (import (shape namespace) (recursive false))))))

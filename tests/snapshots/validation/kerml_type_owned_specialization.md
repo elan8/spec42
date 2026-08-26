@@ -34,7 +34,7 @@ package Model { classifier Base; classifier Derived specializes Base; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:892e744c523895ed785b0743ca67dfcb4b78c98ea2f79f12f739ee396200bbfa") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:892e744c523895ed785b0743ca67dfcb4b78c98ea2f79f12f739ee396200bbfa") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_specialization.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

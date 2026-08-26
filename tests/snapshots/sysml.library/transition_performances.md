@@ -354,7 +354,7 @@ standard library package TransitionPerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:46de6a9b5e529c14cf77db03c1c64e8b63dcb8c0a57f6b0e91781ca945c77f06") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:46de6a9b5e529c14cf77db03c1c64e8b63dcb8c0a57f6b0e91781ca945c77f06") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains a library model of the semantics of conditional transitions between occurrences, \n\t * including the performance of specified Behaviors when the transition occurs.\n\t "))))
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

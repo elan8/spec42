@@ -6,6 +6,7 @@ use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::CanonicalDocument;
+use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
@@ -36,6 +37,7 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
     pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
     pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
+    pub(crate) constructor_expressions: Box<[ConstructorExpressionRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,

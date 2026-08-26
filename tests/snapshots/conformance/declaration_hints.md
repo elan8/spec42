@@ -46,7 +46,7 @@ package Declarations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ce5fb2e6dfee74afb7086d017849a3525b281172047b8fcf72eb813e71698ea0") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ce5fb2e6dfee74afb7086d017849a3525b281172047b8fcf72eb813e71698ea0") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines"))) (kind part-def) (membership (kind owning) (visibility default)))

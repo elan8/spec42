@@ -118,7 +118,7 @@ package '13b-Safety and Security Features Element Group' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:afc81c299c1e1347e5351008d32ed0efc3030835b5be324092e1c6a35e67b00f") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:afc81c299c1e1347e5351008d32ed0efc3030835b5be324092e1c6a35e67b00f") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Parts that contribute to safety AND\n\t\t * parts that contribute to security.\n\t\t "))))

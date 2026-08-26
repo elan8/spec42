@@ -3050,10 +3050,6 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
     let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
     let expected = [
         (
-            SpecializationCheckKind::ConstructorExpressionResult,
-            SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType,
-        ),
-        (
             SpecializationCheckKind::UsageVariationUsage,
             SpecializationCheckPrerequisite::UsageVariationOwner,
         ),

@@ -75,7 +75,7 @@ package Transitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bea0d7d1f990b27981eccc85642bde1f92794e24b7af4d89bdc8ace930cabfc2") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bea0d7d1f990b27981eccc85642bde1f92794e24b7af4d89bdc8ace930cabfc2") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_trigger_actions.md") (qualified-name "Transitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_trigger_actions.md") (qualified-name "Transitions::Flow"))) (kind action-def) (membership (kind owning) (visibility default)))

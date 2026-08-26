@@ -70,7 +70,7 @@ package 'Individuals and Roles' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cff966f014c18aeb0707ebc6f25bb04248a25c55679d878a6453cdccdefe645c") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cff966f014c18aeb0707ebc6f25bb04248a25c55679d878a6453cdccdefe645c") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (path (named (kind package) (name "Individuals and Roles")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Part Definition Example") (import (shape namespace) (recursive false))))))

@@ -28,7 +28,7 @@ package ActionFlowExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3197fb9ed16ea19bebd6b9e85bccc209e55479c489399f91032fffacf61b00d2") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3197fb9ed16ea19bebd6b9e85bccc209e55479c489399f91032fffacf61b00d2") (contract-version "constructor-expression-result-v8") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -178,7 +178,7 @@ package ActionFlowExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:db2c4d7f72a3827191c98577de540629b421aaa5429f75c0e72e1fdc508e7885",
+  "modelDigest": "blake3:9acc5252825e3a83a3969c88ca9cd73a03839e8eba3d551fac89435731a760ae",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",

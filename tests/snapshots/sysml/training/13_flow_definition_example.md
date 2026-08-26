@@ -105,7 +105,7 @@ package 'Flow Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:edf480a47678c7d31ed14319668b48abff2d01f1d173188265f73e3684d4aefd") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:edf480a47678c7d31ed14319668b48abff2d01f1d173188265f73e3684d4aefd") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (path (named (kind package) (name "Flow Definition Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false))))))

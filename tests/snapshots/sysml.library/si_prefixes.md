@@ -750,7 +750,7 @@ standard library package SIPrefixes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9877692e70a8eaff7fe196d7ad6511395193d95cf24aa28abc8502e4ed150df0") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9877692e70a8eaff7fe196d7ad6511395193d95cf24aa28abc8502e4ed150df0") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (qualified-name "SIPrefixes"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * Definition of SI unit prefixes as specified in ISO/IEC 80000-1\n\t ")) (comment (text "\n\t * ISO/IEC 80000-1 prefixes for decimal multiples and sub-multiples\n\t * \n\t * See also https://en.wikipedia.org/wiki/Unit_prefix\n\t ")) (comment (text "\n\t * ISO/IEC 80000-1 prefixes for binary multiples, i.e. multiples of 1024 (= 2^10)\n\t * \n\t * See also https://en.wikipedia.org/wiki/Binary_prefix\n\t "))))
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (path (named (kind library-package) (name "SIPrefixes")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MeasurementReferences") (import (shape namespace) (recursive false))))))

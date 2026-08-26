@@ -92,7 +92,7 @@ package SuccessionStructured {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b08e203ed72d12009c7ad384a8071acbd7c4f1a389b32d77e1a1bee0d231a3db") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b08e203ed72d12009c7ad384a8071acbd7c4f1a389b32d77e1a1bee0d231a3db") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/succession_structured.md") (qualified-name "SuccessionStructured"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/succession_structured.md") (path (named (kind package) (name "SuccessionStructured")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "X")) (succession (reference "Y")))))

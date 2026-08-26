@@ -178,7 +178,7 @@ standard library package TrigFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:000dea9026902fb35d3bb23a3023acdbc3abc8f6b2d1edbe86f352c730446237") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:000dea9026902fb35d3bb23a3023acdbc3abc8f6b2d1edbe86f352c730446237") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines basic trigonometric functions on real numbers.\n\t "))))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

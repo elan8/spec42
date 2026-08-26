@@ -402,10 +402,29 @@ pub(crate) fn write_declarations(
         write_documentation(model, DeclarationId(index as u32), output)?;
         write_feature_values(model, DeclarationId(index as u32), output)?;
         write_operator_expression(model, DeclarationId(index as u32), output)?;
+        write_constructor_expression(model, DeclarationId(index as u32), output)?;
         write_authored(model, DeclarationId(index as u32), output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_constructor_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(constructor) = model
+        .storage
+        .constructor_expressions
+        .iter()
+        .find(|constructor| constructor.expression == declaration)
+    else {
+        return Ok(());
+    };
+    output.write_str(" (constructor-expression (result ")?;
+    write_node_identity(model, constructor.result, output)?;
+    output.write_str("))")
 }
 
 fn write_operator_expression(
@@ -1682,6 +1701,7 @@ mod tests {
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
             expression_arguments: Box::new([]),
+            constructor_expressions: Box::new([]),
             metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),

@@ -54,7 +54,7 @@ package Occurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dab930329f4aa3537b4d2a7620f684fb242d1a0d65601d609fb9c07a070ded64") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dab930329f4aa3537b4d2a7620f684fb242d1a0d65601d609fb9c07a070ded64") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad"))) (kind attribute-def) (membership (kind owning) (visibility default)))

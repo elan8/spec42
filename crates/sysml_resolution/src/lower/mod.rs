@@ -12,6 +12,7 @@ use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::CanonicalDocument;
+use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
@@ -107,6 +108,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) feature_values: Vec<FeatureValueRecord>,
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
+    pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
@@ -566,6 +568,10 @@ impl SemanticModelBuilder {
         )?;
         self.declaration_facts[expression.index()].expression_result = Some(result);
         self.record_operator_expression(document, expression, result, &value.value.expression)?;
+        if matches!(value.value.expression.value, Expression::Constructor { .. }) {
+            self.constructor_expressions
+                .push(ConstructorExpressionRecord { expression, result });
+        }
         let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
@@ -1210,6 +1216,7 @@ impl SemanticModelBuilder {
             feature_values: self.feature_values.into_boxed_slice(),
             operator_expressions: self.operator_expressions.into_boxed_slice(),
             expression_arguments: self.expression_arguments.into_boxed_slice(),
+            constructor_expressions: self.constructor_expressions.into_boxed_slice(),
             metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),

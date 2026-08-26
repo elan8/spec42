@@ -315,6 +315,15 @@ pub(crate) struct ExpressionArgumentRecord {
     pub(crate) ordinal: u32,
 }
 
+/// One authored ConstructorExpression and its canonical result Feature. Its instantiated Type is
+/// the settled `InvocationCallee` reference sourced at `expression`; keeping that reference as the
+/// sole endpoint owner avoids a parallel type-name projection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ConstructorExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
 /// One authored MetadataFeature instance and the Element it annotates.
 ///
 /// The annotation declaration owns its typing reference and body. This record owns the opposite

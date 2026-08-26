@@ -78,7 +78,7 @@ package Inheritance {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dcc7edbafa111aedbd71a061156b2bf93e08ce3ab7107ef7a216e234bb6342c1") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dcc7edbafa111aedbd71a061156b2bf93e08ce3ab7107ef7a216e234bb6342c1") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

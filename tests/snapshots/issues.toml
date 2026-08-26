@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-expression-result-instantiated-type"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ConstructorExpression result and instantiatedType endpoint facts are not jointly published."
-
-[[issue]]
 id = "lowering-gap-specialization-library-anchor-implied-edge"
 kind = "lowering_gap"
 owner = "spec42-semantic"

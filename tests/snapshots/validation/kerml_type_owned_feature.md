@@ -41,7 +41,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e38d02223f77e3427c3deccddec9133a2955ea3adc82ea6c95b58de027fcaf6b") (contract-version "operator-expression-arguments-v7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e38d02223f77e3427c3deccddec9133a2955ea3adc82ea6c95b58de027fcaf6b") (contract-version "constructor-expression-result-v8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_feature.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_feature.md") (qualified-name "Model::Container"))) (kind kerml-type) (membership (kind owning) (visibility default)))
