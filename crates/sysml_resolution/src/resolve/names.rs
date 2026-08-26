@@ -291,9 +291,11 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
 /// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
 /// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
 /// member reached through two different ancestor paths to the same target (the diamond case)
-/// collapses to one candidate, while two different ancestors that directly own two different
-/// same-named members remain two distinct candidates and therefore resolve as ambiguous.
+/// collapses to one candidate. When multiple ancestors contribute same-named members, the member
+/// owned by the most-specific ancestor shadows members owned by its ancestors; members from
+/// incomparable ancestors remain distinct candidates and therefore resolve as ambiguous.
 pub(crate) fn build_inherited_name_index(
+    declarations: &[Declaration],
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
 ) -> Result<NameIndex, ResolutionError> {
@@ -317,7 +319,45 @@ pub(crate) fn build_inherited_name_index(
             }
         }
     }
-    NameIndex::build(entries)
+    entries.sort_unstable_by_key(name_entry_sort_key);
+    let mut visible = Vec::with_capacity(entries.len());
+    let mut cursor = 0;
+    while cursor < entries.len() {
+        let key = entries[cursor].0;
+        let end = entries[cursor..]
+            .partition_point(|entry| entry.0 == key)
+            .checked_add(cursor)
+            .ok_or(ResolutionError::Capacity)?;
+        for &(entry_key, candidate) in &entries[cursor..end] {
+            let candidate_owner = declarations
+                .get(candidate.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            let shadowed_by_more_specific_owner =
+                entries[cursor..end].iter().any(|(_, other_candidate)| {
+                    let other_owner = declarations
+                        .get(other_candidate.index())
+                        .and_then(|declaration| declaration.owner);
+                    match (candidate_owner, other_owner) {
+                        (Some(candidate_owner), Some(other_owner))
+                            if candidate_owner != other_owner =>
+                        {
+                            ancestor_closures
+                                .get(other_owner.index())
+                                .is_some_and(|ancestors| {
+                                    ancestors.binary_search(&candidate_owner).is_ok()
+                                })
+                        }
+                        _ => false,
+                    }
+                });
+            if !shadowed_by_more_specific_owner {
+                visible.push((entry_key, candidate));
+            }
+        }
+        cursor = end;
+    }
+    NameIndex::build(visible)
 }
 
 /// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)

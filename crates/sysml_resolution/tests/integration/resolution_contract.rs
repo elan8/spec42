@@ -864,6 +864,61 @@ fn multi_segment_qualified_expression_operand_resolves_through_nested_namespaces
 }
 
 #[test]
+fn qualified_relationship_target_traverses_an_intermediate_features_effective_type() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tpart def Face {\n\
+         \t\tref edges;\n\
+         \t}\n\
+         \tpart def Shape {\n\
+         \t\tpart faces : Face;\n\
+         \t}\n\
+         \tpart def Derived :> Shape {\n\
+         \t\tpart :>> faces {\n\
+         \t\t\tref :>> Shape::faces::edges;\n\
+         \t\t}\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"Shape::faces::edges\")\n      (outcome (status resolved) (target \
+             (node (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Face::edges\")))))"
+        ),
+        "expected qualified traversal through `Shape::faces` to use `faces`' effective `Face` \
+         member scope, got:\n{output}"
+    );
+}
+
+#[test]
+fn qualified_inherited_member_hides_the_feature_it_redefines() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tassoc BinaryLink {\n\
+         \t\tend feature source;\n\
+         \t}\n\
+         \tassoc Transfer :> BinaryLink {\n\
+         \t\tend feature source redefines BinaryLink::source;\n\
+         \t}\n\
+         \tassoc Message :> Transfer;\n\
+         \tassoc Flow :> Message {\n\
+         \t\tend feature source redefines Message::source;\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"Message::source\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Transfer::source\")))))"
+        ),
+        "expected `Transfer::source` to hide the `BinaryLink::source` it redefines in \
+         `Message`'s inherited member scope, got:\n{output}"
+    );
+}
+
+#[test]
 fn parameter_default_value_with_member_access_resolves() {
     // The `out v_out : SpeedValue = vel.v;` shape deferred by `494b0ba6`: the parameter
     // default value now resolves its `vel.v` member-access operand through the exact same

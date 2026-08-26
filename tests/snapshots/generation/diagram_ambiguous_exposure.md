@@ -152,7 +152,7 @@ package AmbiguousExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ba9d9e389d9594a16056964c544a1e6eb04cca179a95c4759ab86f04c1a03b6b",
+  "modelDigest": "blake3:856b8598e0324a767082e1f77cb8f9afc4ec63cf3a33f1ef1ad00a9cddd1110a",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_ambiguous_exposure.md",

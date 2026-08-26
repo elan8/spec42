@@ -594,7 +594,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // set, and a specialization cycle is detected explicitly rather than looped forever.
         let (ancestor_closures, cyclic_ancestry) =
             build_ancestor_closures(declarations, references, &outcomes)?;
-        inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
+        inherited_names =
+            build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?;
 
         for index in typing_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -684,6 +685,38 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     .owner;
             }
         }
+        // Qualified relationship targets can traverse an intermediate Feature's effective member
+        // scope (`Shape::faces::edges`). Include every declaration whose authored long or short
+        // name occurs in a non-final segment. This is the dependency-complete subset needed by
+        // these relationship queries; building effective member entries for every declaration on
+        // every settlement pass would make unrelated model width part of their cost.
+        let mut relationship_intermediate_names = std::collections::BTreeSet::new();
+        for index in subsetting_slots.iter().chain(&redefinition_slots) {
+            let (segments, _) = paths
+                .get(references[*index].path())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            relationship_intermediate_names.extend(
+                segments
+                    .get(..segments.len().saturating_sub(1))
+                    .unwrap_or_default()
+                    .iter()
+                    .copied(),
+            );
+        }
+        for (index, declaration) in declarations.iter().enumerate() {
+            let long_name_matches = declaration
+                .name
+                .is_some_and(|name| relationship_intermediate_names.contains(&name));
+            let short_name_matches = declaration_facts
+                .and_then(|facts| facts.get(index))
+                .and_then(|facts| facts.short_name)
+                .is_some_and(|name| relationship_intermediate_names.contains(&name));
+            if long_name_matches || short_name_matches {
+                relationship_scopes.insert(
+                    DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?,
+                );
+            }
+        }
         let mut settled_effective_types = None;
         for _ in 0..relationship_pass_limit {
             let previous = subsetting_slots
@@ -714,7 +747,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 )?;
             inherited_names = extend_inherited_names_with_effective_types(
                 &direct_names,
-                build_inherited_name_index(&direct_names, &ancestor_closures)?,
+                build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?,
                 &effective_types,
                 declarations.len(),
                 Some(&relationship_scopes),
@@ -782,7 +815,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         } else {
             inherited_names = extend_inherited_names_with_effective_types(
                 &direct_names,
-                build_inherited_name_index(&direct_names, &ancestor_closures)?,
+                build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?,
                 settled_effective_types
                     .as_ref()
                     .ok_or(ResolutionError::InvalidStorage)?,
@@ -1532,25 +1565,25 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         scratch.next_candidates.clear();
         for candidate in scratch.candidates.iter().copied() {
             record_lookup(scratch.work)?;
-            // A qualified name's later segments name a member OWNED by the previous segment's
-            // resolved declaration, exactly as if that member were being looked up from within
-            // its owner's own scope (KerML's "public by default unless owned by a non-Package
-            // namespace" visibility rule governs whether a *wildcard* import/general lookup can
-            // reach a name, not whether an explicit qualified reference that already names the
-            // owner can reach its direct member). `direct_names` is therefore the right index
-            // here -- the same one `extend_inherited_names_with_effective_types`'s inherited-member
-            // traversal reads from for redefinition targets like `ManagedRequirement::status`
-            // (owned by a Type, not a Package, yet still reachable). `exported_names` is reserved
-            // for cross-file import propagation (`NamespaceImport`/`MembershipImport`), which is
-            // a different visibility question -- whether a *different* file can pull the name in
-            // via `import`, not whether this file's own qualified reference can name it directly.
-            // Import fallback still applies when the owner itself was reached only through an
-            // import (the member is not locally owned at all), so cross-package traversal through
-            // imported namespaces keeps working.
+            // KerML qualified-name traversal continues through the previous segment's visible
+            // memberships. For a Type, those are its directly owned memberships followed by its
+            // inherited memberships; a direct name shadows the inherited tier. The canonical
+            // `inherited_names` index also carries effective-type members for Features, so paths
+            // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
+            // Import fallback remains last for owners reached through an imported namespace.
             let direct = indexes.direct_names.candidates(Some(candidate), *segment);
             if !direct.is_empty() {
                 scratch.next_candidates.extend_from_slice(direct);
-            } else if let Some(imports) = indexes.exported_imports {
+                continue;
+            }
+            let inherited = indexes
+                .inherited_names
+                .map_or(&[][..], |names| names.candidates(Some(candidate), *segment));
+            if !inherited.is_empty() {
+                scratch.next_candidates.extend_from_slice(inherited);
+                continue;
+            }
+            if let Some(imports) = indexes.exported_imports {
                 record_lookup(scratch.work)?;
                 scratch
                     .next_candidates
