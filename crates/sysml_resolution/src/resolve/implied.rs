@@ -552,10 +552,36 @@ pub(crate) struct LibrarySpecializationAnchorFacts {
 }
 
 impl LibrarySpecializationAnchorFacts {
+    /// Whether any generated specialization rule has a usable standard-library anchor.
+    ///
+    /// Workspaces compiled without the standard library have no possible provisional library
+    /// edges. Detect that once instead of scanning every declaration against every generated
+    /// rule; this is only a phase guard, not a cache or an alternate semantic path.
+    pub(crate) fn has_resolved_anchor(&self) -> bool {
+        self.by_rule
+            .values()
+            .any(|outcome| matches!(outcome, LibrarySpecializationAnchor::Resolved(_)))
+    }
+
     /// Compatibility projection for legacy single-anchor rules and the `else` branch of exact
     /// polarity contracts.
     pub(crate) fn outcome(&self, rule_id: &str) -> Option<&LibrarySpecializationAnchor> {
         self.outcome_for(rule_id, LibrarySpecializationAnchorBranch::Default)
+    }
+
+    fn generated_outcome(&self, rule_id: &'static str) -> Option<&LibrarySpecializationAnchor> {
+        self.generated_outcome_for(rule_id, LibrarySpecializationAnchorBranch::Default)
+    }
+
+    fn generated_outcome_for(
+        &self,
+        rule_id: &'static str,
+        branch: LibrarySpecializationAnchorBranch,
+    ) -> Option<&LibrarySpecializationAnchor> {
+        self.by_rule.get(&LibrarySpecializationAnchorKey {
+            rule: LibrarySpecializationRuleKey(rule_id),
+            branch,
+        })
     }
 
     pub(crate) fn outcome_for(
@@ -1721,7 +1747,7 @@ pub(crate) fn synthesize_generated_library_specializations(
         {
             for rule in library_specialization_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
+                    anchor_facts.generated_outcome(rule.rule_id)
                 else {
                     continue;
                 };
@@ -1748,7 +1774,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                 let branch =
                     conditional_library_specialization_anchor_branch(storage, source, rule);
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome_for(rule.rule_id, branch)
+                    anchor_facts.generated_outcome_for(rule.rule_id, branch)
                 else {
                     continue;
                 };
@@ -1773,16 +1799,19 @@ pub(crate) fn synthesize_generated_library_specializations(
     Ok(implied.into_boxed_slice())
 }
 
-/// Dependency-complete unconditional library edges needed while authored names are resolving.
+/// Dependency-complete library edges whose prerequisites are settled before authored names resolve.
 ///
 /// These are provisional solver inputs, not a second published relationship store. The final
 /// synthesis below re-evaluates necessity against settled authored ancestry and publishes the
-/// canonical implied set. Conditional rules wait for their typed prerequisites; they are not
-/// guessed into this pre-resolution set.
-pub(crate) fn provisional_unconditional_library_specializations(
+/// canonical implied set. Conditional rules whose predicates require resolved relationships stay
+/// absent here; predicates owned entirely by lowered declaration facts participate immediately.
+pub(crate) fn provisional_library_specializations(
     storage: &SemanticModelStorage,
     anchor_facts: &LibrarySpecializationAnchorFacts,
 ) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    if !anchor_facts.has_resolved_anchor() {
+        return Ok(Box::default());
+    }
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
@@ -1791,7 +1820,27 @@ pub(crate) fn provisional_unconditional_library_specializations(
         {
             for rule in library_specialization_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
+                    anchor_facts.generated_outcome(rule.rule_id)
+                else {
+                    continue;
+                };
+                if source == *anchor {
+                    continue;
+                }
+                implied.push(ImpliedRelationship {
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
+                    source,
+                    target: *anchor,
+                });
+            }
+            for rule in conditional_library_specialization_rules(metaclass) {
+                if !conditional_library_specialization_predicate_holds(storage, source, rule) {
+                    continue;
+                }
+                let branch =
+                    conditional_library_specialization_anchor_branch(storage, source, rule);
+                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+                    anchor_facts.generated_outcome_for(rule.rule_id, branch)
                 else {
                     continue;
                 };
@@ -2203,7 +2252,7 @@ pub(crate) fn synthesize_generated_library_redefinitions(
         {
             for rule in library_redefinition_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
+                    anchor_facts.generated_outcome(rule.rule_id)
                 else {
                     continue;
                 };

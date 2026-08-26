@@ -124,7 +124,7 @@ impl Lowered {
             .map(|library| library.outcomes.as_ref());
         let library_anchors = library_specialization_anchors(&storage);
         let provisional_library_specializations =
-            crate::resolve::implied::provisional_unconditional_library_specializations(
+            crate::resolve::implied::provisional_library_specializations(
                 &storage,
                 &library_anchors,
             )?;
