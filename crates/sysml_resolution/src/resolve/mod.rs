@@ -30,6 +30,8 @@ use crate::resolve::names::CandidateRange;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
+use crate::resolve::results::EffectiveNameFacts;
+use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -107,9 +109,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
-    let direct_names = build_direct_name_index(declarations, declaration_facts, None)?;
-    let exported_names =
-        build_direct_name_index(declarations, declaration_facts, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
     // A settled library's outcomes are installed before the first pass and its references are then
     // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
@@ -119,6 +118,20 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     if let Some(seed) = seed {
         outcomes[..settled].copy_from_slice(seed);
     }
+    let mut effective_names =
+        derive_effective_names(declarations, declaration_facts, references, &outcomes)?;
+    let mut direct_names = build_direct_name_index(
+        declarations,
+        declaration_facts,
+        Some(&effective_names),
+        None,
+    )?;
+    let mut exported_names = build_direct_name_index(
+        declarations,
+        declaration_facts,
+        Some(&effective_names),
+        Some(&memberships),
+    )?;
     let all_import_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -669,9 +682,31 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     _ => None,
                 })
                 .collect::<Vec<_>>();
+            // Effective identification can only settle after its first Redefinition does. Derive
+            // it at the relationship barrier, rather than rescanning the full declaration and
+            // reference tables after every intermediate pass. If names change, publish fresh name
+            // indexes and give relationships another pass; otherwise both fact families have
+            // reached the same fixed point.
             if current == previous {
-                relationships_converged = true;
-                break;
+                let next_effective_names =
+                    derive_effective_names(declarations, declaration_facts, references, &outcomes)?;
+                if next_effective_names == effective_names {
+                    relationships_converged = true;
+                    break;
+                }
+                effective_names = next_effective_names;
+                direct_names = build_direct_name_index(
+                    declarations,
+                    declaration_facts,
+                    Some(&effective_names),
+                    None,
+                )?;
+                exported_names = build_direct_name_index(
+                    declarations,
+                    declaration_facts,
+                    Some(&effective_names),
+                    Some(&memberships),
+                )?;
             }
         }
         if !relationships_converged {
@@ -823,6 +858,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
             inherited_names,
+            effective_names: effective_names.into_boxed_slice(),
             solver_status,
             implied_relationships,
             authored_relationships: Box::default(),
@@ -846,6 +882,127 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             work,
         },
     ))
+}
+
+/// Settles the two components of KerML `Feature::effectiveName` without changing syntax-owned
+/// identification. An anonymous Feature delegates to the first Feature named by an owned
+/// Redefinition; reverse edges make a chain linear in declarations plus references, while any
+/// dependency left after propagation is an explicit naming cycle.
+fn derive_effective_names<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<Vec<EffectiveNameFacts>, ResolutionError> {
+    if outcomes.len() != references.len()
+        || declaration_facts.is_some_and(|facts| facts.len() != declarations.len())
+    {
+        return Err(ResolutionError::InvalidStorage);
+    }
+
+    let absent = EffectiveNameFacts {
+        name: EffectiveNameOutcome::Absent,
+        short_name: EffectiveNameOutcome::Absent,
+        derived_from_redefinition: false,
+    };
+    let mut facts = vec![absent; declarations.len()];
+    let mut settled = vec![false; declarations.len()];
+    let mut dependency = vec![None; declarations.len()];
+    let mut dependants = vec![Vec::new(); declarations.len()];
+    let mut queue = std::collections::VecDeque::new();
+    let mut first_redefinition = vec![None; declarations.len()];
+    for (reference_index, reference) in references.iter().enumerate() {
+        if reference.kind() == ReferenceKind::Redefinition {
+            let source = reference.source().index();
+            let slot = first_redefinition
+                .get_mut(source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if slot.is_none() {
+                *slot = Some(reference_index);
+            }
+        }
+    }
+
+    for (index, declaration) in declarations.iter().enumerate() {
+        if !is_feature_declaration(declaration.kind) {
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
+        let short_name = declaration_facts
+            .and_then(|facts| facts.get(index))
+            .and_then(|facts| facts.short_name);
+        if declaration.name.is_some() || short_name.is_some() {
+            facts[index] = EffectiveNameFacts {
+                name: declaration
+                    .name
+                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
+                short_name: short_name
+                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
+                derived_from_redefinition: false,
+            };
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
+        let Some(reference_index) = first_redefinition[index] else {
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        };
+        match outcomes[reference_index] {
+            ResolutionStatus::Resolved(target)
+                if declarations
+                    .get(target.index())
+                    .is_some_and(|target| is_feature_declaration(target.kind)) =>
+            {
+                dependency[index] = Some(target.index());
+                dependants
+                    .get_mut(target.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .push(index);
+            }
+            ResolutionStatus::NonConverged => {
+                facts[index].name = EffectiveNameOutcome::NonConverged;
+                facts[index].short_name = EffectiveNameOutcome::NonConverged;
+                facts[index].derived_from_redefinition = true;
+                settled[index] = true;
+                queue.push_back(index);
+            }
+            _ => {
+                facts[index].name = EffectiveNameOutcome::Unresolved;
+                facts[index].short_name = EffectiveNameOutcome::Unresolved;
+                facts[index].derived_from_redefinition = true;
+                settled[index] = true;
+                queue.push_back(index);
+            }
+        }
+    }
+
+    while let Some(target) = queue.pop_front() {
+        for source in std::mem::take(&mut dependants[target]) {
+            if settled[source] {
+                continue;
+            }
+            facts[source] = EffectiveNameFacts {
+                name: facts[target].name,
+                short_name: facts[target].short_name,
+                derived_from_redefinition: true,
+            };
+            settled[source] = true;
+            queue.push_back(source);
+        }
+    }
+    for index in 0..declarations.len() {
+        if dependency[index].is_some() && !settled[index] {
+            facts[index] = EffectiveNameFacts {
+                name: EffectiveNameOutcome::NonConverged,
+                short_name: EffectiveNameOutcome::NonConverged,
+                derived_from_redefinition: true,
+            };
+        }
+    }
+    Ok(facts)
 }
 
 /// Computes, for every declaration, the transitive set of Subclassification ancestors reached

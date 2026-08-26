@@ -11,6 +11,8 @@ use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use crate::resolve::record_lookup;
+use crate::resolve::results::EffectiveNameFacts;
+use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::ResolutionWork;
@@ -375,6 +377,7 @@ pub(crate) fn build_inherited_name_index_for_scopes(
 pub(crate) fn build_direct_name_index(
     declarations: &[Declaration],
     declaration_facts: Option<&[DeclarationFacts]>,
+    effective_names: Option<&[EffectiveNameFacts]>,
     public_only: Option<&MembershipIndex>,
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
@@ -407,6 +410,25 @@ pub(crate) fn build_direct_name_index(
                 },
                 declaration_id,
             ));
+        }
+        if let Some(facts) = effective_names.and_then(|facts| facts.get(index)) {
+            for name in [facts.name, facts.short_name]
+                .into_iter()
+                .filter_map(|outcome| {
+                    let EffectiveNameOutcome::Resolved(name) = outcome else {
+                        return None;
+                    };
+                    Some(name)
+                })
+            {
+                entries.push((
+                    NameKey {
+                        owner: declaration.owner,
+                        name,
+                    },
+                    declaration_id,
+                ));
+            }
         }
     }
     NameIndex::build(entries)

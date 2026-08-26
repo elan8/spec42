@@ -34,6 +34,7 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
+use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -396,6 +397,7 @@ pub(crate) fn write_declarations(
             write_membership(membership, output)?;
         }
         write_declaration_facts(model, DeclarationId(index as u32), output)?;
+        write_effective_identification(model, DeclarationId(index as u32), output)?;
         write_documentation(model, DeclarationId(index as u32), output)?;
         write_feature_values(model, DeclarationId(index as u32), output)?;
         write_operator_expression(model, DeclarationId(index as u32), output)?;
@@ -404,6 +406,39 @@ pub(crate) fn write_declarations(
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_effective_identification(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(facts) = model.resolution.effective_names.get(declaration.index()) else {
+        return Ok(());
+    };
+    if !facts.derived_from_redefinition {
+        return Ok(());
+    }
+    output.write_str(" (effective-identification")?;
+    match facts.name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (name non-converged)")?,
+    }
+    match facts.short_name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (short-name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (short-name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (short-name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (short-name non-converged)")?,
+    }
+    output.write_str(" (provenance first-redefinition))")
 }
 
 fn write_constructor_expression(

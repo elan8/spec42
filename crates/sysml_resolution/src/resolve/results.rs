@@ -2,6 +2,7 @@
 
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
+use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
@@ -27,6 +28,26 @@ pub(crate) enum ResolutionStatus {
 pub(crate) enum SolverStatus {
     Converged,
     NonConverged,
+}
+
+/// One component of KerML `Feature::effectiveName`. Authored names are retained on the syntax-owned
+/// declaration/fact records; this phase-3 value records only the settled semantic result and keeps
+/// absence, an unresolved first Redefinition, and a cyclic naming chain distinct.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum EffectiveNameOutcome {
+    Resolved(NameId),
+    Absent,
+    Unresolved,
+    NonConverged,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct EffectiveNameFacts {
+    pub(crate) name: EffectiveNameOutcome,
+    pub(crate) short_name: EffectiveNameOutcome,
+    /// True only when both components come from the first redefined Feature rather than authored
+    /// identification. This preserves provenance without replacing the authored declaration name.
+    pub(crate) derived_from_redefinition: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -168,6 +189,7 @@ pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
     pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
     pub(crate) inherited_names: NameIndex,
+    pub(crate) effective_names: Box<[EffectiveNameFacts]>,
     pub(crate) solver_status: SolverStatus,
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
     pub(crate) authored_relationships: Box<[AuthoredRelationship]>,
