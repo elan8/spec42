@@ -455,7 +455,7 @@ standard library package ComplexFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b1aaf4d5325d6744b755ed862d9086f127b23518a3cc2982bad3679875ee7003") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b1aaf4d5325d6744b755ed862d9086f127b23518a3cc2982bad3679875ee7003") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/complex_functions.md") (qualified-name "ComplexFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions on Complex values, including concrete specializations of the \n\t * general arithmetic and comparison operations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

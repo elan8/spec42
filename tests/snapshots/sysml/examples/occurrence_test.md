@@ -56,7 +56,7 @@ package OccurrenceTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5713b3e65de90ae6afce9f70b7be3835330f9e71ae13e586775c1e658931b07e") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5713b3e65de90ae6afce9f70b7be3835330f9e71ae13e586775c1e658931b07e") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)))

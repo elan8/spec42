@@ -284,7 +284,7 @@ package '7b-Variant Configurations' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:85f8155a8001806fd987774d95b107e5b13e3eecce5c068304dc9c9d8fa574bb") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:85f8155a8001806fd987774d95b107e5b13e3eecce5c068304dc9c9d8fa574bb") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7b_variant_configurations.md") (path (named (kind package) (name "7b-Variant Configurations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementsModel") (import (shape namespace) (recursive false))))))

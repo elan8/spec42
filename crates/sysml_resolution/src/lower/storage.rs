@@ -9,9 +9,11 @@ use crate::lower::facts::CanonicalDocument;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
+use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -32,6 +34,8 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) references: Box<[AuthoredReference]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
+    pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
+    pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,

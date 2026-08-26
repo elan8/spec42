@@ -376,7 +376,7 @@ package '15_13-Discretely Sampled Function Value' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (path (named (kind package) (name "15_13-Discretely Sampled Function Value")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SampledFunctions::SampledFunction") (import (shape membership) (recursive false))))))

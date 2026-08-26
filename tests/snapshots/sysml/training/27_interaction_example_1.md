@@ -107,7 +107,7 @@ package 'Interaction Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cf0e9b65263b27844b51d637865df9ce30063a7a0957b0425da2a04c63b8ff91") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cf0e9b65263b27844b51d637865df9ce30063a7a0957b0425da2a04c63b8ff91") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false))))))

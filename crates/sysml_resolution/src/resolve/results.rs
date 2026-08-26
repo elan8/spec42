@@ -66,6 +66,13 @@ pub(crate) enum SemanticMetadataProjectionStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum ExpressionArgumentProjectionStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -76,6 +83,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) library_specialization_anchors: LibrarySpecializationAnchorFacts,
     pub(crate) semantic_metadata_projections: Box<[SemanticMetadataProjection]>,
     pub(crate) semantic_metadata_projection_status: SemanticMetadataProjectionStatus,
+    pub(crate) select_expression_projection_status: ExpressionArgumentProjectionStatus,
+    pub(crate) index_expression_projection_status: ExpressionArgumentProjectionStatus,
+    pub(crate) index_expression_array_anchor: Option<LibrarySpecializationAnchor>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -114,6 +124,22 @@ impl ResolutionResults {
             implied_relationships,
             semantic_metadata_projections,
             semantic_metadata_projection_status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_expression_arguments(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        select_expression_projection_status: ExpressionArgumentProjectionStatus,
+        index_expression_projection_status: ExpressionArgumentProjectionStatus,
+        index_expression_array_anchor: Option<LibrarySpecializationAnchor>,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            select_expression_projection_status,
+            index_expression_projection_status,
+            index_expression_array_anchor,
             ..self
         }
     }

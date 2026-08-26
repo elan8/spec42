@@ -2718,24 +2718,6 @@ fn perform_action_body_element_dispatches_nested_action_usage() {
     );
 }
 
-/// `Expression::Index` (`base#(index)`, e.g. `assign x := seq#(i);`) had no arm in
-/// `lower_constraint_expression`, so both the base and index sub-expressions fell through to
-/// unsupported. Recurses into both, mirroring `Tuple`/`CollectionOp`.
-#[test]
-fn assign_value_index_expression_resolves() {
-    let sexpr = semantic_sexpr_for(
-        "package P { action def Act { attribute seq; attribute i; assign x := seq#(i); } }",
-    );
-    assert!(
-        sexpr.matches("(kind expressionOperand)").count() >= 2,
-        "expected both the index base and index expression to resolve as expressionOperand references, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_action_definition_member"),
-        "did not expect unsupported_action_definition_member, got: {sexpr}"
-    );
-}
-
 /// `Expression::Null` (KerML `null`) had no arm in `lower_constraint_expression`, so `assign x
 /// := null;` fell through to unsupported even though it needs no reference resolution at all,
 /// mirroring the existing literal arms.

@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-expression-argument-result"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Expression argument ordering and result-feature endpoint facts are not published for select and index specialization checks."
-
-[[issue]]
 id = "lowering-gap-specialization-expression-result-instantiated-type"
 kind = "lowering_gap"
 owner = "spec42-semantic"

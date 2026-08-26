@@ -1086,7 +1086,7 @@ standard library package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:0683383b61e47daf5fc3d06f372c78670abac17c7ed407cc15dcc1a8429a1ac8") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:0683383b61e47daf5fc3d06f372c78670abac17c7ed407cc15dcc1a8429a1ac8") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for actions and related behavioral elements in the\n\t * SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
@@ -1973,7 +1973,7 @@ standard library package Actions {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "TerminateAction")) (named (kind action) (name "terminateOccurrence")) (named (kind parameter) (name "occ")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "WhileLoopAction")) (named (kind parameter) (name "untilTest")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))

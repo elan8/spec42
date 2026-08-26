@@ -179,7 +179,7 @@ package 'For Loop Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b957cd70deb6bd168fa163de0ddf0ad5f384d7a9f75acd17822ae1ee819984ec") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b957cd70deb6bd168fa163de0ddf0ad5f384d7a9f75acd17822ae1ee819984ec") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SequenceFunctions") (import (shape namespace) (recursive false))))))

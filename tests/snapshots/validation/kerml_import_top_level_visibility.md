@@ -51,7 +51,7 @@ public import Lib::Gadget;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4d5a46e89519176de150fffde30edf02335e6560a15b1c57b324a9b12e8275d5") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4d5a46e89519176de150fffde30edf02335e6560a15b1c57b324a9b12e8275d5") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_import_top_level_visibility.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Lib::Thing") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/kerml_import_top_level_visibility.md") (path (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "Lib::Gadget") (import (shape membership) (recursive false))))))

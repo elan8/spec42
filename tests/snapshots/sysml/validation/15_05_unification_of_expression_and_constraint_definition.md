@@ -134,7 +134,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4e0e75715f7b7e9981466f3e551d5424bb7ddfc87d0548631bbd8c29dc97f32a") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4e0e75715f7b7e9981466f3e551d5424bb7ddfc87d0548631bbd8c29dc97f32a") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (path (named (kind package) (name "15_05-Unification of Expression and Constraint Definition")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "15_03-Value Expression") (import (shape namespace) (recursive false))))))

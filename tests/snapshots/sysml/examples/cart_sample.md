@@ -292,7 +292,7 @@ package CartSample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:c3bdbea9954bdb3884e6d5550ccc8cd362300b6f3b9709cf4bf84f6e0c3603e9") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:c3bdbea9954bdb3884e6d5550ccc8cd362300b6f3b9709cf4bf84f6e0c3603e9") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StateSpaceRepresentation") (import (shape namespace) (recursive false))))))

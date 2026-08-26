@@ -401,10 +401,50 @@ pub(crate) fn write_declarations(
         write_declaration_facts(model, DeclarationId(index as u32), output)?;
         write_documentation(model, DeclarationId(index as u32), output)?;
         write_feature_values(model, DeclarationId(index as u32), output)?;
+        write_operator_expression(model, DeclarationId(index as u32), output)?;
         write_authored(model, DeclarationId(index as u32), output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_operator_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(operator) = model
+        .storage
+        .operator_expressions
+        .iter()
+        .find(|operator| operator.expression == declaration)
+    else {
+        return Ok(());
+    };
+    let kind = match operator.kind {
+        crate::lower::facts::OperatorExpressionKind::Index => "index",
+        crate::lower::facts::OperatorExpressionKind::Select => "select",
+    };
+    write!(output, " (operator-expression (kind {kind}) (arguments")?;
+    let mut arguments = model
+        .storage
+        .expression_arguments
+        .iter()
+        .filter(|argument| argument.expression == declaration)
+        .collect::<Vec<_>>();
+    arguments.sort_by_key(|argument| argument.ordinal);
+    for argument in arguments {
+        write!(
+            output,
+            " (argument (ordinal {}) (expression ",
+            argument.ordinal
+        )?;
+        write_node_identity(model, argument.argument, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, argument.result, output)?;
+        output.write_str("))")?;
+    }
+    output.write_str("))")
 }
 
 /// Renders the authored short name, modifiers, portion kind, direction, and multiplicity of one
@@ -1640,6 +1680,8 @@ mod tests {
             references: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
+            operator_expressions: Box::new([]),
+            expression_arguments: Box::new([]),
             metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),

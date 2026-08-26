@@ -399,7 +399,7 @@ package VehicleVariabilityModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:59530216f265c60bb22bc958bfc380a0cd13183f66813b38fb3d5d1430e1736b") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:59530216f265c60bb22bc958bfc380a0cd13183f66813b38fb3d5d1430e1736b") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model"))) (kind package) (membership (kind owning) (visibility default)))

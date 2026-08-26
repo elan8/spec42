@@ -74,7 +74,7 @@ package UseCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c88d14aa4e5cbef60100bee9f15694b74b3e2ffd3aee26130c4e8e9e9c7f1542") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c88d14aa4e5cbef60100bee9f15694b74b3e2ffd3aee26130c4e8e9e9c7f1542") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_include_use_case_usage_reference.md") (qualified-name "UseCases::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -16,6 +16,7 @@ use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::ExpressionGrammar;
 use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
@@ -24,6 +25,8 @@ use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
+use crate::lower::facts::OperatorExpressionKind;
+use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
@@ -54,6 +57,7 @@ use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use sysml_v2_parser::ast::CollectionOperator;
 use sysml_v2_parser::ast::CommentBody;
 use sysml_v2_parser::ast::DeclarationName;
 use sysml_v2_parser::ast::ReferenceSeparator;
@@ -101,6 +105,8 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) references: Vec<AuthoredReference>,
     pub(crate) documentation: Vec<DocumentationRecord>,
     pub(crate) feature_values: Vec<FeatureValueRecord>,
+    pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
+    pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
@@ -559,6 +565,7 @@ impl SemanticModelBuilder {
             value.value.expression.span,
         )?;
         self.declaration_facts[expression.index()].expression_result = Some(result);
+        self.record_operator_expression(document, expression, result, &value.value.expression)?;
         let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
@@ -569,6 +576,108 @@ impl SemanticModelBuilder {
             value.value.span,
         )?;
         Ok(endpoints)
+    }
+
+    fn push_expression_argument(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        ordinal: u32,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let argument = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlExpression,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(argument, MembershipKind::Owning, Visibility::Default, span)?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(argument),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[argument.index()].expression_result = Some(result);
+        self.expression_arguments.push(ExpressionArgumentRecord {
+            expression,
+            argument,
+            result,
+            ordinal,
+        });
+        Ok(())
+    }
+
+    /// Materializes the ordered argument Expressions of the two operator metaclasses whose
+    /// specialization constraints consume `arguments->first().result`.
+    fn record_operator_expression(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        result: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let (kind, spans) = match &node.value {
+            Expression::Index { base, operands, .. } => (
+                OperatorExpressionKind::Index,
+                std::iter::once(base.span)
+                    .chain(
+                        operands
+                            .value
+                            .elements
+                            .iter()
+                            .map(|element| element.expression.span),
+                    )
+                    .collect::<Vec<_>>(),
+            ),
+            Expression::Select { base, selector } => {
+                let selector_span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*selector)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span;
+                (
+                    OperatorExpressionKind::Select,
+                    vec![base.span, selector_span],
+                )
+            }
+            Expression::CollectionOp {
+                op: CollectionOperator::Select,
+                base,
+                args,
+                brace_body: None,
+                ..
+            } => (
+                OperatorExpressionKind::Select,
+                std::iter::once(base.span)
+                    .chain(args.iter().map(|argument| argument.value.span))
+                    .collect::<Vec<_>>(),
+            ),
+            _ => return Ok(()),
+        };
+        self.operator_expressions.push(OperatorExpressionRecord {
+            expression,
+            result,
+            kind,
+        });
+        for (ordinal, span) in spans.into_iter().enumerate() {
+            self.push_expression_argument(
+                document,
+                expression,
+                u32::try_from(ordinal).map_err(|_| ConstructionError::Capacity)?,
+                span,
+            )?;
+        }
+        Ok(())
     }
 
     /// Records the authored feature value spelling of one declaration.
@@ -906,6 +1015,30 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    pub(crate) fn push_expression_operand_reference(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::ExpressionOperand,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
     /// The site of a constraint-body expression: what the author wrote, and where.
     ///
     /// Records the expression; it does not classify it. What the expression evaluates to is phase
@@ -1075,6 +1208,8 @@ impl SemanticModelBuilder {
             references: self.references.into_boxed_slice(),
             documentation: self.documentation.into_boxed_slice(),
             feature_values: self.feature_values.into_boxed_slice(),
+            operator_expressions: self.operator_expressions.into_boxed_slice(),
+            expression_arguments: self.expression_arguments.into_boxed_slice(),
             metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),

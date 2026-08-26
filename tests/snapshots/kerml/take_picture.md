@@ -78,7 +78,7 @@ behavior TakePicture {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3858e8d89aa17eedefc4517dd85160687281f32d72516dcb42ae47bfe6a63a17") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3858e8d89aa17eedefc4517dd85160687281f32d72516dcb42ae47bfe6a63a17") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Camera") (import (shape membership) (recursive false))))))

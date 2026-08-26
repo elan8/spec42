@@ -44,7 +44,7 @@ package Model { action def Vehicle { doc /* vehicle documentation */ language "A
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8308ef4dbd1f4b2efa1b9163f5d950fec9338e6ed8fc278361cf021ea52aca4c") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8308ef4dbd1f4b2efa1b9163f5d950fec9338e6ed8fc278361cf021ea52aca4c") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model::Vehicle"))) (kind action-def) (membership (kind owning) (visibility default)) (documentation (doc (text " vehicle documentation ")) (rep (language "Alf") (text " vehicle implementation "))))

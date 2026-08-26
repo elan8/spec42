@@ -28,9 +28,11 @@ use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
+use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -58,6 +60,8 @@ pub(crate) struct LoweredDocument {
     pub(crate) references: Box<[AuthoredReference]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
+    pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
+    pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,
@@ -97,6 +101,8 @@ pub(crate) fn lower_document(
         references: builder.references.into_boxed_slice(),
         documentation: builder.documentation.into_boxed_slice(),
         feature_values: builder.feature_values.into_boxed_slice(),
+        operator_expressions: builder.operator_expressions.into_boxed_slice(),
+        expression_arguments: builder.expression_arguments.into_boxed_slice(),
         metadata_annotations: builder.metadata_annotations.into_boxed_slice(),
         unsupported: builder.unsupported.into_boxed_slice(),
         recovery: builder.recovery.into_boxed_slice(),
@@ -308,6 +314,31 @@ impl SemanticModelBuilder {
                 is_default: record.is_default,
                 has_operator: record.has_operator,
                 span: record.span,
+            });
+        }
+
+        reserve(
+            &mut self.operator_expressions,
+            lowered.operator_expressions.len(),
+        )?;
+        for record in lowered.operator_expressions.iter() {
+            self.operator_expressions.push(OperatorExpressionRecord {
+                expression: relocation.declaration(record.expression)?,
+                result: relocation.declaration(record.result)?,
+                kind: record.kind,
+            });
+        }
+
+        reserve(
+            &mut self.expression_arguments,
+            lowered.expression_arguments.len(),
+        )?;
+        for record in lowered.expression_arguments.iter() {
+            self.expression_arguments.push(ExpressionArgumentRecord {
+                expression: relocation.declaration(record.expression)?,
+                argument: relocation.declaration(record.argument)?,
+                result: relocation.declaration(record.result)?,
+                ordinal: record.ordinal,
             });
         }
 

@@ -86,6 +86,10 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::Select { base, selector } => {
+                self.lower_constraint_expression(document, declaration, family, base)?;
+                self.push_expression_operand_reference(document, declaration, *selector)
+            }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -234,6 +238,10 @@ impl SemanticModelBuilder {
                     self.lower_calc_expression(document, declaration, family, &element.expression)?;
                 }
                 Ok(())
+            }
+            Expression::Select { base, selector } => {
+                self.lower_calc_expression(document, declaration, family, base)?;
+                self.push_expression_operand_reference(document, declaration, *selector)
             }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
@@ -413,6 +421,17 @@ impl SemanticModelBuilder {
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_filter_expression(document, declaration, base)
+            }
+            Expression::Index { base, operands, .. } => {
+                self.lower_filter_expression(document, declaration, base)?;
+                for element in &operands.value.elements {
+                    self.lower_filter_expression(document, declaration, &element.expression)?;
+                }
+                Ok(())
+            }
+            Expression::Select { base, selector } => {
+                self.lower_filter_expression(document, declaration, base)?;
+                self.push_expression_operand_reference(document, declaration, *selector)
             }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]

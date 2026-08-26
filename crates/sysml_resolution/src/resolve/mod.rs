@@ -811,6 +811,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
             semantic_metadata_projections: Box::default(),
             semantic_metadata_projection_status: Default::default(),
+            select_expression_projection_status: Default::default(),
+            index_expression_projection_status: Default::default(),
+            index_expression_array_anchor: None,
             #[cfg(test)]
             work,
         },

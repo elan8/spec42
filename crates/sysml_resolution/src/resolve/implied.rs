@@ -18,6 +18,7 @@ use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::build_ancestor_closures;
 use crate::resolve::effective_types::EffectiveTypes;
 use crate::resolve::names::NameIndex;
+use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -895,6 +896,142 @@ pub(crate) struct SemanticMetadataSynthesis {
     pub(crate) status: SemanticMetadataProjectionStatus,
 }
 
+pub(crate) struct OperatorExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) select_status: ExpressionArgumentProjectionStatus,
+    pub(crate) index_status: ExpressionArgumentProjectionStatus,
+    pub(crate) array_anchor: Option<LibrarySpecializationAnchor>,
+}
+
+pub(crate) fn synthesize_operator_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<OperatorExpressionSynthesis, ResolutionError> {
+    let has_index = storage
+        .operator_expressions
+        .iter()
+        .any(|record| record.kind == crate::lower::facts::OperatorExpressionKind::Index);
+    let array =
+        has_index.then(|| resolve_library_specialization_anchor(storage, "Collections::Array"));
+    let mut implied = Vec::new();
+    let mut select_status = ExpressionArgumentProjectionStatus::Complete;
+    let mut index_status = ExpressionArgumentProjectionStatus::Complete;
+    for operator in storage.operator_expressions.iter() {
+        let mut first = storage
+            .expression_arguments
+            .iter()
+            .filter(|argument| argument.expression == operator.expression && argument.ordinal == 0);
+        let Some(argument) = first.next() else {
+            match operator.kind {
+                crate::lower::facts::OperatorExpressionKind::Index => {
+                    index_status = ExpressionArgumentProjectionStatus::Unresolved
+                }
+                crate::lower::facts::OperatorExpressionKind::Select => {
+                    select_status = ExpressionArgumentProjectionStatus::Unresolved
+                }
+            }
+            continue;
+        };
+        if first.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        if operator.kind == crate::lower::facts::OperatorExpressionKind::Index {
+            match array.as_ref() {
+                Some(LibrarySpecializationAnchor::Resolved(array)) => {
+                    match settled_specializes(storage, resolution, argument.result, *array)? {
+                        SettledSpecialization::Conforms => continue,
+                        SettledSpecialization::DoesNotConform => {}
+                        SettledSpecialization::Unresolved => {
+                            index_status = ExpressionArgumentProjectionStatus::Unresolved;
+                            continue;
+                        }
+                    }
+                }
+                _ => {
+                    index_status = ExpressionArgumentProjectionStatus::Unresolved;
+                    continue;
+                }
+            }
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: operator.result,
+            target: argument.result,
+        });
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(OperatorExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        select_status,
+        index_status,
+        array_anchor: array,
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SettledSpecialization {
+    Conforms,
+    DoesNotConform,
+    Unresolved,
+}
+
+fn settled_specializes(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    specific: DeclarationId,
+    general: DeclarationId,
+) -> Result<SettledSpecialization, ResolutionError> {
+    let mut pending = vec![specific];
+    let mut visited = std::collections::BTreeSet::new();
+    let mut unresolved = false;
+    while let Some(current) = pending.pop() {
+        if current == general {
+            return Ok(SettledSpecialization::Conforms);
+        }
+        if !visited.insert(current) {
+            continue;
+        }
+        for (index, reference) in storage.references.iter().enumerate() {
+            if reference.source != current
+                || !matches!(
+                    reference.kind,
+                    ReferenceKind::Subclassification
+                        | ReferenceKind::Subsetting
+                        | ReferenceKind::Redefinition
+                        | ReferenceKind::FeatureTyping
+                )
+            {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            match resolution.outcome(id) {
+                Some(ResolutionStatus::Resolved(target)) => pending.push(target),
+                Some(
+                    ResolutionStatus::Unresolved
+                    | ResolutionStatus::Ambiguous(_)
+                    | ResolutionStatus::Unsupported
+                    | ResolutionStatus::NonConverged,
+                )
+                | None => unresolved = true,
+            }
+        }
+        pending.extend(
+            resolution
+                .implied_relationships
+                .iter()
+                .filter(|edge| edge.source == current)
+                .map(|edge| edge.target),
+        );
+    }
+    Ok(if unresolved {
+        SettledSpecialization::Unresolved
+    } else {
+        SettledSpecialization::DoesNotConform
+    })
+}
+
 pub(crate) fn synthesize_semantic_metadata_specializations(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
@@ -926,51 +1063,6 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
         });
     };
 
-    let resolved_edges = |source: DeclarationId| {
-        storage
-            .references
-            .iter()
-            .enumerate()
-            .filter_map(move |(index, reference)| {
-                (reference.source == source
-                    && matches!(
-                        reference.kind,
-                        ReferenceKind::Subclassification
-                            | ReferenceKind::Subsetting
-                            | ReferenceKind::Redefinition
-                            | ReferenceKind::FeatureTyping
-                    ))
-                .then(|| {
-                    let id = AuthoredReferenceId::from_index(index).ok()?;
-                    match resolution.outcome(id) {
-                        Some(ResolutionStatus::Resolved(target)) => Some(target),
-                        _ => None,
-                    }
-                })
-                .flatten()
-            })
-    };
-    let specializes = |specific: DeclarationId, general: DeclarationId| {
-        let mut pending = vec![specific];
-        let mut visited = std::collections::BTreeSet::new();
-        while let Some(current) = pending.pop() {
-            if current == general {
-                return true;
-            }
-            if visited.insert(current) {
-                pending.extend(resolved_edges(current));
-                pending.extend(
-                    resolution
-                        .implied_relationships
-                        .iter()
-                        .filter(|edge| edge.source == current)
-                        .map(|edge| edge.target),
-                );
-            }
-        }
-        false
-    };
-
     let mut projections = Vec::new();
     let mut implied = Vec::new();
     let mut status = SemanticMetadataProjectionStatus::Complete;
@@ -995,32 +1087,44 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             status = SemanticMetadataProjectionStatus::Unresolved;
             continue;
         };
-        if !specializes(metadata_type, semantic_metadata) {
-            continue;
+        match settled_specializes(storage, resolution, metadata_type, semantic_metadata)? {
+            SettledSpecialization::Conforms => {}
+            SettledSpecialization::DoesNotConform => continue,
+            SettledSpecialization::Unresolved => {
+                status = SemanticMetadataProjectionStatus::Unresolved;
+                continue;
+            }
         }
-        let value = storage.feature_values.iter().find(|value| {
+        let mut value = None;
+        for candidate in storage.feature_values.iter() {
             let Some(owner) = storage
-                .declaration(value.declaration)
+                .declaration(candidate.declaration)
                 .and_then(|decl| decl.owner)
             else {
-                return false;
+                continue;
             };
-            specializes(metadata_type, owner)
-                && storage
-                    .references
-                    .iter()
-                    .enumerate()
-                    .any(|(index, reference)| {
-                        reference.source == value.declaration
-                            && reference.kind == ReferenceKind::Redefinition
-                            && AuthoredReferenceId::from_index(index)
-                                .ok()
-                                .is_some_and(|id| {
-                                    resolution.outcome(id)
-                                        == Some(ResolutionStatus::Resolved(base_type))
-                                })
-                    })
-        });
+            if matches!(
+                settled_specializes(storage, resolution, metadata_type, owner)?,
+                SettledSpecialization::Conforms
+            ) && storage
+                .references
+                .iter()
+                .enumerate()
+                .any(|(index, reference)| {
+                    reference.source == candidate.declaration
+                        && reference.kind == ReferenceKind::Redefinition
+                        && AuthoredReferenceId::from_index(index)
+                            .ok()
+                            .is_some_and(|id| {
+                                resolution.outcome(id)
+                                    == Some(ResolutionStatus::Resolved(base_type))
+                            })
+                })
+            {
+                value = Some(candidate);
+                break;
+            }
+        }
         let Some(value) = value else {
             status = SemanticMetadataProjectionStatus::Unresolved;
             continue;

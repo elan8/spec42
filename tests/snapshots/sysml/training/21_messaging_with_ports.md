@@ -88,7 +88,7 @@ package 'Messaging Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:feb91c879d2638e3bb574cfb56398fb3cc26ba87e69fea1960c2a020c15da8f3") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:feb91c879d2638e3bb574cfb56398fb3cc26ba87e69fea1960c2a020c15da8f3") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

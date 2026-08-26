@@ -80,7 +80,7 @@ package 'Allocation Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f787c0ba6010bc10e009eb5b197e0df19951e5645283ebc65e671aa97e4292ec") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f787c0ba6010bc10e009eb5b197e0df19951e5645283ebc65e671aa97e4292ec") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel"))) (kind package) (membership (kind owning) (visibility default)))

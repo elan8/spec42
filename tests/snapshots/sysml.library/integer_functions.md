@@ -541,7 +541,7 @@ standard library package IntegerFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:86a6491e16b4292789dc419a9e810ea43b1f4c988d414a829789b6d9de6f2ed9") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:86a6491e16b4292789dc419a9e810ea43b1f4c988d414a829789b6d9de6f2ed9") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/integer_functions.md") (qualified-name "IntegerFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions on Integer values, including concrete specializations of the \n\t * general arithmetic and comparison operations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

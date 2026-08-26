@@ -608,7 +608,7 @@ standard library package RealFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:563698051692596de6cfcf7c332043069d7ecb55d69bcb78d11c84e89bb66c56") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:563698051692596de6cfcf7c332043069d7ecb55d69bcb78d11c84e89bb66c56") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Functions on Real values, including concrete specializations of the \n\t * general arithmetic and comparison operations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

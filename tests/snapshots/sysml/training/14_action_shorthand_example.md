@@ -50,7 +50,7 @@ package 'Action Shorthand Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6409babd991a20b892be47396abad82d5e8da9f8e41b377e6a10f72342e58bb0") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6409babd991a20b892be47396abad82d5e8da9f8e41b377e6a10f72342e58bb0") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

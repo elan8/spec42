@@ -84,7 +84,7 @@ package 'Connections Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:457ea7f7731fde8b9fa2f3fa09ade51ab64e58eb3129433ad5cf3552353222f2") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:457ea7f7731fde8b9fa2f3fa09ade51ab64e58eb3129433ad5cf3552353222f2") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Hub"))) (kind part-def) (membership (kind owning) (visibility default)))

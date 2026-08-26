@@ -185,7 +185,7 @@ package 'Filtering Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e2485b3b6d7685cbf36b282a86887d4a0025e9b653842294a9833444082d1ede") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e2485b3b6d7685cbf36b282a86887d4a0025e9b653842294a9833444082d1ede") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (path (named (kind package) (name "Filtering Example-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

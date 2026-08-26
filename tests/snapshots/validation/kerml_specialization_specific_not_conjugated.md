@@ -60,7 +60,7 @@ package Conjugations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7b0c4057f268a63a60d7af7db2bc6e03f25d431378938a20b763142c3e6ebafa") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7b0c4057f268a63a60d7af7db2bc6e03f25d431378938a20b763142c3e6ebafa") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md") (qualified-name "Conjugations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md") (qualified-name "Conjugations::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

@@ -62,7 +62,7 @@ package Flows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a2fa93be61c86966513eab09b25c90e9e204292c649cf0e98fc2d27c829483a8") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a2fa93be61c86966513eab09b25c90e9e204292c649cf0e98fc2d27c829483a8") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_flow_definition_flow_ends.md") (qualified-name "Flows::Binary"))) (kind flow-def) (membership (kind owning) (visibility default)))

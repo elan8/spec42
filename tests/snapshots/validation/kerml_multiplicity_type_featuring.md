@@ -40,7 +40,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:34ad2311e7dcb165470149f704a89fb234bac361fad873410120a6d4b4c1cba0") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:34ad2311e7dcb165470149f704a89fb234bac361fad873410120a6d4b4c1cba0") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (qualified-name "Multiplicities::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

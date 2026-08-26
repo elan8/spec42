@@ -64,7 +64,7 @@ package Chains {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d1a5dea51279844787b29fa786e9ec23645acce844479dcaac8ad66b62f3b5e5") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d1a5dea51279844787b29fa786e9ec23645acce844479dcaac8ad66b62f3b5e5") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_chaining_feature_conformance.md") (qualified-name "Chains::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

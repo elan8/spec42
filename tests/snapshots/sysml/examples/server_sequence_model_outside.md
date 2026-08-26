@@ -104,7 +104,7 @@ package ServerSequenceModelOutside {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8cdec04c2e5583ee307a91787fb402dd304852111f1c310e41672e7fb7f7379f") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8cdec04c2e5583ee307a91787fb402dd304852111f1c310e41672e7fb7f7379f") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ServerSequenceModel") (import (shape namespace) (recursive false))))))

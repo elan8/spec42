@@ -146,7 +146,7 @@ package 'Car Mass Rollup Example 1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ebeab52c916294675496b73622d822c0369f8b7a543c167da3cda0964f2b1f7") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ebeab52c916294675496b73622d822c0369f8b7a543c167da3cda0964f2b1f7") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (qualified-name "Car Mass Rollup Example 1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (path (named (kind package) (name "Car Mass Rollup Example 1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

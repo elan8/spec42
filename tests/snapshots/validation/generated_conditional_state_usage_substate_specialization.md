@@ -36,7 +36,7 @@ package StateUsageSubstateSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1ee63394f9516d5df262cd2fce70be0dfb6a60093bd13119342281ea85777d33") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1ee63394f9516d5df262cd2fce70be0dfb6a60093bd13119342281ea85777d33") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_substate_specialization.md") (qualified-name "StateUsageSubstateSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_substate_specialization.md") (qualified-name "StateUsageSubstateSpecialization::machine"))) (kind state) (membership (kind feature) (visibility default)) (facts (modifiers parallel)))

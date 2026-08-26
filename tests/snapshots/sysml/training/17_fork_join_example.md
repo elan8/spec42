@@ -89,7 +89,7 @@ package 'Fork Join Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bfd0f6f0ecd96368346fb336be4a0114fe7f6569804fe19d2da39e31b80c690e") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bfd0f6f0ecd96368346fb336be4a0114fe7f6569804fe19d2da39e31b80c690e") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (path (named (kind package) (name "Fork Join Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

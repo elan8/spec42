@@ -30,7 +30,7 @@ package Actions { action def Procedure { attribute target; assign target := 1; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:471ed72f0e7e9e1b007dd4096affbf7c95f008d4f6c5f7095cfebdce039a3bd7") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:471ed72f0e7e9e1b007dd4096affbf7c95f008d4f6c5f7095cfebdce039a3bd7") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

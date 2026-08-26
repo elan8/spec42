@@ -83,7 +83,7 @@ package CarWithEnvelopingShape {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:67f7c47c3bf4f8cd6cba39ecfaf2a4930cbd5c427ebc17de07ad223eba41c0f6") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:67f7c47c3bf4f8cd6cba39ecfaf2a4930cbd5c427ebc17de07ad223eba41c0f6") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ShapeItems::Box") (import (shape membership) (recursive false))))))

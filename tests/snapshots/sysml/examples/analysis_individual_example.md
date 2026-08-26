@@ -335,7 +335,7 @@ package AnalysisIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:39d02d58702ecb2aabcc9d8ad7806a3989bd5bce273d9fd40dddab6b49bceb94") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:39d02d58702ecb2aabcc9d8ad7806a3989bd5bce273d9fd40dddab6b49bceb94") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_individual_example.md") (path (named (kind package) (name "AnalysisIndividualExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

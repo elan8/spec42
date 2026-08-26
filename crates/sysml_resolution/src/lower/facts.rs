@@ -292,6 +292,29 @@ pub(crate) struct FeatureValueRecord {
     pub(crate) span: Span,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum OperatorExpressionKind {
+    Index,
+    Select,
+}
+
+/// One authored SelectExpression or IndexExpression and its canonical result Feature.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct OperatorExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) kind: OperatorExpressionKind,
+}
+
+/// One ordered argument Expression owned by an operator expression.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ExpressionArgumentRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) argument: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) ordinal: u32,
+}
+
 /// One authored MetadataFeature instance and the Element it annotates.
 ///
 /// The annotation declaration owns its typing reference and body. This record owns the opposite

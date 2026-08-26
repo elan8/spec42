@@ -39,7 +39,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:8a3b70d77e0138f00cb01c83debd335ac4ab024f20d39baf74d5ecd3eee99111") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:8a3b70d77e0138f00cb01c83debd335ac4ab024f20d39baf74d5ecd3eee99111") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/examples/webshop/Views.sysml") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/Views.sysml") (path (named (kind package) (name "Views")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -9717,7 +9717,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ba48067d1490645c837a9074b7fc1254ed920e4c7d82e4b555152eac58765e28",
+  "modelDigest": "blake3:1603930cce718d133ff2047780b6923970887506f09f2e35cc61ebdefe73b4cd",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",

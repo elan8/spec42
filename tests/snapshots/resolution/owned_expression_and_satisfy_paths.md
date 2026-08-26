@@ -58,7 +58,7 @@ package Resolution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f91f9fcae45755eac195c69692108de419dbc8e5e1ecc38b39b0dd74b9980dda") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f91f9fcae45755eac195c69692108de419dbc8e5e1ecc38b39b0dd74b9980dda") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Requirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Requirements::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))

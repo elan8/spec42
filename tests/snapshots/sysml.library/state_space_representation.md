@@ -251,7 +251,7 @@ standard library package StateSpaceRepresentation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f33163e1dfdd1649bfdb24539884e26d75c8e3572b32d3309297c3a46604caab") (contract-version "semantic-metadata-projection-v6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f33163e1dfdd1649bfdb24539884e26d75c8e3572b32d3309297c3a46604caab") (contract-version "operator-expression-arguments-v7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package provides a model of the foundational state-space system representation, \n\t * commonly used in control systems.\n\t "))))
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (path (named (kind library-package) (name "StateSpaceRepresentation")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::DurationValue") (import (shape membership) (recursive false))))))

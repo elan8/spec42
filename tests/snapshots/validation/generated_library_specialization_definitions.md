@@ -48,7 +48,7 @@ package GeneratedDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:2d94af45d5beb978b1466a12d038964e8a6b062c139c774ba1a549a3fd6f0bf6") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:2d94af45d5beb978b1466a12d038964e8a6b062c139c774ba1a549a3fd6f0bf6") (contract-version "operator-expression-arguments-v7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::AllocationDefinition"))) (kind allocation-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
