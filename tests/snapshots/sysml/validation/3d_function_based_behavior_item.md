@@ -233,7 +233,7 @@ package '3d-Function-based Behavior-item' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a938ea0114bc41569429942e9fe5450deb09a9b292dd5b2393f311ceb44d8785") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a938ea0114bc41569429942e9fe5450deb09a9b292dd5b2393f311ceb44d8785") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3d_function_based_behavior_item.md") (qualified-name "3d-Function-based Behavior-item"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

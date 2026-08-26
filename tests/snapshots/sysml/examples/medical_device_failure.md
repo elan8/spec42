@@ -97,7 +97,7 @@ package MedicalDeviceFailure {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:51366626473ebc97f3725151bcf295affa7c19f7c78f889c7f47421f9356db44") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:51366626473ebc97f3725151bcf295affa7c19f7c78f889c7f47421f9356db44") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false))))))

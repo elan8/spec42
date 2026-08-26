@@ -47,7 +47,7 @@ package ProvenanceExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56ac1a41cff3d325151b7648ffcd7b27b65db0d0e4328768cadbb494f8c7cde4") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56ac1a41cff3d325151b7648ffcd7b27b65db0d0e4328768cadbb494f8c7cde4") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (qualified-name "ProvenanceExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_relationship_provenance.md") (path (named (kind package) (name "ProvenanceExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -209,7 +209,7 @@ package ProvenanceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ac9f7b2306807a7ee54c8a124e9ff90a54d204d5e198b596a5117bfe7be82730",
+  "modelDigest": "blake3:369a144e3a67ff27806e6f9d7fb7f2f12d32426b931328616c9c3b5c596cc29d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",

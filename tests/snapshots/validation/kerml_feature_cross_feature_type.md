@@ -67,7 +67,7 @@ package Crossings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3e6c09c13894182f7110720a4952fcc28be3356e90fdefcc8c817dd09c228ca0") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3e6c09c13894182f7110720a4952fcc28be3356e90fdefcc8c817dd09c228ca0") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link"))) (kind kerml-association) (membership (kind owning) (visibility default)))

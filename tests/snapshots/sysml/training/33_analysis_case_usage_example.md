@@ -129,7 +129,7 @@ package 'Analysis Case Usage Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:921e1c9568d80f2dd3752af04209c82f2ccd10ef98474fd5daa6e6ac482f3b22") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:921e1c9568d80f2dd3752af04209c82f2ccd10ef98474fd5daa6e6ac482f3b22") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Analysis Case Definition Example") (import (shape namespace) (recursive false))))))

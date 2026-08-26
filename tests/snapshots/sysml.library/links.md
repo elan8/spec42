@@ -193,7 +193,7 @@ standard library package Links {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b5f6d75a4656d8c2b313762c8a63f37565f3a289fbeb71a44521d403bf2328c5") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b5f6d75a4656d8c2b313762c8a63f37565f3a289fbeb71a44521d403bf2328c5") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * This package defines associations and features that are related to the typing of links.\n     "))))
     (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

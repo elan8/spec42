@@ -52,7 +52,7 @@ package ParameterTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))

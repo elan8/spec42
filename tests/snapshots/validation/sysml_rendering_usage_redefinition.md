@@ -30,7 +30,7 @@ package Redefinition { view def View; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c200e5ac9f85470907592e678bd49a63d1cb334af66406d5781b05309f298562") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c200e5ac9f85470907592e678bd49a63d1cb334af66406d5781b05309f298562") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_rendering_usage_redefinition.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_rendering_usage_redefinition.md") (qualified-name "Redefinition::View"))) (kind view-def) (membership (kind owning) (visibility default)))

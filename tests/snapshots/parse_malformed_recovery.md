@@ -28,7 +28,7 @@ package Foo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f491eea378f800426817629bbafa921ea3e956f72e6489a11a5fe34827bff600") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f491eea378f800426817629bbafa921ea3e956f72e6489a11a5fe34827bff600") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parse_malformed_recovery.md") (qualified-name "Foo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parse_malformed_recovery.md") (qualified-name "Foo::Bar"))) (kind part-def) (membership (kind owning) (visibility default)))

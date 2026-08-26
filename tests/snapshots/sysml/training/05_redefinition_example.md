@@ -42,7 +42,7 @@ package 'Redefinition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6aebff5d3d57240d346f01d77adcb1139020b0341de466f8ba9d34e0a85c07b1") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6aebff5d3d57240d346f01d77adcb1139020b0341de466f8ba9d34e0a85c07b1") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigEngine"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Engine")))))

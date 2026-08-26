@@ -37,7 +37,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d3432e1e6efdb5066fdbe725fab68cdb4b8c4c39d497485e4176ed4874be03ce") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d3432e1e6efdb5066fdbe725fab68cdb4b8c4c39d497485e4176ed4874be03ce") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (kind kerml-association) (membership (kind owning) (visibility default)))

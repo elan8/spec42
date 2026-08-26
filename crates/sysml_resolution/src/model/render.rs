@@ -1640,6 +1640,7 @@ mod tests {
             references: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
+            metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),
             symbols: SymbolTableBuilder::default().freeze(),

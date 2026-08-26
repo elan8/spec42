@@ -30,6 +30,7 @@ use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -57,6 +58,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) references: Box<[AuthoredReference]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
+    pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,
     pub(crate) evaluation_facts: Box<[PendingEvaluationFact]>,
@@ -95,6 +97,7 @@ pub(crate) fn lower_document(
         references: builder.references.into_boxed_slice(),
         documentation: builder.documentation.into_boxed_slice(),
         feature_values: builder.feature_values.into_boxed_slice(),
+        metadata_annotations: builder.metadata_annotations.into_boxed_slice(),
         unsupported: builder.unsupported.into_boxed_slice(),
         recovery: builder.recovery.into_boxed_slice(),
         evaluation_facts: builder.evaluation_facts.into_boxed_slice(),
@@ -305,6 +308,17 @@ impl SemanticModelBuilder {
                 is_default: record.is_default,
                 has_operator: record.has_operator,
                 span: record.span,
+            });
+        }
+
+        reserve(
+            &mut self.metadata_annotations,
+            lowered.metadata_annotations.len(),
+        )?;
+        for record in lowered.metadata_annotations.iter() {
+            self.metadata_annotations.push(MetadataAnnotationRecord {
+                annotation: relocation.declaration(record.annotation)?,
+                annotated_element: relocation.declaration(record.annotated_element)?,
             });
         }
 

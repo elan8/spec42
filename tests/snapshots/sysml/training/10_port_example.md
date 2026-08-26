@@ -80,7 +80,7 @@ package 'Port Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4e5e022421faaf34783c440a612d48a28954703b6e5c82f9d328a0e83223089a") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4e5e022421faaf34783c440a612d48a28954703b6e5c82f9d328a0e83223089a") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

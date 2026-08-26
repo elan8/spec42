@@ -34,7 +34,7 @@ package '12a-Dependency' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b98fc60512e7c7032f2ce12083bf62b01a2242d80f6c0ad80795e05165aeb776") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b98fc60512e7c7032f2ce12083bf62b01a2242d80f6c0ad80795e05165aeb776") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12a_dependency.md") (path (named (kind package) (name "12a-Dependency")) (anonymous (kind dependency) (ordinal 0))))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Service Layer")) (dependencySupplier (reference "Data Layer")))))

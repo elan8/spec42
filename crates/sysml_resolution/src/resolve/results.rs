@@ -51,6 +51,21 @@ pub(crate) struct ImpliedRelationship {
     pub(crate) target: DeclarationId,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct SemanticMetadataProjection {
+    pub(crate) annotation: DeclarationId,
+    pub(crate) annotated_element: DeclarationId,
+    pub(crate) syntax_element: DeclarationId,
+    pub(crate) specialization_target: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum SemanticMetadataProjectionStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -59,6 +74,8 @@ pub(crate) struct ResolutionResults {
     pub(crate) solver_status: SolverStatus,
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
     pub(crate) library_specialization_anchors: LibrarySpecializationAnchorFacts,
+    pub(crate) semantic_metadata_projections: Box<[SemanticMetadataProjection]>,
+    pub(crate) semantic_metadata_projection_status: SemanticMetadataProjectionStatus,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -83,6 +100,20 @@ impl ResolutionResults {
         Self {
             implied_relationships,
             library_specialization_anchors,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_semantic_metadata(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        semantic_metadata_projections: Box<[SemanticMetadataProjection]>,
+        semantic_metadata_projection_status: SemanticMetadataProjectionStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            semantic_metadata_projections,
+            semantic_metadata_projection_status,
             ..self
         }
     }

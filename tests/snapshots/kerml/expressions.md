@@ -249,7 +249,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:bfa7aa826e271b51c2ad9c25d5aaecec56931d371ebe5d7832d7022f67d44072") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:bfa7aa826e271b51c2ad9c25d5aaecec56931d371ebe5d7832d7022f67d44072") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expressions.md") (path (named (kind package) (name "Expressions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarFunctions") (import (shape namespace) (recursive false))))))

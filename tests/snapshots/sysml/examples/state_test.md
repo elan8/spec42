@@ -186,7 +186,7 @@ package StateTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3939a77ebdac917aefc42d7c3264ac57e3226becddd7ac0e3ada2e8ac0480edc") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3939a77ebdac917aefc42d7c3264ac57e3226becddd7ac0e3ada2e8ac0480edc") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::Exit"))) (kind attribute-def) (membership (kind owning) (visibility default)))

@@ -392,7 +392,7 @@ standard library package Triggers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:53f10488723397ed2a09a22d6f301d8c999224bd41a89da6ce79aa64fa11d49e") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:53f10488723397ed2a09a22d6f301d8c999224bd41a89da6ce79aa64fa11d49e") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains functions that return ChangeSignals for triggering\n\t * when a Boolean condition changes from false to true, at a specific time\n\t * or after a specific time delay.\n\t "))))
     (declaration (id (node (document "memory://snapshot/triggers.md") (path (named (kind library-package) (name "Triggers")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

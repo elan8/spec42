@@ -209,7 +209,7 @@ package '3a-Function-based Behavior-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3b081ef8ba2e964be99eac92f6b641f30d9e18eb89acd1ed6e3d89b3a22fa8a3") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3b081ef8ba2e964be99eac92f6b641f30d9e18eb89acd1ed6e3d89b3a22fa8a3") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_1.md") (qualified-name "3a-Function-based Behavior-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_1.md") (path (named (kind package) (name "3a-Function-based Behavior-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))

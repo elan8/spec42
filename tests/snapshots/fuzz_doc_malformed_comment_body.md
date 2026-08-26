@@ -33,7 +33,7 @@ alias Foo for Bar {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b5c6912f4c93d5cb0006d08ee5afbf91b447ce4c54e29262f361723bed0ecfd2") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b5c6912f4c93d5cb0006d08ee5afbf91b447ce4c54e29262f361723bed0ecfd2") (contract-version "semantic-metadata-projection-v6"))
   (declarations
   )
   (references

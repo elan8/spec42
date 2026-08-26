@@ -39,6 +39,7 @@ use crate::resolve::effective_types::derive_effective_types;
 use crate::resolve::implied::library_specialization_anchors;
 use crate::resolve::implied::synthesize_implied_relationships;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
+use crate::resolve::implied::synthesize_semantic_metadata_specializations;
 use crate::resolve::library_seed::SettledLibrary;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
@@ -155,6 +156,31 @@ impl Lowered {
             resolution.settle(implied.into_boxed_slice(), library_anchors)
         } else {
             resolution
+        };
+        let resolution = if storage.metadata_annotations.is_empty() {
+            resolution
+        } else {
+            let prerequisite_types = derive_effective_types(&storage, &resolution)?;
+            let synthesis = synthesize_semantic_metadata_specializations(
+                &storage,
+                &resolution,
+                &prerequisite_types,
+            )?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_semantic_metadata(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
         };
         let mut completeness = PublicationCompleteness::Complete;
         if has_recovery {

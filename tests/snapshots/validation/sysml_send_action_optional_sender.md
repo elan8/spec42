@@ -28,7 +28,7 @@ package Actions { action def Procedure { action receiver; send 1 to receiver; } 
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1ca6a609151b06c8508354500f0ff1bd6539384199059939336d463b66e021bd") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1ca6a609151b06c8508354500f0ff1bd6539384199059939336d463b66e021bd") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

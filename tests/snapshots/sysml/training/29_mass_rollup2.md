@@ -105,7 +105,7 @@ package MassRollup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d9915002c26e8fd14d3175fdbfde968ca299f94841b7af4d308edbdd651a0e50") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d9915002c26e8fd14d3175fdbfde968ca299f94841b7af4d308edbdd651a0e50") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false))))))

@@ -23,6 +23,7 @@ use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
@@ -100,6 +101,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) references: Vec<AuthoredReference>,
     pub(crate) documentation: Vec<DocumentationRecord>,
     pub(crate) feature_values: Vec<FeatureValueRecord>,
+    pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
     pub(crate) evaluation_facts: Vec<PendingEvaluationFact>,
@@ -1073,6 +1075,7 @@ impl SemanticModelBuilder {
             references: self.references.into_boxed_slice(),
             documentation: self.documentation.into_boxed_slice(),
             feature_values: self.feature_values.into_boxed_slice(),
+            metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
@@ -1748,6 +1751,24 @@ impl SemanticModelBuilder {
         keywords: &[Node<sysml_v2_parser::ast::UsageExtensionKeyword>],
     ) -> Result<(), ConstructionError> {
         for keyword in keywords {
+            let annotation = self.push_typed_declaration(
+                document,
+                Some(declaration),
+                DeclarationKind::MetadataUsage,
+                None,
+                keyword.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                annotation,
+                MembershipKind::Feature,
+                Visibility::Default,
+                keyword.span,
+            )?;
+            self.metadata_annotations.push(MetadataAnnotationRecord {
+                annotation,
+                annotated_element: declaration,
+            });
             let span = self.documents[document.index()]
                 .parsed
                 .qualified_reference(keyword.value.annotation)
@@ -1755,7 +1776,7 @@ impl SemanticModelBuilder {
                 .metadata
                 .span;
             self.push_reference(PendingReference {
-                source: declaration,
+                source: annotation,
                 kind: ReferenceKind::MetadataAnnotation,
                 document,
                 local: keyword.value.annotation,

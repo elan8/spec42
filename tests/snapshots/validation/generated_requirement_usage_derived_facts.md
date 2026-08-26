@@ -46,7 +46,7 @@ package RequirementUsageDerivedFacts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fb675c865d6b17e66ee2ea6773d4640c1c63a4f945dffb0e60756b05d1004d37") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fb675c865d6b17e66ee2ea6773d4640c1c63a4f945dffb0e60756b05d1004d37") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

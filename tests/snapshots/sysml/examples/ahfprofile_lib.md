@@ -357,7 +357,7 @@ library package AHFProfileMetadata{
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8c97661a610c2aa79a737de5c335ef2bd9885bc2ea527f1866a4d469d33e28eb") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8c97661a610c2aa79a737de5c335ef2bd9885bc2ea527f1866a4d469d33e28eb") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (path (named (kind library-package) (name "AHFProfileLib")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

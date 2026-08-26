@@ -50,7 +50,7 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d9ca3ac205dd0c088c18a9b081bd402e524a22025a36f230111c54bd0a693d76") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d9ca3ac205dd0c088c18a9b081bd402e524a22025a36f230111c54bd0a693d76") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))

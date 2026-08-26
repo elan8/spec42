@@ -70,7 +70,7 @@ package Scoping {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dc02369d6fa0296eaa75f6ba3e3e3047242d8a9310da6da02398d3e536f61e83") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dc02369d6fa0296eaa75f6ba3e3e3047242d8a9310da6da02398d3e536f61e83") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1"))) (kind package) (membership (kind owning) (visibility default)))

@@ -813,7 +813,7 @@ standard library package KerML {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:83f3791e6ff5834325f3e4c86379d6b21561eabcbdef04b6dba2edbb88084e91") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:83f3791e6ff5834325f3e4c86379d6b21561eabcbdef04b6dba2edbb88084e91") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ker_ml.md") (qualified-name "KerML"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains a reflective KerML model of the KerML abstract syntax.\n\t "))))
     (declaration (id (node (document "memory://snapshot/ker_ml.md") (path (named (kind library-package) (name "KerML")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

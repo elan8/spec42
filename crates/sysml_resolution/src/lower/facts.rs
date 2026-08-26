@@ -292,6 +292,17 @@ pub(crate) struct FeatureValueRecord {
     pub(crate) span: Span,
 }
 
+/// One authored MetadataFeature instance and the Element it annotates.
+///
+/// The annotation declaration owns its typing reference and body. This record owns the opposite
+/// endpoint, so consumers never have to infer the annotated Element from containment or from a
+/// presentation relationship whose source was rewritten for display.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MetadataAnnotationRecord {
+    pub(crate) annotation: DeclarationId,
+    pub(crate) annotated_element: DeclarationId,
+}
+
 /// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.
 ///
 /// A declaration with no `[...]` written yields `None`; that is genuinely "no multiplicity

@@ -153,7 +153,7 @@ package TimeVaryingAttribute {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8441e70e35ca932c47fde0f3ee386edd4044d2315b972d814c0e5d9db94470ef") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8441e70e35ca932c47fde0f3ee386edd4044d2315b972d814c0e5d9db94470ef") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (path (named (kind package) (name "TimeVaryingAttribute")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::s") (import (shape membership) (recursive false))))))

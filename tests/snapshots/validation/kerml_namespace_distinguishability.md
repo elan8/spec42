@@ -58,7 +58,7 @@ package Colliding {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b44d891fc3df360d2df938c0f54e92081844d1defe980240dd9dead5035b6eb7") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b44d891fc3df360d2df938c0f54e92081844d1defe980240dd9dead5035b6eb7") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_namespace_distinguishability.md") (qualified-name "Colliding"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_namespace_distinguishability.md") (path (named (kind package) (name "Colliding")) (named (kind kerml-classifier) (name "Thing"))))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

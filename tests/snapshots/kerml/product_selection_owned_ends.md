@@ -172,7 +172,7 @@ package ProductSelection_OwnedEnds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bcd09e48bb97b38fe98180c554d872e02a22679552e066dd58a131ab917240a5") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bcd09e48bb97b38fe98180c554d872e02a22679552e066dd58a131ab917240a5") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))

@@ -84,7 +84,7 @@ package ConnectorAll {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5544e6186e9524f6031d7e6095efc59b0e47848e1809c9197683ca088ff33162") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5544e6186e9524f6031d7e6095efc59b0e47848e1809c9197683ca088ff33162") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind kerml-connector) (membership (kind feature) (visibility default)) (facts (modifiers all)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "a")) (connectorEnd (reference "b")))))

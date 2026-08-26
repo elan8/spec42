@@ -30,7 +30,7 @@ package Redefinition { classifier Parent { feature inherited; } classifier Child
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6cb36ecd4bd57a95ee2ec28832959a93c9d56ceb4fc662d24e8a335dd0529f44") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6cb36ecd4bd57a95ee2ec28832959a93c9d56ceb4fc662d24e8a335dd0529f44") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition.md") (qualified-name "Redefinition::Child"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Parent")))))

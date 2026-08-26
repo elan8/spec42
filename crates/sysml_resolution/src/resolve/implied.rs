@@ -6,6 +6,7 @@ use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
@@ -21,6 +22,8 @@ use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::resolve::results::SemanticMetadataProjection;
+use crate::resolve::results::SemanticMetadataProjectionStatus;
 use crate::resolve::results::SolverStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
@@ -880,6 +883,231 @@ pub(crate) fn synthesize_owned_cross_feature_typings(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Publishes the joined semantic-metadata projection required by KerML 8.3.4.12.3 and the
+/// implied specialization it denotes. Every endpoint comes from an owned typed fact: annotation
+/// identity, annotated element, resolved metadata typing, resolved `baseType` redefinition,
+/// expression operand, and effective feature typing.
+pub(crate) struct SemanticMetadataSynthesis {
+    pub(crate) projections: Box<[SemanticMetadataProjection]>,
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) status: SemanticMetadataProjectionStatus,
+}
+
+pub(crate) fn synthesize_semantic_metadata_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    types: &EffectiveTypes,
+) -> Result<SemanticMetadataSynthesis, ResolutionError> {
+    if storage.metadata_annotations.is_empty() {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Complete,
+        });
+    }
+    let LibrarySpecializationAnchor::Resolved(semantic_metadata) =
+        resolve_library_specialization_anchor(storage, "Metaobjects::SemanticMetadata")
+    else {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Unresolved,
+        });
+    };
+    let LibrarySpecializationAnchor::Resolved(base_type) =
+        resolve_library_specialization_anchor(storage, "Metaobjects::SemanticMetadata::baseType")
+    else {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Unresolved,
+        });
+    };
+
+    let resolved_edges = |source: DeclarationId| {
+        storage
+            .references
+            .iter()
+            .enumerate()
+            .filter_map(move |(index, reference)| {
+                (reference.source == source
+                    && matches!(
+                        reference.kind,
+                        ReferenceKind::Subclassification
+                            | ReferenceKind::Subsetting
+                            | ReferenceKind::Redefinition
+                            | ReferenceKind::FeatureTyping
+                    ))
+                .then(|| {
+                    let id = AuthoredReferenceId::from_index(index).ok()?;
+                    match resolution.outcome(id) {
+                        Some(ResolutionStatus::Resolved(target)) => Some(target),
+                        _ => None,
+                    }
+                })
+                .flatten()
+            })
+    };
+    let specializes = |specific: DeclarationId, general: DeclarationId| {
+        let mut pending = vec![specific];
+        let mut visited = std::collections::BTreeSet::new();
+        while let Some(current) = pending.pop() {
+            if current == general {
+                return true;
+            }
+            if visited.insert(current) {
+                pending.extend(resolved_edges(current));
+                pending.extend(
+                    resolution
+                        .implied_relationships
+                        .iter()
+                        .filter(|edge| edge.source == current)
+                        .map(|edge| edge.target),
+                );
+            }
+        }
+        false
+    };
+
+    let mut projections = Vec::new();
+    let mut implied = Vec::new();
+    let mut status = SemanticMetadataProjectionStatus::Complete;
+    for record in storage.metadata_annotations.iter() {
+        let metadata_type = storage
+            .references
+            .iter()
+            .enumerate()
+            .find_map(|(index, reference)| {
+                (reference.source == record.annotation
+                    && reference.kind == ReferenceKind::MetadataAnnotation)
+                    .then(|| {
+                        let id = AuthoredReferenceId::from_index(index).ok()?;
+                        match resolution.outcome(id) {
+                            Some(ResolutionStatus::Resolved(target)) => Some(target),
+                            _ => None,
+                        }
+                    })
+                    .flatten()
+            });
+        let Some(metadata_type) = metadata_type else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        if !specializes(metadata_type, semantic_metadata) {
+            continue;
+        }
+        let value = storage.feature_values.iter().find(|value| {
+            let Some(owner) = storage
+                .declaration(value.declaration)
+                .and_then(|decl| decl.owner)
+            else {
+                return false;
+            };
+            specializes(metadata_type, owner)
+                && storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .any(|(index, reference)| {
+                        reference.source == value.declaration
+                            && reference.kind == ReferenceKind::Redefinition
+                            && AuthoredReferenceId::from_index(index)
+                                .ok()
+                                .is_some_and(|id| {
+                                    resolution.outcome(id)
+                                        == Some(ResolutionStatus::Resolved(base_type))
+                                })
+                    })
+        });
+        let Some(value) = value else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        let syntax_element =
+            storage
+                .references
+                .iter()
+                .enumerate()
+                .find_map(|(index, reference)| {
+                    (reference.source == value.value
+                        && reference.kind == ReferenceKind::ExpressionOperand)
+                        .then(|| {
+                            let id = AuthoredReferenceId::from_index(index).ok()?;
+                            match resolution.outcome(id) {
+                                Some(ResolutionStatus::Resolved(target)) => Some(target),
+                                _ => None,
+                            }
+                        })
+                        .flatten()
+                });
+        let Some(syntax_element) = syntax_element else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        let is_feature = |declaration: DeclarationId| {
+            storage.declaration(declaration).is_some_and(|decl| {
+                crate::resolve::is_usage_declaration(decl.kind)
+                    || matches!(
+                        element_kind::element_kind(decl.kind),
+                        crate::ElementKind::Feature
+                            | crate::ElementKind::Step
+                            | crate::ElementKind::Expression
+                            | crate::ElementKind::BooleanExpression
+                            | crate::ElementKind::Connector
+                            | crate::ElementKind::BindingConnector
+                            | crate::ElementKind::Invariant
+                    )
+            })
+        };
+        let annotated_is_feature = is_feature(record.annotated_element);
+        let syntax_is_feature = is_feature(syntax_element);
+        let targets = if !annotated_is_feature && syntax_is_feature {
+            types
+                .row(syntax_element)
+                .iter()
+                .map(|(target, _)| *target)
+                .collect::<Vec<_>>()
+        } else {
+            vec![syntax_element]
+        };
+        if targets.is_empty() {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+        }
+        for target in targets {
+            projections.push(SemanticMetadataProjection {
+                annotation: record.annotation,
+                annotated_element: record.annotated_element,
+                syntax_element,
+                specialization_target: target,
+            });
+            implied.push(ImpliedRelationship {
+                kind: if annotated_is_feature {
+                    ReferenceKind::Subsetting
+                } else {
+                    ReferenceKind::Subclassification
+                },
+                source: record.annotated_element,
+                target,
+            });
+        }
+    }
+    projections
+        .sort_by_key(|projection| (projection.annotation.0, projection.specialization_target.0));
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    Ok(SemanticMetadataSynthesis {
+        projections: projections.into_boxed_slice(),
+        implied_relationships: implied.into_boxed_slice(),
+        status,
+    })
 }
 
 pub(crate) fn library_specialization_anchors(

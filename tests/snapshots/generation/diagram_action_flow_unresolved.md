@@ -34,7 +34,7 @@ package ActionNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:094b257297e71b097d170282aa255ac79e8783bd766e5566dca383cc0ca7f7ba") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:094b257297e71b097d170282aa255ac79e8783bd766e5566dca383cc0ca7f7ba") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_unresolved.md") (qualified-name "ActionNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_unresolved.md") (path (named (kind package) (name "ActionNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -124,7 +124,7 @@ package ActionNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:1eabf00b4d29eced434d06cbb2f54f08b5a142a18f90b84db85269ce97528892",
+  "modelDigest": "blake3:557439289c9c141630d70ab0858ebdfa5776bd79bd3b0cdf18d7b994d182978c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_unresolved.md",

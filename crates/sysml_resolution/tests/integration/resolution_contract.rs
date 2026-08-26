@@ -1604,26 +1604,6 @@ fn metadata_usage_typed_by_a_metadata_def_resolves() {
 }
 
 #[test]
-fn metadata_annotation_on_part_usage_resolves_the_annotation_reference() {
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tmetadata def Safety {\n\
-         \t\tattribute isMandatory : Boolean;\n\
-         \t}\n\
-         \tpart def Vehicle {\n\
-         \t\tpart seatBelt[2] {@Safety{isMandatory = true;}}\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(kind metadataAnnotation) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Vehicle::seatBelt\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety\")))"
-        ),
-        "expected seatBelt's @Safety metadata annotation reference to resolve, got:\n{output}"
-    );
-}
-
-#[test]
 fn filter_metadata_test_resolves_the_metadata_reference() {
     let output = build_semantic_sexpr(
         "package Demo {\n\

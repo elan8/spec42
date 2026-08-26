@@ -40,7 +40,7 @@ package Model { classifier Base; classifier Derived intersects Base; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3ee9eca61a09e3635767c77adf61fa1eb8fc486d555fcf9d76da471c1be9421b") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3ee9eca61a09e3635767c77adf61fa1eb8fc486d555fcf9d76da471c1be9421b") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_intersecting.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_intersecting.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

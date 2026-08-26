@@ -133,7 +133,7 @@ package 'Use Case Usage Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (path (named (kind package) (name "Use Case Usage Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Use Case Definition Example") (import (shape namespace) (recursive false))))))

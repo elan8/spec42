@@ -2,6 +2,7 @@
 
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
@@ -206,10 +207,10 @@ impl SemanticModelBuilder {
     /// Lowers an `@Name{...}`/`@Name;` metadata annotation body element (`ast::MetadataAnnotation`,
     /// see `ReferenceKind::MetadataAnnotation`), applied to `owner` -- the declaration that owns
     /// the body the annotation appears in (a part usage, action def, state def, ...). Only the
-    /// annotation-target reference (`type_reference`, the production's required
-    /// `OwnedFeatureTyping`, e.g. `Safety`) is resolved, sourced directly at `owner`;
-    /// `about_targets` and the nested `body` (feature-value overrides) are out of scope, see the
-    /// `ReferenceKind::MetadataAnnotation` doc comment.
+    /// annotation itself is a MetadataUsage owned by the annotated element. It owns both its
+    /// typing reference and body, while `MetadataAnnotationRecord` owns the explicit opposite
+    /// endpoint. This keeps the authored MetadataFeature distinct even for the body-less `@Name;`
+    /// form and avoids making a presentation relationship the semantic source of truth.
     ///
     /// `MetadataFeatureDeclaration`'s optional `Identification ( ':' | 'typed by' )` prefix is a
     /// declared name, not a reference: `@t : Safety;` declares `t` and is typed by `Safety`, and
@@ -221,6 +222,40 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<MetadataAnnotation>,
     ) -> Result<(), ConstructionError> {
+        let identification = node
+            .value
+            .declared_name
+            .as_ref()
+            .map(|declared| &declared.value.identification);
+        let name = self.intern_declaration_name(
+            document,
+            identification.and_then(|identification| identification.name),
+        )?;
+        let short_name = self.intern_short_name(
+            document,
+            identification.and_then(|identification| identification.short_name),
+        )?;
+        let annotation = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::MetadataUsage,
+            name,
+            node.span,
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            annotation,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        self.metadata_annotations.push(MetadataAnnotationRecord {
+            annotation,
+            annotated_element: owner,
+        });
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(node.value.type_reference)
@@ -228,7 +263,7 @@ impl SemanticModelBuilder {
             .metadata
             .span;
         self.push_reference(PendingReference {
-            source: owner,
+            source: annotation,
             kind: ReferenceKind::MetadataAnnotation,
             document,
             local: node.value.type_reference,
@@ -236,53 +271,7 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
-        // Widened value-assignment handling (see `lower_value_assignment`): the annotation body's
-        // nested feature-value overrides (`@Safety{isMandatory = true;}`'s `isMandatory = true;`)
-        // were deliberately deferred by the annotation-application slice pending exactly this
-        // machinery (see the `ReferenceKind::MetadataAnnotation` doc comment). Each override is
-        // typed as an ordinary `AttributeUsage` (BNF-shared `AttributeBody`, exactly like `metadata
-        // m : Safety { isMandatory = true; }`'s own body), but the `@Safety{...}` annotation form
-        // has no named declaration of its own to own them (unlike a named `metadata m : Safety`
-        // usage) -- a `MetadataUsage`-kind declaration nested under `owner` gives the overrides a
-        // real owning scope without disturbing `owner`'s own member set or the
-        // `MetadataAnnotation` reference above (still sourced directly at `owner`, unchanged).
-        // It is anonymous unless the author wrote `MetadataFeatureDeclaration`'s optional
-        // `Identification` prefix (`@t : Safety { ... }`), whose declared name and short name are
-        // the scope's own -- the annotated type is never borrowed as a stand-in for them.
-        if matches!(&node.value.body, MetadataBody::Brace { elements, .. } if !elements.is_empty())
-        {
-            let identification = node
-                .value
-                .declared_name
-                .as_ref()
-                .map(|declared| &declared.value.identification);
-            let name = self.intern_declaration_name(
-                document,
-                identification.and_then(|identification| identification.name),
-            )?;
-            let short_name = self.intern_short_name(
-                document,
-                identification.and_then(|identification| identification.short_name),
-            )?;
-            let annotation_scope = self.push_typed_declaration(
-                document,
-                Some(owner),
-                DeclarationKind::MetadataUsage,
-                name,
-                node.span,
-                DeclarationFacts {
-                    short_name,
-                    ..DeclarationFacts::none()
-                },
-            )?;
-            self.push_membership(
-                annotation_scope,
-                MembershipKind::Feature,
-                Visibility::Default,
-                node.span,
-            )?;
-            self.lower_metadata_body(document, annotation_scope, &node.value.body)?;
-        }
+        self.lower_metadata_body(document, annotation, &node.value.body)?;
         Ok(())
     }
 }

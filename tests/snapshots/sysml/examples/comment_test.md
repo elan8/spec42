@@ -62,7 +62,7 @@ package CommentTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cab89b300cc637b967bd447c61b4cac265bebc1c080a13e79122f6699df11964") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cab89b300cc637b967bd447c61b4cac265bebc1c080a13e79122f6699df11964") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text "\n*AAA\n * BBB")) (comment (text "\n    *\n    *\n    * AAA  ***   \n    *BBB\n    \t\t\t\t\t\t\t\t")) (comment (text "\n *       AAAA\n *       BBBB           ")) (comment (text " AAAA\n \n \n  * BBBB\n *\n * CCCC\n ")) (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (comment (text " comment inside a package ")) (doc (locale "en_US") (text " Documentation about Package ")) (comment (text " Named Comment ")) (comment (text " Comment about Comment ")) (comment (text " Documention Comment about Part Def ")) (comment (text " abc "))))
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::A"))) (kind part-def) (membership (kind owning) (visibility default)))

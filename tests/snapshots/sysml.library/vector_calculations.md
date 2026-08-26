@@ -458,7 +458,7 @@ standard library package VectorCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cf109ab4e6563103889612ca5a3f9a77ebdc78269c2fd5a15d026a5544e13ed4") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cf109ab4e6563103889612ca5a3f9a77ebdc78269c2fd5a15d026a5544e13ed4") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package package defines calculations for the construction of and computations on VectorQuantityValues.\n\t ")) (comment (text " Addition and subtraction ")) (comment (text " Multiplication and division ")) (comment (text " Norm and angle ")) (comment (text " Coordinate transformation "))))
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))

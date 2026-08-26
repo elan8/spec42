@@ -94,7 +94,7 @@ package BodyMemberDispatch {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2704ca3d8324d26fc0d4d32c7c9e1a0ed5213433a4268011e4c88d88868e7b1b") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2704ca3d8324d26fc0d4d32c7c9e1a0ed5213433a4268011e4c88d88868e7b1b") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))

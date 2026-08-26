@@ -67,7 +67,7 @@ package Bindings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ef4dd47cea28caebaeb42ffaab482d7ccbc39a84f20a6a0c97068df78575a76a") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ef4dd47cea28caebaeb42ffaab482d7ccbc39a84f20a6a0c97068df78575a76a") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_binding_connector_is_binary.md") (qualified-name "Bindings::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

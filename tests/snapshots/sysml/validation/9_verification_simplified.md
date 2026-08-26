@@ -283,7 +283,7 @@ package '9-Verification-simplified' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false))))))

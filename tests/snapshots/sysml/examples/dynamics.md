@@ -463,7 +463,7 @@ package Dynamics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:707f73ee9387843460c50b7fd9a659c3d69080e46e567797e3fb26ab223d482c") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:707f73ee9387843460c50b7fd9a659c3d69080e46e567797e3fb26ab223d482c") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dynamics.md") (path (named (kind package) (name "Dynamics")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

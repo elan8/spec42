@@ -63,7 +63,7 @@ package 'Dependency Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4839b208edada9d5eee9db58736807e8da58de16f2a620513c8491506e8872e3") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4839b208edada9d5eee9db58736807e8da58de16f2a620513c8491506e8872e3") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (path (named (kind package) (name "Dependency Example")) (anonymous (kind dependency) (ordinal 0))))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "System Assembly::Computer Subsystem")) (dependencySupplier (reference "Software Design")))))

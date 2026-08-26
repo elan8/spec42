@@ -547,7 +547,7 @@ package ServerSequenceRealization_3 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaebb3e659edf48a3ee3548dfb9492f6ddbee06b1b8579c8464a3c7d6726e20b") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaebb3e659edf48a3ee3548dfb9492f6ddbee06b1b8579c8464a3c7d6726e20b") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (path (named (kind package) (name "ServerSequenceRealization_3")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

@@ -36,7 +36,7 @@ package OccurrenceUsageSuboccurrenceSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c06806b4147dbcec1b32788f8366e60fcdcafef4679a6549879319e17bf9fc8d") (contract-version "feature-value-expression-results-v5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c06806b4147dbcec1b32788f8366e60fcdcafef4679a6549879319e17bf9fc8d") (contract-version "semantic-metadata-projection-v6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_lowering_gap.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container"))) (kind part-def) (membership (kind owning) (visibility default)))

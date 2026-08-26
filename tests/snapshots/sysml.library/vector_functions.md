@@ -873,7 +873,7 @@ standard library package VectorFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ab98ff63ef186547e48f7081991890ef9b16570c477dbae6f999bd24f369e99") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ab98ff63ef186547e48f7081991890ef9b16570c477dbae6f999bd24f369e99") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (qualified-name "VectorFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines abstract functions on VectorValues corresponding to the algebraic operations\n\t * provided by a vector space with inner product. It also includes concrete implementations of these\n\t * functions specifically for CartesianVectorValues.\n\t ")) (comment (text " Generic arithmetic functions for all VectorValues. ")) (comment (text " Functions specific to NumericalVectorValues. ")) (comment (text " Specialized functions with concrete definitions for CartesianVectorValues. "))))
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (path (named (kind library-package) (name "VectorFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::NumericalValue") (import (shape membership) (recursive false))))))

@@ -196,7 +196,7 @@ standard library package BooleanFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f31a7da929c9d1aa1c411c30d693afab143233e944a83ee072474f38dda12906") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f31a7da929c9d1aa1c411c30d693afab143233e944a83ee072474f38dda12906") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/boolean_functions.md") (qualified-name "BooleanFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions on Boolean values, including those corresponding to \n\t * (non-conditional) logical operators in the KerML expression notation.\n\t "))))
     (declaration (id (node (document "memory://snapshot/boolean_functions.md") (path (named (kind library-package) (name "BooleanFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

@@ -1960,6 +1960,35 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::MetadataFeatureSemantic {
+            if matches!(
+                self.resolution.semantic_metadata_projection_status,
+                crate::resolve::results::SemanticMetadataProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let outcome =
+                if self
+                    .resolution
+                    .semantic_metadata_projections
+                    .iter()
+                    .all(|projection| {
+                        matches!(
+                            self.conformance(
+                                projection.annotated_element,
+                                projection.specialization_target,
+                                SpecializationScope::AnySpecialization,
+                            ),
+                            Conformance::Conforms
+                        )
+                    })
+                {
+                    SpecializationCheckOutcome::Satisfied
+                } else {
+                    SpecializationCheckOutcome::Violated
+                };
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -1969,9 +1998,7 @@ impl<D> SemanticModel<D> {
                 SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor
             }
             SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
-            SpecializationCheckKind::MetadataFeatureSemantic => {
-                SpecializationCheckPrerequisite::SemanticMetadataProjection
-            }
+            SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
             SpecializationCheckKind::ConnectorBinaryObject
             | SpecializationCheckKind::ConnectorObject => {
                 SpecializationCheckPrerequisite::ConnectorAssociationProjectionAndLibraryAnchor

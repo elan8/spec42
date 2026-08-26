@@ -85,7 +85,7 @@ package 'Interface Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e10b2e8059df16eab752aec5114ca304700425b79ee933845ff073fb3eb5aac1") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e10b2e8059df16eab752aec5114ca304700425b79ee933845ff073fb3eb5aac1") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11_interface_example.md") (path (named (kind package) (name "Interface Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false))))))

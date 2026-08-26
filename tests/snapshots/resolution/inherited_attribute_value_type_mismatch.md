@@ -31,7 +31,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9e7eb73ae52a115ef9f7d78ba27f3da87510fa8f2abbda70e1af4273a42c7d57") (contract-version "feature-value-expression-results-v5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9e7eb73ae52a115ef9f7d78ba27f3da87510fa8f2abbda70e1af4273a42c7d57") (contract-version "semantic-metadata-projection-v6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
