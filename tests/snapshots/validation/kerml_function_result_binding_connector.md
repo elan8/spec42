@@ -39,7 +39,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c35bac7903c6d21f62c184e0b7708a140378a9a8d4fb5d70dce7cabad9b6bc53") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c35bac7903c6d21f62c184e0b7708a140378a9a8d4fb5d70dce7cabad9b6bc53") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Identity"))) (kind kerml-function) (membership (kind owning) (visibility default)))

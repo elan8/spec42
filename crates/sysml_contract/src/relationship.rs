@@ -138,7 +138,6 @@ pub enum TypeFeaturingCheckOutcome {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SpecializationCheckPrerequisite {
     RuleNotPublished,
-    OwnedCrossFeatureOwnerTypes,
     FeatureModifiersOwnerTypingAndLibraryAnchor,
     FeatureValueEvaluationResults,
     SemanticMetadataProjection,

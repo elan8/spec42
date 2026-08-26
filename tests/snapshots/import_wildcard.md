@@ -31,7 +31,7 @@ import ScalarValues::*;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fe29f9182e5693634762d87d29e4d8620020032c1f2a5755fe0ca5c81a1bfe85") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fe29f9182e5693634762d87d29e4d8620020032c1f2a5755fe0ca5c81a1bfe85") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/import_wildcard.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
   )

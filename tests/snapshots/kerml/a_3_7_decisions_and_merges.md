@@ -432,7 +432,7 @@ package DecisionsAndMergesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:3d416d2fcdb36625def557eb5b61d763caa0515344ff7f0a982d4fffafed5b95") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:3d416d2fcdb36625def557eb5b61d763caa0515344ff7f0a982d4fffafed5b95") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesExecution"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t ")) (comment (text " Before decision. ")) (comment (text " Decision. ")) (comment (text " One decision branch taken. ")) (comment (text " One merge branch taken. Merge. ")) (comment (text " After merge. "))))
     (declaration (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (path (named (kind package) (name "DecisionsAndMergesExecution")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Atoms") (import (shape namespace) (recursive false))))))

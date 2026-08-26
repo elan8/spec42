@@ -108,7 +108,7 @@ package 'Requirement Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f8e8702388e9249c93504cf8e632dee4abfd928cbc3a93dd387d41f83ee18d05") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f8e8702388e9249c93504cf8e632dee4abfd928cbc3a93dd387d41f83ee18d05") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

@@ -129,7 +129,7 @@ standard library package ParametersOfInterestMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9787f65a0bc35b112f6a4ec8bf67450b966abb3973717527b90a926fc3114536") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9787f65a0bc35b112f6a4ec8bf67450b966abb3973717527b90a926fc3114536") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains definitions of metadata to identify key parameters of interest,\n\t * including measures of effectiveness (MOE) and other key measures of performance (MOP).\n\t "))))
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false))))))

@@ -50,7 +50,7 @@ package 'State Definition Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ef4b1b27e3d08e6bb597e627a083862f3384e9d57fd6f80f08f4268493160c4") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ef4b1b27e3d08e6bb597e627a083862f3384e9d57fd6f80f08f4268493160c4") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))

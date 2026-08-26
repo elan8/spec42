@@ -27,7 +27,7 @@ package AyPkpowerTrain {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:df2a2f953c2cc0a7983df848811ace14f5e5c2ecbcd71859cf86770ba9d1b74d") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:df2a2f953c2cc0a7983df848811ace14f5e5c2ecbcd71859cf86770ba9d1b74d") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
   )
   (references

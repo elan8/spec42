@@ -166,7 +166,7 @@ package ConnectionTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8ffd9e9a3b8219cd1cdbb709c567a116f46bf279bc129d37a5672d4f87e7219d") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8ffd9e9a3b8219cd1cdbb709c567a116f46bf279bc129d37a5672d4f87e7219d") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C")))))
@@ -310,6 +310,7 @@ package ConnectionTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection-def) (ordinal 0)) (named (kind part) (name "q"))))) (target (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection-def) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A::b"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::a"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (named (kind connection-def) (name "AB")) (named (kind item) (name "a")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::b"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C::end1"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C::end2"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C"))) (provenance implied))
@@ -361,6 +362,7 @@ package ConnectionTest {
     )
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")))
       (subtype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::a")) (scopes any))
+      (subtype (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (named (kind connection-def) (name "AB")) (named (kind item) (name "a")) (anonymous (kind ref) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A::b")))
       (featured-by (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")))
@@ -374,6 +376,11 @@ package ConnectionTest {
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::a")))
       (featured-by (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB")))
       (type (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (named (kind connection-def) (name "AB")) (named (kind item) (name "a")) (anonymous (kind ref) (ordinal 0)))))
+      (type (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (provenance implied))
       (effective-type (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (source direct))
       (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A")) (scopes any))
     )

@@ -167,7 +167,7 @@ package 'Calculation Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5c649927f6fe2bb32ac760b92a33d0e0ef146edb51749cbdb1012ba0cad7b917") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5c649927f6fe2bb32ac760b92a33d0e0ef146edb51749cbdb1012ba0cad7b917") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

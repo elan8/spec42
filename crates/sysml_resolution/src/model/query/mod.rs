@@ -1899,11 +1899,38 @@ impl<D> SemanticModel<D> {
             };
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::FeatureOwnedCrossFeature {
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            'owners: for (index, facts) in self.storage.declaration_facts.iter().enumerate() {
+                let Some(projection) = facts.cross_feature_projection else {
+                    continue;
+                };
+                let Ok(owner) = DeclarationId::from_index(index) else {
+                    return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+                };
+                for (owner_type, _) in self.types.effective_types(owner) {
+                    match self.conformance(
+                        projection.owned_cross_feature,
+                        *owner_type,
+                        SpecializationScope::AnySpecialization,
+                    ) {
+                        Conformance::Conforms => {}
+                        Conformance::DoesNotConform => {
+                            outcome = SpecializationCheckOutcome::Violated;
+                            break 'owners;
+                        }
+                        Conformance::Indeterminate(_) => {
+                            outcome = SpecializationCheckOutcome::Unresolved;
+                            break 'owners;
+                        }
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
-            SpecializationCheckKind::FeatureOwnedCrossFeature => {
-                SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes
-            }
+            SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
             SpecializationCheckKind::FeaturePortion
             | SpecializationCheckKind::FeatureSubobject
             | SpecializationCheckKind::FeatureSuboccurrence => {

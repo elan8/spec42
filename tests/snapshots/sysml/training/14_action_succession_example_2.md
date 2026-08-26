@@ -42,7 +42,7 @@ package 'Action Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:147a0ccaad067843b942cf4265cd5d721c8f51f6def91194f9780380b45b3577") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:147a0ccaad067843b942cf4265cd5d721c8f51f6def91194f9780380b45b3577") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

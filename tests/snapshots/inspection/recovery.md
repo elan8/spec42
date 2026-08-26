@@ -37,7 +37,7 @@ probe recovery.md 6 18
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8b20fc341d5924a47d21bb56068d6414d73a0b180a89ca5ee44c79ddce620179") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8b20fc341d5924a47d21bb56068d6414d73a0b180a89ca5ee44c79ddce620179") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/recovery.md") (qualified-name "Salvaged"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/recovery.md") (qualified-name "Salvaged::Known"))) (kind part-def) (membership (kind owning) (visibility default)))

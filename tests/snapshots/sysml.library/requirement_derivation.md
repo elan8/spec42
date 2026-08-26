@@ -195,7 +195,7 @@ standard library package RequirementDerivation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7f51bd4b732338a6319aef4cd5597637c1e1318d6af91bdafb7289b71c16091") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7f51bd4b732338a6319aef4cd5597637c1e1318d6af91bdafb7289b71c16091") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text " This package provides language-extension metadata for modeling requirement derivation. "))))
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (named (kind library-package) (name "RequirementDerivation")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "DerivationConnections") (import (shape namespace) (recursive false))))))

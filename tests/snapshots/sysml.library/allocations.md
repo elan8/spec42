@@ -89,7 +89,7 @@ standard library package Allocations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5d55bec1f5011521f0f18e85b64d4ea78e1407b2892472bca2181ab513f91c8d") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5d55bec1f5011521f0f18e85b64d4ea78e1407b2892472bca2181ab513f91c8d") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for allocations and related structural elements\n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/allocations.md") (path (named (kind library-package) (name "Allocations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

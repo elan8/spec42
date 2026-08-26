@@ -15,6 +15,7 @@ use crate::namespace_query::NamespaceDerivedElementCollection;
 use crate::redefinition_query::RedefinitionCheckKind;
 use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::build_ancestor_closures;
+use crate::resolve::effective_types::EffectiveTypes;
 use crate::resolve::names::NameIndex;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
@@ -799,6 +800,39 @@ pub(crate) fn synthesize_implied_relationships(
             relationship.target.0,
         )
     });
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes the FeatureTyping relationships required by
+/// `checkFeatureOwnedCrossFeatureSpecialization` (KerML 8.3.3.3.4).
+///
+/// This runs after the first implied-relationship barrier because an owning end Feature's
+/// effective types can themselves be inherited through an implied Redefinition. The `TypeIndex`
+/// is the canonical owner of that closure; this derivation consumes it instead of rebuilding a
+/// second effective-typing algorithm from references.
+pub(crate) fn synthesize_owned_cross_feature_typings(
+    storage: &SemanticModelStorage,
+    types: &EffectiveTypes,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut implied = Vec::new();
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        let Some(projection) = facts.cross_feature_projection else {
+            continue;
+        };
+        let owner = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        implied.extend(
+            types
+                .row(owner)
+                .iter()
+                .map(|(target, _)| ImpliedRelationship {
+                    kind: ReferenceKind::FeatureTyping,
+                    source: projection.owned_cross_feature,
+                    target: *target,
+                }),
+        );
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
 }

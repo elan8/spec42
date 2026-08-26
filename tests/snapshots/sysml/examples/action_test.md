@@ -179,7 +179,7 @@ package ActionTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ef6e7af92f41a99e9beb357aaeddc5617b8670447dc679fc377f524565fed1f7") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ef6e7af92f41a99e9beb357aaeddc5617b8670447dc679fc377f524565fed1f7") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))

@@ -1172,9 +1172,6 @@ fn parse_specialization_check_prerequisite(
     fixture: &str,
 ) -> Result<SpecializationCheckPrerequisite, String> {
     match value {
-        "owned_cross_feature_owner_types" => {
-            Ok(SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes)
-        }
         "feature_modifiers_owner_typing_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor)
         }

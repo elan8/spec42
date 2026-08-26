@@ -199,7 +199,7 @@ package TimeVaryingSteps {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0a36bc093b26843f7d8032d2797a7a2ea4143a798a653afffca0b1b0a908c3be") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0a36bc093b26843f7d8032d2797a7a2ea4143a798a653afffca0b1b0a908c3be") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::Camera"))) (kind kerml-structure) (membership (kind owning) (visibility default)))

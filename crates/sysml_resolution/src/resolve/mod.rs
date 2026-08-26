@@ -1,5 +1,6 @@
 //! Phase 3: name resolution, run to convergence under an explicit bound.
 
+pub(crate) mod effective_types;
 pub(crate) mod implied;
 pub(crate) mod library_seed;
 pub(crate) mod names;

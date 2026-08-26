@@ -43,7 +43,7 @@ package 'State Decomposition-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ba8aa97927d5b322080ff94802bac65694d6775ed207686e135add1006126b83") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ba8aa97927d5b322080ff94802bac65694d6775ed207686e135add1006126b83") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))

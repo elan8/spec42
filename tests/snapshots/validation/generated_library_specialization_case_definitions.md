@@ -48,7 +48,7 @@ package GeneratedCaseDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:73b2efda406fa599ce472b7acc106b37617626014b219d684f91d923147b6a0b") (contract-version "lossless-publication-completeness-v3") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:73b2efda406fa599ce472b7acc106b37617626014b219d684f91d923147b6a0b") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_case_definitions.md") (qualified-name "GeneratedCaseDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_case_definitions.md") (qualified-name "GeneratedCaseDefinitions::AnalysisCaseDefinition"))) (kind analysis-def) (membership (kind owning) (visibility default)))

@@ -120,7 +120,7 @@ package '2c-Parts Interconnection-Multiple Decompositions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1f7031fbd9e1a916ab691756215b3fe735fec169b7c22bd0604861a618819785") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1f7031fbd9e1a916ab691756215b3fe735fec169b7c22bd0604861a618819785") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::A1"))) (kind part-def) (membership (kind owning) (visibility default)))

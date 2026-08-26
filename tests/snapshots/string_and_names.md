@@ -25,7 +25,7 @@ type=file
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fef9638bab0f22c9f70af241ca76de86d7fb0908d9566a171091f7229a3f725a") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fef9638bab0f22c9f70af241ca76de86d7fb0908d9566a171091f7229a3f725a") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
   )
   (references

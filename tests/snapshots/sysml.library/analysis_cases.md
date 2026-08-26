@@ -122,7 +122,7 @@ standard library package AnalysisCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c11a3c112b83e4c61ac39761582e70e13eb004e653100913dd189b04f87cfb16") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c11a3c112b83e4c61ac39761582e70e13eb004e653100913dd189b04f87cfb16") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for analysis cases and related behavioral elements \n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Evaluation") (import (shape membership) (recursive false))))))

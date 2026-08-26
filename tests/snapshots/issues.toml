@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-owned-cross-feature-owner-types"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The owned-cross-feature role and its owner's effective type collection are not a canonical endpoint fact family."
-
-[[issue]]
 id = "lowering-gap-specialization-feature-value-evaluation-results"
 kind = "lowering_gap"
 owner = "spec42-semantic"

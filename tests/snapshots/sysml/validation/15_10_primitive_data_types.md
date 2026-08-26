@@ -179,7 +179,7 @@ package '15.10-Primitive Data Types' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c2a07b84438a39af18e23e05f6fee3f4692163c8b59c0fc9f23463df1ae7cf3") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c2a07b84438a39af18e23e05f6fee3f4692163c8b59c0fc9f23463df1ae7cf3") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text "\n\t * Primitive data types are defined in normative model libraries.\n\t * Any more specialized data types can be declared in user-defined \n\t * model libraries or models as needed.\n\t "))))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (documentation (doc (text "\n\t * The unqualified Integer is signed, in line with integer numbers in mathematics.\n\t "))) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Integer") (import (shape membership) (recursive false))))))

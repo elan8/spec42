@@ -30,7 +30,7 @@ package Redefinition { action def Work; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ab0feb3ad95d162313a3e4e46bfdcc6de55b12a27312c56984eb59d9fb5ae094") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ab0feb3ad95d162313a3e4e46bfdcc6de55b12a27312c56984eb59d9fb5ae094") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_action_usage_state_action_redefinition.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_action_usage_state_action_redefinition.md") (qualified-name "Redefinition::Work"))) (kind action-def) (membership (kind owning) (visibility default)))

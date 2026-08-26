@@ -605,7 +605,7 @@ standard library package Performances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:117a71658d40b6c42c752f2bb9b281e953059d0fd49a4fa92dc38fb448d93af9") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:117a71658d40b6c42c752f2bb9b281e953059d0fd49a4fa92dc38fb448d93af9") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/performances.md") (qualified-name "Performances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines classifiers and features that related to the typing of performances and evaluations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

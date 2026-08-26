@@ -108,7 +108,7 @@ package '15_03-Value Expression' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ab6e6b6a6cd6a866eb38d6f8518d8a43a43df59027973ba7299092fb8c8c5b88") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ab6e6b6a6cd6a866eb38d6f8518d8a43a43df59027973ba7299092fb8c8c5b88") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))

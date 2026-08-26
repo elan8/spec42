@@ -73,7 +73,7 @@ package ProductSelection_UnownedEnds_SysML {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f2a4ce723da5119c047b6cc9820b6a1164487b0922762c1cf12974c0063f3197") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f2a4ce723da5119c047b6cc9820b6a1164487b0922762c1cf12974c0063f3197") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -181,6 +181,7 @@ package ProductSelection_UnownedEnds_SysML {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds_SysML")) (named (kind connection-def) (name "SingleProductSelection")) (named (kind item) (name "selectedProduct")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (provenance implied))
   )
   (evaluation
   )
@@ -224,6 +225,7 @@ package ProductSelection_UnownedEnds_SysML {
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct")) (scopes any))
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts")) (scopes any))
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds_SysML")) (named (kind connection-def) (name "SingleProductSelection")) (named (kind item) (name "selectedProduct")) (anonymous (kind ref) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart")))
       (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")))
@@ -290,6 +292,11 @@ package ProductSelection_UnownedEnds_SysML {
       (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (source inherited) (from (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))))
       (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
       (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds_SysML")) (named (kind connection-def) (name "SingleProductSelection")) (named (kind item) (name "selectedProduct")) (anonymous (kind ref) (ordinal 0)))))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
     )
 )
 ~~~

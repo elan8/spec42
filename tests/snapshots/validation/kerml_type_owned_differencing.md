@@ -40,7 +40,7 @@ package Model { classifier Base; classifier Derived differences Base; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:31fe2489f64fcf22f768589aa3f12d887573104a92bd3bd045e2ac819c3cfd04") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:31fe2489f64fcf22f768589aa3f12d887573104a92bd3bd045e2ac819c3cfd04") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_differencing.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_differencing.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

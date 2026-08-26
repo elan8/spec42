@@ -140,7 +140,7 @@ package AnalysisAnnotation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d513146cd2406cf6742e34a2c06203246666ab4ee709bc958e93018a372f46db") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d513146cd2406cf6742e34a2c06203246666ab4ee709bc958e93018a372f46db") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (path (named (kind package) (name "AnalysisAnnotation")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

@@ -55,7 +55,7 @@ package MassedThings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c17dc71096393b21aa06105c3c4fd813166bbf15ba87ecd48fb4f40c8788fca6") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c17dc71096393b21aa06105c3c4fd813166bbf15ba87ecd48fb4f40c8788fca6") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/massed_things.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings"))) (kind package) (membership (kind owning) (visibility default)))
@@ -91,7 +91,9 @@ package MassedThings {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing::mass"))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing::name"))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly::assembly"))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0))))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly::parts"))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "parts")) (anonymous (kind kerml-end) (ordinal 0))))) (target (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing::mass"))) (state literal) (value (kind integer) (integer 0)))
@@ -103,7 +105,9 @@ package MassedThings {
 (types
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")))
       (subtype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly::assembly")) (scopes any))
+      (subtype (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly::parts")) (scopes any))
+      (subtype (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "parts")) (anonymous (kind kerml-end) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing::mass")))
       (featured-by (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")))
@@ -117,9 +121,19 @@ package MassedThings {
       (effective-type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (source direct))
       (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)))))
+      (type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (source direct))
+      (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly::parts")))
       (featured-by (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThingAssembly")))
       (type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (source direct))
+      (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "parts")) (anonymous (kind kerml-end) (ordinal 0)))))
+      (type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (provenance implied))
       (effective-type (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (source direct))
       (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
     )

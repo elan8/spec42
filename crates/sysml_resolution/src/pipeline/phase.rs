@@ -35,8 +35,10 @@ use crate::model::resolver::PublicationMetadata;
 use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SettledDiagnostics;
+use crate::resolve::effective_types::derive_effective_types;
 use crate::resolve::implied::library_specialization_anchors;
 use crate::resolve::implied::synthesize_implied_relationships;
+use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::library_seed::SettledLibrary;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
@@ -127,6 +129,33 @@ impl Lowered {
         let library_anchors = library_specialization_anchors(&storage);
         let implied = synthesize_implied_relationships(&storage, &resolution, &library_anchors)?;
         let resolution = resolution.settle(implied, library_anchors);
+        // Owned cross-feature typing depends on the owning end's effective types, including types
+        // inherited through the implied relationships settled above. Consume the canonical type
+        // index at an explicit sub-barrier, then replace the provisional relationship set before
+        // publishing `Resolved`; no reader can observe the intermediate state.
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .any(|facts| facts.cross_feature_projection.is_some())
+        {
+            let prerequisite_types = derive_effective_types(&storage, &resolution)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(
+                synthesize_owned_cross_feature_typings(&storage, &prerequisite_types)?.into_vec(),
+            );
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            let library_anchors = resolution.library_specialization_anchors.clone();
+            resolution.settle(implied.into_boxed_slice(), library_anchors)
+        } else {
+            resolution
+        };
         let mut completeness = PublicationCompleteness::Complete;
         if has_recovery {
             completeness = completeness.with(sysml_contract::PublicationObstacle::ParseRecovery);

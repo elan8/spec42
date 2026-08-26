@@ -77,7 +77,7 @@ package ProductSelection_UnownedEnds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:88c3612c9711c48da83f3ee410c82a7a35f2cad03b830bb9bd4eaa4ecb57ab0e") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:88c3612c9711c48da83f3ee410c82a7a35f2cad03b830bb9bd4eaa4ecb57ab0e") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))
@@ -254,6 +254,7 @@ package ProductSelection_UnownedEnds {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection::cart"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection::selectedProduct"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::selectedProduct"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection::selectedProduct"))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind kerml-association) (name "SingleProductSelection")) (named (kind kerml-feature) (name "selectedProduct")) (anonymous (kind kerml-end) (ordinal 0))))) (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind class-def) (name "OnlineCustomer")) (named (kind kerml-connector) (name "ps1")) (anonymous (kind default-reference) (ordinal 0))))) (state non-constant))
@@ -312,6 +313,7 @@ package ProductSelection_UnownedEnds {
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart::selectedProducts")) (scopes any))
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1::selectedProduct")) (scopes any))
       (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection::selectedProduct")) (scopes any))
+      (subtype (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind kerml-association) (name "SingleProductSelection")) (named (kind kerml-feature) (name "selectedProduct")) (anonymous (kind kerml-end) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product::inCart")))
       (featured-by (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")))
@@ -410,6 +412,11 @@ package ProductSelection_UnownedEnds {
       (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (source inherited) (from (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::selectedProduct"))))
       (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (scopes any))
       (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::selectedProduct")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind kerml-association) (name "SingleProductSelection")) (named (kind kerml-feature) (name "selectedProduct")) (anonymous (kind kerml-end) (ordinal 0)))))
+      (type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (source direct))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (scopes any))
     )
 )
 ~~~

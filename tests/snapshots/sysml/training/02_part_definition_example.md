@@ -68,7 +68,7 @@ package 'Part Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:acdb51406f99c0c590ae7188a5528530f6059abf3d66f527e8fb367a820d8898") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:acdb51406f99c0c590ae7188a5528530f6059abf3d66f527e8fb367a820d8898") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (path (named (kind package) (name "Part Definition Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

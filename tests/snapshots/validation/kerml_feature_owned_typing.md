@@ -43,7 +43,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9ff35eb6410d4d2b2532aca13e541a22c10b785b199fedc32d79d1c4c3e7fb4c") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9ff35eb6410d4d2b2532aca13e541a22c10b785b199fedc32d79d1c4c3e7fb4c") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_typing.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_typing.md") (qualified-name "Model::Mass"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

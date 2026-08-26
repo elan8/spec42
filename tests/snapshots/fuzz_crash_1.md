@@ -47,7 +47,7 @@ package MassRkllup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:861a2c099ac6e3f7287c84601ba0dec913b5c87a8df1558b8a4143fdcbbf4399") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:861a2c099ac6e3f7287c84601ba0dec913b5c87a8df1558b8a4143fdcbbf4399") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
   )
   (references

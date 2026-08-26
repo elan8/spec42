@@ -34,7 +34,7 @@ package GeneralExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6da8af2d04690d04e772b3effe5ca812be4aec594772d643dc1ac22649f81bbc") (contract-version "lossless-publication-completeness-v3") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6da8af2d04690d04e772b3effe5ca812be4aec594772d643dc1ac22649f81bbc") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -137,7 +137,7 @@ package GeneralExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:1ff00e95ccdd6f6f8944b983e7255c6966c9198f2746bbaaa62cc5fa3e54c74b",
+  "modelDigest": "blake3:2c2efc04a47eeed346040ec358551be281f83d10e95ae01f5b02c4f95b5f32cf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_complete.md",

@@ -37,7 +37,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d3432e1e6efdb5066fdbe725fab68cdb4b8c4c39d497485e4176ed4874be03ce") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d3432e1e6efdb5066fdbe725fab68cdb4b8c4c39d497485e4176ed4874be03ce") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (kind kerml-association) (membership (kind owning) (visibility default)))
@@ -68,6 +68,7 @@ package Model {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences"))) (target (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::longerOccurrence"))) (target (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::thatOccurrence"))) (target (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::thatOccurrence::happensDuring"))) (target (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences"))) (target (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (provenance implied))
   )
   (evaluation
@@ -90,6 +91,8 @@ package Model {
       (supertype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::thatOccurrence::happensDuring")))
+      (type (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")) (source direct))
       (effective-type (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences"))))
       (supertype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")) (scopes any))
@@ -104,6 +107,7 @@ package Model {
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::Occurrence")))
       (subtype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::longerOccurrence")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::thatOccurrence")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::thatOccurrence::happensDuring")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring::timeCoincidentOccurrences")) (scopes any))
     )
 )

@@ -78,7 +78,7 @@ package ExpressionCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:7a9bb88d3c4b1c3ad264e9edd76f68423257a29ce0610bd33500ba6b555a25a3") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:7a9bb88d3c4b1c3ad264e9edd76f68423257a29ce0610bd33500ba6b555a25a3") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::Item"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

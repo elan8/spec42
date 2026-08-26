@@ -3235,10 +3235,6 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
     let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
     let expected = [
         (
-            SpecializationCheckKind::FeatureOwnedCrossFeature,
-            SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes,
-        ),
-        (
             SpecializationCheckKind::ConstructorExpressionResult,
             SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType,
         ),
@@ -3263,6 +3259,45 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
             );
             settled(published.specialization_check(rule))
         })
+    };
+    assert_eq!(query(&sequential), query(&parallel));
+    assert_eq!(query(&sequential), query(&warm));
+}
+
+#[test]
+fn owned_cross_features_are_implied_typed_by_their_owners_effective_types() {
+    let sources = [(
+        "memory://owned-cross-feature.kerml",
+        "package Model { classifier Thing; feature baseEndpoint : Thing; assoc Link { end crossing [1] feature endpoint :>> baseEndpoint; } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution| {
+        let cross = symbol_named(
+            published,
+            "memory://owned-cross-feature.kerml",
+            "Model::Link::endpoint::crossing",
+        );
+        let thing = symbol_named(
+            published,
+            "memory://owned-cross-feature.kerml",
+            "Model::Thing",
+        );
+        let types = settled(published.direct_types(cross));
+        assert_eq!(types.len(), 1);
+        assert_eq!(types[0].symbol, thing);
+        assert_eq!(types[0].provenance, RelationshipProvenance::Implied);
+        assert_eq!(
+            settled(
+                published.specialization_check(SpecializationCheckKind::FeatureOwnedCrossFeature,)
+            ),
+            SpecializationCheckOutcome::Satisfied,
+        );
+        (
+            types,
+            settled(published.all_supertypes(cross, SpecializationScope::AnySpecialization)),
+        )
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));

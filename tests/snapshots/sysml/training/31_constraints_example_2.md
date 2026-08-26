@@ -152,7 +152,7 @@ package 'Constraints Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1401b94c195cf681c773b33c51257cac88eec771fd607c5e2b716d4656834f0e") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1401b94c195cf681c773b33c51257cac88eec771fd607c5e2b716d4656834f0e") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_2.md") (path (named (kind package) (name "Constraints Example-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

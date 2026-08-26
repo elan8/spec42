@@ -40,7 +40,7 @@ package Dependencies {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:526982ee6349689d97406de6cf14dd886e218a1139374ed9119523131c81bbb0") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:526982ee6349689d97406de6cf14dd886e218a1139374ed9119523131c81bbb0") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "System") (import (shape namespace) (recursive false))))))

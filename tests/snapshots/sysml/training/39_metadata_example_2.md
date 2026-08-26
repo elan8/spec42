@@ -92,7 +92,7 @@ package 'Metadata Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1060f239698c5b61e563660055c923f98689acb8ba03aa99a7aef412a683a192") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1060f239698c5b61e563660055c923f98689acb8ba03aa99a7aef412a683a192") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))

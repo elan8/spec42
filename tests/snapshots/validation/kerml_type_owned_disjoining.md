@@ -34,7 +34,7 @@ package Model { classifier Base; classifier Derived disjoint from Base; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8f8b5319ccaa17262a0490988fd7bc50ccc03a420d2a822a45ae029485cde074") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8f8b5319ccaa17262a0490988fd7bc50ccc03a420d2a822a45ae029485cde074") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_disjoining.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_disjoining.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

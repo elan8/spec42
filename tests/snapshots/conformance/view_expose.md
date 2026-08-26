@@ -54,7 +54,7 @@ package Exposing {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76e89459202e3f2cd1ca8b740b1a99b19783f8f117e46dba49ef7cbaf422dfdb") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76e89459202e3f2cd1ca8b740b1a99b19783f8f117e46dba49ef7cbaf422dfdb") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::Concerns"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))

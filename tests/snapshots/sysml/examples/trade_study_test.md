@@ -81,7 +81,7 @@ package TradeStudyTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:82c06e70b44911029f1518c344a173cc8672463f13c53c24742fd23c580d2859") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:82c06e70b44911029f1518c344a173cc8672463f13c53c24742fd23c580d2859") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

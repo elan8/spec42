@@ -31,7 +31,7 @@ package FeatureInheritance {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:df909931b8c58721d9ed14e94f921f5c9963b522afef74efb37af7c23562a2a1") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:df909931b8c58721d9ed14e94f921f5c9963b522afef74efb37af7c23562a2a1") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s"))) (kind kerml-feature) (membership (kind feature) (visibility default)))

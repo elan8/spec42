@@ -55,7 +55,7 @@ probe element_facts.md 24 32
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " What this package is for. "))))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (short-name "ch") (modifiers abstract)) (documentation (doc (text " A chassis. "))))

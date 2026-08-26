@@ -27,7 +27,7 @@ package Model { classifier Parent; classifier Child :> Parent; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3cc35f4bca3a78ed5e2a3cf1890a34cbbcd7e9989a700fba2c62a2d8125feb36") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3cc35f4bca3a78ed5e2a3cf1890a34cbbcd7e9989a700fba2c62a2d8125feb36") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Child"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Parent")))))

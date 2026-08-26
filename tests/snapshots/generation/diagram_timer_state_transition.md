@@ -43,7 +43,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fa1595078c56e9e6dd8ba7f575a417b826d1d6663928bfaf44c990e0200c5b3c") (contract-version "lossless-publication-completeness-v3") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fa1595078c56e9e6dd8ba7f575a417b826d1d6663928bfaf44c990e0200c5b3c") (contract-version "owned-cross-feature-typing-v4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " Root package for the kitchen timer teaching example. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "KitchenTimerPorts") (import (shape namespace) (recursive false))))))
@@ -4344,7 +4344,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:86df9a9d7ad8b167d0e4a4b4841f36bcf7d64b11ce1acea9b979702cc10dfcbb",
+  "modelDigest": "blake3:474251ee2eb238a345e8a9355d9deece1f8780111329b964b0acc741dc807eb0",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml",

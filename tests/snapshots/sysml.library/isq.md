@@ -228,7 +228,7 @@ standard library package ISQ {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:773775525706e5a8b39f78861a99ccd5fc68a43d180039bf978bed815f005aa1") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:773775525706e5a8b39f78861a99ccd5fc68a43d180039bf978bed815f005aa1") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * International system of quantities (ISQ), as defined in ISO/IEC 80000\n     ")) (comment (text " Additional quantity declarations "))))
     (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

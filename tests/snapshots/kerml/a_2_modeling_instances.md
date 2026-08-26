@@ -86,7 +86,7 @@ package ModelingInstancesWithAtoms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:97dd5c0e74303f65eb1d7f699eefcbf0ea890c8cdd99ab55731c0c854f9376e5") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:97dd5c0e74303f65eb1d7f699eefcbf0ea890c8cdd99ab55731c0c854f9376e5") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))
     (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances::Bicycle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))

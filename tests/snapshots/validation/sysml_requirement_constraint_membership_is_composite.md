@@ -48,7 +48,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:461935389d4d5282670769b5e349a2a909a21a0b8bc87b8fe659a329415a2563") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:461935389d4d5282670769b5e349a2a909a21a0b8bc87b8fe659a329415a2563") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))

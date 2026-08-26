@@ -79,7 +79,7 @@ package MultiplicityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4") (contract-version "owned-cross-feature-typing-v4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
