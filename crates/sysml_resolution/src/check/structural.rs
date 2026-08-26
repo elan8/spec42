@@ -63,6 +63,22 @@ pub(crate) fn requires_exactly_two_ends(kind: DeclarationKind) -> bool {
     )
 }
 
+/// Whether the declaration's KerML metaclass conforms to `Association` or `Connector` for
+/// `validateRedefinitionEndConformance`.
+///
+/// This is a static metamodel question, not model typing: Pilot's validator guards the diagnostic
+/// with `owningType instanceof Association || owningType instanceof Connector`. The represented
+/// concrete subtypes are included here so every caller reads the same typed predicate.
+pub(crate) const fn is_association_or_connector(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::KermlAssociation
+            | DeclarationKind::KermlAssociationStructure
+            | DeclarationKind::KermlConnector
+            | DeclarationKind::KermlBinding
+    )
+}
+
 /// Whether a redefining feature's direction is the redefined feature's or narrows it.
 ///
 /// KerML lets a redefinition restrict direction, so this is a conformance test rather than
@@ -562,8 +578,19 @@ impl<D> SemanticModel<D> {
         target: DeclarationId,
     ) -> Vec<DiagnosticCode> {
         let mut codes = Vec::new();
-        // KerML 8.3.3.3.8: redefining an end requires an end.
-        if self.is_end_feature(target) && !self.is_end_feature(source) {
+        // KerML 8.3.3.3.8: when the redefining feature is owned by an Association or Connector,
+        // redefining an end requires it to remain an end. Other Type owners are deliberately
+        // exempt; StatePerformances in the normative library relies on the Behavior case.
+        let source_owner_is_association_or_connector = self
+            .storage
+            .declaration(source)
+            .and_then(|declaration| declaration.owner)
+            .and_then(|owner| self.storage.declaration(owner))
+            .is_some_and(|owner| is_association_or_connector(owner.kind));
+        if source_owner_is_association_or_connector
+            && self.is_end_feature(target)
+            && !self.is_end_feature(source)
+        {
             codes.push(DiagnosticCode::RedefinitionEndMismatch);
         }
         // Only authored directions are compared. Effective direction under port conjugation is not
