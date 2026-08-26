@@ -78,6 +78,3 @@ of them recovers a fact by parsing presentation text, and none of them runs a ru
 `sysml_diagnostics` is the neutral rendering shape plus the one explicit reporting policy a host
 has -- report only what the parser rejected for a document that does not parse -- and depends on
 this facade alone.
-
-The completed production cutover and deliberately disabled products are recorded in
-[PRODUCTION_CUTOVER.md](PRODUCTION_CUTOVER.md).

@@ -572,8 +572,7 @@ impl<'a> CompletionQueries<'a> {
 
 /// Element inspection and document symbols.
 ///
-/// The `PRODUCTION_CUTOVER.md` row this serves names `sysml_query` as the owner of the typed
-/// service, so the contract is reachable here rather than only from the owning crate that
+/// The contract is reachable through `sysml_query` rather than only from the owning crate that
 /// consumers are not permitted to depend on.
 pub struct InspectionQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
