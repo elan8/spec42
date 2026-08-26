@@ -1600,6 +1600,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
         node: &Node<ReturnDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
@@ -1651,12 +1652,7 @@ impl SemanticModelBuilder {
                 endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
-            self.lower_calc_expression(
-                document,
-                endpoints.expression,
-                UnsupportedFamily::CalcDefinitionMember,
-                &expression,
-            )?;
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
         }
         Ok(())
     }

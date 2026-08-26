@@ -162,12 +162,6 @@ standard library package Cases {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_case_definition_member")
-        (source "semantic")
-        (range (start 48 2) (end 53 3))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 55 48) (end 55 63))
@@ -185,7 +179,7 @@ standard library package Cases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:fd3a88f3bd062fe1d73e2b30e1b8fb2cf3ab8767091a59849454b4fd8915d379"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd3a88f3bd062fe1d73e2b30e1b8fb2cf3ab8767091a59849454b4fd8915d379"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for cases and related behavioral elements \n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
@@ -200,6 +194,7 @@ standard library package Cases {
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj::subj"))) (kind subject) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (default true) (operator false)))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::result"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (modifiers reference) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * The result determined by the case, which should satisfy the case objective.\n\t\t\t "))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::self"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Case")) (redefinition (reference "Calculation::self")))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subcases"))) (kind case) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Other Cases carried out as part of the performance of this Case.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Case")) (subsetting (reference "cases")) (subsetting (reference "subcalculations")))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subj"))) (kind subject) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
@@ -270,6 +265,7 @@ standard library package Cases {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj::subj"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::result"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::self"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subcases"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subj"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance implied))
@@ -297,6 +293,9 @@ standard library package Cases {
     )
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind requirement) (name "obj")) (named (kind subject) (name "subj")) (anonymous (kind kerml-expression) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::result")))
+      (featured-by (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))
     )
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::self")))
       (featured-by (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))

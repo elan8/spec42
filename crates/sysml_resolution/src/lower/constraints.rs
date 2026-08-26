@@ -623,12 +623,12 @@ impl SemanticModelBuilder {
                         );
                     }
                     ConstraintDefBodyElement::ReturnDecl(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
+                        self.lower_return_decl(
                             document,
+                            Some(declaration),
                             UnsupportedFamily::ConstraintDefinitionMember,
-                            node.span,
-                        );
+                            node,
+                        )?;
                     }
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
@@ -1005,7 +1005,12 @@ impl SemanticModelBuilder {
                         )?
                     }
                     CalcDefBodyElement::ReturnDecl(return_decl) => {
-                        self.lower_return_decl(document, Some(declaration), return_decl)?;
+                        self.lower_return_decl(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            return_decl,
+                        )?;
                     }
                     CalcDefBodyElement::AttributeUsage(nested) => {
                         self.lower_attribute_usage(document, Some(declaration), nested)?;

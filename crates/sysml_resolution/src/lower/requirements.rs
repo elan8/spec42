@@ -24,13 +24,66 @@ use sysml_v2_parser::ast::{
     IncludeUseCase, MembershipKind as ParserMembershipKind, Node, PurposeMember,
     QualifiedReferenceId, ReferenceSeparator, RequirementActorDecl, RequirementDef,
     RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
-    SatisfiedRequirement, SatisfyRequirementUsage, StakeholderMember, SubjectDecl, UseCaseDef,
-    UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage, VerificationCaseDef,
+    ReturnRef, ReturnRefBody, ReturnRefBodyElement, SatisfiedRequirement, SatisfyRequirementUsage,
+    StakeholderMember, SubjectDecl, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+    UseCaseUsage as ParserUseCaseUsage, VerificationCaseDef,
     VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewpointDef,
     ViewpointUsage as ParserViewpointUsage,
 };
 
 impl SemanticModelBuilder {
+    /// Lowers a case-family `return ref` as the referential result feature it declares.
+    pub(crate) fn lower_return_ref(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ReturnRef>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    reference: true,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let ReturnRefBody::Brace { elements, .. } = &node.value.body.value {
+            for element in elements {
+                match &element.value {
+                    ReturnRefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(document, Some(declaration), family, member)?;
+                    }
+                    ReturnRefBodyElement::Result(expression) => {
+                        self.push_evaluation_fact(
+                            declaration,
+                            self.calc_expression_site(document, &expression.value),
+                        );
+                        self.lower_calc_expression(document, declaration, family, expression)?;
+                    }
+                    ReturnRefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span);
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers a `subject` declaration (BNF `SubjectDecl`) found in a requirement/concern/case-
     /// family def or usage body, e.g. `subject vehicle : Vehicle;`, mirroring
     /// `lower_parameter_declaration`'s shape: ownership, membership, and (when a type is present)
@@ -1764,9 +1817,11 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::FirstSuccession(_)
                 | UseCaseDefBodyElement::ThenUseCaseUsage(_)
                 | UseCaseDefBodyElement::ThenDone(_)
-                | UseCaseDefBodyElement::RefRedefinition(_)
-                | UseCaseDefBodyElement::ReturnRef(_) => {
+                | UseCaseDefBodyElement::RefRedefinition(_) => {
                     self.push_unsupported(document, unsupported, element.span)
+                }
+                UseCaseDefBodyElement::ReturnRef(node) => {
+                    self.lower_return_ref(document, owner, unsupported, node)?;
                 }
             }
         }
