@@ -480,18 +480,23 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<SatisfyRequirementUsage>,
     ) -> Result<(), ConstructionError> {
-        let SatisfiedRequirement::Reference { reference } = node.value.requirement else {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
+        let (name, short_name, reference) = match &node.value.requirement {
+            SatisfiedRequirement::Reference { reference } => (None, None, Some(*reference)),
+            SatisfiedRequirement::Declaration(inline) => (
+                self.intern_declaration_name(document, inline.value.identification.name)?,
+                self.intern_short_name(document, inline.value.identification.short_name)?,
+                None,
+            ),
         };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Satisfy,
-            None,
+            name,
             node.span,
             // Negation is a satisfaction-polarity fact rather than a declaration modifier.
             DeclarationFacts {
+                short_name,
                 negated: Some(node.value.not_span.is_some()),
                 ..DeclarationFacts::none()
             },
@@ -502,12 +507,14 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        self.push_satisfy_reference(
-            document,
-            declaration,
-            ReferenceKind::SatisfySource,
-            reference,
-        )?;
+        if let Some(reference) = reference {
+            self.push_satisfy_reference(
+                document,
+                declaration,
+                ReferenceKind::SatisfySource,
+                reference,
+            )?;
+        }
         if let Some(subject) = &node.value.subject {
             self.push_satisfy_reference(
                 document,
@@ -516,10 +523,7 @@ impl SemanticModelBuilder {
                 subject.value.reference,
             )?;
         }
-        for element in node.value.body.members() {
-            self.push_unsupported(document, family, element.span);
-        }
-        Ok(())
+        self.lower_requirement_shaped_body(document, declaration, &node.value.body, family)
     }
 
     /// Pushes one of a satisfy usage's two source-backed operands at its anonymous satisfy

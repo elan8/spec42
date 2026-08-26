@@ -846,11 +846,11 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<RequireConstraint>,
     ) -> Result<(), ConstructionError> {
-        if !node.value.has_constraint_keyword {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
-        }
-        let name = self.intern_declaration_name(document, node.value.name)?;
+        let name = if node.value.has_constraint_keyword {
+            self.intern_declaration_name(document, node.value.name)?
+        } else {
+            None
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -876,6 +876,27 @@ impl SemanticModelBuilder {
         // `UsageDeclaration` (SysML BNF 2066-2071), so the declared usage may be typed.
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if !node.value.has_constraint_keyword {
+            let Some(target) = node.value.target else {
+                self.push_unsupported(document, family, node.span);
+                return Ok(());
+            };
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Subsetting,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
         }
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
