@@ -179,7 +179,7 @@ package ActionTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ef6e7af92f41a99e9beb357aaeddc5617b8670447dc679fc377f524565fed1f7") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:ef6e7af92f41a99e9beb357aaeddc5617b8670447dc679fc377f524565fed1f7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -331,6 +331,7 @@ package ActionTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd"))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd2"))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a"))) (provenance implied))
@@ -407,6 +408,7 @@ package ActionTest {
       (type (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (provenance authored))
       (effective-type (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (source direct))
       (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (scopes any))
+      (subtype (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd")))
       (featured-by (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2")))
@@ -419,6 +421,9 @@ package ActionTest {
     )
     (declaration (id (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (source inherited) (from (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))))
+      (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (scopes any))
+      (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a")))

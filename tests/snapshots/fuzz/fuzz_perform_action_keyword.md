@@ -45,7 +45,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:058d3de74b320ebf59c3665087064fa28dc5af41d2a7abd88b7c720a8445f7ef") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:058d3de74b320ebf59c3665087064fa28dc5af41d2a7abd88b7c720a8445f7ef"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))

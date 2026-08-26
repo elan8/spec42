@@ -94,6 +94,13 @@ pub(crate) enum FeatureChainExpressionSpecializationStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum FeatureReferenceExpressionSpecializationStatus {
+    Complete,
+    #[default]
+    Unresolved,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct FeatureChainExpressionProjection {
     pub(crate) expression: DeclarationId,
@@ -102,6 +109,13 @@ pub(crate) struct FeatureChainExpressionProjection {
     pub(crate) source_target: DeclarationId,
     pub(crate) target_feature: DeclarationId,
     pub(crate) subsetting_chain: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureReferenceExpressionProjection {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) referent: DeclarationId,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -132,6 +146,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) feature_chain_expression_specialization_status:
         FeatureChainExpressionSpecializationStatus,
     pub(crate) feature_chain_expression_projections: Box<[FeatureChainExpressionProjection]>,
+    pub(crate) feature_reference_expression_status: FeatureReferenceExpressionSpecializationStatus,
+    pub(crate) feature_reference_expression_projections:
+        Box<[FeatureReferenceExpressionProjection]>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -218,6 +235,20 @@ impl ResolutionResults {
             implied_relationships,
             feature_chain_expression_projections,
             feature_chain_expression_specialization_status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_feature_reference_expressions(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        feature_reference_expression_projections: Box<[FeatureReferenceExpressionProjection]>,
+        feature_reference_expression_status: FeatureReferenceExpressionSpecializationStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            feature_reference_expression_projections,
+            feature_reference_expression_status,
             ..self
         }
     }

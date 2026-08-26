@@ -55,7 +55,7 @@ package MassedThings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c17dc71096393b21aa06105c3c4fd813166bbf15ba87ecd48fb4f40c8788fca6") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c17dc71096393b21aa06105c3c4fd813166bbf15ba87ecd48fb4f40c8788fca6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/massed_things.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings"))) (kind package) (membership (kind owning) (visibility default)))

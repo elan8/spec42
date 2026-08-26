@@ -79,7 +79,7 @@ package 'Vehicle Decomposition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6dd4fe17465956f7749d2243a96ff8cea4712699e8b90192162c6b82243501ff") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6dd4fe17465956f7749d2243a96ff8cea4712699e8b90192162c6b82243501ff"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example from the SysML 1.6 spec, subclause 8.4.5 Constraining Decomposition.\n\t "))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition.md") (qualified-name "Vehicle Decomposition::Chassis Assembly"))) (kind part-def) (membership (kind owning) (visibility default)))

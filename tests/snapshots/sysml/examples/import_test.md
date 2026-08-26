@@ -42,7 +42,7 @@ package ImportTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:43d411905026d0649007b0f3bb99071fd0a539112675a5b70e456f269bcc7b69") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:43d411905026d0649007b0f3bb99071fd0a539112675a5b70e456f269bcc7b69"))
   (declarations
     (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1"))) (kind package) (membership (kind owning) (visibility default)))

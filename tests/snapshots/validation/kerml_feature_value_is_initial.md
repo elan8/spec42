@@ -53,7 +53,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b334534dbc7b63cb757ddf50e194529d2cf2061612c490d8e15d34e811e2ef5") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b334534dbc7b63cb757ddf50e194529d2cf2061612c490d8e15d34e811e2ef5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))
@@ -91,7 +91,9 @@ package Values {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::fixed"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -111,12 +113,17 @@ package Values {
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source")))
       (featured-by (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening")))
       (type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (subtype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::tracked")))
       (type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (provenance authored))
@@ -125,6 +132,9 @@ package Values {
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Thing")))
       (subtype (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::fixed")) (scopes any))

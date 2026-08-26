@@ -2169,6 +2169,45 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::FeatureReferenceExpressionResult {
+            if matches!(
+                self.resolution.feature_reference_expression_status,
+                crate::resolve::results::FeatureReferenceExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for expression in self
+                .resolution
+                .feature_reference_expression_projections
+                .iter()
+            {
+                if self
+                    .storage
+                    .declaration(expression.result)
+                    .is_none_or(|result| result.owner != Some(expression.expression))
+                {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    expression.result,
+                    expression.referent,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2193,7 +2232,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::ConstructorExpression => unreachable!("handled above"),
             SpecializationCheckKind::FeatureChainExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::FeatureReferenceExpressionResult => {
-                SpecializationCheckPrerequisite::FeatureReferenceReferentAndResult
+                unreachable!("handled above")
             }
             SpecializationCheckKind::InvocationExpressionBehaviorResult => {
                 SpecializationCheckPrerequisite::InvocationInstantiatedTypeAndResult

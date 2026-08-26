@@ -38,7 +38,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8ac95afd4bb7f13c7ec13260e2709336d7a98c8e8e5b92d792d696786a9b8fe5") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8ac95afd4bb7f13c7ec13260e2709336d7a98c8e8e5b92d792d696786a9b8fe5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization_unresolved.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization_unresolved.md") (qualified-name "Model::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

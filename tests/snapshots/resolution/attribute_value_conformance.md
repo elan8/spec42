@@ -53,7 +53,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:de9e4049c9c42b9d57c9f71bf2eed1bde301ff34e2575d8837fa5d3be3be8196") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:de9e4049c9c42b9d57c9f71bf2eed1bde301ff34e2575d8837fa5d3be3be8196") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (kind enum-def) (membership (kind owning) (visibility default)))
@@ -147,6 +147,7 @@ package Values {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::untyped"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::untyped"))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle"))) (provenance implied))
@@ -186,6 +187,7 @@ package Values {
     )
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")))
       (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))
+      (subtype (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::draft")))
       (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))
@@ -327,6 +329,7 @@ package Values {
     )
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
     )

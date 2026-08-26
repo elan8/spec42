@@ -105,7 +105,7 @@ package MassRollup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d9915002c26e8fd14d3175fdbfde968ca299f94841b7af4d308edbdd651a0e50") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d9915002c26e8fd14d3175fdbfde968ca299f94841b7af4d308edbdd651a0e50"))
   (declarations
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false))))))
@@ -184,6 +184,7 @@ package MassRollup2 {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -208,6 +209,7 @@ package MassRollup2 {
     )
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::simpleMass")))
       (featured-by (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")))
+      (subtype (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass")))
       (featured-by (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")))
@@ -215,6 +217,7 @@ package MassRollup2 {
     )
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::simpleMass")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing")))
       (type (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")) (provenance authored))

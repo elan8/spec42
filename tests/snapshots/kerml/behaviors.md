@@ -63,7 +63,7 @@ package Behaviors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:68865699f91e36a67d4f07c6f249bb6a3e1bcf946c5621a2750834b306b37d8e") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:68865699f91e36a67d4f07c6f249bb6a3e1bcf946c5621a2750834b306b37d8e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
@@ -141,6 +141,7 @@ package Behaviors {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b"))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x"))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::y"))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-feature) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-feature) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -189,9 +190,11 @@ package Behaviors {
     )
     (declaration (id (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x")))
       (featured-by (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A")))
+      (subtype (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::y")))
       (featured-by (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A")))

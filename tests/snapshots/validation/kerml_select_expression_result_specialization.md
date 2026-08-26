@@ -29,7 +29,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2e9c8cf7d0e4a60865999902ad98442397bffc95a55163606e7ea774684b0963") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2e9c8cf7d0e4a60865999902ad98442397bffc95a55163606e7ea774684b0963"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model::selected"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))

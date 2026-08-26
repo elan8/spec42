@@ -184,7 +184,7 @@ package 'Wheel Package' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:adbac4251611d5fe380fbf024fd4476bd497664637115c98a3f65532c01b056e") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:adbac4251611d5fe380fbf024fd4476bd497664637115c98a3f65532c01b056e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example from the SysML 1.6 spec, subclause 8.4.1 Wheel Hub Assembly.\n\t "))))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

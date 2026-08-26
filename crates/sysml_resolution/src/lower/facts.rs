@@ -336,6 +336,12 @@ pub(crate) struct FeatureChainExpressionRecord {
     pub(crate) subsetting_chain: DeclarationId,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureReferenceExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
 /// One authored MetadataFeature instance and the Element it annotates.
 ///
 /// The annotation declaration owns its typing reference and body. This record owns the opposite

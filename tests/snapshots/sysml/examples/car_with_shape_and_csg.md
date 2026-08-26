@@ -424,7 +424,7 @@ package CarWithShapeAndCSG {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0f2e470afa5f75ac99872a78f0b662841fb97bd610aff77b8325a31e67dc8369") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0f2e470afa5f75ac99872a78f0b662841fb97bd610aff77b8325a31e67dc8369"))
   (declarations
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (path (named (kind package) (name "CarWithShapeAndCSG")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SpatialItems") (import (shape namespace) (recursive false))))))

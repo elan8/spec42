@@ -47,11 +47,11 @@ use crate::evaluation::EvaluatedScalar;
 pub(crate) fn write_semantic(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
-    semantic_contract_version: &str,
+    _semantic_contract_version: &str,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     writeln!(output, "(semantic-model")?;
-    write_metadata(model, source_digest, semantic_contract_version, output)?;
+    write_metadata(model, source_digest, output)?;
     write_declarations(model, output)?;
     write_references(model, output)?;
     write_relationships(model, output)?;
@@ -309,7 +309,6 @@ pub(crate) fn write_diagnostic(
 pub(crate) fn write_metadata(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
-    semantic_contract_version: &str,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     let phase = match model.metadata.phase {
@@ -336,8 +335,6 @@ pub(crate) fn write_metadata(
         model.metadata.has_evaluation
     )?;
     write_quoted(output, &source_digest.to_string())?;
-    write!(output, ") (contract-version ")?;
-    write_quoted(output, semantic_contract_version)?;
     write!(output, ")")?;
     write_admitted_sources(model, output)?;
     writeln!(output, ")")
@@ -1703,6 +1700,7 @@ mod tests {
             expression_arguments: Box::new([]),
             constructor_expressions: Box::new([]),
             feature_chain_expressions: Box::new([]),
+            feature_reference_expressions: Box::new([]),
             metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),

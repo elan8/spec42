@@ -113,7 +113,7 @@ package Packets {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2cc65cd9d54e1a2b7ea0f95816ad1053c065af4d476a2d3aefacda1e9a8d356a") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2cc65cd9d54e1a2b7ea0f95816ad1053c065af4d476a2d3aefacda1e9a8d356a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/packets.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/packets.md") (path (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Time::DateTime") (import (shape membership) (recursive false))))))

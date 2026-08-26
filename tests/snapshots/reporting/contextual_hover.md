@@ -116,7 +116,7 @@ probe model.sysml 11 16 hover
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a0a2d11b3f364a1879a233ec9e0dc14a9e38b05d3dd6c87003325adc49bde561") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a0a2d11b3f364a1879a233ec9e0dc14a9e38b05d3dd6c87003325adc49bde561"))
   (declarations
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::ExternalRecordReference"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -189,6 +189,7 @@ probe model.sysml 11 16 hover
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled"))) (target (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Model::MaxAltitudeAGLReq::drone"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Model::MaxAltitudeAGLReq"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Model::maintenanceReviewRecord"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -214,6 +215,7 @@ probe model.sysml 11 16 hover
     )
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled")))
       (featured-by (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState")))
+      (subtype (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::Vehicle")))
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Model::MaxAltitudeAGLReq::drone")) (scopes any))
@@ -243,6 +245,7 @@ probe model.sysml 11 16 hover
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled")) (scopes any feature))
     )
 )
 ~~~

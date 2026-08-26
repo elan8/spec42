@@ -22,7 +22,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb87776e2a9c30329de4b07bbf8a3bb99767a60e78eea7f45b53b29fb9bb97ad") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb87776e2a9c30329de4b07bbf8a3bb99767a60e78eea7f45b53b29fb9bb97ad"))
   (declarations
     (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

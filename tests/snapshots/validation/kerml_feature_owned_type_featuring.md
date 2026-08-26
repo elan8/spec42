@@ -43,7 +43,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:62e4e35f103e2a544c94d7957a161f0e93786351c06dac8c3d7a5f7da608227d") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:62e4e35f103e2a544c94d7957a161f0e93786351c06dac8c3d7a5f7da608227d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

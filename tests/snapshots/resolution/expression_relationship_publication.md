@@ -31,7 +31,7 @@ package M { part def System { part a; part b; connect a to b; } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:30c1e822853044cbfc7047aefcaddb7a4f69d092dae5e529c4d2a7c33868bf09") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:30c1e822853044cbfc7047aefcaddb7a4f69d092dae5e529c4d2a7c33868bf09"))
   (declarations
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System"))) (kind part-def) (membership (kind owning) (visibility default)))

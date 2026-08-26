@@ -253,7 +253,7 @@ standard library package StringFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fcc414127abebf17e682bd6f3eec86ed5a9ec4b7f62be2fe89963ca884fcff55") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fcc414127abebf17e682bd6f3eec86ed5a9ec4b7f62be2fe89963ca884fcff55"))
   (declarations
     (declaration (id (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions on String values, including those corresponding to string concatenation \n\t * and comparison operators in the KerML expression notation.\n\t "))))
     (declaration (id (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -430,6 +430,7 @@ standard library package StringFunctions {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::Substring::x"))) (target (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::Substring"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString::x"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString::x"))) (target (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString"))) (provenance implied))
   )
   (evaluation
@@ -517,9 +518,11 @@ standard library package StringFunctions {
     )
     (declaration (id (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString::x")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString::x")))
       (featured-by (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString")))
+      (subtype (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
 )
 ~~~

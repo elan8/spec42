@@ -24,6 +24,8 @@ use crate::resolve::results::ConstructorExpressionSpecializationStatus;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::FeatureChainExpressionProjection;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
+use crate::resolve::results::FeatureReferenceExpressionProjection;
+use crate::resolve::results::FeatureReferenceExpressionSpecializationStatus;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -1078,6 +1080,74 @@ pub(crate) fn synthesize_feature_chain_expression_result_specializations(
     implied.dedup();
     projections.sort_by_key(|projection| projection.expression.0);
     Ok(FeatureChainExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+pub(crate) struct FeatureReferenceExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[FeatureReferenceExpressionProjection]>,
+    pub(crate) status: FeatureReferenceExpressionSpecializationStatus,
+}
+
+pub(crate) fn synthesize_feature_reference_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<FeatureReferenceExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = FeatureReferenceExpressionSpecializationStatus::Complete;
+    for expression in storage.feature_reference_expressions.iter() {
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == expression.expression
+                    && reference.kind == ReferenceKind::ExpressionOperand
+            });
+        let Some((index, _)) = references.next() else {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(referent)) = resolution.outcome(id) else {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(referent) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        if !crate::resolve::is_feature_declaration(target.kind) {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: expression.result,
+            target: referent,
+        });
+        projections.push(FeatureReferenceExpressionProjection {
+            expression: expression.expression,
+            result: expression.result,
+            referent,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(FeatureReferenceExpressionSynthesis {
         implied_relationships: implied.into_boxed_slice(),
         projections: projections.into_boxed_slice(),
         status,

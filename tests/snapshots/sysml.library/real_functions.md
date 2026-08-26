@@ -608,7 +608,7 @@ standard library package RealFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:563698051692596de6cfcf7c332043069d7ecb55d69bcb78d11c84e89bb66c56") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:563698051692596de6cfcf7c332043069d7ecb55d69bcb78d11c84e89bb66c56"))
   (declarations
     (declaration (id (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Functions on Real values, including concrete specializations of the \n\t * general arithmetic and comparison operations.\n\t "))))
     (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -1055,6 +1055,7 @@ standard library package RealFunctions {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::product::collection"))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::product"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re::x"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re::x"))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "round")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::round"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::round::x"))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::round"))) (provenance implied))
@@ -1261,9 +1262,11 @@ standard library package RealFunctions {
     )
     (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re::x")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re::x")))
       (featured-by (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re")))
+      (subtype (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "round")) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::round")))

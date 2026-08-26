@@ -44,7 +44,7 @@ er E specializes C intersects A, B;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5ef0e4760c2f7811cb9c38c75d1a1bbe739a0b9754b6b66dee31d68795cf20af") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5ef0e4760c2f7811cb9c38c75d1a1bbe739a0b9754b6b66dee31d68795cf20af"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_multiline_note_idempotence.md") (qualified-name "ers"))) (kind package) (membership (kind owning) (visibility default)))
   )

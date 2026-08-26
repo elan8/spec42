@@ -143,7 +143,7 @@ package 'Binding Connectors Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8516e9e78454a517467fd62ad4666734f0fa506d7a9526a8a7033c688fbff697") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8516e9e78454a517467fd62ad4666734f0fa506d7a9526a8a7033c688fbff697"))
   (declarations
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_1.md") (path (named (kind package) (name "Binding Connectors Example-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false))))))

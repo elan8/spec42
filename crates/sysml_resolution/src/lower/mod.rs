@@ -20,6 +20,7 @@ use crate::lower::facts::DocumentationRecord;
 use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::ExpressionGrammar;
 use crate::lower::facts::FeatureChainExpressionRecord;
+use crate::lower::facts::FeatureReferenceExpressionRecord;
 use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
@@ -111,6 +112,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
     pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
+    pub(crate) feature_reference_expressions: Vec<FeatureReferenceExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
@@ -626,6 +628,10 @@ impl SemanticModelBuilder {
                     source_target,
                     subsetting_chain,
                 });
+        }
+        if matches!(value.value.expression.value, Expression::FeatureRef(_)) {
+            self.feature_reference_expressions
+                .push(FeatureReferenceExpressionRecord { expression, result });
         }
         self.record_operator_expression(document, expression, result, &value.value.expression)?;
         if matches!(value.value.expression.value, Expression::Constructor { .. }) {
@@ -1278,6 +1284,7 @@ impl SemanticModelBuilder {
             expression_arguments: self.expression_arguments.into_boxed_slice(),
             constructor_expressions: self.constructor_expressions.into_boxed_slice(),
             feature_chain_expressions: self.feature_chain_expressions.into_boxed_slice(),
+            feature_reference_expressions: self.feature_reference_expressions.into_boxed_slice(),
             metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),

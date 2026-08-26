@@ -47,7 +47,7 @@ package 'Enumeration Definitions-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74b4c9d5c0a1e27adf44c5977efe75a5f93f22dda16c49ff938f2cd70bf6e848") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74b4c9d5c0a1e27adf44c5977efe75a5f93f22dda16c49ff938f2cd70bf6e848"))
   (declarations
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))
@@ -89,6 +89,7 @@ package 'Enumeration Definitions-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::red"))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::yellow"))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -114,6 +115,7 @@ package 'Enumeration Definitions-1' {
     )
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green")))
       (featured-by (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor")))
+      (subtype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::red")))
       (featured-by (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor")))
@@ -132,6 +134,7 @@ package 'Enumeration Definitions-1' {
     )
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green")) (scopes any feature))
     )
 )
 ~~~

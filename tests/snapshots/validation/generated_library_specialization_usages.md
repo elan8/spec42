@@ -107,7 +107,7 @@ package GeneratedUsages {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:227e3b81ac8567b89d8fd8b115aa2e87747b13a67ca83f540cff65d801468348") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:227e3b81ac8567b89d8fd8b115aa2e87747b13a67ca83f540cff65d801468348") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ActionUsage"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))

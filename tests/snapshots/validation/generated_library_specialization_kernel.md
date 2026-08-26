@@ -82,7 +82,7 @@ package GeneratedKernel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a75c6b4ca128a63f4085c3b0f623d7cf7106a86a32678bbc2bc8de4e25cbee1d") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a75c6b4ca128a63f4085c3b0f623d7cf7106a86a32678bbc2bc8de4e25cbee1d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

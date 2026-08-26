@@ -31,6 +31,7 @@ use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
 use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::FeatureChainExpressionRecord;
+use crate::lower::facts::FeatureReferenceExpressionRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
@@ -66,6 +67,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
     pub(crate) constructor_expressions: Box<[ConstructorExpressionRecord]>,
     pub(crate) feature_chain_expressions: Box<[FeatureChainExpressionRecord]>,
+    pub(crate) feature_reference_expressions: Box<[FeatureReferenceExpressionRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,
@@ -109,6 +111,7 @@ pub(crate) fn lower_document(
         expression_arguments: builder.expression_arguments.into_boxed_slice(),
         constructor_expressions: builder.constructor_expressions.into_boxed_slice(),
         feature_chain_expressions: builder.feature_chain_expressions.into_boxed_slice(),
+        feature_reference_expressions: builder.feature_reference_expressions.into_boxed_slice(),
         metadata_annotations: builder.metadata_annotations.into_boxed_slice(),
         unsupported: builder.unsupported.into_boxed_slice(),
         recovery: builder.recovery.into_boxed_slice(),
@@ -372,6 +375,18 @@ impl SemanticModelBuilder {
                     input_parameter: relocation.declaration(record.input_parameter)?,
                     source_target: relocation.declaration(record.source_target)?,
                     subsetting_chain: relocation.declaration(record.subsetting_chain)?,
+                });
+        }
+
+        reserve(
+            &mut self.feature_reference_expressions,
+            lowered.feature_reference_expressions.len(),
+        )?;
+        for record in lowered.feature_reference_expressions.iter() {
+            self.feature_reference_expressions
+                .push(FeatureReferenceExpressionRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    result: relocation.declaration(record.result)?,
                 });
         }
 

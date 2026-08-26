@@ -126,7 +126,7 @@ standard library package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d698ce266ca31d5ae2c3fe2123880b7d2dcefc42a0bf0f2835761452033c2425") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d698ce266ca31d5ae2c3fe2123880b7d2dcefc42a0bf0f2835761452033c2425"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * This package defines the base types for ports and related structural elements \n     * in the SysML language.\n     "))))
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Object") (import (shape membership) (recursive false))))))

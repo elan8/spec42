@@ -37,7 +37,7 @@ package ConjugatedTypingCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:912e5318a70c75f9558e735281e47dfaeea96906c5d089563369ad16d776e63a") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:912e5318a70c75f9558e735281e47dfaeea96906c5d089563369ad16d776e63a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort"))) (kind port-def) (membership (kind owning) (visibility default)))

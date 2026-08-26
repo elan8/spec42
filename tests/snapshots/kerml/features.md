@@ -180,7 +180,7 @@ package Features {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:00b61c0e836d1cea4e3d75c9e05025a79f812727ef20f86d6a231fe523e3fdcd") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:00b61c0e836d1cea4e3d75c9e05025a79f812727ef20f86d6a231fe523e3fdcd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -371,6 +371,7 @@ package Features {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "w")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "w")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (target (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -432,6 +433,7 @@ package Features {
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin")))
       (supertype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "w")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (subtype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)))))
@@ -459,10 +461,14 @@ package Features {
     )
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x")))
       (featured-by (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::adult")))

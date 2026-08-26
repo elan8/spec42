@@ -51,7 +51,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ffbbd3d9599689e9b9a0c9130e1d6335b710b256eb5e048c586dafd965af4b39") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ffbbd3d9599689e9b9a0c9130e1d6335b710b256eb5e048c586dafd965af4b39"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends::Multiplicities"))) (kind kerml-association) (membership (kind owning) (visibility default)))

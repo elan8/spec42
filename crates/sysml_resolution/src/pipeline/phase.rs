@@ -39,6 +39,7 @@ use crate::resolve::effective_types::derive_effective_types;
 use crate::resolve::implied::library_specialization_anchors;
 use crate::resolve::implied::synthesize_constructor_expression_result_specializations;
 use crate::resolve::implied::synthesize_feature_chain_expression_result_specializations;
+use crate::resolve::implied::synthesize_feature_reference_expression_result_specializations;
 use crate::resolve::implied::synthesize_implied_relationships;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
@@ -246,6 +247,29 @@ impl Lowered {
             });
             implied.dedup();
             resolution.settle_feature_chain_expressions(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
+        };
+        let resolution = if storage.feature_reference_expressions.is_empty() {
+            resolution
+        } else {
+            let synthesis = synthesize_feature_reference_expression_result_specializations(
+                &storage,
+                &resolution,
+            )?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_feature_reference_expressions(
                 implied.into_boxed_slice(),
                 synthesis.projections,
                 synthesis.status,

@@ -56,7 +56,7 @@ package Differences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e0d74bb4ffbae1b8f9f97085951b9c1df7d72116b7c0b009f2cd3f72260450dd") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e0d74bb4ffbae1b8f9f97085951b9c1df7d72116b7c0b009f2cd3f72260450dd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_single_differencing.md") (qualified-name "Differences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_single_differencing.md") (qualified-name "Differences::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

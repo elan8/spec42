@@ -50,7 +50,7 @@ package TransitionUsageStateSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:070cda20f389cbc36fe5cf886577d4b7513f80f195570f33e1e5d25287c939f4") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:070cda20f389cbc36fe5cf886577d4b7513f80f195570f33e1e5d25287c939f4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_specialization_lowering_gap.md") (qualified-name "TransitionUsageStateSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_specialization_lowering_gap.md") (qualified-name "TransitionUsageStateSpecialization::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

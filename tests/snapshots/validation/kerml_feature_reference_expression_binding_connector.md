@@ -39,7 +39,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5e7f1b5383712b62518016a40e253c0c1948a688a47e122fed5815232e331c9") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5e7f1b5383712b62518016a40e253c0c1948a688a47e122fed5815232e331c9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -63,6 +63,7 @@ package References {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::reference"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::reference"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder"))) (provenance implied))
   )
   (evaluation
@@ -75,10 +76,16 @@ package References {
 (types
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::reference")))
       (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder")))
+      (effective-type (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent"))))
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::reference")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent")))
@@ -86,6 +93,7 @@ package References {
       (type (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (path (named (kind package) (name "References")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Thing")))
       (subtype (node (document "memory://snapshot/kerml_feature_reference_expression_binding_connector.md") (qualified-name "References::Holder::referent")) (scopes any))

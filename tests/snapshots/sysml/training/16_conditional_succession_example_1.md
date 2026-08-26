@@ -62,7 +62,7 @@ package 'Conditional Succession Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fa723e0804b7453f4c8d0c1ac6c6501a874727670f2a266f133f18b7809c1a78") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fa723e0804b7453f4c8d0c1ac6c6501a874727670f2a266f133f18b7809c1a78"))
   (declarations
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

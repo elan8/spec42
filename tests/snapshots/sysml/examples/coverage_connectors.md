@@ -64,7 +64,7 @@ part def System {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:161429c0dd614f928a85292a7c7f59528ada4f3eaebf79d2bb8facd801568277") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:161429c0dd614f928a85292a7c7f59528ada4f3eaebf79d2bb8facd801568277"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A::p1"))) (kind port) (membership (kind feature) (visibility default)))

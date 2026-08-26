@@ -55,7 +55,7 @@ probe element_facts.md 24 32
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " What this package is for. "))))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (short-name "ch") (modifiers abstract)) (documentation (doc (text " A chassis. "))))
@@ -112,6 +112,7 @@ probe element_facts.md 24 32
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Trailer::wheels"))) (target (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Trailer"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::count"))) (target (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::count"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::limit"))) (target (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -172,6 +173,7 @@ probe element_facts.md 24 32
     )
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::count")))
       (supertype (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (subtype (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)))))
@@ -179,6 +181,8 @@ probe element_facts.md 24 32
     )
     (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::count")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::limit")))
       (supertype (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
@@ -403,6 +407,7 @@ probe element_facts.md 24 32
           (evaluation evaluated 5)
           (relationship (kind "subsetting") (provenance implied) (target resolved))
           (incoming (kind "expressionOperand") (peer "Facts::derivedCount::") (provenance authored))
+          (incoming (kind "subsetting") (peer "Facts::derivedCount::::") (provenance implied))
           (outgoing (kind "subsetting") (peer "Facts::count::::") (provenance implied))
         )
       )

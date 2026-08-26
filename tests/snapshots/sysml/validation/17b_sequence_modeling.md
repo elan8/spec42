@@ -108,7 +108,7 @@ package '17b-Sequence-Modeling' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0c687464fe1ae65accabbc86a19fb6159fbe2c0aa57e95ac0ef3538be111c940") (contract-version "feature-chain-expression-result-v10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0c687464fe1ae65accabbc86a19fb6159fbe2c0aa57e95ac0ef3538be111c940"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

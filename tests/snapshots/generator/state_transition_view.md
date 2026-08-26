@@ -37,7 +37,7 @@ package DoorController {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:581ae56601182f8d949f19ea5ed75dbda9ea8dabb5e13ed5d99fa6cb34fb8eac") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:581ae56601182f8d949f19ea5ed75dbda9ea8dabb5e13ed5d99fa6cb34fb8eac") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_transition_view.md") (qualified-name "DoorController"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_transition_view.md") (path (named (kind package) (name "DoorController")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
