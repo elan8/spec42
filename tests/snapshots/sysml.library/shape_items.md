@@ -2873,12 +2873,6 @@ standard library package ShapeItems {
         (range (start 667 14) (end 667 23))
       )
       (diagnostic
-        (severity information)
-        (code "duplicate_connection")
-        (source "semantic")
-        (range (start 668 2) (end 668 53))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

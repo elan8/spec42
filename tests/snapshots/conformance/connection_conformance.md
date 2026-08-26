@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Connector ends report their kind, their typing, repetition and disconnection
+description=Connector ends report their kind, typing and disconnection; distinct connectors may relate the same ends
 type=file
 ~~~
 # SOURCE
@@ -89,12 +89,6 @@ package Connections {
             (range (start 19 8) (end 19 25))
           )
         )
-      )
-      (diagnostic
-        (severity information)
-        (code "duplicate_connection")
-        (source "semantic")
-        (range (start 27 8) (end 27 30))
       )
       (diagnostic
         (severity information)
