@@ -642,7 +642,7 @@ standard library package FeatureReferencingPerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:28acb0c1454566044fe26b51ac43502cbfc9bba5590327273a39da0cb7d626c6") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:28acb0c1454566044fe26b51ac43502cbfc9bba5590327273a39da0cb7d626c6") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (qualified-name "FeatureReferencingPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Behaviors used to read, write and monitor values of a referenced Feature of an \n\t * Occurrence.\n\t "))))
     (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (path (named (kind library-package) (name "FeatureReferencingPerformances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

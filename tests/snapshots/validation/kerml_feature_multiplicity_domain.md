@@ -46,7 +46,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dd0fd9ad199a5cdfbf65e453b91357aa43d48d66ea09b69087c7cd28dc4dcd9c") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dd0fd9ad199a5cdfbf65e453b91357aa43d48d66ea09b69087c7cd28dc4dcd9c") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

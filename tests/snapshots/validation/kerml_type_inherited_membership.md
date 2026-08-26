@@ -37,7 +37,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:998040639e4d4a16cb91f217a486e5d2199dfd10d0195890f2f85eacde62b8a6") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:998040639e4d4a16cb91f217a486e5d2199dfd10d0195890f2f85eacde62b8a6") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_inherited_membership.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_inherited_membership.md") (qualified-name "Model::Child"))) (kind kerml-type) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Parent")))))

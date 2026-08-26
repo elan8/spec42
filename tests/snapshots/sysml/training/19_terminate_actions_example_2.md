@@ -38,7 +38,7 @@ package 'Terminate Actions Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7a5095e259d46b27a63a257e3aa3bbe06f5e139ff8dced52719d91f7e581b968") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7a5095e259d46b27a63a257e3aa3bbe06f5e139ff8dced52719d91f7e581b968") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor"))) (kind part-def) (membership (kind owning) (visibility default)))

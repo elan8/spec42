@@ -73,7 +73,7 @@ package '15_02-Basic Value Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b41c0af10bccf301a48e6fa47472e6e3fa145471ce51d7e885f5bee961735f2a") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b41c0af10bccf301a48e6fa47472e6e3fa145471ce51d7e885f5bee961735f2a") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

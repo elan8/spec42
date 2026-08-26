@@ -301,7 +301,7 @@ package TimeVaryingFeaturesEnhanced {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:2618632173d101a5114915b275630b7abae623e5b2bc71f4f7d2e637b270fb36") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:2618632173d101a5114915b275630b7abae623e5b2bc71f4f7d2e637b270fb36") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (path (named (kind package) (name "TimeVaryingFeaturesEnhanced")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ExtendedOccurrences") (import (shape namespace) (recursive false))))))

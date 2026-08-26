@@ -324,6 +324,18 @@ pub(crate) struct ConstructorExpressionRecord {
     pub(crate) result: DeclarationId,
 }
 
+/// One dotted FeatureChainExpression and the anonymous Features that represent its normative
+/// result subsetting chain. The final authored member is the settled `MemberAccessOperand`
+/// reference sourced at `expression`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureChainExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) input_parameter: DeclarationId,
+    pub(crate) source_target: DeclarationId,
+    pub(crate) subsetting_chain: DeclarationId,
+}
+
 /// One authored MetadataFeature instance and the Element it annotates.
 ///
 /// The annotation declaration owns its typing reference and body. This record owns the opposite

@@ -35,7 +35,7 @@ package ArgumentResolutionBug {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b753ec2a1688d588b7fc25704884c3a36dbeb6ed77aafa28f53b6a331363e5bc") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b753ec2a1688d588b7fc25704884c3a36dbeb6ed77aafa28f53b6a331363e5bc") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::A"))) (kind class-def) (membership (kind owning) (visibility default)))

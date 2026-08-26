@@ -40,7 +40,7 @@ package BrowserExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b72dc185f0f7dd98f118430fa8e03ce00bfa4a26ae0233813f17c46bb12047a2") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b72dc185f0f7dd98f118430fa8e03ce00bfa4a26ae0233813f17c46bb12047a2") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -159,7 +159,7 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:d74c95cf21233348113a16379252043e9e129bd7cf6a475c3c1549a5deb205f3",
+  "modelDigest": "blake3:22b94ace62eb446958de55114e8e72dfa2ccea352136983958250c3bfbecd4dc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",

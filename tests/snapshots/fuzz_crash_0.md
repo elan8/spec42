@@ -47,7 +47,7 @@ package MassRollup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d2cdbaae660f4121f88f034ad75b959e812f6345d856120e77d31cf439b47456") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d2cdbaae660f4121f88f034ad75b959e812f6345d856120e77d31cf439b47456") (contract-version "feature-chain-expression-result-v10"))
   (declarations
   )
   (references

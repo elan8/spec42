@@ -22,6 +22,8 @@ use crate::resolve::results::ConstructorExpressionProjection;
 use crate::resolve::results::ConstructorExpressionProjectionStatus;
 use crate::resolve::results::ConstructorExpressionSpecializationStatus;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
+use crate::resolve::results::FeatureChainExpressionProjection;
+use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -998,6 +1000,87 @@ pub(crate) fn synthesize_constructor_expression_result_specializations(
         status,
         specialization_status,
         anchor,
+    })
+}
+
+pub(crate) struct FeatureChainExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[FeatureChainExpressionProjection]>,
+    pub(crate) status: FeatureChainExpressionSpecializationStatus,
+}
+
+pub(crate) fn synthesize_feature_chain_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<FeatureChainExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = FeatureChainExpressionSpecializationStatus::Complete;
+    for chain in storage.feature_chain_expressions.iter() {
+        implied.extend([
+            ImpliedRelationship {
+                kind: ReferenceKind::FeatureChaining,
+                source: chain.subsetting_chain,
+                target: chain.input_parameter,
+            },
+            ImpliedRelationship {
+                kind: ReferenceKind::FeatureChaining,
+                source: chain.subsetting_chain,
+                target: chain.source_target,
+            },
+            ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source: chain.result,
+                target: chain.subsetting_chain,
+            },
+        ]);
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == chain.expression
+                    && reference.kind == ReferenceKind::MemberAccessOperand
+            });
+        let Some((index, _)) = references.next() else {
+            status = FeatureChainExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(target_feature)) = resolution.outcome(id) else {
+            status = FeatureChainExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Redefinition,
+            source: chain.source_target,
+            target: target_feature,
+        });
+        projections.push(FeatureChainExpressionProjection {
+            expression: chain.expression,
+            result: chain.result,
+            input_parameter: chain.input_parameter,
+            source_target: chain.source_target,
+            target_feature,
+            subsetting_chain: chain.subsetting_chain,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(FeatureChainExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
     })
 }
 

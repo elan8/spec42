@@ -11,6 +11,7 @@ use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
 use crate::lower::facts::ExpressionArgumentRecord;
+use crate::lower::facts::FeatureChainExpressionRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
@@ -38,6 +39,7 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
     pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
     pub(crate) constructor_expressions: Box<[ConstructorExpressionRecord]>,
+    pub(crate) feature_chain_expressions: Box<[FeatureChainExpressionRecord]>,
     pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,

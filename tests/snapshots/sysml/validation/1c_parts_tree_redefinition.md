@@ -182,7 +182,7 @@ package '1c-Parts Tree Redefinition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:11973dec81e9056ba9f34ecf61a7b72f25f4c8d866d054e6af20910a1ca20dc3") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:11973dec81e9056ba9f34ecf61a7b72f25f4c8d866d054e6af20910a1ca20dc3") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (named (kind package) (name "1c-Parts Tree Redefinition")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false))))))

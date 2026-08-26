@@ -151,7 +151,7 @@ package PartTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:d73a8d0290bb5fbe966de22ff1bd454d55fb5a39dfb60b7a577bc6a80badef05") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:d73a8d0290bb5fbe966de22ff1bd454d55fb5a39dfb60b7a577bc6a80badef05") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::A"))) (kind part-def) (membership (kind owning) (visibility public)))

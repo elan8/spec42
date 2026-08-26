@@ -28,7 +28,7 @@ package GeometryExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cd1533e0f705a7b2c58dee234aa3cf4a76e04be85c15ceb525c4fe29d47ea5f8") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cd1533e0f705a7b2c58dee234aa3cf4a76e04be85c15ceb525c4fe29d47ea5f8") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_geometry_incomplete.md") (qualified-name "GeometryExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_geometry_incomplete.md") (path (named (kind package) (name "GeometryExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -115,7 +115,7 @@ package GeometryExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:de4c686c2bfa1c29875010ba51a5758f0ea4670ec775f3651cdf1a37647a499a",
+  "modelDigest": "blake3:ce9fbf52c446fa5feebf26b09cb39b3fc68ba65622da56550be865ddc70b0d25",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",

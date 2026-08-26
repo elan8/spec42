@@ -51,7 +51,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5357ff7c0849aed983304050894df8156db2d3cd1d38242d0158a2f82cd7a46a") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5357ff7c0849aed983304050894df8156db2d3cd1d38242d0158a2f82cd7a46a") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

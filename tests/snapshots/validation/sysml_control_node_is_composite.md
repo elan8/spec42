@@ -32,7 +32,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9816577c7f43dbc25b0a96250f506aac58a7c50d4bc136b2e3e8fa774c21ff50") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9816577c7f43dbc25b0a96250f506aac58a7c50d4bc136b2e3e8fa774c21ff50") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

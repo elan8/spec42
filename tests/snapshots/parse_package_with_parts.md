@@ -22,7 +22,7 @@ package Vehicles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d212773d37d7a51212ddae2d026938fa85d9cfefc759f045bc1408fb5a396501") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d212773d37d7a51212ddae2d026938fa85d9cfefc759f045bc1408fb5a396501") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parse_package_with_parts.md") (qualified-name "Vehicles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parse_package_with_parts.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)))

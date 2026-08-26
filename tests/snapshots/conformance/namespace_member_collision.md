@@ -45,7 +45,7 @@ package Separate {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9acc95f0ac446954e45170a27786044f4a002e6c5b1b108ca6ee563d06ba1775") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9acc95f0ac446954e45170a27786044f4a002e6c5b1b108ca6ee563d06ba1775") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/namespace_member_collision.md") (qualified-name "Collides"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/namespace_member_collision.md") (qualified-name "Collides::Distinct"))) (kind part-def) (membership (kind owning) (visibility default)))

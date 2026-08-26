@@ -40,7 +40,7 @@ package InterconnectionNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5103a2bdfbb2c27811fd3872ae343f79902fc2d8eb3e9400a40388debbc93123") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5103a2bdfbb2c27811fd3872ae343f79902fc2d8eb3e9400a40388debbc93123") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_unresolved.md") (qualified-name "InterconnectionNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_unresolved.md") (path (named (kind package) (name "InterconnectionNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -131,7 +131,7 @@ package InterconnectionNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:3ae1f8377ed7007d1260831b5031b013df5e1c6b8bbca2899f92e9b0fe7ee293",
+  "modelDigest": "blake3:f1a69ed5982d35abfcee5da5a9ec50d993a927dbeb90ed19e6ca8efbe14c7160",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_unresolved.md",

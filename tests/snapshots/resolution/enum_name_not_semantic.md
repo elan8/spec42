@@ -43,7 +43,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:52a96ed63257e6aa657a59707b52382ade3d5e7c882c7a02722ca5d3a69a3191") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:52a96ed63257e6aa657a59707b52382ade3d5e7c882c7a02722ca5d3a69a3191") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

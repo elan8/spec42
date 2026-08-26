@@ -60,7 +60,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ecc45616a9ece40c6db379720f95bb5b181835609b1e8d70230bc0ce7cebc4ac") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ecc45616a9ece40c6db379720f95bb5b181835609b1e8d70230bc0ce7cebc4ac") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_related_types.md") (qualified-name "Associations::Binary"))) (kind kerml-association) (membership (kind owning) (visibility default)))

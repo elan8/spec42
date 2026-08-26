@@ -29,7 +29,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:679a4fe06c7c67328c2bb621d7f2d87f3b5f5af082690d3de4ddbbbdf17a1c53") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:679a4fe06c7c67328c2bb621d7f2d87f3b5f5af082690d3de4ddbbbdf17a1c53") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization_missing_library.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization_missing_library.md") (qualified-name "Model::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

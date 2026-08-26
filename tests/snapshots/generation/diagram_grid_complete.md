@@ -40,7 +40,7 @@ package GridExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c672833c613c1f19ddcf802c690c755bc0cc8f13de9a1632a530e6a0e6152a8a") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c672833c613c1f19ddcf802c690c755bc0cc8f13de9a1632a530e6a0e6152a8a") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (qualified-name "GridExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (path (named (kind package) (name "GridExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -159,7 +159,7 @@ package GridExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:570de65bf231a0b27a63d7d676b288ddf418842d8987a98b1128c69c83bd79d9",
+  "modelDigest": "blake3:dff08460f9a0ddf861d31b63c5e0a6ea04d446e5ad94f5bc27b5da56975ad7e2",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_complete.md",

@@ -40,7 +40,7 @@ package GeneralNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7c82e002d36b6a557d6cf0a1e6087cb6b4ca94433ddfaf9184e7f52fe160f521") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7c82e002d36b6a557d6cf0a1e6087cb6b4ca94433ddfaf9184e7f52fe160f521") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_general_unresolved.md") (qualified-name "GeneralNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_general_unresolved.md") (path (named (kind package) (name "GeneralNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -131,7 +131,7 @@ package GeneralNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:cbf08428a84cecd626e8883f922a212bf9434e5193b1c2e12c8393f39315f346",
+  "modelDigest": "blake3:5446d4a7aa7057b7528a303823c410dfc65091f4387e67e3b16ff29634f565ae",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_unresolved.md",

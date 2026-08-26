@@ -235,7 +235,7 @@ library package AHFCoreLib {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:53f8a257c9163ad449d72147501e6727bb87e96ee77f55df942e8e4a8f1a00a8") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:53f8a257c9163ad449d72147501e6727bb87e96ee77f55df942e8e4a8f1a00a8") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFProfileLib") (import (shape namespace) (recursive false))))))

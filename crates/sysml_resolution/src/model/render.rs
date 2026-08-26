@@ -1702,6 +1702,7 @@ mod tests {
             operator_expressions: Box::new([]),
             expression_arguments: Box::new([]),
             constructor_expressions: Box::new([]),
+            feature_chain_expressions: Box::new([]),
             metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),

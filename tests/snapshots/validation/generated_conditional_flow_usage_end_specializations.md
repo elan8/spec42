@@ -40,7 +40,7 @@ package FlowUsageEndSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1c0f21d2266c5d2c8336ca3947e160c1e15e53065d121a89a5499945bc55acfc") (contract-version "constructor-expression-specialization-v9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1c0f21d2266c5d2c8336ca3947e160c1e15e53065d121a89a5499945bc55acfc") (contract-version "feature-chain-expression-result-v10") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_usage_end_specializations.md") (qualified-name "FlowUsageEndSpecializations::Owner"))) (kind action-def) (membership (kind owning) (visibility default)))

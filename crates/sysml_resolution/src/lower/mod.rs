@@ -19,6 +19,7 @@ use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::DocumentationRecord;
 use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::ExpressionGrammar;
+use crate::lower::facts::FeatureChainExpressionRecord;
 use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
@@ -109,6 +110,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
+    pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
@@ -567,6 +569,64 @@ impl SemanticModelBuilder {
             value.value.expression.span,
         )?;
         self.declaration_facts[expression.index()].expression_result = Some(result);
+        if matches!(
+            value.value.expression.value,
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
+        ) {
+            let input_parameter = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts {
+                    direction: Some(ParameterDirection::In),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                input_parameter,
+                MembershipKind::Feature,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            let source_target = self.push_typed_declaration(
+                document,
+                Some(input_parameter),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                source_target,
+                MembershipKind::Feature,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            let subsetting_chain = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                subsetting_chain,
+                MembershipKind::Owning,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            self.feature_chain_expressions
+                .push(FeatureChainExpressionRecord {
+                    expression,
+                    result,
+                    input_parameter,
+                    source_target,
+                    subsetting_chain,
+                });
+        }
         self.record_operator_expression(document, expression, result, &value.value.expression)?;
         if matches!(value.value.expression.value, Expression::Constructor { .. }) {
             self.constructor_expressions
@@ -1217,6 +1277,7 @@ impl SemanticModelBuilder {
             operator_expressions: self.operator_expressions.into_boxed_slice(),
             expression_arguments: self.expression_arguments.into_boxed_slice(),
             constructor_expressions: self.constructor_expressions.into_boxed_slice(),
+            feature_chain_expressions: self.feature_chain_expressions.into_boxed_slice(),
             metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),

@@ -48,7 +48,7 @@ package Circular {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:33b40769c2b01f3ecc9bf9406b603b8c7dd94965ced45e5f4123464ed99ca427") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:33b40769c2b01f3ecc9bf9406b603b8c7dd94965ced45e5f4123464ed99ca427") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::A"))) (kind class-def) (membership (kind owning) (visibility default)))

@@ -88,7 +88,7 @@ package 'Packet Usage' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:77b2e143982006a0827a184bf441f5e1ac0b291f4e74bf124afed2eeac65e8ae") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:77b2e143982006a0827a184bf441f5e1ac0b291f4e74bf124afed2eeac65e8ae") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Packets") (import (shape namespace) (recursive false))))))

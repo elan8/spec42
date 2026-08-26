@@ -2121,6 +2121,54 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::FeatureChainExpressionResult {
+            if matches!(
+                self.resolution
+                    .feature_chain_expression_specialization_status,
+                crate::resolve::results::FeatureChainExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for chain in self.resolution.feature_chain_expression_projections.iter() {
+                let structurally_complete =
+                    self.storage
+                        .declaration(chain.result)
+                        .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self
+                            .storage
+                            .declaration(chain.input_parameter)
+                            .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self.storage.declaration(chain.source_target).is_some_and(
+                            |declaration| declaration.owner == Some(chain.input_parameter),
+                        )
+                        && self
+                            .storage
+                            .declaration(chain.subsetting_chain)
+                            .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self.storage.declaration(chain.target_feature).is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    chain.result,
+                    chain.subsetting_chain,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2143,9 +2191,7 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::IndexExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::ConstructorExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::ConstructorExpression => unreachable!("handled above"),
-            SpecializationCheckKind::FeatureChainExpressionResult => {
-                SpecializationCheckPrerequisite::FeatureChainSourceTargetAndSubsetting
-            }
+            SpecializationCheckKind::FeatureChainExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::FeatureReferenceExpressionResult => {
                 SpecializationCheckPrerequisite::FeatureReferenceReferentAndResult
             }

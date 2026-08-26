@@ -39,7 +39,7 @@ package 'Action Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:09ac2c25b2ccabae242821ffc66b9fef46f1dcfe1c7e2b0ff4222b33e9f10336") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:09ac2c25b2ccabae242821ffc66b9fef46f1dcfe1c7e2b0ff4222b33e9f10336") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

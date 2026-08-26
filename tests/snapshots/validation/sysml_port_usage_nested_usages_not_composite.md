@@ -85,7 +85,7 @@ package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:633263db47c0a5fd62ce0e9618f1be2f3356b8c13d365fe1057d8f7347c25b0d") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:633263db47c0a5fd62ce0e9618f1be2f3356b8c13d365fe1057d8f7347c25b0d") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

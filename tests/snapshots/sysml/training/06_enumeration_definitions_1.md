@@ -47,7 +47,7 @@ package 'Enumeration Definitions-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74b4c9d5c0a1e27adf44c5977efe75a5f93f22dda16c49ff938f2cd70bf6e848") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74b4c9d5c0a1e27adf44c5977efe75a5f93f22dda16c49ff938f2cd70bf6e848") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

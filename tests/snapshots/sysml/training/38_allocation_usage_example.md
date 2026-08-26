@@ -82,7 +82,7 @@ package 'Allocation Usage Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:203bc71c633fdc6da78269450cdcb30e3e7c97b02a20f12b4c406be0f17269b0") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:203bc71c633fdc6da78269450cdcb30e3e7c97b02a20f12b4c406be0f17269b0") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel"))) (kind package) (membership (kind owning) (visibility default)))

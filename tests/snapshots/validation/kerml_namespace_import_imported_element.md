@@ -34,7 +34,7 @@ package Model { import Library::*; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f1d7fb9656c4bea1615a922a9ad424e3bdfd64be06a8aa4f6c317d6421cdca6e") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f1d7fb9656c4bea1615a922a9ad424e3bdfd64be06a8aa4f6c317d6421cdca6e") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_namespace_import_imported_element.md") (qualified-name "Library"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_namespace_import_imported_element.md") (qualified-name "Library::Imported"))) (kind part-def) (membership (kind owning) (visibility default)))

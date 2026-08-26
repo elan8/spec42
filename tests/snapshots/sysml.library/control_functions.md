@@ -543,7 +543,7 @@ standard library package ControlFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d2293914690bae2b9666d1cf12a83b9bea4663d45fd5c59bc81f661f7d0dfd43") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d2293914690bae2b9666d1cf12a83b9bea4663d45fd5c59bc81f661f7d0dfd43") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines functions that correspond to operators in the KerML expression notation \n\t * for which one or more operands are expressions whose evaluation is determined by another operand.\n\t "))))
     (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

@@ -94,7 +94,7 @@ package ViewTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (kind concern-def) (membership (kind owning) (visibility default)))

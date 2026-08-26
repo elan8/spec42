@@ -103,7 +103,7 @@ package '15_12-Compound Value Type' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text "\n\t * Real world user models would use quantity and vector types\n\t * from library models. They are included here for the purpose\n\t * of showing how such attribute defs can be defined.\n\t "))))
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

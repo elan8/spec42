@@ -53,7 +53,7 @@ package ItemTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17aff5b295c11e4a8c2444e4e7abc4f4b80c26d1eb872ab5bb3bb67aca633c68") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17aff5b295c11e4a8c2444e4e7abc4f4b80c26d1eb872ab5bb3bb67aca633c68") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A"))) (kind item-def) (membership (kind owning) (visibility public)))

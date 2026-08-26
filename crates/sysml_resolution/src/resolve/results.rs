@@ -87,6 +87,23 @@ pub(crate) enum ConstructorExpressionSpecializationStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum FeatureChainExpressionSpecializationStatus {
+    Complete,
+    #[default]
+    Unresolved,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureChainExpressionProjection {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) input_parameter: DeclarationId,
+    pub(crate) source_target: DeclarationId,
+    pub(crate) target_feature: DeclarationId,
+    pub(crate) subsetting_chain: DeclarationId,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct ConstructorExpressionProjection {
     pub(crate) expression: DeclarationId,
@@ -112,6 +129,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) constructor_expression_specialization_status:
         ConstructorExpressionSpecializationStatus,
     pub(crate) constructor_expression_anchor: Option<LibrarySpecializationAnchor>,
+    pub(crate) feature_chain_expression_specialization_status:
+        FeatureChainExpressionSpecializationStatus,
+    pub(crate) feature_chain_expression_projections: Box<[FeatureChainExpressionProjection]>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -184,6 +204,20 @@ impl ResolutionResults {
             constructor_expression_projection_status,
             constructor_expression_specialization_status,
             constructor_expression_anchor,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_feature_chain_expressions(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        feature_chain_expression_projections: Box<[FeatureChainExpressionProjection]>,
+        feature_chain_expression_specialization_status: FeatureChainExpressionSpecializationStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            feature_chain_expression_projections,
+            feature_chain_expression_specialization_status,
             ..self
         }
     }

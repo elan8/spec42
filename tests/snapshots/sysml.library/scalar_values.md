@@ -58,7 +58,7 @@ standard library package ScalarValues {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2da3f0f882de2304c481cc3bc44d33be9421f90ab98191373b36d093aa90d5bf") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2da3f0f882de2304c481cc3bc44d33be9421f90ab98191373b36d093aa90d5bf") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains a basic set of primitive scalar (non-collection) data types. \n\t * These include Boolean and String types and a hierarchy of concrete Number types, from \n\t * the most general type of Complex numbers to the most specific type of Positive integers.</p>\n\t "))))
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (path (named (kind library-package) (name "ScalarValues")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false))))))

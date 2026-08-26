@@ -2687,7 +2687,7 @@ standard library package SysML {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1aa7c1ab3e9cf268e133ef4f9ba7e93c050c2b6f0191aa10e3369505cb966516") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1aa7c1ab3e9cf268e133ef4f9ba7e93c050c2b6f0191aa10e3369505cb966516") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sys_ml.md") (qualified-name "SysML"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains a reflective KerML model of the KerML abstract syntax.\n\t "))))
     (declaration (id (node (document "memory://snapshot/sys_ml.md") (path (named (kind library-package) (name "SysML")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

@@ -136,7 +136,7 @@ standard library package Metaobjects {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17fdd9335fdd59579b9677b75a3df83454d2a5c529007cc2ceaba22762f091a7") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17fdd9335fdd59579b9677b75a3df83454d2a5c529007cc2ceaba22762f091a7") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Metaclasses and Features that are related to the typing of syntactic and semantic metadata.\n\t "))))
     (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Object") (import (shape membership) (recursive false))))))

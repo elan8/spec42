@@ -58,7 +58,7 @@ package Classifiers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:715d0cd223e7dbf7c86afe8131c35b26cfcefd7525691936f6f2fc9cc129b41d") (contract-version "constructor-expression-specialization-v9"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:715d0cd223e7dbf7c86afe8131c35b26cfcefd7525691936f6f2fc9cc129b41d") (contract-version "feature-chain-expression-result-v10"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classifiers.md") (qualified-name "Classifiers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/classifiers.md") (qualified-name "Classifiers::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
