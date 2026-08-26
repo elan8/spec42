@@ -159,7 +159,7 @@ package GridExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f39c7a0be8f3e70fdf97589dba0b9e8108a646fa46b4d838dd181497248d7b04",
+  "modelDigest": "blake3:7f3a9c087896355a9a01ad7f93898becdcca0bbf6e8034116870b204cd5df859",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_complete.md",

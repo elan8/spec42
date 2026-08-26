@@ -299,12 +299,24 @@ pub(crate) fn build_inherited_name_index(
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
 ) -> Result<NameIndex, ResolutionError> {
+    build_inherited_name_index_for_scopes(declarations, direct_names, ancestor_closures, None)
+}
+
+pub(crate) fn build_inherited_name_index_for_scopes(
+    declarations: &[Declaration],
+    direct_names: &NameIndex,
+    ancestor_closures: &[Box<[DeclarationId]>],
+    scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
+) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
     for (index, ancestors) in ancestor_closures.iter().enumerate() {
         if ancestors.is_empty() {
             continue;
         }
         let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if scope_filter.is_some_and(|filter| !filter.contains(&child)) {
+            continue;
+        }
         for &ancestor in ancestors.iter() {
             for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
                 for &candidate in candidates {
@@ -358,55 +370,6 @@ pub(crate) fn build_inherited_name_index(
         cursor = end;
     }
     NameIndex::build(visible)
-}
-
-/// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)
-/// with entries reachable through each declaration's canonical effective types. Effective typing
-/// includes direct FeatureTyping and typing inherited transitively through Subsetting and
-/// Redefinition. Every name directly owned by an effective type, or inherited by that type, becomes
-/// a candidate for the declaration's member scope. The original Subclassification-derived entries
-/// are preserved unchanged.
-pub(crate) fn extend_inherited_names_with_effective_types(
-    direct_names: &NameIndex,
-    inherited_names: NameIndex,
-    effective_types: &crate::resolve::effective_types::EffectiveTypes,
-    declaration_count: usize,
-    scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
-) -> Result<NameIndex, ResolutionError> {
-    let mut entries: Vec<(NameKey, DeclarationId)> = Vec::new();
-    for index in 0..declaration_count {
-        let usage = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        if scope_filter.is_some_and(|filter| !filter.contains(&usage)) {
-            continue;
-        }
-        for &(target, _) in effective_types.row(usage) {
-            for source in [direct_names, &inherited_names] {
-                for (name, candidates) in source.entries_for_owner(Some(target)) {
-                    for &candidate in candidates {
-                        entries.push((
-                            NameKey {
-                                owner: Some(usage),
-                                name,
-                            },
-                            candidate,
-                        ));
-                    }
-                }
-            }
-        }
-    }
-    if entries.is_empty() {
-        return Ok(inherited_names);
-    }
-    for (index, keys) in inherited_names.keys.iter().enumerate() {
-        for &candidate in inherited_names.ranges[index]
-            .slice(&inherited_names.candidates)
-            .unwrap_or_default()
-        {
-            entries.push((*keys, candidate));
-        }
-    }
-    NameIndex::build(entries)
 }
 
 pub(crate) fn build_direct_name_index(

@@ -9717,7 +9717,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:e878dd88a91cc87447002d7c7ece9cb214690062c369ea76957f8116a680eac9",
+  "modelDigest": "blake3:99f411d3d8ad9512f7b5c08db6c9d99bad643992a2e9783b1c599ca90d76bef4",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",

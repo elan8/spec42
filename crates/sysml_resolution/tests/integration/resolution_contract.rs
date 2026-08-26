@@ -918,6 +918,52 @@ fn qualified_inherited_member_hides_the_feature_it_redefines() {
     );
 }
 
+/// KerML 8.3.1.8 removes redefined Features from a Type's inheritedMemberships. Projecting a
+/// Feature's effective Type into its local member scope must preserve that same visible-membership
+/// set rather than reintroducing a shadowed ancestor alongside the redefining Feature.
+#[test]
+fn effective_type_scope_excludes_a_member_shadowed_by_an_owned_redefinition() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tclass Base { feature self; }\n\
+         \tclass Derived :> Base { feature self redefines Base::self; }\n\
+         \tfeature holder : Derived { feature selected default self; }\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"self\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Derived::self\")))))"
+        ),
+        "expected the effective Type's owned `self` to hide the redefined `Base::self`, got:\n\
+         {output}"
+    );
+}
+
+/// KerML 8.3.1.8 defines every owned Specialization general as a supertype. In particular, a
+/// Subsetting makes members owned by the subsetted Feature inherited members of the subsetting
+/// Feature; carrying only its effective FeatureTyping loses this scope.
+#[test]
+fn a_subsetting_feature_inherits_members_owned_by_the_subsetted_feature() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tclass Context {\n\
+         \t\tfeature general { feature nested; }\n\
+         \t\tfeature specific subsets general { feature selected subsets nested; }\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"nested\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Context::general::nested\")))))"
+        ),
+        "expected the subsetted Feature's owned member to be inherited, got:\n{output}"
+    );
+}
+
 #[test]
 fn parameter_default_value_with_member_access_resolves() {
     // The `out v_out : SpeedValue = vel.v;` shape deferred by `494b0ba6`: the parameter

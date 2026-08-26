@@ -24,7 +24,7 @@ use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::build_direct_name_index;
 use crate::resolve::names::build_effective_import_indexes;
 use crate::resolve::names::build_inherited_name_index;
-use crate::resolve::names::extend_inherited_names_with_effective_types;
+use crate::resolve::names::build_inherited_name_index_for_scopes;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
 use crate::resolve::names::LookupTarget;
@@ -547,13 +547,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
-        // Effective Feature typing includes types inherited through Subsetting and Redefinition,
-        // not only directly-authored FeatureTyping. Since those relationships themselves use the
-        // effective member scope, settle the two together at a deterministic pass barrier. This
+        // A Feature's supertypes include its FeatureTyping, Subsetting, and Redefinition generals.
+        // Since Subsetting and Redefinition themselves use that inherited member scope, settle the
+        // specialization closure and those two relationship families together at a deterministic
+        // pass barrier. This
         // is required for nested redefinitions such as `:>> quantityDimension { :>>
         // quantityPowerFactors = ...; }`: the outer redefinition first inherits
         // `QuantityDimension`, which makes the inner redefinition's target visible on the next
-        // pass. The canonical effective-type derivation is shared with the published type index.
+        // pass.
         let relationship_pass_limit = declarations
             .len()
             .checked_add(1)
@@ -573,11 +574,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     .owner;
             }
         }
-        // Qualified relationship targets can traverse an intermediate Feature's effective member
-        // scope (`Shape::faces::edges`). Include every declaration whose authored long or short
-        // name occurs in a non-final segment. This is the dependency-complete subset needed by
-        // these relationship queries; building effective member entries for every declaration on
-        // every settlement pass would make unrelated model width part of their cost.
+        // Qualified relationship targets can traverse a named intermediate Feature. Add every
+        // declaration whose authored long or short name occurs before the final segment; this is
+        // the dependency-complete owner set needed during settlement. The final publication index
+        // is still rebuilt without a filter after the relationships converge.
         let mut relationship_intermediate_names = std::collections::BTreeSet::new();
         for index in subsetting_slots.iter().chain(&redefinition_slots) {
             let (segments, _) = paths
@@ -605,7 +605,6 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 );
             }
         }
-        let mut settled_effective_types = None;
         for _ in 0..relationship_pass_limit {
             let previous = subsetting_slots
                 .iter()
@@ -619,28 +618,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     _ => None,
                 })
                 .collect::<Vec<_>>();
-            let edges = references
-                .iter()
-                .enumerate()
-                .filter_map(|(index, reference)| {
-                    let ResolutionStatus::Resolved(target) = outcomes[index] else {
-                        return None;
-                    };
-                    Some((reference.source(), target, reference.kind()))
-                });
-            let effective_types =
-                crate::resolve::effective_types::derive_effective_types_from_edges(
-                    declarations.len(),
-                    edges,
-                )?;
-            inherited_names = extend_inherited_names_with_effective_types(
+            let (specialization_closures, _) =
+                build_specialization_ancestor_closures(declarations, references, &outcomes)?;
+            inherited_names = build_inherited_name_index_for_scopes(
+                declarations,
                 &direct_names,
-                build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?,
-                &effective_types,
-                declarations.len(),
+                &specialization_closures,
                 Some(&relationship_scopes),
             )?;
-            settled_effective_types = Some(effective_types);
 
             for index in subsetting_slots.iter().chain(&redefinition_slots).copied() {
                 work.downstream_evaluations = work
@@ -701,15 +686,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             converged = false;
             solver_status = SolverStatus::NonConverged;
         } else {
-            inherited_names = extend_inherited_names_with_effective_types(
-                &direct_names,
-                build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?,
-                settled_effective_types
-                    .as_ref()
-                    .ok_or(ResolutionError::InvalidStorage)?,
-                declarations.len(),
-                None,
-            )?;
+            let (specialization_closures, _) =
+                build_specialization_ancestor_closures(declarations, references, &outcomes)?;
+            inherited_names =
+                build_inherited_name_index(declarations, &direct_names, &specialization_closures)?;
             // KerML 8.2.3.5.3 local resolution includes a Type's inherited memberships. These
             // ordinary Any-domain references have no role in settling imports, ancestry, or
             // effective typing, so resolve them exactly once against the final canonical scope.
@@ -890,10 +870,41 @@ pub(crate) fn build_ancestor_closures<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
 ) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, |kind| {
+        kind == ReferenceKind::Subclassification
+    })
+}
+
+/// Computes the full Type-generalization closure used by inherited-membership lookup after all
+/// authored specialization families have settled. KerML 8.3.1.8 defines `Type::supertypes` from
+/// every owned Specialization, not only Subclassification: FeatureTyping, Subsetting, and
+/// Redefinition therefore contribute the visible members of their general Types too.
+fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, |kind| {
+        matches!(
+            kind,
+            ReferenceKind::Subclassification
+                | ReferenceKind::FeatureTyping
+                | ReferenceKind::Subsetting
+                | ReferenceKind::Redefinition
+        )
+    })
+}
+
+fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    includes: impl Fn(ReferenceKind) -> bool,
+) -> Result<AncestorClosures, ResolutionError> {
     let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
         vec![Default::default(); declarations.len()];
     for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::Subclassification {
+        if !includes(reference.kind()) {
             continue;
         }
         if let ResolutionStatus::Resolved(target) = outcomes[index] {
@@ -904,28 +915,37 @@ pub(crate) fn build_ancestor_closures<R: ResolutionReferenceFact>(
         }
     }
 
+    let mut dependants = vec![Vec::new(); declarations.len()];
     let mut closure = direct_parents.clone();
-    let pass_limit = declarations
-        .len()
-        .checked_add(1)
-        .ok_or(ResolutionError::Capacity)?;
-    for _ in 0..pass_limit {
-        let mut next = closure.clone();
-        let mut changed = false;
-        for (index, parents) in direct_parents.iter().enumerate() {
-            for parent in parents {
-                for ancestor in
-                    std::iter::once(*parent).chain(closure[parent.index()].iter().copied())
-                {
-                    if next[index].insert(ancestor) {
-                        changed = true;
-                    }
-                }
-            }
+    let mut queue = std::collections::VecDeque::new();
+    for (source, parents) in direct_parents.iter().enumerate() {
+        let source = DeclarationId::from_index(source).map_err(|_| ResolutionError::Capacity)?;
+        for parent in parents {
+            dependants
+                .get_mut(parent.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(source);
+            queue.push_back((source, *parent));
         }
-        closure = next;
-        if !changed {
-            break;
+    }
+    for row in &mut dependants {
+        row.sort_unstable();
+        row.dedup();
+    }
+    // Each finite `(source, ancestor)` fact is inserted and queued once. This reaches the same
+    // deterministic transitive closure as repeated whole-model passes without making hierarchy
+    // depth multiply the cost of copying every declaration's row.
+    while let Some((source, ancestor)) = queue.pop_front() {
+        for dependant in dependants
+            .get(source.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+        {
+            let row = closure
+                .get_mut(dependant.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if row.insert(ancestor) {
+                queue.push_back((*dependant, ancestor));
+            }
         }
     }
 
