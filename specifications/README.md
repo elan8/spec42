@@ -44,3 +44,13 @@ cargo run --locked -p spec42-constraint-manifest -- audit \
 
 Consumers use the `spec42_constraint_manifest` library API rather than re-parsing or
 reclassifying manifest entries.
+
+The manifest also preserves closed, officially reported corrections where a pinned XMI
+`specializesFromLibrary` spelling does not name an element in the normative library. Each record
+retains the source spelling, corrected concrete anchor, exact rule identity, and OMG issue:
+
+- `KERML11-207` corrects `Performance::enclosedPerformance` to `enclosedPerformances`.
+- `KERML11-205` corrects `Performance::subperformance` to `subperformances`.
+
+Refresh derives only these exact rule-scoped corrections; runtime consumers use the corrected
+typed contract and never try alternate spellings.

@@ -8886,6 +8886,7 @@ mod tests {
         .unwrap();
         let manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications: vec![SpecificationManifest {
                 name: "KerML".to_string(),
                 version: "1.0".to_string(),
@@ -9000,6 +9001,7 @@ mod tests {
         .unwrap();
         let manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications: vec![SpecificationManifest {
                 name: "SysML".to_string(),
                 version: "2.0".to_string(),
@@ -9060,6 +9062,7 @@ mod tests {
         .unwrap();
         let manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications: vec![SpecificationManifest {
                 name: "SysML".to_string(),
                 version: "2.0".to_string(),

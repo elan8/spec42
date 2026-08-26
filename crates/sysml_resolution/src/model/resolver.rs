@@ -454,7 +454,9 @@ mod tests {
                             contract.predicate,
                             contract.owner_metaclasses.clone(),
                             contract.true_anchor.clone(),
-                            contract.anchor.clone(),
+                            manifest
+                                .executable_library_anchor(&entry.rule_id, &contract.anchor)
+                                .to_string(),
                         )
                     })
             })

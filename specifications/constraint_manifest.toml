@@ -1,4 +1,16 @@
-schema_version = 16
+schema_version = 17
+
+[[library_anchor_corrections]]
+rule_id = "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization"
+source_anchor = "Performances::Performance::enclosedPerformance"
+corrected_anchor = "Performances::Performance::enclosedPerformances"
+issue = "kerml11_207"
+
+[[library_anchor_corrections]]
+rule_id = "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization"
+source_anchor = "Performances::Performance::subperformance"
+corrected_anchor = "Performances::Performance::subperformances"
+issue = "kerml11_205"
 
 [[specifications]]
 name = "KerML"

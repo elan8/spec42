@@ -8,9 +8,10 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 /// The compatible schema understood by this crate and emitted by the refresh tool.
-// Schema 16 adds the closed Systems::Actions and Systems::Requirements derived-property contracts.
+// Schema 17 preserves typed provenance for official corrections to erroneous library-anchor
+// spellings in the pinned normative constraints.
 // The committed manifest is refreshed only at the coordinated publication barrier.
-pub const SCHEMA_VERSION: u32 = 16;
+pub const SCHEMA_VERSION: u32 = 17;
 
 /// Closed identity of every specification the manifest admits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -68,7 +69,27 @@ pub const PINNED_SPECIFICATIONS: &[PinnedSpecification] =
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConstraintManifest {
     pub schema_version: u32,
+    #[serde(default)]
+    pub library_anchor_corrections: Vec<LibraryAnchorCorrection>,
     pub specifications: Vec<SpecificationManifest>,
+}
+
+/// One official correction from an erroneous anchor spelling in the pinned XMI to the concrete
+/// standard-library identity. It is generated and validated as manifest provenance; runtime
+/// resolution consumes `corrected_anchor` and never guesses a fallback name.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LibraryAnchorCorrection {
+    pub rule_id: String,
+    pub source_anchor: String,
+    pub corrected_anchor: String,
+    pub issue: LibraryAnchorCorrectionIssue,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum LibraryAnchorCorrectionIssue {
+    Kerml11_207,
+    Kerml11_205,
 }
 
 impl ConstraintManifest {
@@ -119,6 +140,60 @@ impl ConstraintManifest {
                 ));
             }
         }
+        let mut corrected_rules = std::collections::BTreeSet::new();
+        for correction in &self.library_anchor_corrections {
+            if !corrected_rules.insert(correction.rule_id.as_str()) {
+                return Err(format!(
+                    "constraint manifest contains duplicate library-anchor correction for {:?}",
+                    correction.rule_id
+                ));
+            }
+            let Some(entry) = self.find_rule(&correction.rule_id) else {
+                return Err(format!(
+                    "constraint manifest library-anchor correction names missing rule {:?}",
+                    correction.rule_id
+                ));
+            };
+            let source_matches = entry
+                .conditional_specializes_from_library
+                .as_ref()
+                .is_some_and(|contract| contract.anchor == correction.source_anchor);
+            let exact_correction = matches!(
+                (
+                    correction.rule_id.as_str(),
+                    correction.source_anchor.as_str(),
+                    correction.corrected_anchor.as_str(),
+                    correction.issue,
+                ),
+                (
+                    "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization",
+                    "Performances::Performance::enclosedPerformance",
+                    "Performances::Performance::enclosedPerformances",
+                    LibraryAnchorCorrectionIssue::Kerml11_207,
+                ) | (
+                    "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization",
+                    "Performances::Performance::subperformance",
+                    "Performances::Performance::subperformances",
+                    LibraryAnchorCorrectionIssue::Kerml11_205,
+                )
+            );
+            if !source_matches || !exact_correction {
+                return Err(format!(
+                    "constraint manifest has an unsupported library-anchor correction for {:?}",
+                    correction.rule_id
+                ));
+            }
+        }
+        for rule_id in [
+            "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization",
+            "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization",
+        ] {
+            if self.find_rule(rule_id).is_some() && !corrected_rules.contains(rule_id) {
+                return Err(format!(
+                    "constraint manifest is missing the official library-anchor correction for {rule_id:?}"
+                ));
+            }
+        }
         Ok(())
     }
 
@@ -127,6 +202,22 @@ impl ConstraintManifest {
             .iter()
             .flat_map(|specification| &specification.constraints)
             .find(|entry| entry.rule_id == rule_id)
+    }
+
+    /// Returns the concrete standard-library identity for a pinned source anchor. Official
+    /// corrections are applied only through the validated exact-rule record; all other anchors
+    /// pass through unchanged.
+    pub fn executable_library_anchor<'a>(
+        &'a self,
+        rule_id: &str,
+        source_anchor: &'a str,
+    ) -> &'a str {
+        self.library_anchor_corrections
+            .iter()
+            .find(|correction| correction.rule_id == rule_id)
+            .map_or(source_anchor, |correction| {
+                correction.corrected_anchor.as_str()
+            })
     }
 
     /// Returns a rule together with the pinned specification that owns its normative identity.
@@ -2079,6 +2170,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
         };
         let manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications: vec![SpecificationManifest {
                 name: "KerML".to_string(),
                 version: "1.0".to_string(),
@@ -2125,6 +2217,30 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
                 Some(pinned.specification_id)
             );
         }
+    }
+
+    #[test]
+    fn official_library_anchor_corrections_are_complete_and_rule_scoped() {
+        let manifest_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../..")
+            .join("specifications/constraint_manifest.toml");
+        let mut manifest = ConstraintManifest::load_toml(&manifest_path).unwrap();
+        assert_eq!(manifest.library_anchor_corrections.len(), 2);
+        assert_eq!(
+            manifest.library_anchor_corrections[0].issue,
+            LibraryAnchorCorrectionIssue::Kerml11_207
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[1].issue,
+            LibraryAnchorCorrectionIssue::Kerml11_205
+        );
+
+        let removed = manifest.library_anchor_corrections.pop().unwrap();
+        assert!(manifest.validate_pinned_inputs().is_err());
+        manifest.library_anchor_corrections.push(removed);
+        manifest.library_anchor_corrections[0].corrected_anchor =
+            "Performances::Performance::notADeclaredFeature".to_string();
+        assert!(manifest.validate_pinned_inputs().is_err());
     }
 
     #[test]
@@ -2190,6 +2306,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .collect::<Vec<_>>();
         let mut manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications,
         };
         manifest.validate_pinned_inputs().unwrap();
@@ -2251,6 +2368,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .collect::<Vec<_>>();
         let mut manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications,
         };
         let entry = ConstraintManifestEntry {
