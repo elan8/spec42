@@ -41,6 +41,7 @@ use crate::resolve::implied::synthesize_constructor_expression_result_specializa
 use crate::resolve::implied::synthesize_feature_chain_expression_result_specializations;
 use crate::resolve::implied::synthesize_feature_reference_expression_result_specializations;
 use crate::resolve::implied::synthesize_implied_relationships;
+use crate::resolve::implied::synthesize_invocation_expression_result_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
@@ -270,6 +271,31 @@ impl Lowered {
             });
             implied.dedup();
             resolution.settle_feature_reference_expressions(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
+        };
+        let resolution = if storage.invocations.is_empty() {
+            resolution
+        } else {
+            let prerequisite_types = derive_effective_types(&storage, &resolution)?;
+            let synthesis = synthesize_invocation_expression_result_specializations(
+                &storage,
+                &resolution,
+                &prerequisite_types,
+            )?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_invocation_expressions(
                 implied.into_boxed_slice(),
                 synthesis.projections,
                 synthesis.status,

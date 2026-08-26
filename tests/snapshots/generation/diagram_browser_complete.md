@@ -159,7 +159,7 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:26f4764c1a6091a0975663b93e8b2c1c8d9a588b809b2c9e266346fe60fd60c1",
+  "modelDigest": "blake3:9a8d1e5dceda7935adf354393bb7b16d936645f6eb309a1d6118a6b2e08b6479",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",

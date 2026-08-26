@@ -2208,6 +2208,36 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::InvocationExpressionBehaviorResult {
+            if matches!(
+                self.resolution.invocation_expression_projection_status,
+                crate::resolve::results::InvocationExpressionProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for invocation in self.resolution.invocation_expression_projections.iter() {
+                if invocation.instantiated_type_kind.is_function() {
+                    continue;
+                }
+                match self.conformance(
+                    invocation.result,
+                    invocation.instantiated_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2235,7 +2265,7 @@ impl<D> SemanticModel<D> {
                 unreachable!("handled above")
             }
             SpecializationCheckKind::InvocationExpressionBehaviorResult => {
-                SpecializationCheckPrerequisite::InvocationInstantiatedTypeAndResult
+                unreachable!("handled above")
             }
             SpecializationCheckKind::InvocationExpression => {
                 SpecializationCheckPrerequisite::InvocationInstantiatedType

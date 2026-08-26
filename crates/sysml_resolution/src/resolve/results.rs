@@ -101,6 +101,27 @@ pub(crate) enum FeatureReferenceExpressionSpecializationStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum InvocationExpressionProjectionStatus {
+    Complete,
+    #[default]
+    Unresolved,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum InvocationInstantiatedTypeKind {
+    Function,
+    FeatureTypedByFunction,
+    NonFunctionType,
+    NonFunctionFeature,
+}
+
+impl InvocationInstantiatedTypeKind {
+    pub(crate) const fn is_function(self) -> bool {
+        matches!(self, Self::Function | Self::FeatureTypedByFunction)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct FeatureChainExpressionProjection {
     pub(crate) expression: DeclarationId,
@@ -123,6 +144,14 @@ pub(crate) struct ConstructorExpressionProjection {
     pub(crate) expression: DeclarationId,
     pub(crate) result: DeclarationId,
     pub(crate) instantiated_type: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct InvocationExpressionProjection {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) instantiated_type: DeclarationId,
+    pub(crate) instantiated_type_kind: InvocationInstantiatedTypeKind,
 }
 
 #[derive(Debug)]
@@ -149,6 +178,8 @@ pub(crate) struct ResolutionResults {
     pub(crate) feature_reference_expression_status: FeatureReferenceExpressionSpecializationStatus,
     pub(crate) feature_reference_expression_projections:
         Box<[FeatureReferenceExpressionProjection]>,
+    pub(crate) invocation_expression_projection_status: InvocationExpressionProjectionStatus,
+    pub(crate) invocation_expression_projections: Box<[InvocationExpressionProjection]>,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -249,6 +280,20 @@ impl ResolutionResults {
             implied_relationships,
             feature_reference_expression_projections,
             feature_reference_expression_status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_invocation_expressions(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        invocation_expression_projections: Box<[InvocationExpressionProjection]>,
+        invocation_expression_projection_status: InvocationExpressionProjectionStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            invocation_expression_projections,
+            invocation_expression_projection_status,
             ..self
         }
     }

@@ -27,6 +27,9 @@ use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
 use crate::resolve::results::FeatureReferenceExpressionProjection;
 use crate::resolve::results::FeatureReferenceExpressionSpecializationStatus;
 use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::results::InvocationExpressionProjection;
+use crate::resolve::results::InvocationExpressionProjectionStatus;
+use crate::resolve::results::InvocationInstantiatedTypeKind;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -1148,6 +1151,131 @@ pub(crate) fn synthesize_feature_reference_expression_result_specializations(
     implied.dedup();
     projections.sort_by_key(|projection| projection.expression.0);
     Ok(FeatureReferenceExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+pub(crate) struct InvocationExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[InvocationExpressionProjection]>,
+    pub(crate) status: InvocationExpressionProjectionStatus,
+}
+
+/// Publishes the InvocationExpression's instantiated type, result, and Function classification as
+/// one phase-4 fact. This is the sole derivation of the OCL `is Function` predicate: a type is a
+/// Function when its concrete declaration or a Subclassification ancestor is one, while a Feature
+/// is Function-valued when any canonical effective type has that classification.
+pub(crate) fn synthesize_invocation_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    effective_types: &EffectiveTypes,
+) -> Result<InvocationExpressionSynthesis, ResolutionError> {
+    let (ancestors, cyclic) = build_ancestor_closures(
+        &storage.declarations,
+        &storage.references,
+        &resolution.outcomes,
+    )?;
+    let is_function_type = |target: DeclarationId| {
+        if cyclic.contains(&target) {
+            return None;
+        }
+        let direct = storage
+            .declaration(target)
+            .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction);
+        let inherited = ancestors.get(target.index()).is_some_and(|values| {
+            values.iter().any(|ancestor| {
+                storage
+                    .declaration(*ancestor)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction)
+            })
+        });
+        Some(direct || inherited)
+    };
+
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = InvocationExpressionProjectionStatus::Complete;
+    for invocation in storage.invocations.iter() {
+        let expression = invocation.declaration;
+        let Some(result) = storage
+            .declaration_facts(expression)
+            .and_then(|facts| facts.expression_result)
+        else {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(ResolutionStatus::Resolved(instantiated_type)) =
+            resolution.outcome(invocation.callee)
+        else {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(instantiated_type) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let feature = crate::resolve::is_feature_declaration(target.kind);
+        let instantiated_type_kind = if feature {
+            let mut typed_by_function = false;
+            let mut classification_complete = true;
+            for (effective_type, _) in effective_types.row(instantiated_type) {
+                match is_function_type(*effective_type) {
+                    Some(true) => typed_by_function = true,
+                    Some(false) => {}
+                    None => classification_complete = false,
+                }
+            }
+            if !classification_complete {
+                status = InvocationExpressionProjectionStatus::Unresolved;
+                continue;
+            }
+            if typed_by_function {
+                InvocationInstantiatedTypeKind::FeatureTypedByFunction
+            } else {
+                InvocationInstantiatedTypeKind::NonFunctionFeature
+            }
+        } else if !crate::resolve::DeclarationDomain::Type.accepts(target.kind) {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        } else {
+            match is_function_type(instantiated_type) {
+                Some(true) => InvocationInstantiatedTypeKind::Function,
+                Some(false) => InvocationInstantiatedTypeKind::NonFunctionType,
+                None => {
+                    status = InvocationExpressionProjectionStatus::Unresolved;
+                    continue;
+                }
+            }
+        };
+        if !instantiated_type_kind.is_function() {
+            implied.push(ImpliedRelationship {
+                kind: if feature {
+                    ReferenceKind::Subsetting
+                } else {
+                    ReferenceKind::FeatureTyping
+                },
+                source: result,
+                target: instantiated_type,
+            });
+        }
+        projections.push(InvocationExpressionProjection {
+            expression,
+            result,
+            instantiated_type,
+            instantiated_type_kind,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(InvocationExpressionSynthesis {
         implied_relationships: implied.into_boxed_slice(),
         projections: projections.into_boxed_slice(),
         status,

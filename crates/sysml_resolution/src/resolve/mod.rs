@@ -822,6 +822,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             feature_chain_expression_projections: Box::default(),
             feature_reference_expression_status: Default::default(),
             feature_reference_expression_projections: Box::default(),
+            invocation_expression_projection_status: Default::default(),
+            invocation_expression_projections: Box::default(),
             #[cfg(test)]
             work,
         },

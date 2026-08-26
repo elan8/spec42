@@ -82,6 +82,7 @@ package P {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b"))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "b")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "b")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "b")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -94,6 +95,9 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")))
+      (subtype (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F::p")))
       (featured-by (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")))
     )
@@ -105,10 +109,15 @@ package P {
       (subtype (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f")))
+      (effective-type (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")) (source inherited) (from (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")) (scopes any))
       (supertype (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (type (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")) (source direct))
+      (supertype (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")) (scopes any))
       (subtype (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f")) (scopes any feature))
     )
 )
