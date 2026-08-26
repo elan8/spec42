@@ -46,7 +46,7 @@ package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:664e993a933f9890ca02ad0903722e9d14bf6214d443016b804bbb50499843b3") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:664e993a933f9890ca02ad0903722e9d14bf6214d443016b804bbb50499843b3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_port_definition_conjugated_port_definition.md") (qualified-name "Ports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_port_definition_conjugated_port_definition.md") (qualified-name "Ports::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))

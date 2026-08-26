@@ -34,7 +34,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d557c1a87a521aa276580c656df0928dfdde08d93aeca279d28ec8374aea8603") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d557c1a87a521aa276580c656df0928dfdde08d93aeca279d28ec8374aea8603"))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_first"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissingFirst")))))

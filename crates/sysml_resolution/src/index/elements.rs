@@ -578,14 +578,47 @@ impl<D> SemanticModel<D> {
     /// elements, and a scan here would make each one cost the size of the model.
     pub(crate) fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
         record_visited_index_entries(2);
-        self.facts
+        let evaluated = self
+            .facts
             .evaluation
             .get(id.index())
             .copied()
             .flatten()
+            .or_else(|| {
+                slice_range(
+                    &self.facts.feature_value_order,
+                    &self.facts.feature_values,
+                    id,
+                )
+                .first()
+                .and_then(|index| self.storage.feature_values.get(*index as usize))
+                .and_then(|value| {
+                    self.facts
+                        .evaluation
+                        .get(value.value.index())
+                        .copied()
+                        .flatten()
+                })
+            });
+        evaluated
             .and_then(|index| self.evaluation.get(index as usize))
             .map(|fact| fact.state.clone())
             .unwrap_or(EvaluationState::NotApplicable)
+    }
+
+    pub(crate) fn evaluation_units_for(
+        &self,
+        id: DeclarationId,
+    ) -> &[crate::index::expressions::SettledUnit] {
+        let expression = slice_range(
+            &self.facts.feature_value_order,
+            &self.facts.feature_values,
+            id,
+        )
+        .first()
+        .and_then(|index| self.storage.feature_values.get(*index as usize))
+        .map_or(id, |value| value.value);
+        self.expressions.units(expression)
     }
 
     /// The authored and implied references this declaration is the source of, in canonical order.

@@ -12,17 +12,24 @@ use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::CanonicalDocument;
+use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionArgumentRecord;
 use crate::lower::facts::ExpressionGrammar;
+use crate::lower::facts::FeatureChainExpressionRecord;
+use crate::lower::facts::FeatureReferenceExpressionRecord;
 use crate::lower::facts::FeatureValueKind;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::MetadataAnnotationRecord;
+use crate::lower::facts::OperatorExpressionKind;
+use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
@@ -53,6 +60,7 @@ use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use sysml_v2_parser::ast::CollectionOperator;
 use sysml_v2_parser::ast::CommentBody;
 use sysml_v2_parser::ast::DeclarationName;
 use sysml_v2_parser::ast::ReferenceSeparator;
@@ -83,6 +91,12 @@ pub(crate) mod states;
 pub(crate) mod storage;
 pub(crate) mod views;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureValueEndpoints {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
     pub(crate) documents: Vec<AdmittedDocument>,
@@ -94,6 +108,12 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) references: Vec<AuthoredReference>,
     pub(crate) documentation: Vec<DocumentationRecord>,
     pub(crate) feature_values: Vec<FeatureValueRecord>,
+    pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
+    pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
+    pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
+    pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
+    pub(crate) feature_reference_expressions: Vec<FeatureReferenceExpressionRecord>,
+    pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
     pub(crate) unsupported: Vec<UnsupportedRecord>,
     pub(crate) recovery: Vec<RecoveryRecord>,
     pub(crate) evaluation_facts: Vec<PendingEvaluationFact>,
@@ -508,34 +528,238 @@ impl SemanticModelBuilder {
         )
     }
 
-    /// Records the authored spelling of a `FeatureValue` clause.
+    /// Constructs the canonical value Expression and result Feature for a `FeatureValue` clause.
     pub(crate) fn record_feature_value(
         &mut self,
+        document: DocumentIdx,
         declaration: DeclarationId,
         value: &Node<FeatureValue>,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<FeatureValueEndpoints, ConstructionError> {
         let kind = match value.value.kind {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
+        let expression = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::KermlExpression,
+            None,
+            value.value.expression.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            expression,
+            MembershipKind::Owning,
+            Visibility::Default,
+            value.value.expression.span,
+        )?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            value.value.expression.span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            result,
+            MembershipKind::Feature,
+            Visibility::Default,
+            value.value.expression.span,
+        )?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        if matches!(
+            value.value.expression.value,
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
+        ) {
+            let input_parameter = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts {
+                    direction: Some(ParameterDirection::In),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                input_parameter,
+                MembershipKind::Feature,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            let source_target = self.push_typed_declaration(
+                document,
+                Some(input_parameter),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                source_target,
+                MembershipKind::Feature,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            let subsetting_chain = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                value.value.expression.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                subsetting_chain,
+                MembershipKind::Owning,
+                Visibility::Default,
+                value.value.expression.span,
+            )?;
+            self.feature_chain_expressions
+                .push(FeatureChainExpressionRecord {
+                    expression,
+                    result,
+                    input_parameter,
+                    source_target,
+                    subsetting_chain,
+                });
+        }
+        if matches!(value.value.expression.value, Expression::FeatureRef(_)) {
+            self.feature_reference_expressions
+                .push(FeatureReferenceExpressionRecord { expression, result });
+        }
+        self.record_operator_expression(document, expression, result, &value.value.expression)?;
+        if matches!(value.value.expression.value, Expression::Constructor { .. }) {
+            self.constructor_expressions
+                .push(ConstructorExpressionRecord { expression, result });
+        }
+        let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
+            endpoints,
             kind,
             value.value.is_default,
             value.value.has_operator,
             value.value.span,
-        )
+        )?;
+        Ok(endpoints)
+    }
+
+    fn push_expression_argument(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        ordinal: u32,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let argument = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlExpression,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(argument, MembershipKind::Owning, Visibility::Default, span)?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(argument),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[argument.index()].expression_result = Some(result);
+        self.expression_arguments.push(ExpressionArgumentRecord {
+            expression,
+            argument,
+            result,
+            ordinal,
+        });
+        Ok(())
+    }
+
+    /// Materializes the ordered argument Expressions of the two operator metaclasses whose
+    /// specialization constraints consume `arguments->first().result`.
+    fn record_operator_expression(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        result: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let (kind, spans) = match &node.value {
+            Expression::Index { base, operands, .. } => (
+                OperatorExpressionKind::Index,
+                std::iter::once(base.span)
+                    .chain(
+                        operands
+                            .value
+                            .elements
+                            .iter()
+                            .map(|element| element.expression.span),
+                    )
+                    .collect::<Vec<_>>(),
+            ),
+            Expression::Select { base, selector } => {
+                let selector_span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*selector)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span;
+                (
+                    OperatorExpressionKind::Select,
+                    vec![base.span, selector_span],
+                )
+            }
+            Expression::CollectionOp {
+                op: CollectionOperator::Select,
+                base,
+                args,
+                brace_body: None,
+                ..
+            } => (
+                OperatorExpressionKind::Select,
+                std::iter::once(base.span)
+                    .chain(args.iter().map(|argument| argument.value.span))
+                    .collect::<Vec<_>>(),
+            ),
+            _ => return Ok(()),
+        };
+        self.operator_expressions.push(OperatorExpressionRecord {
+            expression,
+            result,
+            kind,
+        });
+        for (ordinal, span) in spans.into_iter().enumerate() {
+            self.push_expression_argument(
+                document,
+                expression,
+                u32::try_from(ordinal).map_err(|_| ConstructionError::Capacity)?,
+                span,
+            )?;
+        }
+        Ok(())
     }
 
     /// Records the authored feature value spelling of one declaration.
     ///
-    /// The value *expression* itself keeps travelling the existing operand-reference and
-    /// evaluation-classification path; this fact records only which of the five authored spellings
-    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written, which no other fact
-    /// preserves.
+    /// The record preserves both canonical endpoints and which of the five authored spellings
+    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written.
     pub(crate) fn push_feature_value(
         &mut self,
         declaration: DeclarationId,
+        endpoints: FeatureValueEndpoints,
         kind: FeatureValueKind,
         is_default: bool,
         has_operator: bool,
@@ -546,6 +770,8 @@ impl SemanticModelBuilder {
         }
         self.feature_values.push(FeatureValueRecord {
             declaration,
+            value: endpoints.expression,
+            result: endpoints.result,
             kind,
             is_default,
             has_operator,
@@ -861,6 +1087,30 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    pub(crate) fn push_expression_operand_reference(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::ExpressionOperand,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
     /// The site of a constraint-body expression: what the author wrote, and where.
     ///
     /// Records the expression; it does not classify it. What the expression evaluates to is phase
@@ -1030,6 +1280,12 @@ impl SemanticModelBuilder {
             references: self.references.into_boxed_slice(),
             documentation: self.documentation.into_boxed_slice(),
             feature_values: self.feature_values.into_boxed_slice(),
+            operator_expressions: self.operator_expressions.into_boxed_slice(),
+            expression_arguments: self.expression_arguments.into_boxed_slice(),
+            constructor_expressions: self.constructor_expressions.into_boxed_slice(),
+            feature_chain_expressions: self.feature_chain_expressions.into_boxed_slice(),
+            feature_reference_expressions: self.feature_reference_expressions.into_boxed_slice(),
+            metadata_annotations: self.metadata_annotations.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
@@ -1705,6 +1961,24 @@ impl SemanticModelBuilder {
         keywords: &[Node<sysml_v2_parser::ast::UsageExtensionKeyword>],
     ) -> Result<(), ConstructionError> {
         for keyword in keywords {
+            let annotation = self.push_typed_declaration(
+                document,
+                Some(declaration),
+                DeclarationKind::MetadataUsage,
+                None,
+                keyword.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                annotation,
+                MembershipKind::Feature,
+                Visibility::Default,
+                keyword.span,
+            )?;
+            self.metadata_annotations.push(MetadataAnnotationRecord {
+                annotation,
+                annotated_element: declaration,
+            });
             let span = self.documents[document.index()]
                 .parsed
                 .qualified_reference(keyword.value.annotation)
@@ -1712,7 +1986,7 @@ impl SemanticModelBuilder {
                 .metadata
                 .span;
             self.push_reference(PendingReference {
-                source: declaration,
+                source: annotation,
                 kind: ReferenceKind::MetadataAnnotation,
                 document,
                 local: keyword.value.annotation,

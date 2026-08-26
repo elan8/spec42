@@ -71,6 +71,24 @@ pub(crate) fn classify_constraint_node(
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::Index { base, operands, .. } => {
+            let mut children = Vec::with_capacity(operands.value.elements.len() + 1);
+            children.push(classify_constraint_node(parsed, &base.value, ordinal)?);
+            for element in &operands.value.elements {
+                children.push(classify_constraint_node(
+                    parsed,
+                    &element.expression.value,
+                    ordinal,
+                )?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::Select { base, .. } => {
+            let base = classify_constraint_node(parsed, &base.value, ordinal)?;
+            let selector = EvalNode::Operand(*ordinal);
+            *ordinal += 1;
+            Some(EvalNode::Invocation(vec![base, selector]))
+        }
         Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
             let left = classify_constraint_node(parsed, &left.value, ordinal)?;
             let right = classify_constraint_node(parsed, &right.value, ordinal)?;
@@ -216,6 +234,24 @@ pub(crate) fn classify_calc_node(
                 )?);
             }
             Some(EvalNode::Invocation(children))
+        }
+        Expression::Index { base, operands, .. } => {
+            let mut children = Vec::with_capacity(operands.value.elements.len() + 1);
+            children.push(classify_calc_node(parsed, &base.value, ordinal)?);
+            for element in &operands.value.elements {
+                children.push(classify_calc_node(
+                    parsed,
+                    &element.expression.value,
+                    ordinal,
+                )?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::Select { base, .. } => {
+            let base = classify_calc_node(parsed, &base.value, ordinal)?;
+            let selector = EvalNode::Operand(*ordinal);
+            *ordinal += 1;
+            Some(EvalNode::Invocation(vec![base, selector]))
         }
         Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
             let left = classify_calc_node(parsed, &left.value, ordinal)?;

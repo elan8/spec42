@@ -41,7 +41,7 @@ package Usage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7034a7a26b6fa6d3ae6735409e0ffb373f757bc8b3b9e3b20845f79655dd1f8b") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7034a7a26b6fa6d3ae6735409e0ffb373f757bc8b3b9e3b20845f79655dd1f8b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

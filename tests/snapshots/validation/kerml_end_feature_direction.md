@@ -58,7 +58,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17c0df53be6ca4450153057dc3bb30cc68c3478cafe4ee7b4d7c47452e6510b1") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17c0df53be6ca4450153057dc3bb30cc68c3478cafe4ee7b4d7c47452e6510b1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd"))) (kind connection-def) (membership (kind owning) (visibility default)))

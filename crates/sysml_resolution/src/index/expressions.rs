@@ -853,8 +853,7 @@ impl<D> SemanticModel<D> {
         declaration: DeclarationId,
     ) -> Option<ElementEvaluation> {
         let units = self
-            .expressions
-            .units(declaration)
+            .evaluation_units_for(declaration)
             .iter()
             .filter_map(|unit| self.published_unit(unit))
             .collect::<Vec<_>>();

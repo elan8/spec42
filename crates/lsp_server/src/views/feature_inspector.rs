@@ -455,6 +455,9 @@ fn slice_range(text: &str, range: TextRange) -> Option<&str> {
 /// element's name: two elements in one declaration can share a spelling, and a text comparison
 /// cannot tell the declaration from a reference to something else with the same name.
 pub(crate) fn covers_name(details: &ElementDetails, position: Position) -> bool {
+    if details.inspection.name.is_none() {
+        return false;
+    }
     let range = details.inspection.location.range;
     let position = (position.line, position.character);
     (range.start.line, range.start.character) <= position

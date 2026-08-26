@@ -55,7 +55,7 @@ package AddressBookModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782"))
   (declarations
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel"))) (kind package) (membership (kind owning) (visibility default)))

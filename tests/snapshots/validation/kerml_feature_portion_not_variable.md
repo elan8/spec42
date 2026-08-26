@@ -51,7 +51,7 @@ package Portions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b68e2eb2d011ec6826dcdd44718db6186bfdfdb466f8a7d6eba4fb1f0ff8813e") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b68e2eb2d011ec6826dcdd44718db6186bfdfdb466f8a7d6eba4fb1f0ff8813e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_portion_not_variable.md") (qualified-name "Portions::Owner"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

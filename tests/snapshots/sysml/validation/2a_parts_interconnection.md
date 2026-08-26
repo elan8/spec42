@@ -452,7 +452,7 @@ package '2a-Parts Interconnection' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a8ad92c9854699c8eba68e11d0450fe3c79664cbeca150110178469c7cddc946") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a8ad92c9854699c8eba68e11d0450fe3c79664cbeca150110178469c7cddc946"))
   (declarations
     (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))

@@ -257,8 +257,15 @@ impl<D> SemanticModel<D> {
                 // did not supply.
                 UnitOutcome::UnsupportedExpression | UnitOutcome::CatalogUnavailable => {}
                 UnitOutcome::Resolved { dimensions, .. } => {
+                    let receiver = self
+                        .storage
+                        .declaration_facts(unit.declaration)
+                        .filter(|facts| facts.expression_result.is_some())
+                        .and_then(|_| self.storage.declaration(unit.declaration))
+                        .and_then(|declaration| declaration.owner)
+                        .unwrap_or(unit.declaration);
                     let RequiredMeasurement::Required(expected) =
-                        self.expressions.required_measurement(unit.declaration)
+                        self.expressions.required_measurement(receiver)
                     else {
                         continue;
                     };
@@ -288,7 +295,7 @@ impl<D> SemanticModel<D> {
                         code: DiagnosticCode::IncompatibleUnitDimension,
                         severity: DiagnosticSeverity::Warning,
                         origin: DiagnosticOrigin::Semantic,
-                        subject: self.symbol_id(unit.declaration),
+                        subject: self.symbol_id(receiver),
                         location,
                         related: related.into_boxed_slice(),
                     });

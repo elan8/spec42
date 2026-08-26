@@ -47,11 +47,11 @@ use crate::evaluation::EvaluatedScalar;
 pub(crate) fn write_semantic(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
-    semantic_contract_version: &str,
+    _semantic_contract_version: &str,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     writeln!(output, "(semantic-model")?;
-    write_metadata(model, source_digest, semantic_contract_version, output)?;
+    write_metadata(model, source_digest, output)?;
     write_declarations(model, output)?;
     write_references(model, output)?;
     write_relationships(model, output)?;
@@ -309,7 +309,6 @@ pub(crate) fn write_diagnostic(
 pub(crate) fn write_metadata(
     model: &ResolvedSemanticModel,
     source_digest: &source_identity::RootDigest,
-    semantic_contract_version: &str,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     let phase = match model.metadata.phase {
@@ -336,8 +335,6 @@ pub(crate) fn write_metadata(
         model.metadata.has_evaluation
     )?;
     write_quoted(output, &source_digest.to_string())?;
-    write!(output, ") (contract-version ")?;
-    write_quoted(output, semantic_contract_version)?;
     write!(output, ")")?;
     write_admitted_sources(model, output)?;
     writeln!(output, ")")
@@ -401,10 +398,69 @@ pub(crate) fn write_declarations(
         write_declaration_facts(model, DeclarationId(index as u32), output)?;
         write_documentation(model, DeclarationId(index as u32), output)?;
         write_feature_values(model, DeclarationId(index as u32), output)?;
+        write_operator_expression(model, DeclarationId(index as u32), output)?;
+        write_constructor_expression(model, DeclarationId(index as u32), output)?;
         write_authored(model, DeclarationId(index as u32), output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_constructor_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(constructor) = model
+        .storage
+        .constructor_expressions
+        .iter()
+        .find(|constructor| constructor.expression == declaration)
+    else {
+        return Ok(());
+    };
+    output.write_str(" (constructor-expression (result ")?;
+    write_node_identity(model, constructor.result, output)?;
+    output.write_str("))")
+}
+
+fn write_operator_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(operator) = model
+        .storage
+        .operator_expressions
+        .iter()
+        .find(|operator| operator.expression == declaration)
+    else {
+        return Ok(());
+    };
+    let kind = match operator.kind {
+        crate::lower::facts::OperatorExpressionKind::Index => "index",
+        crate::lower::facts::OperatorExpressionKind::Select => "select",
+    };
+    write!(output, " (operator-expression (kind {kind}) (arguments")?;
+    let mut arguments = model
+        .storage
+        .expression_arguments
+        .iter()
+        .filter(|argument| argument.expression == declaration)
+        .collect::<Vec<_>>();
+    arguments.sort_by_key(|argument| argument.ordinal);
+    for argument in arguments {
+        write!(
+            output,
+            " (argument (ordinal {}) (expression ",
+            argument.ordinal
+        )?;
+        write_node_identity(model, argument.argument, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, argument.result, output)?;
+        output.write_str("))")?;
+    }
+    output.write_str("))")
 }
 
 /// Renders the authored short name, modifiers, portion kind, direction, and multiplicity of one
@@ -428,6 +484,7 @@ pub(crate) fn write_declaration_facts(
         && facts.multiplicity.is_none()
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
+        && facts.expression_result.is_none()
     {
         return Ok(());
     }
@@ -465,6 +522,11 @@ pub(crate) fn write_declaration_facts(
         output.write_str(") (owned-cross-feature ")?;
         write_node_identity(model, projection.owned_cross_feature, output)?;
         output.write_str("))")?;
+    }
+    if let Some(result) = facts.expression_result {
+        output.write_str(" (expression-result ")?;
+        write_node_identity(model, result, output)?;
+        output.write_char(')')?;
     }
     output.write_char(')')
 }
@@ -577,6 +639,11 @@ pub(crate) fn write_feature_values(
         // Deliberately not `(value ...)`: that head is already the evaluation section's computed
         // value, and this is the authored spelling of the value clause.
         write!(output, " (feature-value (kind {kind})")?;
+        output.write_str(" (value ")?;
+        write_node_identity(model, record.value, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, record.result, output)?;
+        output.write_char(')')?;
         if record.is_default {
             output.write_str(" (default true)")?;
         }
@@ -1629,6 +1696,12 @@ mod tests {
             references: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
+            operator_expressions: Box::new([]),
+            expression_arguments: Box::new([]),
+            constructor_expressions: Box::new([]),
+            feature_chain_expressions: Box::new([]),
+            feature_reference_expressions: Box::new([]),
+            metadata_annotations: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),
             symbols: SymbolTableBuilder::default().freeze(),

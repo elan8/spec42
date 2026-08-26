@@ -62,7 +62,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:efb20e355a1a9befefc180f9df9ad5b11e6f04d73945790ff8201feb293e7b7a") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:efb20e355a1a9befefc180f9df9ad5b11e6f04d73945790ff8201feb293e7b7a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)))

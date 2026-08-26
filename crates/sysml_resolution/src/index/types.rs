@@ -16,6 +16,8 @@ use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
+use crate::resolve::effective_types::derive_effective_types;
+pub(crate) use crate::resolve::effective_types::EffectiveTypeSource;
 use crate::resolve::implied::{resolve_library_specialization_anchor, LibrarySpecializationAnchor};
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -84,15 +86,6 @@ pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
 pub(crate) enum FactProvenance {
     Authored,
     Implied,
-}
-
-/// Where one of a feature's effective types came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum EffectiveTypeSource {
-    /// The feature carries this typing itself.
-    Direct,
-    /// The feature inherits this typing from a feature it subsets or redefines.
-    Inherited(DeclarationId),
 }
 
 /// Contiguous per-declaration rows over one shared entry table.
@@ -446,24 +439,17 @@ impl TypeIndex {
         // gives it the typing of the feature it subsets or redefines, which is the rule the legacy
         // conformance check depended on and could only express as "an untyped feature always
         // conforms".
+        let canonical_effective = derive_effective_types(storage, resolution)?;
         let mut effective = Vec::new();
         for index in 0..count {
             let declaration =
                 DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            for (target, _) in direct_types.row(declaration) {
-                effective.push((declaration, (*target, EffectiveTypeSource::Direct)));
-            }
-            for (ancestor, scopes) in specialization.entries(declaration) {
-                if scopes & ScopeBits::FeatureSpecialization.bit() == 0 {
-                    continue;
-                }
-                for (target, _) in direct_types.row(*ancestor) {
-                    effective.push((
-                        declaration,
-                        (*target, EffectiveTypeSource::Inherited(*ancestor)),
-                    ));
-                }
-            }
+            effective.extend(
+                canonical_effective
+                    .row(declaration)
+                    .iter()
+                    .map(|entry| (declaration, *entry)),
+            );
         }
         let effective_types = Rows::build(count, effective)?;
 

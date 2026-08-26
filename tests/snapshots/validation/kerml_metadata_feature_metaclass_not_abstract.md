@@ -52,7 +52,7 @@ package Metadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ddcb5fcbf4b5211be071ec2b41bd0a8e98e1877bfded0bef84fe53cea2982524") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ddcb5fcbf4b5211be071ec2b41bd0a8e98e1877bfded0bef84fe53cea2982524"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-metaclass) (name "AbstractMarker"))))) (kind kerml-metaclass) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

@@ -46,16 +46,18 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8052eb54d3eda11872b142bdd6dd5a2ce7b50a4026ba6d3963fc54802c076c59") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8052eb54d3eda11872b142bdd6dd5a2ce7b50a4026ba6d3963fc54802c076c59"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items")))))
+    (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "items")))))
+    (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (kind expressionOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "items")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items")))))
     (reference (id (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (kind featureTyping) (ordinal 0))
@@ -63,13 +65,15 @@ package Expressions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Thing")))))
   )
   (relationships
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -78,6 +82,11 @@ package Expressions {
 (types
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen")))
       (featured-by (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder")))
+      (supertype (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items")))
       (featured-by (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder")))
@@ -94,7 +103,7 @@ package Expressions {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/kerml_select_expression_operator.md") (range (start 9 25) (end 9 30)) (probe (position 9 25))
-    (reference (id (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::chosen"))) (kind expressionOperand) (ordinal 0) (authored-target "items")
+    (reference (id (source (node (document "memory://snapshot/kerml_select_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "chosen")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "items")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_select_expression_operator.md") (qualified-name "Expressions::Holder::items")))))
     )
   )

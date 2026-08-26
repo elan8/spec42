@@ -1,60 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-owned-cross-feature-owner-types"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The owned-cross-feature role and its owner's effective type collection are not a canonical endpoint fact family."
-
-[[issue]]
-id = "lowering-gap-specialization-feature-value-evaluation-results"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "FeatureValue value/result endpoints and their specialization consequence are not canonical facts."
-
-[[issue]]
-id = "lowering-gap-specialization-semantic-metadata-projection"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Semantic metadata annotation, resolved baseType evaluation, syntax element, and annotated-type projections are not jointly published."
-
-[[issue]]
-id = "lowering-gap-specialization-expression-argument-result"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Expression argument ordering and result-feature endpoint facts are not published for select and index specialization checks."
-
-[[issue]]
-id = "lowering-gap-specialization-expression-result-instantiated-type"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ConstructorExpression result and instantiatedType endpoint facts are not jointly published."
-
-[[issue]]
-id = "lowering-gap-specialization-library-anchor-implied-edge"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The resolver lacks a canonical exact library-anchor specialization fact for the constructor-expression predicate."
-
-[[issue]]
-id = "lowering-gap-specialization-feature-chain-source-target-subsetting"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "FeatureChainExpression source-target, input parameter, result, and subsetting-chain facts are not jointly published."
-
-[[issue]]
-id = "lowering-gap-specialization-feature-reference-referent-result"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "FeatureReferenceExpression referent and result role facts are not jointly published."
-
-[[issue]]
-id = "lowering-gap-specialization-invocation-instantiated-type-result"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "InvocationExpression instantiatedType classification and result endpoint facts are not jointly published."
-
-[[issue]]
 id = "lowering-gap-specialization-invocation-instantiated-type"
 kind = "lowering_gap"
 owner = "spec42-semantic"

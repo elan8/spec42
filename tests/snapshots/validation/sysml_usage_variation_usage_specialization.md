@@ -27,7 +27,7 @@ package Model { part def Parent; part def Child :> Parent; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c95e186c4d5d174f762d78504d09cf7e5fdf47c156aec8d3704fffbb12c9beb4") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c95e186c4d5d174f762d78504d09cf7e5fdf47c156aec8d3704fffbb12c9beb4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Parent")))))

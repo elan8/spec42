@@ -401,11 +401,10 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship_impl(
@@ -676,11 +675,10 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
@@ -773,7 +771,7 @@ impl SemanticModelBuilder {
         self.lower_usage_extension_keywords(document, declaration, &node.value.extension_keywords)?;
         self.lower_usage_declaration_clauses(document, declaration, usage, variation, direction)?;
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         for element in node.value.body.members() {
             self.lower_part_usage_body_element(
@@ -952,13 +950,13 @@ impl SemanticModelBuilder {
         let Some(feature_value) = value else {
             return Ok(());
         };
-        self.record_feature_value(declaration, feature_value)?;
+        let endpoints = self.record_feature_value(document, declaration, feature_value)?;
         let expression = &feature_value.value.expression;
         self.push_evaluation_fact(
-            declaration,
+            endpoints.expression,
             self.constraint_expression_site(document, &expression.value),
         );
-        self.lower_constraint_expression(document, declaration, family, expression)
+        self.lower_constraint_expression(document, endpoints.expression, family, expression)
     }
 
     pub(crate) fn lower_attribute_default_value(
@@ -1216,11 +1214,10 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         self.push_membership(
             declaration,
@@ -1388,13 +1385,13 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
-                declaration,
+                endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
         }
         Ok(())
     }
@@ -1441,11 +1438,10 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
@@ -1567,13 +1563,13 @@ impl SemanticModelBuilder {
         // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
         // machinery existing at all.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
-                declaration,
+                endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
         }
         Ok(())
     }
@@ -1649,15 +1645,15 @@ impl SemanticModelBuilder {
             })?;
         }
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
-                declaration,
+                endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
             self.lower_calc_expression(
                 document,
-                declaration,
+                endpoints.expression,
                 UnsupportedFamily::CalcDefinitionMember,
                 &expression,
             )?;
@@ -1751,13 +1747,13 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
-                declaration,
+                endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
         }
         Ok(())
     }
@@ -1977,11 +1973,10 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]

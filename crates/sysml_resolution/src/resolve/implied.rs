@@ -6,6 +6,7 @@ use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
@@ -15,11 +16,25 @@ use crate::namespace_query::NamespaceDerivedElementCollection;
 use crate::redefinition_query::RedefinitionCheckKind;
 use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::build_ancestor_closures;
+use crate::resolve::effective_types::EffectiveTypes;
 use crate::resolve::names::NameIndex;
+use crate::resolve::results::ConstructorExpressionProjection;
+use crate::resolve::results::ConstructorExpressionProjectionStatus;
+use crate::resolve::results::ConstructorExpressionSpecializationStatus;
+use crate::resolve::results::ExpressionArgumentProjectionStatus;
+use crate::resolve::results::FeatureChainExpressionProjection;
+use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
+use crate::resolve::results::FeatureReferenceExpressionProjection;
+use crate::resolve::results::FeatureReferenceExpressionSpecializationStatus;
 use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::results::InvocationExpressionProjection;
+use crate::resolve::results::InvocationExpressionProjectionStatus;
+use crate::resolve::results::InvocationInstantiatedTypeKind;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::resolve::results::SemanticMetadataProjection;
+use crate::resolve::results::SemanticMetadataProjectionStatus;
 use crate::resolve::results::SolverStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
@@ -792,6 +807,7 @@ pub(crate) fn synthesize_implied_relationships(
     implied.extend(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );
+    implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -801,6 +817,780 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes `checkFeatureValuationSpecialization` (KerML 8.3.3.3.4): a non-default
+/// FeatureValue on an undirected Feature with no explicit specialization subsets the canonical
+/// result Feature of its owned value Expression.
+pub(crate) fn synthesize_feature_valuation_specializations(
+    storage: &SemanticModelStorage,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut implied = Vec::new();
+    for value in storage.feature_values.iter() {
+        if !feature_valuation_specialization_applies(storage, value)? {
+            continue;
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: value.declaration,
+            target: value.result,
+        });
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Canonical applicability predicate shared by synthesis and the exact rule query.
+pub(crate) fn feature_valuation_specialization_applies(
+    storage: &SemanticModelStorage,
+    value: &crate::lower::facts::FeatureValueRecord,
+) -> Result<bool, ResolutionError> {
+    let facts = storage
+        .declaration_facts(value.declaration)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    Ok(!value.is_default
+        && facts.direction.is_none()
+        && !storage.references.iter().any(|reference| {
+            reference.source == value.declaration
+                && matches!(
+                    reference.kind,
+                    ReferenceKind::Subclassification
+                        | ReferenceKind::FeatureTyping
+                        | ReferenceKind::Subsetting
+                        | ReferenceKind::Redefinition
+                )
+        }))
+}
+
+/// Synthesizes the FeatureTyping relationships required by
+/// `checkFeatureOwnedCrossFeatureSpecialization` (KerML 8.3.3.3.4).
+///
+/// This runs after the first implied-relationship barrier because an owning end Feature's
+/// effective types can themselves be inherited through an implied Redefinition. The `TypeIndex`
+/// is the canonical owner of that closure; this derivation consumes it instead of rebuilding a
+/// second effective-typing algorithm from references.
+pub(crate) fn synthesize_owned_cross_feature_typings(
+    storage: &SemanticModelStorage,
+    types: &EffectiveTypes,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut implied = Vec::new();
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        let Some(projection) = facts.cross_feature_projection else {
+            continue;
+        };
+        let owner = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        implied.extend(
+            types
+                .row(owner)
+                .iter()
+                .map(|(target, _)| ImpliedRelationship {
+                    kind: ReferenceKind::FeatureTyping,
+                    source: projection.owned_cross_feature,
+                    target: *target,
+                }),
+        );
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Publishes the joined semantic-metadata projection required by KerML 8.3.4.12.3 and the
+/// implied specialization it denotes. Every endpoint comes from an owned typed fact: annotation
+/// identity, annotated element, resolved metadata typing, resolved `baseType` redefinition,
+/// expression operand, and effective feature typing.
+pub(crate) struct SemanticMetadataSynthesis {
+    pub(crate) projections: Box<[SemanticMetadataProjection]>,
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) status: SemanticMetadataProjectionStatus,
+}
+
+pub(crate) struct OperatorExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) select_status: ExpressionArgumentProjectionStatus,
+    pub(crate) index_status: ExpressionArgumentProjectionStatus,
+    pub(crate) array_anchor: Option<LibrarySpecializationAnchor>,
+}
+
+pub(crate) struct ConstructorExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[ConstructorExpressionProjection]>,
+    pub(crate) status: ConstructorExpressionProjectionStatus,
+    pub(crate) specialization_status: ConstructorExpressionSpecializationStatus,
+    pub(crate) anchor: LibrarySpecializationAnchor,
+}
+
+pub(crate) fn synthesize_constructor_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<ConstructorExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = ConstructorExpressionProjectionStatus::Complete;
+    let anchor =
+        resolve_library_specialization_anchor(storage, "Performances::constructorEvaluations");
+    let mut specialization_status = match &anchor {
+        LibrarySpecializationAnchor::Resolved(_) => {
+            ConstructorExpressionSpecializationStatus::Complete
+        }
+        LibrarySpecializationAnchor::Missing | LibrarySpecializationAnchor::Ambiguous(_) => {
+            ConstructorExpressionSpecializationStatus::Unresolved
+        }
+    };
+    for constructor in storage.constructor_expressions.iter() {
+        if let LibrarySpecializationAnchor::Resolved(anchor) = &anchor {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source: constructor.expression,
+                target: *anchor,
+            });
+        } else {
+            specialization_status = ConstructorExpressionSpecializationStatus::Unresolved;
+        }
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == constructor.expression
+                    && reference.kind == ReferenceKind::InvocationCallee
+            });
+        let Some((index, _)) = references.next() else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(instantiated_type)) = resolution.outcome(id) else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(instantiated_type) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let kind = if crate::resolve::is_feature_declaration(target.kind) {
+            ReferenceKind::Subsetting
+        } else if crate::resolve::DeclarationDomain::Type.accepts(target.kind) {
+            ReferenceKind::FeatureTyping
+        } else {
+            status = ConstructorExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind,
+            source: constructor.result,
+            target: instantiated_type,
+        });
+        projections.push(ConstructorExpressionProjection {
+            expression: constructor.expression,
+            result: constructor.result,
+            instantiated_type,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(ConstructorExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+        specialization_status,
+        anchor,
+    })
+}
+
+pub(crate) struct FeatureChainExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[FeatureChainExpressionProjection]>,
+    pub(crate) status: FeatureChainExpressionSpecializationStatus,
+}
+
+pub(crate) fn synthesize_feature_chain_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<FeatureChainExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = FeatureChainExpressionSpecializationStatus::Complete;
+    for chain in storage.feature_chain_expressions.iter() {
+        implied.extend([
+            ImpliedRelationship {
+                kind: ReferenceKind::FeatureChaining,
+                source: chain.subsetting_chain,
+                target: chain.input_parameter,
+            },
+            ImpliedRelationship {
+                kind: ReferenceKind::FeatureChaining,
+                source: chain.subsetting_chain,
+                target: chain.source_target,
+            },
+            ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source: chain.result,
+                target: chain.subsetting_chain,
+            },
+        ]);
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == chain.expression
+                    && reference.kind == ReferenceKind::MemberAccessOperand
+            });
+        let Some((index, _)) = references.next() else {
+            status = FeatureChainExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(target_feature)) = resolution.outcome(id) else {
+            status = FeatureChainExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Redefinition,
+            source: chain.source_target,
+            target: target_feature,
+        });
+        projections.push(FeatureChainExpressionProjection {
+            expression: chain.expression,
+            result: chain.result,
+            input_parameter: chain.input_parameter,
+            source_target: chain.source_target,
+            target_feature,
+            subsetting_chain: chain.subsetting_chain,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(FeatureChainExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+pub(crate) struct FeatureReferenceExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[FeatureReferenceExpressionProjection]>,
+    pub(crate) status: FeatureReferenceExpressionSpecializationStatus,
+}
+
+pub(crate) fn synthesize_feature_reference_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<FeatureReferenceExpressionSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = FeatureReferenceExpressionSpecializationStatus::Complete;
+    for expression in storage.feature_reference_expressions.iter() {
+        let mut references = storage
+            .references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| {
+                reference.source == expression.expression
+                    && reference.kind == ReferenceKind::ExpressionOperand
+            });
+        let Some((index, _)) = references.next() else {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        if references.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(ResolutionStatus::Resolved(referent)) = resolution.outcome(id) else {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(referent) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        if !crate::resolve::is_feature_declaration(target.kind) {
+            status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
+            continue;
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: expression.result,
+            target: referent,
+        });
+        projections.push(FeatureReferenceExpressionProjection {
+            expression: expression.expression,
+            result: expression.result,
+            referent,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(FeatureReferenceExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+pub(crate) struct InvocationExpressionSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[InvocationExpressionProjection]>,
+    pub(crate) status: InvocationExpressionProjectionStatus,
+}
+
+/// Publishes the InvocationExpression's instantiated type, result, and Function classification as
+/// one phase-4 fact. This is the sole derivation of the OCL `is Function` predicate: a type is a
+/// Function when its concrete declaration or a Subclassification ancestor is one, while a Feature
+/// is Function-valued when any canonical effective type has that classification.
+pub(crate) fn synthesize_invocation_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    effective_types: &EffectiveTypes,
+) -> Result<InvocationExpressionSynthesis, ResolutionError> {
+    let (ancestors, cyclic) = build_ancestor_closures(
+        &storage.declarations,
+        &storage.references,
+        &resolution.outcomes,
+    )?;
+    let is_function_type = |target: DeclarationId| {
+        if cyclic.contains(&target) {
+            return None;
+        }
+        let direct = storage
+            .declaration(target)
+            .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction);
+        let inherited = ancestors.get(target.index()).is_some_and(|values| {
+            values.iter().any(|ancestor| {
+                storage
+                    .declaration(*ancestor)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction)
+            })
+        });
+        Some(direct || inherited)
+    };
+
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = InvocationExpressionProjectionStatus::Complete;
+    for invocation in storage.invocations.iter() {
+        let expression = invocation.declaration;
+        let Some(result) = storage
+            .declaration_facts(expression)
+            .and_then(|facts| facts.expression_result)
+        else {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(ResolutionStatus::Resolved(instantiated_type)) =
+            resolution.outcome(invocation.callee)
+        else {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        };
+        let Some(target) = storage.declaration(instantiated_type) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let feature = crate::resolve::is_feature_declaration(target.kind);
+        let instantiated_type_kind = if feature {
+            let mut typed_by_function = false;
+            let mut classification_complete = true;
+            for (effective_type, _) in effective_types.row(instantiated_type) {
+                match is_function_type(*effective_type) {
+                    Some(true) => typed_by_function = true,
+                    Some(false) => {}
+                    None => classification_complete = false,
+                }
+            }
+            if !classification_complete {
+                status = InvocationExpressionProjectionStatus::Unresolved;
+                continue;
+            }
+            if typed_by_function {
+                InvocationInstantiatedTypeKind::FeatureTypedByFunction
+            } else {
+                InvocationInstantiatedTypeKind::NonFunctionFeature
+            }
+        } else if !crate::resolve::DeclarationDomain::Type.accepts(target.kind) {
+            status = InvocationExpressionProjectionStatus::Unresolved;
+            continue;
+        } else {
+            match is_function_type(instantiated_type) {
+                Some(true) => InvocationInstantiatedTypeKind::Function,
+                Some(false) => InvocationInstantiatedTypeKind::NonFunctionType,
+                None => {
+                    status = InvocationExpressionProjectionStatus::Unresolved;
+                    continue;
+                }
+            }
+        };
+        if !instantiated_type_kind.is_function() {
+            implied.push(ImpliedRelationship {
+                kind: if feature {
+                    ReferenceKind::Subsetting
+                } else {
+                    ReferenceKind::FeatureTyping
+                },
+                source: result,
+                target: instantiated_type,
+            });
+        }
+        projections.push(InvocationExpressionProjection {
+            expression,
+            result,
+            instantiated_type,
+            instantiated_type_kind,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.expression.0);
+    Ok(InvocationExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+pub(crate) fn synthesize_operator_expression_result_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<OperatorExpressionSynthesis, ResolutionError> {
+    let has_index = storage
+        .operator_expressions
+        .iter()
+        .any(|record| record.kind == crate::lower::facts::OperatorExpressionKind::Index);
+    let array =
+        has_index.then(|| resolve_library_specialization_anchor(storage, "Collections::Array"));
+    let mut implied = Vec::new();
+    let mut select_status = ExpressionArgumentProjectionStatus::Complete;
+    let mut index_status = ExpressionArgumentProjectionStatus::Complete;
+    for operator in storage.operator_expressions.iter() {
+        let mut first = storage
+            .expression_arguments
+            .iter()
+            .filter(|argument| argument.expression == operator.expression && argument.ordinal == 0);
+        let Some(argument) = first.next() else {
+            match operator.kind {
+                crate::lower::facts::OperatorExpressionKind::Index => {
+                    index_status = ExpressionArgumentProjectionStatus::Unresolved
+                }
+                crate::lower::facts::OperatorExpressionKind::Select => {
+                    select_status = ExpressionArgumentProjectionStatus::Unresolved
+                }
+            }
+            continue;
+        };
+        if first.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        if operator.kind == crate::lower::facts::OperatorExpressionKind::Index {
+            match array.as_ref() {
+                Some(LibrarySpecializationAnchor::Resolved(array)) => {
+                    match settled_specializes(storage, resolution, argument.result, *array)? {
+                        SettledSpecialization::Conforms => continue,
+                        SettledSpecialization::DoesNotConform => {}
+                        SettledSpecialization::Unresolved => {
+                            index_status = ExpressionArgumentProjectionStatus::Unresolved;
+                            continue;
+                        }
+                    }
+                }
+                _ => {
+                    index_status = ExpressionArgumentProjectionStatus::Unresolved;
+                    continue;
+                }
+            }
+        }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: operator.result,
+            target: argument.result,
+        });
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(OperatorExpressionSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        select_status,
+        index_status,
+        array_anchor: array,
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SettledSpecialization {
+    Conforms,
+    DoesNotConform,
+    Unresolved,
+}
+
+fn settled_specializes(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    specific: DeclarationId,
+    general: DeclarationId,
+) -> Result<SettledSpecialization, ResolutionError> {
+    let mut pending = vec![specific];
+    let mut visited = std::collections::BTreeSet::new();
+    let mut unresolved = false;
+    while let Some(current) = pending.pop() {
+        if current == general {
+            return Ok(SettledSpecialization::Conforms);
+        }
+        if !visited.insert(current) {
+            continue;
+        }
+        for (index, reference) in storage.references.iter().enumerate() {
+            if reference.source != current
+                || !matches!(
+                    reference.kind,
+                    ReferenceKind::Subclassification
+                        | ReferenceKind::Subsetting
+                        | ReferenceKind::Redefinition
+                        | ReferenceKind::FeatureTyping
+                )
+            {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            match resolution.outcome(id) {
+                Some(ResolutionStatus::Resolved(target)) => pending.push(target),
+                Some(
+                    ResolutionStatus::Unresolved
+                    | ResolutionStatus::Ambiguous(_)
+                    | ResolutionStatus::Unsupported
+                    | ResolutionStatus::NonConverged,
+                )
+                | None => unresolved = true,
+            }
+        }
+        pending.extend(
+            resolution
+                .implied_relationships
+                .iter()
+                .filter(|edge| edge.source == current)
+                .map(|edge| edge.target),
+        );
+    }
+    Ok(if unresolved {
+        SettledSpecialization::Unresolved
+    } else {
+        SettledSpecialization::DoesNotConform
+    })
+}
+
+pub(crate) fn synthesize_semantic_metadata_specializations(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    types: &EffectiveTypes,
+) -> Result<SemanticMetadataSynthesis, ResolutionError> {
+    if storage.metadata_annotations.is_empty() {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Complete,
+        });
+    }
+    let LibrarySpecializationAnchor::Resolved(semantic_metadata) =
+        resolve_library_specialization_anchor(storage, "Metaobjects::SemanticMetadata")
+    else {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Unresolved,
+        });
+    };
+    let LibrarySpecializationAnchor::Resolved(base_type) =
+        resolve_library_specialization_anchor(storage, "Metaobjects::SemanticMetadata::baseType")
+    else {
+        return Ok(SemanticMetadataSynthesis {
+            projections: Box::default(),
+            implied_relationships: Box::default(),
+            status: SemanticMetadataProjectionStatus::Unresolved,
+        });
+    };
+
+    let mut projections = Vec::new();
+    let mut implied = Vec::new();
+    let mut status = SemanticMetadataProjectionStatus::Complete;
+    for record in storage.metadata_annotations.iter() {
+        let metadata_type = storage
+            .references
+            .iter()
+            .enumerate()
+            .find_map(|(index, reference)| {
+                (reference.source == record.annotation
+                    && reference.kind == ReferenceKind::MetadataAnnotation)
+                    .then(|| {
+                        let id = AuthoredReferenceId::from_index(index).ok()?;
+                        match resolution.outcome(id) {
+                            Some(ResolutionStatus::Resolved(target)) => Some(target),
+                            _ => None,
+                        }
+                    })
+                    .flatten()
+            });
+        let Some(metadata_type) = metadata_type else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        match settled_specializes(storage, resolution, metadata_type, semantic_metadata)? {
+            SettledSpecialization::Conforms => {}
+            SettledSpecialization::DoesNotConform => continue,
+            SettledSpecialization::Unresolved => {
+                status = SemanticMetadataProjectionStatus::Unresolved;
+                continue;
+            }
+        }
+        let mut value = None;
+        for candidate in storage.feature_values.iter() {
+            let Some(owner) = storage
+                .declaration(candidate.declaration)
+                .and_then(|decl| decl.owner)
+            else {
+                continue;
+            };
+            if matches!(
+                settled_specializes(storage, resolution, metadata_type, owner)?,
+                SettledSpecialization::Conforms
+            ) && storage
+                .references
+                .iter()
+                .enumerate()
+                .any(|(index, reference)| {
+                    reference.source == candidate.declaration
+                        && reference.kind == ReferenceKind::Redefinition
+                        && AuthoredReferenceId::from_index(index)
+                            .ok()
+                            .is_some_and(|id| {
+                                resolution.outcome(id)
+                                    == Some(ResolutionStatus::Resolved(base_type))
+                            })
+                })
+            {
+                value = Some(candidate);
+                break;
+            }
+        }
+        let Some(value) = value else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        let syntax_element =
+            storage
+                .references
+                .iter()
+                .enumerate()
+                .find_map(|(index, reference)| {
+                    (reference.source == value.value
+                        && reference.kind == ReferenceKind::ExpressionOperand)
+                        .then(|| {
+                            let id = AuthoredReferenceId::from_index(index).ok()?;
+                            match resolution.outcome(id) {
+                                Some(ResolutionStatus::Resolved(target)) => Some(target),
+                                _ => None,
+                            }
+                        })
+                        .flatten()
+                });
+        let Some(syntax_element) = syntax_element else {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+            continue;
+        };
+        let is_feature = |declaration: DeclarationId| {
+            storage.declaration(declaration).is_some_and(|decl| {
+                crate::resolve::is_usage_declaration(decl.kind)
+                    || matches!(
+                        element_kind::element_kind(decl.kind),
+                        crate::ElementKind::Feature
+                            | crate::ElementKind::Step
+                            | crate::ElementKind::Expression
+                            | crate::ElementKind::BooleanExpression
+                            | crate::ElementKind::Connector
+                            | crate::ElementKind::BindingConnector
+                            | crate::ElementKind::Invariant
+                    )
+            })
+        };
+        let annotated_is_feature = is_feature(record.annotated_element);
+        let syntax_is_feature = is_feature(syntax_element);
+        let targets = if !annotated_is_feature && syntax_is_feature {
+            types
+                .row(syntax_element)
+                .iter()
+                .map(|(target, _)| *target)
+                .collect::<Vec<_>>()
+        } else {
+            vec![syntax_element]
+        };
+        if targets.is_empty() {
+            status = SemanticMetadataProjectionStatus::Unresolved;
+        }
+        for target in targets {
+            projections.push(SemanticMetadataProjection {
+                annotation: record.annotation,
+                annotated_element: record.annotated_element,
+                syntax_element,
+                specialization_target: target,
+            });
+            implied.push(ImpliedRelationship {
+                kind: if annotated_is_feature {
+                    ReferenceKind::Subsetting
+                } else {
+                    ReferenceKind::Subclassification
+                },
+                source: record.annotated_element,
+                target,
+            });
+        }
+    }
+    projections
+        .sort_by_key(|projection| (projection.annotation.0, projection.specialization_target.0));
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    Ok(SemanticMetadataSynthesis {
+        projections: projections.into_boxed_slice(),
+        implied_relationships: implied.into_boxed_slice(),
+        status,
+    })
 }
 
 pub(crate) fn library_specialization_anchors(

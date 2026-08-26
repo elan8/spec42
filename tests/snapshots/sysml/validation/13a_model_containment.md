@@ -134,7 +134,7 @@ package '13a-Model Containment' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51b9f2b846f0a5f90279a22aef7c274f6a3e850233ecc25eeb44e4f918280f1d") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51b9f2b846f0a5f90279a22aef7c274f6a3e850233ecc25eeb44e4f918280f1d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (path (named (kind package) (name "13a-Model Containment")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "2a-Parts Interconnection") (import (shape namespace) (recursive false))))))

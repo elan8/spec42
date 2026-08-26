@@ -51,7 +51,7 @@ package 'Package Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:93152d0f4c0505188500bbc40fa825c5801bb20eb17b0187e45a0fc55c75457c") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:93152d0f4c0505188500bbc40fa825c5801bb20eb17b0187e45a0fc55c75457c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/01_package_example.md") (qualified-name "Package Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/01_package_example.md") (path (named (kind package) (name "Package Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "ISQ::TorqueValue") (import (shape membership) (recursive false))))))

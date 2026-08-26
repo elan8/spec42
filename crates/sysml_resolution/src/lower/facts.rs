@@ -218,6 +218,8 @@ pub(crate) struct DeclarationFacts {
     /// chained feature is the owned cross feature. Publishing both identities here preserves that
     /// transformation result without asking a validation consumer to reconstruct parser syntax.
     pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
+    /// The canonical result Feature owned by this Expression.
+    pub(crate) expression_result: Option<DeclarationId>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -282,10 +284,73 @@ pub(crate) enum FeatureValueKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct FeatureValueRecord {
     pub(crate) declaration: DeclarationId,
+    pub(crate) value: DeclarationId,
+    pub(crate) result: DeclarationId,
     pub(crate) kind: FeatureValueKind,
     pub(crate) is_default: bool,
     pub(crate) has_operator: bool,
     pub(crate) span: Span,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum OperatorExpressionKind {
+    Index,
+    Select,
+}
+
+/// One authored SelectExpression or IndexExpression and its canonical result Feature.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct OperatorExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) kind: OperatorExpressionKind,
+}
+
+/// One ordered argument Expression owned by an operator expression.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ExpressionArgumentRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) argument: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) ordinal: u32,
+}
+
+/// One authored ConstructorExpression and its canonical result Feature. Its instantiated Type is
+/// the settled `InvocationCallee` reference sourced at `expression`; keeping that reference as the
+/// sole endpoint owner avoids a parallel type-name projection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ConstructorExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
+/// One dotted FeatureChainExpression and the anonymous Features that represent its normative
+/// result subsetting chain. The final authored member is the settled `MemberAccessOperand`
+/// reference sourced at `expression`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureChainExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+    pub(crate) input_parameter: DeclarationId,
+    pub(crate) source_target: DeclarationId,
+    pub(crate) subsetting_chain: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct FeatureReferenceExpressionRecord {
+    pub(crate) expression: DeclarationId,
+    pub(crate) result: DeclarationId,
+}
+
+/// One authored MetadataFeature instance and the Element it annotates.
+///
+/// The annotation declaration owns its typing reference and body. This record owns the opposite
+/// endpoint, so consumers never have to infer the annotated Element from containment or from a
+/// presentation relationship whose source was rewritten for display.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MetadataAnnotationRecord {
+    pub(crate) annotation: DeclarationId,
+    pub(crate) annotated_element: DeclarationId,
 }
 
 /// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.

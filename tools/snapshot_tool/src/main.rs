@@ -1172,14 +1172,8 @@ fn parse_specialization_check_prerequisite(
     fixture: &str,
 ) -> Result<SpecializationCheckPrerequisite, String> {
     match value {
-        "owned_cross_feature_owner_types" => {
-            Ok(SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes)
-        }
         "feature_modifiers_owner_typing_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor)
-        }
-        "feature_value_evaluation_results" => {
-            Ok(SpecializationCheckPrerequisite::FeatureValueEvaluationResults)
         }
         "semantic_metadata_projection" => {
             Ok(SpecializationCheckPrerequisite::SemanticMetadataProjection)
@@ -5482,9 +5476,9 @@ fn compare_specialization_check_observation(
             "semantic specialization check expectation for {:?} observed an incomplete publication",
             expectation.rule
         )),
-        SpecializationCheckObservation::Outcome(_) => Err(format!(
-            "semantic specialization check expectation for {:?} did not match its typed outcome",
-            expectation.rule
+        SpecializationCheckObservation::Outcome(actual) => Err(format!(
+            "semantic specialization check expectation for {:?} expected {:?}, observed {:?}",
+            expectation.rule, expected, actual
         )),
     }
 }

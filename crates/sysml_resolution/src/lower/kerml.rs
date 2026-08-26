@@ -312,13 +312,13 @@ impl SemanticModelBuilder {
             &node.value.relationship_parts,
         )?;
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(
-                declaration,
+                endpoints.expression,
                 self.calc_expression_site(document, &expression.value),
             );
-            self.lower_calc_expression(document, declaration, family, &expression)?;
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }

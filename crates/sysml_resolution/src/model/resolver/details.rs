@@ -151,20 +151,7 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
 
-        let metadata = self
-            .outgoing_reference_ids(candidate_id)
-            .iter()
-            .filter_map(|reference_id| {
-                let reference = self.storage.references.get(reference_id.index())?;
-                if reference.kind != ReferenceKind::MetadataAnnotation {
-                    return None;
-                }
-                match self.resolution.outcome(*reference_id) {
-                    Some(ResolutionStatus::Resolved(target)) => Some(target),
-                    _ => None,
-                }
-            })
-            .collect::<std::collections::BTreeSet<_>>();
+        let metadata = self.metadata_annotation_targets(candidate_id);
         let candidate_kind = self
             .storage
             .declaration(candidate_id)
@@ -648,26 +635,38 @@ impl<D> SemanticModel<D> {
         inherited.into_boxed_slice()
     }
 
+    fn metadata_annotation_targets(
+        &self,
+        annotated_element: DeclarationId,
+    ) -> std::collections::BTreeSet<DeclarationId> {
+        self.storage
+            .metadata_annotations
+            .iter()
+            .filter(|record| record.annotated_element == annotated_element)
+            .filter_map(|record| {
+                self.outgoing_reference_ids(record.annotation)
+                    .iter()
+                    .find_map(|reference_id| {
+                        let reference = self.storage.references.get(reference_id.index())?;
+                        if reference.kind != ReferenceKind::MetadataAnnotation {
+                            return None;
+                        }
+                        match self.resolution.outcome(*reference_id) {
+                            Some(ResolutionStatus::Resolved(target)) => Some(target),
+                            _ => None,
+                        }
+                    })
+            })
+            .collect()
+    }
+
     /// The metadata definitions annotating this element, in canonical order.
     ///
-    /// The annotation reference is authored *on* the annotated element and names the metadata
-    /// definition, so this is an outgoing binding. Only settled targets appear; an annotation whose
-    /// name did not resolve stays visible as an unresolved relationship on the inspection rather
-    /// than as a metadata entry that would claim the element carries something it does not.
+    /// Each authored annotation has its own MetadataUsage identity. The lowering record supplies
+    /// the annotated endpoint and that usage's reference supplies the settled metadata type; this
+    /// projection never infers either endpoint from a name or presentation relationship.
     pub(crate) fn metadata_annotations(&self, id: DeclarationId) -> Box<[SymbolEntry]> {
-        let targets = self
-            .outgoing_reference_ids(id)
-            .iter()
-            .filter(|reference_id| {
-                self.storage.references[reference_id.index()].kind
-                    == ReferenceKind::MetadataAnnotation
-            })
-            .filter_map(|reference_id| match self.reference_outcome(*reference_id) {
-                ReferenceOutcome::Resolved(target) => Some(target),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        self.entries(targets)
+        self.entries(self.metadata_annotation_targets(id).into_iter().collect())
     }
 
     pub(crate) fn incoming_relationships(&self, id: DeclarationId) -> Box<[ConnectedElement]> {

@@ -1899,22 +1899,355 @@ impl<D> SemanticModel<D> {
             };
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::FeatureOwnedCrossFeature {
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            'owners: for (index, facts) in self.storage.declaration_facts.iter().enumerate() {
+                let Some(projection) = facts.cross_feature_projection else {
+                    continue;
+                };
+                let Ok(owner) = DeclarationId::from_index(index) else {
+                    return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+                };
+                for (owner_type, _) in self.types.effective_types(owner) {
+                    match self.conformance(
+                        projection.owned_cross_feature,
+                        *owner_type,
+                        SpecializationScope::AnySpecialization,
+                    ) {
+                        Conformance::Conforms => {}
+                        Conformance::DoesNotConform => {
+                            outcome = SpecializationCheckOutcome::Violated;
+                            break 'owners;
+                        }
+                        Conformance::Indeterminate(_) => {
+                            outcome = SpecializationCheckOutcome::Unresolved;
+                            break 'owners;
+                        }
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::FeatureValuation {
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for value in self.storage.feature_values.iter() {
+                match crate::resolve::implied::feature_valuation_specialization_applies(
+                    &self.storage,
+                    value,
+                ) {
+                    Ok(false) => continue,
+                    Err(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                    Ok(true) => {}
+                }
+                match self.conformance(
+                    value.declaration,
+                    value.result,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::MetadataFeatureSemantic {
+            if matches!(
+                self.resolution.semantic_metadata_projection_status,
+                crate::resolve::results::SemanticMetadataProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let outcome =
+                if self
+                    .resolution
+                    .semantic_metadata_projections
+                    .iter()
+                    .all(|projection| {
+                        matches!(
+                            self.conformance(
+                                projection.annotated_element,
+                                projection.specialization_target,
+                                SpecializationScope::AnySpecialization,
+                            ),
+                            Conformance::Conforms
+                        )
+                    })
+                {
+                    SpecializationCheckOutcome::Satisfied
+                } else {
+                    SpecializationCheckOutcome::Violated
+                };
+            return self.resolved_outcome(outcome);
+        }
+        if matches!(
+            kind,
+            SpecializationCheckKind::SelectExpressionResult
+                | SpecializationCheckKind::IndexExpressionResult
+        ) {
+            let (operator_kind, status) = match kind {
+                SpecializationCheckKind::SelectExpressionResult => (
+                    crate::lower::facts::OperatorExpressionKind::Select,
+                    self.resolution.select_expression_projection_status,
+                ),
+                SpecializationCheckKind::IndexExpressionResult => (
+                    crate::lower::facts::OperatorExpressionKind::Index,
+                    self.resolution.index_expression_projection_status,
+                ),
+                _ => unreachable!(),
+            };
+            if matches!(
+                status,
+                crate::resolve::results::ExpressionArgumentProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for operator in self
+                .storage
+                .operator_expressions
+                .iter()
+                .filter(|operator| operator.kind == operator_kind)
+            {
+                let Some(argument) = self.storage.expression_arguments.iter().find(|argument| {
+                    argument.expression == operator.expression && argument.ordinal == 0
+                }) else {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                };
+                if operator_kind == crate::lower::facts::OperatorExpressionKind::Index {
+                    let Some(crate::resolve::implied::LibrarySpecializationAnchor::Resolved(array)) =
+                        self.resolution.index_expression_array_anchor.as_ref()
+                    else {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    };
+                    match self.conformance(
+                        argument.result,
+                        *array,
+                        SpecializationScope::AnySpecialization,
+                    ) {
+                        Conformance::Conforms => continue,
+                        Conformance::DoesNotConform => {}
+                        Conformance::Indeterminate(_) => {
+                            outcome = SpecializationCheckOutcome::Unresolved;
+                            break;
+                        }
+                    }
+                }
+                match self.conformance(
+                    operator.result,
+                    argument.result,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::ConstructorExpressionResult {
+            if matches!(
+                self.resolution.constructor_expression_projection_status,
+                crate::resolve::results::ConstructorExpressionProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for constructor in self.resolution.constructor_expression_projections.iter() {
+                match self.conformance(
+                    constructor.result,
+                    constructor.instantiated_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::ConstructorExpression {
+            if matches!(
+                self.resolution.constructor_expression_specialization_status,
+                crate::resolve::results::ConstructorExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let Some(crate::resolve::implied::LibrarySpecializationAnchor::Resolved(anchor)) =
+                self.resolution.constructor_expression_anchor.as_ref()
+            else {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            };
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for constructor in self.storage.constructor_expressions.iter() {
+                match self.conformance(
+                    constructor.expression,
+                    *anchor,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::FeatureChainExpressionResult {
+            if matches!(
+                self.resolution
+                    .feature_chain_expression_specialization_status,
+                crate::resolve::results::FeatureChainExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for chain in self.resolution.feature_chain_expression_projections.iter() {
+                let structurally_complete =
+                    self.storage
+                        .declaration(chain.result)
+                        .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self
+                            .storage
+                            .declaration(chain.input_parameter)
+                            .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self.storage.declaration(chain.source_target).is_some_and(
+                            |declaration| declaration.owner == Some(chain.input_parameter),
+                        )
+                        && self
+                            .storage
+                            .declaration(chain.subsetting_chain)
+                            .is_some_and(|declaration| declaration.owner == Some(chain.expression))
+                        && self.storage.declaration(chain.target_feature).is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    chain.result,
+                    chain.subsetting_chain,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::FeatureReferenceExpressionResult {
+            if matches!(
+                self.resolution.feature_reference_expression_status,
+                crate::resolve::results::FeatureReferenceExpressionSpecializationStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for expression in self
+                .resolution
+                .feature_reference_expression_projections
+                .iter()
+            {
+                if self
+                    .storage
+                    .declaration(expression.result)
+                    .is_none_or(|result| result.owner != Some(expression.expression))
+                {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    expression.result,
+                    expression.referent,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::InvocationExpressionBehaviorResult {
+            if matches!(
+                self.resolution.invocation_expression_projection_status,
+                crate::resolve::results::InvocationExpressionProjectionStatus::Unresolved
+            ) {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for invocation in self.resolution.invocation_expression_projections.iter() {
+                if invocation.instantiated_type_kind.is_function() {
+                    continue;
+                }
+                match self.conformance(
+                    invocation.result,
+                    invocation.instantiated_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
-            SpecializationCheckKind::FeatureOwnedCrossFeature => {
-                SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes
-            }
+            SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
             SpecializationCheckKind::FeaturePortion
             | SpecializationCheckKind::FeatureSubobject
             | SpecializationCheckKind::FeatureSuboccurrence => {
                 SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor
             }
-            SpecializationCheckKind::FeatureValuation => {
-                SpecializationCheckPrerequisite::FeatureValueEvaluationResults
-            }
-            SpecializationCheckKind::MetadataFeatureSemantic => {
-                SpecializationCheckPrerequisite::SemanticMetadataProjection
-            }
+            SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
+            SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
             SpecializationCheckKind::ConnectorBinaryObject
             | SpecializationCheckKind::ConnectorObject => {
                 SpecializationCheckPrerequisite::ConnectorAssociationProjectionAndLibraryAnchor
@@ -1924,23 +2257,15 @@ impl<D> SemanticModel<D> {
                 SpecializationCheckPrerequisite::StepOwnershipTypingAndLibraryAnchor
             }
             SpecializationCheckKind::SelectExpressionResult
-            | SpecializationCheckKind::IndexExpressionResult => {
-                SpecializationCheckPrerequisite::ExpressionArgumentResult
-            }
-            SpecializationCheckKind::ConstructorExpressionResult => {
-                SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType
-            }
-            SpecializationCheckKind::ConstructorExpression => {
-                SpecializationCheckPrerequisite::LibraryAnchorAndImpliedSpecialization
-            }
-            SpecializationCheckKind::FeatureChainExpressionResult => {
-                SpecializationCheckPrerequisite::FeatureChainSourceTargetAndSubsetting
-            }
+            | SpecializationCheckKind::IndexExpressionResult => unreachable!("handled above"),
+            SpecializationCheckKind::ConstructorExpressionResult => unreachable!("handled above"),
+            SpecializationCheckKind::ConstructorExpression => unreachable!("handled above"),
+            SpecializationCheckKind::FeatureChainExpressionResult => unreachable!("handled above"),
             SpecializationCheckKind::FeatureReferenceExpressionResult => {
-                SpecializationCheckPrerequisite::FeatureReferenceReferentAndResult
+                unreachable!("handled above")
             }
             SpecializationCheckKind::InvocationExpressionBehaviorResult => {
-                SpecializationCheckPrerequisite::InvocationInstantiatedTypeAndResult
+                unreachable!("handled above")
             }
             SpecializationCheckKind::InvocationExpression => {
                 SpecializationCheckPrerequisite::InvocationInstantiatedType

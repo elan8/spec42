@@ -25,11 +25,17 @@ use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::AuthoredUnitToken;
+use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DocumentationRecord;
+use crate::lower::facts::ExpressionArgumentRecord;
+use crate::lower::facts::FeatureChainExpressionRecord;
+use crate::lower::facts::FeatureReferenceExpressionRecord;
 use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::MetadataAnnotationRecord;
+use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -57,6 +63,12 @@ pub(crate) struct LoweredDocument {
     pub(crate) references: Box<[AuthoredReference]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
+    pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
+    pub(crate) expression_arguments: Box<[ExpressionArgumentRecord]>,
+    pub(crate) constructor_expressions: Box<[ConstructorExpressionRecord]>,
+    pub(crate) feature_chain_expressions: Box<[FeatureChainExpressionRecord]>,
+    pub(crate) feature_reference_expressions: Box<[FeatureReferenceExpressionRecord]>,
+    pub(crate) metadata_annotations: Box<[MetadataAnnotationRecord]>,
     pub(crate) unsupported: Box<[UnsupportedRecord]>,
     pub(crate) recovery: Box<[RecoveryRecord]>,
     pub(crate) evaluation_facts: Box<[PendingEvaluationFact]>,
@@ -95,6 +107,12 @@ pub(crate) fn lower_document(
         references: builder.references.into_boxed_slice(),
         documentation: builder.documentation.into_boxed_slice(),
         feature_values: builder.feature_values.into_boxed_slice(),
+        operator_expressions: builder.operator_expressions.into_boxed_slice(),
+        expression_arguments: builder.expression_arguments.into_boxed_slice(),
+        constructor_expressions: builder.constructor_expressions.into_boxed_slice(),
+        feature_chain_expressions: builder.feature_chain_expressions.into_boxed_slice(),
+        feature_reference_expressions: builder.feature_reference_expressions.into_boxed_slice(),
+        metadata_annotations: builder.metadata_annotations.into_boxed_slice(),
         unsupported: builder.unsupported.into_boxed_slice(),
         recovery: builder.recovery.into_boxed_slice(),
         evaluation_facts: builder.evaluation_facts.into_boxed_slice(),
@@ -250,6 +268,10 @@ impl SemanticModelBuilder {
                         })
                     })
                     .transpose()?,
+                expression_result: facts
+                    .expression_result
+                    .map(|result| relocation.declaration(result))
+                    .transpose()?,
                 ..facts.clone()
             });
         }
@@ -295,10 +317,87 @@ impl SemanticModelBuilder {
         for record in lowered.feature_values.iter() {
             self.feature_values.push(FeatureValueRecord {
                 declaration: relocation.declaration(record.declaration)?,
+                value: relocation.declaration(record.value)?,
+                result: relocation.declaration(record.result)?,
                 kind: record.kind,
                 is_default: record.is_default,
                 has_operator: record.has_operator,
                 span: record.span,
+            });
+        }
+
+        reserve(
+            &mut self.operator_expressions,
+            lowered.operator_expressions.len(),
+        )?;
+        for record in lowered.operator_expressions.iter() {
+            self.operator_expressions.push(OperatorExpressionRecord {
+                expression: relocation.declaration(record.expression)?,
+                result: relocation.declaration(record.result)?,
+                kind: record.kind,
+            });
+        }
+
+        reserve(
+            &mut self.expression_arguments,
+            lowered.expression_arguments.len(),
+        )?;
+        for record in lowered.expression_arguments.iter() {
+            self.expression_arguments.push(ExpressionArgumentRecord {
+                expression: relocation.declaration(record.expression)?,
+                argument: relocation.declaration(record.argument)?,
+                result: relocation.declaration(record.result)?,
+                ordinal: record.ordinal,
+            });
+        }
+
+        reserve(
+            &mut self.constructor_expressions,
+            lowered.constructor_expressions.len(),
+        )?;
+        for record in lowered.constructor_expressions.iter() {
+            self.constructor_expressions
+                .push(ConstructorExpressionRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    result: relocation.declaration(record.result)?,
+                });
+        }
+
+        reserve(
+            &mut self.feature_chain_expressions,
+            lowered.feature_chain_expressions.len(),
+        )?;
+        for record in lowered.feature_chain_expressions.iter() {
+            self.feature_chain_expressions
+                .push(FeatureChainExpressionRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    result: relocation.declaration(record.result)?,
+                    input_parameter: relocation.declaration(record.input_parameter)?,
+                    source_target: relocation.declaration(record.source_target)?,
+                    subsetting_chain: relocation.declaration(record.subsetting_chain)?,
+                });
+        }
+
+        reserve(
+            &mut self.feature_reference_expressions,
+            lowered.feature_reference_expressions.len(),
+        )?;
+        for record in lowered.feature_reference_expressions.iter() {
+            self.feature_reference_expressions
+                .push(FeatureReferenceExpressionRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    result: relocation.declaration(record.result)?,
+                });
+        }
+
+        reserve(
+            &mut self.metadata_annotations,
+            lowered.metadata_annotations.len(),
+        )?;
+        for record in lowered.metadata_annotations.iter() {
+            self.metadata_annotations.push(MetadataAnnotationRecord {
+                annotation: relocation.declaration(record.annotation)?,
+                annotated_element: relocation.declaration(record.annotated_element)?,
             });
         }
 

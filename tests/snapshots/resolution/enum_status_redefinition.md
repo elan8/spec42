@@ -31,7 +31,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd7fe7b1e7f45b7fe7d690ba43ef5a1b5ad324737d823591f04faac4852cb030") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd7fe7b1e7f45b7fe7d690ba43ef5a1b5ad324737d823591f04faac4852cb030"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -41,7 +41,9 @@ package Demo {
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ManagedRequirement")))))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Need")))))
-    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "status")) (expressionOperand (reference "RequirementStatusKind::approved")))))
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "status")))))
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "RequirementStatusKind::approved")))))
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (kind featureTyping) (ordinal 0))
@@ -59,7 +61,7 @@ package Demo {
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "status")
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))))
-    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "RequirementStatusKind::approved")
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved")))))
   )
@@ -69,13 +71,15 @@ package Demo {
     (relationship (kind specialization) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -102,6 +106,7 @@ package Demo {
     )
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved")))
       (featured-by (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind")))
+      (subtype (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement")))
       (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
@@ -119,6 +124,10 @@ package Demo {
       (effective-type (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind")) (source inherited) (from (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))))
       (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")) (scopes any feature))
       (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved")) (scopes any feature))
     )
 )
 ~~~
@@ -151,7 +160,7 @@ package Demo {
     )
   )
   (query (document "memory://snapshot/enum_status_redefinition.md") (range (start 10 31) (end 10 62)) (probe (position 10 31))
-    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "RequirementStatusKind::approved")
+    (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "RequirementStatusKind::approved")
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved")))))
     )
   )

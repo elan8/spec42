@@ -1,5 +1,6 @@
 //! Phase 3: name resolution, run to convergence under an explicit bound.
 
+pub(crate) mod effective_types;
 pub(crate) mod implied;
 pub(crate) mod library_seed;
 pub(crate) mod names;
@@ -808,6 +809,21 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             solver_status,
             implied_relationships,
             library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
+            semantic_metadata_projections: Box::default(),
+            semantic_metadata_projection_status: Default::default(),
+            select_expression_projection_status: Default::default(),
+            index_expression_projection_status: Default::default(),
+            index_expression_array_anchor: None,
+            constructor_expression_projection_status: Default::default(),
+            constructor_expression_projections: Box::default(),
+            constructor_expression_specialization_status: Default::default(),
+            constructor_expression_anchor: None,
+            feature_chain_expression_specialization_status: Default::default(),
+            feature_chain_expression_projections: Box::default(),
+            feature_reference_expression_status: Default::default(),
+            feature_reference_expression_projections: Box::default(),
+            invocation_expression_projection_status: Default::default(),
+            invocation_expression_projections: Box::default(),
             #[cfg(test)]
             work,
         },
@@ -1138,6 +1154,22 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::FinalState
             | DeclarationKind::PerformParameterBinding
     )
+}
+
+/// Whether a lowered declaration is a KerML `Feature` (including every SysML usage). This is the
+/// canonical metamodel-category predicate used by both resolution synthesis and structural checks.
+pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
+    is_usage_declaration(kind)
+        || matches!(
+            crate::model::element_kind::element_kind(kind),
+            sysml_contract::ElementKind::Feature
+                | sysml_contract::ElementKind::Step
+                | sysml_contract::ElementKind::Expression
+                | sysml_contract::ElementKind::BooleanExpression
+                | sysml_contract::ElementKind::Connector
+                | sysml_contract::ElementKind::BindingConnector
+                | sysml_contract::ElementKind::Invariant
+        )
 }
 
 /// Whether a lowered Usage is an `ActionUsage` or one of its concrete SysML subtypes.

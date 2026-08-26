@@ -95,7 +95,7 @@ package VariabilityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:16b888c6815444dfd8aaff94acf942263750ae25ffaac0a3d4031275a0720967") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:16b888c6815444dfd8aaff94acf942263750ae25ffaac0a3d4031275a0720967"))
   (declarations
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -113,7 +113,9 @@ package VariabilityTest {
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P") (variation true)))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (subsetting (reference "q")))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0)) (named (kind attribute) (name "b"))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B")) (redefinition (reference "a")))))
-    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P")))))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P")))))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (kind specialization) (ordinal 0))
@@ -165,6 +167,7 @@ package VariabilityTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P::a"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V::x::b"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V::x"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0)) (named (kind attribute) (name "b"))))) (target (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )
@@ -238,6 +241,9 @@ package VariabilityTest {
       (type (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (provenance authored))
       (effective-type (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (source direct))
       (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
 )
 ~~~

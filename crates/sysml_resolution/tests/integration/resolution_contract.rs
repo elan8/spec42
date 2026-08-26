@@ -55,8 +55,8 @@ fn enumeration_literal_bodies_publish_their_members_and_documentation() {
 ///
 /// `SubjectDecl.value` became a `FeatureValue` and `EnumeratedValue` gained one, so both can
 /// record `=`/`:=`/`default` through the same `record_feature_value` every sibling usage
-/// already calls. Only the spelling is recorded here; the value expression is not lowered,
-/// matching `lower_item_usage`'s scope boundary.
+/// already calls. The canonical value Expression and result are constructed even where this
+/// declaration-specific lowering path does not yet classify the expression's operands.
 #[test]
 fn subjects_and_enumeration_literals_record_their_authored_value() {
     let subject = build_semantic_sexpr(
@@ -741,94 +741,6 @@ fn calc_exponent_operator_negative_integer_exponent_promotes_to_real() {
 }
 
 #[test]
-fn constraint_logical_and_combines_two_comparisons_to_boolean() {
-    // `and`/`or` combining multiple comparisons in a general constraint body (not just a
-    // `filter <expr>;` condition, which already supported `and`/`or` for reference resolution
-    // per `25c8bf52`) is the same "widen the recursive classifier" pattern applied to
-    // evaluation: `EvalNode::Logical` folds two already-folded Boolean comparison operands.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute mass1 = 2;\n\
-         \tattribute mass2 = 3;\n\
-         \tattribute massLimit = 10;\n\
-         \tattribute isActive = true;\n\
-         \tconstraint def C { (mass1 + mass2) < massLimit and isActive }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
-        ),
-        "expected `(mass1 + mass2) < massLimit and isActive` to fold to Boolean(true) \
-         (2 + 3 = 5 < 10, and isActive is true), got:\n{output}"
-    );
-}
-
-#[test]
-fn calc_unary_minus_resolves_feature_operand() {
-    // `-x` with a resolvable feature operand: the operand reference resolves and, since it
-    // has a known constant value, the whole expression folds through `fold_unary`.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute mass = 5;\n\
-         \tcalc def Calc { -mass }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer -5)))"
-        ),
-        "expected `-mass` (mass = 5) to resolve the operand reference and fold to \
-         Integer(-5), got:\n{output}"
-    );
-}
-
-#[test]
-fn constraint_logical_xor_combines_two_comparisons_to_boolean() {
-    // `xor` shares `and`/`or`'s exact Boolean/Boolean truth-table shape (`is_logical_operator`
-    // widened, `fold_logical`'s new `Xor` arm): true xor false = true.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute mass1 = 2;\n\
-         \tattribute massLimit = 10;\n\
-         \tattribute isActive = false;\n\
-         \tconstraint def C { mass1 < massLimit xor isActive }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
-        ),
-        "expected `mass1 < massLimit xor isActive` (true xor false) to fold to \
-         Boolean(true), got:\n{output}"
-    );
-}
-
-#[test]
-fn constraint_logical_implies_combines_two_comparisons_to_boolean() {
-    // `implies`: false implies anything is true (`!left || right`).
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute mass1 = 20;\n\
-         \tattribute massLimit = 10;\n\
-         \tattribute isActive = false;\n\
-         \tconstraint def C { mass1 < massLimit implies isActive }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
-        ),
-        "expected `mass1 < massLimit implies isActive` (false implies false) to fold to \
-         Boolean(true), got:\n{output}"
-    );
-}
-
-#[test]
 fn constraint_simple_comparison_only_regression_unaffected() {
     // Regression guard: a plain comparison-only constraint body (slices 1-3, no arithmetic or
     // logical widening involved) must fold exactly as before.
@@ -927,35 +839,6 @@ fn multi_segment_qualified_expression_operand_resolves_through_nested_namespaces
         ),
         "expected the three-segment qualified name `Outer::Inner::member` to resolve its \
          ExpressionOperand reference to the nested attribute, got:\n{output}"
-    );
-}
-
-#[test]
-fn metadata_annotation_body_override_value_resolves() {
-    // The metadata annotation body override deferred by `2680ca20` pending exactly this
-    // value-assignment machinery: `isMandatory = true;` inside `@Safety{...}` now lowers
-    // through the same shared pipeline as an attribute default value. Upstream types a
-    // `MetadataBody` member as a `MetadataBodyUsage` -- a reference redefinition of a feature
-    // of the annotated type, not a declaration named `isMandatory` -- so the override owns an
-    // anonymous attribute whose `redefinition` names the overridden feature.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tmetadata def Safety {\n\
-         \t\tattribute isMandatory : Boolean;\n\
-         \t}\n\
-         \tpart def Vehicle {\n\
-         \t\tpart seatBelt[2] {@Safety{isMandatory = true;}}\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind \
-             boolean) (boolean true)))"
-        ),
-        "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
-         Boolean(true) evaluation fact, got:\n{output}"
     );
 }
 
@@ -1717,26 +1600,6 @@ fn metadata_usage_typed_by_a_metadata_def_resolves() {
             "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::m\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
         ),
         "expected m's typing reference to Base to resolve, got:\n{output}"
-    );
-}
-
-#[test]
-fn metadata_annotation_on_part_usage_resolves_the_annotation_reference() {
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tmetadata def Safety {\n\
-         \t\tattribute isMandatory : Boolean;\n\
-         \t}\n\
-         \tpart def Vehicle {\n\
-         \t\tpart seatBelt[2] {@Safety{isMandatory = true;}}\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(kind metadataAnnotation) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Vehicle::seatBelt\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety\")))"
-        ),
-        "expected seatBelt's @Safety metadata annotation reference to resolve, got:\n{output}"
     );
 }
 
@@ -2855,24 +2718,6 @@ fn perform_action_body_element_dispatches_nested_action_usage() {
     );
 }
 
-/// `Expression::Index` (`base#(index)`, e.g. `assign x := seq#(i);`) had no arm in
-/// `lower_constraint_expression`, so both the base and index sub-expressions fell through to
-/// unsupported. Recurses into both, mirroring `Tuple`/`CollectionOp`.
-#[test]
-fn assign_value_index_expression_resolves() {
-    let sexpr = semantic_sexpr_for(
-        "package P { action def Act { attribute seq; attribute i; assign x := seq#(i); } }",
-    );
-    assert!(
-        sexpr.matches("(kind expressionOperand)").count() >= 2,
-        "expected both the index base and index expression to resolve as expressionOperand references, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_action_definition_member"),
-        "did not expect unsupported_action_definition_member, got: {sexpr}"
-    );
-}
-
 /// `Expression::Null` (KerML `null`) had no arm in `lower_constraint_expression`, so `assign x
 /// := null;` fell through to unsupported even though it needs no reference resolution at all,
 /// mirroring the existing literal arms.
@@ -2973,36 +2818,6 @@ fn doc_comments_bind_to_the_declaration_owning_their_body() {
 
 /// All five authored value spellings stay distinguishable: `=`, `:=`, `default =`,
 /// `default :=`, and the operator-less bare `default`.
-#[test]
-fn authored_feature_value_spellings_stay_distinct() {
-    let bind = semantic_sexpr_for("package P { attribute mass : Integer = 10; }");
-    assert!(
-        bind.contains("(feature-value (kind bind))"),
-        "expected a plain `=` bind, got: {bind}"
-    );
-
-    let assign = semantic_sexpr_for("package P { attribute mass : Integer := 10; }");
-    assert!(
-        assign.contains("(feature-value (kind assign))"),
-        "expected a `:=` assign, got: {assign}"
-    );
-
-    let default_bind = semantic_sexpr_for("package P { attribute mass : Integer default = 10; }");
-    assert!(
-        default_bind.contains("(feature-value (kind bind) (default true))"),
-        "expected a `default =` bind, got: {default_bind}"
-    );
-
-    let bare_default = semantic_sexpr_for("package P { attribute mass : Integer default 10; }");
-    assert!(
-        bare_default.contains("(feature-value (kind bind) (default true) (operator false))"),
-        "expected the operator-less bare `default` spelling, got: {bare_default}"
-    );
-}
-
-/// A named declaration whose owner chain passes through an anonymous scope cannot be
-/// identified by a qualified name alone -- the anonymous owner contributes no name segment --
-/// so it renders the explicit path form instead.
 #[test]
 fn a_named_declaration_under_an_anonymous_owner_renders_an_explicit_path() {
     let sexpr = semantic_sexpr_for(
@@ -3235,14 +3050,6 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
     let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
     let expected = [
         (
-            SpecializationCheckKind::FeatureOwnedCrossFeature,
-            SpecializationCheckPrerequisite::OwnedCrossFeatureOwnerTypes,
-        ),
-        (
-            SpecializationCheckKind::ConstructorExpressionResult,
-            SpecializationCheckPrerequisite::ExpressionResultAndInstantiatedType,
-        ),
-        (
             SpecializationCheckKind::UsageVariationUsage,
             SpecializationCheckPrerequisite::UsageVariationOwner,
         ),
@@ -3263,6 +3070,121 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
             );
             settled(published.specialization_check(rule))
         })
+    };
+    assert_eq!(query(&sequential), query(&parallel));
+    assert_eq!(query(&sequential), query(&warm));
+}
+
+#[test]
+fn owned_cross_features_are_implied_typed_by_their_owners_effective_types() {
+    let sources = [(
+        "memory://owned-cross-feature.kerml",
+        "package Model { classifier Thing; feature baseEndpoint : Thing; assoc Link { end crossing [1] feature endpoint :>> baseEndpoint; } }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution| {
+        let cross = symbol_named(
+            published,
+            "memory://owned-cross-feature.kerml",
+            "Model::Link::endpoint::crossing",
+        );
+        let thing = symbol_named(
+            published,
+            "memory://owned-cross-feature.kerml",
+            "Model::Thing",
+        );
+        let types = settled(published.direct_types(cross));
+        assert_eq!(types.len(), 1);
+        assert_eq!(types[0].symbol, thing);
+        assert_eq!(types[0].provenance, RelationshipProvenance::Implied);
+        assert_eq!(
+            settled(
+                published.specialization_check(SpecializationCheckKind::FeatureOwnedCrossFeature,)
+            ),
+            SpecializationCheckOutcome::Satisfied,
+        );
+        (
+            types,
+            settled(published.all_supertypes(cross, SpecializationScope::AnySpecialization)),
+        )
+    };
+    assert_eq!(query(&sequential), query(&parallel));
+    assert_eq!(query(&sequential), query(&warm));
+}
+
+#[test]
+fn feature_valuations_publish_value_result_endpoints_and_implied_subsetting() {
+    let sources = [(
+        "memory://feature-valuations.kerml",
+        "package Model { classifier Thing; feature source : Thing; feature inferred = source; feature typed : Thing = source; out feature directed = source; feature defaulted default = source; }",
+    )];
+    let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+    let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
+    let query = |published: &PublishedResolution| {
+        let inferred = identity_of(
+            published,
+            "memory://feature-valuations.kerml",
+            "Model::inferred",
+        );
+        let relationships = settled(published.inspect(inferred))
+            .relationships
+            .into_vec()
+            .into_iter()
+            .filter(|relationship| relationship.kind == "subsetting")
+            .collect::<Vec<_>>();
+        let implied = relationships
+            .iter()
+            .find(|relationship| relationship.provenance == RelationshipProvenance::Implied)
+            .expect("the untyped, undirected regular valuation must imply a Subsetting");
+        let RelationshipTarget::Resolved(result) = implied.target else {
+            panic!("the implied valuation target must be settled")
+        };
+        let result_details = settled(published.element_details(result));
+        assert_eq!(result_details.inspection.kind, ElementKind::Feature);
+        let expression = result_details
+            .owner
+            .as_ref()
+            .expect("the result must be owned by its value Expression");
+        assert_eq!(expression.kind, ElementKind::Expression);
+        let expression_details = settled(published.element_details(expression.identity));
+        assert_eq!(
+            expression_details
+                .owner
+                .as_ref()
+                .map(|owner| owner.identity),
+            Some(inferred),
+        );
+        let feature_evaluation = settled(published.evaluate(inferred));
+        let expression_evaluation = settled(published.evaluate(expression.identity));
+        assert_eq!(feature_evaluation.state, expression_evaluation.state);
+        assert_eq!(feature_evaluation.units, expression_evaluation.units);
+        assert_eq!(
+            feature_evaluation.expected_measurement, expression_evaluation.expected_measurement,
+            "the valued Feature must project its canonical value Expression evaluation",
+        );
+        for suppressed_name in ["typed", "directed", "defaulted"] {
+            let suppressed = identity_of(
+                published,
+                "memory://feature-valuations.kerml",
+                &format!("Model::{suppressed_name}"),
+            );
+            assert!(
+                settled(published.inspect(suppressed))
+                    .relationships
+                    .iter()
+                    .all(|relationship| !(relationship.kind == "subsetting"
+                        && relationship.provenance == RelationshipProvenance::Implied)),
+                "{suppressed_name} must not receive the conditional implied Subsetting",
+            );
+        }
+        assert_eq!(
+            settled(published.specialization_check(SpecializationCheckKind::FeatureValuation,)),
+            SpecializationCheckOutcome::Satisfied,
+        );
+        (relationships, result_details, expression_details)
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));

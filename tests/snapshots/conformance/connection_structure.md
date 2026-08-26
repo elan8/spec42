@@ -71,7 +71,7 @@ package Structure {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:285e00ec13d320a7eb7b9bb9db4039cb9b5dd5e638649a0251d7454deac6d44a") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:285e00ec13d320a7eb7b9bb9db4039cb9b5dd5e638649a0251d7454deac6d44a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (kind part-def) (membership (kind owning) (visibility default)))

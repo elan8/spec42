@@ -1554,7 +1554,7 @@ impl SemanticModelBuilder {
             self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
         }
         if let Some(feature_value) = value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         if let Some(payload) = payload {
             if let Some(type_name) = payload.value.type_name {
@@ -1756,11 +1756,10 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
-        // value expression itself is not lowered here -- expression coverage for this usage
-        // family is unchanged by this fact family.
+        // Constructs the canonical value Expression/result and preserves its authored spelling.
+        // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
+            self.record_feature_value(document, declaration, feature_value)?;
         }
         match &node.value.target {
             PerformActionTarget::Action(usage_declaration) => {

@@ -39,7 +39,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:639bf58febba197d97fa97129ac1dc01e9e1a495764a18354f4e21592889c226") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:639bf58febba197d97fa97129ac1dc01e9e1a495764a18354f4e21592889c226"))
   (declarations
     (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling"))) (kind interface-def) (membership (kind owning) (visibility default)))

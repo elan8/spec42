@@ -79,7 +79,7 @@ package MultiplicityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -93,7 +93,9 @@ package MultiplicityTest {
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::e"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::f"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper unbounded))))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::g"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper expression))))
-    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A::i"))) (kind featureTyping) (ordinal 0))
@@ -118,9 +120,10 @@ package MultiplicityTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (target (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A::i"))) (target (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A::x"))) (target (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (state literal) (value (kind integer) (integer 5)))
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 5)))
   )
 )
 ~~~
@@ -152,6 +155,9 @@ package MultiplicityTest {
       (type (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P")) (provenance authored))
       (effective-type (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P")) (source direct))
       (supertype (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
 )
 ~~~

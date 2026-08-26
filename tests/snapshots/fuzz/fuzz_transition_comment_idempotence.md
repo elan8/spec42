@@ -35,7 +35,7 @@ state def S {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:833de34c746f50cc26cb08947a601c20204fb20c256af1275da9e50ece988020") (contract-version "lossless-publication-completeness-v3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:833de34c746f50cc26cb08947a601c20204fb20c256af1275da9e50ece988020"))
   (declarations
   )
   (references
