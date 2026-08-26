@@ -71,6 +71,9 @@ pub(crate) fn classify_constraint_node(
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+            classify_constraint_node(parsed, &body.value.result.as_ref()?.value, ordinal)
+        }
         Expression::Index { base, operands, .. } => {
             let mut children = Vec::with_capacity(operands.value.elements.len() + 1);
             children.push(classify_constraint_node(parsed, &base.value, ordinal)?);
@@ -234,6 +237,9 @@ pub(crate) fn classify_calc_node(
                 )?);
             }
             Some(EvalNode::Invocation(children))
+        }
+        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+            classify_calc_node(parsed, &body.value.result.as_ref()?.value, ordinal)
         }
         Expression::Index { base, operands, .. } => {
             let mut children = Vec::with_capacity(operands.value.elements.len() + 1);

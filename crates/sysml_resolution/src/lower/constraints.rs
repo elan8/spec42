@@ -129,6 +129,16 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::BodyExpr(body)
+                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+            {
+                self.lower_constraint_expression(
+                    document,
+                    declaration,
+                    family,
+                    body.value.result.as_deref().expect("guarded result"),
+                )
+            }
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op)
                     || is_arithmetic_operator(op)
@@ -277,6 +287,16 @@ impl SemanticModelBuilder {
                     self.lower_calc_expression(document, declaration, family, &element.expression)?;
                 }
                 Ok(())
+            }
+            Expression::BodyExpr(body)
+                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+            {
+                self.lower_calc_expression(
+                    document,
+                    declaration,
+                    family,
+                    body.value.result.as_deref().expect("guarded result"),
+                )
             }
             Expression::BinaryOp { op, left, right }
                 if is_arithmetic_operator(op)
