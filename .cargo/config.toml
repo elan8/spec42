@@ -12,7 +12,7 @@
 # `cargo deny check bans` and the guard test in `crates/source_identity` both read the resolved
 # graph, so an active patch shows up as a parser resolved from a path rather than from git. That is
 # intended -- comment this out before producing evidence for a pin bump.
-# [patch."https://github.com/lukewilliamboswell/sysml-v2-parser.git"]
+# [patch."https://github.com/elan8/sysml-v2-parser.git"]
 # sysml-v2-parser = { path = "../sysml-v2-parser" }
 
 # `cargo snapshot check` / `cargo snapshot update`: the snapshot tool builds every fixture's

@@ -28,7 +28,7 @@ const AUTHORITY_CRATE: &str = "sysml_resolution";
 const PARSER_PACKAGE: &str = "sysml-v2-parser";
 
 /// The upstream the pin must come from.
-const PARSER_GIT_URL: &str = "https://github.com/lukewilliamboswell/sysml-v2-parser.git";
+const PARSER_GIT_URL: &str = "https://github.com/elan8/sysml-v2-parser.git";
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))

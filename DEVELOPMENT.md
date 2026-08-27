@@ -189,7 +189,7 @@ cannot walk, cache, or serialise a parser document even while holding one.
 ### Updating the parser
 
 1. Change the `rev` in the root `Cargo.toml` `[workspace.dependencies]`, then run
-   `cargo update -p 'git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
+   `cargo update -p 'git+https://github.com/elan8/sysml-v2-parser.git?rev=<old-rev>#sysml-v2-parser@<version>'`.
    The bare `cargo update -p sysml-v2-parser` form is ambiguous whenever more than one identity is
    momentarily resolvable, and it is silent about it -- use the fully qualified spec.
 2. `cargo check --workspace --all-targets`, then `cargo test --workspace`. Integration tests live

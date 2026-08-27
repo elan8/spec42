@@ -4,7 +4,9 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`lukewilliamboswell/sysml-v2-parser@695b2b44f389192e187fcf51441d47b7e882c789`. Every gap below was
+`elan8/sysml-v2-parser@4b65812da4b4b03aa6e781674f1cab8844cadc88` (the `v0.55.0` release commit;
+identical parser code to the previously pinned `lukewilliamboswell/sysml-v2-parser@695b2b44`, which
+merged unchanged into `elan8/sysml-v2-parser` main as `#123`). Every gap below was
 re-exercised against that exact revision, one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
@@ -77,11 +79,12 @@ rerun against the exact replacement revision when fixed.
 | 52 | `readonly` and `variable` modifiers | Preserve presence and token spans independently from effective/default values |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
 
-The contribution target is the pinned `lukewilliamboswell/sysml-v2-parser` repository. References
-below to `elan8/sysml-v2-parser#121` record where the arena-backed work originated; they do not
-authorize changing spec42 to follow a moving upstream branch. A fix is consumed only by updating
-the single full revision in spec42 and regenerating the lockfile through the normal dependency
-workflow.
+The contribution target is the pinned `elan8/sysml-v2-parser` repository (the canonical upstream;
+the `lukewilliamboswell/sysml-v2-parser` fork used during the pipeline-rewrite cycle merged into it
+as `#123` and is no longer the target). References below to `elan8/sysml-v2-parser#121` record
+where the arena-backed work originated; they do not authorize changing spec42 to follow a moving
+upstream branch. A fix is consumed only by updating the single full revision in spec42 and
+regenerating the lockfile through the normal dependency workflow.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
