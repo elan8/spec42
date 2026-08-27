@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.7:validateRequirementConstraintMembershipOwningType
-blocked_by=parser-gap-74-require-constraint-membership
+blocked_by=semantic-requirement-constraint-owner
 type=file
 ~~~
 # SOURCE
@@ -49,12 +49,6 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 12 8) (end 13 4))
-      )
     )
   )
 )
@@ -62,10 +56,11 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:90e2c9c2eacf75643a9cace9f8936678aba596833eaaeda6c2e11631e82bbf81"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:90e2c9c2eacf75643a9cace9f8936678aba596833eaaeda6c2e11631e82bbf81"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (kind require-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Bound")))))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -73,6 +68,9 @@ package Roles {
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::limit"))) (kind require-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Bound")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Bound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")))))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0))
       (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component")))))
@@ -81,8 +79,10 @@ package Roles {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::limit"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::limit"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::limit"))) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good"))) (provenance implied))
   )
@@ -93,7 +93,14 @@ package Roles {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit")))
+      (featured-by (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad")))
+      (type (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")))
+      (subtype (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit")) (scopes any))
       (subtype (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::limit")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component")))
@@ -116,6 +123,11 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (range (start 12 35) (end 12 40)) (probe (position 12 35))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad::limit"))) (kind featureTyping) (ordinal 0) (authored-target "Bound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")))))
+    )
+  )
   (query (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (range (start 6 23) (end 6 32)) (probe (position 6 23))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component")))))

@@ -4,13 +4,20 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`lukewilliamboswell/sysml-v2-parser@34fd6c4976dc299c3ceb27bf4dc3f15170078408`. Every gap below was
+`lukewilliamboswell/sysml-v2-parser@695b2b44f389192e187fcf51441d47b7e882c789`. Every gap below was
 re-exercised against that exact revision, one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
 `sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. New
 upstream work must be based on the full pinned identity, not an abbreviated revision or the old
 `sysml-v2-parser-next` dependency alias.
+
+The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
+79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed
+action parameter kinds, and invalid membership owners now reach typed lowering. Gap 77 is narrowed
+to the transition effect-action spelling in a state body; transitions in action bodies are typed.
+The remaining unmet corpus expectations have explicit semantic or lowering blockers rather than
+continuing to masquerade as parser gaps.
 
 The bump from `c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056` (12 upstream commits in the parser
 speculation-removal performance series) leaves the open gaps below unchanged. Corpus regeneration
@@ -62,16 +69,10 @@ rerun against the exact replacement revision when fixed.
 
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
-| 62 | A KerML `Flow` with two payload features cannot be authored, so the at-most-one rule has no violating side | Accept the repeated `of <payload>` clause, or diagnose the second occurrence; prove `flow of Thing of Thing from source to target;` is either represented or reported, never `recovered_calc_body_element` |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
-| 66 | How many `crosses`/`references` clauses one feature authored: two clauses collapse into one relationship | Model each *clause* separately, or diagnose the second occurrence; prove `feature f crosses a crosses b;` is distinguishable from a single clause naming two targets |
-| 69 | A *binding* connector declaration cannot carry its end-feature body | Add the typed end-feature-body production for binding-connector declarations; prove a three-ended binding reaches one connector plus all three ends |
-| 74 | `require constraint` outside a requirement-shaped body | Admit the member independently of the owner validation rule; prove `part def H { require constraint c : C; }` reaches one typed member rather than `unexpected_keyword_in_scope`, so semantics can report the invalid owner |
 | 76 | The shorthand `else` branch as an action-body statement | Add the `if <cond> then <a> else <b>;` alternative; prove it reaches one member with both branches, as `if <cond> then <a>;` already does |
-| 77 | Transition effect-action members in a state body, and a `transition` member in an action body | Add the typed transition-body member variants; prove a transition effect action parses in a state body and a `transition` member is admitted in an action body instead of `unexpected_keyword_in_scope` |
+| 77 | A transition effect-action member in a state body | Admit the effect-action spelling used by `sysml_transition_feature_membership_effect_action.md` rather than returning `recovered_state_body_element`; transitions in action bodies are already typed |
 | 78 | `abstract` paired with `variation`, in either order | Accept the modifier pair on definition and usage declarations; prove `abstract variation part def Good;` and `abstract variation part good : Base;` parse, as the bare `variation` spellings already do |
-| 79 | `expose` in a package body, and `verify`/`render` in a part-definition body | Admit these member forms independently of the owner validation rule; prove their typed owners and spans reach the AST so semantics can report the invalid owner rather than the parser rejecting the spelling |
-| 82 | **Regression at the pinned revision.** The kind keyword of a directed parameter (`in action body { ... }`) is consumed and dropped | Record the keyword on `InOutDecl` (or produce the kinded usage node with its direction); prove `in action body { }` and `in body { }` are distinguishable to lowering |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 52 | `readonly` and `variable` modifiers | Preserve presence and token spans independently from effective/default values |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
@@ -84,70 +85,26 @@ workflow.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
-  `unexpected_keyword_in_scope` at `34fd6c4`, while `flow a.y to b.x1;` and `redefines
+  `unexpected_keyword_in_scope` at `695b2b44`, while `flow a.y to b.x1;` and `redefines
   predecessors [0];` reach typed nodes. The KerML message declaration cannot be authored in a
   `classifier`, `struct`, `class` or `behavior` body.
-
-- Gap 62. KerML flow declarations parse and lower, including the declaration-led form (see
-  "Lowering that the bump unblocked"). What remains is the *at-most-one-payload* rule's violating
-  side: `behavior M { flow of Thing of Thing from source to target; }` is
-  `recovered_calc_body_element` at `34fd6c4`, so KerML 8.3.4.9.2 `validateFlowPayloadFeature` has
-  no authorable violation and `tests/snapshots/validation/kerml_flow_payload_feature.md` stays
-  blocked.
-
-- Gap 66. Clause *count* is unobservable. At `34fd6c4` `feature two crosses source crosses
-  target;` parses, and both targets now lower and resolve as `crossSubsetting` references (the
-  `unsupported_reference` they used to settle as is gone: reference and cross subsetting joined
-  the subsetting resolution pass). What the AST cannot express is that the author wrote two
-  separate clauses: `KermlFeature::crosses` is one `Option<Node<SubsettingRelationship>>` whose
-  `target` is a `Vec`, indistinguishable from one clause naming two targets. KerML 8.3.3.3.4
-  states both `validateFeatureOwnedCrossSubsetting` and `validateFeatureOwnedReferenceSubsetting`
-  as "at most one **clause**" rules, so the violation cannot be observed.
-  `kerml_feature_owned_cross_subsetting.md` and `kerml_feature_owned_reference_subsetting.md` are
-  blocked on `parser-gap-66-subsetting-clause-count`.
-
-- Gap 69. Unchanged: a binding connector with an end-feature body is `unexpected_keyword_in_scope`
-  at `34fd6c4`, so `kerml_binding_connector_is_binary.md`, `kerml_connector_binary_specialization.md`
-  and `generated_conditional_binary_connector_specialization.md` stay blocked.
-
-- Gap 74. Narrowed. The declared `require constraint c : C;` / `assume constraint a : A;` parse in
-  a requirement-shaped body with their typing (`RequireConstraint::typing`), and lower, so
-  `generated_conditional_requirement_constraint_specialization.md`,
-  `sysml_requirement_constraint_membership_is_composite.md` and
-  `generated_requirement_constraint_derived_facts_parser_gap.md` are unblocked. What remains is the
-  owner rule's violating side: `part def H { require constraint c : C; }` is
-  `unexpected_keyword_in_scope` at `34fd6c4`, so
-  `validateRequirementConstraintMembershipOwningType` cannot be authored and
-  `sysml_requirement_constraint_membership_owning_type.md` stays blocked.
 
 - Gap 76. Narrowed to one spelling. `accept when true;` and `accept at now;` parse in an action
   body and lower through `lower_accept_trigger`; the three trigger-argument fixtures now wait on a
   semantic rule (`semantic-trigger-invocation-argument-typing`) and the accept derived-fact
   fixtures on the action-parameter identity gap. `action def P { action a1; action a2; if true
-  then a1 else a2; }` is still `recovered_action_body_element` at `34fd6c4`, so
+  then a1 else a2; }` is still `recovered_action_body_element` at `695b2b44`, so
   `sysml_if_action_usage_parameters.md` stays blocked.
 
-- Gap 77. Unchanged: `transition aTransition first start accept apayload : Anything via receiver
-  then done;` in a state body and a `transition` member in an action body are
-  `recovered_state_body_element` and `unexpected_keyword_in_scope` respectively at `34fd6c4`.
+- Gap 77. Narrowed. A `transition` member in an action body now reaches the typed `Transition`
+  variant. The effect-action spelling exercised by
+  `sysml_transition_feature_membership_effect_action.md` still returns
+  `recovered_state_body_element` at `695b2b44`.
 
-- Gap 78. Unchanged. Probed one spelling per document at `34fd6c4`: `abstract variation part def
+- Gap 78. Unchanged. Probed one spelling per document at `695b2b44`: `abstract variation part def
   Good;` is `recovered_package_body_element`, `abstract variation part good : Base;` is
   `recovered_part_def_body_element`, and `attribute def X { abstract variation attribute a; }` is
   `unsupported_grammar_form`; the bare `variation` spellings parse. Seven fixtures stay blocked.
-
-- Gap 79. Unchanged: `expose` in a package body is `recovered_package_body_element`, and `verify`
-  / `render` in a part-definition body are `unexpected_keyword_in_scope` at `34fd6c4`.
-
-- Gap 82. **Regression at the pinned revision**, visible only now that `perform <path>;` resolves
-  its target. `src/parser/action.rs`'s `in_out_decl_inner` consumes an `action` keyword after the
-  direction ("Library shorthand: `in action body { ... }` (treat as name `body` typed as
-  action)") and binds nothing: `InOutDecl` has no slot for it, so `Actions.sysml`'s `in action
-  body { ... }` reaches lowering as a plain parameter and `then perform body;` performs a
-  `ParameterUsage`. `sysml_resolution`'s `validatePerformActionUsageReference` therefore skips a
-  parameter target rather than report a defect the author did not write
-  (`check/host.rs`, `collect_behavior_structure`). Needs the keyword recorded, or the kinded
-  usage node produced with its direction.
 
 - Gap 41. KerML's implicit self-reference identifier `that` has no lexically-distinguished status
   in the parser: `SYSML_RESERVED_KEYWORDS` (`src/parser/lex.rs`) does not contain `"that"`, so it
@@ -187,7 +144,12 @@ standalone `subclassifier C specializes B;` declaration, which is a spec42 lower
 Not upstream gaps: the parser carries these typed facts, and the remaining work is
 `sysml_resolution` lowering. Recorded so the coverage they represent stays visible rather than
 disappearing with the gap entries they closed. Each was re-checked against the owning lowering
-at pinned `34fd6c4`; entries whose lowering has since landed were removed.
+at pinned `695b2b44`; entries whose lowering has since landed were removed.
+
+- **Newly typed parser-gap fallout.** Flow payload clauses, ordered feature-specialization clauses,
+  binding body ends, invalid-owner requirement/view memberships, and action-body transitions now
+  reach lowering. Their remaining semantic facts and validations are tracked by the typed blockers
+  in `tests/snapshots/issues.toml`; they are no longer upstream parser gaps.
 
 - **KerML explicit relationship declarations.** `ast::KermlRelationshipDecl`
   (`PackageBodyElement::KermlRelationship`) models `subtype`/`subclassifier`/`typing`/`subset`/

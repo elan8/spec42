@@ -1754,6 +1754,7 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::WhileStmt(_)
         | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
+        ADBE::Transition(_) => {}
         ADBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
@@ -1852,6 +1853,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::WhileStmt(_)
         | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}
+        AUBE::Transition(_) => {}
         AUBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);

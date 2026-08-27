@@ -1672,6 +1672,12 @@ impl SemanticModelBuilder {
             PackageBodyElement::RenderingUsage(node) => {
                 self.lower_rendering_usage(document, owner, node)?
             }
+            PackageBodyElement::Expose(node) => match owner {
+                Some(owner) => self.lower_expose(document, owner, node)?,
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
+            },
             PackageBodyElement::ConnectionDef(node) => {
                 self.lower_connection_def(document, owner, node)?
             }

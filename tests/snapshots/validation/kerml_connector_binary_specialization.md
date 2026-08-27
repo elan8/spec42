@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.5.3:validateConnectorBinarySpecialization
-blocked_by=parser-gap-69-connector-end-body
+blocked_by=parser-gap-kerml-connector-specialization
 type=file
 libraries=standard
 ~~~

@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureOwnedCrossSubsetting
-blocked_by=parser-gap-66-subsetting-clause-count
+blocked_by=lowering-gap-feature-specialization-clause-count
 type=file
 ~~~
 # SOURCE

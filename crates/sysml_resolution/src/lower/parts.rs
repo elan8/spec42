@@ -28,11 +28,12 @@ use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, CaseReturnDecl,
     DefaultReferenceUsage, DefinitionBody, DefinitionBodyElement, DefinitionPrefix, EnumDef,
     EnumerationBody, EnumerationBodyElement, EnumerationUsage as ParserEnumerationUsage,
-    ExtendedUsage, FeatureValue, InOut, InOutDecl, ItemDef, ItemUsage as ParserItemUsage,
-    MembershipKind as ParserMembershipKind, Node, OccurrenceBodyElement, OccurrenceDef,
-    OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OccurrenceUsagePrefix,
-    OwnedCrossUsage, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-    PartUsageBodyElement, RefDecl, ReturnDecl, UnextendedUsagePrefix,
+    ExtendedUsage, FeatureValue, InOut, InOutDecl, InOutDeclKind, ItemDef,
+    ItemUsage as ParserItemUsage, MembershipKind as ParserMembershipKind, Node,
+    OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
+    OccurrenceUsageBody, OccurrenceUsagePrefix, OwnedCrossUsage, PartDef, PartDefBody,
+    PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, RefDecl, ReturnDecl,
+    UnextendedUsagePrefix,
 };
 
 impl SemanticModelBuilder {
@@ -158,6 +159,14 @@ impl SemanticModelBuilder {
                             requirement_usage,
                         )?;
                     }
+                    PartDefBodyElement::RequireConstraint(node) => {
+                        self.lower_require_constraint_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::PortDef(port_def) => {
                         self.lower_port_def(document, Some(declaration), port_def)?;
                     }
@@ -226,6 +235,21 @@ impl SemanticModelBuilder {
                     }
                     PartDefBodyElement::RenderingUsage(node) => {
                         self.lower_rendering_usage(document, Some(declaration), node)?;
+                    }
+                    PartDefBodyElement::ViewRendering(node) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node.span,
+                        );
+                    }
+                    PartDefBodyElement::VerifyRequirement(node) => {
+                        self.lower_verify_requirement_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
                     }
                     PartDefBodyElement::UseCaseUsage(node) => {
                         self.lower_use_case_usage(document, Some(declaration), node)?;
@@ -1502,7 +1526,14 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::ParameterUsage,
+            if matches!(
+                node.value.kind.as_ref().map(|kind| kind.value),
+                Some(InOutDeclKind::Action)
+            ) {
+                DeclarationKind::ActionUsage
+            } else {
+                DeclarationKind::ParameterUsage
+            },
             name,
             node.span,
             DeclarationFacts {

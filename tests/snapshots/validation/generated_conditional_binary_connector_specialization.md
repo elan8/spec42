@@ -7,7 +7,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.5.3:checkConnectorBinarySpecialization
-blocked_by=parser-gap-69-connector-end-body
+blocked_by=lowering-gap-connector-body-end-count
 type=file
 libraries=standard
 ~~~

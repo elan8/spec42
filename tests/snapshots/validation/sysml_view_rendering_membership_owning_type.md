@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.26.10:validateViewRenderingMembershipOwningType
-blocked_by=parser-gap-79-membership-owner-forms
+blocked_by=lowering-view-rendering-membership
 type=file
 ~~~
 # SOURCE
@@ -54,10 +54,10 @@ package Views {
         (range (start 5 8) (end 5 29))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 10 8) (end 11 4))
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 10 8) (end 10 29))
       )
     )
   )
@@ -66,7 +66,7 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:c11a6ba7a831fa811abbe2f8f153d22ae796d9f466f2bf041c26afd7794331f3"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:c11a6ba7a831fa811abbe2f8f153d22ae796d9f466f2bf041c26afd7794331f3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_view_rendering_membership_owning_type.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_view_rendering_membership_owning_type.md") (qualified-name "Views::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
