@@ -153,7 +153,9 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             .unwrap_or_else(|| panic!("the fixture authors a SequenceView; catalog: {views:?}"));
 
         let runtime = GeneratorRuntime::new().expect("generator runtime");
-        let prepared = runtime.prepare(&module).expect("the diagram plugin is a valid module");
+        let prepared = runtime
+            .prepare(&module)
+            .expect("the diagram plugin is a valid module");
         let execution = runtime
             .execute_prepared(
                 &prepared,
