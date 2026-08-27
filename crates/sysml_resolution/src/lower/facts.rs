@@ -102,6 +102,17 @@ pub(crate) enum PortionKind {
     Timeslice,
 }
 
+/// The normative role of a feature owned through a `TransitionFeatureMembership`.
+///
+/// This comes from the typed transition grammar and is never reconstructed from child order,
+/// declaration kind, a name, or rendered output.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TransitionFeatureRole {
+    Trigger,
+    Guard,
+    Effect,
+}
+
 /// The closed set of declaration modifier prefixes the pinned parser can express.
 ///
 /// Deliberately not a `Vec<String>` of labels: each flag is a typed fact with exactly one parser
@@ -190,6 +201,14 @@ pub(crate) struct DeclarationFacts {
     /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
     /// action selected by a control-action branch/body syntax production.
     pub(crate) action_input_parameter_position: Option<u32>,
+    /// This ParameterUsage is the TransitionUsage's synthesized second input parameter.
+    pub(crate) is_transition_payload_parameter: bool,
+    /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.
+    pub(crate) is_trigger_payload_parameter: bool,
+    /// This Succession is the one owned member synthesized by a TransitionUsage's `then` clause.
+    pub(crate) is_transition_succession: bool,
+    /// The exact `TransitionFeatureMembership::kind` through which this child is owned.
+    pub(crate) transition_feature_role: Option<TransitionFeatureRole>,
     /// The number of directly owned end Features when the owning construct's complete authored
     /// end collection is known during lowering.
     ///

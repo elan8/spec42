@@ -4,8 +4,10 @@ use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::TransitionFeatureRole;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
@@ -477,14 +479,32 @@ impl SemanticModelBuilder {
             ReferenceKind::TransitionTarget,
             &node.value.target,
         )?;
+        self.lower_transition_succession(document, declaration, node)?;
         if let Some(guard) = &node.value.guard {
+            let guard_expression = self.push_typed_declaration(
+                document,
+                Some(declaration),
+                DeclarationKind::KermlBooleanExpression,
+                None,
+                guard.span,
+                DeclarationFacts {
+                    transition_feature_role: Some(TransitionFeatureRole::Guard),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                guard_expression,
+                MembershipKind::Feature,
+                Visibility::Default,
+                guard.span,
+            )?;
             self.push_evaluation_fact(
-                declaration,
+                guard_expression,
                 self.constraint_expression_site(document, &guard.value),
             );
             self.lower_constraint_expression(
                 document,
-                declaration,
+                guard_expression,
                 UnsupportedFamily::StateDefinitionMember,
                 guard,
             )?;
@@ -522,15 +542,35 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(accept @ TransitionAccept::Payload(_, _)) => {
-                self.lower_accept_trigger(
+            Some(TransitionAccept::Payload(clause, via)) => {
+                let trigger_action =
+                    trigger_action.expect("an authored accept always creates its trigger action");
+                self.lower_transition_payload_chain(
                     document,
-                    trigger_action.expect("an authored accept always creates its trigger action"),
-                    UnsupportedFamily::StateDefinitionMember,
-                    accept,
+                    declaration,
+                    trigger_action,
+                    clause,
+                    node.span,
                 )?;
+                if let Some(via) = via {
+                    self.lower_satisfy_operand(
+                        document,
+                        trigger_action,
+                        UnsupportedFamily::StateDefinitionMember,
+                        ReferenceKind::AcceptVia,
+                        via,
+                    )?;
+                }
             }
         }
+        let effect_action = node
+            .value
+            .effect
+            .as_ref()
+            .map(|effect| {
+                self.lower_transition_effect_action(document, declaration, node.span, effect)
+            })
+            .transpose()?;
         match &node.value.effect {
             None => {}
             Some(TransitionEffect::Perform {
@@ -539,7 +579,7 @@ impl SemanticModelBuilder {
             }) => {
                 self.push_action_binding_reference(
                     document,
-                    declaration,
+                    effect_action.expect("an authored effect always creates its action"),
                     ReferenceKind::TransitionEffect,
                     *type_name,
                 )?;
@@ -566,6 +606,54 @@ impl SemanticModelBuilder {
             }
         }
         Ok(())
+    }
+
+    /// Publishes the SuccessionAsUsage that the transition grammar authors through its implicit
+    /// source end and explicit `then` end. TransitionUsage keeps its own derived source/target
+    /// references, while this distinct owned member carries the succession endpoints used by the
+    /// normative `succession.sourceFeature = source` contract.
+    fn lower_transition_succession(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        node: &Node<Transition>,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let succession = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::Succession,
+            None,
+            node.span,
+            DeclarationFacts {
+                is_transition_succession: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            succession,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let Some(source) = &node.value.source {
+            self.lower_succession_end(
+                document,
+                succession,
+                UnsupportedFamily::StateDefinitionMember,
+                ReferenceKind::Succession,
+                source,
+            )?;
+        } else {
+            self.reserve_reference_ordinal(succession, ReferenceKind::Succession)?;
+        }
+        self.lower_succession_end(
+            document,
+            succession,
+            UnsupportedFamily::StateDefinitionMember,
+            ReferenceKind::Succession,
+            &node.value.target,
+        )?;
+        Ok(succession)
     }
 
     /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.
@@ -599,6 +687,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 is_trigger_action: Some(true),
+                transition_feature_role: Some(TransitionFeatureRole::Trigger),
                 accept_has_payload_argument: Some(has_payload),
                 accept_has_receiver_argument: Some(has_receiver),
                 ..DeclarationFacts::none()
@@ -611,6 +700,121 @@ impl SemanticModelBuilder {
             span,
         )?;
         Ok(declaration)
+    }
+
+    /// Publishes the ActionUsage owned by a transition's effect membership. Detailed lowering for
+    /// the individual perform/accept/send/assign forms remains with their existing branches; this
+    /// common declaration is the canonical identity consumed by transition-feature derivation and
+    /// specialization.
+    fn lower_transition_effect_action(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        span: Span,
+        effect: &TransitionEffect,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let (kind, name) = match effect {
+            TransitionEffect::Perform { name, .. } => (
+                DeclarationKind::PerformActionUsage,
+                self.intern_declaration_name(document, *name)?,
+            ),
+            TransitionEffect::Accept { .. } => (DeclarationKind::AcceptActionUsage, None),
+            TransitionEffect::Send { .. } => (DeclarationKind::SendActionUsage, None),
+            TransitionEffect::Assign { .. } => (DeclarationKind::Assign, None),
+            TransitionEffect::Expression(_) => (DeclarationKind::ActionUsage, None),
+        };
+        let action = self.push_typed_declaration(
+            document,
+            Some(transition),
+            kind,
+            name,
+            span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    composite: true,
+                    ..DeclarationModifiers::default()
+                },
+                is_trigger_action: (kind == DeclarationKind::AcceptActionUsage).then_some(false),
+                transition_feature_role: Some(TransitionFeatureRole::Effect),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(action, MembershipKind::Feature, Visibility::Default, span)?;
+        Ok(action)
+    }
+
+    /// Lowers the two distinct parameters represented by `accept signal : Signal` on a
+    /// TransitionUsage: the trigger AcceptActionUsage's payload parameter and the transition's
+    /// second input parameter. Explicit role facts let resolution publish
+    /// `subsetsChain(triggerAction, triggerPayloadParameter())` without rediscovering either
+    /// endpoint from syntax, names, or child order.
+    fn lower_transition_payload_chain(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        trigger_action: DeclarationId,
+        clause: &sysml_v2_parser::ast::PayloadClause,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let trigger_payload_parameter = self.push_typed_declaration(
+            document,
+            Some(trigger_action),
+            DeclarationKind::ParameterUsage,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::InOut),
+                is_trigger_payload_parameter: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            trigger_payload_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        if let Some(type_name) = clause.type_name {
+            let type_span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: trigger_payload_parameter,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags {
+                    direction: Some(ParameterDirection::InOut),
+                    ..RelationshipFlags::default()
+                },
+                span: type_span,
+                import: None,
+            })?;
+        }
+
+        let name = self.intern_declaration_name(document, Some(clause.name))?;
+        let transition_payload_parameter = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::ParameterUsage,
+            name,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::In),
+                is_transition_payload_parameter: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            transition_payload_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        Ok(())
     }
 
     /// Lowers one `Transition` operand (`source`/`target`/shorthand `accept`/`Expression`

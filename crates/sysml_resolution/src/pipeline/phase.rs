@@ -41,10 +41,14 @@ use crate::resolve::implied::synthesize_constructor_expression_result_specializa
 use crate::resolve::implied::synthesize_feature_chain_expression_result_specializations;
 use crate::resolve::implied::synthesize_feature_reference_expression_result_specializations;
 use crate::resolve::implied::synthesize_implied_relationships;
-use crate::resolve::implied::synthesize_invocation_expression_result_specializations;
+use crate::resolve::implied::synthesize_invocation_expression_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
+use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
+use crate::resolve::implied::synthesize_transition_feature_specializations;
+use crate::resolve::implied::synthesize_transition_payload_subsettings;
+use crate::resolve::implied::synthesize_transition_succession_sources;
 use crate::resolve::library_seed::SettledLibrary;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
@@ -219,6 +223,64 @@ impl Lowered {
                 synthesis.status,
             )
         };
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .all(|facts| !facts.is_transition_payload_parameter)
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_transition_payload_subsettings(&storage)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_transition_payload_subsettings(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
+        };
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .all(|facts| !facts.is_transition_succession)
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_transition_succession_sources(&storage, &resolution)?;
+            resolution.settle_transition_succession_sources(synthesis.projections, synthesis.status)
+        };
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .all(|facts| facts.transition_feature_role.is_none())
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_transition_feature_specializations(&storage)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_transition_feature_specializations(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
+        };
         let resolution = if storage.operator_expressions.is_empty() {
             resolution
         } else {
@@ -312,7 +374,7 @@ impl Lowered {
             resolution
         } else {
             let prerequisite_types = derive_effective_types(&storage, &resolution)?;
-            let synthesis = synthesize_invocation_expression_result_specializations(
+            let synthesis = synthesize_invocation_expression_specializations(
                 &storage,
                 &resolution,
                 &prerequisite_types,
@@ -331,6 +393,31 @@ impl Lowered {
                 implied.into_boxed_slice(),
                 synthesis.projections,
                 synthesis.status,
+            )
+        };
+        let resolution = if storage
+            .declarations
+            .iter()
+            .all(|declaration| declaration.kind != crate::model::DeclarationKind::Succession)
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_succession_endpoint_subsettings(&storage, &resolution)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_succession_endpoint_subsettings(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.decision_status,
+                synthesis.merge_status,
             )
         };
         let mut completeness = PublicationCompleteness::Complete;

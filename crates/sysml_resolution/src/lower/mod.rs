@@ -885,6 +885,23 @@ impl SemanticModelBuilder {
         Ok(id)
     }
 
+    /// Reserves one authored-reference position for a grammar-owned endpoint that has no name to
+    /// resolve. This keeps later positional endpoints (for example a transition succession's
+    /// target when its source is implicit) at their canonical ordinal without inventing a
+    /// reference or resolved semantic fact.
+    pub(crate) fn reserve_reference_ordinal(
+        &mut self,
+        source: DeclarationId,
+        kind: ReferenceKind,
+    ) -> Result<(), ConstructionError> {
+        let ordinal = self
+            .next_reference_ordinals
+            .entry((source, kind))
+            .or_insert(0);
+        *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+        Ok(())
+    }
+
     /// Pushes one `ReferenceKind::MemberAccessOperand` reference for a flattened dotted
     /// feature-chain: `chain` is the ordered list of
     /// parser `QualifiedReferenceId`s from the root segment outward (a bare `FeatureRef`/

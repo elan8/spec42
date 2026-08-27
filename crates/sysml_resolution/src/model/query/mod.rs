@@ -2210,7 +2210,11 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
-        if kind == SpecializationCheckKind::InvocationExpressionBehaviorResult {
+        if matches!(
+            kind,
+            SpecializationCheckKind::InvocationExpression
+                | SpecializationCheckKind::InvocationExpressionBehaviorResult
+        ) {
             if matches!(
                 self.resolution.invocation_expression_projection_status,
                 crate::resolve::results::InvocationExpressionProjectionStatus::Unresolved
@@ -2219,13 +2223,244 @@ impl<D> SemanticModel<D> {
             }
             let mut outcome = SpecializationCheckOutcome::Satisfied;
             for invocation in self.resolution.invocation_expression_projections.iter() {
-                if invocation.instantiated_type_kind.is_function() {
-                    continue;
-                }
+                let source = if kind == SpecializationCheckKind::InvocationExpression {
+                    invocation.expression
+                } else {
+                    if invocation.instantiated_type_kind.is_function() {
+                        continue;
+                    }
+                    invocation.result
+                };
                 match self.conformance(
-                    invocation.result,
+                    source,
                     invocation.instantiated_type,
                     SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if matches!(
+            kind,
+            SpecializationCheckKind::DecisionNodeOutgoingSuccession
+                | SpecializationCheckKind::MergeNodeIncomingSuccession
+        ) {
+            use crate::resolve::results::SuccessionEndpointSubsettingKind;
+            use crate::resolve::results::SuccessionEndpointSubsettingStatus;
+
+            let (projection_kind, status, endpoint_kind) = match kind {
+                SpecializationCheckKind::DecisionNodeOutgoingSuccession => (
+                    SuccessionEndpointSubsettingKind::DecisionOutgoing,
+                    self.resolution.decision_outgoing_subsetting_status,
+                    crate::model::DeclarationKind::Decide,
+                ),
+                SpecializationCheckKind::MergeNodeIncomingSuccession => (
+                    SuccessionEndpointSubsettingKind::MergeIncoming,
+                    self.resolution.merge_incoming_subsetting_status,
+                    crate::model::DeclarationKind::Merge,
+                ),
+                _ => unreachable!(),
+            };
+            if status == SuccessionEndpointSubsettingStatus::Unresolved {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .succession_endpoint_subsetting_projections
+                .iter()
+                .filter(|projection| projection.kind == projection_kind)
+            {
+                let structurally_complete = self
+                    .storage
+                    .declaration(projection.succession)
+                    .is_some_and(|declaration| {
+                        declaration.kind == crate::model::DeclarationKind::Succession
+                    })
+                    && self
+                        .storage
+                        .declaration(projection.endpoint)
+                        .is_some_and(|declaration| declaration.kind == endpoint_kind)
+                    && self
+                        .storage
+                        .declaration(projection.subsetting_target)
+                        .is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.succession,
+                    projection.subsetting_target,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::TransitionUsagePayload {
+            if self.resolution.transition_payload_subsetting_status
+                == crate::resolve::results::TransitionPayloadSubsettingStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_payload_subsetting_projections
+                .iter()
+            {
+                let structurally_complete = self
+                    .storage
+                    .declaration(projection.transition)
+                    .is_some_and(|declaration| {
+                        declaration.kind == crate::model::DeclarationKind::Transition
+                    })
+                    && self
+                        .storage
+                        .declaration(projection.transition_payload_parameter)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::ParameterUsage
+                                && declaration.owner == Some(projection.transition)
+                        })
+                    && self
+                        .storage
+                        .declaration(projection.trigger_action)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::AcceptActionUsage
+                                && declaration.owner == Some(projection.transition)
+                        })
+                    && self
+                        .storage
+                        .declaration(projection.trigger_payload_parameter)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::ParameterUsage
+                                && declaration.owner == Some(projection.trigger_action)
+                        });
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.transition_payload_parameter,
+                    projection.trigger_payload_parameter,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::TransitionUsageSuccessionSource {
+            if self.resolution.transition_succession_source_status
+                == crate::resolve::results::TransitionSuccessionSourceStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_succession_source_projections
+                .iter()
+            {
+                let structurally_complete =
+                    self.storage
+                        .declaration(projection.transition)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::Transition
+                        })
+                        && self.storage.declaration(projection.succession).is_some_and(
+                            |declaration| {
+                                declaration.kind == crate::model::DeclarationKind::Succession
+                                    && declaration.owner == Some(projection.transition)
+                            },
+                        );
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                if projection.transition_source != projection.succession_source {
+                    outcome = SpecializationCheckOutcome::Violated;
+                    break;
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::TransitionUsageTransitionFeature {
+            use crate::lower::facts::TransitionFeatureRole;
+            use crate::resolve::results::TransitionFeatureSpecializationStatus;
+
+            if self.resolution.transition_feature_specialization_status
+                == TransitionFeatureSpecializationStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_feature_specialization_projections
+                .iter()
+            {
+                let structurally_complete =
+                    self.storage
+                        .declaration(projection.transition)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::Transition
+                        })
+                        && self.storage.declaration(projection.feature).is_some_and(
+                            |declaration| {
+                                declaration.owner == Some(projection.transition)
+                            && match projection.role {
+                                TransitionFeatureRole::Trigger => {
+                                    declaration.kind
+                                        == crate::model::DeclarationKind::AcceptActionUsage
+                                }
+                                TransitionFeatureRole::Guard => {
+                                    declaration.kind
+                                        == crate::model::DeclarationKind::KermlBooleanExpression
+                                }
+                                TransitionFeatureRole::Effect => declaration.kind.is_action_usage(),
+                            }
+                            },
+                        )
+                        && self
+                            .storage
+                            .declaration(projection.library_anchor)
+                            .is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.feature,
+                    projection.library_anchor,
+                    SpecializationScope::FeatureSpecialization,
                 ) {
                     Conformance::Conforms => {}
                     Conformance::DoesNotConform => {
@@ -2274,7 +2509,7 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::MergeNodeIncomingSuccession
             | SpecializationCheckKind::DecisionNodeOutgoingSuccession => {
-                SpecializationCheckPrerequisite::SuccessionEndpointAndSubsetting
+                unreachable!("handled above")
             }
             SpecializationCheckKind::StateUsageExclusiveState
             | SpecializationCheckKind::StateUsageSubstate => {
@@ -2284,14 +2519,12 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::TransitionUsageState => {
                 SpecializationCheckPrerequisite::TransitionOwnerSourceAndLibraryAnchor
             }
-            SpecializationCheckKind::TransitionUsagePayload => {
-                SpecializationCheckPrerequisite::TransitionTriggerPayloadEndpoints
-            }
+            SpecializationCheckKind::TransitionUsagePayload => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsageSuccessionSource => {
-                SpecializationCheckPrerequisite::TransitionSuccessionSource
+                unreachable!("handled above")
             }
             SpecializationCheckKind::TransitionUsageTransitionFeature => {
-                SpecializationCheckPrerequisite::TransitionFeatureRolesAndLibraryAnchors
+                unreachable!("handled above")
             }
             SpecializationCheckKind::IncludeUseCase => {
                 SpecializationCheckPrerequisite::UseCaseOwnerAndLibraryAnchor

@@ -5,6 +5,7 @@ use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
+use crate::lower::facts::TransitionFeatureRole;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
 use crate::model::AuthoredReferenceId;
@@ -37,6 +38,15 @@ use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::SemanticMetadataProjection;
 use crate::resolve::results::SemanticMetadataProjectionStatus;
 use crate::resolve::results::SolverStatus;
+use crate::resolve::results::SuccessionEndpointSubsettingKind;
+use crate::resolve::results::SuccessionEndpointSubsettingProjection;
+use crate::resolve::results::SuccessionEndpointSubsettingStatus;
+use crate::resolve::results::TransitionFeatureSpecializationProjection;
+use crate::resolve::results::TransitionFeatureSpecializationStatus;
+use crate::resolve::results::TransitionPayloadSubsettingProjection;
+use crate::resolve::results::TransitionPayloadSubsettingStatus;
+use crate::resolve::results::TransitionSuccessionSourceProjection;
+use crate::resolve::results::TransitionSuccessionSourceStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -1266,11 +1276,433 @@ pub(crate) struct InvocationExpressionSynthesis {
     pub(crate) status: InvocationExpressionProjectionStatus,
 }
 
-/// Publishes the InvocationExpression's instantiated type, result, and Function classification as
-/// one phase-4 fact. This is the sole derivation of the OCL `is Function` predicate: a type is a
-/// Function when its concrete declaration or a Subclassification ancestor is one, while a Feature
-/// is Function-valued when any canonical effective type has that classification.
-pub(crate) fn synthesize_invocation_expression_result_specializations(
+pub(crate) struct SuccessionEndpointSubsettingSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[SuccessionEndpointSubsettingProjection]>,
+    pub(crate) decision_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) merge_status: SuccessionEndpointSubsettingStatus,
+}
+
+pub(crate) struct TransitionPayloadSubsettingSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[TransitionPayloadSubsettingProjection]>,
+    pub(crate) status: TransitionPayloadSubsettingStatus,
+}
+
+pub(crate) struct TransitionSuccessionSourceSynthesis {
+    pub(crate) projections: Box<[TransitionSuccessionSourceProjection]>,
+    pub(crate) status: TransitionSuccessionSourceStatus,
+}
+
+pub(crate) struct TransitionFeatureSpecializationSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[TransitionFeatureSpecializationProjection]>,
+    pub(crate) status: TransitionFeatureSpecializationStatus,
+}
+
+/// Publishes the three role-specific specializations required for transition features. Each role
+/// is a lowering-owned enum and each target is resolved by canonical standard-library identity.
+/// The guard spelling is inherited by `Actions::TransitionAction` from
+/// `TransitionPerformances::TransitionPerformance`, so the latter is the concrete declaration
+/// identity named by the former qualified feature selection.
+pub(crate) fn synthesize_transition_feature_specializations(
+    storage: &SemanticModelStorage,
+) -> Result<TransitionFeatureSpecializationSynthesis, ResolutionError> {
+    let anchors = transition_feature_specialization_anchors(storage);
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = TransitionFeatureSpecializationStatus::Complete;
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let Some(role) = storage.declaration_facts[index].transition_feature_role else {
+            continue;
+        };
+        let feature = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(transition) = declaration.owner.filter(|owner| {
+            storage
+                .declaration(*owner)
+                .is_some_and(|owner| owner.kind == DeclarationKind::Transition)
+        }) else {
+            status = TransitionFeatureSpecializationStatus::Unresolved;
+            continue;
+        };
+        let anchor = match role {
+            TransitionFeatureRole::Trigger => &anchors[0],
+            TransitionFeatureRole::Guard => &anchors[1],
+            TransitionFeatureRole::Effect => &anchors[2],
+        };
+        let LibrarySpecializationAnchor::Resolved(library_anchor) = anchor else {
+            status = TransitionFeatureSpecializationStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind: implied_library_specialization_kind(storage, feature, *library_anchor)?,
+            source: feature,
+            target: *library_anchor,
+        });
+        projections.push(TransitionFeatureSpecializationProjection {
+            transition,
+            feature,
+            role,
+            library_anchor: *library_anchor,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| (projection.transition.0, projection.feature.0));
+    Ok(TransitionFeatureSpecializationSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+/// Resolves all three fixed transition-feature anchors in one declaration pass. The corpus builds
+/// many small workspace publications over the same large standard library; repeating a full scan
+/// once per role is needless work even though it is asymptotically linear.
+fn transition_feature_specialization_anchors(
+    storage: &SemanticModelStorage,
+) -> [LibrarySpecializationAnchor; 3] {
+    let mut candidates: [Vec<DeclarationId>; 3] = std::array::from_fn(|_| Vec::new());
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if !storage
+            .document(declaration.document)
+            .is_some_and(|document| document.role == SourceRole::StandardLibrary)
+        {
+            continue;
+        }
+        let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+            continue;
+        };
+        let slot_and_owners: Option<(usize, &[&str])> = match name {
+            "accepter" => Some((0, &["Actions", "TransitionAction"])),
+            "guard" => Some((1, &["TransitionPerformances", "TransitionPerformance"])),
+            "effect" => Some((2, &["Actions", "TransitionAction"])),
+            _ => None,
+        };
+        let Some((slot, owners)) = slot_and_owners else {
+            continue;
+        };
+        if anchor_owner_path_matches(storage, declaration.owner, owners) {
+            if let Ok(id) = DeclarationId::from_index(index) {
+                candidates[slot].push(id);
+            }
+        }
+    }
+    candidates.map(|mut candidates| {
+        candidates.sort_unstable();
+        candidates.dedup();
+        match candidates.len() {
+            0 => LibrarySpecializationAnchor::Missing,
+            1 => LibrarySpecializationAnchor::Resolved(candidates[0]),
+            _ => LibrarySpecializationAnchor::Ambiguous(candidates.into_boxed_slice()),
+        }
+    })
+}
+
+/// Joins each TransitionUsage's derived source with the source endpoint of its owned Succession.
+/// Both endpoint families are indexed once by dense declaration identity, keeping construction
+/// linear and retaining absence separately from an unresolved authored reference.
+pub(crate) fn synthesize_transition_succession_sources(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<TransitionSuccessionSourceSynthesis, ResolutionError> {
+    let mut succession_by_transition = vec![None; storage.declarations.len()];
+    let mut transition_source = vec![None; storage.declarations.len()];
+    let mut succession_source = vec![None; storage.declarations.len()];
+    let mut transition_has_source = vec![false; storage.declarations.len()];
+    let mut succession_has_source = vec![false; storage.declarations.len()];
+    let mut status = TransitionSuccessionSourceStatus::Complete;
+
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if !storage.declaration_facts[index].is_transition_succession {
+            continue;
+        }
+        let succession = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(transition) = declaration.owner else {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+            continue;
+        };
+        let slot = succession_by_transition
+            .get_mut(transition.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if slot.replace(succession).is_some() {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+        }
+    }
+
+    for (index, reference) in storage.references.iter().enumerate() {
+        let source = reference.source;
+        let is_transition_source = reference.kind == ReferenceKind::TransitionSource;
+        let is_owned_succession_source = reference.kind == ReferenceKind::Succession
+            && reference.ordinal == 0
+            && storage
+                .declaration_facts
+                .get(source.index())
+                .is_some_and(|facts| facts.is_transition_succession);
+        if !is_transition_source && !is_owned_succession_source {
+            continue;
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let endpoint = match resolution.outcome(id) {
+            Some(ResolutionStatus::Resolved(endpoint)) => endpoint,
+            _ => {
+                status = TransitionSuccessionSourceStatus::Unresolved;
+                continue;
+            }
+        };
+        let slots = if is_transition_source {
+            transition_has_source[source.index()] = true;
+            &mut transition_source
+        } else {
+            succession_has_source[source.index()] = true;
+            &mut succession_source
+        };
+        let slot = slots
+            .get_mut(source.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if slot.replace(endpoint).is_some() {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+        }
+    }
+
+    let mut projections = Vec::new();
+    for (transition_index, succession) in succession_by_transition.into_iter().enumerate() {
+        let Some(succession) = succession else {
+            continue;
+        };
+        let transition =
+            DeclarationId::from_index(transition_index).map_err(|_| ResolutionError::Capacity)?;
+        if transition_has_source[transition_index] != succession_has_source[succession.index()] {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+            continue;
+        }
+        projections.push(TransitionSuccessionSourceProjection {
+            transition,
+            succession,
+            transition_source: transition_source[transition_index],
+            succession_source: succession_source[succession.index()],
+        });
+    }
+    projections.sort_by_key(|projection| projection.transition.0);
+    Ok(TransitionSuccessionSourceSynthesis {
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+/// Publishes `checkTransitionUsagePayloadSpecialization` from the exact lowering-owned payload
+/// chain records. Dense declaration-indexed presence flags keep this linear even for a model with
+/// many triggered transitions.
+pub(crate) fn synthesize_transition_payload_subsettings(
+    storage: &SemanticModelStorage,
+) -> Result<TransitionPayloadSubsettingSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut projected_trigger_actions = vec![false; storage.declarations.len()];
+    let mut status = TransitionPayloadSubsettingStatus::Complete;
+    let mut trigger_action_by_transition = vec![None; storage.declarations.len()];
+    let mut trigger_payload_by_action = vec![None; storage.declarations.len()];
+    let mut transition_payload_by_transition = vec![None; storage.declarations.len()];
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let facts = &storage.declaration_facts[index];
+        if declaration.kind == DeclarationKind::AcceptActionUsage
+            && facts.is_trigger_action == Some(true)
+        {
+            if let Some(transition) = declaration.owner {
+                let slot = trigger_action_by_transition
+                    .get_mut(transition.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+        if facts.is_trigger_payload_parameter {
+            if let Some(action) = declaration.owner {
+                let slot = trigger_payload_by_action
+                    .get_mut(action.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+        if facts.is_transition_payload_parameter {
+            if let Some(transition) = declaration.owner {
+                let slot = transition_payload_by_transition
+                    .get_mut(transition.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+    }
+    for (transition_index, transition_payload_parameter) in
+        transition_payload_by_transition.into_iter().enumerate()
+    {
+        let Some(transition_payload_parameter) = transition_payload_parameter else {
+            continue;
+        };
+        let transition =
+            DeclarationId::from_index(transition_index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(trigger_action) = trigger_action_by_transition[transition_index] else {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+            continue;
+        };
+        let Some(trigger_payload_parameter) = trigger_payload_by_action[trigger_action.index()]
+        else {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+            continue;
+        };
+        projected_trigger_actions[trigger_action.index()] = true;
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: transition_payload_parameter,
+            target: trigger_payload_parameter,
+        });
+        projections.push(TransitionPayloadSubsettingProjection {
+            transition,
+            transition_payload_parameter,
+            trigger_action,
+            trigger_payload_parameter,
+        });
+    }
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind == DeclarationKind::AcceptActionUsage
+            && storage.declaration_facts[index].is_trigger_action == Some(true)
+            && storage.declaration_facts[index].accept_has_payload_argument == Some(true)
+            && !projected_trigger_actions[index]
+        {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.transition.0);
+    Ok(TransitionPayloadSubsettingSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+/// Publishes the SysML 8.3.17.7/13 contextual `subsetsChain` facts in one linear pass over
+/// declarations and references. The projection retains the selected endpoint (`self`) while the
+/// ordinary implied Subsetting relationship targets the canonical library feature.
+pub(crate) fn synthesize_succession_endpoint_subsettings(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<SuccessionEndpointSubsettingSynthesis, ResolutionError> {
+    let mut endpoints = vec![[None; 2]; storage.declarations.len()];
+    let mut decision_status = SuccessionEndpointSubsettingStatus::Complete;
+    let mut merge_status = SuccessionEndpointSubsettingStatus::Complete;
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind != ReferenceKind::Succession {
+            continue;
+        }
+        let Some(slot) = endpoints.get_mut(reference.source.index()) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let ordinal = usize::try_from(reference.ordinal).map_err(|_| ResolutionError::Capacity)?;
+        let Some(endpoint) = slot.get_mut(ordinal) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        *endpoint = resolution.outcome(id);
+    }
+
+    let decision_anchor = resolve_library_specialization_anchor(
+        storage,
+        "ControlPerformances::DecisionPerformance::outgoingHBLink",
+    );
+    let merge_anchor = resolve_library_specialization_anchor(
+        storage,
+        "ControlPerformances::MergePerformance::incomingHBLink",
+    );
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind != DeclarationKind::Succession {
+            continue;
+        }
+        let succession = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let [source, target] = endpoints[index];
+        match source {
+            Some(ResolutionStatus::Resolved(endpoint))
+                if storage
+                    .declaration(endpoint)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Decide) =>
+            {
+                match decision_anchor {
+                    LibrarySpecializationAnchor::Resolved(subsetting_target) => {
+                        implied.push(ImpliedRelationship {
+                            kind: ReferenceKind::Subsetting,
+                            source: succession,
+                            target: subsetting_target,
+                        });
+                        projections.push(SuccessionEndpointSubsettingProjection {
+                            succession,
+                            endpoint,
+                            subsetting_target,
+                            kind: SuccessionEndpointSubsettingKind::DecisionOutgoing,
+                        });
+                    }
+                    _ => decision_status = SuccessionEndpointSubsettingStatus::Unresolved,
+                }
+            }
+            _ => {}
+        }
+        match target {
+            Some(ResolutionStatus::Resolved(endpoint))
+                if storage
+                    .declaration(endpoint)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Merge) =>
+            {
+                match merge_anchor {
+                    LibrarySpecializationAnchor::Resolved(subsetting_target) => {
+                        implied.push(ImpliedRelationship {
+                            kind: ReferenceKind::Subsetting,
+                            source: succession,
+                            target: subsetting_target,
+                        });
+                        projections.push(SuccessionEndpointSubsettingProjection {
+                            succession,
+                            endpoint,
+                            subsetting_target,
+                            kind: SuccessionEndpointSubsettingKind::MergeIncoming,
+                        });
+                    }
+                    _ => merge_status = SuccessionEndpointSubsettingStatus::Unresolved,
+                }
+            }
+            _ => {}
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    projections.sort_by_key(|projection| (projection.succession.0, projection.kind as u8));
+    Ok(SuccessionEndpointSubsettingSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        decision_status,
+        merge_status,
+    })
+}
+
+/// Publishes the InvocationExpression's instantiated type, its own specialization, result
+/// specialization, and Function classification as one phase-4 fact. This is the sole derivation
+/// of the OCL `is Function` predicate: a type is a Function when its concrete declaration or a
+/// Subclassification ancestor is one, while a Feature is Function-valued when any canonical
+/// effective type has that classification.
+pub(crate) fn synthesize_invocation_expression_specializations(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
     effective_types: &EffectiveTypes,
@@ -1351,6 +1783,15 @@ pub(crate) fn synthesize_invocation_expression_result_specializations(
                 }
             }
         };
+        implied.push(ImpliedRelationship {
+            kind: if feature {
+                ReferenceKind::Subsetting
+            } else {
+                ReferenceKind::FeatureTyping
+            },
+            source: expression,
+            target: instantiated_type,
+        });
         if !instantiated_type_kind.is_function() {
             implied.push(ImpliedRelationship {
                 kind: if feature {
