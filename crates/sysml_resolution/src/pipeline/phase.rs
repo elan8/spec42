@@ -46,6 +46,7 @@ use crate::resolve::implied::synthesize_operator_expression_result_specializatio
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
 use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
+use crate::resolve::implied::synthesize_transition_feature_specializations;
 use crate::resolve::implied::synthesize_transition_payload_subsettings;
 use crate::resolve::implied::synthesize_transition_succession_sources;
 use crate::resolve::library_seed::SettledLibrary;
@@ -255,6 +256,30 @@ impl Lowered {
         } else {
             let synthesis = synthesize_transition_succession_sources(&storage, &resolution)?;
             resolution.settle_transition_succession_sources(synthesis.projections, synthesis.status)
+        };
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .all(|facts| facts.transition_feature_role.is_none())
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_transition_feature_specializations(&storage)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_transition_feature_specializations(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.status,
+            )
         };
         let resolution = if storage.operator_expressions.is_empty() {
             resolution

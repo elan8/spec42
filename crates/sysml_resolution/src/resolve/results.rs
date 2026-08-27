@@ -1,5 +1,6 @@
 //! Phase 3: the settled outcome of name resolution.
 
+use crate::lower::facts::TransitionFeatureRole;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::NameId;
@@ -238,6 +239,21 @@ pub(crate) enum TransitionSuccessionSourceStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TransitionFeatureSpecializationProjection {
+    pub(crate) transition: DeclarationId,
+    pub(crate) feature: DeclarationId,
+    pub(crate) role: TransitionFeatureRole,
+    pub(crate) library_anchor: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum TransitionFeatureSpecializationStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -276,6 +292,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) transition_succession_source_projections:
         Box<[TransitionSuccessionSourceProjection]>,
     pub(crate) transition_succession_source_status: TransitionSuccessionSourceStatus,
+    pub(crate) transition_feature_specialization_projections:
+        Box<[TransitionFeatureSpecializationProjection]>,
+    pub(crate) transition_feature_specialization_status: TransitionFeatureSpecializationStatus,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -442,6 +461,20 @@ impl ResolutionResults {
         Self {
             transition_succession_source_projections: projections,
             transition_succession_source_status: status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_transition_feature_specializations(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        projections: Box<[TransitionFeatureSpecializationProjection]>,
+        status: TransitionFeatureSpecializationStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            transition_feature_specialization_projections: projections,
+            transition_feature_specialization_status: status,
             ..self
         }
     }

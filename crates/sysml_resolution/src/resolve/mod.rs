@@ -1124,6 +1124,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             transition_payload_subsetting_status: Default::default(),
             transition_succession_source_projections: Box::default(),
             transition_succession_source_status: Default::default(),
+            transition_feature_specialization_projections: Box::default(),
+            transition_feature_specialization_status: Default::default(),
             #[cfg(test)]
             work,
         },

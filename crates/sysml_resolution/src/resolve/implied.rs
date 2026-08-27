@@ -5,6 +5,7 @@ use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
+use crate::lower::facts::TransitionFeatureRole;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind;
 use crate::model::AuthoredReferenceId;
@@ -40,6 +41,8 @@ use crate::resolve::results::SolverStatus;
 use crate::resolve::results::SuccessionEndpointSubsettingKind;
 use crate::resolve::results::SuccessionEndpointSubsettingProjection;
 use crate::resolve::results::SuccessionEndpointSubsettingStatus;
+use crate::resolve::results::TransitionFeatureSpecializationProjection;
+use crate::resolve::results::TransitionFeatureSpecializationStatus;
 use crate::resolve::results::TransitionPayloadSubsettingProjection;
 use crate::resolve::results::TransitionPayloadSubsettingStatus;
 use crate::resolve::results::TransitionSuccessionSourceProjection;
@@ -1289,6 +1292,117 @@ pub(crate) struct TransitionPayloadSubsettingSynthesis {
 pub(crate) struct TransitionSuccessionSourceSynthesis {
     pub(crate) projections: Box<[TransitionSuccessionSourceProjection]>,
     pub(crate) status: TransitionSuccessionSourceStatus,
+}
+
+pub(crate) struct TransitionFeatureSpecializationSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[TransitionFeatureSpecializationProjection]>,
+    pub(crate) status: TransitionFeatureSpecializationStatus,
+}
+
+/// Publishes the three role-specific specializations required for transition features. Each role
+/// is a lowering-owned enum and each target is resolved by canonical standard-library identity.
+/// The guard spelling is inherited by `Actions::TransitionAction` from
+/// `TransitionPerformances::TransitionPerformance`, so the latter is the concrete declaration
+/// identity named by the former qualified feature selection.
+pub(crate) fn synthesize_transition_feature_specializations(
+    storage: &SemanticModelStorage,
+) -> Result<TransitionFeatureSpecializationSynthesis, ResolutionError> {
+    let anchors = transition_feature_specialization_anchors(storage);
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut status = TransitionFeatureSpecializationStatus::Complete;
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let Some(role) = storage.declaration_facts[index].transition_feature_role else {
+            continue;
+        };
+        let feature = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(transition) = declaration.owner.filter(|owner| {
+            storage
+                .declaration(*owner)
+                .is_some_and(|owner| owner.kind == DeclarationKind::Transition)
+        }) else {
+            status = TransitionFeatureSpecializationStatus::Unresolved;
+            continue;
+        };
+        let anchor = match role {
+            TransitionFeatureRole::Trigger => &anchors[0],
+            TransitionFeatureRole::Guard => &anchors[1],
+            TransitionFeatureRole::Effect => &anchors[2],
+        };
+        let LibrarySpecializationAnchor::Resolved(library_anchor) = anchor else {
+            status = TransitionFeatureSpecializationStatus::Unresolved;
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind: implied_library_specialization_kind(storage, feature, *library_anchor)?,
+            source: feature,
+            target: *library_anchor,
+        });
+        projections.push(TransitionFeatureSpecializationProjection {
+            transition,
+            feature,
+            role,
+            library_anchor: *library_anchor,
+        });
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    projections.sort_by_key(|projection| (projection.transition.0, projection.feature.0));
+    Ok(TransitionFeatureSpecializationSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
+}
+
+/// Resolves all three fixed transition-feature anchors in one declaration pass. The corpus builds
+/// many small workspace publications over the same large standard library; repeating a full scan
+/// once per role is needless work even though it is asymptotically linear.
+fn transition_feature_specialization_anchors(
+    storage: &SemanticModelStorage,
+) -> [LibrarySpecializationAnchor; 3] {
+    let mut candidates: [Vec<DeclarationId>; 3] = std::array::from_fn(|_| Vec::new());
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if !storage
+            .document(declaration.document)
+            .is_some_and(|document| document.role == SourceRole::StandardLibrary)
+        {
+            continue;
+        }
+        let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+            continue;
+        };
+        let slot_and_owners: Option<(usize, &[&str])> = match name {
+            "accepter" => Some((0, &["Actions", "TransitionAction"])),
+            "guard" => Some((1, &["TransitionPerformances", "TransitionPerformance"])),
+            "effect" => Some((2, &["Actions", "TransitionAction"])),
+            _ => None,
+        };
+        let Some((slot, owners)) = slot_and_owners else {
+            continue;
+        };
+        if anchor_owner_path_matches(storage, declaration.owner, owners) {
+            if let Ok(id) = DeclarationId::from_index(index) {
+                candidates[slot].push(id);
+            }
+        }
+    }
+    candidates.map(|mut candidates| {
+        candidates.sort_unstable();
+        candidates.dedup();
+        match candidates.len() {
+            0 => LibrarySpecializationAnchor::Missing,
+            1 => LibrarySpecializationAnchor::Resolved(candidates[0]),
+            _ => LibrarySpecializationAnchor::Ambiguous(candidates.into_boxed_slice()),
+        }
+    })
 }
 
 /// Joins each TransitionUsage's derived source with the source endpoint of its owned Succession.

@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-transition-feature-roles-library-anchors"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Transition trigger, guard, and effect role collections are not published with their exact library anchors."
-
-[[issue]]
 id = "lowering-gap-specialization-usage-variation-owner"
 kind = "lowering_gap"
 owner = "spec42-semantic"

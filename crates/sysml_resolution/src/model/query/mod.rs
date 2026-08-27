@@ -2412,6 +2412,69 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::TransitionUsageTransitionFeature {
+            use crate::lower::facts::TransitionFeatureRole;
+            use crate::resolve::results::TransitionFeatureSpecializationStatus;
+
+            if self.resolution.transition_feature_specialization_status
+                == TransitionFeatureSpecializationStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_feature_specialization_projections
+                .iter()
+            {
+                let structurally_complete =
+                    self.storage
+                        .declaration(projection.transition)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::Transition
+                        })
+                        && self.storage.declaration(projection.feature).is_some_and(
+                            |declaration| {
+                                declaration.owner == Some(projection.transition)
+                            && match projection.role {
+                                TransitionFeatureRole::Trigger => {
+                                    declaration.kind
+                                        == crate::model::DeclarationKind::AcceptActionUsage
+                                }
+                                TransitionFeatureRole::Guard => {
+                                    declaration.kind
+                                        == crate::model::DeclarationKind::KermlBooleanExpression
+                                }
+                                TransitionFeatureRole::Effect => declaration.kind.is_action_usage(),
+                            }
+                            },
+                        )
+                        && self
+                            .storage
+                            .declaration(projection.library_anchor)
+                            .is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.feature,
+                    projection.library_anchor,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2461,7 +2524,7 @@ impl<D> SemanticModel<D> {
                 unreachable!("handled above")
             }
             SpecializationCheckKind::TransitionUsageTransitionFeature => {
-                SpecializationCheckPrerequisite::TransitionFeatureRolesAndLibraryAnchors
+                unreachable!("handled above")
             }
             SpecializationCheckKind::IncludeUseCase => {
                 SpecializationCheckPrerequisite::UseCaseOwnerAndLibraryAnchor

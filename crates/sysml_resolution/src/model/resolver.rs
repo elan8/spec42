@@ -1170,6 +1170,8 @@ mod tests {
             transition_payload_subsetting_status: Default::default(),
             transition_succession_source_projections: Box::default(),
             transition_succession_source_status: Default::default(),
+            transition_feature_specialization_projections: Box::default(),
+            transition_feature_specialization_status: Default::default(),
             work: ResolutionWork::default(),
         }
     }
