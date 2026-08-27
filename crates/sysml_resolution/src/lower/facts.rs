@@ -194,6 +194,8 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_transition_payload_parameter: bool,
     /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.
     pub(crate) is_trigger_payload_parameter: bool,
+    /// This Succession is the one owned member synthesized by a TransitionUsage's `then` clause.
+    pub(crate) is_transition_succession: bool,
     /// The number of directly owned end Features when the owning construct's complete authored
     /// end collection is known during lowering.
     ///

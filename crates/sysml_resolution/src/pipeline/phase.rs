@@ -47,6 +47,7 @@ use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
 use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
 use crate::resolve::implied::synthesize_transition_payload_subsettings;
+use crate::resolve::implied::synthesize_transition_succession_sources;
 use crate::resolve::library_seed::SettledLibrary;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
@@ -244,6 +245,16 @@ impl Lowered {
                 synthesis.projections,
                 synthesis.status,
             )
+        };
+        let resolution = if storage
+            .declaration_facts
+            .iter()
+            .all(|facts| !facts.is_transition_succession)
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_transition_succession_sources(&storage, &resolution)?;
+            resolution.settle_transition_succession_sources(synthesis.projections, synthesis.status)
         };
         let resolution = if storage.operator_expressions.is_empty() {
             resolution

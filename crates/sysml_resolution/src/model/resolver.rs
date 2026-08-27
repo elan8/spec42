@@ -1168,6 +1168,8 @@ mod tests {
             merge_incoming_subsetting_status: Default::default(),
             transition_payload_subsetting_projections: Box::default(),
             transition_payload_subsetting_status: Default::default(),
+            transition_succession_source_projections: Box::default(),
+            transition_succession_source_status: Default::default(),
             work: ResolutionWork::default(),
         }
     }

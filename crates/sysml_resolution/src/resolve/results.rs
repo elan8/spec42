@@ -223,6 +223,21 @@ pub(crate) enum TransitionPayloadSubsettingStatus {
     Unresolved,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TransitionSuccessionSourceProjection {
+    pub(crate) transition: DeclarationId,
+    pub(crate) succession: DeclarationId,
+    pub(crate) transition_source: Option<DeclarationId>,
+    pub(crate) succession_source: Option<DeclarationId>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum TransitionSuccessionSourceStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -258,6 +273,9 @@ pub(crate) struct ResolutionResults {
     pub(crate) transition_payload_subsetting_projections:
         Box<[TransitionPayloadSubsettingProjection]>,
     pub(crate) transition_payload_subsetting_status: TransitionPayloadSubsettingStatus,
+    pub(crate) transition_succession_source_projections:
+        Box<[TransitionSuccessionSourceProjection]>,
+    pub(crate) transition_succession_source_status: TransitionSuccessionSourceStatus,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -412,6 +430,18 @@ impl ResolutionResults {
             implied_relationships,
             transition_payload_subsetting_projections: projections,
             transition_payload_subsetting_status: status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_transition_succession_sources(
+        self,
+        projections: Box<[TransitionSuccessionSourceProjection]>,
+        status: TransitionSuccessionSourceStatus,
+    ) -> Self {
+        Self {
+            transition_succession_source_projections: projections,
+            transition_succession_source_status: status,
             ..self
         }
     }

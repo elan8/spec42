@@ -478,6 +478,7 @@ impl SemanticModelBuilder {
             ReferenceKind::TransitionTarget,
             &node.value.target,
         )?;
+        self.lower_transition_succession(document, declaration, node)?;
         if let Some(guard) = &node.value.guard {
             self.push_evaluation_fact(
                 declaration,
@@ -579,6 +580,54 @@ impl SemanticModelBuilder {
             }
         }
         Ok(())
+    }
+
+    /// Publishes the SuccessionAsUsage that the transition grammar authors through its implicit
+    /// source end and explicit `then` end. TransitionUsage keeps its own derived source/target
+    /// references, while this distinct owned member carries the succession endpoints used by the
+    /// normative `succession.sourceFeature = source` contract.
+    fn lower_transition_succession(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        node: &Node<Transition>,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let succession = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::Succession,
+            None,
+            node.span,
+            DeclarationFacts {
+                is_transition_succession: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            succession,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let Some(source) = &node.value.source {
+            self.lower_succession_end(
+                document,
+                succession,
+                UnsupportedFamily::StateDefinitionMember,
+                ReferenceKind::Succession,
+                source,
+            )?;
+        } else {
+            self.reserve_reference_ordinal(succession, ReferenceKind::Succession)?;
+        }
+        self.lower_succession_end(
+            document,
+            succession,
+            UnsupportedFamily::StateDefinitionMember,
+            ReferenceKind::Succession,
+            &node.value.target,
+        )?;
+        Ok(succession)
     }
 
     /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.

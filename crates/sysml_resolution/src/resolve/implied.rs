@@ -42,6 +42,8 @@ use crate::resolve::results::SuccessionEndpointSubsettingProjection;
 use crate::resolve::results::SuccessionEndpointSubsettingStatus;
 use crate::resolve::results::TransitionPayloadSubsettingProjection;
 use crate::resolve::results::TransitionPayloadSubsettingStatus;
+use crate::resolve::results::TransitionSuccessionSourceProjection;
+use crate::resolve::results::TransitionSuccessionSourceStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -1282,6 +1284,102 @@ pub(crate) struct TransitionPayloadSubsettingSynthesis {
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
     pub(crate) projections: Box<[TransitionPayloadSubsettingProjection]>,
     pub(crate) status: TransitionPayloadSubsettingStatus,
+}
+
+pub(crate) struct TransitionSuccessionSourceSynthesis {
+    pub(crate) projections: Box<[TransitionSuccessionSourceProjection]>,
+    pub(crate) status: TransitionSuccessionSourceStatus,
+}
+
+/// Joins each TransitionUsage's derived source with the source endpoint of its owned Succession.
+/// Both endpoint families are indexed once by dense declaration identity, keeping construction
+/// linear and retaining absence separately from an unresolved authored reference.
+pub(crate) fn synthesize_transition_succession_sources(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<TransitionSuccessionSourceSynthesis, ResolutionError> {
+    let mut succession_by_transition = vec![None; storage.declarations.len()];
+    let mut transition_source = vec![None; storage.declarations.len()];
+    let mut succession_source = vec![None; storage.declarations.len()];
+    let mut transition_has_source = vec![false; storage.declarations.len()];
+    let mut succession_has_source = vec![false; storage.declarations.len()];
+    let mut status = TransitionSuccessionSourceStatus::Complete;
+
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if !storage.declaration_facts[index].is_transition_succession {
+            continue;
+        }
+        let succession = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(transition) = declaration.owner else {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+            continue;
+        };
+        let slot = succession_by_transition
+            .get_mut(transition.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if slot.replace(succession).is_some() {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+        }
+    }
+
+    for (index, reference) in storage.references.iter().enumerate() {
+        let source = reference.source;
+        let is_transition_source = reference.kind == ReferenceKind::TransitionSource;
+        let is_owned_succession_source = reference.kind == ReferenceKind::Succession
+            && reference.ordinal == 0
+            && storage
+                .declaration_facts
+                .get(source.index())
+                .is_some_and(|facts| facts.is_transition_succession);
+        if !is_transition_source && !is_owned_succession_source {
+            continue;
+        }
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let endpoint = match resolution.outcome(id) {
+            Some(ResolutionStatus::Resolved(endpoint)) => endpoint,
+            _ => {
+                status = TransitionSuccessionSourceStatus::Unresolved;
+                continue;
+            }
+        };
+        let slots = if is_transition_source {
+            transition_has_source[source.index()] = true;
+            &mut transition_source
+        } else {
+            succession_has_source[source.index()] = true;
+            &mut succession_source
+        };
+        let slot = slots
+            .get_mut(source.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if slot.replace(endpoint).is_some() {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+        }
+    }
+
+    let mut projections = Vec::new();
+    for (transition_index, succession) in succession_by_transition.into_iter().enumerate() {
+        let Some(succession) = succession else {
+            continue;
+        };
+        let transition =
+            DeclarationId::from_index(transition_index).map_err(|_| ResolutionError::Capacity)?;
+        if transition_has_source[transition_index] != succession_has_source[succession.index()] {
+            status = TransitionSuccessionSourceStatus::Unresolved;
+            continue;
+        }
+        projections.push(TransitionSuccessionSourceProjection {
+            transition,
+            succession,
+            transition_source: transition_source[transition_index],
+            succession_source: succession_source[succession.index()],
+        });
+    }
+    projections.sort_by_key(|projection| projection.transition.0);
+    Ok(TransitionSuccessionSourceSynthesis {
+        projections: projections.into_boxed_slice(),
+        status,
+    })
 }
 
 /// Publishes `checkTransitionUsagePayloadSpecialization` from the exact lowering-owned payload

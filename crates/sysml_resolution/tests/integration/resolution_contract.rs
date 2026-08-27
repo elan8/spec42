@@ -3191,16 +3191,10 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
     let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let expected = [
-        (
-            SpecializationCheckKind::UsageVariationUsage,
-            SpecializationCheckPrerequisite::UsageVariationOwner,
-        ),
-        (
-            SpecializationCheckKind::TransitionUsageSuccessionSource,
-            SpecializationCheckPrerequisite::TransitionSuccessionSource,
-        ),
-    ];
+    let expected = [(
+        SpecializationCheckKind::UsageVariationUsage,
+        SpecializationCheckPrerequisite::UsageVariationOwner,
+    )];
     let query = |published: &PublishedResolution| {
         expected.map(|(rule, prerequisite)| {
             assert_eq!(

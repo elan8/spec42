@@ -1122,6 +1122,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             merge_incoming_subsetting_status: Default::default(),
             transition_payload_subsetting_projections: Box::default(),
             transition_payload_subsetting_status: Default::default(),
+            transition_succession_source_projections: Box::default(),
+            transition_succession_source_status: Default::default(),
             #[cfg(test)]
             work,
         },
@@ -2027,6 +2029,22 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
                 .owner
                 .and_then(|connector| declarations.get(connector.index()))
                 .and_then(|connector| connector.owner)
+        } else if reference.kind() == ReferenceKind::Succession
+            && source.kind == DeclarationKind::Succession
+            && source.owner.is_some_and(|owner| {
+                declarations
+                    .get(owner.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Transition)
+            })
+        {
+            // SysML scopes both ends of the Succession owned by a TransitionUsage in the
+            // TransitionUsage's owning namespace. Starting inside the Transition would admit its
+            // inherited/payload features ahead of the sibling state/action named by `first` or
+            // `then`, making the succession endpoints disagree with Transition.source/target.
+            source
+                .owner
+                .and_then(|transition| declarations.get(transition.index()))
+                .and_then(|transition| transition.owner)
         } else {
             source.owner
         };

@@ -2377,6 +2377,41 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::TransitionUsageSuccessionSource {
+            if self.resolution.transition_succession_source_status
+                == crate::resolve::results::TransitionSuccessionSourceStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_succession_source_projections
+                .iter()
+            {
+                let structurally_complete =
+                    self.storage
+                        .declaration(projection.transition)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::Transition
+                        })
+                        && self.storage.declaration(projection.succession).is_some_and(
+                            |declaration| {
+                                declaration.kind == crate::model::DeclarationKind::Succession
+                                    && declaration.owner == Some(projection.transition)
+                            },
+                        );
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                if projection.transition_source != projection.succession_source {
+                    outcome = SpecializationCheckOutcome::Violated;
+                    break;
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2423,7 +2458,7 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::TransitionUsagePayload => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsageSuccessionSource => {
-                SpecializationCheckPrerequisite::TransitionSuccessionSource
+                unreachable!("handled above")
             }
             SpecializationCheckKind::TransitionUsageTransitionFeature => {
                 SpecializationCheckPrerequisite::TransitionFeatureRolesAndLibraryAnchors
