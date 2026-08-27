@@ -5,7 +5,7 @@ import { prepareGraph } from "./graph";
 import { prepareInterconnection } from "./interconnection";
 import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
-import { asRecord } from "./util";
+import { asArray, asRecord, asString } from "./util";
 
 export type {
   InterconnectionLayoutDto,
@@ -74,6 +74,109 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
   if (view === "grid-view") return prepareGrid(visualization);
   if (view === "geometry-view") return prepareGeometry(visualization);
   return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
+}
+
+/**
+ * Adapt a schema-5 `sequence-view` projection into the `{ lifelines, messages }` shape the
+ * sequence renderer consumes.
+ *
+ * The projection gives us: `metadata.participants` (lifeline node indices),
+ * `metadata.messages` (message node indices), `flow` edges (send event -> receive event,
+ * `origin` = the message), `succession` edges (message -> message, authored order), and
+ * `containment` edges (lifeline -> ... -> event). We climb containment to map each message
+ * end to its lifeline, and topologically order the messages by succession.
+ */
+function sequenceDiagramFromProjection(
+  name: string,
+  projection: Record<string, unknown>,
+  nodes: PreparedNode[],
+  metadata: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  const rawEdges = asArray(projection.edges).map(asRecord);
+  const asIndex = (value: unknown): number | undefined =>
+    typeof value === "number" && nodes[value] !== undefined ? value : undefined;
+  const participantIdx = asArray(metadata.participants)
+    .map(asIndex)
+    .filter((value): value is number => value !== undefined);
+  const messageIdx = asArray(metadata.messages)
+    .map(asIndex)
+    .filter((value): value is number => value !== undefined);
+  if (participantIdx.length === 0 || messageIdx.length === 0) return undefined;
+
+  const participantSet = new Set(participantIdx);
+  const ownerOf = new Map<number, number>();
+  for (const edge of rawEdges) {
+    if (asString(edge.kind) !== "containment") continue;
+    const owner = asIndex(edge.source);
+    const child = asIndex(edge.target);
+    if (owner !== undefined && child !== undefined) ownerOf.set(child, owner);
+  }
+  const lifelineOf = (node: number): number | undefined => {
+    let current: number | undefined = node;
+    const seen = new Set<number>();
+    while (current !== undefined && !seen.has(current)) {
+      if (participantSet.has(current)) return current;
+      seen.add(current);
+      current = ownerOf.get(current);
+    }
+    return undefined;
+  };
+
+  const ends = new Map<number, { from?: number; to?: number }>();
+  for (const edge of rawEdges) {
+    if (asString(edge.kind) !== "flow") continue;
+    const origin = asIndex(edge.origin);
+    const source = asIndex(edge.source);
+    const target = asIndex(edge.target);
+    if (origin === undefined) continue;
+    ends.set(origin, {
+      from: source === undefined ? undefined : lifelineOf(source),
+      to: target === undefined ? undefined : lifelineOf(target),
+    });
+  }
+
+  // Authored order: a chain of `succession` edges between message nodes. Messages with no
+  // incoming succession start; ties and unordered messages keep declaration order.
+  const nextOf = new Map<number, number[]>();
+  const hasIncoming = new Set<number>();
+  for (const edge of rawEdges) {
+    if (asString(edge.kind) !== "succession") continue;
+    const from = asIndex(edge.source);
+    const to = asIndex(edge.target);
+    if (from === undefined || to === undefined) continue;
+    const successors = nextOf.get(from) ?? [];
+    successors.push(to);
+    nextOf.set(from, successors);
+    hasIncoming.add(to);
+  }
+  const ordered: number[] = [];
+  const placed = new Set<number>();
+  const visit = (node: number): void => {
+    if (placed.has(node) || !messageIdx.includes(node)) return;
+    placed.add(node);
+    ordered.push(node);
+    for (const next of nextOf.get(node) ?? []) visit(next);
+  };
+  for (const message of messageIdx) if (!hasIncoming.has(message)) visit(message);
+  for (const message of messageIdx) visit(message);
+
+  const lifelines = participantIdx.map((index) => ({
+    id: nodes[index].id,
+    name: nodes[index].label || nodes[index].kind,
+  }));
+  const messages = ordered.map((index, position) => {
+    const end = ends.get(index) ?? {};
+    return {
+      id: nodes[index].id,
+      name: nodes[index].label,
+      source: end.from === undefined ? undefined : nodes[end.from].id,
+      target: end.to === undefined ? undefined : nodes[end.to].id,
+      kind: nodes[index].kind,
+      order: position + 1,
+    };
+  }).filter((message) => message.source !== undefined && message.target !== undefined);
+
+  return { name, lifelines, messages, activations: [], fragments: [] };
 }
 
 function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
@@ -223,6 +326,9 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
     };
   });
   const metadata = asRecord(projection.metadata);
+  const sequenceDiagram = selected.kind === "sequence-view"
+    ? sequenceDiagramFromProjection(selected.name, projection, nodes, metadata)
+    : undefined;
   const gridRows = Array.isArray(metadata.rows)
     ? metadata.rows.filter((value): value is number => typeof value === "number" && nodes[value] !== undefined)
     : [];
@@ -251,6 +357,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
         ? projection.exposedRoots.map((index) => `n:${String(index)}`)
         : [],
       viewMetadata: projection.metadata,
+      ...(sequenceDiagram ? { sequenceDiagram } : {}),
       ...(selected.kind === "grid-view" ? {
         cells: gridCells,
         columns: [

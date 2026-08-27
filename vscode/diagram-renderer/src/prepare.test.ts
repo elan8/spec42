@@ -715,4 +715,65 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes[0]?.range?.start?.line).toBe(40);
     expect(prepared.meta?.parentContext).toBe("OrderLifecycleStateMachine");
   });
+
+  it("adapts a typed sequence-view projection into lifelines and ordered messages", () => {
+    const node = (metaclass: string, name: string, owner: number | null) => ({
+      reference: 0,
+      metaclass,
+      notationRole: metaclass === "SuccessionAsUsage" ? "unsupported" : "usage",
+      name,
+      typing: { status: "absent" },
+      owner,
+      source: 0,
+      compartments: [],
+    });
+    const prepared = prepareViewData({
+      schemaVersion: 5,
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [{ document: 0, range: [0, 0, 0, 1] }],
+      references: [{ kind: "qualified-name" }],
+      selectedView: { reference: 0, kind: "sequence-view", name: "checkoutFlow", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "sequence-view",
+        exposedRoots: [0],
+        nodes: [
+          node("OccurrenceDefinition", "CheckoutFlow", null), // 0
+          node("PartUsage", "storefront", 0), // 1  lifeline
+          node("OccurrenceUsage", "submitSent", 1), // 2
+          node("OccurrenceUsage", "outcomeReceived", 1), // 3
+          node("PartUsage", "apiGateway", 0), // 4  lifeline
+          node("OccurrenceUsage", "submitReceived", 4), // 5
+          node("OccurrenceUsage", "outcomeSent", 4), // 6
+          node("FlowUsage", "submitCheckout", 0), // 7  message
+          node("FlowUsage", "apiResponse", 0), // 8  message
+          node("SuccessionAsUsage", "", 0), // 9  ordering
+        ],
+        relationships: [],
+        edges: [
+          { source: 0, target: 1, origin: 1, kind: "containment", provenance: "authored", navigation: null },
+          { source: 1, target: 2, origin: 2, kind: "containment", provenance: "authored", navigation: null },
+          { source: 1, target: 3, origin: 3, kind: "containment", provenance: "authored", navigation: null },
+          { source: 0, target: 4, origin: 4, kind: "containment", provenance: "authored", navigation: null },
+          { source: 4, target: 5, origin: 5, kind: "containment", provenance: "authored", navigation: null },
+          { source: 4, target: 6, origin: 6, kind: "containment", provenance: "authored", navigation: null },
+          { source: 2, target: 5, origin: 7, kind: "flow", provenance: "authored", navigation: null },
+          { source: 6, target: 3, origin: 8, kind: "flow", provenance: "authored", navigation: null },
+          { source: 7, target: 8, origin: 9, kind: "succession", provenance: "authored", navigation: null },
+        ],
+        metadata: { participants: [1, 4], messages: [7, 8] },
+        scene: { kind: "sequence" },
+      },
+    });
+
+    const sequence = prepared.meta?.sequenceDiagram as Record<string, unknown>;
+    expect((sequence.lifelines as Array<Record<string, unknown>>).map((l) => l.name)).toEqual([
+      "storefront",
+      "apiGateway",
+    ]);
+    expect(sequence.messages).toEqual([
+      { id: "n:7", name: "submitCheckout", source: "n:1", target: "n:4", kind: "FlowUsage", order: 1 },
+      { id: "n:8", name: "apiResponse", source: "n:4", target: "n:1", kind: "FlowUsage", order: 2 },
+    ]);
+  });
 });
