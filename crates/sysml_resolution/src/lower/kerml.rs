@@ -21,10 +21,11 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use sysml_v2_parser::ast::{
-    FeaturePrefixHead, FeatureRelationshipPart, KermlBindingMember, KermlClassifierDecl,
-    KermlConnectorEnd, KermlConnectorMember, KermlFeature, KermlInvariantMember,
-    KermlRelationshipDecl, KermlRelationshipKeyword, KermlSuccessionMember, KermlTypeRelationship,
-    KermlTypeRelationshipKeyword, MembershipKind as ParserMembershipKind, Node, OwnedCrossFeature,
+    FeaturePrefixHead, FeatureRelationshipPart, FeatureSpecialization, KermlBindingMember,
+    KermlClassifierDecl, KermlConnectorEnd, KermlConnectorMember, KermlFeature,
+    KermlInvariantMember, KermlRelationshipDecl, KermlRelationshipKeyword, KermlSuccessionMember,
+    KermlTypeRelationship, KermlTypeRelationshipKeyword, MembershipKind as ParserMembershipKind,
+    Node, OwnedCrossFeature,
 };
 
 impl SemanticModelBuilder {
@@ -353,26 +354,24 @@ impl SemanticModelBuilder {
         {
             self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
         }
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship_impl(
-                document,
-                declaration,
-                relationship,
-                false,
-                direction_node_fact(node.value.prefix.direction()),
-            )?;
-        }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.references {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.crosses {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        for specialization in &node.value.specializations {
+            match specialization {
+                FeatureSpecialization::Typing(relationship) => {
+                    self.lower_typing_relationship_impl(
+                        document,
+                        declaration,
+                        relationship,
+                        false,
+                        direction_node_fact(node.value.prefix.direction()),
+                    )?;
+                }
+                FeatureSpecialization::Subsetting { relationship, .. }
+                | FeatureSpecialization::ReferenceSubsetting(relationship)
+                | FeatureSpecialization::CrossSubsetting(relationship)
+                | FeatureSpecialization::Redefinition(relationship) => {
+                    self.lower_subsetting_relationship(document, declaration, relationship)?;
+                }
+            }
         }
         self.lower_kerml_feature_relationship_parts(
             document,
@@ -495,18 +494,20 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        self.lower_kerml_connector_end(
-            document,
-            declaration,
-            ReferenceKind::BindSource,
-            &node.value.left,
-        )?;
-        self.lower_kerml_connector_end(
-            document,
-            declaration,
-            ReferenceKind::BindTarget,
-            &node.value.right,
-        )?;
+        if let Some(ends) = &node.value.inline_ends {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::BindSource,
+                &ends.value.left,
+            )?;
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::BindTarget,
+                &ends.value.right,
+            )?;
+        }
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 

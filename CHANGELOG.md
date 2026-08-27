@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `c81e0b6` -> `695b2b4`.** The parser now
+  preserves ordered and repeated flow-payload and feature-specialization clauses, binding body
+  ends, directed action parameter kinds, action-body transitions, and invalid-owner
+  requirement/view memberships. `sysml_resolution` consumes the new exhaustive AST shapes;
+  obsolete parser blockers are retired or narrowed, while remaining semantic work is tracked by
+  typed lowering/semantic blockers in the snapshot corpus.
+
 - **Bumped the pinned `sysml-v2-parser` revision `c1677e7` -> `34fd6c4`.** The 12-commit upstream
   speculation-removal performance series preserves the existing parser-gap inventory; snapshot
   regeneration now reports the retained `#Safety feature z1 : T;` extended usage explicitly as an

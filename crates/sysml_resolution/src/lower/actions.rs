@@ -139,6 +139,9 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::StateUsage(state_usage) => {
                 self.lower_state_usage(document, Some(owner), state_usage)?;
             }
+            ActionDefBodyElement::Transition(transition) => {
+                self.lower_transition(document, owner, transition)?;
+            }
             ActionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
             }
@@ -546,6 +549,9 @@ impl SemanticModelBuilder {
             }
             ActionUsageBodyElement::StateUsage(state_usage) => {
                 self.lower_state_usage(document, Some(owner), state_usage)?;
+            }
+            ActionUsageBodyElement::Transition(transition) => {
+                self.lower_transition(document, owner, transition)?;
             }
             ActionUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
@@ -1521,18 +1527,18 @@ impl SemanticModelBuilder {
         // declaration-led form (`flow f : T from a to b;`, `abstract flow flows : Flow[0..*]
         // nonunique :> messages { ... }`), whose `UsageDeclaration` clauses lower through the
         // same helpers every keyworded usage uses and whose endpoints are optional.
-        let (usage, value, payload, endpoints) = match &node.value.declaration {
-            FlowDeclaration::EndpointOnly { endpoints } => (None, None, None, Some(endpoints)),
+        let (usage, value, payloads, endpoints) = match &node.value.declaration {
+            FlowDeclaration::EndpointOnly { endpoints } => (None, None, &[][..], Some(endpoints)),
             FlowDeclaration::Declared {
                 declaration,
                 value,
-                payload,
+                payloads,
                 endpoints,
                 ..
             } => (
                 Some(&declaration.value),
                 value.as_ref(),
-                payload.as_ref(),
+                payloads.as_slice(),
                 endpoints.as_ref().as_ref(),
             ),
         };
@@ -1576,8 +1582,8 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = value {
             self.record_feature_value(document, declaration, feature_value)?;
         }
-        if let Some(payload) = payload {
-            if let Some(type_name) = payload.value.type_name {
+        for payload in payloads {
+            if let Some(type_name) = payload.value.feature.value.type_name {
                 let span = self.documents[document.index()]
                     .parsed
                     .qualified_reference(type_name)
