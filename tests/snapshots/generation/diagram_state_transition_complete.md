@@ -642,6 +642,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 3,
+        "origin": 6,
         "provenance": "authored",
         "reference": 15,
         "source": 0,
@@ -650,6 +651,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 1,
+        "origin": 5,
         "provenance": "authored",
         "reference": 16,
         "source": 0,
@@ -658,6 +660,7 @@ package StateExample {
       {
         "kind": "initial-state",
         "navigation": 2,
+        "origin": 5,
         "provenance": "authored",
         "reference": 20,
         "source": 5,
@@ -666,6 +669,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 4,
+        "origin": 4,
         "provenance": "authored",
         "reference": 17,
         "source": 0,
@@ -674,6 +678,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 6,
+        "origin": 1,
         "provenance": "authored",
         "reference": 18,
         "source": 0,
@@ -682,6 +687,7 @@ package StateExample {
       {
         "kind": "transition",
         "navigation": 7,
+        "origin": 1,
         "provenance": "implied",
         "reference": 37,
         "source": 6,
@@ -690,6 +696,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 5,
+        "origin": 2,
         "provenance": "authored",
         "reference": 24,
         "source": 1,
@@ -698,6 +705,7 @@ package StateExample {
       {
         "kind": "succession",
         "navigation": 7,
+        "origin": 2,
         "provenance": "authored",
         "reference": 36,
         "source": 6,
@@ -706,6 +714,7 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 5,
+        "origin": 3,
         "provenance": "authored",
         "reference": 25,
         "source": 1,

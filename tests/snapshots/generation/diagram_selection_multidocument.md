@@ -357,6 +357,7 @@ package BehaviorModel {
       {
         "kind": "containment",
         "navigation": 1,
+        "origin": 1,
         "provenance": "authored",
         "reference": 5,
         "source": 0,

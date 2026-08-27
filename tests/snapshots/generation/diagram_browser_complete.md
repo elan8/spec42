@@ -301,6 +301,7 @@ package BrowserExample {
       {
         "kind": "containment",
         "navigation": 1,
+        "origin": 1,
         "provenance": "authored",
         "reference": 6,
         "source": 0,
@@ -309,6 +310,7 @@ package BrowserExample {
       {
         "kind": "containment",
         "navigation": 2,
+        "origin": 2,
         "provenance": "authored",
         "reference": 8,
         "source": 1,

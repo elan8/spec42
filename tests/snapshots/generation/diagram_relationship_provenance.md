@@ -448,6 +448,7 @@ package ProvenanceExample {
       {
         "kind": "containment",
         "navigation": 2,
+        "origin": 1,
         "provenance": "authored",
         "reference": 13,
         "source": 0,
@@ -456,6 +457,7 @@ package ProvenanceExample {
       {
         "kind": "containment",
         "navigation": 3,
+        "origin": 2,
         "provenance": "authored",
         "reference": 16,
         "source": 1,
@@ -464,6 +466,7 @@ package ProvenanceExample {
       {
         "kind": "containment",
         "navigation": 3,
+        "origin": 3,
         "provenance": "authored",
         "reference": 21,
         "source": 2,
