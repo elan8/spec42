@@ -4,6 +4,7 @@ use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
@@ -522,13 +523,25 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(accept @ TransitionAccept::Payload(_, _)) => {
-                self.lower_accept_trigger(
+            Some(TransitionAccept::Payload(clause, via)) => {
+                let trigger_action =
+                    trigger_action.expect("an authored accept always creates its trigger action");
+                self.lower_transition_payload_chain(
                     document,
-                    trigger_action.expect("an authored accept always creates its trigger action"),
-                    UnsupportedFamily::StateDefinitionMember,
-                    accept,
+                    declaration,
+                    trigger_action,
+                    clause,
+                    node.span,
                 )?;
+                if let Some(via) = via {
+                    self.lower_satisfy_operand(
+                        document,
+                        trigger_action,
+                        UnsupportedFamily::StateDefinitionMember,
+                        ReferenceKind::AcceptVia,
+                        via,
+                    )?;
+                }
             }
         }
         match &node.value.effect {
@@ -611,6 +624,80 @@ impl SemanticModelBuilder {
             span,
         )?;
         Ok(declaration)
+    }
+
+    /// Lowers the two distinct parameters represented by `accept signal : Signal` on a
+    /// TransitionUsage: the trigger AcceptActionUsage's payload parameter and the transition's
+    /// second input parameter. Explicit role facts let resolution publish
+    /// `subsetsChain(triggerAction, triggerPayloadParameter())` without rediscovering either
+    /// endpoint from syntax, names, or child order.
+    fn lower_transition_payload_chain(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        trigger_action: DeclarationId,
+        clause: &sysml_v2_parser::ast::PayloadClause,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let trigger_payload_parameter = self.push_typed_declaration(
+            document,
+            Some(trigger_action),
+            DeclarationKind::ParameterUsage,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::InOut),
+                is_trigger_payload_parameter: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            trigger_payload_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        if let Some(type_name) = clause.type_name {
+            let type_span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: trigger_payload_parameter,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags {
+                    direction: Some(ParameterDirection::InOut),
+                    ..RelationshipFlags::default()
+                },
+                span: type_span,
+                import: None,
+            })?;
+        }
+
+        let name = self.intern_declaration_name(document, Some(clause.name))?;
+        let transition_payload_parameter = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::ParameterUsage,
+            name,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::In),
+                is_transition_payload_parameter: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            transition_payload_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        Ok(())
     }
 
     /// Lowers one `Transition` operand (`source`/`target`/shorthand `accept`/`Expression`

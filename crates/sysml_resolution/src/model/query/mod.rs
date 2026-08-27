@@ -2316,6 +2316,67 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if kind == SpecializationCheckKind::TransitionUsagePayload {
+            if self.resolution.transition_payload_subsetting_status
+                == crate::resolve::results::TransitionPayloadSubsettingStatus::Unresolved
+            {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .transition_payload_subsetting_projections
+                .iter()
+            {
+                let structurally_complete = self
+                    .storage
+                    .declaration(projection.transition)
+                    .is_some_and(|declaration| {
+                        declaration.kind == crate::model::DeclarationKind::Transition
+                    })
+                    && self
+                        .storage
+                        .declaration(projection.transition_payload_parameter)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::ParameterUsage
+                                && declaration.owner == Some(projection.transition)
+                        })
+                    && self
+                        .storage
+                        .declaration(projection.trigger_action)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::AcceptActionUsage
+                                && declaration.owner == Some(projection.transition)
+                        })
+                    && self
+                        .storage
+                        .declaration(projection.trigger_payload_parameter)
+                        .is_some_and(|declaration| {
+                            declaration.kind == crate::model::DeclarationKind::ParameterUsage
+                                && declaration.owner == Some(projection.trigger_action)
+                        });
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.transition_payload_parameter,
+                    projection.trigger_payload_parameter,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2360,9 +2421,7 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::TransitionUsageState => {
                 SpecializationCheckPrerequisite::TransitionOwnerSourceAndLibraryAnchor
             }
-            SpecializationCheckKind::TransitionUsagePayload => {
-                SpecializationCheckPrerequisite::TransitionTriggerPayloadEndpoints
-            }
+            SpecializationCheckKind::TransitionUsagePayload => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsageSuccessionSource => {
                 SpecializationCheckPrerequisite::TransitionSuccessionSource
             }

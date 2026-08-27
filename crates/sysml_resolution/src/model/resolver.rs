@@ -1166,6 +1166,8 @@ mod tests {
             succession_endpoint_subsetting_projections: Box::default(),
             decision_outgoing_subsetting_status: Default::default(),
             merge_incoming_subsetting_status: Default::default(),
+            transition_payload_subsetting_projections: Box::default(),
+            transition_payload_subsetting_status: Default::default(),
             work: ResolutionWork::default(),
         }
     }

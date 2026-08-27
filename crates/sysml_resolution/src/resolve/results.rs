@@ -208,6 +208,21 @@ pub(crate) struct SuccessionEndpointSubsettingProjection {
     pub(crate) kind: SuccessionEndpointSubsettingKind,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct TransitionPayloadSubsettingProjection {
+    pub(crate) transition: DeclarationId,
+    pub(crate) transition_payload_parameter: DeclarationId,
+    pub(crate) trigger_action: DeclarationId,
+    pub(crate) trigger_payload_parameter: DeclarationId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum TransitionPayloadSubsettingStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -240,6 +255,9 @@ pub(crate) struct ResolutionResults {
         Box<[SuccessionEndpointSubsettingProjection]>,
     pub(crate) decision_outgoing_subsetting_status: SuccessionEndpointSubsettingStatus,
     pub(crate) merge_incoming_subsetting_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) transition_payload_subsetting_projections:
+        Box<[TransitionPayloadSubsettingProjection]>,
+    pub(crate) transition_payload_subsetting_status: TransitionPayloadSubsettingStatus,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -380,6 +398,20 @@ impl ResolutionResults {
             succession_endpoint_subsetting_projections: projections,
             decision_outgoing_subsetting_status: decision_status,
             merge_incoming_subsetting_status: merge_status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_transition_payload_subsettings(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        projections: Box<[TransitionPayloadSubsettingProjection]>,
+        status: TransitionPayloadSubsettingStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            transition_payload_subsetting_projections: projections,
+            transition_payload_subsetting_status: status,
             ..self
         }
     }

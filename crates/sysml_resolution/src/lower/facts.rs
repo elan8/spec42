@@ -190,6 +190,10 @@ pub(crate) struct DeclarationFacts {
     /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
     /// action selected by a control-action branch/body syntax production.
     pub(crate) action_input_parameter_position: Option<u32>,
+    /// This ParameterUsage is the TransitionUsage's synthesized second input parameter.
+    pub(crate) is_transition_payload_parameter: bool,
+    /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.
+    pub(crate) is_trigger_payload_parameter: bool,
     /// The number of directly owned end Features when the owning construct's complete authored
     /// end collection is known during lowering.
     ///

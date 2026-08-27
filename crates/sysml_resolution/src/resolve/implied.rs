@@ -40,6 +40,8 @@ use crate::resolve::results::SolverStatus;
 use crate::resolve::results::SuccessionEndpointSubsettingKind;
 use crate::resolve::results::SuccessionEndpointSubsettingProjection;
 use crate::resolve::results::SuccessionEndpointSubsettingStatus;
+use crate::resolve::results::TransitionPayloadSubsettingProjection;
+use crate::resolve::results::TransitionPayloadSubsettingStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -1274,6 +1276,110 @@ pub(crate) struct SuccessionEndpointSubsettingSynthesis {
     pub(crate) projections: Box<[SuccessionEndpointSubsettingProjection]>,
     pub(crate) decision_status: SuccessionEndpointSubsettingStatus,
     pub(crate) merge_status: SuccessionEndpointSubsettingStatus,
+}
+
+pub(crate) struct TransitionPayloadSubsettingSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[TransitionPayloadSubsettingProjection]>,
+    pub(crate) status: TransitionPayloadSubsettingStatus,
+}
+
+/// Publishes `checkTransitionUsagePayloadSpecialization` from the exact lowering-owned payload
+/// chain records. Dense declaration-indexed presence flags keep this linear even for a model with
+/// many triggered transitions.
+pub(crate) fn synthesize_transition_payload_subsettings(
+    storage: &SemanticModelStorage,
+) -> Result<TransitionPayloadSubsettingSynthesis, ResolutionError> {
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    let mut projected_trigger_actions = vec![false; storage.declarations.len()];
+    let mut status = TransitionPayloadSubsettingStatus::Complete;
+    let mut trigger_action_by_transition = vec![None; storage.declarations.len()];
+    let mut trigger_payload_by_action = vec![None; storage.declarations.len()];
+    let mut transition_payload_by_transition = vec![None; storage.declarations.len()];
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let facts = &storage.declaration_facts[index];
+        if declaration.kind == DeclarationKind::AcceptActionUsage
+            && facts.is_trigger_action == Some(true)
+        {
+            if let Some(transition) = declaration.owner {
+                let slot = trigger_action_by_transition
+                    .get_mut(transition.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+        if facts.is_trigger_payload_parameter {
+            if let Some(action) = declaration.owner {
+                let slot = trigger_payload_by_action
+                    .get_mut(action.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+        if facts.is_transition_payload_parameter {
+            if let Some(transition) = declaration.owner {
+                let slot = transition_payload_by_transition
+                    .get_mut(transition.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if slot.replace(id).is_some() {
+                    status = TransitionPayloadSubsettingStatus::Unresolved;
+                }
+            }
+        }
+    }
+    for (transition_index, transition_payload_parameter) in
+        transition_payload_by_transition.into_iter().enumerate()
+    {
+        let Some(transition_payload_parameter) = transition_payload_parameter else {
+            continue;
+        };
+        let transition =
+            DeclarationId::from_index(transition_index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(trigger_action) = trigger_action_by_transition[transition_index] else {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+            continue;
+        };
+        let Some(trigger_payload_parameter) = trigger_payload_by_action[trigger_action.index()]
+        else {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+            continue;
+        };
+        projected_trigger_actions[trigger_action.index()] = true;
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: transition_payload_parameter,
+            target: trigger_payload_parameter,
+        });
+        projections.push(TransitionPayloadSubsettingProjection {
+            transition,
+            transition_payload_parameter,
+            trigger_action,
+            trigger_payload_parameter,
+        });
+    }
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind == DeclarationKind::AcceptActionUsage
+            && storage.declaration_facts[index].is_trigger_action == Some(true)
+            && storage.declaration_facts[index].accept_has_payload_argument == Some(true)
+            && !projected_trigger_actions[index]
+        {
+            status = TransitionPayloadSubsettingStatus::Unresolved;
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    projections.sort_by_key(|projection| projection.transition.0);
+    Ok(TransitionPayloadSubsettingSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        status,
+    })
 }
 
 /// Publishes the SysML 8.3.17.7/13 contextual `subsetsChain` facts in one linear pass over
