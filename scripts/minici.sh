@@ -111,12 +111,7 @@ cargo test -p server --test integration generator_cli
 # diagram.wasm: its exact bytes are produced and checked by CI's Ubuntu artifact job.
 if [[ "${CI:-false}" == "true" ]]; then
   scripts/build-repository-generator-plugins.sh
-  # TEMP (PR #87 bootstrap): the diagram guest gained `edge.origin`, so the committed
-  # vscode/generators/diagram.wasm is stale and can only be refreshed from this run's
-  # repository-generator-plugins artifact. Warn instead of failing so that artifact uploads;
-  # revert this hunk in the same PR once the real bytes are committed.
-  git diff --exit-code vscode/generators/diagram.wasm \
-    || echo "::warning::diagram.wasm drift; refresh from the repository-generator-plugins artifact"
+  git diff --exit-code vscode/generators/diagram.wasm
 else
   SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
 fi
