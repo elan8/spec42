@@ -903,9 +903,14 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::TransitionTrigger
                 | DiagramRelationshipKind::TransitionEffect
         ),
-        // No reference kind publishes a sequence message end, so nothing is required of a
-        // sequence view yet; the enum says so where a string comparison could not.
-        DiagramViewKind::Sequence => false,
+        // A message (`FlowConnectionUsage`) on an occurrence lifeline publishes its ends as
+        // `flowSource` / `flowTarget`; `succession` between messages carries their order.
+        DiagramViewKind::Sequence => matches!(
+            kind,
+            DiagramRelationshipKind::FlowSource
+                | DiagramRelationshipKind::FlowTarget
+                | DiagramRelationshipKind::Succession
+        ),
         DiagramViewKind::General
         | DiagramViewKind::Browser
         | DiagramViewKind::Grid

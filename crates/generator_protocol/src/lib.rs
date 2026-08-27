@@ -301,8 +301,11 @@ impl Metaclass {
             "Documentation" => Self::Documentation,
             "EnumerationDefinition" => Self::EnumerationDefinition,
             "EnumerationUsage" => Self::EnumerationUsage,
-            "FlowDefinition" => Self::FlowDefinition,
-            "FlowUsage" => Self::FlowUsage,
+            // The Flow clause (SysML v2.0 §8.3.16) names these `FlowDefinition` / `FlowUsage`;
+            // §8.3.13.5 still spells the concrete usage `FlowConnectionUsage`, which is the name
+            // `sysml_contract::ElementKind` carries. Both denote the same metaclass.
+            "FlowDefinition" | "FlowConnectionDefinition" => Self::FlowDefinition,
+            "FlowUsage" | "FlowConnectionUsage" => Self::FlowUsage,
             "IndividualDefinition" => Self::IndividualDefinition,
             "IndividualUsage" => Self::IndividualUsage,
             "InterfaceDefinition" => Self::InterfaceDefinition,
