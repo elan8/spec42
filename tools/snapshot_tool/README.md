@@ -111,6 +111,15 @@ changing compiler diagnostics cannot bless a validation result accidentally:
 ~~~
 ```
 
+Repository-level admission fixtures may add typed publication ratchets in `META`. These are
+authored assertions evaluated against the publication and diagnostic contracts, not against the
+rendered snapshot text; `update` cannot bless a regression:
+
+```ini
+require_complete_publication=true
+require_no_diagnostics=true
+```
+
 New normative fixtures declare their source contract, rule family, authored expectation, and stable
 rule ID in `META`. `rule_id` may repeat when one fixture intentionally supplies evidence for more
 than one rule:

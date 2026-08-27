@@ -36,7 +36,7 @@ package StepSubperformanceSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:98d475e59d73e7802b723f24289aaf703b3e165ac8e38ea40b4dbb567ea09151") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:98d475e59d73e7802b723f24289aaf703b3e165ac8e38ea40b4dbb567ea09151") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_subperformance_specialization.md") (qualified-name "StepSubperformanceSpecialization::Parent"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

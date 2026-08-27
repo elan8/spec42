@@ -36,7 +36,7 @@ package RequirementConstraintSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b1a68b8cf2a404247958e3b0861bb35b6edd976af841ee92df8fe67e1dc3da51") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b1a68b8cf2a404247958e3b0861bb35b6edd976af841ee92df8fe67e1dc3da51") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_requirement_constraint_specialization.md") (qualified-name "RequirementConstraintSpecialization::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))

@@ -34,7 +34,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fdc338a6a7d6161badb51a6638a8bbb6035bf5f48516e8eed3fe8f84797c9eae") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fdc338a6a7d6161badb51a6638a8bbb6035bf5f48516e8eed3fe8f84797c9eae") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/implicit_feature_specialization_scope.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/implicit_feature_specialization_scope.md") (qualified-name "Demo::outer"))) (kind kerml-feature) (membership (kind feature) (visibility default)))

@@ -73,7 +73,7 @@ package GeneratedSpecializationLoweringGaps {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:78eeddebe56437a7e492b73d6bd7ecd7e94b1dbddb5de3d56084c4dae0ba66da") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:78eeddebe56437a7e492b73d6bd7ecd7e94b1dbddb5de3d56084c4dae0ba66da") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

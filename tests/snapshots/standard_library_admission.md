@@ -3,6 +3,8 @@
 description=Workspace typing resolved against the admitted standard library
 type=file
 libraries=standard
+require_complete_publication=true
+require_no_diagnostics=true
 ~~~
 # SOURCE
 ~~~sysml

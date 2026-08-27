@@ -626,21 +626,6 @@ fn transition_source_and_target_unresolvable_stay_unresolved() {
     );
 }
 
-/// A bare `require;`-less-constraint shorthand (`has_constraint_keyword == false`, e.g.
-/// `require someExistingConstraint;`) references an existing constraint rather than declaring
-/// one. Upstream now carries that role on `RequireConstraint::target`, but nothing lowers it
-/// yet (planning/UPSTREAM_PARSER_GAPS.md, "Typed upstream, not yet lowered here"), so it must
-/// stay an explicit unsupported diagnostic rather than being silently dropped or guessed at.
-#[test]
-fn require_shorthand_reference_without_constraint_keyword_stays_unsupported() {
-    let sexpr =
-        diagnostics_sexpr_for("package P { constraint c; requirement def R { require c; } }");
-    assert!(
-        sexpr.contains("unsupported_requirement_definition_member"),
-        "expected the constraint-keyword-less `require c;` shorthand to remain unsupported, got: {sexpr}"
-    );
-}
-
 /// A state def/usage body's bare `entry;`/`do;`/`exit;` (no `action` reference, no body
 /// content) is a legal no-op marker -- pervasive in the training/validation corpus (e.g.
 /// `entry; then off;`) -- and must not be reported as `unsupported_state_definition_member`

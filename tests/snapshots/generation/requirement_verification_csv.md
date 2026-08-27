@@ -35,7 +35,7 @@ package Verification {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:21e54e58d4953281af02f9361a08c8787fca8b11de3e983252a33dce57d8dc3f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:21e54e58d4953281af02f9361a08c8787fca8b11de3e983252a33dce57d8dc3f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_verification_csv.md") (qualified-name "Verification"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_verification_csv.md") (qualified-name "Verification::Availability"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -447,8 +447,8 @@ package Verification {
 ## requirement_verification.csv
 ~~~csv
 requirement_qualified_name,verification_case_qualified_name,relationship_semantic_id,provenance,requirement_status,outcome,outcome_status,publication_status
-Verification::safeStop,Verification::SafetyCheck,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:016:verification-defn11:SafetyCheck1:011:requirementn9:objective1:018:verify-requirementa1:0,authored,resolved,,unsupported,recovered
-Verification::availability,Verification::SafetyCheck,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:016:verification-defn11:SafetyCheck1:011:requirementn21:availabilityObjective1:018:verify-requirementa1:0,authored,resolved,,unsupported,recovered
-Verification::safeStop,Verification::safetyRun,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:012:verificationn9:safetyRun1:011:requirementn16:runtimeObjective1:018:verify-requirementa1:0,authored,resolved,,unsupported,recovered
+Verification::safeStop,Verification::SafetyCheck,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:016:verification-defn11:SafetyCheck1:011:requirementn9:objective1:018:verify-requirementa1:0,authored,resolved,,unsupported,resolved
+Verification::availability,Verification::SafetyCheck,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:016:verification-defn11:SafetyCheck1:011:requirementn21:availabilityObjective1:018:verify-requirementa1:0,authored,resolved,,unsupported,resolved
+Verification::safeStop,Verification::safetyRun,element/v149:memory://snapshot/requirement_verification_csv.md7:packagen12:Verification1:012:verificationn9:safetyRun1:011:requirementn16:runtimeObjective1:018:verify-requirementa1:0,authored,resolved,,unsupported,resolved
 
 ~~~

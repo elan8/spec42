@@ -45,7 +45,7 @@ package VehicleRequirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d83884a2c832875438b5c0a347e9e6aed46b36c320e42b730340af8eb6bb7686") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d83884a2c832875438b5c0a347e9e6aed46b36c320e42b730340af8eb6bb7686") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_instances_csv.md") (qualified-name "VehicleRequirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_instances_csv.md") (qualified-name "VehicleRequirements::LowBatteryWarning"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text "Definition of battery warning."))))
@@ -270,9 +270,9 @@ package VehicleRequirements {
 ## requirement_instances.csv
 ~~~csv
 qualified_name,name,requirement_definition_qualified_name,typing_status,typing_provenance
-VehicleRequirements::lowBatteryUsage,lowBatteryUsage,VehicleRequirements::LowBatteryWarning,recovered,authored
-VehicleRequirements::missingTyping,missingTyping,,missing-recovery,
-VehicleRequirements::safeStopUsage,safeStopUsage,VehicleRequirements::SafeStop,recovered,authored
-VehicleRequirements::unresolvedTyping,unresolvedTyping,,unresolved-recovery,
+VehicleRequirements::lowBatteryUsage,lowBatteryUsage,VehicleRequirements::LowBatteryWarning,resolved,authored
+VehicleRequirements::missingTyping,missingTyping,,missing,
+VehicleRequirements::safeStopUsage,safeStopUsage,VehicleRequirements::SafeStop,resolved,authored
+VehicleRequirements::unresolvedTyping,unresolvedTyping,,unresolved,
 
 ~~~

@@ -39,7 +39,7 @@ package IfActionSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ea4a56f6de9ff08ab86d94f59ff1d93741589278fcc0af1bab7d0cc2fd482d6a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ea4a56f6de9ff08ab86d94f59ff1d93741589278fcc0af1bab7d0cc2fd482d6a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_if_action_specialization.md") (qualified-name "IfActionSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_if_action_specialization.md") (qualified-name "IfActionSpecialization::Decision"))) (kind action-def) (membership (kind owning) (visibility default)))

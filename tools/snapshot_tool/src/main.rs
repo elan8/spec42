@@ -141,6 +141,8 @@ struct FixtureMeta {
     repository_sources: Vec<String>,
     generation: Option<GenerationRequest>,
     standard_library_documents: BTreeSet<String>,
+    require_complete_publication: bool,
+    require_no_diagnostics: bool,
     normative_expectation: Option<NormativeExpectation>,
     legacy_rule_ids: Vec<String>,
 }
@@ -2691,6 +2693,27 @@ fn regenerate_snapshot(
     {
         expectation.state = ExpectationState::Failed;
         expectation.failure = Some(error);
+    }
+    if meta.require_complete_publication
+        && !canonical_model.publication().completeness().is_complete()
+    {
+        expectation.state = ExpectationState::Failed;
+        expectation.failure = Some(format!(
+            "{fallback_name}: publication completeness ratchet failed: {:?}",
+            canonical_model.publication().completeness()
+        ));
+    }
+    if meta.require_no_diagnostics && !observed_diagnostics.is_empty() {
+        expectation.state = ExpectationState::Failed;
+        expectation.failure = Some(format!(
+            "{fallback_name}: zero-diagnostic ratchet failed with {} diagnostics",
+            observed_diagnostics.len()
+        ));
+    }
+    if (meta.require_complete_publication || meta.require_no_diagnostics)
+        && expectation.state == ExpectationState::NotApplicable
+    {
+        expectation.state = ExpectationState::Passed;
     }
 
     let fixture = replace_or_insert_section(fixture, "SMG", &canonical.smg)
@@ -6975,6 +6998,8 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
             repository_sources: Vec::new(),
             generation: None,
             standard_library_documents: BTreeSet::new(),
+            require_complete_publication: false,
+            require_no_diagnostics: false,
             normative_expectation: None,
             legacy_rule_ids: Vec::new(),
         });
@@ -6999,6 +7024,8 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let mut evidence = None;
     let mut specification_id = None;
     let mut standard_library_documents = BTreeSet::new();
+    let mut require_complete_publication = false;
+    let mut require_no_diagnostics = false;
     let mut seen = HashSet::new();
     for (line_index, line) in text.lines().enumerate() {
         if line.trim().is_empty() || line.trim_start().starts_with('#') {
@@ -7028,6 +7055,8 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 | "blocked_by"
                 | "evidence_reference"
                 | "specification_id"
+                | "require_complete_publication"
+                | "require_no_diagnostics"
         ) && !seen.insert(key)
         {
             return Err(format!("{fallback_name}: duplicate META key {key:?}"));
@@ -7143,6 +7172,12 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                     ));
                 }
             }
+            "require_complete_publication" => {
+                require_complete_publication = parse_meta_bool(value, key, fallback_name)?;
+            }
+            "require_no_diagnostics" => {
+                require_no_diagnostics = parse_meta_bool(value, key, fallback_name)?;
+            }
             _ => {}
         }
     }
@@ -7254,9 +7289,19 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
         repository_sources,
         generation,
         standard_library_documents,
+        require_complete_publication,
+        require_no_diagnostics,
         normative_expectation,
         legacy_rule_ids,
     })
+}
+
+fn parse_meta_bool(value: &str, key: &str, fallback_name: &str) -> Result<bool, String> {
+    match value {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        _ => Err(format!("{fallback_name}: META {key} must be true or false")),
+    }
 }
 
 fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorPlugin, String> {
@@ -7825,7 +7870,7 @@ mod tests {
 
     #[test]
     fn parses_generate_metadata_and_rejects_incomplete_or_conflicting_metadata() {
-        let fixture = "# META\n~~~ini\ndescription=Requirements CSV\ntype=generate\nlibraries=standard\nplugin=requirements_csv\n~~~\n";
+        let fixture = "# META\n~~~ini\ndescription=Requirements CSV\ntype=generate\nlibraries=standard\nplugin=requirements_csv\nrequire_complete_publication=true\nrequire_no_diagnostics=true\n~~~\n";
         assert_eq!(
             parse_fixture_meta(fixture, "fixture.md").unwrap(),
             FixtureMeta {
@@ -7836,6 +7881,8 @@ mod tests {
                     diagram_selection: None,
                 }),
                 standard_library_documents: BTreeSet::new(),
+                require_complete_publication: true,
+                require_no_diagnostics: true,
                 normative_expectation: None,
                 legacy_rule_ids: Vec::new(),
             }
@@ -8716,6 +8763,8 @@ mod tests {
                 repository_sources: Vec::new(),
                 generation: None,
                 standard_library_documents: BTreeSet::new(),
+                require_complete_publication: false,
+                require_no_diagnostics: false,
                 normative_expectation: Some(NormativeExpectation {
                     blocked_by: None,
                     ..expectation.clone()

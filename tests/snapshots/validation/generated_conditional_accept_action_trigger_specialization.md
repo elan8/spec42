@@ -50,7 +50,7 @@ package AcceptActionTriggerSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:97241291c79c6611f6cbbabaee0d924fbd1f0fd845630f45961f07b34750609b") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:97241291c79c6611f6cbbabaee0d924fbd1f0fd845630f45961f07b34750609b") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_accept_action_trigger_specialization.md") (qualified-name "AcceptActionTriggerSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_accept_action_trigger_specialization.md") (qualified-name "AcceptActionTriggerSpecialization::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

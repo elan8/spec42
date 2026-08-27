@@ -38,7 +38,7 @@ package BinaryConnectionSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:4bf6795c0b937802d1c81aa4f4594c1c409dd2bf9e3ce61264096f69f3b5e05a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4bf6795c0b937802d1c81aa4f4594c1c409dd2bf9e3ce61264096f69f3b5e05a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_connection_specializations.md") (qualified-name "BinaryConnectionSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_connection_specializations.md") (qualified-name "BinaryConnectionSpecializations::Left"))) (kind occurrence-def) (membership (kind owning) (visibility default)))

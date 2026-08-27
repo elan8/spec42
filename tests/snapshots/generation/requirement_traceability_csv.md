@@ -38,7 +38,7 @@ package Traceability {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:770f698a14bc80a6a5b68977d07672d3effaf0ee455f8f3e7b2d3488e6981b64") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:770f698a14bc80a6a5b68977d07672d3effaf0ee455f8f3e7b2d3488e6981b64") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_traceability_csv.md") (qualified-name "Traceability"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_traceability_csv.md") (path (named (kind package) (name "Traceability")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "safety")) (satisfyTarget (reference "vehicle")))))
@@ -456,9 +456,9 @@ package Traceability {
 ## requirement_traceability.csv
 ~~~csv
 requirement_qualified_name,satisfying_element_qualified_name,relationship_semantic_id,polarity,provenance,requirement_status,satisfying_element_status,publication_status
-Traceability::safety,Traceability::vehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:0,satisfied,authored,resolved,resolved,recovered
-Traceability::availability,Traceability::vehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:1,satisfied,authored,resolved,resolved,recovered
-Traceability::safety,Traceability::backupVehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:2,satisfied,authored,resolved,resolved,recovered
-Traceability::availability,Traceability::backupVehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:3,not_satisfied,authored,resolved,resolved,recovered
+Traceability::safety,Traceability::vehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:0,satisfied,authored,resolved,resolved,resolved
+Traceability::availability,Traceability::vehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:1,satisfied,authored,resolved,resolved,resolved
+Traceability::safety,Traceability::backupVehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:2,satisfied,authored,resolved,resolved,resolved
+Traceability::availability,Traceability::backupVehicle,element/v149:memory://snapshot/requirement_traceability_csv.md7:packagen12:Traceability1:07:satisfya1:3,not_satisfied,authored,resolved,resolved,resolved
 
 ~~~

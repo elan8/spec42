@@ -42,7 +42,7 @@ resolve * StandardViewDefinitions::GeneralView ViewDefinition
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:08705b01ea1da3f617bc63af56d143a3a47cf251043022b5ecb31e029805c7b6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:08705b01ea1da3f617bc63af56d143a3a47cf251043022b5ecb31e029805c7b6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/a.sysml") (qualified-name "Shared"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a.sysml") (qualified-name "Shared::selected"))) (kind view) (membership (kind feature) (visibility default)))
@@ -132,7 +132,7 @@ resolve * StandardViewDefinitions::GeneralView ViewDefinition
 ~~~sexpr
 (qualified-reference-queries
   (reference (document "memory://snapshot/a.sysml") (qualified-name "Shared::selected") (expected-kind "ViewUsage")
-    (outcome (status unsupported) (candidate (identity "element/v125:memory://snapshot/a.sysml7:packagen6:Shared1:04:viewn8:selected1:0") (kind "ViewUsage") (qualified-name "Shared::selected") (location (document "memory://snapshot/a.sysml") (range (start 1 9) (end 1 17)) (role Declaration))))
+    (outcome (status resolved) (candidate (identity "element/v125:memory://snapshot/a.sysml7:packagen6:Shared1:04:viewn8:selected1:0") (kind "ViewUsage") (qualified-name "Shared::selected") (location (document "memory://snapshot/a.sysml") (range (start 1 9) (end 1 17)) (role Declaration))))
   )
   (reference (document any) (qualified-name "Shared::selected") (expected-kind "ViewUsage")
     (outcome (status ambiguous) (candidates (candidate (identity "element/v125:memory://snapshot/a.sysml7:packagen6:Shared1:04:viewn8:selected1:0") (kind "ViewUsage") (qualified-name "Shared::selected") (location (document "memory://snapshot/a.sysml") (range (start 1 9) (end 1 17)) (role Declaration))) (candidate (identity "element/v125:memory://snapshot/b.sysml7:packagen6:Shared1:04:viewn8:selected1:0") (kind "ViewUsage") (qualified-name "Shared::selected") (location (document "memory://snapshot/b.sysml") (range (start 1 9) (end 1 17)) (role Declaration)))))
@@ -141,10 +141,10 @@ resolve * StandardViewDefinitions::GeneralView ViewDefinition
     (outcome (status wrong-kind) (candidates (candidate (identity "element/v125:memory://snapshot/a.sysml7:packagen6:Shared1:04:partn5:wrong1:0") (kind "PartUsage") (qualified-name "Shared::wrong") (location (document "memory://snapshot/a.sysml") (range (start 2 9) (end 2 14)) (role Declaration)))))
   )
   (reference (document "memory://snapshot/a.sysml") (qualified-name "Shared::missing") (expected-kind "ViewUsage")
-    (outcome (status unsupported))
+    (outcome (status unresolved))
   )
   (reference (document any) (qualified-name "StandardViewDefinitions::GeneralView") (expected-kind "ViewDefinition")
-    (outcome (status unsupported) (candidate (identity "element/v160:memory://snapshot/sysml.library/standard_view_definitions.md15:library-packagen23:StandardViewDefinitions1:08:view-defn11:GeneralView1:0") (kind "ViewDefinition") (qualified-name "StandardViewDefinitions::GeneralView") (location (document "memory://snapshot/sysml.library/standard_view_definitions.md") (range (start 6 18) (end 6 29)) (role Declaration))))
+    (outcome (status resolved) (candidate (identity "element/v160:memory://snapshot/sysml.library/standard_view_definitions.md15:library-packagen23:StandardViewDefinitions1:08:view-defn11:GeneralView1:0") (kind "ViewDefinition") (qualified-name "StandardViewDefinitions::GeneralView") (location (document "memory://snapshot/sysml.library/standard_view_definitions.md") (range (start 6 18) (end 6 29)) (role Declaration))))
   )
 )
 ~~~

@@ -123,6 +123,9 @@ cargo run -p server --bin spec42 -- --no-stdlib generate \
   vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
 cargo test -p server --test integration diagram_generator_smoke
 
+step "Standard-library publication ratchet"
+cargo snapshot check --fixture standard_library_admission.md
+
 step "Semantic snapshot corpus"
 cargo snapshot check
 
