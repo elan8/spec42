@@ -34,6 +34,7 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
+use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -396,6 +397,7 @@ pub(crate) fn write_declarations(
             write_membership(membership, output)?;
         }
         write_declaration_facts(model, DeclarationId(index as u32), output)?;
+        write_effective_identification(model, DeclarationId(index as u32), output)?;
         write_documentation(model, DeclarationId(index as u32), output)?;
         write_feature_values(model, DeclarationId(index as u32), output)?;
         write_operator_expression(model, DeclarationId(index as u32), output)?;
@@ -404,6 +406,39 @@ pub(crate) fn write_declarations(
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_effective_identification(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(facts) = model.resolution.effective_names.get(declaration.index()) else {
+        return Ok(());
+    };
+    if !facts.derived_from_redefinition {
+        return Ok(());
+    }
+    output.write_str(" (effective-identification")?;
+    match facts.name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (name non-converged)")?,
+    }
+    match facts.short_name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (short-name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (short-name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (short-name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (short-name non-converged)")?,
+    }
+    output.write_str(" (provenance first-redefinition))")
 }
 
 fn write_constructor_expression(
@@ -720,6 +755,28 @@ pub(crate) fn write_relationships(
             reference_kind(reference.kind),
             reference.ordinal,
         )?;
+    }
+    let mut authored = model
+        .resolution
+        .authored_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect::<Vec<_>>();
+    authored.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in authored {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance authored))")?;
     }
     let mut implied: Vec<&ImpliedRelationship> = model
         .resolution
@@ -1551,6 +1608,7 @@ pub(crate) fn visibility(value: Visibility) -> &'static str {
 
 pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
     match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => "explicitRelationshipEndpoint",
         ReferenceKind::NamespaceImport => "namespaceImport",
         ReferenceKind::MembershipImport => "membershipImport",
         ReferenceKind::FilterImport => "filterImport",
@@ -1620,6 +1678,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
 /// import kinds, which bring names into scope rather than relating two elements.
 pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
     match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => None,
         ReferenceKind::FeatureTyping => Some("typing"),
         ReferenceKind::TypeFeaturing => Some("typeFeaturing"),
         ReferenceKind::FeatureChaining => Some("featureChaining"),
@@ -1694,6 +1753,7 @@ mod tests {
             declaration_facts: Box::new([]),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),

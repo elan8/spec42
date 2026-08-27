@@ -512,9 +512,6 @@ semantic_diagnostic_codes! {
         "This port takes part in no connection.";
     }
     Validation {
-    /// Two connectors relate the same pair of ends.
-    DuplicateConnection => "duplicate_connection",
-        "This connector repeats an existing pair of ends.";
     /// Connected elements are neither ports nor a pair of structural parts.
     ConnectionContextInvalid => "connection_context_invalid",
         "Connected elements must be ports, or a pair of structural parts.";

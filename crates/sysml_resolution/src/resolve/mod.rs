@@ -8,6 +8,7 @@ pub(crate) mod results;
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::intern::SymbolPathArena;
@@ -19,16 +20,21 @@ use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::implied::detect_cyclic_alias_bindings;
 use crate::resolve::implied::synthesize_implied_alias_bindings;
 use crate::resolve::implied::synthesize_implied_redefinitions;
+use crate::resolve::implied::synthesize_positional_end_redefinitions;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::build_direct_name_index;
 use crate::resolve::names::build_effective_import_indexes;
 use crate::resolve::names::build_inherited_name_index;
-use crate::resolve::names::extend_inherited_names_with_usage_typing;
+use crate::resolve::names::build_inherited_name_index_for_scopes;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
+use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
+use crate::resolve::results::EffectiveNameFacts;
+use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -43,6 +49,9 @@ pub(crate) trait ResolutionReferenceFact {
     fn kind(&self) -> ReferenceKind;
     fn path(&self) -> SymbolPathId;
     fn flags(&self) -> RelationshipFlags;
+    fn member_access_narrowings(&self) -> &[crate::lower::facts::MemberAccessNarrowing] {
+        &[]
+    }
 }
 
 impl ResolutionReferenceFact for AuthoredReference {
@@ -61,14 +70,25 @@ impl ResolutionReferenceFact for AuthoredReference {
     fn flags(&self) -> RelationshipFlags {
         self.flags
     }
+
+    fn member_access_narrowings(&self) -> &[crate::lower::facts::MemberAccessNarrowing] {
+        &self.member_access_narrowings
+    }
+}
+
+#[derive(Clone, Copy, Default)]
+pub(crate) struct ResolutionStartingState<'a> {
+    pub provisional_relationships: &'a [ImpliedRelationship],
+    pub settled_outcomes: Option<&'a [ResolutionStatus]>,
 }
 
 pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
-    seed: Option<&[ResolutionStatus]>,
+    starting_state: ResolutionStartingState<'_>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let supported_import_count = references
         .iter()
@@ -85,26 +105,30 @@ pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
         .max(1);
     resolve_dense_with_limit(
         declarations,
+        declaration_facts,
         memberships,
         paths,
         references,
         pass_limit,
-        seed,
+        starting_state,
     )
 }
 
 pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
-    seed: Option<&[ResolutionStatus]>,
+    starting_state: ResolutionStartingState<'_>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
+    let ResolutionStartingState {
+        provisional_relationships,
+        settled_outcomes: seed,
+    } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
-    let direct_names = build_direct_name_index(declarations, None)?;
-    let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
     // A settled library's outcomes are installed before the first pass and its references are then
     // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
@@ -114,6 +138,20 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     if let Some(seed) = seed {
         outcomes[..settled].copy_from_slice(seed);
     }
+    let mut effective_names =
+        derive_effective_names(declarations, declaration_facts, references, &outcomes)?;
+    let mut direct_names = build_direct_name_index(
+        declarations,
+        declaration_facts,
+        Some(&effective_names),
+        None,
+    )?;
+    let mut exported_names = build_direct_name_index(
+        declarations,
+        declaration_facts,
+        Some(&effective_names),
+        Some(&memberships),
+    )?;
     let all_import_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -310,18 +348,22 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DependencySupplier
                     | ReferenceKind::PerformParameterTarget
                     | ReferenceKind::FeatureChaining
+                    | ReferenceKind::ExplicitRelationshipEndpoint
             )
-            // A dotted `chains a.b` is a `FeatureChain`, resolved hop by hop below.
+            // Dotted feature chains are resolved hop by hop below.
             .then(|| {
-                !(reference.kind() == ReferenceKind::FeatureChaining && reference.flags().dotted)
+                !(matches!(
+                    reference.kind(),
+                    ReferenceKind::FeatureChaining | ReferenceKind::ExplicitRelationshipEndpoint
+                ) && reference.flags().dotted)
             })
             .unwrap_or(false)
             .then_some(index)
         })
         .collect();
     // `MemberAccessOperand` (a dotted feature-chain access, e.g. `t.bead`, `f.a`) must run after
-    // `typing_slots` has resolved and `inherited_names` has been extended with usage-typing entries
-    // below (`extend_inherited_names_with_usage_typing`), because its interior segments are looked
+    // effective typing has settled and `inherited_names` has been extended with effective-type
+    // entries below (`extend_inherited_names_with_effective_types`), because its interior segments are looked
     // up as members of each hop's resolved *type*, not the hop's own declaration -- exactly the
     // index that extension builds. It cannot join `state_binding_slots` above, which runs before
     // that extension exists.
@@ -336,6 +378,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (matches!(
                 reference.kind(),
                 ReferenceKind::MemberAccessOperand
+                    | ReferenceKind::ExplicitRelationshipEndpoint
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
             ) || (reference.flags().dotted
@@ -415,7 +458,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         exported_imports = next_exported_imports;
     }
 
-    let solver_status = if converged {
+    let mut solver_status = if converged {
         SolverStatus::Converged
     } else {
         for index in import_slots
@@ -466,130 +509,18 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
-        for index in alias_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in connector_end_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in succession_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in state_binding_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                &references[index],
-                DeclarationDomain::Any,
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: None,
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        // Alias bindings form a functional graph (each alias has at most one outgoing edge, its
-        // own resolved target). A cycle (`alias A for B; alias B for A;`) is detected explicitly,
-        // bounded by declaration count, and published as a typed `NonConverged` outcome on each
-        // implicated alias's own `AliasBinding` reference -- mirroring the Subclassification
-        // ancestor-closure cycle handling above -- rather than looping or panicking.
-        let cyclic_alias_sources =
-            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
-        for index in alias_slots.iter().copied() {
-            if cyclic_alias_sources.contains(&references[index].source()) {
-                outcomes[index] = ResolutionStatus::NonConverged;
-            }
-        }
-
         // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
         // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
         // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
         // set, and a specialization cycle is detected explicitly rather than looped forever.
-        let (ancestor_closures, cyclic_ancestry) =
-            build_ancestor_closures(declarations, references, &outcomes)?;
-        inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
+        let (ancestor_closures, cyclic_ancestry) = build_ancestor_closures_with_implied(
+            declarations,
+            references,
+            &outcomes,
+            provisional_relationships,
+        )?;
+        inherited_names =
+            build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?;
 
         for index in typing_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -653,68 +584,19 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
-        // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
-        // target through the usage's own ancestor closure -- a plain usage has no Subclassification
-        // ancestors of its own. Instead, the target must be reached
-        // by first following the usage's own settled `FeatureTyping` reference to its type, then
-        // searching that type's directly-owned members and its already-computed ancestor closure
-        // (built above from Subclassification, independently of this step). This is why it runs
-        // only now, after `typing_slots` has converged -- unlike the Subclassification-based
-        // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
-        // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
-        // reached only via `Need -> UserRequirement -> ManagedRequirement`.
-        inherited_names = extend_inherited_names_with_usage_typing(
-            &direct_names,
-            inherited_names,
-            references,
-            &outcomes,
-            &typing_slots,
-        )?;
-
-        // `MemberAccessOperand` (dotted feature-chain access, e.g. `t.bead`) resolves its root
-        // segment through the same `DeclarationDomain::Any` lexical lookup every other operand
-        // kind uses, then chases each subsequent segment as a member owned (directly or through
-        // inheritance) by the *type* of the previously resolved segment, via the just-extended
-        // `inherited_names` index -- see `resolve_member_access_reference`'s own doc comment.
-        for index in member_access_slots.iter().copied() {
+        // Settle aliases against the already-complete import, subclassification, and typing
+        // scopes before entering the mutually recursive subsetting/redefinition solver. Most
+        // aliases are package members and are final here; only an unresolved alias nested in a
+        // Type needs another evaluation when that Type's relationship-derived ancestry changes.
+        for index in alias_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
                 .ok_or(ResolutionError::Capacity)?;
-            outcomes[index] = resolve_member_access_reference(
+            outcomes[index] = resolve_reference(
                 declarations,
                 paths,
                 &references[index],
-                ResolutionIndexes {
-                    direct_names: &direct_names,
-                    exported_names: &exported_names,
-                    effective_imports: Some(&effective_imports),
-                    exported_imports: Some(&exported_imports),
-                    inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
-                    ambiguous_candidates: &mut ambiguous_candidates,
-                    candidates: &mut candidates,
-                    next_candidates: &mut next_candidates,
-                    work: &mut work,
-                },
-            )?;
-        }
-
-        for index in subsetting_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
-                outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
-            }
-            outcomes[index] = resolve_reference(
-                declarations,
-                paths,
-                reference,
                 DeclarationDomain::Any,
                 ResolutionIndexes {
                     direct_names: &direct_names,
@@ -731,36 +613,429 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 },
             )?;
         }
-
-        for index in redefinition_slots.iter().copied() {
-            work.downstream_evaluations = work
-                .downstream_evaluations
-                .checked_add(1)
-                .ok_or(ResolutionError::Capacity)?;
-            let reference = &references[index];
-            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+        let cyclic_alias_sources =
+            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+        for index in alias_slots.iter().copied() {
+            if cyclic_alias_sources.contains(&references[index].source()) {
                 outcomes[index] = ResolutionStatus::NonConverged;
-                continue;
             }
-            outcomes[index] = resolve_reference(
+        }
+
+        // A Feature's supertypes include its FeatureTyping, Subsetting, and Redefinition generals.
+        // Since Subsetting and Redefinition themselves use that inherited member scope, settle the
+        // specialization closure and those two relationship families together at a deterministic
+        // pass barrier. This
+        // is required for nested redefinitions such as `:>> quantityDimension { :>>
+        // quantityPowerFactors = ...; }`: the outer redefinition first inherits
+        // `QuantityDimension`, which makes the inner redefinition's target visible on the next
+        // pass.
+        let relationship_pass_limit = declarations
+            .len()
+            .checked_add(1)
+            .ok_or(ResolutionError::Capacity)?;
+        let mut relationships_converged = false;
+        let mut relationship_scopes = std::collections::BTreeSet::new();
+        for index in subsetting_slots.iter().chain(&redefinition_slots) {
+            let mut owner = declarations
+                .get(references[*index].source().index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            while let Some(current) = owner {
+                relationship_scopes.insert(current);
+                owner = declarations
+                    .get(current.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .owner;
+            }
+        }
+        // An alias can consume inherited names only when it is nested in a Type. Top-level and
+        // package aliases use direct/imported namespace lookup, so adding all their package owner
+        // chains would expand the scoped inherited-name index without changing any lookup.
+        for index in &alias_slots {
+            let mut owner = declarations
+                .get(references[*index].source().index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            while let Some(current) = owner {
+                let declaration = declarations
+                    .get(current.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if DeclarationDomain::Type.accepts(declaration.kind) {
+                    relationship_scopes.insert(current);
+                }
+                owner = declaration.owner;
+            }
+        }
+        // Qualified relationship targets can traverse a named intermediate Feature. Add every
+        // declaration whose authored or effective long/short name occurs before the final
+        // segment. KerML 7.3.4.5 makes an unnamed redefining Feature's first redefined Feature its
+        // effective name and requires that implicit name to participate in resolution exactly as
+        // an authored name does. Omitting those declarations here makes paths such as
+        // `Mid::faces::edge` stop at an anonymous `:>> faces` redefinition.
+        //
+        // Only Redefinition sources can acquire a new effective name during this fixed point, so
+        // track that bounded candidate set rather than rescanning every declaration on every
+        // relationship pass. The final publication index is still rebuilt without a filter after
+        // the relationships converge.
+        let mut relationship_intermediate_names = std::collections::BTreeSet::new();
+        for index in subsetting_slots.iter().chain(&redefinition_slots) {
+            let (segments, _) = paths
+                .get(references[*index].path())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            relationship_intermediate_names.extend(
+                segments
+                    .get(..segments.len().saturating_sub(1))
+                    .unwrap_or_default()
+                    .iter()
+                    .copied(),
+            );
+        }
+        let mut effective_scope_candidates = std::collections::BTreeSet::new();
+        for reference in references
+            .iter()
+            .filter(|reference| reference.kind() == ReferenceKind::Redefinition)
+        {
+            effective_scope_candidates.insert(reference.source());
+        }
+        for (index, declaration) in declarations.iter().enumerate() {
+            let long_name_matches = declaration
+                .name
+                .is_some_and(|name| relationship_intermediate_names.contains(&name));
+            let short_name_matches = declaration_facts
+                .and_then(|facts| facts.get(index))
+                .and_then(|facts| facts.short_name)
+                .is_some_and(|name| relationship_intermediate_names.contains(&name));
+            if long_name_matches || short_name_matches {
+                relationship_scopes.insert(
+                    DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?,
+                );
+            }
+        }
+        let add_matching_effective_scopes =
+            |names: &[EffectiveNameFacts],
+             scopes: &mut std::collections::BTreeSet<DeclarationId>| {
+                for declaration in effective_scope_candidates.iter().copied() {
+                    let Some(facts) = names.get(declaration.index()) else {
+                        continue;
+                    };
+                    if [facts.name, facts.short_name].into_iter().any(|outcome| {
+                        matches!(
+                            outcome,
+                            EffectiveNameOutcome::Resolved(name)
+                                if relationship_intermediate_names.contains(&name)
+                        )
+                    }) {
+                        scopes.insert(declaration);
+                    }
+                }
+            };
+        add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
+        let mut settled_specialization_closures: Option<Vec<Box<[DeclarationId]>>> = None;
+        let mut aliases_require_full_resolution = false;
+        for _ in 0..relationship_pass_limit {
+            let previous = subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .chain(&alias_slots)
+                .filter_map(|index| match outcomes[*index] {
+                    ResolutionStatus::Resolved(target) => Some((
+                        references[*index].source(),
+                        target,
+                        references[*index].kind(),
+                    )),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            // Same-name implicit Redefinitions are semantic Specializations too. Derive the
+            // current pass's exact owner-local edges before building inherited scope so nested
+            // body references can consume their enclosing Feature's inherited members in this
+            // pass. The derivation is indexed by direct owner/name and bounded by the same solver
+            // pass limit; it is not a recursive query from each nested reference.
+            let mut pass_provisional_relationships = provisional_relationships.to_vec();
+            pass_provisional_relationships.extend(
+                synthesize_implied_redefinitions(
+                    declarations,
+                    membership_records,
+                    references,
+                    &direct_names,
+                    &outcomes,
+                )?
+                .into_vec(),
+            );
+            pass_provisional_relationships.extend(
+                synthesize_positional_end_redefinitions(
+                    declarations,
+                    declaration_facts,
+                    references,
+                    &outcomes,
+                )?
+                .into_vec(),
+            );
+            pass_provisional_relationships.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            pass_provisional_relationships.dedup();
+            let (specialization_closures, _) = build_specialization_ancestor_closures(
                 declarations,
-                paths,
-                reference,
-                DeclarationDomain::Any,
-                ResolutionIndexes {
+                references,
+                &outcomes,
+                &pass_provisional_relationships,
+            )?;
+            let alias_scope_changed = |source: DeclarationId| -> Result<bool, ResolutionError> {
+                let Some(previous) = settled_specialization_closures.as_ref() else {
+                    return Ok(true);
+                };
+                let mut scope = declarations
+                    .get(source.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .owner;
+                while let Some(current) = scope {
+                    if previous.get(current.index()) != specialization_closures.get(current.index())
+                    {
+                        return Ok(true);
+                    }
+                    scope = declarations
+                        .get(current.index())
+                        .ok_or(ResolutionError::InvalidStorage)?
+                        .owner;
+                }
+                Ok(false)
+            };
+            let mut aliases_to_resolve = Vec::new();
+            for index in alias_slots.iter().copied() {
+                if aliases_require_full_resolution
+                    || (!matches!(
+                        outcomes[index],
+                        ResolutionStatus::Resolved(_) | ResolutionStatus::NonConverged
+                    ) && alias_scope_changed(references[index].source())?)
+                {
+                    aliases_to_resolve.push(index);
+                }
+            }
+            inherited_names = build_inherited_name_index_for_scopes(
+                declarations,
+                &direct_names,
+                &specialization_closures,
+                Some(&relationship_scopes),
+            )?;
+            settled_specialization_closures = Some(specialization_closures);
+            aliases_require_full_resolution = false;
+
+            // KerML AliasMember is a Membership of the aliased memberElement, not a semantic
+            // wrapper around it. Resolve aliases inside this same fixed point so specialization
+            // scope can traverse an alias target on the following pass. This also covers aliases
+            // nested in typed/redefined Features without depending on source order.
+            for index in aliases_to_resolve {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                outcomes[index] = resolve_reference(
+                    declarations,
+                    paths,
+                    reference,
+                    DeclarationDomain::Any,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
+            let cyclic_alias_sources =
+                detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+            for index in alias_slots.iter().copied() {
+                if cyclic_alias_sources.contains(&references[index].source()) {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                }
+            }
+
+            for index in subsetting_slots.iter().chain(&redefinition_slots).copied() {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                    continue;
+                }
+                outcomes[index] = resolve_reference(
+                    declarations,
+                    paths,
+                    reference,
+                    DeclarationDomain::Any,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
+            let current = subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .chain(&alias_slots)
+                .filter_map(|index| match outcomes[*index] {
+                    ResolutionStatus::Resolved(target) => Some((
+                        references[*index].source(),
+                        target,
+                        references[*index].kind(),
+                    )),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            // Effective identification can only settle after its first Redefinition does. Derive
+            // it at the relationship barrier, rather than rescanning the full declaration and
+            // reference tables after every intermediate pass. If names change, publish fresh name
+            // indexes and give relationships another pass; otherwise both fact families have
+            // reached the same fixed point.
+            if current == previous {
+                let next_effective_names =
+                    derive_effective_names(declarations, declaration_facts, references, &outcomes)?;
+                if next_effective_names == effective_names {
+                    relationships_converged = true;
+                    break;
+                }
+                effective_names = next_effective_names;
+                aliases_require_full_resolution = true;
+                add_matching_effective_scopes(&effective_names, &mut relationship_scopes);
+                direct_names = build_direct_name_index(
+                    declarations,
+                    declaration_facts,
+                    Some(&effective_names),
+                    None,
+                )?;
+                exported_names = build_direct_name_index(
+                    declarations,
+                    declaration_facts,
+                    Some(&effective_names),
+                    Some(&memberships),
+                )?;
+            }
+        }
+        if !relationships_converged {
+            for index in subsetting_slots
+                .iter()
+                .chain(&redefinition_slots)
+                .chain(&member_access_slots)
+                .copied()
+            {
+                outcomes[index] = ResolutionStatus::NonConverged;
+            }
+            converged = false;
+            solver_status = SolverStatus::NonConverged;
+        } else {
+            // The converged relationship pass just built this closure from the same settled
+            // outcomes. Reuse that immutable result at the barrier instead of repeating the
+            // whole transitive closure over every authored and provisional specialization edge.
+            let specialization_closures = settled_specialization_closures
+                .as_deref()
+                .ok_or(ResolutionError::InvalidStorage)?;
+            inherited_names =
+                build_inherited_name_index(declarations, &direct_names, specialization_closures)?;
+            // KerML 8.2.3.5.3 local resolution includes a Type's inherited memberships. These
+            // ordinary Any-domain references have no role in settling imports, ancestry, or
+            // effective typing, so resolve them exactly once against the final canonical scope.
+            // This is one indexed pass over authored references, not a query-time search. Dotted
+            // spellings are feature chains and therefore use the same type-directed hop resolver
+            // as expression member access.
+            for index in state_binding_slots
+                .iter()
+                .chain(&connector_end_slots)
+                .chain(&succession_slots)
+                .copied()
+            {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                    continue;
+                }
+                let indexes = ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
-                },
-                ResolutionScratch {
+                };
+                let scratch = ResolutionScratch {
                     ambiguous_candidates: &mut ambiguous_candidates,
                     candidates: &mut candidates,
                     next_candidates: &mut next_candidates,
                     work: &mut work,
-                },
-            )?;
+                };
+                outcomes[index] = if reference.flags().dotted {
+                    resolve_member_access_reference(
+                        declarations,
+                        paths,
+                        reference,
+                        &outcomes,
+                        indexes,
+                        scratch,
+                    )?
+                } else {
+                    resolve_reference(
+                        declarations,
+                        paths,
+                        reference,
+                        DeclarationDomain::Any,
+                        indexes,
+                        scratch,
+                    )?
+                };
+            }
+            // Dotted member access consumes the final effective member scope.
+            for index in member_access_slots.iter().copied() {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let outcome = resolve_member_access_reference(
+                    declarations,
+                    paths,
+                    &references[index],
+                    &outcomes,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+                outcomes[index] = outcome;
+            }
         }
     }
     #[cfg(test)]
@@ -769,10 +1044,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .map_err(|_| ResolutionError::Capacity)?;
     }
 
-    // The implied-redefinition family reads only settled Subclassification outcomes and the
-    // already-built owner-scoped direct-name index above; it is not mutually recursive with the
-    // import/typing fixed point above and therefore runs once, after that fixed point settles,
-    // rather than joining it as another per-pass family.
+    // Publish the same canonical implied-redefinition derivation used provisionally by the
+    // relationship fixed point above. The provisional edges were isolated pass inputs; only this
+    // settled result enters the publication.
     let implied_relationships = if converged {
         let mut implied = synthesize_implied_redefinitions(
             declarations,
@@ -782,6 +1056,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             &outcomes,
         )?
         .into_vec();
+        implied.extend(
+            synthesize_positional_end_redefinitions(
+                declarations,
+                declaration_facts,
+                references,
+                &outcomes,
+            )?
+            .into_vec(),
+        );
         let cyclic_alias_sources =
             detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
         implied.extend(
@@ -793,6 +1076,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?
             .into_vec(),
         );
+        implied.sort_by_key(|relationship| {
+            (
+                relationship.kind,
+                relationship.source.0,
+                relationship.target.0,
+            )
+        });
+        implied.dedup();
         implied.into_boxed_slice()
     } else {
         Box::default()
@@ -806,8 +1097,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
             inherited_names,
+            effective_names: effective_names.into_boxed_slice(),
             solver_status,
             implied_relationships,
+            authored_relationships: Box::default(),
             library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
             semantic_metadata_projections: Box::default(),
             semantic_metadata_projection_status: Default::default(),
@@ -828,6 +1121,127 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             work,
         },
     ))
+}
+
+/// Settles the two components of KerML `Feature::effectiveName` without changing syntax-owned
+/// identification. An anonymous Feature delegates to the first Feature named by an owned
+/// Redefinition; reverse edges make a chain linear in declarations plus references, while any
+/// dependency left after propagation is an explicit naming cycle.
+fn derive_effective_names<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<Vec<EffectiveNameFacts>, ResolutionError> {
+    if outcomes.len() != references.len()
+        || declaration_facts.is_some_and(|facts| facts.len() != declarations.len())
+    {
+        return Err(ResolutionError::InvalidStorage);
+    }
+
+    let absent = EffectiveNameFacts {
+        name: EffectiveNameOutcome::Absent,
+        short_name: EffectiveNameOutcome::Absent,
+        derived_from_redefinition: false,
+    };
+    let mut facts = vec![absent; declarations.len()];
+    let mut settled = vec![false; declarations.len()];
+    let mut dependency = vec![None; declarations.len()];
+    let mut dependants = vec![Vec::new(); declarations.len()];
+    let mut queue = std::collections::VecDeque::new();
+    let mut first_redefinition = vec![None; declarations.len()];
+    for (reference_index, reference) in references.iter().enumerate() {
+        if reference.kind() == ReferenceKind::Redefinition {
+            let source = reference.source().index();
+            let slot = first_redefinition
+                .get_mut(source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if slot.is_none() {
+                *slot = Some(reference_index);
+            }
+        }
+    }
+
+    for (index, declaration) in declarations.iter().enumerate() {
+        if !is_feature_declaration(declaration.kind) {
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
+        let short_name = declaration_facts
+            .and_then(|facts| facts.get(index))
+            .and_then(|facts| facts.short_name);
+        if declaration.name.is_some() || short_name.is_some() {
+            facts[index] = EffectiveNameFacts {
+                name: declaration
+                    .name
+                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
+                short_name: short_name
+                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
+                derived_from_redefinition: false,
+            };
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
+        let Some(reference_index) = first_redefinition[index] else {
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        };
+        match outcomes[reference_index] {
+            ResolutionStatus::Resolved(target)
+                if declarations
+                    .get(target.index())
+                    .is_some_and(|target| is_feature_declaration(target.kind)) =>
+            {
+                dependency[index] = Some(target.index());
+                dependants
+                    .get_mut(target.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .push(index);
+            }
+            ResolutionStatus::NonConverged => {
+                facts[index].name = EffectiveNameOutcome::NonConverged;
+                facts[index].short_name = EffectiveNameOutcome::NonConverged;
+                facts[index].derived_from_redefinition = true;
+                settled[index] = true;
+                queue.push_back(index);
+            }
+            _ => {
+                facts[index].name = EffectiveNameOutcome::Unresolved;
+                facts[index].short_name = EffectiveNameOutcome::Unresolved;
+                facts[index].derived_from_redefinition = true;
+                settled[index] = true;
+                queue.push_back(index);
+            }
+        }
+    }
+
+    while let Some(target) = queue.pop_front() {
+        for source in std::mem::take(&mut dependants[target]) {
+            if settled[source] {
+                continue;
+            }
+            facts[source] = EffectiveNameFacts {
+                name: facts[target].name,
+                short_name: facts[target].short_name,
+                derived_from_redefinition: true,
+            };
+            settled[source] = true;
+            queue.push_back(source);
+        }
+    }
+    for index in 0..declarations.len() {
+        if dependency[index].is_some() && !settled[index] {
+            facts[index] = EffectiveNameFacts {
+                name: EffectiveNameOutcome::NonConverged,
+                short_name: EffectiveNameOutcome::NonConverged,
+                derived_from_redefinition: true,
+            };
+        }
+    }
+    Ok(facts)
 }
 
 /// Computes, for every declaration, the transitive set of Subclassification ancestors reached
@@ -852,42 +1266,152 @@ pub(crate) fn build_ancestor_closures<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
 ) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_with_implied(declarations, references, outcomes, &[])
+}
+
+fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, false, |kind| {
+        kind == ReferenceKind::Subclassification
+    })
+}
+
+/// Computes the full Type-generalization closure used by inherited-membership lookup after all
+/// authored specialization families have settled. KerML 8.3.1.8 defines `Type::supertypes` from
+/// every owned Specialization, not only Subclassification: FeatureTyping, Subsetting, and
+/// Redefinition therefore contribute the visible members of their general Types too. AliasMember
+/// transparency is represented by giving an alias a traversal row to its `memberElement` while
+/// linking each specialization source directly to the ultimate non-alias target. AliasBinding is
+/// therefore a lookup bridge here, not a competing authored Type-generalization fact.
+fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, true, |kind| {
+        matches!(
+            kind,
+            ReferenceKind::Subclassification
+                | ReferenceKind::FeatureTyping
+                | ReferenceKind::Subsetting
+                | ReferenceKind::Redefinition
+        )
+    })
+}
+
+fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+    expand_alias_targets: bool,
+    includes: impl Fn(ReferenceKind) -> bool,
+) -> Result<AncestorClosures, ResolutionError> {
+    let mut alias_targets = std::collections::BTreeMap::new();
+    if expand_alias_targets {
+        for (index, reference) in references.iter().enumerate() {
+            if reference.kind() == ReferenceKind::AliasBinding {
+                if let ResolutionStatus::Resolved(target) = outcomes[index] {
+                    alias_targets.insert(reference.source(), target);
+                }
+            }
+        }
+    }
     let mut direct_parents: Vec<std::collections::BTreeSet<DeclarationId>> =
         vec![Default::default(); declarations.len()];
+    if expand_alias_targets {
+        for (source, target) in &alias_targets {
+            direct_parents
+                .get_mut(source.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .insert(*target);
+        }
+    }
     for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::Subclassification {
+        if !includes(reference.kind()) {
             continue;
         }
         if let ResolutionStatus::Resolved(target) = outcomes[index] {
             let slot = direct_parents
                 .get_mut(reference.source().index())
                 .ok_or(ResolutionError::InvalidStorage)?;
-            slot.insert(target);
-        }
-    }
-
-    let mut closure = direct_parents.clone();
-    let pass_limit = declarations
-        .len()
-        .checked_add(1)
-        .ok_or(ResolutionError::Capacity)?;
-    for _ in 0..pass_limit {
-        let mut next = closure.clone();
-        let mut changed = false;
-        for (index, parents) in direct_parents.iter().enumerate() {
-            for parent in parents {
-                for ancestor in
-                    std::iter::once(*parent).chain(closure[parent.index()].iter().copied())
+            if expand_alias_targets
+                && declarations
+                    .get(target.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
+            {
+                let mut current = target;
+                let mut visited = std::collections::BTreeSet::new();
+                while declarations
+                    .get(current.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
+                    && visited.insert(current)
                 {
-                    if next[index].insert(ancestor) {
-                        changed = true;
-                    }
+                    let Some(next) = alias_targets.get(&current).copied() else {
+                        break;
+                    };
+                    current = next;
                 }
+                if declarations
+                    .get(current.index())
+                    .is_some_and(|declaration| declaration.kind != DeclarationKind::Alias)
+                {
+                    slot.insert(current);
+                }
+            } else {
+                slot.insert(target);
             }
         }
-        closure = next;
-        if !changed {
-            break;
+    }
+    for relationship in implied {
+        if !includes(relationship.kind) {
+            continue;
+        }
+        let slot = direct_parents
+            .get_mut(relationship.source.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if relationship.target.index() >= declarations.len() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        slot.insert(relationship.target);
+    }
+
+    let mut dependants = vec![Vec::new(); declarations.len()];
+    let mut closure = direct_parents.clone();
+    let mut queue = std::collections::VecDeque::new();
+    for (source, parents) in direct_parents.iter().enumerate() {
+        let source = DeclarationId::from_index(source).map_err(|_| ResolutionError::Capacity)?;
+        for parent in parents {
+            dependants
+                .get_mut(parent.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(source);
+            queue.push_back((source, *parent));
+        }
+    }
+    for row in &mut dependants {
+        row.sort_unstable();
+        row.dedup();
+    }
+    // Each finite `(source, ancestor)` fact is inserted and queued once. This reaches the same
+    // deterministic transitive closure as repeated whole-model passes without making hierarchy
+    // depth multiply the cost of copying every declaration's row.
+    while let Some((source, ancestor)) = queue.pop_front() {
+        for dependant in dependants
+            .get(source.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+        {
+            let row = closure
+                .get_mut(dependant.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if row.insert(ancestor) {
+                queue.push_back((*dependant, ancestor));
+            }
         }
     }
 
@@ -949,6 +1473,7 @@ pub(crate) fn supported_import_domain(
             Some(DeclarationDomain::Any)
         }
         ReferenceKind::NamespaceImport
+        | ReferenceKind::ExplicitRelationshipEndpoint
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport
         | ReferenceKind::FeatureTyping
@@ -1163,6 +1688,7 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
         || matches!(
             crate::model::element_kind::element_kind(kind),
             sysml_contract::ElementKind::Feature
+                | sysml_contract::ElementKind::Multiplicity
                 | sysml_contract::ElementKind::Step
                 | sysml_contract::ElementKind::Expression
                 | sysml_contract::ElementKind::BooleanExpression
@@ -1417,10 +1943,9 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
     let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
-    // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
-    // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
-    // Redefinition excludes owned
-    // first-scope candidates".
+    // KerML Redefinition relates a Feature to a different, inherited Feature. The Pilot's
+    // `KerMLScope` therefore starts a redefinition search with inherited members and excludes the
+    // redefining Feature itself.
     //
     // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
     // shape the KerML abstract-syntax library uses throughout to narrow an inherited feature --
@@ -1456,8 +1981,47 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         } else {
             DeclarationDomain::Any
         };
-        let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
+        // A nested redefinition can explicitly qualify through its enclosing Feature, as in
+        // `ref :>> base::edges` inside a redefining `base`. That qualifier denotes the inherited
+        // `base`, not the enclosing redefining Feature. Detect this from canonical direct-name
+        // identity and begin at the enclosing Type's inherited tier. This is a constant number of
+        // indexed lookups; it does not recursively query the candidate graph.
+        let qualified_redefinition_owner =
+            if reference.kind() == ReferenceKind::Redefinition && segments.len() > 1 {
+                source.owner.and_then(|owner| {
+                    declarations
+                        .get(owner.index())
+                        .and_then(|owner_declaration| owner_declaration.owner)
+                        .filter(|grandowner| {
+                            indexes
+                                .direct_names
+                                .candidates(Some(*grandowner), segments[0])
+                                .contains(&owner)
+                        })
+                })
+            } else {
+                None
+            };
+        let lexical_scope = if let Some(owner) = qualified_redefinition_owner {
+            Some(owner)
+        } else if reference.kind() == ReferenceKind::ExpressionOperand {
             Some(reference.source())
+        } else if reference.kind() == ReferenceKind::ConnectorEnd
+            && source.owner.is_some_and(|owner| {
+                declarations
+                    .get(owner.index())
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlConnector)
+            })
+        {
+            // KerML 8.2.3.5.2 resolves the ReferenceSubsetting of an end Feature in the
+            // owningNamespace of its Connector. The end itself is the semantic relationship
+            // source, but neither it nor the Connector's owned end names form the lookup scope.
+            // Starting at the Connector's owner also prevents `from self references self` from
+            // resolving the target back to the newly declared end Feature.
+            source
+                .owner
+                .and_then(|connector| declarations.get(connector.index()))
+                .and_then(|connector| connector.owner)
         } else {
             source.owner
         };
@@ -1469,6 +2033,11 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             LookupTarget {
                 domain: first_segment_domain,
                 excluded,
+                first_scope: if qualified_redefinition_owner.is_some() {
+                    FirstScopePolicy::InheritedOnly
+                } else {
+                    FirstScopePolicy::OwnedThenInherited
+                },
             },
             scratch.candidates,
             scratch.work,
@@ -1479,25 +2048,25 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         scratch.next_candidates.clear();
         for candidate in scratch.candidates.iter().copied() {
             record_lookup(scratch.work)?;
-            // A qualified name's later segments name a member OWNED by the previous segment's
-            // resolved declaration, exactly as if that member were being looked up from within
-            // its owner's own scope (KerML's "public by default unless owned by a non-Package
-            // namespace" visibility rule governs whether a *wildcard* import/general lookup can
-            // reach a name, not whether an explicit qualified reference that already names the
-            // owner can reach its direct member). `direct_names` is therefore the right index
-            // here -- the same one `extend_inherited_names_with_usage_typing`'s inherited-member
-            // traversal reads from for redefinition targets like `ManagedRequirement::status`
-            // (owned by a Type, not a Package, yet still reachable). `exported_names` is reserved
-            // for cross-file import propagation (`NamespaceImport`/`MembershipImport`), which is
-            // a different visibility question -- whether a *different* file can pull the name in
-            // via `import`, not whether this file's own qualified reference can name it directly.
-            // Import fallback still applies when the owner itself was reached only through an
-            // import (the member is not locally owned at all), so cross-package traversal through
-            // imported namespaces keeps working.
+            // KerML qualified-name traversal continues through the previous segment's visible
+            // memberships. For a Type, those are its directly owned memberships followed by its
+            // inherited memberships; a direct name shadows the inherited tier. The canonical
+            // `inherited_names` index also carries effective-type members for Features, so paths
+            // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
+            // Import fallback remains last for owners reached through an imported namespace.
             let direct = indexes.direct_names.candidates(Some(candidate), *segment);
             if !direct.is_empty() {
                 scratch.next_candidates.extend_from_slice(direct);
-            } else if let Some(imports) = indexes.exported_imports {
+                continue;
+            }
+            let inherited = indexes
+                .inherited_names
+                .map_or(&[][..], |names| names.candidates(Some(candidate), *segment));
+            if !inherited.is_empty() {
+                scratch.next_candidates.extend_from_slice(inherited);
+                continue;
+            }
+            if let Some(imports) = indexes.exported_imports {
                 record_lookup(scratch.work)?;
                 scratch
                     .next_candidates
@@ -1538,23 +2107,22 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
 /// The root segment resolves through `DeclarationDomain::Any` lexical lookup, beginning in the
 /// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
 /// constraint/calc expression reach its own parameters without changing the enclosing-scope result
-/// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
-/// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
-/// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
-/// time this runs has already been extended with usage-typing entries
-/// (`extend_inherited_names_with_usage_typing`): for a declaration `usage` whose own `FeatureTyping`
-/// reference resolved to `target`, `inherited_names.candidates(Some(usage), name)` already contains
-/// every name owned (directly or by inheritance) by `target`. This is exactly "member of the
-/// previously resolved segment's type."
+/// for sources that own no declarations. Each subsequent segment first uses the previous segment's
+/// directly owned members, then its effective-type members when no direct member shadows them.
+/// The latter reuses `inherited_names`, which by the time this runs has already been extended from
+/// canonical effective typing
+/// (`extend_inherited_names_with_effective_types`): `inherited_names.candidates(Some(usage), name)`
+/// contains every name owned (directly or by inheritance) by every effective type of `usage`.
 ///
 /// If the root segment does not resolve to exactly one candidate, or any subsequent segment finds
-/// no owned-by-type member, the whole chain publishes `Unresolved`; if an intermediate or final
+/// no direct-or-typed member, the whole chain publishes `Unresolved`; if an intermediate or final
 /// segment is ambiguous, the whole chain publishes `Ambiguous`. The chain never partially resolves
 /// -- there is no way to publish "the first two segments resolved but the third didn't."
 pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     paths: &SymbolPathArena,
     reference: &R,
+    outcomes: &[ResolutionStatus],
     indexes: ResolutionIndexes<'_>,
     scratch: ResolutionScratch<'_>,
 ) -> Result<ResolutionStatus, ResolutionError> {
@@ -1580,11 +2148,34 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         LookupTarget {
             domain: DeclarationDomain::Any,
             excluded: None,
+            first_scope: FirstScopePolicy::OwnedThenInherited,
         },
         scratch.candidates,
         scratch.work,
     )?;
-    for segment in &segments[1..] {
+    for (segment_index, segment) in segments.iter().enumerate().skip(1) {
+        for narrowing in reference
+            .member_access_narrowings()
+            .iter()
+            .filter(|narrowing| narrowing.segment_count as usize == segment_index)
+        {
+            scratch.candidates.clear();
+            match outcomes.get(narrowing.target.index()) {
+                Some(ResolutionStatus::Resolved(target)) => scratch.candidates.push(*target),
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    return Ok(ResolutionStatus::Ambiguous(*range));
+                }
+                Some(ResolutionStatus::NonConverged) => {
+                    return Ok(ResolutionStatus::NonConverged);
+                }
+                Some(ResolutionStatus::Unsupported) => {
+                    return Ok(ResolutionStatus::Unsupported);
+                }
+                Some(ResolutionStatus::Unresolved) | None => {
+                    return Ok(ResolutionStatus::Unresolved);
+                }
+            }
+        }
         if scratch.candidates.len() != 1 {
             // Zero candidates (Unresolved) or more than one (Ambiguous) -- either way the chain
             // cannot continue past this hop; publish that outcome directly rather than silently
@@ -1594,7 +2185,10 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         let candidate = scratch.candidates[0];
         scratch.next_candidates.clear();
         record_lookup(scratch.work)?;
-        if let Some(inherited) = indexes.inherited_names {
+        let direct = indexes.direct_names.candidates(Some(candidate), *segment);
+        if !direct.is_empty() {
+            scratch.next_candidates.extend_from_slice(direct);
+        } else if let Some(inherited) = indexes.inherited_names {
             scratch
                 .next_candidates
                 .extend_from_slice(inherited.candidates(Some(candidate), *segment));

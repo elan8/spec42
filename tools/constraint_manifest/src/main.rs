@@ -20,8 +20,9 @@ use spec42_constraint_manifest::{
     ConstraintManifest, ConstraintManifestEntry, DefinitionUsageDerivedContract,
     ElementDerivedDocumentationContract, ElementDerivedDocumentationKind,
     ElementDerivedOwnerContract, ElementDerivedOwnerKind, FeatureDerivedRelationshipContract,
-    FeatureDerivedRelationshipKind, LibraryRedefinitionContract, LibrarySpecializationContract,
-    LibrarySpecializationPredicate, NamespaceDerivedElementContract, NamespaceDerivedElementKind,
+    FeatureDerivedRelationshipKind, LibraryAnchorCorrection, LibraryAnchorCorrectionIssue,
+    LibraryRedefinitionContract, LibrarySpecializationContract, LibrarySpecializationPredicate,
+    NamespaceDerivedElementContract, NamespaceDerivedElementKind,
     NamespaceImportDerivedElementContract, NamespaceImportDerivedElementKind, PinnedSpecification,
     RedefinitionCheckContract, RedefinitionCheckKind, RequirementDerivedFactContract,
     RequirementDerivedFactKind, SpecializationCheckContract, SpecializationCheckKind,
@@ -133,10 +134,57 @@ fn extract_manifest(
         extract_specification(SYSML20_SPECIFICATION, sysml, sysml_pdf)?,
     ];
     specifications.sort_by(|left, right| left.name.cmp(&right.name));
+    let library_anchor_corrections = official_library_anchor_corrections(&specifications);
     Ok(ConstraintManifest {
         schema_version: SCHEMA_VERSION,
+        library_anchor_corrections,
         specifications,
     })
+}
+
+fn official_library_anchor_corrections(
+    specifications: &[SpecificationManifest],
+) -> Vec<LibraryAnchorCorrection> {
+    specifications
+        .iter()
+        .flat_map(|specification| &specification.constraints)
+        .filter_map(|entry| {
+            let contract = entry.conditional_specializes_from_library.as_ref()?;
+            let (corrected_anchor, issue) = match entry.rule_id.as_str() {
+                "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization"
+                    if contract.anchor == "Performances::Performance::enclosedPerformance" =>
+                {
+                    (
+                        "Performances::Performance::enclosedPerformances",
+                        LibraryAnchorCorrectionIssue::Kerml11_207,
+                    )
+                }
+                "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization"
+                    if contract.anchor == "Performances::Performance::subperformance" =>
+                {
+                    (
+                        "Performances::Performance::subperformances",
+                        LibraryAnchorCorrectionIssue::Kerml11_205,
+                    )
+                }
+                "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
+                    if contract.anchor == "Connections::BinaryConnections" =>
+                {
+                    (
+                        "Connections::BinaryConnection",
+                        LibraryAnchorCorrectionIssue::Sysml21_348,
+                    )
+                }
+                _ => return None,
+            };
+            Some(LibraryAnchorCorrection {
+                rule_id: entry.rule_id.clone(),
+                source_anchor: contract.anchor.clone(),
+                corrected_anchor: corrected_anchor.to_string(),
+                issue,
+            })
+        })
+        .collect()
 }
 
 fn extract_specification(
@@ -1655,6 +1703,7 @@ mod tests {
     fn rendering_is_deterministic_in_both_formats() {
         let manifest = ConstraintManifest {
             schema_version: SCHEMA_VERSION,
+            library_anchor_corrections: Vec::new(),
             specifications: vec![SpecificationManifest {
                 name: "TestML".to_string(),
                 version: "1.0".to_string(),

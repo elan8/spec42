@@ -24,6 +24,7 @@ use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::AuthoredFilterCondition;
 use crate::lower::facts::AuthoredInvocation;
 use crate::lower::facts::AuthoredReference;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::AuthoredUnitToken;
 use crate::lower::facts::ConstructorExpressionRecord;
 use crate::lower::facts::Declaration;
@@ -61,6 +62,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) declaration_facts: Box<[DeclarationFacts]>,
     pub(crate) memberships: Box<[MembershipRecord]>,
     pub(crate) references: Box<[AuthoredReference]>,
+    pub(crate) relationship_declarations: Box<[AuthoredRelationshipDeclaration]>,
     pub(crate) documentation: Box<[DocumentationRecord]>,
     pub(crate) feature_values: Box<[FeatureValueRecord]>,
     pub(crate) operator_expressions: Box<[OperatorExpressionRecord]>,
@@ -105,6 +107,7 @@ pub(crate) fn lower_document(
         declaration_facts: builder.declaration_facts.into_boxed_slice(),
         memberships: builder.memberships.into_boxed_slice(),
         references: builder.references.into_boxed_slice(),
+        relationship_declarations: builder.relationship_declarations.into_boxed_slice(),
         documentation: builder.documentation.into_boxed_slice(),
         feature_values: builder.feature_values.into_boxed_slice(),
         operator_expressions: builder.operator_expressions.into_boxed_slice(),
@@ -297,8 +300,33 @@ impl SemanticModelBuilder {
                 ordinal: reference.ordinal,
                 import: reference.import,
                 flags: reference.flags,
+                member_access_narrowings: reference
+                    .member_access_narrowings
+                    .iter()
+                    .map(|narrowing| {
+                        Ok(crate::lower::facts::MemberAccessNarrowing {
+                            segment_count: narrowing.segment_count,
+                            target: relocation.reference(narrowing.target)?,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, ConstructionError>>()?
+                    .into_boxed_slice(),
                 span: reference.span,
             });
+        }
+
+        reserve(
+            &mut self.relationship_declarations,
+            lowered.relationship_declarations.len(),
+        )?;
+        for relationship in lowered.relationship_declarations.iter() {
+            self.relationship_declarations
+                .push(AuthoredRelationshipDeclaration {
+                    kind: relationship.kind,
+                    source: relocation.reference(relationship.source)?,
+                    target: relocation.reference(relationship.target)?,
+                    span: relationship.span,
+                });
         }
 
         reserve(&mut self.documentation, lowered.documentation.len())?;

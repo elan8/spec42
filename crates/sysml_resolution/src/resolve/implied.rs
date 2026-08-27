@@ -2,6 +2,7 @@
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
 use crate::lower::storage::SemanticModelStorage;
@@ -552,10 +553,36 @@ pub(crate) struct LibrarySpecializationAnchorFacts {
 }
 
 impl LibrarySpecializationAnchorFacts {
+    /// Whether any generated specialization rule has a usable standard-library anchor.
+    ///
+    /// Workspaces compiled without the standard library have no possible provisional library
+    /// edges. Detect that once instead of scanning every declaration against every generated
+    /// rule; this is only a phase guard, not a cache or an alternate semantic path.
+    pub(crate) fn has_resolved_anchor(&self) -> bool {
+        self.by_rule
+            .values()
+            .any(|outcome| matches!(outcome, LibrarySpecializationAnchor::Resolved(_)))
+    }
+
     /// Compatibility projection for legacy single-anchor rules and the `else` branch of exact
     /// polarity contracts.
     pub(crate) fn outcome(&self, rule_id: &str) -> Option<&LibrarySpecializationAnchor> {
         self.outcome_for(rule_id, LibrarySpecializationAnchorBranch::Default)
+    }
+
+    fn generated_outcome(&self, rule_id: &'static str) -> Option<&LibrarySpecializationAnchor> {
+        self.generated_outcome_for(rule_id, LibrarySpecializationAnchorBranch::Default)
+    }
+
+    fn generated_outcome_for(
+        &self,
+        rule_id: &'static str,
+        branch: LibrarySpecializationAnchorBranch,
+    ) -> Option<&LibrarySpecializationAnchor> {
+        self.by_rule.get(&LibrarySpecializationAnchorKey {
+            rule: LibrarySpecializationRuleKey(rule_id),
+            branch,
+        })
     }
 
     pub(crate) fn outcome_for(
@@ -577,7 +604,7 @@ pub(crate) struct LibrarySpecializationDiagnosticKey {
 
 /// Synthesizes implied same-name inherited-member redefinition facts.
 ///
-/// Scope: a feature member `f` directly owned by a type `Child`, where `Child` has a resolved
+/// Scope: a feature member `f` directly owned by a Type `Child`, where `Child` has a resolved
 /// `Subclassification` reference to `Parent`, and `Parent` directly (not transitively) owns
 /// exactly one feature member also named `f`. This deliberately does not chase multi-level or
 /// diamond ancestry: if the immediate parent has zero or more than one directly owned same-name
@@ -635,6 +662,82 @@ pub(crate) fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
                     kind: ReferenceKind::Redefinition,
                     source: member,
                     target: single_match,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes the positional Redefinitions required for owned end Features.
+///
+/// KerML `checkFeatureEndRedefinition` pairs each owned end with the end at the same position in
+/// every direct supertype of its owning Type. `Type::supertypes` is formed from every owned
+/// Specialization, so a FeatureTyping is just as relevant here as a Subclassification. End
+/// identity and order come from lowering facts and declaration order; names are presentation and
+/// are deliberately not consulted. An authored Redefinition remains authoritative.
+pub(crate) fn synthesize_positional_end_redefinitions<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let Some(declaration_facts) = declaration_facts else {
+        return Ok(Box::default());
+    };
+    if declaration_facts.len() != declarations.len() || outcomes.len() != references.len() {
+        return Err(ResolutionError::InvalidStorage);
+    }
+
+    let mut ends_by_owner = vec![Vec::new(); declarations.len()];
+    for (index, (declaration, facts)) in declarations.iter().zip(declaration_facts).enumerate() {
+        if !(facts.modifiers.end || facts.positional_end.is_some()) {
+            continue;
+        }
+        let Some(owner) = declaration.owner else {
+            continue;
+        };
+        let end = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        ends_by_owner
+            .get_mut(owner.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .push(end);
+    }
+
+    let explicitly_redefines = references
+        .iter()
+        .filter(|reference| reference.kind() == ReferenceKind::Redefinition)
+        .map(ResolutionReferenceFact::source)
+        .collect::<std::collections::BTreeSet<_>>();
+    let mut implied = Vec::new();
+    for (index, reference) in references.iter().enumerate() {
+        if !matches!(
+            reference.kind(),
+            ReferenceKind::Subclassification
+                | ReferenceKind::FeatureTyping
+                | ReferenceKind::Subsetting
+                | ReferenceKind::Redefinition
+        ) {
+            continue;
+        }
+        let ResolutionStatus::Resolved(general) = outcomes[index] else {
+            continue;
+        };
+        let specific = reference.source();
+        let specific_ends = ends_by_owner
+            .get(specific.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        let general_ends = ends_by_owner
+            .get(general.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        for (&source, &target) in specific_ends.iter().zip(general_ends) {
+            if !explicitly_redefines.contains(&source) && source != target {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Redefinition,
+                    source,
+                    target,
                 });
             }
         }
@@ -1721,7 +1824,7 @@ pub(crate) fn synthesize_generated_library_specializations(
         {
             for rule in library_specialization_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
+                    anchor_facts.generated_outcome(rule.rule_id)
                 else {
                     continue;
                 };
@@ -1734,7 +1837,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                     continue;
                 }
                 implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
                     source,
                     target: *anchor,
                 });
@@ -1748,7 +1851,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                 let branch =
                     conditional_library_specialization_anchor_branch(storage, source, rule);
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome_for(rule.rule_id, branch)
+                    anchor_facts.generated_outcome_for(rule.rule_id, branch)
                 else {
                     continue;
                 };
@@ -1761,7 +1864,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                     continue;
                 }
                 implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Subclassification,
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
                     source,
                     target: *anchor,
                 });
@@ -1771,6 +1874,105 @@ pub(crate) fn synthesize_generated_library_specializations(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Dependency-complete library edges whose prerequisites are settled before authored names resolve.
+///
+/// These are provisional solver inputs, not a second published relationship store. The final
+/// synthesis below re-evaluates necessity against settled authored ancestry and publishes the
+/// canonical implied set. Conditional rules whose predicates require resolved relationships stay
+/// absent here; predicates owned entirely by lowered declaration facts participate immediately.
+pub(crate) fn provisional_library_specializations(
+    storage: &SemanticModelStorage,
+    anchor_facts: &LibrarySpecializationAnchorFacts,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    if !anchor_facts.has_resolved_anchor() {
+        return Ok(Box::default());
+    }
+    let mut implied = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
+            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
+        {
+            for rule in library_specialization_rules(metaclass) {
+                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+                    anchor_facts.generated_outcome(rule.rule_id)
+                else {
+                    continue;
+                };
+                if source == *anchor {
+                    continue;
+                }
+                implied.push(ImpliedRelationship {
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
+                    source,
+                    target: *anchor,
+                });
+            }
+            for rule in conditional_library_specialization_rules(metaclass) {
+                if !conditional_library_specialization_predicate_holds(storage, source, rule) {
+                    continue;
+                }
+                let branch =
+                    conditional_library_specialization_anchor_branch(storage, source, rule);
+                let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+                    anchor_facts.generated_outcome_for(rule.rule_id, branch)
+                else {
+                    continue;
+                };
+                if source == *anchor {
+                    continue;
+                }
+                implied.push(ImpliedRelationship {
+                    kind: implied_library_specialization_kind(storage, source, *anchor)?,
+                    source,
+                    target: *anchor,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// The concrete specialization relationship required by the source and target metaclasses.
+///
+/// KerML Table 10 does not make every `specializesFromLibrary` constraint a
+/// Subclassification: Feature-to-Feature specialization is Subsetting, while Classifier-to-
+/// Classifier specialization is Subclassification. A Feature specialized by a Classifier is
+/// typed by it. Keeping that distinction on the canonical edge is what lets feature inheritance
+/// and effective typing consume the generated rule without a private reinterpretation.
+fn implied_library_specialization_kind(
+    storage: &SemanticModelStorage,
+    source: DeclarationId,
+    target: DeclarationId,
+) -> Result<ReferenceKind, ResolutionError> {
+    let source = storage
+        .declaration(source)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let target = storage
+        .declaration(target)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    match (
+        crate::resolve::is_feature_declaration(source.kind),
+        crate::resolve::is_feature_declaration(target.kind),
+    ) {
+        (true, true) => Ok(ReferenceKind::Subsetting),
+        (true, false) => Ok(ReferenceKind::FeatureTyping),
+        (false, false) => Ok(ReferenceKind::Subclassification),
+        // A Classifier cannot specialize a Feature with one direct relationship. The only
+        // normative form needing that shape specializes the Classifier by the Feature's types and
+        // is synthesized by its dedicated metadata rule, not this one-anchor contract.
+        (false, true) => Err(ResolutionError::InvalidStorage),
+    }
 }
 
 /// Evaluates only the exact predicate vocabulary emitted by the pinned-manifest extractor.
@@ -1857,8 +2059,10 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
         LibrarySpecializationPredicate::HasElseActionBranch => {
             declaration.kind == DeclarationKind::If && facts.has_else_action.is_some()
         }
-        LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo
-        | LibrarySpecializationPredicate::ConnectorEndCountIsTwo
+        LibrarySpecializationPredicate::OwnedEndFeatureCountIsTwo => {
+            facts.owned_end_feature_count == Some(2)
+        }
+        LibrarySpecializationPredicate::ConnectorEndCountIsTwo
         | LibrarySpecializationPredicate::AssociationEndCountIsTwo
         | LibrarySpecializationPredicate::EndFeatureCountIsTwo => {
             positional_end_count(storage, source) == 2
@@ -2127,7 +2331,7 @@ pub(crate) fn synthesize_generated_library_redefinitions(
         {
             for rule in library_redefinition_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
-                    anchor_facts.outcome(rule.rule_id)
+                    anchor_facts.generated_outcome(rule.rule_id)
                 else {
                     continue;
                 };

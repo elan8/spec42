@@ -299,6 +299,8 @@ fn main() {
             ));
         }
         if let Some(contract) = &entry.conditional_specializes_from_library {
+            let anchor =
+                manifest.executable_library_anchor(&entry.rule_id, contract.anchor.as_str());
             conditional_specializations.push(format!(
                 "    ConditionalLibrarySpecializationRule {{ rule_id: {:?}, metaclass: {:?}, predicate: LibrarySpecializationPredicate::{:?}, owner_metaclasses: &{:?}, true_anchor: {:?}, anchor: {:?} }},",
                 entry.rule_id,
@@ -306,7 +308,7 @@ fn main() {
                 contract.predicate,
                 contract.owner_metaclasses,
                 contract.true_anchor,
-                contract.anchor,
+                anchor,
             ));
         }
         if let Some(contract) = &entry.redefines_from_library {

@@ -212,10 +212,6 @@ at pinned `34fd6c4`; entries whose lowering has since landed were removed.
   usage) carries a resolvable `QualifiedReferenceId`, but every scope still reports the member as
   unsupported. The prefix form of the same keyword (`UsageExtensionKeyword`) is lowered.
 
-- **`RequireConstraint.target`.** The keyword-less `require <qualified.name>;` shorthand carries an
-  arena-backed target; `lower_require_constraint_member` still defers the whole
-  `has_constraint_keyword == false` form.
-
 - **`CommentAnnotation.keyword_span`.** Whether a comment member was written with the `comment`
   keyword is a grammatical fact with its own span; `sysml_resolution` does not record it, so the
   two spellings publish identically.

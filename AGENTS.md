@@ -126,6 +126,19 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 - The standalone snapshot tool is the primary end-to-end integration test for the compiler
   pipeline; regenerate and review its checked-in snapshots for pipeline behavior changes.
+- Semantic compiler behavior belongs in the standalone snapshot corpus, not in Rust tests that
+  render a model and search its text. New or modified semantic coverage must use authored typed
+  snapshot expectations (`EXPECTED SEMANTICS` or `EXPECTED DIAGNOSTICS`) when the snapshot tool
+  exposes the relevant contract; otherwise it must use the canonical generated snapshot projection
+  until that typed expectation API is added. Never assert semantic identities, facts,
+  relationships, outcomes, diagnostics, or provenance with `contains`, substring matching, regexes,
+  or hand-parsed rendered S-expressions.
+- When touching an existing semantic-level unit or integration test that string-matches rendered
+  compiler output, migrate that coverage into the snapshot corpus and remove the anti-pattern; do
+  not extend it with another assertion. Rust unit tests remain appropriate for owning-layer
+  algorithms, typed data structures, parser mechanics, snapshot Markdown mechanics, and renderers
+  when the tested value is itself the textual contract, but their assertions must consume the
+  owning typed API rather than rediscover semantics from presentation text.
 - Specification and conformance claims require traceable normative evidence plus executable tests.
   Unsupported coverage stays visible; it does not disappear behind omission or optimistic labels.
 - Encode each researched KerML or SysML validation rule in the snapshot corpus with conforming and

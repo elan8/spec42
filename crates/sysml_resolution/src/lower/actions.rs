@@ -1,6 +1,5 @@
 //! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
@@ -849,8 +848,8 @@ impl SemanticModelBuilder {
     /// FeatureChainRef` (the shape the parser actually produces for a dotted path with no
     /// intervening non-name segments, e.g. `assign a.b := ...;`'s target, mirroring
     /// `lower_satisfy_operand`'s identical `MemberAccess`/`FeatureChainRef` pairing) -- resolves as
-    /// a `MemberAccessOperand` reference through `flatten_member_access_chain`/
-    /// `push_member_access_reference`. The bare `start`/`done` pseudo-action markers parse as an
+    /// a `MemberAccessOperand` reference through typed member-access lowering. The bare
+    /// `start`/`done` pseudo-action markers parse as an
     /// ordinary `FeatureRef` that legitimately fails to resolve because no such declaration is
     /// synthesized; any other expression shape is left as an explicit unsupported-member
     /// diagnostic.
@@ -881,9 +880,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
             }

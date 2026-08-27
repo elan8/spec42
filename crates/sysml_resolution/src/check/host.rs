@@ -36,7 +36,6 @@ use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
-use crate::model::SymbolPathId;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
 use crate::type_query::Conformance;
@@ -512,8 +511,6 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         let mut connected_ends: BTreeSet<DeclarationId> = BTreeSet::new();
-        let mut seen_pairs: BTreeSet<(Option<DeclarationId>, Vec<SymbolPathId>)> = BTreeSet::new();
-
         for id in declared.iter().copied() {
             let declaration = self
                 .storage
@@ -628,25 +625,6 @@ impl<D> SemanticModel<D> {
                     ]);
                     diagnostics.push(diagnostic);
                 }
-            }
-
-            // Keyed by the authored paths, not the settled declarations. A member-access end
-            // settles to the *definition's* port -- `propulsionUnit1.cmd` and
-            // `propulsionUnit2.cmd` both name `PropulsionUnit::cmd` -- so keying on targets would
-            // report a fan-out to distinct usages as one connection repeated. The path is an
-            // authored fact the parser interned, not the text of the statement.
-            let pair = (
-                declaration.owner,
-                ends.iter()
-                    .map(|(_, reference)| reference.path)
-                    .collect::<Vec<_>>(),
-            );
-            if !seen_pairs.insert(pair) {
-                diagnostics.push(self.declaration_diagnostic(
-                    id,
-                    DiagnosticCode::DuplicateConnection,
-                    DiagnosticSeverity::Information,
-                )?);
             }
         }
 
@@ -1705,10 +1683,16 @@ impl<D> SemanticModel<D> {
             // KerML 8.4.4.5 specifies implicit redefinition for the parameters of a specializing
             // behavior, so a specializing function restating `in v : T` or `return u : T = ...` is
             // the authored way to give a body, not a silent override.
-            if matches!(
-                declaration.kind,
-                DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
-            ) {
+            let is_parameter = self
+                .storage
+                .declaration_facts(source)
+                .is_some_and(|facts| facts.direction.is_some());
+            if is_parameter
+                || matches!(
+                    declaration.kind,
+                    DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
+                )
+            {
                 continue;
             }
             let Some(value) = self

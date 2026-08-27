@@ -1,7 +1,7 @@
 //! Phase 5: classifying an authored expression into the shape evaluation folds.
 
 use sysml_v2_parser::{
-    ast::{BinaryOperator, Expression, Node, QualifiedReferenceId, UnaryOperator},
+    ast::{BinaryOperator, Expression, UnaryOperator},
     ParsedDocument,
 };
 
@@ -70,6 +70,9 @@ pub(crate) fn classify_constraint_node(
                 )?);
             }
             Some(EvalNode::Invocation(children))
+        }
+        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+            classify_constraint_node(parsed, &body.value.result.as_ref()?.value, ordinal)
         }
         Expression::Index { base, operands, .. } => {
             let mut children = Vec::with_capacity(operands.value.elements.len() + 1);
@@ -234,6 +237,9 @@ pub(crate) fn classify_calc_node(
                 )?);
             }
             Some(EvalNode::Invocation(children))
+        }
+        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+            classify_calc_node(parsed, &body.value.result.as_ref()?.value, ordinal)
         }
         Expression::Index { base, operands, .. } => {
             let mut children = Vec::with_capacity(operands.value.elements.len() + 1);
@@ -458,47 +464,4 @@ pub(crate) fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
 /// other three.
 pub(crate) fn is_range_or_coalesce_operator(op: &BinaryOperator) -> bool {
     matches!(op, BinaryOperator::Range | BinaryOperator::NullCoalesce)
-}
-
-/// Flattens a dotted `Expression::MemberAccess` chain (`a.b.c`, parsed as nested
-/// `MemberAccess(MemberAccess(FeatureRef(a), b), c)`) into its ordered list of qualified-reference
-/// segments: the innermost `FeatureRef`/`FeatureChainRef`'s own (possibly multi-segment) path,
-/// followed by each subsequent `member` segment outward. Returns `None` when the chain's root is
-/// anything other than a `FeatureRef`/`FeatureChainRef` (an index expression, invocation, literal,
-/// etc.), since this pipeline has no lexical-lookup starting point for those shapes -- the caller
-/// falls through to its existing unsupported-member diagnostic in that case. A bare
-/// `FeatureRef`/`FeatureChainRef` (no `MemberAccess` wrapper at all) flattens to a single-entry
-/// list, letting callers route both shapes through the same chain-resolution path uniformly.
-///
-/// `Expression::Parenthesized` and `Expression::TypeCheck` (the `as`/`istype`/`hastype` cast
-/// family) are transparent wrappers for this purpose: `(vehicles as VehiclePart).m` (real corpus
-/// usage, `sysml/examples/calculation_test.md`) is `MemberAccess(Parenthesized(TypeCheck{operand:
-/// FeatureRef(vehicles), type_name: VehiclePart}), m)`, and its member `m` resolves relative to
-/// `vehicles`' own lexical lookup exactly like an uncast `vehicles.m` would -- this pipeline does
-/// not model the cast's type-narrowing effect on member lookup (no call site needs it yet), it
-/// just stops treating the cast as an opaque root the way it previously stopped the whole chain
-/// from resolving at all. A `TypeCheck` with no operand (bare `istype`/`hastype` with an implicit
-/// subject) still returns `None`, matching Gap 41's `that`-self-reference boundary: an implicit
-/// `that` operand is indistinguishable from a genuinely absent one without the same upstream
-/// parser fix that gap already documents.
-pub(crate) fn flatten_member_access_chain(
-    node: &Node<Expression>,
-) -> Option<Vec<QualifiedReferenceId>> {
-    match &node.value {
-        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => Some(vec![*target]),
-        Expression::MemberAccess { base, member, .. } => {
-            let mut chain = flatten_member_access_chain(base)?;
-            chain.push(*member);
-            Some(chain)
-        }
-        Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
-            [only] => flatten_member_access_chain(&only.expression),
-            _ => None,
-        },
-        Expression::TypeCheck {
-            operand: Some(operand),
-            ..
-        } => flatten_member_access_chain(operand),
-        _ => None,
-    }
 }

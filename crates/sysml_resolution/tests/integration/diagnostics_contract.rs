@@ -626,21 +626,6 @@ fn transition_source_and_target_unresolvable_stay_unresolved() {
     );
 }
 
-/// A bare `require;`-less-constraint shorthand (`has_constraint_keyword == false`, e.g.
-/// `require someExistingConstraint;`) references an existing constraint rather than declaring
-/// one. Upstream now carries that role on `RequireConstraint::target`, but nothing lowers it
-/// yet (planning/UPSTREAM_PARSER_GAPS.md, "Typed upstream, not yet lowered here"), so it must
-/// stay an explicit unsupported diagnostic rather than being silently dropped or guessed at.
-#[test]
-fn require_shorthand_reference_without_constraint_keyword_stays_unsupported() {
-    let sexpr =
-        diagnostics_sexpr_for("package P { constraint c; requirement def R { require c; } }");
-    assert!(
-        sexpr.contains("unsupported_requirement_definition_member"),
-        "expected the constraint-keyword-less `require c;` shorthand to remain unsupported, got: {sexpr}"
-    );
-}
-
 /// A state def/usage body's bare `entry;`/`do;`/`exit;` (no `action` reference, no body
 /// content) is a legal no-op marker -- pervasive in the training/validation corpus (e.g.
 /// `entry; then off;`) -- and must not be reported as `unsupported_state_definition_member`
@@ -933,22 +918,6 @@ fn a_cyclic_hierarchy_yields_no_conformance_answer() {
         conformance(published.conforms_to(a, a, SpecializationScope::AnySpecialization)),
         Conformance::Conforms,
         "reflexivity holds even inside a cycle"
-    );
-}
-
-#[test]
-fn feature_typing_conformance_rejects_an_unrelated_type() {
-    let published = publication_for(&[(
-        "memory://types.sysml",
-        "package P { part def T; part def U; part def A { part x : T; } part def B :> A { part y : U :>> x; } }",
-    )]);
-    let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
-    let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
-
-    assert_eq!(
-        conformance(published.feature_typing_conforms(specific, general)),
-        Conformance::DoesNotConform,
-        "U neither is nor specializes T"
     );
 }
 

@@ -36,7 +36,7 @@ package StepOwnedPerformanceNormativeGap {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5e37dca175049335fd77517abca647d6c44cb7ed0dc544ddfbfd6299cd2dc200") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5e37dca175049335fd77517abca647d6c44cb7ed0dc544ddfbfd6299cd2dc200") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
@@ -46,7 +46,7 @@ package StepOwnedPerformanceNormativeGap {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder::work"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder::work"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder::work"))) (target (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder"))) (provenance implied))
   )
   (evaluation
@@ -63,12 +63,15 @@ package StepOwnedPerformanceNormativeGap {
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder::work")))
       (featured-by (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
 )
 ~~~

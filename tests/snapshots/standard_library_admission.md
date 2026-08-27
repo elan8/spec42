@@ -3,6 +3,8 @@
 description=Workspace typing resolved against the admitted standard library
 type=file
 libraries=standard
+require_complete_publication=true
+require_no_diagnostics=true
 ~~~
 # SOURCE
 ~~~sysml
@@ -27,11 +29,11 @@ package Vehicles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:caecb804bb4b208a6a1b4c22abb097084eb87c6951dead58a85ce03fd63cae66") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:caecb804bb4b208a6a1b4c22abb097084eb87c6951dead58a85ce03fd63cae66") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))
-    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "mass")))))
+    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (effective-identification (name "mass") (short-name absent) (provenance first-redefinition)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "mass")))))
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
   )
@@ -51,10 +53,10 @@ package Vehicles {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (target (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle"))) (provenance implied))
   )
   (evaluation
@@ -74,12 +76,14 @@ package Vehicles {
     )
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (path (named (kind package) (name "Vehicles")) (named (kind part-def) (name "Car")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))))
       (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (source inherited) (from (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))))
       (supertype (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
@@ -97,11 +101,13 @@ package Vehicles {
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass")))
       (featured-by (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle")))
       (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))))
       (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (source direct))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))

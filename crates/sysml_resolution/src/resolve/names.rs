@@ -2,6 +2,7 @@
 
 use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
+use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -10,6 +11,8 @@ use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use crate::resolve::record_lookup;
+use crate::resolve::results::EffectiveNameFacts;
+use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::ResolutionWork;
@@ -290,11 +293,22 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
 /// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
 /// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
 /// member reached through two different ancestor paths to the same target (the diamond case)
-/// collapses to one candidate, while two different ancestors that directly own two different
-/// same-named members remain two distinct candidates and therefore resolve as ambiguous.
+/// collapses to one candidate. When multiple ancestors contribute same-named members, the member
+/// owned by the most-specific ancestor shadows members owned by its ancestors; members from
+/// incomparable ancestors remain distinct candidates and therefore resolve as ambiguous.
 pub(crate) fn build_inherited_name_index(
+    declarations: &[Declaration],
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
+) -> Result<NameIndex, ResolutionError> {
+    build_inherited_name_index_for_scopes(declarations, direct_names, ancestor_closures, None)
+}
+
+pub(crate) fn build_inherited_name_index_for_scopes(
+    declarations: &[Declaration],
+    direct_names: &NameIndex,
+    ancestor_closures: &[Box<[DeclarationId]>],
+    scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
     for (index, ancestors) in ancestor_closures.iter().enumerate() {
@@ -302,6 +316,9 @@ pub(crate) fn build_inherited_name_index(
             continue;
         }
         let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if scope_filter.is_some_and(|filter| !filter.contains(&child)) {
+            continue;
+        }
         for &ancestor in ancestors.iter() {
             for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
                 for &candidate in candidates {
@@ -316,72 +333,51 @@ pub(crate) fn build_inherited_name_index(
             }
         }
     }
-    NameIndex::build(entries)
-}
-
-/// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)
-/// with entries reachable only by first following a usage's own settled `FeatureTyping` reference
-/// to its type: for every declaration `usage` whose `FeatureTyping` reference resolved to `target`,
-/// every name directly owned by `target` and every name already reachable in `target`'s own
-/// ancestor-scoped `inherited_names` entry becomes a candidate for `(usage, name)` here too. This
-/// lets an explicit `:>>`/`:>` reference owned by a plain usage (which has no Subclassification
-/// ancestors of its own) reach a member owned by an ancestor of the usage's *type* -- for example
-/// `need : Need { attribute :>> status = ...; }` reaching `ManagedRequirement::status` through
-/// `Need`'s own ancestor closure. Must run after `typing_slots` has resolved, since it reads their
-/// settled outcomes; the original entries are preserved unchanged, so plain type-owned
-/// Subclassification lookups (Subsetting/Redefinition owned directly by a def) are unaffected.
-pub(crate) fn extend_inherited_names_with_usage_typing<R: ResolutionReferenceFact>(
-    direct_names: &NameIndex,
-    inherited_names: NameIndex,
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-    typing_slots: &[usize],
-) -> Result<NameIndex, ResolutionError> {
-    let mut entries: Vec<(NameKey, DeclarationId)> = Vec::new();
-    for &index in typing_slots {
-        let ResolutionStatus::Resolved(target) = outcomes[index] else {
-            continue;
-        };
-        let usage = references[index].source();
-        for (name, candidates) in direct_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
+    entries.sort_unstable_by_key(name_entry_sort_key);
+    let mut visible = Vec::with_capacity(entries.len());
+    let mut cursor = 0;
+    while cursor < entries.len() {
+        let key = entries[cursor].0;
+        let end = entries[cursor..]
+            .partition_point(|entry| entry.0 == key)
+            .checked_add(cursor)
+            .ok_or(ResolutionError::Capacity)?;
+        for &(entry_key, candidate) in &entries[cursor..end] {
+            let candidate_owner = declarations
+                .get(candidate.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .owner;
+            let shadowed_by_more_specific_owner =
+                entries[cursor..end].iter().any(|(_, other_candidate)| {
+                    let other_owner = declarations
+                        .get(other_candidate.index())
+                        .and_then(|declaration| declaration.owner);
+                    match (candidate_owner, other_owner) {
+                        (Some(candidate_owner), Some(other_owner))
+                            if candidate_owner != other_owner =>
+                        {
+                            ancestor_closures
+                                .get(other_owner.index())
+                                .is_some_and(|ancestors| {
+                                    ancestors.binary_search(&candidate_owner).is_ok()
+                                })
+                        }
+                        _ => false,
+                    }
+                });
+            if !shadowed_by_more_specific_owner {
+                visible.push((entry_key, candidate));
             }
         }
-        for (name, candidates) in inherited_names.entries_for_owner(Some(target)) {
-            for &candidate in candidates {
-                entries.push((
-                    NameKey {
-                        owner: Some(usage),
-                        name,
-                    },
-                    candidate,
-                ));
-            }
-        }
+        cursor = end;
     }
-    if entries.is_empty() {
-        return Ok(inherited_names);
-    }
-    for (index, keys) in inherited_names.keys.iter().enumerate() {
-        for &candidate in inherited_names.ranges[index]
-            .slice(&inherited_names.candidates)
-            .unwrap_or_default()
-        {
-            entries.push((*keys, candidate));
-        }
-    }
-    NameIndex::build(entries)
+    NameIndex::build(visible)
 }
 
 pub(crate) fn build_direct_name_index(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
+    effective_names: Option<&[EffectiveNameFacts]>,
     public_only: Option<&MembershipIndex>,
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
@@ -402,6 +398,37 @@ pub(crate) fn build_direct_name_index(
                 },
                 declaration_id,
             ));
+        }
+        if let Some(short_name) = declaration_facts
+            .and_then(|facts| facts.get(index))
+            .and_then(|facts| facts.short_name)
+        {
+            entries.push((
+                NameKey {
+                    owner: declaration.owner,
+                    name: short_name,
+                },
+                declaration_id,
+            ));
+        }
+        if let Some(facts) = effective_names.and_then(|facts| facts.get(index)) {
+            for name in [facts.name, facts.short_name]
+                .into_iter()
+                .filter_map(|outcome| {
+                    let EffectiveNameOutcome::Resolved(name) = outcome else {
+                        return None;
+                    };
+                    Some(name)
+                })
+            {
+                entries.push((
+                    NameKey {
+                        owner: declaration.owner,
+                        name,
+                    },
+                    declaration_id,
+                ));
+            }
         }
     }
     NameIndex::build(entries)
@@ -472,6 +499,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                 }
             }
             ReferenceKind::FilterImport
+            | ReferenceKind::ExplicitRelationshipEndpoint
             | ReferenceKind::FeatureTyping
             | ReferenceKind::TypeFeaturing
             | ReferenceKind::FeatureChaining
@@ -572,6 +600,15 @@ pub(crate) struct LookupTarget {
     pub(crate) domain: DeclarationDomain,
     /// A declaration that is not in its own scope for this reference, if any.
     pub(crate) excluded: Option<DeclarationId>,
+    /// Redefinition is scoped from the general Types of the redefining Feature, not from its
+    /// owned memberships. Other reference kinds use ordinary owned-before-inherited lookup.
+    pub(crate) first_scope: FirstScopePolicy,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum FirstScopePolicy {
+    OwnedThenInherited,
+    InheritedOnly,
 }
 
 pub(crate) fn lookup_lexical_into(
@@ -583,7 +620,11 @@ pub(crate) fn lookup_lexical_into(
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,
 ) -> Result<(), ResolutionError> {
-    let LookupTarget { domain, excluded } = target;
+    let LookupTarget {
+        domain,
+        excluded,
+        first_scope,
+    } = target;
     let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
         let compatible = raw
             .iter()
@@ -614,15 +655,18 @@ pub(crate) fn lookup_lexical_into(
         true
     };
     let mut filtered = Vec::new();
+    let mut is_first_scope = true;
     loop {
         record_lookup(work)?;
-        let mut direct = indexes.direct_names.candidates(owner, name);
-        if visible(direct, &mut filtered) {
-            direct = &filtered;
-        }
-        if !direct.is_empty() {
-            select_tier(direct, candidates);
-            return Ok(());
+        if !is_first_scope || first_scope == FirstScopePolicy::OwnedThenInherited {
+            let mut direct = indexes.direct_names.candidates(owner, name);
+            if visible(direct, &mut filtered) {
+                direct = &filtered;
+            }
+            if !direct.is_empty() {
+                select_tier(direct, candidates);
+                return Ok(());
+            }
         }
         if let Some(inherited) = indexes.inherited_names {
             record_lookup(work)?;
@@ -647,5 +691,6 @@ pub(crate) fn lookup_lexical_into(
             .get(current.index())
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
+        is_first_scope = false;
     }
 }

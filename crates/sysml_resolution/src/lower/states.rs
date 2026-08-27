@@ -1,6 +1,5 @@
 //! Phase 2 lowering — state machines: state definitions and usages, transitions, entry/do/exit actions.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::DeclarationFacts;
@@ -490,9 +489,14 @@ impl SemanticModelBuilder {
                 guard,
             )?;
         }
-        if node.value.accept.is_some() {
-            self.lower_transition_trigger_action(document, declaration, node.span)?;
-        }
+        let trigger_action = node
+            .value
+            .accept
+            .as_ref()
+            .map(|accept| {
+                self.lower_transition_trigger_action(document, declaration, node.span, accept)
+            })
+            .transpose()?;
         match &node.value.accept {
             None => {}
             Some(TransitionAccept::Shorthand(expression, _via)) => {
@@ -518,12 +522,13 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(TransitionAccept::Payload(_, _)) => {
-                self.push_unsupported(
+            Some(accept @ TransitionAccept::Payload(_, _)) => {
+                self.lower_accept_trigger(
                     document,
+                    trigger_action.expect("an authored accept always creates its trigger action"),
                     UnsupportedFamily::StateDefinitionMember,
-                    node.span,
-                );
+                    accept,
+                )?;
             }
         }
         match &node.value.effect {
@@ -575,7 +580,13 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         transition: DeclarationId,
         span: Span,
+        accept: &TransitionAccept,
     ) -> Result<DeclarationId, ConstructionError> {
+        let (has_payload, has_receiver) = match accept {
+            TransitionAccept::Payload(_, via) => (true, via.is_some()),
+            TransitionAccept::Shorthand(_, via) => (false, via.is_some()),
+            TransitionAccept::TimeTrigger(_, _) => (false, false),
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(transition),
@@ -588,6 +599,8 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 is_trigger_action: Some(true),
+                accept_has_payload_argument: Some(has_payload),
+                accept_has_receiver_argument: Some(has_receiver),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -632,9 +645,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(
                         document,
                         UnsupportedFamily::StateDefinitionMember,

@@ -1,6 +1,5 @@
 //! Phase 2 lowering — requirements, cases, viewpoints, concerns, and their satisfaction members.
 
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
@@ -25,13 +24,66 @@ use sysml_v2_parser::ast::{
     IncludeUseCase, MembershipKind as ParserMembershipKind, Node, PurposeMember,
     QualifiedReferenceId, ReferenceSeparator, RequirementActorDecl, RequirementDef,
     RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
-    SatisfiedRequirement, SatisfyRequirementUsage, StakeholderMember, SubjectDecl, UseCaseDef,
-    UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage, VerificationCaseDef,
+    ReturnRef, ReturnRefBody, ReturnRefBodyElement, SatisfiedRequirement, SatisfyRequirementUsage,
+    StakeholderMember, SubjectDecl, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+    UseCaseUsage as ParserUseCaseUsage, VerificationCaseDef,
     VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewpointDef,
     ViewpointUsage as ParserViewpointUsage,
 };
 
 impl SemanticModelBuilder {
+    /// Lowers a case-family `return ref` as the referential result feature it declares.
+    pub(crate) fn lower_return_ref(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ReturnRef>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    reference: true,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let ReturnRefBody::Brace { elements, .. } = &node.value.body.value {
+            for element in elements {
+                match &element.value {
+                    ReturnRefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(document, Some(declaration), family, member)?;
+                    }
+                    ReturnRefBodyElement::Result(expression) => {
+                        self.push_evaluation_fact(
+                            declaration,
+                            self.calc_expression_site(document, &expression.value),
+                        );
+                        self.lower_calc_expression(document, declaration, family, expression)?;
+                    }
+                    ReturnRefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span);
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers a `subject` declaration (BNF `SubjectDecl`) found in a requirement/concern/case-
     /// family def or usage body, e.g. `subject vehicle : Vehicle;`, mirroring
     /// `lower_parameter_declaration`'s shape: ownership, membership, and (when a type is present)
@@ -428,18 +480,23 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<SatisfyRequirementUsage>,
     ) -> Result<(), ConstructionError> {
-        let SatisfiedRequirement::Reference { reference } = node.value.requirement else {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
+        let (name, short_name, reference) = match &node.value.requirement {
+            SatisfiedRequirement::Reference { reference } => (None, None, Some(*reference)),
+            SatisfiedRequirement::Declaration(inline) => (
+                self.intern_declaration_name(document, inline.value.identification.name)?,
+                self.intern_short_name(document, inline.value.identification.short_name)?,
+                None,
+            ),
         };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Satisfy,
-            None,
+            name,
             node.span,
             // Negation is a satisfaction-polarity fact rather than a declaration modifier.
             DeclarationFacts {
+                short_name,
                 negated: Some(node.value.not_span.is_some()),
                 ..DeclarationFacts::none()
             },
@@ -450,12 +507,14 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        self.push_satisfy_reference(
-            document,
-            declaration,
-            ReferenceKind::SatisfySource,
-            reference,
-        )?;
+        if let Some(reference) = reference {
+            self.push_satisfy_reference(
+                document,
+                declaration,
+                ReferenceKind::SatisfySource,
+                reference,
+            )?;
+        }
         if let Some(subject) = &node.value.subject {
             self.push_satisfy_reference(
                 document,
@@ -464,10 +523,7 @@ impl SemanticModelBuilder {
                 subject.value.reference,
             )?;
         }
-        for element in node.value.body.members() {
-            self.push_unsupported(document, family, element.span);
-        }
-        Ok(())
+        self.lower_requirement_shaped_body(document, declaration, &node.value.body, family)
     }
 
     /// Pushes one of a satisfy usage's two source-backed operands at its anonymous satisfy
@@ -525,7 +581,7 @@ impl SemanticModelBuilder {
     /// `DeclarationDomain::Any` lexical lookup. A dotted feature-chain path
     /// (`Expression::MemberAccess`/`Expression::FeatureChainRef`, e.g. `f.a`) resolves as a
     /// `ReferenceKind::MemberAccessOperand` reference instead, through the same
-    /// `flatten_member_access_chain`/`push_member_access_reference` path `lower_connector_end`
+    /// typed member-access lowering path `lower_connector_end`
     /// uses -- this is also `Bind`'s (`lower_bind`) operand path, since it shares this helper, so
     /// `bind f.a = a.g;` resolves both dotted operands the same way `connect f.a to a.g;` does.
     /// Also supports `Expression::Invocation`/`Expression::Constructor` (reference resolution
@@ -559,9 +615,10 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(owner, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(owner, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
             }
@@ -1764,9 +1821,11 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::FirstSuccession(_)
                 | UseCaseDefBodyElement::ThenUseCaseUsage(_)
                 | UseCaseDefBodyElement::ThenDone(_)
-                | UseCaseDefBodyElement::RefRedefinition(_)
-                | UseCaseDefBodyElement::ReturnRef(_) => {
+                | UseCaseDefBodyElement::RefRedefinition(_) => {
                     self.push_unsupported(document, unsupported, element.span)
+                }
+                UseCaseDefBodyElement::ReturnRef(node) => {
+                    self.lower_return_ref(document, owner, unsupported, node)?;
                 }
             }
         }

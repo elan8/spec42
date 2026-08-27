@@ -110,6 +110,8 @@ use crate::resolve::resolve_dense;
 #[cfg(test)]
 use crate::resolve::resolve_dense_with_limit;
 #[cfg(test)]
+use crate::resolve::results::EffectiveNameOutcome;
+#[cfg(test)]
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -452,7 +454,9 @@ mod tests {
                             contract.predicate,
                             contract.owner_metaclasses.clone(),
                             contract.true_anchor.clone(),
-                            contract.anchor.clone(),
+                            manifest
+                                .executable_library_anchor(&entry.rule_id, &contract.anchor)
+                                .to_string(),
                         )
                     })
             })
@@ -646,6 +650,7 @@ mod tests {
             .into_boxed_slice(),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
@@ -759,6 +764,7 @@ mod tests {
             .into_boxed_slice(),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
@@ -924,6 +930,7 @@ mod tests {
             declaration_facts: Box::new([]),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
@@ -1024,6 +1031,7 @@ mod tests {
             declaration_facts: vec![DeclarationFacts::none(); 11].into_boxed_slice(),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
@@ -1110,6 +1118,7 @@ mod tests {
             .into_boxed_slice(),
             memberships: Box::new([]),
             references: Box::new([]),
+            relationship_declarations: Box::new([]),
             documentation: Box::new([]),
             feature_values: Box::new([]),
             operator_expressions: Box::new([]),
@@ -1134,8 +1143,10 @@ mod tests {
             outcomes: Box::new([]),
             ambiguous_candidates: Box::new([]),
             inherited_names: NameIndex::build(Vec::new()).unwrap(),
+            effective_names: Box::new([]),
             solver_status: status,
             implied_relationships: Box::new([]),
+            authored_relationships: Box::new([]),
             library_specialization_anchors: LibrarySpecializationAnchorFacts::default(),
             semantic_metadata_projections: Box::new([]),
             semantic_metadata_projection_status: Default::default(),
@@ -1328,10 +1339,11 @@ mod tests {
     ) -> (NameIndex, NameIndex, MembershipIndex, ResolutionResults) {
         resolve_dense(
             &fixture.declarations,
+            None,
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
-            None,
+            crate::resolve::ResolutionStartingState::default(),
         )
         .unwrap()
     }
@@ -2070,6 +2082,97 @@ mod tests {
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(redefinition_index)),
             Some(ResolutionStatus::Resolved(status))
+        );
+    }
+
+    #[test]
+    fn anonymous_redefinition_publishes_and_resolves_its_inherited_effective_name() {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let derived_name = symbols.intern("Derived").unwrap();
+        let length_name = symbols.intern("length").unwrap();
+        let alias_name = symbols.intern("selectedLength").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+        let length_path = paths.push(&[length_name], false).unwrap();
+        let derived_length_path = paths.push(&[derived_name, length_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let base = DeclarationId(1);
+        let derived = DeclarationId(3);
+        let anonymous_length = DeclarationId(4);
+        let alias = DeclarationId(5);
+        let declarations = vec![
+            declaration(
+                DocumentIdx(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(demo),
+                Some(base_name),
+                DeclarationKind::ClassDefinition,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(base),
+                Some(length_name),
+                DeclarationKind::AttributeUsage,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(demo),
+                Some(derived_name),
+                DeclarationKind::ClassDefinition,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(derived),
+                None,
+                DeclarationKind::AttributeUsage,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(demo),
+                Some(alias_name),
+                DeclarationKind::Alias,
+            ),
+        ];
+        let references = vec![
+            reference(derived, ReferenceKind::Subclassification, base_path, false),
+            reference(
+                anonymous_length,
+                ReferenceKind::Redefinition,
+                length_path,
+                false,
+            ),
+            reference(
+                alias,
+                ReferenceKind::AliasBinding,
+                derived_length_path,
+                false,
+            ),
+        ];
+        let fixture = ResolverFixture {
+            memberships: memberships_for(&declarations, &[]),
+            declarations: declarations.into_boxed_slice(),
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        };
+
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(fixture.declarations[anonymous_length.index()].name, None);
+        assert_eq!(
+            resolution.effective_names[anonymous_length.index()].name,
+            EffectiveNameOutcome::Resolved(length_name)
+        );
+        assert!(resolution.effective_names[anonymous_length.index()].derived_from_redefinition);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(2)),
+            Some(ResolutionStatus::Resolved(anonymous_length))
         );
     }
 
@@ -3186,11 +3289,12 @@ mod tests {
         let fixture = cross_file_fixture(false);
         let (_, _, _memberships, resolution) = resolve_dense_with_limit(
             &fixture.declarations,
+            None,
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
             1,
-            None,
+            crate::resolve::ResolutionStartingState::default(),
         )
         .unwrap();
         assert_eq!(resolution.solver_status, SolverStatus::NonConverged);

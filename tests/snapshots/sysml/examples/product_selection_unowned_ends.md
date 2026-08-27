@@ -60,12 +60,6 @@ package ProductSelection_UnownedEnds_SysML {
         (source "parser")
         (range (start 28 3) (end 29 2))
       )
-      (diagnostic
-        (severity information)
-        (code "duplicate_connection")
-        (source "semantic")
-        (range (start 31 2) (end 33 3))
-      )
     )
   )
 )

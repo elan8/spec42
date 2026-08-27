@@ -6,6 +6,7 @@ use crate::lower::facts::kerml_classifier_kind;
 use crate::lower::facts::kerml_feature_kind;
 use crate::lower::facts::kerml_feature_prefix_modifiers;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::PendingReference;
@@ -22,11 +23,78 @@ use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     FeaturePrefixHead, FeatureRelationshipPart, KermlBindingMember, KermlClassifierDecl,
     KermlConnectorEnd, KermlConnectorMember, KermlFeature, KermlInvariantMember,
-    KermlSuccessionMember, KermlTypeRelationship, KermlTypeRelationshipKeyword,
-    MembershipKind as ParserMembershipKind, Node, OwnedCrossFeature,
+    KermlRelationshipDecl, KermlRelationshipKeyword, KermlSuccessionMember, KermlTypeRelationship,
+    KermlTypeRelationshipKeyword, MembershipKind as ParserMembershipKind, Node, OwnedCrossFeature,
 };
 
 impl SemanticModelBuilder {
+    /// Lowers the two independently-authored endpoints of a KerML relationship declaration.
+    /// Both names resolve from the enclosing lexical scope; the paired fact later publishes one
+    /// authored semantic edge between their settled declarations.
+    pub(crate) fn lower_kerml_relationship_decl(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlRelationshipDecl>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match node.value.keyword {
+            KermlRelationshipKeyword::Subtype | KermlRelationshipKeyword::Subclassifier => {
+                ReferenceKind::Subclassification
+            }
+            KermlRelationshipKeyword::Typing => ReferenceKind::FeatureTyping,
+            KermlRelationshipKeyword::Subset => ReferenceKind::Subsetting,
+            KermlRelationshipKeyword::Redefinition => ReferenceKind::Redefinition,
+            KermlRelationshipKeyword::Disjoint => ReferenceKind::Disjoining,
+            KermlRelationshipKeyword::Inverse => ReferenceKind::FeatureInverting,
+            KermlRelationshipKeyword::Conjugate => ReferenceKind::Conjugation,
+            KermlRelationshipKeyword::Featuring => ReferenceKind::TypeFeaturing,
+        };
+        let parsed = &self.documents[document.index()].parsed;
+        let source_span = parsed
+            .qualified_reference(node.value.source)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let target_span = parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let source = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.source,
+            flags: RelationshipFlags::default(),
+            span: source_span,
+            import: None,
+        })?;
+        let target = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span: target_span,
+            import: None,
+        })?;
+        self.relationship_declarations
+            .push(AuthoredRelationshipDeclaration {
+                kind,
+                source,
+                target,
+                span: node.span,
+            });
+        if node.value.identification.is_some() || node.value.body.is_some() {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::RelationshipBodyMember,
+                node.span,
+            );
+        }
+        Ok(())
+    }
+
     /// Lowers a bodied KerML classifier declaration (`KermlClassifierDecl`), mirroring
     /// `lower_class_def`: ownership, an optional `specializes` relationship, and owned-member
     /// structure. Its body shares the `CalcDefBody` grammar (parameters, `return` results,
@@ -445,10 +513,13 @@ impl SemanticModelBuilder {
     /// Lowers one `KermlConnectorEnd` -- the connector-end shape shared by KerML connector,
     /// binding and succession members and by a `flow`/`allocation` usage's `from`/`to` clauses --
     /// as an authored reference of `kind`, mirroring `lower_binding_connector_operand` but
-    /// operating on `KermlConnectorEnd.target` rather than a general expression. Allocation ends
-    /// preserve their directional kind while dotted paths use the canonical type-directed member
-    /// resolver; other KerML end kinds retain their established qualified lookup. The end's own
-    /// `multiplicity` and `references` chain are not modeled as distinct facts here.
+    /// operating on `KermlConnectorEnd.target` rather than a general expression. If the end has a
+    /// `references` chain, `target` is instead the declared name of an owned end Feature and the
+    /// chain is its ReferenceSubsetting target (`from [1] source references actualSource`). This
+    /// is the same abstract-syntax shape as a SysML named connector end, not two endpoint paths.
+    /// Allocation ends preserve their directional kind while dotted paths use the canonical
+    /// type-directed member resolver; other KerML end kinds retain their established qualified
+    /// lookup.
     pub(crate) fn lower_kerml_connector_end(
         &mut self,
         document: DocumentIdx,
@@ -456,23 +527,59 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         end: &Node<KermlConnectorEnd>,
     ) -> Result<(), ConstructionError> {
+        let (source, target) = if let Some(target) = end.value.references {
+            let parsed = &self.documents[document.index()].parsed;
+            let declared = parsed
+                .qualified_reference(end.value.target)
+                .ok_or(ConstructionError::InvalidParserReference)?;
+            if declared.metadata.is_absolute || declared.segments.len() != 1 {
+                return Err(ConstructionError::InvalidParserReference);
+            }
+            let decoded = declared
+                .segment_decoded_text(0)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .into_owned();
+            let name = self.intern_declared_name(&decoded)?;
+            let positional_end = self.next_positional_end_ordinal(owner)?;
+            let declaration = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::KermlFeature,
+                name,
+                end.span,
+                DeclarationFacts {
+                    multiplicity: multiplicity_facts(end.value.multiplicity.as_ref()),
+                    positional_end: Some(positional_end),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                declaration,
+                MembershipKind::Feature,
+                Visibility::Default,
+                end.span,
+            )?;
+            (declaration, target)
+        } else {
+            (owner, end.value.target)
+        };
         if matches!(
             kind,
             ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget
         ) {
-            return self.push_satisfy_reference(document, owner, kind, end.value.target);
+            return self.push_satisfy_reference(document, source, kind, target);
         }
         let span = self.documents[document.index()]
             .parsed
-            .qualified_reference(end.value.target)
+            .qualified_reference(target)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
             .span;
         self.push_reference(PendingReference {
-            source: owner,
+            source,
             kind,
             document,
-            local: end.value.target,
+            local: target,
             flags: RelationshipFlags::default(),
             span,
             import: None,

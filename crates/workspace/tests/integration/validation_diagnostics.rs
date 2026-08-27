@@ -132,15 +132,6 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected reduced unconnected_port noise, got {unconnected_count}"
     );
 
-    let duplicate_connection_count = semantic_diags
-        .iter()
-        .filter(|diagnostic| diagnostic.code == "duplicate_connection")
-        .count();
-    assert_eq!(
-        duplicate_connection_count, 0,
-        "fan-out to distinct usage ports must not be reported as duplicate_connection: {semantic_diags:#?}"
-    );
-
     let unresolved: Vec<_> = semantic_diags
         .iter()
         .filter(|diagnostic| diagnostic.code == "unresolved_type_reference")

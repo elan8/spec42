@@ -1,7 +1,6 @@
 //! Phase 2 lowering — constraints, calculations, expressions, filters, and unit tokens.
 
 use crate::evaluate::classify::classify_filter_predicate;
-use crate::evaluate::classify::flatten_member_access_chain;
 use crate::evaluate::classify::is_arithmetic_operator;
 use crate::evaluate::classify::is_comparison_operator;
 use crate::evaluate::classify::is_logical_operator;
@@ -109,9 +108,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
@@ -128,6 +128,16 @@ impl SemanticModelBuilder {
                     )?;
                 }
                 Ok(())
+            }
+            Expression::BodyExpr(body)
+                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+            {
+                self.lower_constraint_expression(
+                    document,
+                    declaration,
+                    family,
+                    body.value.result.as_deref().expect("guarded result"),
+                )
             }
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op)
@@ -262,9 +272,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, family, node.span);
                 }
                 Ok(())
@@ -276,6 +287,16 @@ impl SemanticModelBuilder {
                     self.lower_calc_expression(document, declaration, family, &element.expression)?;
                 }
                 Ok(())
+            }
+            Expression::BodyExpr(body)
+                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+            {
+                self.lower_calc_expression(
+                    document,
+                    declaration,
+                    family,
+                    body.value.result.as_deref().expect("guarded result"),
+                )
             }
             Expression::BinaryOp { op, left, right }
                 if is_arithmetic_operator(op)
@@ -470,9 +491,10 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(node) {
-                    self.push_member_access_reference(declaration, document, &chain, node.span)?;
-                } else {
+                if self
+                    .push_member_access_expression(declaration, document, node)?
+                    .is_none()
+                {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
                 }
                 Ok(())
@@ -601,12 +623,12 @@ impl SemanticModelBuilder {
                         );
                     }
                     ConstraintDefBodyElement::ReturnDecl(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
+                        self.lower_return_decl(
                             document,
+                            Some(declaration),
                             UnsupportedFamily::ConstraintDefinitionMember,
-                            node.span,
-                        );
+                            node,
+                        )?;
                     }
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
@@ -824,11 +846,11 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<RequireConstraint>,
     ) -> Result<(), ConstructionError> {
-        if !node.value.has_constraint_keyword {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
-        }
-        let name = self.intern_declaration_name(document, node.value.name)?;
+        let name = if node.value.has_constraint_keyword {
+            self.intern_declaration_name(document, node.value.name)?
+        } else {
+            None
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -854,6 +876,27 @@ impl SemanticModelBuilder {
         // `UsageDeclaration` (SysML BNF 2066-2071), so the declared usage may be typed.
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if !node.value.has_constraint_keyword {
+            let Some(target) = node.value.target else {
+                self.push_unsupported(document, family, node.span);
+                return Ok(());
+            };
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Subsetting,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
         }
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
@@ -959,6 +1002,9 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::ActionMember(node) => {
                         self.lower_action_def_body_element(document, declaration, node)?;
                     }
+                    CalcDefBodyElement::KermlRelationship(node) => {
+                        self.lower_kerml_relationship_decl(document, declaration, node)?;
+                    }
                     CalcDefBodyElement::Annotating(member) => {
                         self.lower_annotating_member(
                             document,
@@ -980,7 +1026,12 @@ impl SemanticModelBuilder {
                         )?
                     }
                     CalcDefBodyElement::ReturnDecl(return_decl) => {
-                        self.lower_return_decl(document, Some(declaration), return_decl)?;
+                        self.lower_return_decl(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            return_decl,
+                        )?;
                     }
                     CalcDefBodyElement::AttributeUsage(nested) => {
                         self.lower_attribute_usage(document, Some(declaration), nested)?;

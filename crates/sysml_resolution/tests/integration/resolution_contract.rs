@@ -322,6 +322,27 @@ fn every_short_name_carrying_declaration_publishes_it() {
 }
 
 #[test]
+fn a_declared_short_name_is_a_namespace_relative_resolution_name() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tattribute <isq> quantities {\n\
+         \t\tattribute L = 1;\n\
+         \t}\n\
+         \tattribute x = isq.L;\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"isq::L\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::quantities::L\")))))"
+        ),
+        "expected the declared short name `isq` to resolve as an alias for `quantities`, \
+         got:\n{output}"
+    );
+}
+
+#[test]
 fn attribute_typed_by_an_enum_def_resolves_its_feature_typing_reference() {
     let output = build_semantic_sexpr(
         "package Demo {\n\
@@ -839,6 +860,107 @@ fn multi_segment_qualified_expression_operand_resolves_through_nested_namespaces
         ),
         "expected the three-segment qualified name `Outer::Inner::member` to resolve its \
          ExpressionOperand reference to the nested attribute, got:\n{output}"
+    );
+}
+
+#[test]
+fn qualified_relationship_target_traverses_an_intermediate_features_effective_type() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tpart def Face {\n\
+         \t\tref edges;\n\
+         \t}\n\
+         \tpart def Shape {\n\
+         \t\tpart faces : Face;\n\
+         \t}\n\
+         \tpart def Derived :> Shape {\n\
+         \t\tpart :>> faces {\n\
+         \t\t\tref :>> Shape::faces::edges;\n\
+         \t\t}\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"Shape::faces::edges\")\n      (outcome (status resolved) (target \
+             (node (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Face::edges\")))))"
+        ),
+        "expected qualified traversal through `Shape::faces` to use `faces`' effective `Face` \
+         member scope, got:\n{output}"
+    );
+}
+
+#[test]
+fn qualified_inherited_member_hides_the_feature_it_redefines() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tassoc BinaryLink {\n\
+         \t\tend feature source;\n\
+         \t}\n\
+         \tassoc Transfer :> BinaryLink {\n\
+         \t\tend feature source redefines BinaryLink::source;\n\
+         \t}\n\
+         \tassoc Message :> Transfer;\n\
+         \tassoc Flow :> Message {\n\
+         \t\tend feature source redefines Message::source;\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"Message::source\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Transfer::source\")))))"
+        ),
+        "expected `Transfer::source` to hide the `BinaryLink::source` it redefines in \
+         `Message`'s inherited member scope, got:\n{output}"
+    );
+}
+
+/// KerML 8.3.1.8 removes redefined Features from a Type's inheritedMemberships. Projecting a
+/// Feature's effective Type into its local member scope must preserve that same visible-membership
+/// set rather than reintroducing a shadowed ancestor alongside the redefining Feature.
+#[test]
+fn effective_type_scope_excludes_a_member_shadowed_by_an_owned_redefinition() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tclass Base { feature self; }\n\
+         \tclass Derived :> Base { feature self redefines Base::self; }\n\
+         \tfeature holder : Derived { feature selected default self; }\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"self\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Derived::self\")))))"
+        ),
+        "expected the effective Type's owned `self` to hide the redefined `Base::self`, got:\n\
+         {output}"
+    );
+}
+
+/// KerML 8.3.1.8 defines every owned Specialization general as a supertype. In particular, a
+/// Subsetting makes members owned by the subsetted Feature inherited members of the subsetting
+/// Feature; carrying only its effective FeatureTyping loses this scope.
+#[test]
+fn a_subsetting_feature_inherits_members_owned_by_the_subsetted_feature() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tclass Context {\n\
+         \t\tfeature general { feature nested; }\n\
+         \t\tfeature specific subsets general { feature selected subsets nested; }\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains(
+            "(authored-target \"nested\")\n      (outcome (status resolved) (target (node \
+             (document \"memory://test/enum.sysml\") (qualified-name \
+             \"Demo::Context::general::nested\")))))"
+        ),
+        "expected the subsetted Feature's owned member to be inherited, got:\n{output}"
     );
 }
 
@@ -1763,6 +1885,27 @@ fn bind_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
     assert!(
         !output.contains("(status unresolved)") && !output.contains("unsupported"),
         "expected both dotted bind operands (f.a, a.g) to resolve, got:\n{output}"
+    );
+}
+
+/// KerML 8.2.3.5.3 makes inherited memberships part of local name resolution. Binding operands
+/// are ordinary feature references, so they must consume the final inherited scope rather than
+/// the pre-inheritance provisional scope used to settle imports.
+#[test]
+fn binding_operands_resolve_inherited_effective_members() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tpart def Base { part left; part right; }\n\
+         \tpart def Derived :> Base { bind left = right; }\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
+        "expected both inherited binding endpoints to be published, got:\n{output}"
+    );
+    assert!(
+        !output.contains("(status unresolved)") && !output.contains("(status ambiguous"),
+        "expected inherited binding operands to resolve, got:\n{output}"
     );
 }
 
@@ -4157,6 +4300,40 @@ fn relationships_are_published_in_both_directions() {
     );
 }
 
+/// An explicit KerML relationship declaration authors both endpoints. It is not a relationship
+/// from the enclosing classifier, and neither endpoint keyword is lowered as an expression name.
+#[test]
+fn explicit_kerml_relationship_declarations_publish_paired_endpoints() {
+    let published = detail_publication(
+        &[(
+            "memory://relationships.kerml",
+            "package P { class C { feature general; feature specific; subset specific subsets general; } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let specific = details_of(&published, "memory://relationships.kerml", "P::C::specific");
+    let general = details_of(&published, "memory://relationships.kerml", "P::C::general");
+    assert!(
+        specific.outgoing.iter().any(|relationship| {
+            relationship.kind == "subsetting"
+                && relationship.peer.name.as_deref() == Some("general")
+                && relationship.provenance == RelationshipProvenance::Authored
+        }),
+        "{:?}",
+        specific.outgoing
+    );
+    assert!(
+        general.incoming.iter().any(|relationship| {
+            relationship.kind == "subsetting"
+                && relationship.peer.name.as_deref() == Some("specific")
+                && relationship.provenance == RelationshipProvenance::Authored
+        }),
+        "{:?}",
+        general.incoming
+    );
+    assert!(published.diagnostics().is_empty());
+}
+
 /// Repetition and query order cannot change a published answer.
 #[test]
 fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
@@ -5168,274 +5345,6 @@ fn generated_library_specialization_rules_publish_generic_anchor_outcomes() {
 /// `end` declarations for a flow definition, and the typed `from`/`to` endpoint pair for an
 /// anonymous flow usage. No consumer reconstructs either collection from source text.
 #[test]
-fn flow_specializations_publish_implied_edges_from_canonical_end_facts() {
-    const BINARY_RULE: &str = "sysml-2.0:8.3.16.2:checkFlowDefinitionBinarySpecialization";
-    const FLOW_USAGE_RULE: &str = "sysml-2.0:8.3.16.3:checkFlowUsageFlowSpecialization";
-    const FLOW_WITH_ENDS_RULE: &str = "kerml-1.0:8.3.4.9.2:checkFlowWithEndsSpecialization";
-    let library = SourceInput::new(
-        "memory://flows.sysml",
-        "standard library package Flows { flow def Message; flow def flows; } standard library package Transfers { flow def flowTransfers; }".to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.sysml",
-        "package Model { part def Component; flow def Binary { end source : Component; end target : Component; } action def Owner { action source; action target; flow from source to target; } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let published = build(
-        BuildRequest::new(
-            vec![library, workspace],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let message = identity_of(&published, "memory://flows.sysml", "Flows::Message");
-    let flows = identity_of(&published, "memory://flows.sysml", "Flows::flows");
-    let transfers = identity_of(
-        &published,
-        "memory://flows.sysml",
-        "Transfers::flowTransfers",
-    );
-    assert_eq!(
-        settled(published.library_specialization_anchor(BINARY_RULE)),
-        message.clone()
-    );
-    assert_eq!(
-        settled(published.library_specialization_anchor(FLOW_USAGE_RULE)),
-        flows.clone()
-    );
-    assert_eq!(
-        settled(published.library_specialization_anchor(FLOW_WITH_ENDS_RULE)),
-        transfers.clone()
-    );
-    assert!(
-        specialization_relationships(&published, "memory://model.sysml", "Model::Binary")
-            .iter()
-            .any(|relationship| {
-                relationship.provenance == RelationshipProvenance::Implied
-                    && relationship.target == RelationshipTarget::Resolved(message)
-            })
-    );
-    let symbols = settled(published.document_symbols("memory://model.sysml"));
-    let flow = symbols
-        .iter()
-        .find(|entry| entry.kind == ElementKind::FlowConnectionUsage)
-        .expect("lowered anonymous flow usage");
-    let relationships = settled(published.inspect(flow.identity)).relationships;
-    assert!(relationships.iter().any(|relationship| {
-        relationship.kind == "specialization"
-            && relationship.provenance == RelationshipProvenance::Implied
-            && relationship.target == RelationshipTarget::Resolved(flows)
-    }));
-    assert!(relationships.iter().any(|relationship| {
-        relationship.kind == "specialization"
-            && relationship.provenance == RelationshipProvenance::Implied
-            && relationship.target == RelationshipTarget::Resolved(transfers)
-    }));
-}
-
-/// Feature category specialization consumes direct authored FeatureTyping outcomes and the
-/// owning end/association facts. A class-typed sibling and a feature outside an association
-/// demonstrate that neither category rule is inferred from a feature's label or effective
-/// display type.
-#[test]
-fn feature_data_value_and_end_specializations_use_canonical_typing_and_owner_facts() {
-    const DATA_VALUE_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureDataValueSpecialization";
-    const END_RULE: &str = "kerml-1.0:8.3.3.3.4:checkFeatureEndSpecialization";
-    let library = SourceInput::new(
-        "memory://feature-anchors.sysml",
-        "standard library package Base { feature dataValues; } standard library package Links { class Link { feature participant; } }".to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.kerml",
-        "package Model { datatype Value; class ClassValue; class Owner { feature data : Value; feature ordinary : ClassValue; } assoc Association { end feature endFeature : Value; } class NotAssociation { end feature nonEnd : Value; } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let published = build(
-        BuildRequest::new(
-            vec![library, workspace],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let data_values = identity_of(
-        &published,
-        "memory://feature-anchors.sysml",
-        "Base::dataValues",
-    );
-    let participant = identity_of(
-        &published,
-        "memory://feature-anchors.sysml",
-        "Links::Link::participant",
-    );
-    let implied = |target| ElementRelationship {
-        kind: "specialization",
-        provenance: RelationshipProvenance::Implied,
-        authored: None,
-        target: RelationshipTarget::Resolved(target),
-        location: None,
-    };
-    assert_eq!(
-        settled(published.library_specialization_anchor(DATA_VALUE_RULE)),
-        data_values.clone()
-    );
-    assert_eq!(
-        settled(published.library_specialization_anchor(END_RULE)),
-        participant.clone()
-    );
-    assert!(
-        specialization_relationships(&published, "memory://model.kerml", "Model::Owner::data")
-            .contains(&implied(data_values))
-    );
-    assert!(specialization_relationships(
-        &published,
-        "memory://model.kerml",
-        "Model::Association::endFeature",
-    )
-    .contains(&implied(participant)));
-    assert!(specialization_relationships(
-        &published,
-        "memory://model.kerml",
-        "Model::Owner::ordinary",
-    )
-    .is_empty());
-    assert!(!specialization_relationships(
-        &published,
-        "memory://model.kerml",
-        "Model::NotAssociation::nonEnd",
-    )
-    .contains(&implied(participant)));
-}
-
-/// `Connector::association` is the direct, settled typing target restricted to Association.
-/// This rule therefore has a complete fact path without relying on a connector-end body or
-/// display-name inference. The binary companion deliberately has separate coverage because
-/// its positional endpoint collection is not yet published for KerML connector bodies.
-#[test]
-fn connector_object_specialization_uses_direct_association_structure_typing() {
-    const RULE: &str = "kerml-1.0:8.3.4.5.3:checkConnectorObjectSpecialization";
-    let library = SourceInput::new(
-        "memory://objects.kerml",
-        "standard library package Objects { assoc struct linkObjects; }".to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.kerml",
-        "package Model { assoc struct LinkObject; classifier Holder { connector pair : LinkObject; connector ordinary; } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let publish = |schedule| {
-        build(
-            BuildRequest::new(
-                vec![library.clone(), workspace.clone()],
-                schedule,
-                "contract-v1",
-            )
-            .unwrap(),
-        )
-        .unwrap()
-    };
-    let sequential = publish(ConstructionSchedule::Sequential);
-    let parallel = publish(ConstructionSchedule::Parallel);
-    let anchor = identity_of(
-        &sequential,
-        "memory://objects.kerml",
-        "Objects::linkObjects",
-    );
-    let implied = ElementRelationship {
-        kind: "specialization",
-        provenance: RelationshipProvenance::Implied,
-        authored: None,
-        target: RelationshipTarget::Resolved(anchor),
-        location: None,
-    };
-    assert_eq!(
-        settled(sequential.library_specialization_anchor(RULE)),
-        anchor.clone()
-    );
-    assert!(specialization_relationships(
-        &sequential,
-        "memory://model.kerml",
-        "Model::Holder::pair"
-    )
-    .contains(&implied));
-    assert!(
-        specialization_relationships(&parallel, "memory://model.kerml", "Model::Holder::pair")
-            .contains(&implied)
-    );
-    assert!(!specialization_relationships(
-        &sequential,
-        "memory://model.kerml",
-        "Model::Holder::ordinary",
-    )
-    .contains(&implied));
-}
-
-/// The pinned Step predicate places `self.isComposite` after its owner disjunction. The
-/// manifest extractor preserves that complete spelling while the resolver consumes the same
-/// canonical composite and owner facts as every other `CompositeOwnedBy` rule.
-#[test]
-fn step_subperformance_specialization_uses_composite_behavior_ownership() {
-    const RULE: &str = "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization";
-    let library = SourceInput::new(
-        "memory://performances.kerml",
-        "standard library package Performances { behavior Performance { step subperformance; } }"
-            .to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.kerml",
-        "package Model { behavior Parent { composite step child; step ordinary; } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let published = build(
-        BuildRequest::new(
-            vec![library, workspace],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let anchor = identity_of(
-        &published,
-        "memory://performances.kerml",
-        "Performances::Performance::subperformance",
-    );
-    let implied = ElementRelationship {
-        kind: "specialization",
-        provenance: RelationshipProvenance::Implied,
-        authored: None,
-        target: RelationshipTarget::Resolved(anchor),
-        location: None,
-    };
-    assert_eq!(
-        settled(published.library_specialization_anchor(RULE)),
-        anchor.clone()
-    );
-    assert!(specialization_relationships(
-        &published,
-        "memory://model.kerml",
-        "Model::Parent::child"
-    )
-    .contains(&implied));
-    assert!(!specialization_relationships(
-        &published,
-        "memory://model.kerml",
-        "Model::Parent::ordinary",
-    )
-    .contains(&implied));
-}
-
-/// Exact conditional contracts publish both branch anchors at the same barrier. The legacy
-/// query remains the `else`/default projection, while the typed branch query exposes the
-/// predicate-true anchor without recreating anchor names in a consumer.
-#[test]
 fn polarity_library_specialization_anchors_are_branch_keyed_and_schedule_stable() {
     const RULE: &str = "sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization";
     let sources = || {
@@ -5495,68 +5404,6 @@ fn polarity_library_specialization_anchors_are_branch_keyed_and_schedule_stable(
             RULE,
             LibrarySpecializationAnchorBranch::PredicateTrue,
         ),
-    );
-}
-
-#[test]
-fn membership_role_specializations_select_published_anchors_and_suppress_ordinary_members() {
-    let library = SourceInput::new(
-        "memory://roles.sysml",
-        "standard library package Requirements { package RequirementCheck { constraint def concerns; constraint def assumptions; constraint def constraints; part actors; part stakeholders; } } standard library package Cases { package Case { part actors; } } standard library package VerificationCases { package VerificationCase { package obj { requirement requirementVerifications; } } }".to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.sysml",
-        "package Model { part def Component; concern def Safety; requirement def R { subject item : Component; frame concern framed : Safety; actor requirementActor : Component; stakeholder stakeholder : Component; } case def C { actor caseActor : Component; } part ordinary : Component; }".to_string(),
-        SourceKind::Workspace,
-    );
-    let publish = |schedule| {
-        build(
-            BuildRequest::new(
-                vec![library.clone(), workspace.clone()],
-                schedule,
-                "contract-v1",
-            )
-            .expect("membership-role request"),
-        )
-        .expect("membership-role publication")
-    };
-    let sequential = publish(ConstructionSchedule::Sequential);
-    let parallel = publish(ConstructionSchedule::Parallel);
-    let target = |name| identity_of(&sequential, "memory://roles.sysml", name);
-    let relationships = |published: &PublishedResolution, source| {
-        specialization_relationships(published, "memory://model.sysml", source)
-    };
-    let implied = |target| ElementRelationship {
-        kind: "specialization",
-        provenance: RelationshipProvenance::Implied,
-        authored: None,
-        target: RelationshipTarget::Resolved(target),
-        location: None,
-    };
-
-    assert_eq!(
-        relationships(&sequential, "Model::R::framed"),
-        vec![implied(target("Requirements::RequirementCheck::concerns"))]
-    );
-    assert_eq!(
-        relationships(&sequential, "Model::R::requirementActor"),
-        vec![implied(target("Requirements::RequirementCheck::actors"))]
-    );
-    assert_eq!(
-        relationships(&sequential, "Model::R::stakeholder"),
-        vec![implied(target(
-            "Requirements::RequirementCheck::stakeholders"
-        ))]
-    );
-    assert_eq!(
-        relationships(&sequential, "Model::C::caseActor"),
-        vec![implied(target("Cases::Case::actors"))]
-    );
-    assert!(relationships(&sequential, "Model::ordinary").is_empty());
-    assert_eq!(
-        relationships(&parallel, "Model::R::requirementActor"),
-        relationships(&sequential, "Model::R::requirementActor"),
     );
 }
 
@@ -5634,309 +5481,6 @@ fn requirement_derived_facts_use_canonical_membership_roles() {
     );
 }
 
-#[test]
-fn accept_action_specializations_use_canonical_trigger_and_subaction_facts() {
-    let library = SourceInput::new(
-        "memory://actions.sysml",
-        "standard library package Actions { action acceptActions; action def Action { action acceptSubactions; } action def TransitionAction { action accepter; } }".to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.sysml",
-        "package Model { item def Message; action standalone accept payload : Message; action def Parent { action child accept payload : Message; } state def Machine { state source; state target; transition first source accept when true then target; } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let published = build(
-        BuildRequest::new(
-            vec![library, workspace],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .expect("accept-action request"),
-    )
-    .expect("accept-action publication");
-    let accept_actions = identity_of(
-        &published,
-        "memory://actions.sysml",
-        "Actions::acceptActions",
-    );
-    let accept_subactions = identity_of(
-        &published,
-        "memory://actions.sysml",
-        "Actions::Action::acceptSubactions",
-    );
-    let accepter = identity_of(
-        &published,
-        "memory://actions.sysml",
-        "Actions::TransitionAction::accepter",
-    );
-    let accepts = settled(published.search_elements(ElementSearch {
-        kind: ElementKind::AcceptActionUsage,
-        source: ElementSource::Workspace,
-    }));
-    assert_eq!(accepts.len(), 3);
-    let targets = accepts
-        .iter()
-        .map(|accept| {
-            settled(published.inspect(accept.identity))
-                .relationships
-                .iter()
-                .filter(|relationship| relationship.kind == "specialization")
-                .map(|relationship| relationship.target.clone())
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    let roles = accepts
-        .iter()
-        .map(|accept| settled(published.inspect(accept.identity)).role)
-        .collect::<Vec<_>>();
-    assert_eq!(
-        targets,
-        vec![
-            vec![RelationshipTarget::Resolved(accept_actions)],
-            vec![
-                RelationshipTarget::Resolved(accept_actions),
-                RelationshipTarget::Resolved(accept_subactions),
-            ],
-            vec![RelationshipTarget::Resolved(accepter)],
-        ]
-    );
-    assert_eq!(
-        roles,
-        vec![None, None, Some(MembershipRole::TransitionTriggerAction),]
-    );
-}
-
-#[test]
-fn if_action_specialization_uses_the_typed_else_action_fact() {
-    let library = SourceInput::new(
-        "memory://actions.sysml",
-        "standard library package Actions { action ifThenActions; action ifThenElseActions; }"
-            .to_string(),
-        SourceKind::StandardLibrary,
-    );
-    let workspace = SourceInput::new(
-        "memory://model.sysml",
-        "package Model { action def Decision { action condition; if condition { action thenOnly; } if condition { action thenElse; } else { action otherwise; } } }".to_string(),
-        SourceKind::Workspace,
-    );
-    let published = build(
-        BuildRequest::new(
-            vec![library, workspace],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .expect("if-action request"),
-    )
-    .expect("if-action publication");
-    let if_then = identity_of(
-        &published,
-        "memory://actions.sysml",
-        "Actions::ifThenActions",
-    );
-    let if_then_else = identity_of(
-        &published,
-        "memory://actions.sysml",
-        "Actions::ifThenElseActions",
-    );
-    let if_actions = settled(published.search_elements(ElementSearch {
-        kind: ElementKind::IfActionUsage,
-        source: ElementSource::Workspace,
-    }));
-    assert_eq!(if_actions.len(), 2);
-    let targets = if_actions
-        .iter()
-        .map(|if_action| {
-            settled(published.inspect(if_action.identity))
-                .relationships
-                .iter()
-                .filter(|relationship| relationship.kind == "specialization")
-                .map(|relationship| relationship.target.clone())
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(
-        targets,
-        vec![
-            vec![RelationshipTarget::Resolved(if_then)],
-            vec![RelationshipTarget::Resolved(if_then_else)],
-        ]
-    );
-}
-
-#[test]
-fn satisfy_specialization_selects_the_published_negation_branch() {
-    let published = build(
-        BuildRequest::new(
-            vec![
-                SourceInput::new(
-                    "memory://requirements.sysml",
-                    "standard library package Requirements { constraint def satisfiedRequirementChecks; constraint def notSatisfiedRequirementChecks; }".to_string(),
-                    SourceKind::StandardLibrary,
-                ),
-                SourceInput::new(
-                    "memory://model.sysml",
-                    "package Model { requirement def Safety; part def Vehicle; satisfy Safety by Vehicle; not satisfy Safety by Vehicle; }".to_string(),
-                    SourceKind::Workspace,
-                ),
-            ],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let satisfied = identity_of(
-        &published,
-        "memory://requirements.sysml",
-        "Requirements::satisfiedRequirementChecks",
-    );
-    let not_satisfied = identity_of(
-        &published,
-        "memory://requirements.sysml",
-        "Requirements::notSatisfiedRequirementChecks",
-    );
-    let uses = settled(published.search_elements(ElementSearch {
-        kind: ElementKind::SatisfyRequirementUsage,
-        source: ElementSource::Workspace,
-    }));
-    assert_eq!(uses.len(), 2);
-    let targets = uses
-        .iter()
-        .map(|use_| {
-            settled(published.inspect(use_.identity))
-                .relationships
-                .iter()
-                .filter(|relationship| relationship.kind == "specialization")
-                .map(|relationship| relationship.target.clone())
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(
-        targets,
-        vec![
-            vec![RelationshipTarget::Resolved(satisfied)],
-            vec![RelationshipTarget::Resolved(not_satisfied)],
-        ]
-    );
-}
-
-#[test]
-fn assert_specialization_selects_the_published_negation_branch() {
-    let published = build(
-        BuildRequest::new(
-            vec![
-                SourceInput::new(
-                    "memory://constraints.sysml",
-                    "standard library package Constraints { constraint def assertedConstraintChecks; constraint def negatedConstraintChecks; }".to_string(),
-                    SourceKind::StandardLibrary,
-                ),
-                SourceInput::new(
-                    "memory://model.sysml",
-                    "package Model { part def Container { assert constraint Positive { true; } assert not constraint Negative { true; } } }".to_string(),
-                    SourceKind::Workspace,
-                ),
-            ],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let asserted = identity_of(
-        &published,
-        "memory://constraints.sysml",
-        "Constraints::assertedConstraintChecks",
-    );
-    let negated = identity_of(
-        &published,
-        "memory://constraints.sysml",
-        "Constraints::negatedConstraintChecks",
-    );
-    let assertions = settled(published.search_elements(ElementSearch {
-        kind: ElementKind::AssertConstraintUsage,
-        source: ElementSource::Workspace,
-    }));
-    assert_eq!(assertions.len(), 2);
-    let targets = assertions
-        .iter()
-        .map(|assertion| {
-            settled(published.inspect(assertion.identity))
-                .relationships
-                .iter()
-                .filter(|relationship| relationship.kind == "specialization")
-                .map(|relationship| relationship.target.clone())
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(
-        targets,
-        vec![
-            vec![RelationshipTarget::Resolved(asserted)],
-            vec![RelationshipTarget::Resolved(negated)],
-        ]
-    );
-}
-
-#[test]
-fn invariant_specialization_selects_the_published_negation_branch() {
-    let published = build(
-        BuildRequest::new(
-            vec![
-                SourceInput::new(
-                    "memory://performances.sysml",
-                    "standard library package Performances { constraint def trueEvaluations; constraint def falseEvaluations; }".to_string(),
-                    SourceKind::StandardLibrary,
-                ),
-                SourceInput::new(
-                    "memory://model.sysml",
-                    "package Model { inv Positive { true } inv not Negative { true } }".to_string(),
-                    SourceKind::Workspace,
-                ),
-            ],
-            ConstructionSchedule::Sequential,
-            "contract-v1",
-        )
-        .unwrap(),
-    )
-    .unwrap();
-    let true_evaluation = identity_of(
-        &published,
-        "memory://performances.sysml",
-        "Performances::trueEvaluations",
-    );
-    let false_evaluation = identity_of(
-        &published,
-        "memory://performances.sysml",
-        "Performances::falseEvaluations",
-    );
-    let invariants = settled(published.search_elements(ElementSearch {
-        kind: ElementKind::Invariant,
-        source: ElementSource::Workspace,
-    }));
-    assert_eq!(invariants.len(), 2);
-    let targets = invariants
-        .iter()
-        .map(|invariant| {
-            settled(published.inspect(invariant.identity))
-                .relationships
-                .iter()
-                .filter(|relationship| relationship.kind == "specialization")
-                .map(|relationship| relationship.target.clone())
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    assert_eq!(
-        targets,
-        vec![
-            vec![RelationshipTarget::Resolved(true_evaluation)],
-            vec![RelationshipTarget::Resolved(false_evaluation)],
-        ]
-    );
-}
-
-/// An authored specialization that reaches the canonical anchor is already the effective
-/// semantic fact. The resolver must not add a second, redundant direct edge.
 #[test]
 fn part_definition_authored_equivalent_and_more_specific_specializations_suppress_implication() {
     let published = build(

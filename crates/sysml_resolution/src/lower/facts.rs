@@ -190,20 +190,23 @@ pub(crate) struct DeclarationFacts {
     /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
     /// action selected by a control-action branch/body syntax production.
     pub(crate) action_input_parameter_position: Option<u32>,
-    /// The number of direct, typed `from`/`to` endpoints on a lowered anonymous `FlowUsage`.
+    /// The number of directly owned end Features when the owning construct's complete authored
+    /// end collection is known during lowering.
     ///
-    /// KerML's `ownedEndFeatures` collection is represented by these two parser fields for the
-    /// only flow-use form this lowering admits. It is intentionally absent for unsupported named
-    /// or typed flow forms, so generated specialization predicates cannot turn an incomplete
-    /// lowering into a positive result.
+    /// For a connection body this includes every supported authored end form: a positional
+    /// `EndDecl` and a Feature carrying the `end` modifier. For an anonymous `FlowUsage`, KerML's
+    /// `ownedEndFeatures` collection is represented by its two typed `from`/`to` endpoints. It is
+    /// intentionally absent when recovery makes the authored collection incomplete, so generated
+    /// specialization predicates cannot turn a partial lowering into a positive result.
     pub(crate) owned_end_feature_count: Option<u32>,
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///
     /// Present only on a declaration lowered from an `end` member of a connection/interface/
-    /// occurrence definition body, and it is what makes a connector end *positional*: KerML orders
-    /// a connector's ends, and the source/target distinction of a binary connection-like
-    /// definition is that order and nothing else. An `end` member's declared label is optional and
-    /// carries no ordering, so recovering the position from a name would be a guess.
+    /// occurrence definition body or a named inline KerML/SysML connector end, and it is what makes
+    /// a connector end *positional*: KerML orders a connector's ends, and the source/target
+    /// distinction of a binary connection-like definition is that order and nothing else. An end's
+    /// declared label is optional and carries no ordering, so recovering the position from a name
+    /// would be a guess.
     ///
     /// Absent on every other declaration, including a feature carrying the `end` modifier prefix:
     /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
@@ -809,6 +812,27 @@ pub(crate) struct AuthoredReference {
     pub(crate) ordinal: u32,
     pub(crate) import: Option<AuthoredImportFacts>,
     pub(crate) flags: RelationshipFlags,
+    /// Typed cast boundaries inside a flattened member-access path. After `segment_count`
+    /// segments, subsequent member lookup starts from the resolved cast target rather than the
+    /// operand's pre-cast type.
+    pub(crate) member_access_narrowings: Box<[MemberAccessNarrowing]>,
+    pub(crate) span: Span,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MemberAccessNarrowing {
+    pub(crate) segment_count: u32,
+    pub(crate) target: AuthoredReferenceId,
+}
+
+/// One explicitly declared KerML relationship whose source and target are both authored names.
+/// The endpoint references remain ordinary resolver inputs; this record is the canonical pairing
+/// that prevents either endpoint from being mistaken for a relationship from the enclosing type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct AuthoredRelationshipDeclaration {
+    pub(crate) kind: ReferenceKind,
+    pub(crate) source: AuthoredReferenceId,
+    pub(crate) target: AuthoredReferenceId,
     pub(crate) span: Span,
 }
 

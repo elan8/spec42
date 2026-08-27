@@ -37,12 +37,6 @@ package 'Action Shorthand Example' {
 (fixture-diagnostics
   (document "memory://snapshot/14_action_shorthand_example.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 17 27) (end 17 38))
-      )
     )
   )
 )
@@ -95,7 +89,7 @@ package 'Action Shorthand Example' {
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus::image")))))
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0))
       (authored-target "shoot::image")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image")))))
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0))
       (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus")))))
@@ -115,6 +109,7 @@ package 'Action Shorthand Example' {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::picture"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::picture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind flowSource) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
+    (relationship (kind flowTarget) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
@@ -261,7 +256,7 @@ package 'Action Shorthand Example' {
   )
   (query (document "memory://snapshot/14_action_shorthand_example.md") (range (start 17 27) (end 17 38)) (probe (position 17 27))
     (reference (id (source (node (document "memory://snapshot/14_action_shorthand_example.md") (path (named (kind package) (name "Action Shorthand Example")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image")))))
     )
   )
   (query (document "memory://snapshot/14_action_shorthand_example.md") (range (start 12 16) (end 12 21)) (probe (position 12 16))

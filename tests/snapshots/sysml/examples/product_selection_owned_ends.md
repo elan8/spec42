@@ -70,12 +70,6 @@ package ProductSelection_OwnedEnds_SysML {
         (source "parser")
         (range (start 38 3) (end 39 2))
       )
-      (diagnostic
-        (severity information)
-        (code "duplicate_connection")
-        (source "semantic")
-        (range (start 41 2) (end 43 3))
-      )
     )
   )
 )

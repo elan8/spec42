@@ -920,6 +920,9 @@ impl DeclarationKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum ReferenceKind {
+    /// One endpoint of an explicit KerML relationship declaration. The paired lowering fact owns
+    /// whether this reference is the relationship source or target and the relationship kind.
+    ExplicitRelationshipEndpoint,
     NamespaceImport,
     MembershipImport,
     FilterImport,
@@ -1161,7 +1164,7 @@ pub(crate) enum ReferenceKind {
     /// inheritance) by the *type* of the previously resolved segment -- never as a member of the
     /// previous segment's own declaration -- reusing the ancestor-closure/usage-typing-extended
     /// `inherited_names` index built for `Subsetting`/`Redefinition` (see
-    /// `extend_inherited_names_with_usage_typing` in resolver.rs). If the root segment fails to
+    /// `extend_inherited_names_with_effective_types` in the resolver). If the root segment fails to
     /// resolve to exactly one declaration, or any subsequent segment is not found on the current
     /// segment's resolved type, the whole chain publishes an explicit `Unresolved`/`Ambiguous`
     /// outcome -- it never fabricates a partial result. This unifies every deferred dotted-path

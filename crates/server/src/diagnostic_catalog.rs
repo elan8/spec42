@@ -463,13 +463,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
-        code: "duplicate_connection",
-        severity: "information",
-        meaning: "The same connection appears more than once.",
-        typical_fix: "Remove duplicate connect/bind statements.",
-        editor_quick_fixes: None,
-    },
-    DiagnosticCatalogEntry {
         code: "connection_context_invalid",
         severity: "warning",
         meaning: "Connection endpoints are not connectable in the containing structural context.",
@@ -749,7 +742,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
 
 /// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.
 const MODELING_GUIDANCE_CODES: &[&str] = &[
-    "duplicate_connection",
     "missing_final_state",
     "missing_initial_state",
     "missing_library_context",
