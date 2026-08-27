@@ -41,7 +41,7 @@ use crate::resolve::implied::synthesize_constructor_expression_result_specializa
 use crate::resolve::implied::synthesize_feature_chain_expression_result_specializations;
 use crate::resolve::implied::synthesize_feature_reference_expression_result_specializations;
 use crate::resolve::implied::synthesize_implied_relationships;
-use crate::resolve::implied::synthesize_invocation_expression_result_specializations;
+use crate::resolve::implied::synthesize_invocation_expression_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
@@ -312,7 +312,7 @@ impl Lowered {
             resolution
         } else {
             let prerequisite_types = derive_effective_types(&storage, &resolution)?;
-            let synthesis = synthesize_invocation_expression_result_specializations(
+            let synthesis = synthesize_invocation_expression_specializations(
                 &storage,
                 &resolution,
                 &prerequisite_types,

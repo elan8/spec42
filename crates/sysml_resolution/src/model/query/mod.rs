@@ -2210,7 +2210,11 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
-        if kind == SpecializationCheckKind::InvocationExpressionBehaviorResult {
+        if matches!(
+            kind,
+            SpecializationCheckKind::InvocationExpression
+                | SpecializationCheckKind::InvocationExpressionBehaviorResult
+        ) {
             if matches!(
                 self.resolution.invocation_expression_projection_status,
                 crate::resolve::results::InvocationExpressionProjectionStatus::Unresolved
@@ -2219,11 +2223,16 @@ impl<D> SemanticModel<D> {
             }
             let mut outcome = SpecializationCheckOutcome::Satisfied;
             for invocation in self.resolution.invocation_expression_projections.iter() {
-                if invocation.instantiated_type_kind.is_function() {
-                    continue;
-                }
+                let source = if kind == SpecializationCheckKind::InvocationExpression {
+                    invocation.expression
+                } else {
+                    if invocation.instantiated_type_kind.is_function() {
+                        continue;
+                    }
+                    invocation.result
+                };
                 match self.conformance(
-                    invocation.result,
+                    source,
                     invocation.instantiated_type,
                     SpecializationScope::AnySpecialization,
                 ) {

@@ -1266,11 +1266,12 @@ pub(crate) struct InvocationExpressionSynthesis {
     pub(crate) status: InvocationExpressionProjectionStatus,
 }
 
-/// Publishes the InvocationExpression's instantiated type, result, and Function classification as
-/// one phase-4 fact. This is the sole derivation of the OCL `is Function` predicate: a type is a
-/// Function when its concrete declaration or a Subclassification ancestor is one, while a Feature
-/// is Function-valued when any canonical effective type has that classification.
-pub(crate) fn synthesize_invocation_expression_result_specializations(
+/// Publishes the InvocationExpression's instantiated type, its own specialization, result
+/// specialization, and Function classification as one phase-4 fact. This is the sole derivation
+/// of the OCL `is Function` predicate: a type is a Function when its concrete declaration or a
+/// Subclassification ancestor is one, while a Feature is Function-valued when any canonical
+/// effective type has that classification.
+pub(crate) fn synthesize_invocation_expression_specializations(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
     effective_types: &EffectiveTypes,
@@ -1351,6 +1352,15 @@ pub(crate) fn synthesize_invocation_expression_result_specializations(
                 }
             }
         };
+        implied.push(ImpliedRelationship {
+            kind: if feature {
+                ReferenceKind::Subsetting
+            } else {
+                ReferenceKind::FeatureTyping
+            },
+            source: expression,
+            target: instantiated_type,
+        });
         if !instantiated_type_kind.is_function() {
             implied.push(ImpliedRelationship {
                 kind: if feature {

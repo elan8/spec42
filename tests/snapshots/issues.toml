@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-invocation-instantiated-type"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "InvocationExpression instantiatedType is not exposed as the canonical specialization endpoint."
-
-[[issue]]
 id = "lowering-gap-specialization-succession-endpoint-subsetting"
 kind = "lowering_gap"
 owner = "spec42-semantic"
