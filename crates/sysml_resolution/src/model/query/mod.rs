@@ -2249,6 +2249,73 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if matches!(
+            kind,
+            SpecializationCheckKind::DecisionNodeOutgoingSuccession
+                | SpecializationCheckKind::MergeNodeIncomingSuccession
+        ) {
+            use crate::resolve::results::SuccessionEndpointSubsettingKind;
+            use crate::resolve::results::SuccessionEndpointSubsettingStatus;
+
+            let (projection_kind, status, endpoint_kind) = match kind {
+                SpecializationCheckKind::DecisionNodeOutgoingSuccession => (
+                    SuccessionEndpointSubsettingKind::DecisionOutgoing,
+                    self.resolution.decision_outgoing_subsetting_status,
+                    crate::model::DeclarationKind::Decide,
+                ),
+                SpecializationCheckKind::MergeNodeIncomingSuccession => (
+                    SuccessionEndpointSubsettingKind::MergeIncoming,
+                    self.resolution.merge_incoming_subsetting_status,
+                    crate::model::DeclarationKind::Merge,
+                ),
+                _ => unreachable!(),
+            };
+            if status == SuccessionEndpointSubsettingStatus::Unresolved {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            }
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for projection in self
+                .resolution
+                .succession_endpoint_subsetting_projections
+                .iter()
+                .filter(|projection| projection.kind == projection_kind)
+            {
+                let structurally_complete = self
+                    .storage
+                    .declaration(projection.succession)
+                    .is_some_and(|declaration| {
+                        declaration.kind == crate::model::DeclarationKind::Succession
+                    })
+                    && self
+                        .storage
+                        .declaration(projection.endpoint)
+                        .is_some_and(|declaration| declaration.kind == endpoint_kind)
+                    && self
+                        .storage
+                        .declaration(projection.subsetting_target)
+                        .is_some();
+                if !structurally_complete {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                }
+                match self.conformance(
+                    projection.succession,
+                    projection.subsetting_target,
+                    SpecializationScope::FeatureSpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = SpecializationCheckOutcome::Violated;
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2283,7 +2350,7 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::MergeNodeIncomingSuccession
             | SpecializationCheckKind::DecisionNodeOutgoingSuccession => {
-                SpecializationCheckPrerequisite::SuccessionEndpointAndSubsetting
+                unreachable!("handled above")
             }
             SpecializationCheckKind::StateUsageExclusiveState
             | SpecializationCheckKind::StateUsageSubstate => {

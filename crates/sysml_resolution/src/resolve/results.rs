@@ -184,6 +184,30 @@ pub(crate) struct InvocationExpressionProjection {
     pub(crate) instantiated_type_kind: InvocationInstantiatedTypeKind,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum SuccessionEndpointSubsettingKind {
+    DecisionOutgoing,
+    MergeIncoming,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum SuccessionEndpointSubsettingStatus {
+    #[default]
+    Complete,
+    Unresolved,
+}
+
+/// The resolved endpoint and library feature that jointly define one normative `subsetsChain`.
+/// The endpoint is retained explicitly because the implied Subsetting edge alone cannot represent
+/// whether the library feature is contextualized by the source DecisionNode or target MergeNode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct SuccessionEndpointSubsettingProjection {
+    pub(crate) succession: DeclarationId,
+    pub(crate) endpoint: DeclarationId,
+    pub(crate) subsetting_target: DeclarationId,
+    pub(crate) kind: SuccessionEndpointSubsettingKind,
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
@@ -212,6 +236,10 @@ pub(crate) struct ResolutionResults {
         Box<[FeatureReferenceExpressionProjection]>,
     pub(crate) invocation_expression_projection_status: InvocationExpressionProjectionStatus,
     pub(crate) invocation_expression_projections: Box<[InvocationExpressionProjection]>,
+    pub(crate) succession_endpoint_subsetting_projections:
+        Box<[SuccessionEndpointSubsettingProjection]>,
+    pub(crate) decision_outgoing_subsetting_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) merge_incoming_subsetting_status: SuccessionEndpointSubsettingStatus,
     #[cfg(test)]
     pub(crate) work: ResolutionWork,
 }
@@ -336,6 +364,22 @@ impl ResolutionResults {
             implied_relationships,
             invocation_expression_projections,
             invocation_expression_projection_status,
+            ..self
+        }
+    }
+
+    pub(crate) fn settle_succession_endpoint_subsettings(
+        self,
+        implied_relationships: Box<[ImpliedRelationship]>,
+        projections: Box<[SuccessionEndpointSubsettingProjection]>,
+        decision_status: SuccessionEndpointSubsettingStatus,
+        merge_status: SuccessionEndpointSubsettingStatus,
+    ) -> Self {
+        Self {
+            implied_relationships,
+            succession_endpoint_subsetting_projections: projections,
+            decision_outgoing_subsetting_status: decision_status,
+            merge_incoming_subsetting_status: merge_status,
             ..self
         }
     }

@@ -725,15 +725,17 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `first X then Y;` control-flow succession statement (BNF `FirstStmt`) found
-    /// inside an action def/usage body as its own anonymous `DeclarationKind::Succession`
+    /// inside an action def/usage body as its own `DeclarationKind::Succession`
     /// feature owned by the enclosing action def/usage `owner` declaration, mirroring
     /// `lower_end_decl`'s nested-declaration shape: both ends are lowered as authored
-    /// `Succession` references sourced at this new anonymous declaration (not at `owner`
+    /// `Succession` references sourced at this new declaration (not at `owner`
     /// directly), so lexical lookup starts in `owner`'s own scope -- where `X`/`Y` are actually
-    /// declared as sibling actions -- rather than `owner`'s enclosing scope. The `first` end is
+    /// declared as sibling actions -- rather than `owner`'s enclosing scope. An authored
+    /// `succession <name> : <type>` prefix supplies the declaration identity and FeatureTyping
+    /// reference; the bare form remains anonymous. The `first` end is
     /// always lowered; the `then` end is `None` for the standalone initial-node marker
-    /// `first start;` (§6 G13), which is left as-is (no reference to lower). The named/typed
-    /// `succession` keyword prefix and any braced body content are out of scope.
+    /// `first start;` (§6 G13), which is left as-is (no reference to lower). Braced body content
+    /// remains out of scope.
     pub(crate) fn lower_first_stmt(
         &mut self,
         document: DocumentIdx,
@@ -741,11 +743,12 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<FirstStmt>,
     ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.succession_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Succession,
-            None,
+            name,
             node.span,
             DeclarationFacts {
                 // The succession feature's own multiplicity (`succession [n] first ... then ...`).
@@ -761,6 +764,23 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        if let Some(type_name) = node.value.succession_type {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         self.lower_succession_end(
             document,
             declaration,

@@ -45,6 +45,7 @@ use crate::resolve::implied::synthesize_invocation_expression_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
+use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
 use crate::resolve::library_seed::SettledLibrary;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
@@ -331,6 +332,31 @@ impl Lowered {
                 implied.into_boxed_slice(),
                 synthesis.projections,
                 synthesis.status,
+            )
+        };
+        let resolution = if storage
+            .declarations
+            .iter()
+            .all(|declaration| declaration.kind != crate::model::DeclarationKind::Succession)
+        {
+            resolution
+        } else {
+            let synthesis = synthesize_succession_endpoint_subsettings(&storage, &resolution)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(synthesis.implied_relationships);
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            resolution.settle_succession_endpoint_subsettings(
+                implied.into_boxed_slice(),
+                synthesis.projections,
+                synthesis.decision_status,
+                synthesis.merge_status,
             )
         };
         let mut completeness = PublicationCompleteness::Complete;

@@ -1163,6 +1163,9 @@ mod tests {
             feature_reference_expression_projections: Box::default(),
             invocation_expression_projection_status: Default::default(),
             invocation_expression_projections: Box::default(),
+            succession_endpoint_subsetting_projections: Box::default(),
+            decision_outgoing_subsetting_status: Default::default(),
+            merge_incoming_subsetting_status: Default::default(),
             work: ResolutionWork::default(),
         }
     }

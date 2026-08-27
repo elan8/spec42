@@ -37,6 +37,9 @@ use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::SemanticMetadataProjection;
 use crate::resolve::results::SemanticMetadataProjectionStatus;
 use crate::resolve::results::SolverStatus;
+use crate::resolve::results::SuccessionEndpointSubsettingKind;
+use crate::resolve::results::SuccessionEndpointSubsettingProjection;
+use crate::resolve::results::SuccessionEndpointSubsettingStatus;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -1264,6 +1267,116 @@ pub(crate) struct InvocationExpressionSynthesis {
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
     pub(crate) projections: Box<[InvocationExpressionProjection]>,
     pub(crate) status: InvocationExpressionProjectionStatus,
+}
+
+pub(crate) struct SuccessionEndpointSubsettingSynthesis {
+    pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
+    pub(crate) projections: Box<[SuccessionEndpointSubsettingProjection]>,
+    pub(crate) decision_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) merge_status: SuccessionEndpointSubsettingStatus,
+}
+
+/// Publishes the SysML 8.3.17.7/13 contextual `subsetsChain` facts in one linear pass over
+/// declarations and references. The projection retains the selected endpoint (`self`) while the
+/// ordinary implied Subsetting relationship targets the canonical library feature.
+pub(crate) fn synthesize_succession_endpoint_subsettings(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<SuccessionEndpointSubsettingSynthesis, ResolutionError> {
+    let mut endpoints = vec![[None; 2]; storage.declarations.len()];
+    let mut decision_status = SuccessionEndpointSubsettingStatus::Complete;
+    let mut merge_status = SuccessionEndpointSubsettingStatus::Complete;
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind != ReferenceKind::Succession {
+            continue;
+        }
+        let Some(slot) = endpoints.get_mut(reference.source.index()) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let ordinal = usize::try_from(reference.ordinal).map_err(|_| ResolutionError::Capacity)?;
+        let Some(endpoint) = slot.get_mut(ordinal) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        let id = AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        *endpoint = resolution.outcome(id);
+    }
+
+    let decision_anchor = resolve_library_specialization_anchor(
+        storage,
+        "ControlPerformances::DecisionPerformance::outgoingHBLink",
+    );
+    let merge_anchor = resolve_library_specialization_anchor(
+        storage,
+        "ControlPerformances::MergePerformance::incomingHBLink",
+    );
+    let mut implied = Vec::new();
+    let mut projections = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind != DeclarationKind::Succession {
+            continue;
+        }
+        let succession = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let [source, target] = endpoints[index];
+        match source {
+            Some(ResolutionStatus::Resolved(endpoint))
+                if storage
+                    .declaration(endpoint)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Decide) =>
+            {
+                match decision_anchor {
+                    LibrarySpecializationAnchor::Resolved(subsetting_target) => {
+                        implied.push(ImpliedRelationship {
+                            kind: ReferenceKind::Subsetting,
+                            source: succession,
+                            target: subsetting_target,
+                        });
+                        projections.push(SuccessionEndpointSubsettingProjection {
+                            succession,
+                            endpoint,
+                            subsetting_target,
+                            kind: SuccessionEndpointSubsettingKind::DecisionOutgoing,
+                        });
+                    }
+                    _ => decision_status = SuccessionEndpointSubsettingStatus::Unresolved,
+                }
+            }
+            _ => {}
+        }
+        match target {
+            Some(ResolutionStatus::Resolved(endpoint))
+                if storage
+                    .declaration(endpoint)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::Merge) =>
+            {
+                match merge_anchor {
+                    LibrarySpecializationAnchor::Resolved(subsetting_target) => {
+                        implied.push(ImpliedRelationship {
+                            kind: ReferenceKind::Subsetting,
+                            source: succession,
+                            target: subsetting_target,
+                        });
+                        projections.push(SuccessionEndpointSubsettingProjection {
+                            succession,
+                            endpoint,
+                            subsetting_target,
+                            kind: SuccessionEndpointSubsettingKind::MergeIncoming,
+                        });
+                    }
+                    _ => merge_status = SuccessionEndpointSubsettingStatus::Unresolved,
+                }
+            }
+            _ => {}
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    projections.sort_by_key(|projection| (projection.succession.0, projection.kind as u8));
+    Ok(SuccessionEndpointSubsettingSynthesis {
+        implied_relationships: implied.into_boxed_slice(),
+        projections: projections.into_boxed_slice(),
+        decision_status,
+        merge_status,
+    })
 }
 
 /// Publishes the InvocationExpression's instantiated type, its own specialization, result
