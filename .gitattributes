@@ -12,3 +12,6 @@ generator-tests/golden/** -text
 # Compatibility snapshots are retained byte-for-byte, including source
 # whitespace that is significant to formatter fixtures.
 crates/workspace/tests/fixtures/sysml_compatibility/** -whitespace
+
+# ABI/schema manifests are byte-compared against a freshly derived (LF) copy.
+docs/generation/*.json text eol=lf

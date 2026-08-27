@@ -877,6 +877,11 @@ impl GeneratorModelView {
                     }
                     DiagramEdgeKind::Relationship(kind) => kind.clone(),
                 };
+                let origin_occurrence = projection
+                    .elements
+                    .get(edge.origin as usize)
+                    .map(|element| &element.occurrence_id)
+                    .unwrap_or(&edge.source);
                 Ok(DiagramEdge {
                     reference: self.diagram_relationship_reference(
                         edge.source_semantic_id,
@@ -887,6 +892,7 @@ impl GeneratorModelView {
                     target_element: self.diagram_reference(edge.target_semantic_id)?,
                     source_occurrence: self.diagram_occurrence(&edge.source)?,
                     target_occurrence: self.diagram_occurrence(&edge.target)?,
+                    origin_occurrence: self.diagram_occurrence(origin_occurrence)?,
                     kind,
                     provenance: relationship_provenance(edge.provenance),
                     source: edge.source_location.as_ref().map(|location| {

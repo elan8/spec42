@@ -448,6 +448,7 @@ impl NormalizedProduct {
             "reference": self.reference(&value.reference)?,
             "source": self.node(&value.source_occurrence)?,
             "target": self.node(&value.target_occurrence)?,
+            "origin": self.node(&value.origin_occurrence)?,
             "kind": edge_kind(&value.kind),
             "provenance": provenance(&value.provenance),
             "navigation": value.source.as_ref().map(|source| self.source(source)).transpose()?,
