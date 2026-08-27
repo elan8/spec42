@@ -15,3 +15,6 @@ crates/workspace/tests/fixtures/sysml_compatibility/** -whitespace
 
 # ABI/schema manifests are byte-compared against a freshly derived (LF) copy.
 docs/generation/*.json text eol=lf
+
+# Shell scripts must stay LF -- a CRLF shebang line is exit 127 on Linux.
+*.sh text eol=lf
