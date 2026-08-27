@@ -21,8 +21,8 @@ fn lsp_initialize_advertises_remaining_feature_capabilities() {
     assert!(caps["linkedEditingRangeProvider"]
         .as_bool()
         .unwrap_or(false));
-    assert!(caps["monikerProvider"].as_bool().unwrap_or(false));
-    assert!(caps["callHierarchyProvider"].as_bool().unwrap_or(false));
+    assert!(caps["monikerProvider"].is_null());
+    assert!(caps["callHierarchyProvider"].is_null());
     assert_eq!(
         caps["experimental"]["typeHierarchyProvider"].as_bool(),
         Some(true),

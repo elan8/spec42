@@ -4,19 +4,10 @@ import process from "node:process";
 
 const repoRoot = process.cwd();
 const metadataPath = path.join(repoRoot, "docs", "reference", "conformance-metadata.json");
-const constantsPath = path.join(repoRoot, "vscode", "src", "visualization", "webview", "constants.ts");
 const outputPath = path.join(repoRoot, "docs", "reference", "CONFORMANCE-MATRIX.md");
 const check = process.argv.includes("--check");
 
 const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-const constants = fs.readFileSync(constantsPath, "utf8");
-const shippedViews = [...constants.matchAll(/SYSML_ENABLED_VIEWS\s*=\s*\[([\s\S]*?)\]/g)]
-  .flatMap((match) => [...match[1].matchAll(/'([^']+)'/g)].map((id) => id[1]));
-const documentedViews = new Set(metadata.views.map((view) => view.id));
-const missingViews = shippedViews.filter((view) => !documentedViews.has(view));
-if (missingViews.length > 0) {
-  throw new Error(`CONFORMANCE-MATRIX metadata is missing shipped view IDs: ${missingViews.join(", ")}`);
-}
 if (!Array.isArray(metadata.semanticValidation) || metadata.semanticValidation.length === 0) {
   throw new Error("CONFORMANCE-MATRIX metadata must include semantic validation categories.");
 }

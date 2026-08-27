@@ -1,0 +1,26 @@
+[package]
+name = "session_actor"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Generic tokio actor for embedder-owned session state: lock-free snapshot reads, single-writer mutations, superseded background results dropped; knows nothing about SysML"
+
+[features]
+default = []
+
+[dependencies]
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time"] }
+thiserror = { workspace = true }
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time", "test-util"] }
+
+[[test]]
+name = "dependency_guardrails"
+path = "tests/dependency_guardrails.rs"
+
+[[test]]
+name = "concurrent_reads"
+path = "tests/concurrent_reads.rs"

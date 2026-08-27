@@ -5,11 +5,7 @@ use std::sync::Arc;
 use std::time::Instant;
 use tower_lsp::lsp_types::ServerCapabilities;
 
-use crate::validation::{ValidationReport, ValidationRequest};
-
 pub const KERNEL_INTERFACE_VERSION: u32 = 1;
-
-pub type PipelineHook = Arc<dyn ValidationPipelineHook>;
 
 /// Optional host hook for capability augmentation.
 ///
@@ -89,23 +85,17 @@ impl CapabilityMetadata {
 
 pub trait CapabilityProvider: Send + Sync {
     fn metadata(&self) -> CapabilityMetadata;
-    fn pipeline_hooks(&self) -> Vec<PipelineHook> {
-        Vec::new()
-    }
-}
-
-pub trait ValidationPipelineHook: Send + Sync {
-    fn before_validate(&self, _request: &ValidationRequest) -> Result<(), String> {
-        Ok(())
-    }
-    fn after_validate(&self, _report: &mut ValidationReport) -> Result<(), String> {
-        Ok(())
-    }
 }
 
 /// Server configuration built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
+    /// The one set of services this host publishes through, shared with the engine that embeds
+    /// it so the two never hold separate memos or library strata.
+    pub services: sysml_query::Services,
+    /// The resolved library catalog used to enforce `.project.json` dependency admission for
+    /// each independently published editor project.
+    pub project_library_catalog: Option<Arc<library_catalog::LibraryCatalog>>,
     /// Optional library roots supplied by the host (e.g. materialized standard library), merged
     /// before client `libraryPaths` during LSP initialize / configuration.
     pub default_library_paths: Vec<PathBuf>,
@@ -117,13 +107,16 @@ pub struct Spec42Config {
     pub custom_method_providers: Vec<Arc<dyn CustomMethodProvider>>,
     /// Optional custom JSON-RPC method handlers for plugin composition.
     pub custom_rpc_providers: Vec<Arc<dyn CustomRpcProvider>>,
-    /// Optional validation pipeline hooks for host-side behavior.
-    pub pipeline_hooks: Vec<PipelineHook>,
 }
 
 impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
+            .field("services", &"shared")
+            .field(
+                "project_library_catalog",
+                &self.project_library_catalog.is_some(),
+            )
             .field("default_library_paths", &self.default_library_paths)
             .field("standard_library_paths", &self.standard_library_paths)
             .field("capability_augmenters", &self.capability_augmenters.len())
@@ -132,7 +125,6 @@ impl std::fmt::Debug for Spec42Config {
                 &self.custom_method_providers.len(),
             )
             .field("custom_rpc_providers", &self.custom_rpc_providers.len())
-            .field("pipeline_hooks", &self.pipeline_hooks.len())
             .finish()
     }
 }
@@ -140,6 +132,19 @@ impl std::fmt::Debug for Spec42Config {
 impl Spec42Config {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn with_services(mut self, services: sysml_query::Services) -> Self {
+        self.services = services;
+        self
+    }
+
+    pub fn with_project_library_catalog(
+        mut self,
+        catalog: library_catalog::LibraryCatalog,
+    ) -> Self {
+        self.project_library_catalog = Some(Arc::new(catalog));
+        self
     }
 
     /// Add a capability augmenter.
@@ -157,12 +162,6 @@ impl Spec42Config {
     /// Add a custom RPC provider.
     pub fn with_custom_rpc_provider(mut self, p: Arc<dyn CustomRpcProvider>) -> Self {
         self.custom_rpc_providers.push(p);
-        self
-    }
-
-    /// Add a validation pipeline hook.
-    pub fn with_pipeline_hook(mut self, hook: PipelineHook) -> Self {
-        self.pipeline_hooks.push(hook);
         self
     }
 

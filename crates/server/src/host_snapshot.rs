@@ -45,6 +45,7 @@ pub fn load_snapshot_with_engine(
         workspace_root,
         engine.package_roots(),
         &engine.library_catalog().stdlib.roots,
+        engine.services().clone(),
     );
     let request = WorkspaceLoadRequest::single_target(path.to_path_buf())
         .with_workspace_root(workspace_root.map(Path::to_path_buf))

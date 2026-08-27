@@ -1,5 +1,6 @@
 //! Sandboxed runtime for Spec42 core WebAssembly generator modules.
 
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -8,7 +9,9 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
-    MAX_ARTIFACT_PATH_BYTES,
+    RequirementUsageTypingSummary, RequirementVerificationSummary, SatisfyEndpointSummary,
+    SatisfyPolaritySummary, SatisfyRelationshipSummary, TypingProvenanceSummary,
+    VerificationOutcomeSummary, VerificationRequirementSummary, MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -21,8 +24,8 @@ mod epoch;
 pub use epoch::{Clock, EntryObserver, EpochController, ManualClock, SystemClock};
 use epoch::{Deadline, Expiry, TICK_INTERVAL};
 use wasmtime::{
-    Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module, ResourceLimiter, Store,
-    StoreLimits, StoreLimitsBuilder, Trap, UpdateDeadline, ValType,
+    Cache, CacheConfig, Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module,
+    ResourceLimiter, Store, StoreLimits, StoreLimitsBuilder, Trap, UpdateDeadline, ValType,
 };
 
 pub const GENERATOR_ABI_VERSION: u32 = protocol::ABI_VERSION;
@@ -50,6 +53,10 @@ pub struct RuntimeOptions {
     /// only when something wants the number — the conformance harness uses it as an exact,
     /// reproducible cost metric, which is the primary reason it still exists.
     pub fuel_metering: bool,
+    /// Reuse Wasmtime's content- and configuration-keyed native compilation artifacts across
+    /// processes. Cache misses, corruption, and an unavailable cache remain equivalent to the
+    /// canonical uncached compilation path.
+    pub compilation_cache: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -156,6 +163,7 @@ pub struct GeneratorHostError {
 #[derive(Debug)]
 pub struct GeneratorExecution {
     pub artifacts: ArtifactSet,
+    pub publication_completeness: generator_api::GeneratorPublicationCompleteness,
     pub diagnostics: Vec<GeneratorDiagnostic>,
     pub generator_digest: String,
     pub duration: Duration,
@@ -197,6 +205,8 @@ impl Default for CancellationHandle {
 pub struct GeneratorRuntime {
     engine: Engine,
     options: RuntimeOptions,
+    compilation_cache: Option<Cache>,
+    compilation_cache_error: Option<String>,
     clock: Arc<dyn Clock>,
     /// One ticker for the whole runtime. Dropped with it, which stops the thread.
     _epoch: EpochController,
@@ -214,7 +224,21 @@ impl GeneratorRuntime {
     }
 
     pub fn with_options(options: RuntimeOptions) -> Result<Self, GeneratorHostError> {
-        Self::with_options_and_clock(options, Arc::new(SystemClock), TICK_INTERVAL)
+        Self::with_options_clock_and_cache(options, Arc::new(SystemClock), TICK_INTERVAL, None)
+    }
+
+    /// Builds a runtime with an explicit native compilation-cache directory.
+    /// Primarily useful for hermetic hosts and cold/warm/corruption tests.
+    pub fn with_options_and_cache_directory(
+        options: RuntimeOptions,
+        cache_directory: &Path,
+    ) -> Result<Self, GeneratorHostError> {
+        Self::with_options_clock_and_cache(
+            options,
+            Arc::new(SystemClock),
+            TICK_INTERVAL,
+            Some(cache_directory),
+        )
     }
 
     /// Builds a runtime with an injected clock and tick cadence.
@@ -225,6 +249,15 @@ impl GeneratorRuntime {
         options: RuntimeOptions,
         clock: Arc<dyn Clock>,
         tick_interval: Duration,
+    ) -> Result<Self, GeneratorHostError> {
+        Self::with_options_clock_and_cache(options, clock, tick_interval, None)
+    }
+
+    fn with_options_clock_and_cache(
+        options: RuntimeOptions,
+        clock: Arc<dyn Clock>,
+        tick_interval: Duration,
+        cache_directory: Option<&Path>,
     ) -> Result<Self, GeneratorHostError> {
         let mut config = Config::new();
         config.consume_fuel(options.fuel_metering);
@@ -239,6 +272,31 @@ impl GeneratorRuntime {
         // otherwise platform-dependent; both are pinned here.
         config.relaxed_simd_deterministic(true);
         config.cranelift_nan_canonicalization(true);
+        let (compilation_cache, compilation_cache_error) = if options.compilation_cache {
+            let directory = cache_directory.map(Path::to_path_buf).or_else(|| {
+                directories::BaseDirs::new().map(|dirs| {
+                    dirs.cache_dir()
+                        .join("spec42")
+                        .join("wasmtime-compilation-cache")
+                })
+            });
+            let cache = directory
+                .ok_or_else(|| "the platform has no per-user cache directory".to_owned())
+                .and_then(|directory| {
+                    let mut cache_config = CacheConfig::new();
+                    cache_config.with_directory(directory);
+                    Cache::new(cache_config).map_err(|error| error.to_string())
+                });
+            match cache {
+                Ok(cache) => {
+                    config.cache(Some(cache.clone()));
+                    (Some(cache), None)
+                }
+                Err(error) => (None, Some(error)),
+            }
+        } else {
+            (None, None)
+        };
         let engine = Engine::new(&config).map_err(|error| GeneratorHostError {
             category: GeneratorFailureCategory::ArtifactInvalid,
             phase: GenerationPhase::RuntimeConfiguration,
@@ -248,6 +306,8 @@ impl GeneratorRuntime {
         Ok(Self {
             engine,
             options,
+            compilation_cache,
+            compilation_cache_error,
             clock,
             _epoch: epoch,
         })
@@ -255,6 +315,29 @@ impl GeneratorRuntime {
 
     pub fn options(&self) -> RuntimeOptions {
         self.options
+    }
+
+    /// Whether the requested disposable native-code cache was successfully configured.
+    pub fn compilation_cache_enabled(&self) -> bool {
+        self.compilation_cache.is_some()
+    }
+
+    pub fn compilation_cache_hits(&self) -> usize {
+        self.compilation_cache
+            .as_ref()
+            .map(Cache::cache_hits)
+            .unwrap_or(0)
+    }
+
+    pub fn compilation_cache_misses(&self) -> usize {
+        self.compilation_cache
+            .as_ref()
+            .map(Cache::cache_misses)
+            .unwrap_or(0)
+    }
+
+    pub fn compilation_cache_error(&self) -> Option<&str> {
+        self.compilation_cache_error.as_deref()
     }
 
     /// Advances the engine epoch once.
@@ -288,7 +371,7 @@ impl GeneratorRuntime {
 
     /// Validates and compiles a core module without loading a model snapshot.
     pub fn prepare(&self, module_bytes: &[u8]) -> Result<PreparedGenerator, GeneratorHostError> {
-        let generator_digest = digest(module_bytes);
+        let generator_digest = artifact_digest(module_bytes);
         if !Parser::is_core_wasm(module_bytes) {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ArtifactInvalid,
@@ -380,12 +463,6 @@ impl GeneratorRuntime {
             });
         }
 
-        let mut linker = Linker::new(&self.engine);
-        add_host_functions(&mut linker).map_err(|error| GeneratorHostError {
-            category: GeneratorFailureCategory::ApiIncompatible,
-            phase: GenerationPhase::ApiLinking,
-            message: error.to_string(),
-        })?;
         if runtime_limits.fuel.is_some() && !self.options.fuel_metering {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ResourceExhausted,
@@ -460,6 +537,7 @@ impl GeneratorRuntime {
         let state = store.into_data();
         Ok(GeneratorExecution {
             artifacts,
+            publication_completeness: state.model.publication_completeness(),
             diagnostics: state.diagnostics,
             generator_digest: prepared.generator_digest.clone(),
             duration,
@@ -948,6 +1026,40 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
+        protocol::Operation::RequirementTyping => {
+            let usage = decode_for::<protocol::query::RequirementTyping>(request)?;
+            encode_result(
+                state
+                    .model
+                    .requirement_usage_typing(&usage)
+                    .map(requirement_usage_typing)
+                    .map_err(|error| error.to_string()),
+            )
+        }
+        protocol::Operation::SatisfyRelationships => encode_result(
+            state
+                .model
+                .satisfy_relationships()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(satisfy_relationship)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
+        protocol::Operation::RequirementVerifications => encode_result(
+            state
+                .model
+                .requirement_verifications()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(requirement_verification)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
         protocol::Operation::Relationships => {
             let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
@@ -965,6 +1077,21 @@ fn handle_query(
                     .model
                     .effective_features(&element)
                     .map(|values| values.into_iter().map(summary).collect::<Vec<_>>())
+                    .map_err(|error| error.to_string()),
+            )
+        }
+        protocol::Operation::DiagramViews => encode_result(
+            state
+                .model
+                .diagram_views()
+                .map_err(|error| error.to_string()),
+        ),
+        protocol::Operation::DiagramView => {
+            let view = decode_for::<protocol::query::DiagramView>(request)?;
+            encode_result(
+                state
+                    .model
+                    .diagram_view(&view)
                     .map_err(|error| error.to_string()),
             )
         }
@@ -1111,6 +1238,110 @@ fn relationship(value: RelationshipSummary) -> protocol::Relationship {
     }
 }
 
+fn requirement_usage_typing(
+    value: RequirementUsageTypingSummary,
+) -> protocol::RequirementUsageTyping {
+    use protocol::RequirementUsageTyping as Wire;
+    match value {
+        RequirementUsageTypingSummary::Resolved {
+            definition,
+            provenance,
+        } => Wire::Resolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredResolved {
+            definition,
+            provenance,
+        } => Wire::RecoveredResolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredMissing => Wire::RecoveredMissing,
+        RequirementUsageTypingSummary::RecoveredUnresolved => Wire::RecoveredUnresolved,
+        RequirementUsageTypingSummary::RecoveredAmbiguous { candidates } => {
+            Wire::RecoveredAmbiguous {
+                candidates: candidates.into_iter().map(summary).collect(),
+            }
+        }
+        RequirementUsageTypingSummary::RecoveredUnsupported => Wire::RecoveredUnsupported,
+        RequirementUsageTypingSummary::Missing => Wire::Missing,
+        RequirementUsageTypingSummary::Unresolved => Wire::Unresolved,
+        RequirementUsageTypingSummary::Ambiguous { candidates } => Wire::Ambiguous {
+            candidates: candidates.into_iter().map(summary).collect(),
+        },
+        RequirementUsageTypingSummary::Unsupported => Wire::Unsupported,
+        RequirementUsageTypingSummary::Recovery => Wire::Recovery,
+        RequirementUsageTypingSummary::Incomplete => Wire::Incomplete,
+    }
+}
+
+fn satisfy_endpoint(value: SatisfyEndpointSummary) -> protocol::SatisfyEndpoint {
+    match value {
+        SatisfyEndpointSummary::Resolved(value) => {
+            protocol::SatisfyEndpoint::Resolved(summary(value))
+        }
+        SatisfyEndpointSummary::Ambiguous(values) => {
+            protocol::SatisfyEndpoint::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        SatisfyEndpointSummary::Unresolved => protocol::SatisfyEndpoint::Unresolved,
+        SatisfyEndpointSummary::Unsupported => protocol::SatisfyEndpoint::Unsupported,
+    }
+}
+
+fn satisfy_relationship(value: SatisfyRelationshipSummary) -> protocol::SatisfyRelationship {
+    protocol::SatisfyRelationship {
+        semantic_id: value.semantic_id,
+        requirement: satisfy_endpoint(value.requirement),
+        satisfying_element: satisfy_endpoint(value.satisfying_element),
+        polarity: match value.polarity {
+            SatisfyPolaritySummary::Satisfied => protocol::SatisfyPolarity::Satisfied,
+            SatisfyPolaritySummary::NotSatisfied => protocol::SatisfyPolarity::NotSatisfied,
+        },
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        recovered: value.recovered,
+    }
+}
+
+fn requirement_verification(
+    value: RequirementVerificationSummary,
+) -> protocol::RequirementVerification {
+    let requirement = match value.requirement {
+        VerificationRequirementSummary::Resolved(value) => {
+            protocol::VerificationRequirement::Resolved(summary(value))
+        }
+        VerificationRequirementSummary::Ambiguous(values) => {
+            protocol::VerificationRequirement::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        VerificationRequirementSummary::Unresolved => protocol::VerificationRequirement::Unresolved,
+        VerificationRequirementSummary::Unsupported => {
+            protocol::VerificationRequirement::Unsupported
+        }
+    };
+    protocol::RequirementVerification {
+        semantic_id: value.semantic_id,
+        verification_case: summary(value.verification_case),
+        requirement,
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        outcome: match value.outcome {
+            VerificationOutcomeSummary::Unsupported => protocol::VerificationOutcome::Unsupported,
+        },
+        recovered: value.recovered,
+    }
+}
+
 fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
     let level = protocol::Level::try_from_code(level)
         .map_err(|unknown| AbiViolation::error(unknown.to_string()))?;
@@ -1122,7 +1353,12 @@ fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
     })
 }
 
-fn digest(bytes: &[u8]) -> String {
+/// The digest format a generation artifact is identified by.
+///
+/// A generation result verifies by comparing the digest the host recorded for an artifact with
+/// the digest a later reader computes over the bytes on disk. The two must be the same string for
+/// the same bytes, so the format is declared once, here, where artifacts are produced.
+pub fn artifact_digest(bytes: &[u8]) -> String {
     format!("sha256:{:x}", Sha256::digest(bytes))
 }
 

@@ -1,0 +1,338 @@
+# META
+~~~ini
+description=Interface ends, binding connectors and non-connectable contexts
+type=file
+~~~
+# SOURCE
+~~~sysml
+package Structure {
+    port def Signal;
+    attribute def Voltage;
+    attribute def Current;
+    action def Step;
+    item def Payload;
+
+    interface def Conforming {
+        end supplier : Signal;
+        end consumer : Signal;
+    }
+
+    interface def EndWithoutAPortType {
+        end supplier;
+        end consumer : Signal;
+    }
+
+    part def Bindings {
+        attribute left : Voltage;
+        attribute right : Current;
+        attribute same : Voltage;
+        bind left = same;
+        bind left = right;
+    }
+
+    part def NotConnectable {
+        item payload : Payload;
+        perform action step : Step;
+        connect payload to step;
+    }
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/connection_structure.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 13 8) (end 13 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "binding_connector_incompatible")
+        (source "semantic")
+        (range (start 22 8) (end 22 26))
+        (related-information
+          (related
+            (uri "memory://snapshot/connection_structure.md")
+            (range (start 18 8) (end 18 33))
+          )
+          (related
+            (uri "memory://snapshot/connection_structure.md")
+            (range (start 19 8) (end 19 34))
+          )
+        )
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:285e00ec13d320a7eb7b9bb9db4039cb9b5dd5e638649a0251d7454deac6d44a"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "left")) (bindTarget (reference "same")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "left")) (bindTarget (reference "right")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Voltage")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Current")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Voltage")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming"))) (kind interface-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType"))) (kind interface-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::supplier"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "payload")) (connectorEnd (reference "step")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Payload")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Step")))))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0))
+      (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindSource) (ordinal 0))
+      (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0))
+      (authored-target "same")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindTarget) (ordinal 0))
+      (authored-target "right")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Voltage")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Current")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Voltage")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0))
+      (authored-target "payload")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1))
+      (authored-target "step")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Payload")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")))))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Step")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")))))
+  )
+  (relationships
+    (relationship (kind bindSource) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0)))
+    (relationship (kind bindSource) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindSource) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::supplier"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings")))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings")))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming")))
+      (positional-ends (authored 2) (effective 2))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType")))
+      (positional-ends (authored 2) (effective 2))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::supplier")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType")))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable")))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step")))
+      (featured-by (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable")))
+      (type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")) (source direct))
+      (supertype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer")) (scopes any))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier")) (scopes any))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")) (scopes any))
+      (subtype (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/connection_structure.md") (range (start 21 13) (end 21 17)) (probe (position 21 13))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0) (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 22 13) (end 22 17)) (probe (position 22 13))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindSource) (ordinal 0) (authored-target "left")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 21 20) (end 21 24)) (probe (position 21 20))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0) (authored-target "same")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 22 20) (end 22 25)) (probe (position 22 20))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "Bindings")) (anonymous (kind bind) (ordinal 1))))) (kind bindTarget) (ordinal 0) (authored-target "right")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 18 25) (end 18 32)) (probe (position 18 25))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::left"))) (kind featureTyping) (ordinal 0) (authored-target "Voltage")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 19 26) (end 19 33)) (probe (position 19 26))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::right"))) (kind featureTyping) (ordinal 0) (authored-target "Current")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Current")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 20 25) (end 20 32)) (probe (position 20 25))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Bindings::same"))) (kind featureTyping) (ordinal 0) (authored-target "Voltage")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 9 23) (end 9 29)) (probe (position 9 23))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) (kind featureTyping) (ordinal 0) (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 8 23) (end 8 29)) (probe (position 8 23))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) (kind featureTyping) (ordinal 0) (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 14 23) (end 14 29)) (probe (position 14 23))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) (kind featureTyping) (ordinal 0) (authored-target "Signal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 28 16) (end 28 23)) (probe (position 28 16))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0) (authored-target "payload")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 28 27) (end 28 31)) (probe (position 28 27))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1) (authored-target "step")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 26 23) (end 26 30)) (probe (position 26 23))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (kind featureTyping) (ordinal 0) (authored-target "Payload")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload")))))
+    )
+  )
+  (query (document "memory://snapshot/connection_structure.md") (range (start 27 30) (end 27 34)) (probe (position 27 30))
+    (reference (id (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (kind featureTyping) (ordinal 0) (authored-target "Step")
+      (outcome (status resolved) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step")))))
+    )
+  )
+)
+~~~

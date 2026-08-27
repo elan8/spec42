@@ -60,7 +60,11 @@ impl FileSystem for RealFileSystem {
         metadata
             .file_type()
             .is_file()
-            .then(|| fs::read(path).ok().map(|bytes| super::digest(&bytes)))
+            .then(|| {
+                fs::read(path)
+                    .ok()
+                    .map(|bytes| generator_host::artifact_digest(&bytes))
+            })
             .flatten()
     }
 }
@@ -444,11 +448,11 @@ mod tests {
                 entries: vec![
                     (
                         "owned.txt".to_owned(),
-                        Some(super::super::digest(b"original")),
+                        Some(generator_host::artifact_digest(b"original")),
                     ),
                     (
                         "handwritten.txt".to_owned(),
-                        Some(super::super::digest(b"mine")),
+                        Some(generator_host::artifact_digest(b"mine")),
                     ),
                 ],
             }

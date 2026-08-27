@@ -15,8 +15,7 @@ Install a nightly toolchain and `cargo-fuzz` to explore the language targets:
 
 ```sh
 cd fuzz
-cargo +nightly fuzz run sysml_parser corpus/sysml -- -max_total_time=300
-cargo +nightly fuzz run sysml_semantic_graph corpus/sysml -- -max_total_time=300
+cargo +nightly fuzz run sysml_publication corpus/sysml -- -max_total_time=300
 cargo +nightly fuzz run sysml_formatter corpus/sysml -- -max_total_time=300
 ```
 

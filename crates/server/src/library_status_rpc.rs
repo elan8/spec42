@@ -2,14 +2,14 @@
 
 use std::sync::Arc;
 
-use lsp_server::{CustomRpcContext, CustomRpcProvider};
-use serde::Serialize;
-use workspace::catalog::KparLibraryComponent;
-use workspace::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
-use workspace::library::stdlib::{
+use library_catalog::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
+use library_catalog::library::stdlib::{
     managed_status as stdlib_managed_status, StandardLibraryConfig, StandardLibraryPaths,
     StandardLibraryStatus,
 };
+use library_catalog::KparLibraryComponent;
+use lsp_server::{CustomRpcContext, CustomRpcProvider};
+use serde::Serialize;
 
 const METHOD: &str = "sysml/libraryStatus";
 
@@ -211,7 +211,7 @@ fn build_kpar_dto(component: &KparLibraryComponent) -> Result<KparLibraryStatusD
 #[cfg(test)]
 mod tests {
     use super::*;
-    use workspace::library::managed::{
+    use library_catalog::library::managed::{
         kpar_library_paths_from_data_dir, KparLibraryConfig, EMBEDDED_KPAR_LIBRARY_REPO,
     };
 
@@ -240,6 +240,7 @@ mod tests {
             content_path: String::new(),
             format: "kpar".to_string(),
             artifact: Some("elan8-method-libraries-0.2.0.kpar".to_string()),
+            resource: None,
         };
         let paths = kpar_library_paths_from_data_dir(std::path::Path::new("/tmp/data"), "method");
         let component = KparLibraryComponent {

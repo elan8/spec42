@@ -32,17 +32,17 @@ fn parse_clean_fixture_path() -> PathBuf {
 fn parse_with_diagnostics_clean_fixture_has_no_errors() {
     let path = parse_clean_fixture_path();
     let content = std::fs::read_to_string(&path).expect("read parse_clean.sysml");
-    let result = sysml_v2_parser::parse_with_diagnostics(&content);
+    let result = sysml_query::syntax::SyntaxService::new().parse_text(&content);
 
-    if !result.errors.is_empty() {
+    if !result.diagnostics().is_empty() {
         eprintln!(
             "parse_with_diagnostics reported {} error(s) on {} ({} bytes, {} lines):",
-            result.errors.len(),
+            result.diagnostics().len(),
             path.display(),
             content.len(),
             content.lines().count()
         );
-        for (i, e) in result.errors.iter().enumerate() {
+        for (i, e) in result.diagnostics().iter().enumerate() {
             eprintln!(
                 "  error {}: {} (line {:?}, column {:?}, code {:?})",
                 i + 1,
@@ -51,10 +51,10 @@ fn parse_with_diagnostics_clean_fixture_has_no_errors() {
                 e.column,
                 e.code
             );
-            if let Some((sl, sc, el, ec)) = e.to_lsp_range() {
+            if let Some(range) = e.range() {
                 eprintln!(
                     "         LSP range: line {} char {} -> line {} char {}",
-                    sl, sc, el, ec
+                    range.start_line, range.start_character, range.end_line, range.end_character
                 );
             }
         }
@@ -64,12 +64,12 @@ fn parse_with_diagnostics_clean_fixture_has_no_errors() {
         );
         panic!(
             "expected no parse errors for parse_clean.sysml; got {} (see stderr)",
-            result.errors.len()
+            result.diagnostics().len()
         );
     }
 
     assert!(
-        !result.root.elements.is_empty(),
+        result.has_root_elements(),
         "expected at least one root element (package)"
     );
 }
@@ -85,8 +85,8 @@ fn parse_with_diagnostics_invalid_returns_errors() {
     ];
     let mut any_has_errors = false;
     for content in invalid_inputs {
-        let result = sysml_v2_parser::parse_with_diagnostics(content);
-        if !result.errors.is_empty() {
+        let result = sysml_query::syntax::SyntaxService::new().parse_text(content);
+        if !result.diagnostics().is_empty() {
             any_has_errors = true;
             break;
         }
@@ -106,26 +106,26 @@ fn parse_with_diagnostics_common_invalid_inputs_have_codes_and_ranges() {
     ];
 
     for (label, content) in invalid_inputs {
-        let result = sysml_v2_parser::parse_with_diagnostics(content);
+        let result = sysml_query::syntax::SyntaxService::new().parse_text(content);
         assert!(
-            !result.errors.is_empty(),
+            !result.diagnostics().is_empty(),
             "{label}: expected at least one parser diagnostic"
         );
         assert!(
-            result.errors.iter().any(|error| error
+            result.diagnostics().iter().any(|error| error
                 .code
                 .as_deref()
                 .is_some_and(|code| !code.trim().is_empty())),
             "{label}: expected at least one parser diagnostic with a stable code, got {:?}",
-            result.errors
+            result.diagnostics()
         );
         assert!(
             result
-                .errors
+                .diagnostics()
                 .iter()
-                .any(|error| error.to_lsp_range().is_some()),
+                .any(|error| error.range().is_some()),
             "{label}: expected at least one parser diagnostic with an LSP range, got {:?}",
-            result.errors
+            result.diagnostics()
         );
     }
 }

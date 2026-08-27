@@ -1,9 +1,12 @@
 import type {
+  FeatureInspectorAnalysis,
   FeatureInspectorElement,
+  FeatureInspectorEvaluation,
   FeatureInspectorLanguageHelp,
   FeatureInspectorResult,
   FeatureInspectorSelectionKind,
 } from "../providers/lspModelProvider";
+import { resolvedReference } from "../providers/lspModelProvider";
 
 export type FeatureInspectorMode =
   | "language"
@@ -31,25 +34,62 @@ export interface FeatureInspectorViewModel {
   value?: FeatureInspectorValueContext;
 }
 
-function attributeText(
-  attributes: Record<string, unknown>,
-  ...keys: string[]
+/** The evaluated value with its unit, when the publication settled on one.
+ *
+ * Only the states that carry a value produce text here; the others are shown by their state
+ * rather than as an empty value, so a failed or non-constant expression is never rendered as a
+ * successful blank. */
+export function evaluatedValueText(
+  evaluation: FeatureInspectorEvaluation | undefined
 ): string | undefined {
-  for (const key of keys) {
-    const value = attributes[key];
-    if (value === undefined || value === null || value === "") {
-      continue;
-    }
-    if (Array.isArray(value)) {
-      const text = value.filter(Boolean).join(", ");
-      if (text) {
-        return text;
-      }
-    } else if (typeof value !== "object") {
-      return String(value);
-    }
+  if (
+    !evaluation ||
+    (evaluation.state !== "literal" && evaluation.state !== "evaluated")
+  ) {
+    return undefined;
   }
-  return undefined;
+  const value = String(evaluation.value);
+  return evaluation.unit ? `${value} [${evaluation.unit}]` : value;
+}
+
+/** A short label for an evaluation state that carries no value. */
+export function evaluationStateLabel(
+  evaluation: FeatureInspectorEvaluation | undefined
+): string | undefined {
+  switch (evaluation?.state) {
+    case "notRun":
+      return "not evaluated";
+    case "nonConstant":
+      return "not constant";
+    case "cyclic":
+      return "cyclic value";
+    case "unsupported":
+      return "unsupported expression";
+    case "failed":
+      return `evaluation failed (${evaluation.reason})`;
+    default:
+      return undefined;
+  }
+}
+
+/** A short label for the verdict channel, absent when the element states no verdict. */
+export function analysisLabel(
+  analysis: FeatureInspectorAnalysis | undefined
+): string | undefined {
+  switch (analysis?.state) {
+    case "verdict":
+      return analysis.passed ? "passed" : "failed";
+    case "computed":
+      return analysis.unit
+        ? `${String(analysis.value)} [${analysis.unit}]`
+        : String(analysis.value);
+    case "notRun":
+      return "not evaluated";
+    case "unsettled":
+      return `not settled (${analysis.evaluation})`;
+    default:
+      return undefined;
+  }
 }
 
 function elementSections(element: FeatureInspectorElement): string[] {
@@ -84,13 +124,9 @@ function elementSections(element: FeatureInspectorElement): string[] {
     sections.push("Metadata");
   }
   if (
-    attributeText(
-      element.attributes,
-      "value",
-      "defaultValue",
-      "evaluatedValue",
-      "evaluatedUnit"
-    )
+    evaluatedValueText(element.evaluation) ||
+    evaluationStateLabel(element.evaluation) ||
+    analysisLabel(element.analysis)
   ) {
     sections.push("Value");
   }
@@ -109,23 +145,25 @@ function valueContext(
   selectionKind: "value" | "unit",
   element: FeatureInspectorElement
 ): FeatureInspectorValueContext {
-  const typingTarget = element.typing.targets[0];
+  // Only a family the publication resolved names a type. An ambiguous or unresolved one has no
+  // single target, and picking a candidate here would make the view claim a resolution the
+  // publication refused to make.
+  const typingTarget =
+    element.typing.status === "resolved" ? element.typing.targets[0] : undefined;
+  const evaluated = evaluatedValueText(element.evaluation);
   return {
     selectionKind,
     selectionText: result.selection.text,
     declaration: element.declaration,
-    declaredValue: attributeText(element.attributes, "value", "defaultValue"),
-    evaluatedValue: attributeText(element.attributes, "evaluatedValue"),
-    unit: attributeText(element.attributes, "evaluatedUnit", "unit"),
-    quantityType:
-      typingTarget?.qualifiedName ||
-      attributeText(
-        element.attributes,
-        "attributeType",
-        "itemType",
-        "partType",
-        "refType"
-      ),
+    declaredValue:
+      element.evaluation.state === "literal" ? evaluated : undefined,
+    evaluatedValue: evaluated ?? evaluationStateLabel(element.evaluation),
+    unit:
+      element.evaluation.state === "literal" ||
+      element.evaluation.state === "evaluated"
+        ? element.evaluation.unit
+        : undefined,
+    quantityType: typingTarget?.qualifiedName,
   };
 }
 
@@ -144,11 +182,12 @@ export function buildFeatureInspectorViewModel(
     };
   }
 
-  if (result.selection.kind === "reference" && result.referencedElement) {
+  const referenced = resolvedReference(result);
+  if (result.selection.kind === "reference" && referenced) {
     return {
       mode: "reference",
-      sections: elementSections(result.referencedElement),
-      primaryElement: result.referencedElement,
+      sections: elementSections(referenced),
+      primaryElement: referenced,
       referencedFrom: result.containingElement,
     };
   }

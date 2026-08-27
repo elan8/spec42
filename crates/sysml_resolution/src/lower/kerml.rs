@@ -1,0 +1,733 @@
+//! Phase 2 lowering — KerML-scope declarations: classifiers, features, connectors, invariants.
+
+use crate::lower::facts::basic_feature_prefix_modifiers;
+use crate::lower::facts::direction_node_fact;
+use crate::lower::facts::kerml_classifier_kind;
+use crate::lower::facts::kerml_feature_kind;
+use crate::lower::facts::kerml_feature_prefix_modifiers;
+use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::AuthoredRelationshipDeclaration;
+use crate::lower::facts::DeclarationFacts;
+use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::PendingReference;
+use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::UnsupportedFamily;
+use crate::lower::SemanticModelBuilder;
+use crate::model::ConstructionError;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentIdx;
+use crate::model::MembershipKind;
+use crate::model::ReferenceKind;
+use crate::model::Visibility;
+use sysml_v2_parser::ast::{
+    FeaturePrefixHead, FeatureRelationshipPart, FeatureSpecialization, KermlBindingMember,
+    KermlClassifierDecl, KermlConnectorEnd, KermlConnectorMember, KermlFeature,
+    KermlInvariantMember, KermlRelationshipDecl, KermlRelationshipKeyword, KermlSuccessionMember,
+    KermlTypeRelationship, KermlTypeRelationshipKeyword, MembershipKind as ParserMembershipKind,
+    Node, OwnedCrossFeature,
+};
+
+impl SemanticModelBuilder {
+    /// Lowers the two independently-authored endpoints of a KerML relationship declaration.
+    /// Both names resolve from the enclosing lexical scope; the paired fact later publishes one
+    /// authored semantic edge between their settled declarations.
+    pub(crate) fn lower_kerml_relationship_decl(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlRelationshipDecl>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match node.value.keyword {
+            KermlRelationshipKeyword::Subtype | KermlRelationshipKeyword::Subclassifier => {
+                ReferenceKind::Subclassification
+            }
+            KermlRelationshipKeyword::Typing => ReferenceKind::FeatureTyping,
+            KermlRelationshipKeyword::Subset => ReferenceKind::Subsetting,
+            KermlRelationshipKeyword::Redefinition => ReferenceKind::Redefinition,
+            KermlRelationshipKeyword::Disjoint => ReferenceKind::Disjoining,
+            KermlRelationshipKeyword::Inverse => ReferenceKind::FeatureInverting,
+            KermlRelationshipKeyword::Conjugate => ReferenceKind::Conjugation,
+            KermlRelationshipKeyword::Featuring => ReferenceKind::TypeFeaturing,
+        };
+        let parsed = &self.documents[document.index()].parsed;
+        let source_span = parsed
+            .qualified_reference(node.value.source)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let target_span = parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        let source = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.source,
+            flags: RelationshipFlags::default(),
+            span: source_span,
+            import: None,
+        })?;
+        let target = self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::ExplicitRelationshipEndpoint,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span: target_span,
+            import: None,
+        })?;
+        self.relationship_declarations
+            .push(AuthoredRelationshipDeclaration {
+                kind,
+                source,
+                target,
+                span: node.span,
+            });
+        if node.value.identification.is_some() || node.value.body.is_some() {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::RelationshipBodyMember,
+                node.span,
+            );
+        }
+        Ok(())
+    }
+
+    /// Lowers a bodied KerML classifier declaration (`KermlClassifierDecl`), mirroring
+    /// `lower_class_def`: ownership, an optional `specializes` relationship, and owned-member
+    /// structure. Its body shares the `CalcDefBody` grammar (parameters, `return` results,
+    /// feature members, invariants, expressions, documentation), the same shape `calc def`
+    /// bodies use, so it is walked through the existing `lower_calc_def_body` rather than
+    /// `lower_attribute_body`. `is_abstract`/`is_all`/`multiplicity`/`type_relationships` and the
+    /// specific `KermlClassifierKeyword` spelling are not modeled as distinct facts here (see
+    /// `DeclarationKind::KermlClassifier`).
+    /// Lowers the KerML type-relationship clauses on a classifier or feature header --
+    /// `unions`, `intersects`, `differences`, `disjoint from` (BNF `TypeRelationshipPart`).
+    ///
+    /// KerML models these as four distinct metaclasses, each a direct kind of `Relationship` and
+    /// none of them a kind of `Specialization`: `Unioning` relates `typeUnioned` to `unioningType`,
+    /// and `Intersecting`, `Differencing` and `Disjoining` follow the same source-to-target shape.
+    /// They are therefore lowered as their own reference kinds rather than folded into the
+    /// specialization edges, which would state a generalization the author did not write and would
+    /// put union operands into `supertypes`.
+    ///
+    /// One reference per authored target, in authored order across clauses. The per-`(source,
+    /// kind)` ordinal is what carries that order, and it is load-bearing for `differences`, whose
+    /// first target is the type being reduced and whose remaining targets are the exclusions --
+    /// including across a second `differences` clause, which continues the same list.
+    ///
+    /// Shared by the classifier and feature owners so the two cannot drift; the parser gives both
+    /// the same `Vec<Node<KermlTypeRelationship>>`.
+    /// Lowers the `FeatureRelationshipPart` list a KerML feature declaration carries.
+    ///
+    /// `unions`/`intersects`/`disjoint from`/`differences` reuse the existing type-relationship
+    /// lowering. `chains`, `featured by` and `inverse of` lower to their own canonical relationship kinds;
+    /// `inverse of` remains explicitly unsupported because it needs a separate inverse-fact owner.
+    pub(crate) fn lower_kerml_feature_relationship_parts(
+        &mut self,
+        document: DocumentIdx,
+        source: DeclarationId,
+        parts: &[Node<FeatureRelationshipPart>],
+    ) -> Result<(), ConstructionError> {
+        for part in parts {
+            match &part.value {
+                FeatureRelationshipPart::TypeRelationship(relationship) => {
+                    self.lower_kerml_type_relationships(
+                        document,
+                        source,
+                        std::slice::from_ref(relationship),
+                    )?;
+                }
+                FeatureRelationshipPart::Chaining { target } => {
+                    let span = self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(*target)
+                        .ok_or(ConstructionError::InvalidParserReference)?
+                        .metadata
+                        .span;
+                    self.push_reference(PendingReference {
+                        source,
+                        kind: ReferenceKind::FeatureChaining,
+                        document,
+                        local: *target,
+                        flags: RelationshipFlags::default(),
+                        span,
+                        import: None,
+                    })?;
+                }
+                FeatureRelationshipPart::TypeFeaturing(featuring) => {
+                    for target in featuring.value.targets.iter().copied() {
+                        let span = self.documents[document.index()]
+                            .parsed
+                            .qualified_reference(target)
+                            .ok_or(ConstructionError::InvalidParserReference)?
+                            .metadata
+                            .span;
+                        self.push_reference(PendingReference {
+                            source,
+                            kind: ReferenceKind::TypeFeaturing,
+                            document,
+                            local: target,
+                            flags: RelationshipFlags::default(),
+                            span,
+                            import: None,
+                        })?;
+                    }
+                }
+                FeatureRelationshipPart::Inverting { target } => {
+                    let span = self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(*target)
+                        .ok_or(ConstructionError::InvalidParserReference)?
+                        .metadata
+                        .span;
+                    self.push_reference(PendingReference {
+                        source,
+                        kind: ReferenceKind::FeatureInverting,
+                        document,
+                        local: *target,
+                        flags: RelationshipFlags::default(),
+                        span,
+                        import: None,
+                    })?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn lower_kerml_type_relationships(
+        &mut self,
+        document: DocumentIdx,
+        source: DeclarationId,
+        relationships: &[Node<KermlTypeRelationship>],
+    ) -> Result<(), ConstructionError> {
+        for relationship in relationships {
+            let kind = match relationship.value.keyword {
+                KermlTypeRelationshipKeyword::Unions => ReferenceKind::Unioning,
+                KermlTypeRelationshipKeyword::Intersects => ReferenceKind::Intersecting,
+                KermlTypeRelationshipKeyword::Differences => ReferenceKind::Differencing,
+                KermlTypeRelationshipKeyword::DisjointFrom => ReferenceKind::Disjoining,
+            };
+            for target in relationship.value.targets.iter().copied() {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span;
+                self.push_reference(PendingReference {
+                    source,
+                    kind,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn lower_kerml_classifier_decl(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        node: &Node<KermlClassifierDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.identification.name)?;
+        let short_name = self.intern_short_name(document, node.identification.short_name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            kerml_classifier_kind(&node.value.keyword),
+            name,
+            node.span,
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span,
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        // `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (KerML BNF 462): the
+        // declared type is the `Conjugation`'s source (`conjugatedType`) and owner, so the
+        // relationship is one authored reference sourced here. `TypeDeclaration` makes it the
+        // exclusive alternative of `SpecializationPart`, which is why both are never lowered from
+        // one declaration. The `conjugates`/`~` spelling is emission provenance, not semantics.
+        if let Some(conjugation) = &node.value.conjugates {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(conjugation.value.target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Conjugation,
+                document,
+                local: conjugation.value.target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a bare/bodied KerML feature member (`KermlFeature`, gap #14: previously an
+    /// opaque `FeatureDecl { keyword, text }` raw-text fallback, now a fully typed shape),
+    /// mirroring `lower_ref_decl`: ownership, membership, an optional `:` typing target, and
+    /// `subsets`/`redefines` relationships. Its `= expr` value, when present, is classified and
+    /// lowered through the same `classify_expression`/`lower_calc_expression` pipeline
+    /// `lower_parameter_declaration`/`lower_return_decl` use. Its body shares the `CalcDefBody`
+    /// grammar, so owned members are walked through the existing `lower_calc_def_body`. See
+    /// `DeclarationKind::KermlFeature` for the facts intentionally left unmodeled.
+    ///
+    /// This is now also the entry point for the two nodes upstream folded into it: the directed
+    /// kinded parameter (`in expr p : Boolean = a;`, formerly `TypedParameterMember`), whose
+    /// direction is the `BasicFeaturePrefix` slot read below, and the association end with an
+    /// owned cross feature (`end happensDuring [1..*] subsets ... feature thatOccurrence : ...;`,
+    /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
+    /// alternative -- so it is lowered here as an owned child through
+    /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
+    pub(crate) fn lower_kerml_feature_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
+        node: &Node<KermlFeature>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            kerml_feature_kind(node.value.kind.as_ref()),
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    all: node.value.is_all,
+                    member: node.value.is_member,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..kerml_feature_prefix_modifiers(&node.value.prefix)
+                },
+                direction: direction_node_fact(node.value.prefix.direction()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span,
+        )?;
+        if let FeaturePrefixHead::End {
+            cross: Some(cross), ..
+        } = &node.value.prefix.head
+        {
+            self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
+        }
+        for specialization in &node.value.specializations {
+            match specialization {
+                FeatureSpecialization::Typing(relationship) => {
+                    self.lower_typing_relationship_impl(
+                        document,
+                        declaration,
+                        relationship,
+                        false,
+                        direction_node_fact(node.value.prefix.direction()),
+                    )?;
+                }
+                FeatureSpecialization::Subsetting { relationship, .. }
+                | FeatureSpecialization::ReferenceSubsetting(relationship)
+                | FeatureSpecialization::CrossSubsetting(relationship)
+                | FeatureSpecialization::Redefinition(relationship) => {
+                    self.lower_subsetting_relationship(document, declaration, relationship)?;
+                }
+            }
+        }
+        self.lower_kerml_feature_relationship_parts(
+            document,
+            declaration,
+            &node.value.relationship_parts,
+        )?;
+        if let Some(feature_value) = &node.value.value {
+            let endpoints = self.record_feature_value(document, declaration, feature_value)?;
+            let expression = feature_value.value.expression.clone();
+            self.push_evaluation_fact(
+                endpoints.expression,
+                self.calc_expression_site(document, &expression.value),
+            );
+            self.lower_calc_expression(document, endpoints.expression, family, &expression)?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a KerML connector member (`KermlConnectorMember`), e.g. `connector fixWheel :
+    /// BikeWheelFixed from [1] rollsOn to [1] holdsWheel;` (KerML Spec Annex A-3-3, gap: this
+    /// construct was previously entirely unlowered -- see `DeclarationKind::KermlConnector`).
+    /// Mirrors `lower_connection_def`: ownership, membership, an optional `:` typing target, and
+    /// `from`/`to` ends resolved through `lower_kerml_connector_end` (the same
+    /// `ReferenceKind::ConnectorEnd` reference kind `connection def`/`interface def` use). `is_all`
+    /// and body content beyond the shared `lower_calc_def_body` walk are not modeled as distinct
+    /// facts here.
+    pub(crate) fn lower_kerml_connector_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlConnectorMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlConnector,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let Some(type_name) = node.value.typing {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(end) = &node.value.from {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::ConnectorEnd,
+                end,
+            )?;
+        }
+        if let Some(end) = &node.value.to {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::ConnectorEnd,
+                end,
+            )?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a KerML binding connector member (`KermlBindingMember`), e.g. `binding [1]
+    /// startShot = [1] endShot;` (KerML Spec §8.2.4, gap: previously entirely unlowered -- see
+    /// `DeclarationKind::KermlBinding`). Structurally the keyword-full sibling of
+    /// `BindingConnectorUsage`/`Bind` -- mirrors `lower_binding_connector_usage`'s two-reference
+    /// shape, resolving `left`/`right` as `ReferenceKind::BindSource`/`BindTarget` references
+    /// through `lower_kerml_connector_end`'s target rather than a bare `QualifiedReferenceId`
+    /// (each end additionally carries an optional multiplicity/`references` chain, both out of
+    /// scope here, same as `KermlConnectorMember`'s ends).
+    pub(crate) fn lower_kerml_binding_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlBindingMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlBinding,
+            name,
+            node.span,
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let Some(ends) = &node.value.inline_ends {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::BindSource,
+                &ends.value.left,
+            )?;
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::BindTarget,
+                &ends.value.right,
+            )?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers one `KermlConnectorEnd` -- the connector-end shape shared by KerML connector,
+    /// binding and succession members and by a `flow`/`allocation` usage's `from`/`to` clauses --
+    /// as an authored reference of `kind`, mirroring `lower_binding_connector_operand` but
+    /// operating on `KermlConnectorEnd.target` rather than a general expression. If the end has a
+    /// `references` chain, `target` is instead the declared name of an owned end Feature and the
+    /// chain is its ReferenceSubsetting target (`from [1] source references actualSource`). This
+    /// is the same abstract-syntax shape as a SysML named connector end, not two endpoint paths.
+    /// Allocation ends preserve their directional kind while dotted paths use the canonical
+    /// type-directed member resolver; other KerML end kinds retain their established qualified
+    /// lookup.
+    pub(crate) fn lower_kerml_connector_end(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: ReferenceKind,
+        end: &Node<KermlConnectorEnd>,
+    ) -> Result<(), ConstructionError> {
+        let (source, target) = if let Some(target) = end.value.references {
+            let parsed = &self.documents[document.index()].parsed;
+            let declared = parsed
+                .qualified_reference(end.value.target)
+                .ok_or(ConstructionError::InvalidParserReference)?;
+            if declared.metadata.is_absolute || declared.segments.len() != 1 {
+                return Err(ConstructionError::InvalidParserReference);
+            }
+            let decoded = declared
+                .segment_decoded_text(0)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .into_owned();
+            let name = self.intern_declared_name(&decoded)?;
+            let positional_end = self.next_positional_end_ordinal(owner)?;
+            let declaration = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::KermlFeature,
+                name,
+                end.span,
+                DeclarationFacts {
+                    multiplicity: multiplicity_facts(end.value.multiplicity.as_ref()),
+                    positional_end: Some(positional_end),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                declaration,
+                MembershipKind::Feature,
+                Visibility::Default,
+                end.span,
+            )?;
+            (declaration, target)
+        } else {
+            (owner, end.value.target)
+        };
+        if matches!(
+            kind,
+            ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget
+        ) {
+            return self.push_satisfy_reference(document, source, kind, target);
+        }
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source,
+            kind,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers a KerML succession member (`KermlSuccessionMember`), e.g. `succession p_before_d
+    /// first [1] paint then [1] dry;` (Kernel Semantic Library `ControlPerformances.kerml`, KerML
+    /// Spec Annex A-3-6-Sequences). Structurally the keyword-full sibling of `KermlBindingMember`
+    /// (same `KermlConnectorEnd`-shaped `first`/`then` operands, same absent `body`/`membership`
+    /// shape difference from `KermlConnectorMember`) -- reuses `lower_kerml_connector_end`
+    /// verbatim for both ends, tagged `ReferenceKind::Succession` (the same kind
+    /// `lower_first_stmt`'s `FirstStmt` uses for its own `first`/`then` operands) rather than
+    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. `is_all`
+    /// (`all` sufficiency) and the succession's own `multiplicity` are not modeled as distinct
+    /// facts here, mirroring `KermlConnectorMember`/`KermlBindingMember`'s own unmodeled
+    /// end-level `multiplicity`/`references`.
+    pub(crate) fn lower_kerml_succession_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<KermlSuccessionMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Succession,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        self.lower_kerml_connector_end(
+            document,
+            declaration,
+            ReferenceKind::Succession,
+            &node.value.first,
+        )?;
+        self.lower_kerml_connector_end(
+            document,
+            declaration,
+            ReferenceKind::Succession,
+            &node.value.then,
+        )?;
+        Ok(())
+    }
+
+    /// Lowers a KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <=
+    /// that & that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7, gap:
+    /// previously entirely unlowered -- see `DeclarationKind::KermlInvariant`). Its body shares
+    /// the `CalcDefBody` grammar (not `ConstraintDefBody`, unlike `AssertConstraintMember`), so it
+    /// is walked through the existing `lower_calc_def_body` -- the same
+    /// `classify_expression`/`lower_calc_expression` pipeline already used for
+    /// `KermlFeatureMember` values applies unchanged to its boolean expression(s). Its typed
+    /// `is_negated` parser field is published as the canonical declaration polarity fact; the
+    /// evaluator may still report an unrelated unsupported expression shape explicitly.
+    pub(crate) fn lower_kerml_invariant_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        node: &Node<KermlInvariantMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::KermlInvariant,
+            name,
+            node.span,
+            DeclarationFacts {
+                negated: Some(node.value.is_negated),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the cross feature an `end`-prefixed KerML feature owns (`OwnedCrossFeature`, KerML
+    /// BNF 595), e.g. the `happensDuring [1..*] subsets timeCoincidentOccurrences` in `end
+    /// happensDuring [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence
+    /// redefines longerOccurrence;` (KerML Spec Annex A-3, association-end form).
+    ///
+    /// Upstream folded `KermlEndMember` into `FeaturePrefix`'s own `OwnedCrossFeatureMember`, which
+    /// inverts the ownership this used to publish: the cross feature is owned *by* the end-prefixed
+    /// feature, as `FeaturePrefix` spells it, not the other way round. It keeps
+    /// `DeclarationKind::KermlEnd`, and its `subsets` clause resolves through the same
+    /// `SubsettingKind`-dispatched machinery every sibling clause uses. `OwnedCrossFeature` carries
+    /// only the slots the corpus authors in cross position, so there is no typing, value or body to
+    /// walk here.
+    pub(crate) fn lower_kerml_owned_cross_feature(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<OwnedCrossFeature>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlEnd,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..basic_feature_prefix_modifiers(&node.value.prefix)
+                },
+                direction: direction_node_fact(node.value.prefix.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span,
+        )?;
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.declaration_facts[owner.index()].cross_feature_projection =
+            Some(super::facts::CrossFeatureProjection {
+                cross_feature: declaration,
+                owned_cross_feature: declaration,
+            });
+        Ok(())
+    }
+}

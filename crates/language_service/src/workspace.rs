@@ -1,10 +1,8 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
-use sysml_model::{
-    build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
-    WorkspaceParsedDocument,
-};
-use sysml_v2_parser::RootNamespace;
+use sysml_query::resolved_slice::TextPosition;
+use sysml_query::source::SourceDocument;
 use url::Url;
 
 use crate::symbol::{symbol_entries_for_uri, SymbolEntry};
@@ -14,8 +12,9 @@ use crate::uri::normalize_uri;
 struct DocumentEntry {
     path: String,
     content: String,
-    #[allow(dead_code)]
-    parsed: RootNamespace,
+    /// The admitted document, kept so the syntax service can be asked for its tree. A document
+    /// handle, not a tree: the tree stays in the service's memo.
+    document: SourceDocument,
 }
 
 /// In-memory indexed workspace for headless language-service queries.
@@ -23,7 +22,8 @@ struct DocumentEntry {
 pub struct InMemoryWorkspace {
     documents: HashMap<Url, DocumentEntry>,
     path_to_uri: HashMap<String, Url>,
-    semantic_graph: SemanticGraph,
+    syntax: sysml_query::syntax::SyntaxService,
+    published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
     symbol_table: Vec<SymbolEntry>,
 }
 
@@ -32,7 +32,21 @@ pub trait WorkspaceSnapshot {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url>;
     fn path_for_uri(&self, uri: &Url) -> String;
     fn document_text(&self, uri: &Url) -> Option<&str>;
-    fn semantic_graph(&self) -> &SemanticGraph;
+    /// The tree the syntax service parsed for this document.
+    ///
+    /// A handle into the service's memo, so asking is a lookup rather than a parse. Services that
+    /// need a syntax answer ask the tree for it instead of re-deriving one from the text.
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource>;
+    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
+    fn semantic_status(&self) -> crate::dto::SemanticResultStatus {
+        self.published_model()
+            .map(|model| {
+                crate::dto::SemanticResultStatus::from_publication(
+                    model.publication().completeness(),
+                )
+            })
+            .unwrap_or_default()
+    }
     fn symbol_table(&self) -> &[SymbolEntry];
     fn index_uris(&self) -> Vec<Url>;
     fn normalize_uri(&self, uri: &Url) -> Url {
@@ -50,74 +64,69 @@ pub trait WorkspaceSnapshot {
 }
 
 impl InMemoryWorkspace {
-    /// Build a workspace from pre-loaded SysML documents (workspace + optional library docs).
-    pub fn from_documents(documents: Vec<SysmlDocument>) -> Result<Self, String> {
-        let (semantic_graph, parsed_docs) = build_semantic_graph_from_documents(&documents)?;
-        Self::from_graph_and_documents(semantic_graph, parsed_docs, &documents)
-    }
-
-    /// Build a workspace from an already-built semantic graph and parsed documents.
-    pub fn from_graph_and_documents(
-        semantic_graph: SemanticGraph,
-        parsed_docs: Vec<WorkspaceParsedDocument>,
-        documents: &[SysmlDocument],
+    /// Index documents against the exact immutable publication owned by the host.
+    pub fn from_documents_and_publication(
+        documents: Vec<SourceDocument>,
+        published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
     ) -> Result<Self, String> {
         let mut documents_map = HashMap::new();
         let mut path_to_uri = HashMap::new();
 
-        for parsed in parsed_docs {
-            let path = parsed.uri.path().trim_start_matches('/').replace('\\', "/");
-            let path = parsed
-                .uri
+        for document in &documents {
+            let full_path = document
+                .uri()
+                .path()
+                .trim_start_matches('/')
+                .replace('\\', "/");
+            let last_segment = document
+                .uri()
                 .path()
                 .split('/')
                 .next_back()
                 .map(str::to_string)
                 .filter(|segment| !segment.is_empty())
-                .unwrap_or_else(|| path.clone());
+                .unwrap_or(full_path);
+            // The logical path a host addresses this document by, when it gave one.
+            let path = document
+                .path_hint()
+                .map(str::to_owned)
+                .unwrap_or(last_segment);
 
-            // Prefer path_hint from original documents when available.
-            let path = documents
-                .iter()
-                .find(|doc| doc.uri == parsed.uri)
-                .and_then(|doc| doc.path_hint.clone())
-                .unwrap_or(path);
-
-            let uri = normalize_uri(&parsed.uri);
+            let uri = document.uri().clone();
             path_to_uri.insert(path.clone(), uri.clone());
             documents_map.insert(
                 uri,
                 DocumentEntry {
                     path,
-                    content: parsed.content,
-                    parsed: parsed.parsed,
+                    content: document.content().to_owned(),
+                    document: document.clone(),
                 },
             );
         }
 
         let mut symbol_table = Vec::new();
         for uri in documents_map.keys() {
-            symbol_table.extend(symbol_entries_for_uri(&semantic_graph, uri));
+            symbol_table.extend(symbol_entries_for_uri(&published_model, uri));
         }
 
         Ok(Self {
             documents: documents_map,
             path_to_uri,
-            semantic_graph,
+            syntax: sysml_query::syntax::SyntaxService::new(),
+            published_model,
             symbol_table,
         })
-    }
-
-    pub fn from_provider(
-        provider: &impl sysml_model::SysmlDocumentProvider,
-    ) -> Result<Self, String> {
-        let documents = provider.load_documents()?;
-        Self::from_documents(documents)
     }
 }
 
 impl WorkspaceSnapshot for InMemoryWorkspace {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url> {
+        if let Ok(uri) = Url::parse(path) {
+            let normalized = normalize_uri(&uri);
+            if self.documents.contains_key(&normalized) {
+                return Some(normalized);
+            }
+        }
         let normalized = path.trim_start_matches('/').replace('\\', "/");
         self.path_to_uri.get(&normalized).cloned().or_else(|| {
             self.path_to_uri
@@ -143,8 +152,14 @@ impl WorkspaceSnapshot for InMemoryWorkspace {
             .map(|entry| entry.content.as_str())
     }
 
-    fn semantic_graph(&self) -> &SemanticGraph {
-        &self.semantic_graph
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        self.documents
+            .get(&normalize_uri(uri))
+            .map(|entry| self.syntax.parse(&entry.document))
+    }
+
+    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
+        Some(&self.published_model)
     }
 
     fn symbol_table(&self) -> &[SymbolEntry] {
@@ -169,8 +184,12 @@ impl WorkspaceSnapshot for &InMemoryWorkspace {
         (*self).document_text(uri)
     }
 
-    fn semantic_graph(&self) -> &SemanticGraph {
-        (*self).semantic_graph()
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        (*self).parsed(uri)
+    }
+
+    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
+        (*self).published_model()
     }
 
     fn symbol_table(&self) -> &[SymbolEntry] {

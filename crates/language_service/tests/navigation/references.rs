@@ -52,7 +52,7 @@ fn find_references_excludes_declaration_when_requested() {
 #[test]
 fn find_references_cross_file_includes_definition_and_use() {
     let content_def = "package P { part def Widget; }";
-    let content_use = "package Q { part w : Widget; }";
+    let content_use = "package Q { import P::*; part w : Widget; }";
     let ws = multi_doc(&[("def.sysml", content_def), ("use.sysml", content_use)]);
     let pos = super::support::position_for(content_use, "Widget");
     let result = find_references(&ws, "use.sysml", pos, true);

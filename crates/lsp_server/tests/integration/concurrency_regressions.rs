@@ -2,7 +2,7 @@
 //!
 //! These specifically guard the property that motivated the whole migration: a slow
 //! background rebuild (relink, or the startup workspace scan) must never block an unrelated,
-//! cheap read request (hover) behind it. Before the migration, `sysml_model_result` held the
+//! cheap read request (hover) behind it. Before the migration, the mutable model result held the
 //! server's single `RwLock` read guard for the duration of a full workspace visualization
 //! rebuild, so *any* concurrent request queued behind it for as long as that rebuild took
 //! (20-30+ seconds on a real workspace). Under the actor, reads only ever look at the latest
@@ -88,6 +88,16 @@ fn hover_request_not_blocked_by_concurrent_relink() {
     assert!(
         elapsed < NOT_BLOCKED_BOUND,
         "hover must not block behind a concurrent relink; took {elapsed:?}: {hover_resp}"
+    );
+    let hover_json: serde_json::Value =
+        serde_json::from_str(&hover_resp).expect("parse hover response");
+    let contents = hover_json["result"]["contents"]["value"]
+        .as_str()
+        .or_else(|| hover_json["result"]["contents"].as_str())
+        .unwrap_or_default();
+    assert!(
+        !contents.contains("Unresolved"),
+        "an in-flight first publication must report loading, not a settled resolution failure: {contents}"
     );
 
     let _ = child.kill();

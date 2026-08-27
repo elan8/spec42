@@ -1,25 +1,10 @@
 //! Shared LSP integration test harness: spawn server, send/read JSON-RPC messages.
 
 use std::io::{Read, Write};
-use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
 
 pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
-
-/// Minimal `workspace::Spec42Engine` for `validate_paths`/`validate_paths_with_semantics` calls
-/// in these tests — mirrors `crates/workspace/tests/support/comparison_fixtures.rs::test_engine`.
-pub fn test_engine(
-    cache: &tempfile::TempDir,
-    library_paths: Vec<PathBuf>,
-) -> workspace::Spec42Engine {
-    workspace::EngineBuilder::default()
-        .cache_dir(cache.path().to_path_buf())
-        .no_stdlib(true)
-        .library_paths(library_paths)
-        .build()
-        .expect("engine")
-}
 
 pub const INTEGRATION_LAUNCH_MODE: &str = "spec42-core-test-binary";
 
@@ -28,9 +13,20 @@ pub fn server_binary_path() -> std::path::PathBuf {
 }
 
 pub fn spawn_server() -> Child {
+    spawn_server_with_env(&[])
+}
+
+pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> Child {
     let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
-    Command::new(&server_path)
+    let mut command = Command::new(&server_path);
+    for (name, value) in env {
+        command.env(name, value);
+        if *name == "SPEC42_LSP_TEST_STDLIB" {
+            command.env("SPEC42_LIBRARY_FULL_SCAN", "1");
+        }
+    }
+    command
         // Keep debug diagnostics enabled during integration tests.
         .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())
@@ -116,6 +112,52 @@ pub fn lsp_barrier(stdin: &mut std::process::ChildStdin, stdout: &mut std::proce
     });
     send_message(stdin, &req.to_string());
     let _ = read_response(stdout, id).expect("workspace barrier response");
+}
+
+/// Deterministic publication barrier: block until the server publishes diagnostics for `uri`.
+///
+/// Every publisher of `textDocument/publishDiagnostics` diagnoses a document from a captured
+/// session publication and publishes only while that publication is still the live one — whether
+/// it is the relink task after a `didOpen`/`didChange` on a ready session, or the startup scan's
+/// sweep when the `didOpen` landed while the session was still `Indexing` and no relink token was
+/// available. Either way the notification for a URI means: the publication that currently answers
+/// requests has this document's admitted revision in it. Blocking on it therefore observes the
+/// publication barrier itself, instead of guessing at wall-clock indexing latency with a
+/// sleep/retry loop.
+///
+/// That equivalence is exactly what `rebuild_publication` guarantees by preparing its inputs and
+/// taking its build token in one actor turn (see `session/handle.rs`); before that, a document
+/// could be in the index — and so be diagnosed and published for — while a superseding build
+/// prepared from a staler index kept it out of the publication, and requests answered empty.
+///
+/// Call this before any request whose `read_response` would otherwise discard the notification.
+pub fn wait_for_publication(stdout: &mut std::process::ChildStdout, uri: &str) {
+    wait_for_publications(stdout, &[uri]);
+}
+
+/// [`wait_for_publication`] for several documents whose publications may arrive in any order.
+pub fn wait_for_publications(stdout: &mut std::process::ChildStdout, uris: &[&str]) {
+    let mut pending: Vec<String> = uris.iter().map(|uri| normalized_uri(uri)).collect();
+    while !pending.is_empty() {
+        let msg = read_message(stdout).unwrap_or_else(|| {
+            panic!("server closed before publishing diagnostics for {pending:?}")
+        });
+        let json: serde_json::Value = match serde_json::from_str(&msg) {
+            Ok(json) => json,
+            Err(_) => continue,
+        };
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        if let Some(published) = json["params"]["uri"].as_str().map(normalized_uri) {
+            pending.retain(|uri| *uri != published);
+        }
+    }
+}
+
+/// Compare URIs the way the server may re-serialize them when publishing.
+fn normalized_uri(uri: &str) -> String {
+    uri.trim_end_matches('/').to_ascii_lowercase()
 }
 
 pub struct TestSession {

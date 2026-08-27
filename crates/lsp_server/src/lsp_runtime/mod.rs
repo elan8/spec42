@@ -3,9 +3,11 @@ pub(crate) mod custom;
 mod diagnostics;
 mod documents;
 mod features;
+mod generation;
 mod hierarchy;
 mod lifecycle;
 mod navigation;
+mod project_registry;
 mod references_resolver;
 mod symbols;
 
@@ -18,18 +20,21 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
+use crate::session::state::ServerState;
+use crate::session::RuntimeConfig;
 use crate::views::dto;
-use crate::workspace::state::ServerState;
-use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
-    sysml_feature_inspector_result, sysml_library_search_result, sysml_model_result,
-    sysml_server_stats_result, sysml_visualization_result,
+    sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
-use sysml_model::SysmlVisualizationResultDto;
+use generation::{
+    DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
+    StateTransitionViewsParams, StateTransitionViewsResult,
+};
+use project_registry::ProjectRegistry;
 
 struct Backend {
     client: Client,
-    handle: WorkspaceHandle,
+    projects: ProjectRegistry,
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
@@ -37,13 +42,14 @@ struct Backend {
     /// everywhere else without touching the actor. LSP guarantees
     /// `initialize` precedes every other request.
     runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
+    generator_service: Arc<std::result::Result<GeneratorService, String>>,
 }
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         documents::initialize(
-            &self.handle,
+            &self.projects,
             &self.config,
             &self.server_name,
             &self.runtime_config,
@@ -55,7 +61,7 @@ impl LanguageServer for Backend {
     async fn initialized(&self, _: InitializedParams) {
         documents::initialized(
             &self.client,
-            &self.handle,
+            &self.projects,
             &self.server_name,
             &self.runtime_config,
         )
@@ -67,51 +73,120 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        documents::did_open(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        let uri = params.text_document.uri.clone();
+        let mut handles = self.projects.handles_admitting_library_uri(&uri);
+        if handles.is_empty() {
+            let Some(handle) = self.projects.handle_for_uri(&uri).await else {
+                return;
+            };
+            if let Some(error) = self.projects.admission_error_for_uri(&uri) {
+                self.client.log_message(MessageType::ERROR, error).await;
+                return;
+            }
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_open(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        documents::did_change(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        let mut handles = self
+            .projects
+            .handles_admitting_library_uri(&params.text_document.uri);
+        if handles.is_empty() {
+            let Some(handle) = self
+                .projects
+                .handle_for_uri(&params.text_document.uri)
+                .await
+            else {
+                return;
+            };
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_change(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        documents::did_close(&self.client, params).await;
+        let mut handles = self
+            .projects
+            .handles_admitting_library_uri(&params.text_document.uri);
+        if handles.is_empty() {
+            let Some(handle) = self
+                .projects
+                .existing_handle_for_uri(&params.text_document.uri)
+            else {
+                return;
+            };
+            handles.push(handle);
+        }
+        for handle in handles {
+            documents::did_close(&self.client, &handle, params.clone()).await;
+        }
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
-        documents::did_change_watched_files(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        for change in params.changes {
+            if change
+                .uri
+                .to_file_path()
+                .ok()
+                .and_then(|path| path.file_name().map(|name| name == ".project.json"))
+                .unwrap_or(false)
+            {
+                self.projects.rediscover().await;
+                documents::initialized(
+                    &self.client,
+                    &self.projects,
+                    &self.server_name,
+                    &self.runtime_config,
+                )
+                .await;
+                continue;
+            }
+            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+                continue;
+            };
+            documents::did_change_watched_files(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                DidChangeWatchedFilesParams {
+                    changes: vec![change],
+                },
+            )
+            .await;
+        }
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
-        documents::did_change_configuration(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.runtime_config,
-            params,
-        )
-        .await;
+        for handle in self.projects.handles() {
+            documents::did_change_configuration(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
+        }
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
@@ -120,7 +195,7 @@ impl LanguageServer for Backend {
             .text_document
             .uri
             .clone();
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&hover_uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -135,7 +210,7 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -150,12 +225,11 @@ impl LanguageServer for Backend {
     }
 
     async fn completion_resolve(&self, params: CompletionItem) -> Result<CompletionItem> {
-        let state = self.handle.snapshot();
-        features::completion_resolve(&state, params)
+        features::completion_resolve(params)
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::signature_help(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -167,7 +241,7 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -182,7 +256,7 @@ impl LanguageServer for Backend {
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -198,7 +272,7 @@ impl LanguageServer for Backend {
     }
 
     async fn document_link(&self, params: DocumentLinkParams) -> Result<Option<Vec<DocumentLink>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::document_link(&state, params.text_document.uri)
     }
 
@@ -206,7 +280,7 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentHighlightParams,
     ) -> Result<Option<Vec<DocumentHighlight>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -224,7 +298,7 @@ impl LanguageServer for Backend {
         &self,
         params: SelectionRangeParams,
     ) -> Result<Option<Vec<SelectionRange>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::selection_range(&state, params.text_document.uri, params.positions)
     }
 
@@ -232,7 +306,7 @@ impl LanguageServer for Backend {
         &self,
         params: TextDocumentPositionParams,
     ) -> Result<Option<PrepareRenameResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -247,7 +321,7 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -266,12 +340,12 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentSymbolParams,
     ) -> Result<Option<DocumentSymbolResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::document_symbol(&state, params.text_document.uri)
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> Result<Option<Vec<FoldingRange>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::folding_range(&state, params.text_document.uri)
     }
 
@@ -280,17 +354,39 @@ impl LanguageServer for Backend {
         &self,
         params: WorkspaceSymbolParams,
     ) -> Result<Option<Vec<SymbolInformation>>> {
-        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        features::workspace_symbol(&state, params.query, perf_logging_enabled)
+        let mut symbols = Vec::new();
+        for handle in self.projects.handles() {
+            let state = handle.snapshot();
+            if let Some(mut project_symbols) =
+                features::workspace_symbol(&state, params.query.clone(), perf_logging_enabled)?
+            {
+                symbols.append(&mut project_symbols);
+            }
+        }
+        symbols.sort_by(|left, right| {
+            (
+                left.location.uri.as_str(),
+                left.location.range.start.line,
+                left.location.range.start.character,
+                left.name.as_str(),
+            )
+                .cmp(&(
+                    right.location.uri.as_str(),
+                    right.location.range.start.line,
+                    right.location.range.start.character,
+                    right.name.as_str(),
+                ))
+        });
+        Ok(Some(symbols))
     }
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::code_action(
             &state,
             params.text_document.uri,
@@ -300,7 +396,7 @@ impl LanguageServer for Backend {
     }
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let runtime_config = self
             .runtime_config
             .get()
@@ -314,12 +410,12 @@ impl LanguageServer for Backend {
     }
 
     async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::inlay_hint(&state, params.text_document.uri, params.range)
     }
 
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         features::formatting(&state, params.text_document.uri, params.options)
     }
 
@@ -327,7 +423,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -354,7 +450,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -382,17 +478,8 @@ impl LanguageServer for Backend {
         &self,
         params: LinkedEditingRangeParams,
     ) -> Result<Option<LinkedEditingRanges>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::linked_editing_range(
-            &state,
-            params.text_document_position_params.text_document.uri,
-            params.text_document_position_params.position,
-        )
-    }
-
-    async fn moniker(&self, params: MonikerParams) -> Result<Option<Vec<Moniker>>> {
-        let state = self.handle.snapshot();
-        features::moniker(
             &state,
             params.text_document_position_params.text_document.uri,
             params.text_document_position_params.position,
@@ -403,7 +490,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchyPrepareParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::prepare_type_hierarchy(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -415,7 +502,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySupertypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.item.uri)?;
         features::supertypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
 
@@ -423,229 +510,62 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.handle.snapshot();
+        let state = self.state_for_uri(&params.item.uri)?;
         features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
-    }
-
-    async fn prepare_call_hierarchy(
-        &self,
-        params: CallHierarchyPrepareParams,
-    ) -> Result<Option<Vec<CallHierarchyItem>>> {
-        let state = self.handle.snapshot();
-        features::prepare_call_hierarchy(
-            &state,
-            params.text_document_position_params.text_document.uri,
-            params.text_document_position_params.position,
-        )
-    }
-
-    async fn incoming_calls(
-        &self,
-        params: CallHierarchyIncomingCallsParams,
-    ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-        let state = self.handle.snapshot();
-        features::incoming_calls(&state, params.item.uri.clone(), params.item.selection_range)
-    }
-
-    async fn outgoing_calls(
-        &self,
-        params: CallHierarchyOutgoingCallsParams,
-    ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-        let state = self.handle.snapshot();
-        features::outgoing_calls(&state, params.item.uri.clone(), params.item.selection_range)
     }
 }
 
 impl Backend {
-    async fn wait_for_stable_snapshot(&self) {
-        // Wait for any in-flight async relink to complete so downstream responses
-        // reflect a fully-resolved semantic graph (satisfy/perform/subject edges etc).
-        // The snapshot handle wakes when the actor publishes a new state (no polling).
-        let mut snapshot_rx = self.handle.snapshot_handle();
-        let _ = tokio::time::timeout(
-            std::time::Duration::from_secs(30),
-            snapshot_rx.wait_for(|s| {
-                !matches!(
-                    s.session.lifecycle(),
-                    workspace::SessionLifecycle::Reindexing
-                )
-            }),
-        )
-        .await;
-    }
-
-    async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
-        let request_start = Instant::now();
-        // Log handler dispatch time BEFORE the (former) lock acquisition so we can compare
-        // against the frontend's getModelRequestStart timestamp and see how long
-        // the request sat in the transport/queue before reaching this handler.
-        {
-            let is_perf = self
-                .runtime_config
-                .get()
-                .map(|c| c.perf_logging_enabled)
-                .unwrap_or(false);
-            if is_perf {
-                self.client
-                    .log_message(
-                        MessageType::INFO,
-                        "[SysML][perf] {\"event\":\"backend:sysmlModelHandlerStart\"}",
-                    )
-                    .await;
-            }
+    fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
+        if let Some(error) = self.projects.admission_error_for_uri(uri) {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(error));
         }
-        self.wait_for_stable_snapshot().await;
-        let read_lock_wait_start = Instant::now();
-        let state = self.handle.snapshot();
-        let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
-        let perf_logging_enabled = self
-            .runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let (response, parse_cached_uri) = sysml_model_result(
-            &self.client,
-            &self.handle,
-            &state,
-            &self.config,
-            params,
-            perf_logging_enabled,
-        )
-        .await?;
-        drop(state);
-
-        let cache_mark_lock_wait_start = Instant::now();
-        if let Some(uri) = parse_cached_uri {
-            self.handle.mark_parse_cached(uri).await.ok();
-        }
-        let cache_mark_lock_wait_ms = cache_mark_lock_wait_start.elapsed().as_millis().max(1);
-        let total_ms = request_start.elapsed().as_millis().max(1);
-        let parse_time_ms = response
-            .stats
-            .as_ref()
-            .map(|stats| stats.parse_time_ms)
-            .unwrap_or(0);
-        let model_build_time_ms = response
-            .stats
-            .as_ref()
-            .map(|stats| stats.model_build_time_ms)
-            .unwrap_or(0);
-        let node_count = response
-            .graph
-            .as_ref()
-            .map(|graph| graph.nodes.len())
-            .unwrap_or(0);
-        let edge_count = response
-            .graph
-            .as_ref()
-            .map(|graph| graph.edges.len())
-            .unwrap_or(0);
-        let client = self.client.clone();
-        tokio::spawn(async move {
-            if !perf_logging_enabled {
-                return;
-            }
-            client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "[SysML][perf] {{\"event\":\"backend:sysmlModelRequest\",\"lockWaitMs\":{},\"readLockWaitMs\":{},\"cacheMarkLockWaitMs\":{},\"totalMs\":{},\"parseTimeMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{}}}",
-                        read_lock_wait_ms + cache_mark_lock_wait_ms,
-                        read_lock_wait_ms,
-                        cache_mark_lock_wait_ms,
-                        total_ms,
-                        parse_time_ms,
-                        model_build_time_ms,
-                        node_count,
-                        edge_count,
-                    ),
+        self.projects
+            .existing_handle_for_uri(uri)
+            .map(|handle| handle.snapshot())
+            .ok_or_else(|| {
+                tower_lsp::jsonrpc::Error::invalid_params(
+                    "document URI is outside the configured workspace projects",
                 )
-                .await;
-        });
-        Ok(response)
+            })
     }
-
-    async fn sysml_visualization(
-        &self,
-        params: serde_json::Value,
-    ) -> Result<SysmlVisualizationResultDto> {
-        let request_start = Instant::now();
-        self.wait_for_stable_snapshot().await;
-        let state = self.handle.snapshot();
-        let perf_logging_enabled = self
-            .runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let (response, build_meta) =
-            sysml_visualization_result(&self.handle, &state, params).await?;
-        drop(state);
-        if perf_logging_enabled {
-            let graph_nodes = response
-                .graph
-                .as_ref()
-                .map(|graph| graph.nodes.len())
-                .unwrap_or(0);
-            let graph_edges = response
-                .graph
-                .as_ref()
-                .map(|graph| graph.edges.len())
-                .unwrap_or(0);
-            let general_view_nodes = response
-                .general_view_graph
-                .as_ref()
-                .map(|graph| graph.nodes.len())
-                .unwrap_or(0);
-            let general_view_edges = response
-                .general_view_graph
-                .as_ref()
-                .map(|graph| graph.edges.len())
-                .unwrap_or(0);
-            let model_build_time_ms = response
-                .stats
-                .as_ref()
-                .map(|stats| stats.model_build_time_ms)
-                .unwrap_or(0);
-            self.client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "[SysML][perf] {{\"event\":\"backend:sysmlVisualizationRequest\",\"view\":\"{}\",\"modelReady\":{},\"totalMs\":{},\"cacheHit\":{},\"ibdMs\":{},\"viewEvalMs\":{},\"sceneMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{},\"generalViewNodes\":{},\"generalViewEdges\":{},\"viewCandidates\":{}}}",
-                        response.view,
-                        response.model_ready,
-                        request_start.elapsed().as_millis().max(1),
-                        build_meta.cache_hit,
-                        build_meta.ibd_ms,
-                        build_meta.view_eval_ms,
-                        build_meta.scene_ms,
-                        model_build_time_ms,
-                        graph_nodes,
-                        graph_edges,
-                        general_view_nodes,
-                        general_view_edges,
-                        response.view_candidates.len(),
-                    ),
-                )
-                .await;
-        }
-        Ok(response)
-    }
-
     async fn sysml_feature_inspector(
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-        let state = self.handle.snapshot();
+        let (uri, _) = crate::views::parse_sysml_feature_inspector_params(&params)?;
+        let state = self.state_for_uri(&uri)?;
         sysml_feature_inspector_result(&state, params)
     }
 
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
-        let state = self.handle.snapshot();
-        Ok(sysml_server_stats_result(&state, self.start_time))
+        let mut result = dto::SysmlServerStatsDto {
+            uptime: self.start_time.elapsed().as_secs(),
+            memory: dto::SysmlServerMemoryDto { rss: 0 },
+            caches: dto::SysmlServerCachesDto {
+                documents: 0,
+                symbol_tables: 0,
+                semantic_tokens: 0,
+            },
+        };
+        for handle in self.projects.handles() {
+            let project = sysml_server_stats_result(&handle.snapshot(), self.start_time);
+            result.caches.documents += project.caches.documents;
+            result.caches.symbol_tables += project.caches.symbol_tables;
+            result.caches.semantic_tokens += project.caches.semantic_tokens;
+        }
+        Ok(result)
     }
 
     async fn sysml_clear_cache(&self) -> Result<dto::SysmlClearCacheResultDto> {
-        let (documents, symbol_tables) = self.handle.clear_cache_state().await.unwrap_or((0, 0));
+        let mut documents = 0;
+        let mut symbol_tables = 0;
+        for handle in self.projects.handles() {
+            let (handle_documents, handle_symbols) =
+                handle.clear_cache_state().await.unwrap_or((0, 0));
+            documents += handle_documents;
+            symbol_tables += handle_symbols;
+        }
         Ok(dto::SysmlClearCacheResultDto {
             documents,
             symbol_tables,
@@ -653,12 +573,132 @@ impl Backend {
         })
     }
 
+    async fn spec42_generate(&self, params: GenerateParams) -> Result<GenerateResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.state_for_uri(&model_uri)?;
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = Arc::clone(state.session.current());
+        let module_bytes = params
+            .module_bytes()
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)?;
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.generate(
+                &module_bytes,
+                publication,
+                &params.args,
+                params.expected_model_digest.as_deref(),
+            )
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "generator worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_state_transition_views(
+        &self,
+        params: StateTransitionViewsParams,
+    ) -> Result<StateTransitionViewsResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.state_for_uri(&model_uri)?;
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = Arc::clone(state.session.current());
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.state_transition_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "state-transition catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_diagram_views(&self, params: DiagramViewsParams) -> Result<DiagramViewsResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.state_for_uri(&model_uri)?;
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = Arc::clone(state.session.current());
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.diagram_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "diagram catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
     async fn sysml_library_search(
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlLibrarySearchResultDto> {
-        let state = self.handle.snapshot();
-        sysml_library_search_result(&state, params)
+        let request: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params.clone())
+            .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        if let Some(project_uri) = request.project_uri {
+            let uri = Url::parse(&project_uri).map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "invalid library-search project URI: {error}"
+                ))
+            })?;
+            let state = self.state_for_uri(&uri)?;
+            return sysml_library_search_result(&state, params);
+        }
+        let handles = self.projects.handles();
+        if handles.len() != 1 {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "sysml/librarySearch requires project provenance in a multi-project workspace",
+            ));
+        }
+        sysml_library_search_result(&handles[0].snapshot(), params)
     }
 
     async fn custom_rpc_method(
@@ -696,27 +736,38 @@ fn make_custom_rpc_handler(
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
-    let handle = WorkspaceHandle::spawn(ServerState::default());
+    let projects = ProjectRegistry::new(
+        config.services.clone(),
+        config.project_library_catalog.clone(),
+    );
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
     let service_config = Arc::clone(&config);
     let runtime_config = Arc::new(std::sync::OnceLock::<RuntimeConfig>::new());
+    let generator_service = Arc::new(GeneratorService::new());
 
     let mut builder = LspService::build(move |client| Backend {
         client,
-        handle: handle.clone(),
+        projects: projects.clone(),
         config: Arc::clone(&service_config),
         start_time,
         server_name: server_name.clone(),
         runtime_config: Arc::clone(&runtime_config),
+        generator_service: Arc::clone(&generator_service),
     })
-    .custom_method("sysml/model", Backend::sysml_model)
-    .custom_method("sysml/visualization", Backend::sysml_visualization)
+    // TODO(follow-up): Model projections and diagrams return as generator plugins consuming
+    // typed immutable-model queries. Do not restore the legacy graph DTO custom methods.
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
-    .custom_method("sysml/librarySearch", Backend::sysml_library_search);
+    .custom_method("sysml/librarySearch", Backend::sysml_library_search)
+    .custom_method("spec42/generate", Backend::spec42_generate)
+    .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method(
+        "spec42/stateTransitionViews",
+        Backend::spec42_state_transition_views,
+    );
 
     for method in custom_rpc_methods {
         let method_name: &'static str = Box::leak(method.into_boxed_str());

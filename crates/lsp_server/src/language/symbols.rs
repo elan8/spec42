@@ -2,83 +2,124 @@
 #![allow(deprecated)] // DocumentSymbol/SymbolInformation.deprecated; use tags in future
 
 use crate::common::text_span::to_lsp_range;
-#[cfg(test)]
-use crate::syntax::ast_util::identification_name;
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
-#[cfg(test)]
-use sysml_v2_parser::ast::{
-    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, RootElement,
-};
-use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::{
-    DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
-};
+use sysml_query::resolved_slice::ElementKind;
+use sysml_query::syntax::{ParsedSource, SyntaxOutlineKind};
+use tower_lsp::lsp_types::{DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind};
 
-#[cfg(test)]
-fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
-    let t = text.trim().trim_end_matches(';').trim();
-    let tokens: Vec<String> = t
-        .split_whitespace()
-        .map(|s| {
-            s.trim_end_matches(';')
-                .trim_end_matches(',')
-                .trim_end_matches(')')
-                .to_string()
-        })
-        .filter(|s| !s.is_empty())
-        .collect();
-    let kw = keyword.trim();
-    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
-        if pos + 1 < tokens.len() {
-            let name = sanitize_identifier(&tokens[pos + 1]);
-            if !name.is_empty() && !name.eq_ignore_ascii_case("specializes") {
-                return name;
-            }
-        }
-    }
-    for tok in &tokens {
-        let name = sanitize_identifier(tok);
-        if !name.is_empty() {
-            return name;
-        }
-    }
-    fallback.to_string()
-}
-
-#[cfg(test)]
-fn sanitize_identifier(s: &str) -> String {
-    s.chars()
-        .filter(|c| c.is_alphanumeric() || *c == '_')
-        .collect()
-}
-
-/// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
-pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
-    use crate::common::text_span::to_lsp_range;
-
-    language_service::find_reference_ranges(source, name)
-        .into_iter()
-        .map(to_lsp_range)
-        .collect()
-}
-
-fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
+/// The one label a host prints for an LSP [`SymbolKind`], the inverse of the table above.
+///
+/// It lives beside `outline_kind_to_lsp` so the crate's kind vocabulary has one home: the library
+/// browser labels an outline kind by composing the two, rather than keeping a third table.
+pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
     match kind {
-        "package" | "namespace" | "library package" => SymbolKind::MODULE,
-        "part def" | "classifier decl" => SymbolKind::CLASS,
-        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
-        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
-        "action def" => SymbolKind::FUNCTION,
-        "part" => SymbolKind::OBJECT,
-        "action" => SymbolKind::EVENT,
-        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
-            SymbolKind::NAMESPACE
+        SymbolKind::FILE => "file",
+        SymbolKind::MODULE => "module",
+        SymbolKind::NAMESPACE => "namespace",
+        SymbolKind::PACKAGE => "package",
+        SymbolKind::CLASS => "class",
+        SymbolKind::METHOD => "method",
+        SymbolKind::PROPERTY => "property",
+        SymbolKind::FIELD => "field",
+        SymbolKind::CONSTRUCTOR => "constructor",
+        SymbolKind::ENUM => "enum",
+        SymbolKind::INTERFACE => "interface",
+        SymbolKind::FUNCTION => "function",
+        SymbolKind::VARIABLE => "variable",
+        SymbolKind::CONSTANT => "constant",
+        SymbolKind::STRING => "string",
+        SymbolKind::NUMBER => "number",
+        SymbolKind::BOOLEAN => "boolean",
+        SymbolKind::ARRAY => "array",
+        SymbolKind::OBJECT => "object",
+        SymbolKind::KEY => "key",
+        SymbolKind::NULL => "null",
+        SymbolKind::ENUM_MEMBER => "enumMember",
+        SymbolKind::STRUCT => "struct",
+        SymbolKind::EVENT => "event",
+        SymbolKind::OPERATOR => "operator",
+        SymbolKind::TYPE_PARAMETER => "typeParameter",
+        _ => "symbol",
+    }
+}
+
+/// The single outline-kind -> LSP [`SymbolKind`] table for this crate.
+///
+/// It matches on the published [`SyntaxOutlineKind`] rather than on the authored keyword, so a
+/// new declaration form the grammar publishes is a compile error here instead of silently
+/// classifying as a variable; document symbols and workspace symbols share this one table.
+fn outline_kind_to_lsp(kind: SyntaxOutlineKind) -> SymbolKind {
+    match kind {
+        SyntaxOutlineKind::Package
+        | SyntaxOutlineKind::Namespace
+        | SyntaxOutlineKind::LibraryPackage => SymbolKind::MODULE,
+        SyntaxOutlineKind::PartDef
+        | SyntaxOutlineKind::ItemDef
+        | SyntaxOutlineKind::RequirementDef
+        | SyntaxOutlineKind::ClassifierDecl => SymbolKind::CLASS,
+        SyntaxOutlineKind::PortDef
+        | SyntaxOutlineKind::InterfaceDef
+        | SyntaxOutlineKind::PortUsage => SymbolKind::INTERFACE,
+        SyntaxOutlineKind::AttributeDef
+        | SyntaxOutlineKind::AttributeUsage
+        | SyntaxOutlineKind::FeatureDecl
+        | SyntaxOutlineKind::Ref => SymbolKind::PROPERTY,
+        SyntaxOutlineKind::ActionDef
+        | SyntaxOutlineKind::AnalysisDef
+        | SyntaxOutlineKind::VerificationDef => SymbolKind::FUNCTION,
+        SyntaxOutlineKind::PartUsage
+        | SyntaxOutlineKind::ItemUsage
+        | SyntaxOutlineKind::RequirementUsage => SymbolKind::OBJECT,
+        SyntaxOutlineKind::ActionUsage
+        | SyntaxOutlineKind::AnalysisUsage
+        | SyntaxOutlineKind::VerificationUsage => SymbolKind::EVENT,
+        SyntaxOutlineKind::ViewDef
+        | SyntaxOutlineKind::ViewpointDef
+        | SyntaxOutlineKind::RenderingDef
+        | SyntaxOutlineKind::ViewUsage
+        | SyntaxOutlineKind::ViewpointUsage
+        | SyntaxOutlineKind::RenderingUsage => SymbolKind::NAMESPACE,
+    }
+}
+
+/// The LSP [`SymbolKind`] for a published semantic element kind.
+///
+/// Workspace symbols and the library browser carry an [`ElementKind`] metaclass name, not an
+/// outline keyword: they used to be passed through the outline table, where no metaclass name
+/// matched and every symbol arrived as a variable. Classifying the parsed kind is the fix.
+fn element_kind_to_lsp(kind: Option<ElementKind>) -> SymbolKind {
+    let Some(kind) = kind else {
+        return SymbolKind::VARIABLE;
+    };
+    match kind {
+        ElementKind::Namespace | ElementKind::Package | ElementKind::LibraryPackage => {
+            SymbolKind::MODULE
         }
+        ElementKind::PortDefinition | ElementKind::InterfaceDefinition | ElementKind::PortUsage => {
+            SymbolKind::INTERFACE
+        }
+        ElementKind::AttributeDefinition
+        | ElementKind::AttributeUsage
+        | ElementKind::ReferenceUsage => SymbolKind::PROPERTY,
+        ElementKind::ActionDefinition | ElementKind::CalculationDefinition => SymbolKind::FUNCTION,
+        ElementKind::ActionUsage | ElementKind::CalculationUsage => SymbolKind::EVENT,
+        ElementKind::PartUsage | ElementKind::ItemUsage => SymbolKind::OBJECT,
+        ElementKind::ViewDefinition
+        | ElementKind::ViewpointDefinition
+        | ElementKind::RenderingDefinition
+        | ElementKind::ViewUsage
+        | ElementKind::ViewpointUsage
+        | ElementKind::RenderingUsage => SymbolKind::NAMESPACE,
+        other if other.as_str().ends_with("Definition") => SymbolKind::CLASS,
         _ => SymbolKind::VARIABLE,
     }
+}
+
+/// The LSP [`SymbolKind`] for a metaclass name a published symbol entry carries.
+pub(crate) fn element_kind_label_to_lsp(label: Option<&str>) -> SymbolKind {
+    element_kind_to_lsp(label.and_then(ElementKind::parse))
 }
 
 fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
@@ -91,8 +132,8 @@ fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
         .collect::<Vec<_>>();
     DocumentSymbol {
         name: symbol.name,
-        detail: Some(symbol.kind.clone()),
-        kind: outline_kind_to_lsp(&symbol.kind),
+        detail: Some(symbol.kind.keyword().to_string()),
+        kind: outline_kind_to_lsp(symbol.kind),
         tags: None,
         deprecated: None,
         range,
@@ -106,7 +147,7 @@ fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
 }
 
 /// Collects document symbols (outline) from the AST.
-pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
+pub fn collect_document_symbols(root: &ParsedSource) -> Vec<DocumentSymbol> {
     ls_document_symbols(root)
         .into_iter()
         .map(map_outline_symbol)
@@ -114,7 +155,7 @@ pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
 }
 
 /// Collects folding ranges from the AST.
-pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
+pub fn collect_folding_ranges(root: &ParsedSource) -> Vec<FoldingRange> {
     ls_folding_ranges(root)
         .into_iter()
         .map(|range| FoldingRange {
@@ -132,192 +173,27 @@ pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
         .collect()
 }
 
-/// Workspace-wide symbol entry: one definable name with location and semantic info.
-#[derive(Debug, Clone)]
-pub struct SymbolEntry {
-    pub name: String,
-    pub uri: Url,
-    pub range: Range,
-    pub kind: SymbolKind,
-    pub container_name: Option<String>,
-    pub detail: Option<String>,
-    pub description: Option<String>,
-    /// One-line signature for hover code block (e.g. "part def Vehicle : Car;").
-    pub signature: Option<String>,
-}
-
 /// Collects all named elements from the document for hover/completion: (name, short_description).
+/// Every named element in the document, flattened, with a short description.
+///
+/// Built from the published outline rather than a private AST walk: the outline already names
+/// each declaration and its authored keyword, which is exactly what this reported.
 #[cfg(test)]
-pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
+pub fn collect_named_elements(document: &ParsedSource) -> Vec<(String, String)> {
+    fn push(node: &language_service::OutlineSymbol, out: &mut Vec<(String, String)>) {
+        if !node.name.is_empty() {
+            out.push((
+                node.name.clone(),
+                format!("{} '{}'", node.kind.keyword(), node.name),
+            ));
+        }
+        for child in &node.children {
+            push(child, out);
+        }
+    }
     let mut out = Vec::new();
-    for node in &root.elements {
-        let (name, elements) = match &node.value {
-            RootElement::Package(p) => {
-                let name = identification_name(&p.identification);
-                let elements = match &p.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, elements)
-            }
-            RootElement::Namespace(n) => {
-                let name = identification_name(&n.identification);
-                let elements = match &n.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, elements)
-            }
-            RootElement::LibraryPackage(lp) => {
-                let name = identification_name(&lp.identification);
-                let elements = match &lp.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, elements)
-            }
-            RootElement::Import(_) | RootElement::Member(_) => continue,
-        };
-        if !name.is_empty() {
-            out.push((name.clone(), format!("package '{}'", name)));
-        }
-        for el in elements {
-            collect_named_from_element(el, &mut out);
-        }
+    for node in ls_document_symbols(document) {
+        push(&node, &mut out);
     }
     out
-}
-
-#[cfg(test)]
-fn collect_named_from_element(
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
-    out: &mut Vec<(String, String)>,
-) {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
-    match &node.value {
-        PBE::Package(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("package '{}'", name)));
-            }
-            if let PackageBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_named_from_element(child, out);
-                }
-            }
-        }
-        PBE::PartDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("part def '{}'", name)));
-            }
-            if let PartDefBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_named_from_part_def_body(child, out);
-                }
-            }
-        }
-        PBE::PartUsage(p) => {
-            out.push((p.name.clone(), format!("part usage '{}'", p.name)));
-            if let PartUsageBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_named_from_part_usage_body(child, out);
-                }
-            }
-        }
-        PBE::PortDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("port def '{}'", name)));
-            }
-        }
-        PBE::InterfaceDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("interface def '{}'", name)));
-            }
-        }
-        PBE::AttributeDef(p) => out.push((p.name.clone(), format!("attribute def '{}'", p.name))),
-        PBE::FeatureDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
-            if !name.is_empty() {
-                out.push((name.clone(), format!("feature decl '{}'", name)));
-            }
-        }
-        PBE::ClassifierDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
-            if !name.is_empty() {
-                out.push((name.clone(), format!("classifier decl '{}'", name)));
-            }
-        }
-        PBE::ActionDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("action def '{}'", name)));
-            }
-        }
-        PBE::ActionUsage(p) => out.push((p.name.clone(), format!("action usage '{}'", p.name))),
-        PBE::ViewDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("view def '{}'", name)));
-            }
-        }
-        PBE::ViewpointDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("viewpoint def '{}'", name)));
-            }
-        }
-        PBE::RenderingDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), format!("rendering def '{}'", name)));
-            }
-        }
-        PBE::ViewUsage(p) => out.push((p.name.clone(), format!("view usage '{}'", p.name))),
-        PBE::ViewpointUsage(p) => {
-            out.push((p.name.clone(), format!("viewpoint usage '{}'", p.name)))
-        }
-        PBE::RenderingUsage(p) => {
-            out.push((p.name.clone(), format!("rendering usage '{}'", p.name)))
-        }
-        PBE::Import(_) | PBE::AliasDef(_) => {}
-        _ => {}
-    }
-}
-
-#[cfg(test)]
-fn collect_named_from_part_def_body(
-    node: &sysml_v2_parser::Node<PartDefBodyElement>,
-    out: &mut Vec<(String, String)>,
-) {
-    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
-    match &node.value {
-        PDBE::AttributeDef(n) => out.push((n.name.clone(), format!("attribute def '{}'", n.name))),
-        PDBE::PortUsage(n) => out.push((n.name.clone(), format!("port usage '{}'", n.name))),
-        _ => {}
-    }
-}
-
-#[cfg(test)]
-fn collect_named_from_part_usage_body(
-    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
-    out: &mut Vec<(String, String)>,
-) {
-    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
-    match &node.value {
-        PUBE::AttributeUsage(n) => out.push((n.name.clone(), format!("attribute '{}'", n.name))),
-        PUBE::PartUsage(n) => {
-            out.push((n.name.clone(), format!("part usage '{}'", n.name)));
-            if let PartUsageBody::Brace { elements } = &n.body {
-                for child in elements {
-                    collect_named_from_part_usage_body(child, out);
-                }
-            }
-        }
-        PUBE::PortUsage(n) => out.push((n.name.clone(), format!("port '{}'", n.name))),
-        PUBE::Ref(n) => out.push((n.value.name.clone(), format!("ref '{}'", n.value.name))),
-        _ => {}
-    }
 }

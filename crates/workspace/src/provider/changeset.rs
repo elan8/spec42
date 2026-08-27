@@ -2,15 +2,16 @@
 
 use std::collections::HashSet;
 
-use sysml_model::{SysmlDocument, SysmlDocumentProvider};
-use url::Url;
+use sysml_query::source::{
+    SourceAuthority, SourceDocument, SourceError, SourceLoadReport, SourceProvider, Url,
+};
 
 /// Overlay added/changed documents and remove logical URIs from a base provider.
 #[derive(Debug, Clone)]
 pub struct ChangesetDocumentProvider<P> {
     base: P,
-    added: Vec<SysmlDocument>,
-    changed: Vec<SysmlDocument>,
+    added: Vec<SourceDocument>,
+    changed: Vec<SourceDocument>,
     removed: HashSet<String>,
 }
 
@@ -24,12 +25,12 @@ impl<P> ChangesetDocumentProvider<P> {
         }
     }
 
-    pub fn with_added(mut self, documents: Vec<SysmlDocument>) -> Self {
+    pub fn with_added(mut self, documents: Vec<SourceDocument>) -> Self {
         self.added = documents;
         self
     }
 
-    pub fn with_changed(mut self, documents: Vec<SysmlDocument>) -> Self {
+    pub fn with_changed(mut self, documents: Vec<SourceDocument>) -> Self {
         self.changed = documents;
         self
     }
@@ -40,16 +41,23 @@ impl<P> ChangesetDocumentProvider<P> {
     }
 }
 
-impl<P: SysmlDocumentProvider> SysmlDocumentProvider for ChangesetDocumentProvider<P> {
-    fn load_documents(&self) -> Result<Vec<SysmlDocument>, String> {
-        let mut documents = self.base.load_documents()?;
-        documents.retain(|doc| !self.removed.contains(&doc.uri.to_string()));
+impl<P: SourceProvider> SourceProvider for ChangesetDocumentProvider<P> {
+    fn load(&self, authority: &SourceAuthority) -> Result<SourceLoadReport, SourceError> {
+        let mut report = self.base.load(authority)?;
+        report
+            .documents
+            .retain(|doc| !self.removed.contains(&doc.uri().to_string()));
 
-        let changed_uris: HashSet<String> =
-            self.changed.iter().map(|doc| doc.uri.to_string()).collect();
-        documents.retain(|doc| !changed_uris.contains(&doc.uri.to_string()));
-        documents.extend(self.changed.clone());
-        documents.extend(self.added.clone());
-        Ok(documents)
+        let changed_uris: HashSet<String> = self
+            .changed
+            .iter()
+            .map(|doc| doc.uri().to_string())
+            .collect();
+        report
+            .documents
+            .retain(|doc| !changed_uris.contains(&doc.uri().to_string()));
+        report.documents.extend(self.changed.clone());
+        report.documents.extend(self.added.clone());
+        Ok(report)
     }
 }

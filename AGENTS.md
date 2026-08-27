@@ -10,6 +10,7 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 - Understand the relevant design, implementation, and tests before changing code. Executable
   contracts, manifests, and tests establish current behavior; design documents establish intent.
+  The root `design.md` is the authoritative design document for the system's architecture.
   If they disagree, do not guess. Resolve the conflict when it is in scope and otherwise report it.
 - Fix the owning abstraction, not only the visible symptom. Do not expand a change to clean up
   unrelated legacy debt or pre-existing failures.
@@ -123,8 +124,29 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 ## Evidence and verification
 
+- The standalone snapshot tool is the primary end-to-end integration test for the compiler
+  pipeline; regenerate and review its checked-in snapshots for pipeline behavior changes.
+- Semantic compiler behavior belongs in the standalone snapshot corpus, not in Rust tests that
+  render a model and search its text. New or modified semantic coverage must use authored typed
+  snapshot expectations (`EXPECTED SEMANTICS` or `EXPECTED DIAGNOSTICS`) when the snapshot tool
+  exposes the relevant contract; otherwise it must use the canonical generated snapshot projection
+  until that typed expectation API is added. Never assert semantic identities, facts,
+  relationships, outcomes, diagnostics, or provenance with `contains`, substring matching, regexes,
+  or hand-parsed rendered S-expressions.
+- When touching an existing semantic-level unit or integration test that string-matches rendered
+  compiler output, migrate that coverage into the snapshot corpus and remove the anti-pattern; do
+  not extend it with another assertion. Rust unit tests remain appropriate for owning-layer
+  algorithms, typed data structures, parser mechanics, snapshot Markdown mechanics, and renderers
+  when the tested value is itself the textual contract, but their assertions must consume the
+  owning typed API rather than rediscover semantics from presentation text.
 - Specification and conformance claims require traceable normative evidence plus executable tests.
   Unsupported coverage stays visible; it does not disappear behind omission or optimistic labels.
+- Encode each researched KerML or SysML validation rule in the snapshot corpus with conforming and
+  violating source examples, explicit specification document and clause metadata, and an authored
+  `EXPECTED DIAGNOSTICS` assertion. If the canonical compiler does not yet satisfy that assertion,
+  use a typed `blocked_by` issue with a concrete owner and category so the case remains visible as
+  `BLOCKED`; remove the blocker when it becomes stale. The snapshot-tool README owns the fixture
+  syntax, blocker semantics, and evidence requirements.
 - For behavior changes and bug fixes, add the narrowest regression test at the owning layer, then
   verify affected consumers. Test both sides of the rule as appropriate: accepted/rejected,
   resolved/unresolved, same/cross source, full/incremental, cold/warm, or current/superseded. A pure
@@ -138,8 +160,28 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 - Run focused checks while iterating, then the broader checks appropriate to the affected area. Fix
   failures caused by the change; record unrelated failures and continue independent checks where
   practical.
+- Before opening or updating a pull request, run `scripts/minici.sh`, the repository's local
+  pre-push entry point for the platform-independent Rust-core CI checks. If its documented local
+  prerequisites are unavailable, report that explicitly and do not claim that all checks pass;
+  distinguish the script's coverage from the CI-only packaging and cross-platform jobs in
+  `.github/workflows/ci.yml`.
 - Establish correctness and equivalence before optimizing. Measure representative workloads and
   preserve deterministic correctness under both cold and warm conditions.
 - Review architectural changes adversarially. Look for a second source of truth, downstream
   re-derivation, hidden recovery, incomplete cache identity, stale publication, nondeterministic
   ordering, boundary leakage, generated-artifact drift, and missing negative or parity coverage.
+
+## Documentation lifecycle
+
+- Planning documents contain only active decisions, blockers, and remaining work. Remove an item
+  when it is completed; do not retain completion summaries, execution diaries, resolved-item
+  indexes, historical context sections, or superseded plans.
+- Git commit messages own implementation history and completed-work rationale. `CHANGELOG.md` may
+  carry one succinct user-visible summary when the change is notable; it is not a substitute for a
+  planning archive.
+- Move reusable lessons into this file as enduring repository policy, or into the authoritative
+  design document when they are lasting properties of the system. Do not preserve them in a
+  completed investigation or progress tracker.
+- Delete a planning or investigation document when it has no live decisions or work. Update or
+  remove inbound references in the same change so completed documents do not survive as accidental
+  authorities.

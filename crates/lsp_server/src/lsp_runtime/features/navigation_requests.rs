@@ -4,8 +4,7 @@ use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
-use crate::language::word_at_position;
-use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
+use crate::session::{snapshot::ServerStateSnapshot, ServerState};
 
 use crate::lsp_runtime::navigation;
 use crate::lsp_runtime::references_resolver;
@@ -57,17 +56,14 @@ pub(crate) fn references(
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let links = navigation::collect_document_links(text, |import_name| {
+    let imports = entry.parsed.imports();
+    let links = navigation::collect_document_links(&imports, |import_name| {
         state
-            .symbol_table
+            .semantic_symbols
             .iter()
             .find(|entry| entry.name == import_name)
             .map(|entry| entry.uri.clone())
@@ -110,18 +106,14 @@ pub(crate) fn selection_range(
     positions: Vec<Position>,
 ) -> Result<Option<Vec<SelectionRange>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
     Ok(Some(navigation::selection_ranges_for_positions(
-        text,
+        entry.content(),
+        &entry.parsed,
         &positions,
-        word_at_position,
     )))
 }
 

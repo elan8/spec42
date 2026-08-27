@@ -5,9 +5,7 @@ use thiserror::Error;
 
 mod map;
 
-pub(crate) use map::{
-    map_language_service_error, map_provider_error, map_render_snapshot_error, map_view_error,
-};
+pub(crate) use map::map_provider_error;
 
 #[derive(Debug, Error, Serialize)]
 #[serde(tag = "code", content = "details")]
@@ -24,8 +22,6 @@ pub enum WorkspaceError {
     },
     #[error("unresolved_library_environment: {message}")]
     UnresolvedLibraryEnvironment { message: String },
-    #[error("unsupported_view: {view}: {message}")]
-    UnsupportedView { view: String, message: String },
     #[error("cancelled")]
     Cancelled,
     #[error("resource_limit_exceeded: {limit}: {message}")]
@@ -54,13 +50,6 @@ impl WorkspaceError {
 
     pub fn unresolved_library_environment(message: impl Into<String>) -> Self {
         Self::UnresolvedLibraryEnvironment {
-            message: message.into(),
-        }
-    }
-
-    pub fn unsupported_view(view: impl Into<String>, message: impl Into<String>) -> Self {
-        Self::UnsupportedView {
-            view: view.into(),
             message: message.into(),
         }
     }
@@ -103,7 +92,6 @@ impl WorkspaceError {
             Self::InvalidDocumentUri { .. } => "invalid_document_uri",
             Self::ParserFailure { .. } => "parser_failure",
             Self::UnresolvedLibraryEnvironment { .. } => "unresolved_library_environment",
-            Self::UnsupportedView { .. } => "unsupported_view",
             Self::Cancelled => "cancelled",
             Self::ResourceLimitExceeded { .. } => "resource_limit_exceeded",
             Self::DuplicateComparisonIdentity { .. } => "duplicate_comparison_identity",

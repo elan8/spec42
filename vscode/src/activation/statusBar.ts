@@ -6,8 +6,6 @@ import {
 } from "../diagnostics/workspaceDiagnostics";
 import { hasWorkspaceFolder } from "../providers/lspModelProvider";
 import type { LspModelProvider } from "../providers/lspModelProvider";
-import { setVisualizationGateState } from "../visualization/visualizationGate";
-import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { log } from "../logger";
 import {
   formatSpec42StatusBar,
@@ -20,19 +18,10 @@ import {
   isSysmlDoc,
 } from "./configBridge";
 
-export type WorkspaceIndexSummary = {
-  scannedFiles: number;
-  loadedFiles: number;
-  truncated: boolean;
-  cancelled: boolean;
-  failures?: number;
-};
-
 let statusItem: vscode.StatusBarItem | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
-let lastWorkspaceIndexSummary: WorkspaceIndexSummary | undefined;
 
 export function getServerHealthState(): ServerHealthState {
   return serverHealthState;
@@ -40,16 +29,6 @@ export function getServerHealthState(): ServerHealthState {
 
 export function getServerHealthDetail(): string {
   return serverHealthDetail;
-}
-
-export function getWorkspaceIndexSummary(): WorkspaceIndexSummary | undefined {
-  return lastWorkspaceIndexSummary;
-}
-
-export function setWorkspaceIndexSummary(
-  summary: WorkspaceIndexSummary | undefined
-): void {
-  lastWorkspaceIndexSummary = summary;
 }
 
 export function setLspModelProviderForStatus(
@@ -90,15 +69,7 @@ export function setServerHealth(
   const previousState = serverHealthState;
   serverHealthState = state;
   serverHealthDetail = detail;
-  setVisualizationGateState({ serverHealthState: state });
   log("Server health:", state, detail);
-  if (
-    VisualizationPanel.currentPanel &&
-    (state === "ready" || state === "degraded" || state === "indexing") &&
-    state !== previousState
-  ) {
-    VisualizationPanel.currentPanel.notifyWorkspaceLifecycleChanged();
-  }
   updateStatusBar(context);
 }
 
@@ -141,10 +112,7 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
   );
   item.text = status.text;
   const baseTooltip = status.baseTooltip;
-  const workspaceTooltip = lastWorkspaceIndexSummary
-    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)${(lastWorkspaceIndexSummary.failures ?? 0) > 0 ? `\nFailures: ${lastWorkspaceIndexSummary.failures}` : ""}${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
-    : "";
-  item.tooltip = `${baseTooltip}${workspaceTooltip}`;
+  item.tooltip = baseTooltip;
   item.show();
 
   const provider = lspModelProviderForStatus;
@@ -158,7 +126,7 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
             ? `${Math.floor(stats.uptime / 60)}m ${stats.uptime % 60}s`
             : `${stats.uptime}s`;
         const caches = stats.caches;
-        item.tooltip = `${baseTooltip}${workspaceTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
+        item.tooltip = `${baseTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
       })
       .catch(() => {});
   }
@@ -168,8 +136,6 @@ async function showSpec42StatusActions(): Promise<void> {
   const selected = await vscode.window.showQuickPick(
     [
       { label: "$(issues) Open Problems", command: "workbench.actions.view.problems" },
-      { label: "$(list-tree) Show Model Explorer", command: "sysml.showModelExplorer" },
-      { label: "$(graph) Open Visualizer", command: "sysml.showVisualizer" },
       { label: "$(star-full) Open Recommended Example", command: "spec42.examples.openRecommended" },
       { label: "$(output) Show SysML Output", command: "sysml.showOutput" },
       { label: "$(debug-restart) Restart Server", command: "sysml.restartServer" },

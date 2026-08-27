@@ -3,22 +3,22 @@
 #![allow(dead_code)]
 
 use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
-use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
+use sysml_query::resolved_slice::TextPosition;
+use sysml_query::source::{SourceDocument, SourceKind, SourceService};
 
-pub fn document(path: &str, content: &str) -> SysmlDocument {
-    SysmlDocument::from_memory_path(
-        "test",
-        path,
-        content.to_string(),
-        SysmlDocumentSourceKind::Workspace,
-        None,
-        None,
-    )
-    .expect("document")
+pub fn document(path: &str, content: &str) -> SourceDocument {
+    SourceService::new()
+        .admit_memory("test", path, content, SourceKind::Workspace)
+        .expect("document")
 }
 
-pub fn workspace_from_docs(docs: Vec<SysmlDocument>) -> InMemoryWorkspace {
-    InMemoryWorkspace::from_documents(docs).expect("workspace")
+pub fn workspace_from_docs(docs: Vec<SourceDocument>) -> InMemoryWorkspace {
+    let services = sysml_query::Services::new();
+    let publication = services
+        .publication
+        .publish(&docs, [])
+        .expect("publication");
+    InMemoryWorkspace::from_documents_and_publication(docs, publication).expect("workspace")
 }
 
 pub fn single_doc(path: &str, content: &str) -> InMemoryWorkspace {

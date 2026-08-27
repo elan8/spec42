@@ -1,21 +1,30 @@
 ﻿[workspace]
 resolver = "2"
 members = [
-  "crates/diagram",
   "crates/generator_api",
   "crates/generator_conformance",
   "crates/generator_host",
   "crates/generator_protocol",
   "crates/generator_sdk",
   "crates/language_service",
+  "crates/library_catalog",
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/source_identity",
+  "crates/sysml_contract",
+  "crates/sysml_source",
   "crates/sysml_diagnostics",
-  "crates/sysml_model",
+  "crates/sysml_query",
+  "crates/sysml_resolution",
   "crates/workspace",
   "crates/sysml_tokens",
-  "crates/workspace_session",
+  "crates/session_actor",
+  "tools/snapshot_tool",
+  "tools/constraint_manifest",
+  "tools/query_bench",
+  "tools/resolution_benchmark",
+  "tools/semantic_benchmark",
 ]
 
 [workspace.package]
@@ -37,5 +46,15 @@ thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
-sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
+blake3 = "1"
+sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "4b65812da4b4b03aa6e781674f1cab8844cadc88", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
+zstd = "0.13"
+
+# The resolver and the parser do real work in every integration test; unoptimised they make
+# a cold standard-library build 3-5x slower. opt-level 1 costs ~3s on an incremental rebuild.
+[profile.dev.package.sysml_resolution]
+opt-level = 1
+
+[profile.dev.package.sysml-v2-parser]
+opt-level = 1

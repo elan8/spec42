@@ -52,7 +52,7 @@ export function formatSpec42StatusBar(
         lifecyclePhase === "validatingFiles"
           ? "Problems reflect open files. Workspace model not built yet."
           : "Building the cross-file workspace model.",
-        "Model Explorer and diagrams update when workspace indexing completes.",
+        "Cross-file editor results update when workspace indexing completes.",
         workspaceDiagTooltip,
         activeDiagTooltip,
         "Click for Spec42 actions.",

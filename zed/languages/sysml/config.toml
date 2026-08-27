@@ -1,5 +1,5 @@
 name = "SysML v2"
 grammar = "sysml"
-path_suffixes = ["sysml"]
+path_suffixes = ["sysml", "kerml"]
 line_comments = ["// "]
 tab_size = 4

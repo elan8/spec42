@@ -9,7 +9,8 @@ use serde::{de::DeserializeOwned, Serialize};
 
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
-    Artifact, ElementDetail, ElementSummary, Multiplicity, Relationship,
+    Artifact, DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementSummary,
+    Multiplicity, Relationship,
 };
 
 /// Starting size of the query response buffer. Responses larger than this cost one extra
@@ -133,7 +134,20 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 
 pub mod model {
     pub use spec42_generator_protocol::{
-        ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship, SourceRange,
+        DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+        DiagramEdgeKind, DiagramElement, DiagramElementType, DiagramElementTyping,
+        DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramNotationRole,
+        DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+        DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+        DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+        ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo, Multiplicity,
+        ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
+        RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
+        SatisfyPolarity, SatisfyRelationship, SourceRange, SourceReference, StateMachineIdentity,
+        StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
+        StateTransitionScene, StateTransitionViewProjection, StateTransitionViewSummary,
+        TransitionTrigger, TypingProvenance, UnsupportedReason, VerificationOutcome,
+        VerificationRequirement,
     };
 
     use super::call;
@@ -163,12 +177,32 @@ pub mod model {
         call::<query::TypedBy>(&feature.to_owned())
     }
 
+    pub fn requirement_usage_typing(usage: &str) -> Result<RequirementUsageTyping, String> {
+        call::<query::RequirementTyping>(&usage.to_owned())
+    }
+
+    pub fn satisfy_relationships() -> Result<Vec<SatisfyRelationship>, String> {
+        call::<query::SatisfyRelationships>(&())
+    }
+
+    pub fn requirement_verifications() -> Result<Vec<RequirementVerification>, String> {
+        call::<query::RequirementVerifications>(&())
+    }
+
     pub fn relationships(element: &str) -> Result<Vec<Relationship>, String> {
         call::<query::Relationships>(&element.to_owned())
     }
 
     pub fn effective_features(element: &str) -> Result<Vec<ElementSummary>, String> {
         call::<query::EffectiveFeatures>(&element.to_owned())
+    }
+
+    pub fn diagram_views() -> Result<Vec<DiagramViewSummary>, String> {
+        call::<query::DiagramViews>(&())
+    }
+
+    pub fn diagram_view(handle: &str) -> Result<DiagramViewProjection, String> {
+        call::<query::DiagramView>(&handle.to_owned())
     }
 }
 

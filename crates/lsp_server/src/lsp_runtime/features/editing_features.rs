@@ -5,46 +5,17 @@ use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, format_document,
-    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
-    suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
     suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
     suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
     suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
     suggest_qualify_ambiguous_name_quick_fixes, suggest_search_library_for_symbol_quick_fix,
     suggest_show_standard_library_info_quick_fix, suggest_wrap_in_package,
 };
-use crate::workspace::snapshot::ServerStateSnapshot;
-use crate::workspace::ServerState;
+use crate::session::snapshot::ServerStateSnapshot;
+use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
-
-fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
-    let mut out = Vec::new();
-    let mut stack: Vec<u32> = Vec::new();
-
-    for (line_idx, line) in text.lines().enumerate() {
-        let line_no = line_idx as u32;
-        for ch in line.chars() {
-            if ch == '{' {
-                stack.push(line_no);
-            } else if ch == '}' {
-                if let Some(start_line) = stack.pop() {
-                    if line_no > start_line {
-                        out.push(FoldingRange {
-                            start_line,
-                            start_character: None,
-                            end_line: line_no,
-                            end_character: None,
-                            kind: Some(FoldingRangeKind::Region),
-                            collapsed_text: None,
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    out
-}
+use sysml_query::syntax::SyntaxOutlineKind;
 
 pub(crate) fn signature_help(
     state: &ServerState,
@@ -52,28 +23,33 @@ pub(crate) fn signature_help(
     pos: Position,
 ) -> Result<Option<SignatureHelp>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.as_str())
-    {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
-    let line = text.lines().nth(pos.line as usize).unwrap_or("");
+    let line = entry.content().lines().nth(pos.line as usize).unwrap_or("");
     let cursor_prefix = line
         .chars()
         .take(pos.character as usize)
         .collect::<String>();
     let active_param = cursor_prefix.matches(',').count() as u32;
-    let label = if line.contains("part def") {
-        "part def <Name> : <Type>"
-    } else if line.contains("port def") || line.contains("port ") {
-        "port <name> : <PortType>"
-    } else if line.contains("attribute") {
-        "attribute <name> : <AttributeType>"
-    } else {
-        "name : Type"
+    // Which declaration shape to prompt for is a question about the declaration the cursor is
+    // in, and the syntax service answers it. Testing the line's text for `part def` used to
+    // prompt from a keyword in a comment, and from the *enclosing* declaration's keyword when
+    // the cursor sat on a nested member.
+    let label = match entry
+        .parsed
+        .declaration_at(pos.line)
+        .map(|declaration| declaration.kind)
+    {
+        Some(SyntaxOutlineKind::PartDef) => "part def <Name> : <Type>",
+        Some(SyntaxOutlineKind::PortDef | SyntaxOutlineKind::PortUsage) => {
+            "port <name> : <PortType>"
+        }
+        Some(SyntaxOutlineKind::AttributeDef | SyntaxOutlineKind::AttributeUsage) => {
+            "attribute <name> : <AttributeType>"
+        }
+        _ => "name : Type",
     };
     Ok(Some(SignatureHelp {
         signatures: vec![SignatureInformation {
@@ -145,7 +121,11 @@ pub(crate) fn rename(
         }
     }
 
-    let edits = language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
+    let Some(edits) =
+        language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name)
+    else {
+        return Ok(None);
+    };
     if edits.is_empty() {
         return Ok(Some(WorkspaceEdit::default()));
     }
@@ -180,12 +160,8 @@ pub(crate) fn document_symbol(
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let doc = match &entry.parsed {
-        Some(doc) => doc,
-        None => return Ok(None),
-    };
     Ok(Some(DocumentSymbolResponse::Nested(
-        collect_document_symbols(doc),
+        collect_document_symbols(&entry.parsed),
     )))
 }
 
@@ -195,13 +171,10 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    if let Some(doc) = &entry.parsed {
-        let parsed_ranges = collect_folding_ranges(doc);
-        if !parsed_ranges.is_empty() {
-            return Ok(Some(parsed_ranges));
-        }
-    }
-    Ok(Some(collect_brace_folding_ranges(&entry.content)))
+    // One derivation: the syntax service's folding regions, which already survive parser
+    // recovery. An empty answer means the document has no foldable region, not that a second
+    // heuristic should guess one.
+    Ok(Some(collect_folding_ranges(&entry.parsed)))
 }
 
 #[allow(deprecated)]
@@ -217,7 +190,7 @@ pub(crate) fn workspace_symbol(
             let uri = Url::parse(&entry.uri).ok()?;
             Some(SymbolInformation {
                 name: entry.name,
-                kind: workspace_symbol_kind(entry.detail.as_deref().unwrap_or("symbol")),
+                kind: crate::language::element_kind_label_to_lsp(entry.detail.as_deref()),
                 tags: None,
                 deprecated: None,
                 location: Location {
@@ -231,22 +204,6 @@ pub(crate) fn workspace_symbol(
     Ok(Some(out))
 }
 
-fn workspace_symbol_kind(kind: &str) -> SymbolKind {
-    match kind {
-        "package" | "namespace" | "library package" => SymbolKind::MODULE,
-        "part def" | "classifier decl" => SymbolKind::CLASS,
-        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
-        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
-        "action def" => SymbolKind::FUNCTION,
-        "part" => SymbolKind::OBJECT,
-        "action" => SymbolKind::EVENT,
-        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
-            SymbolKind::NAMESPACE
-        }
-        _ => SymbolKind::VARIABLE,
-    }
-}
-
 pub(crate) fn code_action(
     state: &ServerState,
     uri: Url,
@@ -254,22 +211,24 @@ pub(crate) fn code_action(
     diagnostics: &[Diagnostic],
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
-    {
-        Some(text) => text,
+    let entry = match state.index.get(&uri_norm) {
+        Some(entry) => entry,
         None => return Ok(None),
     };
+    let text = entry.content();
+    let parsed = &entry.parsed;
+    let model = state.published_model();
     let mut actions = Vec::new();
-    if let Some(action) = suggest_wrap_in_package(&text, &uri) {
+    if let Some(action) = suggest_wrap_in_package(text, parsed, &uri) {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
-    if let Some(action) = suggest_create_verification_case(&text, &uri, range.start.line) {
+    if let Some(action) =
+        suggest_create_verification_case(text, parsed, model, &uri, range.start.line)
+    {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
-    if let Some(action) = suggest_create_usage_from_definition(&text, &uri, range.start.line) {
+    if let Some(action) = suggest_create_usage_from_definition(text, parsed, &uri, range.start.line)
+    {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
     for diagnostic in diagnostics {
@@ -279,7 +238,7 @@ pub(crate) fn code_action(
         );
         if is_untyped_part_usage {
             if let Some(action) =
-                suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
+                suggest_create_matching_part_def_quick_fix(text, parsed, model, &uri, diagnostic)
             {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
@@ -289,50 +248,37 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "implicit_redefinition_without_operator"
         );
         if is_implicit_redefinition_without_operator {
-            if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic) {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
-        let is_case_subject_missing = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "case_subject_missing"
-        );
-        if is_case_subject_missing {
-            if let Some(action) =
-                suggest_add_missing_case_subject_quick_fix(&text, &uri, diagnostic)
-            {
+            if let Some(action) = suggest_explicit_redefinition_quick_fix(text, &uri, diagnostic) {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }
         let is_ambiguous_name_reference = matches!(
             diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "ambiguous_name_reference"
+            Some(NumberOrString::String(code)) if code == "ambiguous_reference"
         );
         if is_ambiguous_name_reference {
-            for action in suggest_qualify_ambiguous_name_quick_fixes(
-                &text,
-                &uri,
-                diagnostic,
-                &state.semantic_graph,
-            ) {
-                actions.push(CodeActionOrCommand::CodeAction(action));
+            {
+                let model = state.published_model();
+                for action in
+                    suggest_qualify_ambiguous_name_quick_fixes(text, &uri, diagnostic, model)
+                {
+                    actions.push(CodeActionOrCommand::CodeAction(action));
+                }
             }
         }
         let is_unresolved_type_reference = matches!(
             diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code))
-                if code == "unresolved_type_reference" || code == "unresolved_ref_type_reference"
+            Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions =
-                suggest_add_import_quick_fixes(&text, &uri, diagnostic, &state.semantic_graph);
+            let import_actions = suggest_add_import_quick_fixes(text, &uri, diagnostic, model);
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
-            if let Some(mut action) =
-                suggest_create_definition_for_unresolved_type_quick_fix(&text, &uri, diagnostic)
-            {
+            if let Some(mut action) = suggest_create_definition_for_unresolved_type_quick_fix(
+                text, parsed, model, &uri, diagnostic,
+            ) {
                 if has_imports {
                     action.is_preferred = Some(false);
                 }
@@ -372,7 +318,7 @@ pub(crate) fn formatting(
     let text = match state
         .index
         .get(&uri_norm)
-        .map(|entry| entry.content.clone())
+        .map(|entry| entry.content().to_owned())
     {
         Some(text) => text,
         None => return Ok(None),

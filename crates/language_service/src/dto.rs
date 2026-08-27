@@ -1,5 +1,46 @@
-﻿use serde::{Deserialize, Serialize};
-use sysml_model::TextRange;
+use serde::{Deserialize, Serialize};
+use sysml_query::resolved_slice::TextRange;
+use sysml_query::syntax::SyntaxOutlineKind;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SemanticObstacleDto {
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct SemanticResultStatus {
+    /// False when no immutable semantic publication was available for the request.
+    pub available: bool,
+    /// Every obstacle reported by the publication, in canonical order when available.
+    pub obstacles: Vec<SemanticObstacleDto>,
+}
+
+impl SemanticResultStatus {
+    pub fn from_publication(
+        completeness: sysml_query::resolved_slice::PublicationCompleteness,
+    ) -> Self {
+        use sysml_query::resolved_slice::PublicationObstacle;
+        Self {
+            available: true,
+            obstacles: completeness
+                .obstacles()
+                .map(|obstacle| match obstacle {
+                    PublicationObstacle::ParseRecovery => SemanticObstacleDto::ParseRecovery,
+                    PublicationObstacle::UnsupportedSyntax => {
+                        SemanticObstacleDto::UnsupportedSyntax
+                    }
+                    PublicationObstacle::NonConverged => SemanticObstacleDto::NonConverged,
+                })
+                .collect(),
+        }
+    }
+
+    pub fn is_complete(&self) -> bool {
+        self.available && self.obstacles.is_empty()
+    }
+}
 
 /// A source location using a logical path string and neutral text range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -13,18 +54,24 @@ pub struct SourceLocation {
 pub struct HoverResult {
     pub contents: String,
     pub range: Option<TextRange>,
+    #[serde(default)]
+    pub semantic_status: SemanticResultStatus,
 }
 
 /// Go-to-definition result: one or more target locations.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DefinitionResult {
     pub locations: Vec<SourceLocation>,
+    #[serde(default)]
+    pub semantic_status: SemanticResultStatus,
 }
 
 /// Find-references result.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ReferencesResult {
     pub locations: Vec<SourceLocation>,
+    #[serde(default)]
+    pub semantic_status: SemanticResultStatus,
 }
 
 /// Neutral completion item kind (not LSP-specific).
@@ -76,6 +123,8 @@ pub struct CompletionItemDto {
 pub struct CompletionResult {
     pub items: Vec<CompletionItemDto>,
     pub is_incomplete: bool,
+    #[serde(default)]
+    pub semantic_status: SemanticResultStatus,
 }
 
 /// Replace range for completion edits at a cursor position.
@@ -88,7 +137,7 @@ pub struct CompletionEditShape {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OutlineSymbol {
     pub name: String,
-    pub kind: String,
+    pub kind: SyntaxOutlineKind,
     pub range: TextRange,
     pub selection_range: TextRange,
     pub children: Vec<OutlineSymbol>,

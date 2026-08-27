@@ -1,9 +1,10 @@
+#![recursion_limit = "256"]
+
 //! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;
 pub mod cli;
 pub mod diagnostic_catalog;
-pub mod diagrams;
 #[cfg(test)]
 pub mod elk_layout;
 pub mod environment;
@@ -24,30 +25,27 @@ use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    BundleArgs, CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs,
-    InitArgs, LibrariesCommand, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
-    UnbundleArgs,
+    BundleArgs, CheckArgs, Cli, Command, DoctorArgs, ExplainDiagnosticArgs, InitArgs,
+    LibrariesCommand, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand, UnbundleArgs,
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
-use lsp_server::{
-    validate_paths_with_semantics, SemanticValidationReport, ValidationReport, ValidationRequest,
-    ValidationSummary,
-};
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
-use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
+use workspace::{validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
-pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
-    let references_stdlib = environment::workspace_references_standard_library(&args.path);
+///
+/// The report — including its advice — is `workspace::validate_paths`'s answer. This crate adds
+/// nothing to it: a workspace that needs library roots says so through the diagnostics the
+/// publication settled, which is what the advice is derived from.
+pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport, String> {
     let environment = resolve_environment(cli)?;
     let engine = build_engine(cli)?;
-    let config = Arc::new(lsp_server::default_server_config());
-    let mut report = validate_paths_with_semantics(
+    validate_paths(
         &engine,
-        &config,
+        &[],
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -55,65 +53,13 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             parallel_enabled: true,
             strict_diagnostics: args.strict_diagnostics,
         },
-    )?
-    .validation;
-    if references_stdlib
-        && environment.stdlib_path.is_none()
-        && !cli.no_stdlib
-        && !report
-            .advice
-            .iter()
-            .any(|line| line.contains("standard library"))
-    {
-        report.advice.push(
-            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
-                .to_string(),
-        );
-    }
-    Ok(report)
+    )
 }
 
 /// Environment report (same as `spec42 doctor`).
 pub fn perform_doctor(cli: &Cli) -> Result<DoctorReport, String> {
     let environment = resolve_environment(cli)?;
     build_doctor_report("doctor", &environment)
-}
-
-/// Validation with semantic graph projection (used by MCP model summary).
-pub fn perform_check_with_semantics(
-    cli: &Cli,
-    args: &CheckArgs,
-) -> Result<SemanticValidationReport, String> {
-    let references_stdlib = environment::workspace_references_standard_library(&args.path);
-    let environment = resolve_environment(cli)?;
-    let engine = build_engine(cli)?;
-    let config = Arc::new(lsp_server::default_server_config());
-    let mut report = validate_paths_with_semantics(
-        &engine,
-        &config,
-        ValidationRequest {
-            targets: vec![args.path.clone()],
-            workspace_root: args.workspace_root.clone(),
-            library_paths: environment.library_paths.clone(),
-            parallel_enabled: true,
-            strict_diagnostics: args.strict_diagnostics,
-        },
-    )?;
-    if references_stdlib
-        && environment.stdlib_path.is_none()
-        && !cli.no_stdlib
-        && !report
-            .validation
-            .advice
-            .iter()
-            .any(|line| line.contains("standard library"))
-    {
-        report.validation.advice.push(
-            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
-                .to_string(),
-        );
-    }
-    Ok(report)
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -127,50 +73,27 @@ pub struct ModelSummaryTruncation {
 #[derive(Debug, Clone, Serialize)]
 pub struct ModelSummaryResponse {
     pub workspace_root: Option<String>,
-    pub summary: ValidationSummary,
-    pub nodes: Vec<HostSemanticModelNode>,
-    pub relationships: Vec<HostSemanticModelRelationship>,
+    pub summary: HostValidationSummary,
     pub truncation: ModelSummaryTruncation,
 }
 
-const SUMMARY_RELATIONSHIP_KINDS: &[&str] = &["typing", "connection", "reference"];
-
-/// Compact semantic projection for agents (caps node count, filters relationship kinds).
+/// Narrow summary while a typed model-summary projection is defined.
 pub fn build_model_summary(
-    report: SemanticValidationReport,
-    max_nodes: usize,
+    report: HostValidationReport,
+    _max_nodes: usize,
 ) -> ModelSummaryResponse {
-    let nodes_total = report.semantic_model.nodes.len();
-    let nodes: Vec<_> = report
-        .semantic_model
-        .nodes
-        .into_iter()
-        .take(max_nodes)
-        .collect();
-
-    let filtered: Vec<_> = report
-        .semantic_model
-        .relationships
-        .into_iter()
-        .filter(|rel| SUMMARY_RELATIONSHIP_KINDS.contains(&rel.kind.as_str()))
-        .collect();
-    let relationships_total = filtered.len();
-    let relationships: Vec<_> = filtered
-        .into_iter()
-        .take(max_nodes.saturating_mul(2))
-        .collect();
-
+    // TODO(follow-up): expose a bounded typed summary from PublishedModel. Do not recreate the
+    // retired graph DTO here; until that owner exists, diagnostics are the complete supported
+    // result and semantic nodes/relationships are explicitly absent.
     ModelSummaryResponse {
-        workspace_root: report.validation.workspace_root,
-        summary: report.validation.summary,
+        workspace_root: report.workspace_root,
+        summary: report.summary,
         truncation: ModelSummaryTruncation {
-            nodes_total,
-            nodes_returned: nodes.len(),
-            relationships_total,
-            relationships_returned: relationships.len(),
+            nodes_total: 0,
+            nodes_returned: 0,
+            relationships_total: 0,
+            relationships_returned: 0,
         },
-        nodes,
-        relationships,
     }
 }
 
@@ -193,7 +116,6 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
         Some(Command::Libraries { command }) => run_libraries(&cli, command),
-        Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
     }
 }
 
@@ -206,10 +128,18 @@ fn run_bundle(args: &BundleArgs) -> Result<ExitCode, String> {
     }
     let project_path = args.directory.join(kpar::PROJECT_FILE);
     let project_bytes = std::fs::read(&project_path).map_err(|error| {
-        format!(
-            "bundle requires {} as the project metadata authority: {error}",
-            project_path.display()
-        )
+        if error.kind() == std::io::ErrorKind::NotFound {
+            format!(
+                "bundle requires {} as the project metadata authority: {error}. Run `spec42 init {}` to create it",
+                project_path.display(),
+                args.directory.display()
+            )
+        } else {
+            format!(
+                "bundle requires {} as the project metadata authority: {error}",
+                project_path.display()
+            )
+        }
     })?;
     let project: kpar::Project = serde_json::from_slice(&project_bytes).map_err(|error| {
         format!(
@@ -273,7 +203,9 @@ fn run_unbundle(args: &UnbundleArgs) -> Result<ExitCode, String> {
 }
 
 fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
-    let scaffold = starter_workspace::scaffold(&args.path)?;
+    let engine = build_engine(cli)?;
+    let usage = library_catalog::manifest_usages_for_standard_library(engine.library_catalog())?;
+    let scaffold = starter_workspace::scaffold(&args.path, usage)?;
     let validation_args = CheckArgs {
         path: scaffold.root.clone(),
         workspace_root: Some(scaffold.root.clone()),
@@ -302,8 +234,11 @@ fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
 
 async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
+    let engine = build_engine(cli)?;
     let config = Arc::new(
         lsp_server::default_server_config()
+            .with_services(engine.services().clone())
+            .with_project_library_catalog(engine.library_catalog().clone())
             .with_default_library_paths(environment.library_paths.clone())
             .with_standard_library_paths(environment.stdlib_roots.clone())
             .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(
@@ -437,24 +372,10 @@ fn run_sysand(command: &SysandCommand) -> Result<ExitCode, String> {
     }
 }
 
-fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String> {
-    match command {
-        DiagramsCommand::Export(args) => {
-            let summary = diagrams::export_diagrams(cli, args)?;
-            println!(
-                "Exported {} diagram artifact(s) to {}",
-                summary.exported,
-                summary.output_dir.display()
-            );
-            Ok(ExitCode::SUCCESS)
-        }
-    }
-}
-
 fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let selected =
-        |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
+        |id: &Option<String>| -> Result<Vec<&library_catalog::KparLibraryComponent>, String> {
             match id {
                 None => Ok(environment.kpar_libraries.iter().collect()),
                 Some(wanted) => {
@@ -558,14 +479,6 @@ fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, Stri
             }
             if cleared == 0 {
                 println!("No materialized KPAR library data was found.");
-            }
-        }
-        LibrariesCommand::ClearGraphCache => {
-            let cleared = workspace::library_graph_cache::clear_all()?;
-            if cleared == 0 {
-                println!("No cached library graph data was found.");
-            } else {
-                println!("Cleared {cleared} cached library graph file(s).");
             }
         }
     }

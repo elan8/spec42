@@ -1,138 +1,8 @@
 //! SysML v2 reserved keywords and keyword documentation for completion/hover.
 
-/// SysML v2 reserved keywords from Language Specification 2.0, 8.2.2.1.2.
-/// Single source of truth for semantic token fallback and keyword checks (goto-def, rename).
-/// Note: "position" is a contextual keyword (position_statement) only, not reserved—valid as identifier.
-pub const RESERVED_KEYWORDS: &[&str] = &[
-    "about",
-    "abstract",
-    "accept",
-    "action",
-    "actor",
-    "after",
-    "alias",
-    "all",
-    "allocate",
-    "allocation",
-    "analysis",
-    "and",
-    "as",
-    "assert",
-    "assign",
-    "assume",
-    "at",
-    "attribute",
-    "bind",
-    "binding",
-    "by",
-    "calc",
-    "case",
-    "comment",
-    "concern",
-    "connect",
-    "connection",
-    "constant",
-    "constraint",
-    "crosses",
-    "decide",
-    "def",
-    "default",
-    "defined",
-    "dependency",
-    "derived",
-    "do",
-    "doc",
-    "else",
-    "end",
-    "entry",
-    "enum",
-    "event",
-    "exhibit",
-    "exit",
-    "expose",
-    "false",
-    "filter",
-    "first",
-    "flow",
-    "for",
-    "fork",
-    "frame",
-    "from",
-    "hastype",
-    "if",
-    "implies",
-    "import",
-    "in",
-    "include",
-    "individual",
-    "inout",
-    "interface",
-    "istype",
-    "item",
-    "join",
-    "language",
-    "library",
-    "locale",
-    "loop",
-    "merge",
-    "message",
-    "meta",
-    "metadata",
-    "nonunique",
-    "not",
-    "null",
-    "objective",
-    "occurrence",
-    "of",
-    "or",
-    "ordered",
-    "out",
-    "package",
-    "parallel",
-    "part",
-    "perform",
-    "port",
-    "private",
-    "protected",
-    "public",
-    "redefines",
-    "ref",
-    "references",
-    "render",
-    "rendering",
-    "rep",
-    "require",
-    "requirement",
-    "return",
-    "satisfy",
-    "send",
-    "snapshot",
-    "specializes",
-    "stakeholder",
-    "standard",
-    "state",
-    "subject",
-    "subsets",
-    "succession",
-    "terminate",
-    "then",
-    "timeslice",
-    "to",
-    "transition",
-    "true",
-    "until",
-    "use",
-    "variant",
-    "variation",
-    "verification",
-    "verify",
-    "via",
-    "view",
-    "viewpoint",
-    "when",
-    "while",
-    "xor",
-];
+/// SysML v2 reserved keywords from Language Specification 2.0, 8.2.2.1.2, owned by the syntax
+/// service; re-exported so hosts that reach keywords through this crate keep one vocabulary.
+pub use sysml_query::syntax::{is_reserved_keyword, RESERVED_KEYWORDS};
 
 /// Normative reserved-word sequence from OMG SysML 2.0 Part 1,
 /// 8.2.2.1.2, "Reserved Keywords".
@@ -151,12 +21,11 @@ protected public redefines ref references render rendering rep require requireme
 snapshot specializes stakeholder standard state subject subsets succession terminate then timeslice to \
 transition true until use variant variation verification verify via view viewpoint when while xor";
 
-/// Returns true if the word is a SysML v2 reserved keyword.
-pub fn is_reserved_keyword(word: &str) -> bool {
-    RESERVED_KEYWORDS.contains(&word)
-}
-
 /// Curated subset of reserved keywords used for completion suggestions.
+///
+/// A presentation order over the facade's vocabulary, not a second vocabulary: the test below
+/// holds every entry to [`is_reserved_keyword`], so a word the syntax service does not reserve
+/// cannot be offered as a keyword.
 pub fn sysml_keywords() -> &'static [&'static str] {
     &[
         "package",
@@ -753,6 +622,21 @@ mod tests {
         for identifier in ["value", "provides", "requires"] {
             assert!(!is_reserved_keyword(identifier), "{identifier}");
             assert!(keyword_hover_markdown(identifier).is_none(), "{identifier}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod completion_keyword_tests {
+    use super::*;
+
+    #[test]
+    fn every_completion_keyword_is_one_the_syntax_service_reserves() {
+        for keyword in sysml_keywords() {
+            assert!(
+                is_reserved_keyword(keyword),
+                "`{keyword}` is offered for completion but the syntax service does not reserve it"
+            );
         }
     }
 }

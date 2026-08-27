@@ -106,15 +106,14 @@ jobs:
         run: |
           cargo test --workspace --exclude server --exclude lsp_server
           cargo test -p server --lib
-          cargo test -p server --test multi_file_check
+          cargo test -p server --test integration multi_file_check
           cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
           # Each integration test starts a server and awaits asynchronous indexing.
           # Run this suite serially so CPU contention cannot exhaust its retry budget.
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
-          cargo test -p server \
-            --test cli_ai_tools \
-            --test kitchen_timer_check \
-            -- --include-ignored
+          for module in cli_ai_tools kitchen_timer_check; do
+            cargo test -p server --test integration "$module" -- --include-ignored
+          done
 
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
@@ -307,7 +306,7 @@ jobs:
 
       - name: Install vscode deps and package
         run: |
-          cd vscode && npm ci && npm run build:webview-assets && npm run build:webview && npm run compile && npm run verify:package-layout && npm run package
+          cd vscode && npm ci && npm run compile && npm run package
 
       - name: Verify packaged VSIX layout
         run: |

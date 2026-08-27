@@ -1,0 +1,11 @@
+[package]
+name = "spec42-conformance-requirement_instances_csv"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+spec42-generator-sdk = { workspace = true }

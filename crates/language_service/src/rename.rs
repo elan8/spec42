@@ -1,40 +1,63 @@
-use sysml_model::TextPosition;
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::dto::SourceLocation;
-use crate::references::{find_references_at_position, resolve_symbol_target_at_position};
 use crate::workspace::WorkspaceSnapshot;
 
-/// Returns the identifier range that would be renamed at the cursor.
+fn path_for_document(workspace: &impl WorkspaceSnapshot, document: &str) -> String {
+    workspace
+        .resolve_uri_for_path(document)
+        .map(|uri| workspace.path_for_uri(&uri))
+        .unwrap_or_else(|| document.to_string())
+}
+
 pub fn prepare_rename(
     workspace: &impl WorkspaceSnapshot,
     document_path: &str,
     position: TextPosition,
-) -> Option<sysml_model::TextRange> {
+) -> Option<TextRange> {
     let uri = workspace.resolve_uri_for_path(document_path)?;
-    resolve_symbol_target_at_position(workspace, &uri, position)
-        .map(|target| target.identifier_range)
+    match workspace
+        .published_model()?
+        .edits()
+        .prepare_rename(uri.as_str(), position, None)
+    {
+        sysml_query::resolved_slice::RenameOutcome::Ready { range, .. } => Some(range),
+        _ => None,
+    }
 }
 
-/// Produces neutral text edits to rename a symbol and all references.
 pub fn apply_rename(
     workspace: &impl WorkspaceSnapshot,
     document_path: &str,
     position: TextPosition,
     new_name: &str,
-) -> Vec<crate::dto::TextEditDto> {
-    let references = find_references_at_position(workspace, document_path, position, true);
-    references
-        .locations
-        .into_iter()
-        .map(|location| crate::dto::TextEditDto {
-            path: location.path,
-            range: location.range,
-            replacement: new_name.to_string(),
-        })
-        .collect()
+) -> Option<Vec<crate::dto::TextEditDto>> {
+    let uri = workspace.resolve_uri_for_path(document_path)?;
+    let model = workspace.published_model()?;
+    let sysml_query::resolved_slice::RenameOutcome::Ready { occurrences, .. } = model
+        .edits()
+        .prepare_rename(uri.as_str(), position, Some(new_name))
+    else {
+        return None;
+    };
+    Some(
+        occurrences
+            .into_vec()
+            .into_iter()
+            .map(|location| crate::dto::TextEditDto {
+                path: path_for_document(
+                    workspace,
+                    model
+                        .document_identity(location.document)
+                        .unwrap_or_default(),
+                ),
+                range: location.range,
+                replacement: new_name.to_string(),
+            })
+            .collect(),
+    )
 }
 
-/// Rename target metadata for hosts that need declaration + reference sites.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RenameTarget {
     pub name: String,
@@ -48,11 +71,32 @@ pub fn rename_target(
     position: TextPosition,
 ) -> Option<RenameTarget> {
     let uri = workspace.resolve_uri_for_path(document_path)?;
-    let target = resolve_symbol_target_at_position(workspace, &uri, position)?;
-    let references = find_references_at_position(workspace, document_path, position, true);
+    let model = workspace.published_model()?;
+    let sysml_query::resolved_slice::RenameOutcome::Ready {
+        symbol,
+        occurrences,
+        ..
+    } = model.edits().prepare_rename(uri.as_str(), position, None)
+    else {
+        return None;
+    };
+    let references = occurrences
+        .into_vec()
+        .into_iter()
+        .map(|location| SourceLocation {
+            path: path_for_document(
+                workspace,
+                model
+                    .document_identity(location.document)
+                    .unwrap_or_default(),
+            ),
+            range: location.range,
+        })
+        .collect::<Vec<_>>();
+    let definition = references.first()?.clone();
     Some(RenameTarget {
-        name: target.name,
-        definition: target.definition_location,
-        references: references.locations,
+        name: model.symbol_name(symbol).unwrap_or_default().to_owned(),
+        definition,
+        references,
     })
 }

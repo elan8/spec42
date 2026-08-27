@@ -32,9 +32,9 @@ fn goto_definition_resolves_same_file_usage_to_definition() {
 #[test]
 fn goto_definition_cross_file_resolves_to_definition() {
     let content_def = "package P { part def Engine; }";
-    let content_use = "package Q { part e : Engine; }";
+    let content_use = "package Q { import P::*; part e : Engine; }";
     let ws = multi_doc(&[("def.sysml", content_def), ("use.sysml", content_use)]);
-    let pos = position_at(0, 22);
+    let pos = position_for(content_use, "Engine");
     let result = goto_definition(&ws, "use.sysml", pos);
     assert!(
         result

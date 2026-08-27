@@ -1,0 +1,24 @@
+[package]
+build = "build.rs"
+name = "sysml_resolution"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Opaque parser-owned SysML semantic resolution"
+
+[dependencies]
+hashbrown = "0.17"
+rayon = "1.12"
+source_identity = { path = "../source_identity" }
+sysml_contract = { path = "../sysml_contract", features = ["serde"] }
+sysml_source = { path = "../sysml_source" }
+sysml-v2-parser.workspace = true
+serde.workspace = true
+spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../../tools/constraint_manifest" }
+
+[build-dependencies]
+spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../../tools/constraint_manifest" }
+
+[dev-dependencies]
+tempfile = "3"

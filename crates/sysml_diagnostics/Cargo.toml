@@ -4,10 +4,8 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Semantic diagnostics engine for Spec42"
+description = "Transport-neutral diagnostic DTOs and host reporting policy for Spec42"
 
 [dependencies]
-sysml_model = { path = "../sysml_model" }
-sysml-v2-parser = { workspace = true }
-serde_json = { workspace = true }
+sysml_query = { path = "../sysml_query" }
 url = { version = "2", features = ["serde"] }

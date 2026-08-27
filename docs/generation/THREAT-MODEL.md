@@ -7,7 +7,7 @@ normal `spec42 check`; generation introduces no parser or linker.
 ## Protected assets
 
 - files outside the explicit output root and unowned files within it;
-- workspace sources, libraries, semantic graph, host process, credentials, and environment;
+- workspace sources, libraries, immutable semantic publication, host process, credentials, and environment;
 - availability of local and CI hosts;
 - deterministic artifacts and trustworthy provenance.
 

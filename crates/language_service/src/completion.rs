@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
-use sysml_model::{ElementKind, TextPosition, TextRange};
+use sysml_query::resolved_slice::ElementKind;
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{
@@ -8,19 +9,45 @@ use crate::dto::{
     CompletionResult, CompletionTextEditDto,
 };
 use crate::keywords::{keyword_doc, sysml_keywords};
-use crate::presentation_hover::hover_markdown_for_node;
-use crate::references::TYPE_LOOKUP_KINDS;
 use crate::text::{completion_prefix, line_prefix_at_position};
 use crate::workspace::WorkspaceSnapshot;
 
-pub const PART_TYPE_LOOKUP_KINDS: &[&str] = &["part def"];
-pub const PORT_TYPE_LOOKUP_KINDS: &[&str] = &["port def", "interface"];
-pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[&str] = &[
-    "attribute def",
-    "item def",
-    "enum def",
-    "occurrence def",
-    "kermlDecl",
+/// The definition kinds offered when a typed declaration gives no narrower expectation.
+pub const DEFAULT_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::PartDefinition,
+    ElementKind::PortDefinition,
+    ElementKind::InterfaceDefinition,
+    ElementKind::ItemDefinition,
+    ElementKind::AttributeDefinition,
+    ElementKind::ActionDefinition,
+    ElementKind::OccurrenceDefinition,
+    ElementKind::FlowConnectionDefinition,
+    ElementKind::AllocationDefinition,
+    ElementKind::StateDefinition,
+    ElementKind::RequirementDefinition,
+    ElementKind::UseCaseDefinition,
+    ElementKind::ConcernDefinition,
+    ElementKind::Classifier,
+    ElementKind::Class,
+    ElementKind::Structure,
+    ElementKind::DataType,
+];
+pub const PART_TYPE_LOOKUP_KINDS: &[ElementKind] = &[ElementKind::PartDefinition];
+pub const PORT_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::PortDefinition,
+    ElementKind::InterfaceDefinition,
+];
+pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::AttributeDefinition,
+    ElementKind::ItemDefinition,
+    ElementKind::EnumerationDefinition,
+    ElementKind::OccurrenceDefinition,
+    // What the former `"kermlDecl"` string stood for. The KerML declaration kinds are now
+    // distinct metaclasses, so name the ones that can actually type an attribute.
+    ElementKind::DataType,
+    ElementKind::Classifier,
+    ElementKind::Class,
+    ElementKind::Structure,
 ];
 const DECLARATION_MODIFIER_KEYWORDS: &[&str] = &["def"];
 
@@ -41,7 +68,7 @@ pub enum CompletionContext {
     TypeReference {
         prefix: String,
         qualifier: Option<String>,
-        expected_kinds: &'static [&'static str],
+        expected_kinds: &'static [ElementKind],
     },
     QualifiedReference {
         prefix: String,
@@ -85,6 +112,11 @@ impl CompletionContext {
 struct CompletionCandidate {
     label: String,
     item: CompletionItemDto,
+    /// The candidate's published element kind, where it came from a model member.
+    ///
+    /// Ranking matches on this rather than on `item.detail`, which is an English label built for
+    /// display. Comparing display text was how the kind filter silently stopped matching.
+    element_kind: Option<ElementKind>,
     tier: i32,
     score: i32,
 }
@@ -120,9 +152,16 @@ pub fn complete(
         &hints,
         &edit_shape,
     ));
+    let semantic_status = workspace
+        .published_model()
+        .map(|model| {
+            crate::dto::SemanticResultStatus::from_publication(model.publication().completeness())
+        })
+        .unwrap_or_default();
     Some(CompletionResult {
         items,
-        is_incomplete: false,
+        is_incomplete: !semantic_status.is_complete(),
+        semantic_status,
     })
 }
 
@@ -233,7 +272,7 @@ fn completion_token(trimmed_line_prefix: &str) -> (usize, &str) {
 fn detect_type_reference_context(
     before_token: &str,
     raw_token: &str,
-) -> Option<(&'static [&'static str], Option<String>, String)> {
+) -> Option<(&'static [ElementKind], Option<String>, String)> {
     let before_trimmed = before_token.trim_end();
     if !before_trimmed.ends_with(':') || before_trimmed.ends_with("::") {
         return None;
@@ -244,7 +283,7 @@ fn detect_type_reference_context(
         "part" => PART_TYPE_LOOKUP_KINDS,
         "port" => PORT_TYPE_LOOKUP_KINDS,
         "attribute" => ATTRIBUTE_TYPE_LOOKUP_KINDS,
-        _ => TYPE_LOOKUP_KINDS,
+        _ => DEFAULT_TYPE_LOOKUP_KINDS,
     };
 
     let (qualifier, prefix) = if let Some((qualifier, prefix)) = raw_token.rsplit_once("::") {
@@ -300,9 +339,9 @@ fn typed_declaration_keyword(prefix: &str) -> Option<&str> {
 }
 
 fn refine_completion_context(
-    workspace: &impl WorkspaceSnapshot,
-    uri: &Url,
-    pos: TextPosition,
+    _workspace: &impl WorkspaceSnapshot,
+    _uri: &Url,
+    _pos: TextPosition,
     context: CompletionContext,
 ) -> CompletionContext {
     match context {
@@ -311,14 +350,6 @@ fn refine_completion_context(
         | CompletionContext::BodyStatement { prefix }
             if prefix.is_empty() =>
         {
-            if let Some(node) = workspace
-                .semantic_graph()
-                .find_deepest_node_at_position(uri, pos)
-            {
-                if node.element_kind == ElementKind::Package || node.element_kind.is_definition() {
-                    return CompletionContext::BodyStatement { prefix };
-                }
-            }
             CompletionContext::TopLevelKeyword { prefix }
         }
         other => other,
@@ -328,7 +359,7 @@ fn refine_completion_context(
 fn completion_semantic_hints(
     workspace: &impl WorkspaceSnapshot,
     uri: &Url,
-    pos: TextPosition,
+    _pos: TextPosition,
     context: &CompletionContext,
 ) -> CompletionSemanticHints {
     if !workspace.supports_semantic_queries() {
@@ -339,21 +370,6 @@ fn completion_semantic_hints(
         same_file_uri: Some(workspace.normalize_uri(uri)),
         ..CompletionSemanticHints::default()
     };
-
-    let graph = workspace.semantic_graph();
-    if let Some(node) = graph.find_deepest_node_at_position(uri, pos) {
-        hints.preferred_names.insert(node.name.clone());
-        if let Some(parent_id) = &node.parent_id {
-            hints
-                .container_names
-                .insert(parent_id.qualified_name.clone());
-        }
-        for ancestor in graph.ancestors_of(node) {
-            hints
-                .container_names
-                .insert(ancestor.id.qualified_name.clone());
-        }
-    }
 
     match context {
         CompletionContext::TypeReference {
@@ -498,6 +514,7 @@ fn snippet_candidate(
     let documentation = documentation.into();
     CompletionCandidate {
         label: label.to_string(),
+        element_kind: None,
         item: CompletionItemDto {
             label: label.to_string(),
             kind: Some(kind),
@@ -538,6 +555,7 @@ fn collect_keyword_candidates(
     for keyword in keywords {
         out.push(CompletionCandidate {
             label: (*keyword).to_string(),
+            element_kind: None,
             item: CompletionItemDto {
                 label: (*keyword).to_string(),
                 kind: Some(CompletionItemKindDto::Keyword),
@@ -565,7 +583,7 @@ fn collect_keyword_candidates(
 
 fn collect_symbol_candidates(
     workspace: &impl WorkspaceSnapshot,
-    _current_uri: &Url,
+    current_uri: &Url,
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
@@ -595,43 +613,75 @@ fn collect_symbol_candidates(
     }
 
     let qualifier = match context {
-        CompletionContext::QualifiedReference { qualifier, .. } => Some(qualifier.as_str()),
+        CompletionContext::TypeReference {
+            qualifier: Some(qualifier),
+            ..
+        }
+        | CompletionContext::QualifiedReference { qualifier, .. } => Some(qualifier.as_str()),
         CompletionContext::MemberReference { receiver, .. } => Some(receiver.as_str()),
         _ => None,
     };
 
-    let graph = workspace.semantic_graph();
-
-    for entry in workspace.symbol_table() {
-        if !prefix.is_empty() && !entry.name.to_lowercase().contains(&prefix) {
+    let query_position = edit_shape.replace_range.end;
+    let Some(model) = workspace.published_model() else {
+        return;
+    };
+    let completion = model.completion();
+    let outcome = completion.visible_members(
+        current_uri.as_str(),
+        sysml_query::resolved_slice::TextPosition {
+            line: query_position.line,
+            character: query_position.character,
+        },
+        qualifier.map(|value| value.trim_end_matches(':')),
+    );
+    let mut members = match outcome.answer {
+        sysml_query::resolved_slice::QueryAnswer::Resolved(members) => {
+            members.iter().collect::<Vec<_>>()
+        }
+        _ => return,
+    };
+    if qualifier.is_some() {
+        if let sysml_query::resolved_slice::QueryAnswer::Resolved(extra) = completion
+            .visible_members(
+                current_uri.as_str(),
+                sysml_query::resolved_slice::TextPosition {
+                    line: query_position.line,
+                    character: query_position.character,
+                },
+                None,
+            )
+            .answer
+        {
+            members.extend(extra.iter())
+        }
+    }
+    members.sort_by_key(|a| a.symbol());
+    members.dedup_by(|a, b| a.symbol() == b.symbol());
+    for member in members {
+        let name = member.name().to_string();
+        if !prefix.is_empty() && !name.to_lowercase().contains(&prefix) {
             continue;
         }
-        let detail = entry.detail.clone();
-        let node = graph.nodes_for_uri(&entry.uri).into_iter().find(|node| {
-            node.name == entry.name
-                && detail
-                    .as_deref()
-                    .is_none_or(|detail| detail == node.element_kind)
+        let detail = Some(element_kind_label(member.kind()).to_string());
+        let documentation = Some(format!(
+            "**{}**\n\nQualified name: `{}`",
+            name,
+            member.qualified_name()
+        ));
+        let label_details = Some(CompletionItemLabelDetailsDto {
+            detail: Some(format!(" - {}", member.kind())),
+            description: member
+                .container_name()
+                .map(ToString::to_string)
+                .or_else(|| Some(member.declaring_document().to_string())),
         });
-        let documentation = node
-            .map(|node| hover_markdown_for_node(graph, node, false))
-            .or_else(|| entry.description.clone());
-        let label_details =
-            entry
-                .container_name
-                .as_ref()
-                .map(|container| CompletionItemLabelDetailsDto {
-                    detail: Some(format!(
-                        " - {}",
-                        entry.detail.as_deref().unwrap_or("symbol")
-                    )),
-                    description: Some(container.clone()),
-                });
-        let kind = entry.detail.as_deref().map(element_kind_to_completion_kind);
+        let kind = Some(element_kind_to_completion_kind(member.kind()));
         out.push(CompletionCandidate {
-            label: entry.name.clone(),
+            label: name.clone(),
+            element_kind: Some(member.kind()),
             item: CompletionItemDto {
-                label: entry.name.clone(),
+                label: name.clone(),
                 kind,
                 detail: detail.clone(),
                 documentation: documentation.clone(),
@@ -639,10 +689,10 @@ fn collect_symbol_candidates(
                     .as_ref()
                     .is_some_and(|doc| doc.contains("```")),
                 label_details,
-                filter_text: Some(entry.name.clone()),
+                filter_text: Some(name.clone()),
                 text_edit: Some(CompletionTextEditDto {
                     range: edit_shape.replace_range,
-                    new_text: entry.name.clone(),
+                    new_text: name.clone(),
                 }),
                 insert_text_format_snippet: false,
                 sort_text: None,
@@ -651,11 +701,15 @@ fn collect_symbol_candidates(
                 resolve_detail: detail,
                 resolve_documentation: documentation,
             },
-            tier: if qualifier.is_some_and(|qualifier| {
-                container_matches_qualifier(entry.container_name.as_deref(), qualifier)
-            }) {
+            tier: if qualifier
+                .is_some_and(|qualifier| member.declaring_document().contains(qualifier))
+            {
                 TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
-            } else if hints.same_file_uri.as_ref() == Some(&entry.uri) {
+            } else if hints
+                .same_file_uri
+                .as_ref()
+                .is_some_and(|uri| uri.as_str() == member.declaring_document())
+            {
                 TIER_SAME_FILE_COMPATIBLE
             } else {
                 TIER_GENERIC_SYMBOL
@@ -665,16 +719,112 @@ fn collect_symbol_candidates(
     }
 }
 
-fn element_kind_to_completion_kind(kind: &str) -> CompletionItemKindDto {
+/// The editor icon for a published element kind.
+///
+/// Takes `ElementKind` rather than a string: this function used to match display labels such as
+/// `"part def"` while being handed the raw debug spelling `"PartDefinition"`, so no arm ever fired
+/// and every completion item was rendered as `Reference`. With the enum the mismatch cannot be
+/// expressed.
+fn element_kind_to_completion_kind(kind: ElementKind) -> CompletionItemKindDto {
     match kind {
-        "package" => CompletionItemKindDto::Module,
-        "part def" => CompletionItemKindDto::Class,
-        "port def" | "interface" => CompletionItemKindDto::Interface,
-        "action def" => CompletionItemKindDto::Function,
-        "attribute def" | "attribute" => CompletionItemKindDto::Property,
-        "part" | "item" => CompletionItemKindDto::Variable,
-        "requirement def" | "case def" | "analysis def" => CompletionItemKindDto::Event,
+        ElementKind::Package | ElementKind::LibraryPackage | ElementKind::Namespace => {
+            CompletionItemKindDto::Module
+        }
+        ElementKind::PartDefinition
+        | ElementKind::ItemDefinition
+        | ElementKind::OccurrenceDefinition
+        | ElementKind::IndividualDefinition
+        | ElementKind::Definition
+        | ElementKind::Usage
+        | ElementKind::Class
+        | ElementKind::Classifier
+        | ElementKind::Structure
+        | ElementKind::Association
+        | ElementKind::AssociationStructure
+        | ElementKind::DataType
+        | ElementKind::Metaclass => CompletionItemKindDto::Class,
+        ElementKind::PortDefinition
+        | ElementKind::InterfaceDefinition
+        | ElementKind::InterfaceUsage => CompletionItemKindDto::Interface,
+        ElementKind::ActionDefinition
+        | ElementKind::ActionUsage
+        | ElementKind::CalculationDefinition
+        | ElementKind::CalculationUsage
+        | ElementKind::Behavior
+        | ElementKind::Function
+        | ElementKind::Predicate
+        | ElementKind::Interaction
+        | ElementKind::Step
+        | ElementKind::Expression
+        | ElementKind::BooleanExpression => CompletionItemKindDto::Function,
+        ElementKind::AttributeDefinition | ElementKind::AttributeUsage | ElementKind::Feature => {
+            CompletionItemKindDto::Property
+        }
+        ElementKind::PartUsage
+        | ElementKind::ItemUsage
+        | ElementKind::OccurrenceUsage
+        | ElementKind::PortUsage
+        | ElementKind::ReferenceUsage
+        | ElementKind::ForLoopVariable => CompletionItemKindDto::Variable,
+        ElementKind::RequirementDefinition
+        | ElementKind::CaseDefinition
+        | ElementKind::AnalysisCaseDefinition
+        | ElementKind::UseCaseDefinition
+        | ElementKind::VerificationCaseDefinition
+        | ElementKind::ConcernDefinition
+        | ElementKind::ConstraintDefinition => CompletionItemKindDto::Event,
+        // `CompletionItemKindDto` has no `Enum` variant; an enumeration definition is a
+        // classifier, so `Class` is the closest available icon.
+        ElementKind::EnumerationDefinition => CompletionItemKindDto::Class,
         _ => CompletionItemKindDto::Reference,
+    }
+}
+
+/// The surface-syntax label shown in a completion item's detail text.
+pub(crate) fn element_kind_label(kind: ElementKind) -> &'static str {
+    match kind {
+        ElementKind::PartDefinition => "part def",
+        ElementKind::PortDefinition => "port def",
+        ElementKind::InterfaceDefinition => "interface def",
+        ElementKind::ItemDefinition => "item def",
+        ElementKind::AttributeDefinition => "attribute def",
+        ElementKind::ActionDefinition => "action def",
+        ElementKind::OccurrenceDefinition => "occurrence def",
+        ElementKind::FlowConnectionDefinition => "flow def",
+        ElementKind::AllocationDefinition => "allocation def",
+        ElementKind::StateDefinition => "state def",
+        ElementKind::RequirementDefinition => "requirement def",
+        ElementKind::UseCaseDefinition => "use case def",
+        ElementKind::ConcernDefinition => "concern def",
+        ElementKind::EnumerationDefinition => "enum def",
+        ElementKind::Package | ElementKind::LibraryPackage => "package",
+        ElementKind::PartUsage => "part",
+        ElementKind::PortUsage => "port",
+        ElementKind::ItemUsage => "item",
+        ElementKind::AttributeUsage => "attribute",
+        ElementKind::ActionUsage => "action",
+        ElementKind::ReferenceUsage => "ref",
+        ElementKind::Type => "type",
+        ElementKind::Classifier => "classifier",
+        ElementKind::Class => "class",
+        ElementKind::Structure => "struct",
+        ElementKind::Association => "assoc",
+        ElementKind::AssociationStructure => "assoc struct",
+        ElementKind::DataType => "datatype",
+        ElementKind::Metaclass => "metaclass",
+        ElementKind::Behavior => "behavior",
+        ElementKind::Function => "function",
+        ElementKind::Predicate => "predicate",
+        ElementKind::Interaction => "interaction",
+        ElementKind::Multiplicity => "multiplicity",
+        ElementKind::Feature => "feature",
+        ElementKind::Step => "step",
+        ElementKind::Expression => "expression",
+        ElementKind::BooleanExpression => "boolean expression",
+        ElementKind::Connector => "connector",
+        ElementKind::BindingConnector => "binding connector",
+        ElementKind::Invariant => "invariant",
+        other => other.as_str(),
     }
 }
 
@@ -684,7 +834,6 @@ fn rank_candidates_in_place(
     candidates: &mut [CompletionCandidate],
 ) {
     for candidate in candidates {
-        let detail = candidate.item.detail.as_deref();
         let prefix = context.prefix().to_lowercase();
         let label = candidate.label.to_lowercase();
         let starts_with_prefix = !prefix.is_empty() && label.starts_with(&prefix);
@@ -699,7 +848,7 @@ fn rank_candidates_in_place(
 
         let kind_matches_context = match context {
             CompletionContext::TypeReference { expected_kinds, .. } => {
-                entry_kind_matches(detail, expected_kinds)
+                entry_kind_matches(candidate.element_kind, expected_kinds)
             }
             CompletionContext::DeclarationModifier { .. } => candidate.label == "def",
             CompletionContext::BodyStatement { .. } | CompletionContext::TopLevelKeyword { .. } => {
@@ -758,18 +907,8 @@ fn rank_candidates_in_place(
     }
 }
 
-fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
-    detail
-        .map(|detail| expected_kinds.contains(&detail))
-        .unwrap_or(false)
-}
-
-fn container_matches_qualifier(container_name: Option<&str>, qualifier: &str) -> bool {
-    let qualifier_lc = qualifier.to_ascii_lowercase();
-    container_name.is_some_and(|container| {
-        let container_lc = container.to_ascii_lowercase();
-        container_lc == qualifier_lc || container_lc.ends_with(&format!("::{qualifier_lc}"))
-    })
+fn entry_kind_matches(kind: Option<ElementKind>, expected_kinds: &[ElementKind]) -> bool {
+    kind.is_some_and(|kind| expected_kinds.contains(&kind))
 }
 
 fn dedupe_completion_candidates(candidates: Vec<CompletionCandidate>) -> Vec<CompletionCandidate> {

@@ -10,12 +10,12 @@ use crate::stdlib::{
     StandardLibraryStatus,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
-use workspace::catalog::{HostLibraryRequest, KparLibraryComponent};
-use workspace::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
+use library_catalog::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
+use library_catalog::{HostLibraryRequest, KparLibraryComponent};
 use workspace::{EngineBuilder, Spec42Engine};
 
 #[cfg(test)]
-use workspace::catalog::resolve_stdlib_component_for_test;
+use library_catalog::catalog::resolve_stdlib_component_for_test;
 
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct ConfigFile {
@@ -26,6 +26,7 @@ pub struct ConfigFile {
     pub standard_library_repo: Option<String>,
     pub standard_library_content_path: Option<String>,
     pub disabled_libraries: Option<Vec<String>>,
+    pub project_libraries: Option<BTreeMap<String, String>>,
 }
 
 #[derive(Debug, Clone)]
@@ -394,6 +395,7 @@ fn build_host_library_request(
         no_stdlib: cli.no_stdlib,
         stdlib_path_override: cli.stdlib_path.clone(),
         kpar_library_path_overrides: parse_kpar_library_path_overrides(&cli.kpar_library_paths)?,
+        project_library_paths: resolve_project_library_paths(cli, explicit_config, default_config)?,
         disabled_kpar_libraries: resolve_disabled_kpar_libraries(
             cli,
             explicit_config,
@@ -407,6 +409,60 @@ fn build_host_library_request(
         config_no_stdlib,
         extra_library_paths: sysand_dependency_roots.to_vec(),
     })
+}
+
+fn resolve_project_library_paths(
+    cli: &Cli,
+    explicit_config: &ConfigFile,
+    default_config: &ConfigFile,
+) -> Result<BTreeMap<String, PathBuf>, String> {
+    let mut entries = Vec::new();
+    if let Some(configured) = &default_config.project_libraries {
+        entries.extend(
+            configured
+                .iter()
+                .map(|(resource, path)| format!("{resource}={path}")),
+        );
+    }
+    if let Some(configured) = &explicit_config.project_libraries {
+        entries.extend(
+            configured
+                .iter()
+                .map(|(resource, path)| format!("{resource}={path}")),
+        );
+    }
+    if let Ok(value) = std::env::var("SPEC42_PROJECT_LIBRARIES") {
+        entries.extend(
+            value
+                .split(',')
+                .map(str::trim)
+                .filter(|entry| !entry.is_empty())
+                .map(str::to_owned),
+        );
+    }
+    entries.extend(cli.project_libraries.iter().cloned());
+    parse_resource_path_mappings(&entries, "project library")
+}
+
+fn parse_resource_path_mappings(
+    entries: &[String],
+    label: &str,
+) -> Result<BTreeMap<String, PathBuf>, String> {
+    let mut mappings = BTreeMap::new();
+    for entry in entries {
+        let (resource, path) = entry
+            .rsplit_once('=')
+            .ok_or_else(|| format!("invalid {label} '{entry}' (expected RESOURCE=PATH)"))?;
+        let resource = resource.trim();
+        let path = path.trim();
+        if resource.is_empty() || path.is_empty() {
+            return Err(format!(
+                "invalid {label} '{entry}' (empty resource or path)"
+            ));
+        }
+        mappings.insert(resource.to_owned(), canonicalize_lossy(Path::new(path)));
+    }
+    Ok(mappings)
 }
 
 fn resolve_disabled_kpar_libraries(
@@ -530,6 +586,7 @@ fn resolve_stdlib_path(
         no_stdlib: cli.no_stdlib,
         stdlib_path_override: cli.stdlib_path.clone(),
         kpar_library_path_overrides: BTreeMap::new(),
+        project_library_paths: BTreeMap::new(),
         disabled_kpar_libraries: BTreeSet::new(),
         library_paths: Vec::new(),
         standard_library: standard_library.clone(),
@@ -571,54 +628,6 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
 }
 
-/// True when any `.sysml` / `.kerml` file under `path` references common standard-library packages.
-pub fn workspace_references_standard_library(path: &Path) -> bool {
-    fn file_references_stdlib(path: &Path) -> bool {
-        let Ok(content) = fs::read_to_string(path) else {
-            return false;
-        };
-        content.contains("ScalarValues")
-            || content.contains("ISQ::")
-            || content.contains("ISQ ")
-            || content.contains("SI::")
-            || content.contains("import ISQ")
-            || content.contains("import SI")
-    }
-
-    fn walk(dir: &Path, budget: &mut usize) -> bool {
-        for entry in walkdir::WalkDir::new(dir)
-            .follow_links(false)
-            .into_iter()
-            .filter_map(Result::ok)
-        {
-            if *budget == 0 {
-                break;
-            }
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let path = entry.path();
-            if !path
-                .extension()
-                .is_some_and(|ext| ext == "sysml" || ext == "kerml")
-            {
-                continue;
-            }
-            *budget = budget.saturating_sub(1);
-            if file_references_stdlib(path) {
-                return true;
-            }
-        }
-        false
-    }
-
-    if path.is_file() {
-        return file_references_stdlib(path);
-    }
-    let mut budget = 256usize;
-    walk(path, &mut budget)
-}
-
 #[cfg(test)]
 mod tests {
     use std::sync::Mutex;
@@ -638,6 +647,7 @@ mod tests {
             library_paths: Vec::new(),
             stdlib_path: None,
             kpar_library_paths: Vec::new(),
+            project_libraries: Vec::new(),
             disabled_kpar_libraries: Vec::new(),
             no_stdlib: false,
             stdio: false,
@@ -672,6 +682,26 @@ mod tests {
                     .display()
                     .to_string()
             )
+        );
+    }
+
+    #[test]
+    fn project_library_config_and_cli_bind_authored_resources_without_name_inference() {
+        let mut cli = empty_cli();
+        cli.project_libraries = vec!["https://example.test/std=/tmp/alternate.kpar".into()];
+        let default_config = ConfigFile {
+            project_libraries: Some(BTreeMap::from([(
+                "https://example.test/domain".into(),
+                "/tmp/domain.kpar".into(),
+            )])),
+            ..ConfigFile::default()
+        };
+        let mappings = resolve_project_library_paths(&cli, &ConfigFile::default(), &default_config)
+            .expect("explicit resource mappings");
+        assert_eq!(mappings.len(), 2);
+        assert_eq!(
+            mappings["https://example.test/std"],
+            canonicalize_lossy(Path::new("/tmp/alternate.kpar"))
         );
     }
 

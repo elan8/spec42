@@ -1,0 +1,217 @@
+//! Span/range conversion and name extraction for the syntax-role collector.
+
+use super::{SyntaxRange, SyntaxRole};
+
+use sysml_v2_parser::ast::Identification;
+use sysml_v2_parser::Span;
+
+/// Accept both legacy textual type names and parser 0.35 typed relationships.
+pub trait TypeNameRef {
+    fn type_name_ref(&self) -> &str;
+}
+
+impl TypeNameRef for str {
+    fn type_name_ref(&self) -> &str {
+        self
+    }
+}
+
+impl TypeNameRef for String {
+    fn type_name_ref(&self) -> &str {
+        self
+    }
+}
+
+/// Converts Span to our SyntaxRange (0-based) for semantic token range matching.
+// `Span::to_lsp_range` is deprecated in favour of `ParsedDocument::range`, which returns the
+// *true* multi-line range. This collector deliberately keeps the single-line projection: several
+// callers use a node's range as a search window within one line, and a genuinely multi-line range
+// changes which spans they find. Switching is a behaviour change to the published tokens, so it
+// belongs in its own reviewed commit with an intended golden diff, not here.
+#[allow(deprecated)]
+pub fn span_to_source_range(span: &Span) -> SyntaxRange {
+    let (start_line, start_char, end_line, end_char) = span.to_lsp_range();
+    SyntaxRange {
+        start_line,
+        start_character: start_char,
+        end_line,
+        end_character: end_char,
+    }
+}
+
+/// Returns the decoded display name from an `Identification` (name, or short name, or empty).
+pub fn identification_name(
+    document: &sysml_v2_parser::ParsedDocument,
+    ident: &Identification,
+) -> String {
+    ident
+        .name
+        .or(ident.short_name)
+        .and_then(|name| document.decoded_declaration_name(name))
+        .map(|name| name.into_owned())
+        .unwrap_or_default()
+}
+
+/// The decoded text of an optional declaration name, or `None` when absent.
+pub fn declaration_name_text(
+    document: &sysml_v2_parser::ParsedDocument,
+    name: Option<sysml_v2_parser::ast::DeclarationName>,
+) -> Option<String> {
+    name.and_then(|name| document.decoded_declaration_name(name))
+        .map(|name| name.into_owned())
+}
+
+/// The authored source text under a span.
+pub fn span_text<'a>(source: &'a str, span: &Span) -> &'a str {
+    source
+        .get(span.offset..span.offset.saturating_add(span.len))
+        .unwrap_or("")
+}
+
+/// Locate a whole-word occurrence of `word` inside `span` on a single source line.
+pub fn word_range_within_span(source: &str, span: &SyntaxRange, word: &str) -> Option<SyntaxRange> {
+    if word.is_empty() || span.start_line != span.end_line {
+        return None;
+    }
+    let line = source.lines().nth(span.start_line as usize)?;
+    let line_start = span.start_character as usize;
+    let line_end = span.end_character as usize;
+    if line_end <= line_start {
+        return None;
+    }
+    let slice: String = line
+        .chars()
+        .skip(line_start)
+        .take(line_end - line_start)
+        .collect();
+    let mut search_at = 0usize;
+    while let Some(rel) = slice[search_at..].find(word) {
+        let abs = search_at + rel;
+        let before_ok = abs == 0 || !is_ident_byte(slice.as_bytes().get(abs - 1).copied());
+        let after = abs + word.len();
+        let after_ok = after >= slice.len() || !is_ident_byte(slice.as_bytes().get(after).copied());
+        if before_ok && after_ok {
+            let char_start = slice[..abs].chars().count();
+            let char_end = char_start + word.chars().count();
+            return Some(SyntaxRange {
+                start_line: span.start_line,
+                start_character: line_start as u32 + char_start as u32,
+                end_line: span.end_line,
+                end_character: line_start as u32 + char_end as u32,
+            });
+        }
+        search_at = abs + 1;
+    }
+    None
+}
+
+fn is_ident_byte(b: Option<u8>) -> bool {
+    b.is_some_and(|b| b.is_ascii_alphanumeric() || b == b'_')
+}
+
+/// Push a definition shell span (refined to the declared name during merge) plus optional specializes type.
+pub fn push_ident_definition_spans(
+    span: &Span,
+    specializes_span: Option<&Span>,
+    role: SyntaxRole,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    out.push((span_to_source_range(span), role));
+    if let Some(s) = specializes_span {
+        out.push((span_to_source_range(s), SyntaxRole::Type));
+    }
+}
+
+/// Push usage name/type ranges: the name is its own span; the type uses the parser span when
+/// present, otherwise a source lookup within the node span.
+pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
+    source: &str,
+    node_span: &Span,
+    name: impl Into<Option<sysml_v2_parser::ast::DeclarationName>>,
+    type_name: Option<&T>,
+    type_span: Option<&Span>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(name) = name.into() {
+        out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+    }
+    if let Some(s) = type_span {
+        out.push((span_to_source_range(s), SyntaxRole::Type));
+    } else if let Some(type_name) = type_name.map(TypeNameRef::type_name_ref) {
+        if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), type_name)
+        {
+            out.push((r, SyntaxRole::Type));
+        }
+    }
+}
+
+/// Best-effort declared name from a KerML modeled declaration (`FeatureDecl` /
+/// `ClassifierDecl` / similar), mirroring graph-builder name extraction.
+pub fn modeled_decl_name(keyword: &str, text: &str) -> Option<String> {
+    let t = text.trim().trim_end_matches(';').trim();
+    let tokens: Vec<&str> = t.split_whitespace().collect();
+    let kw = keyword.trim();
+    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
+        let mut i = pos + 1;
+        while i < tokens.len() {
+            let tok = tokens[i].trim_end_matches([';', ',', ')', '{']);
+            if tok.eq_ignore_ascii_case("def")
+                || tok.eq_ignore_ascii_case("id")
+                || tok.eq_ignore_ascii_case("case")
+                || tok.starts_with('\'')
+            {
+                i += 1;
+                continue;
+            }
+            if tok.eq_ignore_ascii_case("specializes") {
+                break;
+            }
+            let name: String = tok
+                .chars()
+                .filter(|c| c.is_alphanumeric() || *c == '_')
+                .collect();
+            if !name.is_empty() {
+                return Some(name);
+            }
+            break;
+        }
+    }
+    None
+}
+
+/// Push a whole-word occurrence of `name` inside `span` when present in `source`.
+pub fn push_word_token(
+    source: &str,
+    span: &Span,
+    name: &str,
+    role: SyntaxRole,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if name.is_empty() {
+        return;
+    }
+    let local = name.rsplit("::").next().unwrap_or(name);
+    if let Some(r) = word_range_within_span(source, &span_to_source_range(span), local) {
+        out.push((r, role));
+    }
+}
+
+/// The authored label of a namespace-owning declaration.
+///
+/// A package name may be a qualified path, which the document's arena owns rather than the node.
+pub fn qualified_identification_name(
+    document: &sysml_v2_parser::ParsedDocument,
+    identification: &sysml_v2_parser::ast::QualifiedIdentification,
+) -> String {
+    use sysml_v2_parser::ast::NamespaceName;
+    match identification.name.as_ref() {
+        Some(NamespaceName::Simple(name)) => {
+            declaration_name_text(document, Some(*name)).unwrap_or_default()
+        }
+        Some(NamespaceName::Qualified(name)) => document
+            .qualified_declaration_name(*name)
+            .map(|view| view.authored_text().to_string())
+            .unwrap_or_default(),
+        None => declaration_name_text(document, identification.short_name).unwrap_or_default(),
+    }
+}

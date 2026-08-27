@@ -29,24 +29,15 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
+          targets: wasm32-unknown-unknown
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
-      - name: cargo fmt --check
-        run: cargo fmt --all -- --check
-
-      - name: Standard library config is current
-        run: node scripts/sync-standard-library-config.mjs --check
-
-      - name: KPAR libraries config is current
-        run: node scripts/sync-kpar-libraries-config.mjs --check
-
-      - name: Extension versions match Cargo workspace
-        run: node scripts/sync-workspace-version.mjs --check
-
-      - name: SysML reference tooling smoke checks
-        run: python3 -m unittest tools/sysml_reference/test_tools.py
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -103,64 +94,37 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Conformance matrix is current
-        run: node scripts/generate-conformance-matrix.mjs --check
+      # This is also the local pre-push entry point. Keep the commands in one place so local and
+      # hosted Rust-core checks cannot silently drift apart.
+      - name: Mini CI
+        id: repository-plugins
+        run: scripts/minici.sh
 
-      - name: Generator ABI manifest and specification are current
-        run: |
-          cargo run -p spec42-generator-protocol --example abi-manifest > docs/generation/generator-abi.json
-          git diff --exit-code docs/generation/generator-abi.json
-          node scripts/sync-generator-abi.mjs --check
+      # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests plus
+      # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates Spec42
+      # errors/warnings in its own CI, so pinning it here would couple releases to showcase drift.
 
-      - name: Requirements slice integration checks
-        run: |
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
-          cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
+      # The report deliberately exits non-zero while the manifest has uncovered normative rules.
+      # Keep that known debt visible as an artifact without turning the existing baseline into a
+      # permanent red build; Mini CI's snapshot check remains the hard freshness/expectation gate.
+      - name: Semantic evidence coverage report
+        continue-on-error: true
+        run: cargo snapshot report --format json > target/snapshot-report.json
 
-      - name: cargo test (core workspace)
-        run: |
-          cargo test --workspace --exclude server --exclude lsp_server
-          cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
-          # lsp_integration spawns a real server subprocess per test and waits on background
-          # async indexing with a wall-clock retry budget; under default parallelism on shared
-          # CI runners, contention from many concurrent subprocesses can starve that budget and
-          # produce flaky failures that don't reproduce locally. Run it serially here instead.
-          cargo test -p lsp_server --test lsp_integration -- --test-threads=1
-          cargo test -p server --lib
-
-      - name: SysML fuzz seed regression corpus
-        run: cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
-
-      - name: Generator conformance corpus
-        run: |
-          scripts/build-generator-plugins.sh
-          cargo run -p generator_conformance --bin generator-conformance
-          # A blessed golden must be committed, never produced by CI.
-          git diff --exit-code generator-tests/golden
-          # Subprocess layer: exit codes, the output transaction and cross-process
-          # determinism, none of which the in-process corpus can observe. Must run after the
-          # plugins are built or it skips itself.
-          cargo test -p server --test generator_cli
-
-      - name: Sandboxed Rust generator smoke
-        run: |
-          cargo build --release --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
-
-      # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
-      # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
-      # Spec42 errors/warnings on its own CI; pinning it here couples Spec42
-      # releases to showcase/method drift.
-
-      - name: cargo clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-
-      - name: cargo doc
-        run: cargo doc --no-deps --workspace
-        env:
-          RUSTDOCFLAGS: -D warnings
+      - name: Upload semantic evidence coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-evidence-coverage
+          path: target/snapshot-report.json
+      - name: Upload repository generator plugins
+        if: always() && steps.repository-plugins.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-generator-plugins
+          path: generator-plugins/target/wasm32-unknown-unknown/release/*.wasm
+          if-no-files-found: error
+          retention-days: 14
 
   audit:
     name: Dependency audit
@@ -249,12 +213,10 @@ jobs:
 
       - name: Agent CLI surface integration tests
         run: |
-          cargo test -p server \
-            --test cli_ai_tools \
-            --test kitchen_timer_check \
-            --test kpar_stdlib_embed_smoke \
-            --test multi_file_check \
-            -- --include-ignored
+          # One integration binary per crate; each module is selected by name.
+          for module in cli_ai_tools kitchen_timer_check kpar_stdlib_embed_smoke multi_file_check; do
+            cargo test -p server --test integration "$module" -- --include-ignored
+          done
 
   frontend-unit:
     name: Frontend unit checks
@@ -270,26 +232,23 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: |
-            shared/diagram-renderer/package-lock.json
+            vscode/diagram-renderer/package-lock.json
             vscode/package-lock.json
 
-      - name: Check frontend ELK dependency parity
-        run: node scripts/check-frontend-elk-parity.mjs
-
       - name: npm ci (diagram renderer)
-        run: cd shared/diagram-renderer && npm ci
+        run: cd vscode/diagram-renderer && npm ci
 
       - name: npm audit (diagram renderer)
-        run: cd shared/diagram-renderer && npm audit --omit=dev
+        run: cd vscode/diagram-renderer && npm audit --omit=dev
 
       - name: npm typecheck (diagram renderer)
-        run: cd shared/diagram-renderer && npm run typecheck
+        run: cd vscode/diagram-renderer && npm run typecheck
 
       - name: npm test (diagram renderer)
-        run: cd shared/diagram-renderer && npm test
+        run: cd vscode/diagram-renderer && npm test
 
       - name: npm test:coverage (diagram renderer)
-        run: cd shared/diagram-renderer && npm run test:coverage
+        run: cd vscode/diagram-renderer && npm run test:coverage
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
@@ -299,6 +258,12 @@ jobs:
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
+
+      - name: Build diagram webview
+        run: cd vscode && npm run build:diagram-webview
+
+      - name: Diagram viewer unit tests
+        run: cd vscode && npm run test:diagram-unit
 
       - name: LM CLI argv unit tests
         run: cd vscode && npm run test:lm-cli-unit
@@ -424,23 +389,17 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
+
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: npm test (extension smoke)
         run: cd vscode && xvfb-run -a npm test
 
       - name: npm test (multi-file smoke)
         run: cd vscode && xvfb-run -a npm run test:multi-file
-
-      - name: npm test (workspace smoke)
-        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
-
-      - name: npm test (state view integration)
-        run: cd vscode && xvfb-run -a npm run test:state-view
-
-      - name: npm test (interconnection integration)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
 
       - name: npm test (server restart smoke)
         run: cd vscode && xvfb-run -a npm run test:server-restart
@@ -550,11 +509,11 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
 
-      - name: Verify package layout
-        run: cd vscode && npm run verify:package-layout
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: Package VSIX
         run: cd vscode && npm run package

@@ -7,6 +7,529 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `c81e0b6` -> `695b2b4`.** The parser now
+  preserves ordered and repeated flow-payload and feature-specialization clauses, binding body
+  ends, directed action parameter kinds, action-body transitions, and invalid-owner
+  requirement/view memberships. `sysml_resolution` consumes the new exhaustive AST shapes;
+  obsolete parser blockers are retired or narrowed, while remaining semantic work is tracked by
+  typed lowering/semantic blockers in the snapshot corpus.
+
+- **Bumped the pinned `sysml-v2-parser` revision `c1677e7` -> `34fd6c4`.** The 12-commit upstream
+  speculation-removal performance series preserves the existing parser-gap inventory; snapshot
+  regeneration now reports the retained `#Safety feature z1 : T;` extended usage explicitly as an
+  unsupported package member.
+
+- **Bumped the pinned `sysml-v2-parser` revision `f52100f` -> `c1677e7`.** The 40-commit bump
+  (upstream "gaps wave 2", "corpus snapshot wave 3", the parser performance pass and the
+  span-backed authored-text migration) closes gaps
+  59, 64, 65, 67, 70, 72, 73, 75, 80 and 81 in `planning/UPSTREAM_PARSER_GAPS.md` and narrows 62,
+  66, 74 and 76, each re-probed at the new revision one spelling per document through `spec42
+  check`. It opens one gap, 82: a directed `in action body { ... }` parameter reaches the AST as
+  a plain `InOutDecl` with its `action` keyword consumed, so `validatePerformActionUsageReference`
+  deliberately does not report a `perform` of a parameter. Across the snapshot corpus 74 fixtures
+  reach `complete` (48 from `unsupported-syntax`, 26 from `parse-recovery`) and no fixture
+  regresses from `complete`. The standard library's last parse recoveries are gone, which is what
+  makes the next entry visible.
+
+- **The semantic boundary consumes parser AST v240 without recreating source facts.** Declaration
+  names, short names, string literals, comment bodies, opaque declaration text and fallback
+  operators are resolved through their owning `ParsedDocument` spans. Semantic names and literal
+  values are decoded once at lowering; authored comment bytes remain authored. The grammar-owned
+  implicit `objective` role is derived by objective-membership lowering rather than fabricated in
+  the syntax tree. Integer literals outside `i64` now remain explicit parser recovery instead of
+  silently becoming zero.
+
+- **The 94-document standard library publishes `unsupported-syntax` honestly, and 1,963 of its
+  unsupported members now lower.** Parser recovery in `Flows.sysml`/`Interfaces.sysml`/
+  `Items.sysml` had masked the library's unsupported syntax behind `parse-recovery`; with the bump
+  the completeness is the true one, and 94 library-admitting fixtures record it. The members that
+  lower: `:>> x = value;` in an attribute body (1,885, the ISQ quantity definitions), dotted
+  feature-chain targets of `subsets`/`references`/`crosses`/`redefines`/`chains`/`inverse of`
+  (resolved hop by hop through the member-access resolver, keeping their relationship kind),
+  `inverse of` (`featureInverting`), the declaration-led `flow f : T ... from a to b;` form in every
+  body that admits a flow, SysML `succession` usages in connection, occurrence, state, requirement
+  and part-usage bodies, and a usage's `intersects` clause. Seven library members remain
+  unsupported (`subclassifier` relationship declarations, `{true}` expression bodies, `return ref`,
+  a constraint's `return result = ...`, `satisfy requirement ... by that`, a transition with an
+  accept payload in a state body); each is named in the gaps document.
+
+- **The generator API treats an unsupported-syntax publication the way it already treated parser
+  recovery.** `satisfy_relationships` and `requirement_verifications` returned an error for a
+  publication whose only defect was unsupported syntax in an admitted library, while every other
+  query and the crate's own `outcome` helper handed the settled values over with the incomplete
+  flag set; a requirement's typing likewise collapsed to `Unsupported` instead of the wire's
+  `Recovered*` family. All three now follow the same policy, `SatisfyRelationship::recovered` and
+  `RequirementVerification::recovered` are documented as "the publication is not complete", and
+  the generation fixtures are byte-identical to before the bump. No wire schema change.
+
+- **Nine constructs the bump unblocked now lower, and five validation rules fire on them.**
+  `end` on every occurrence-usage family (`end part`, `end [1] part bead : TireBead;`, `end
+  theCauses [*] occurrence theCause :> causes;`) publishes the `end` modifier and the owned cross
+  feature as a `ReferenceUsage`; `#Tag` extension keywords on any usage, `ref` declaration or
+  enumerated value lower as `metadataAnnotation` references, and the keyword-less `#Tag <name>`
+  `ExtendedUsage` is its own `DeclarationKind::ExtendedUsage` (`ElementKind::Usage`); a
+  `MetadataBody`'s nested definition, alias and import members lower; `include use case v : V;`
+  declares a nested use case; `require constraint c : C;` keeps its typing; a `perform <path>;`
+  target is a `referenceSubsetting` reference; a named connector end (`connect bead references
+  t.bead to ...`) is a positional end declaration; `end derived x : T;` / `end in x : T;` carry
+  their `RefPrefix`; a state definition's or usage's `parallel` body modifier is the `parallel`
+  modifier fact; and a classifier's `conjugates A` / `~ A` clause is a `conjugation` reference,
+  which `deriveTypeOwnedConjugator` now answers. `::>`/`references`, `crosses`, `inverse of` and
+  a usage's `intersects` clause resolve through the subsetting pass instead of settling as
+  `unsupported_reference`.
+
+  New diagnostics: `end_feature_has_direction` (KerML `validateFeatureEndNoDirection`),
+  `metadata_body_feature_invalid` (`validateMetadataFeatureBody`), `port_owned_usage_composite`
+  and `port_nested_usage_composite` (SysML `validatePortDefinitionOwnedUsagesNotComposite` /
+  `validatePortUsageNestedUsagesNotComposite`, over a canonical `usage_is_composite` fact that
+  follows the Pilot: a usage is composite unless `ref`, `end`, attribute-like or a reference
+  usage) and `parallel_state_substate_transition` (`validateStateDefinitionParallelSubactions` /
+  `validateStateUsageParallelSubactions`); `end_feature_invalid_restrictions` also covers
+  `portion`. The KerML end-feature fixtures author their violating side in SysML's
+  `DefaultReferenceUsage` spelling, the one production in either language that puts a `RefPrefix`
+  beside `end`. Fourteen validation fixtures came off `blocked_by`; the two whose violating side has
+  no concrete-syntax spelling at all (a second `conjugates` clause, a `var` end feature) are now
+  `by_construction` fixtures blocked on `abstract_syntax_coverage_gap` issues, and the fixtures
+  whose remaining blocker is semantic rather than syntactic name it (`lowering-gap-kerml-relationship-declarations`,
+  `lowering-gap-state-usage-specialization-facts`, `semantic-trigger-invocation-argument-typing`,
+  `semantic-feature-chaining-rules`, `parser-gap-66-subsetting-clause-count`).
+
+- **The snapshot tool builds each fixture once.** The per-fixture sequential/parallel
+  construction lanes are gone; that invariant is proven once by the authority's own
+  `construction_schedule_parity` test over the examples corpus. `cargo snapshot check` runs the
+  tool in release over the cached library stratum: a full check is now ~2 seconds. The workspace
+  test suite runs in ~18 seconds (from ~56), with integration tests as one binary per crate and
+  the resolver and parser compiled at opt-level 1 in dev.
+
+- **A symbol entry names its element by handle; the qualified name is read from the
+  publication.** `SymbolEntry::qualified_name` is gone. Document and workspace symbols are
+  produced in bulk -- one entry per declaration in a document, every one carrying a `Box<str>`
+  copy of the `::`-joined path the publication already stores. Consumers read it through the
+  borrowed `PublishedModel::qualified_name`, `display_label` takes the name it should fall back
+  to, and the LSP, generator and report edges materialise text only where a protocol demands
+  it. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank by one entry; the three entries that
+  remain are synthesised text with nothing to borrow from, and the guard's comment says why.
+
+- **Authored text is a handle too: `sysml_contract::TextId`.** A published fact that quoted text
+  the publication had already interned was allocating a second copy of it per result.
+  `TextId` is the publication-scoped slot of one interned run, with the same validity story as
+  `SymbolId`, and `PublishedModel::text` / `PublishedResolution::text` borrows the run back.
+  `AuthoredUnit::authored` -- the unit token as written between the brackets -- is the first fact
+  to carry the handle instead of a `Box<str>`; the hover edge reads the text through the
+  publication. Rendering is unchanged, so snapshot output is byte-identical. Enforcement: the
+  owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
+
+- **A qualified-reference candidate names its element by handle.**
+  `QualifiedReferenceTarget::qualified_name` is gone. The caller supplied that name in the
+  `QualifiedElementReference` it asked with, so handing a `Box<str>` copy back -- once per
+  candidate of an ambiguous or wrong-kind outcome -- duplicated both the request and the
+  publication's own storage. Consumers read it through the borrowed
+  `PublishedResolution::qualified_name`. Rendering is unchanged, so snapshot output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank by one entry.
+
+- **An element inspection names its element by handle; the qualified name is read from the
+  publication.** `ElementInspection::qualified_name` is gone. It was a `Box<str>` copy of the
+  `::`-joined display path the publication already stores, allocated once per inspection -- and
+  inspections are produced in bulk by details, hover and the feature inspector. Consumers now read
+  it through the borrowed `PublishedModel::qualified_name` / `PublishedResolution::qualified_name`,
+  which slices the settled blob, and the LSP and generator edges materialise an owned string only
+  where their protocols demand one. Rendering is unchanged, so snapshot output is byte-identical.
+  Enforcement: the owned-string inventory's *product* list in `architecture.rs` shrank by one entry.
+- **Diagram scene ids are typed; relationships, edges and transitions carry no synthesised
+  string.** `DiagramRelationship::semantic_id`, `DiagramEdge::semantic_id` and
+  `DiagramStateTransition::semantic_id` were `Box<str>`s composed from an occurrence key and a
+  suffix, allocated per scene item and used only to order the scene and to pair a transition with
+  its origin. A relationship now carries its `ordinal`; an edge and a transition carry the `origin`
+  index into the projection's elements, and a transition its `DiagramTransitionRole`. Ordering is
+  unchanged (the same key is compared, once, at construction), and the generator boundary renders
+  the transition id through `DiagramViewProjection::transition_scene_id`, so protocol output is
+  byte-identical. Enforcement: the owned-string inventory's product list in `architecture.rs`
+  shrank by three entries.
+
+- **A projected diagram relationship states its kind as an enum, not as text.**
+  `DiagramRelationship::kind` was a `Box<str>` of the canonical reference name, so every consumer
+  that dispatched on it -- the edge composer, the transition-feature lookup, the generator
+  boundary -- was a string comparison no compiler checks, where a typo silently produces a
+  missing edge instead of an error. `sysml_contract::DiagramRelationshipKind` has one variant per
+  reference kind the resolution authority publishes (58 of them), and `name()` returns the same
+  canonical text, so the published product and the scene keys derived from it are byte-identical.
+  `DiagramIncompleteReason`'s three relationship arms carry the enum too.
+
+  Making the set exhaustive surfaced two comparisons that could never match: the state-transition
+  scene looked up a `transitionGuard` relationship and the completeness rule required
+  `messageSource`/`messageTarget` for a sequence view, none of which any reference kind emits.
+  Both are now written as what they always evaluated to -- an absent guard, and nothing required
+  of a sequence view -- rather than as a lookup that quietly fails. Enforcement: the owned-string
+  inventory's product list in `architecture.rs` shrank by one entry.
+
+- **A diagram catalog entry names its view by handle; the display name is read at the edge.**
+  `DiagramViewCatalogEntry` no longer carries a `Box<str>` of the view usage's name. The catalog
+  lists every authored standard view in a workspace, so it was allocating one copy per entry --
+  and a second for the entry the projection echoes back -- for text only a view picker renders.
+  The authored-name-else-qualified-name fallback stays the authority's rule rather than moving to
+  each consumer: `PublishedResolution::diagram_view_name` (facade: `diagrams().view_name`)
+  applies it and borrows the result. Catalog order was already the handle's canonical identity
+  order, so nothing about ordering or output changes. Enforcement: the owned-string inventory's
+  product list in `architecture.rs` shrank by one entry.
+
+- **A state-transition vertex names its element by handle; the label is read at the edge.**
+  `DiagramStateVertex` is now `Copy` -- a `SymbolId`, a vertex kind and a `SourceLocation`. The
+  label it used to carry was a copy of the element's authored name, which the publication already
+  stores, allocated once per vertex for text only a renderer needs. A consumer reads it with
+  `symbol_name`, which borrows from the settled symbol blob. Output is byte-identical: the
+  generator boundary materialises the same `unwrap_or_default` empty label for an anonymous state.
+  Enforcement: the owned-string inventory's product list in `architecture.rs` shrank by one entry.
+
+- **A navigation result names its element by handle; the name is read at the editor edge.**
+  `NavigationTarget` is now `Copy` -- a `SymbolId` and a `SourceLocation` -- and
+  `RenameOutcome::Ready` no longer carries a `Box<str>` of the name either. A definition or
+  reference query that returns several candidates was allocating a copy of a name the publication
+  already stores, once per candidate, for text most consumers never render. `PublishedModel`
+  (and `PublishedResolution`) grew a borrowed `symbol_name`, which slices the settled symbol blob;
+  the LSP edge materialises there, where the protocol demands an owned string anyway. Candidate
+  ordering still breaks ties on the authored name, read through the publication, so output is
+  byte-identical. Enforcement: the owned-string inventory's *product* list in `architecture.rs`
+  shrank by one entry.
+
+- **The owned-string inventory says which owned strings are debt.** `FACADE_OWNED_STRING_FIELDS`
+  split into `FACADE_OWNED_STRING_INPUT_FIELDS` -- names a consumer hands in to ask a question,
+  which no publication storage backs and which are correctly owned -- and
+  `FACADE_OWNED_STRING_PRODUCT_FIELDS`, the copies a query hands back, which is the list meant to
+  shrink. Both sets are asserted exactly and are checked for overlap, so a product cannot be
+  reclassified as an input to escape the rule.
+
+- **A published location names its document by handle, not by a copy of the URI.**
+  `sysml_contract::DocumentId` is a `Copy`, publication-scoped ordinal with the same validity
+  story as `SymbolId`: valid for exactly the publication that minted it, and
+  `DocumentToken`/`PublishedModel::resolve_document_token` is what survives a rebuild or crosses a
+  process boundary. `SourceLocation::document` is now that handle, so `SourceLocation` is `Copy`
+  and every reference, rename occurrence, symbol entry and inspection stops carrying a per-result
+  `Box<str>` of a string the publication already holds once. Hosts materialise the identity where
+  they need text, through the borrowed `PublishedModel::document_identity`; `document_of` is the
+  inverse a host uses when an editor request names a document by URI. Contractually ordered
+  results still sort by identity, not by ordinal, so output is byte-identical. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank by one entry.
+
+- **The keystroke-path facade products are borrowed views over the publication, not owned copies
+  of it.** `visible_members` answers with `VisibleMembers<'m>`/`VisibleMemberRef<'m>`: handles plus
+  `&'m str` accessors that slice the publication's settled symbol, qualified-name and document
+  blobs, so a completion request over the standard library allocates 4 times instead of 487. The
+  qualified name comes from the barrier-settled `QualifiedNameIndex` that every other query reads,
+  retiring a second owner-chain derivation. `PublishedDiagnostics<'m>` borrows the settled
+  diagnostic sequence rather than cloning it per query, and `Diagnostic`, `DiagnosticLocation` and
+  `RelatedLocation` publish their storage through `&str` accessors. Enforcement: the
+  `FACADE_OWNED_STRING_FIELDS` inventory in `architecture.rs` shrank from 29 entries to 23.
+
+- **The editor host and the batch host are siblings again: `lsp_server` no longer depends on
+  `workspace`.** Batch validation — walk a directory, publish once, collect the diagnostics the
+  publication settled — moved from `lsp_server::validation` to `workspace::validation`, where the
+  rest of the batch path already lived. There is now one validation report type
+  (`HostValidationReport`, grown an `advice` field and shared with the snapshot's own eager
+  validation), one summariser, one target-discovery helper, and one entry point whose reporting
+  policy the caller chooses. `server` reaches validation through `workspace` and keeps
+  `lsp_server` only to launch the editor host; it no longer re-derives library advice by
+  re-scanning the workspace's `.sysml` text and grepping the report it was handed. The report
+  crosses the graph as neutral `SemanticDiagnostic` values, and `spec42 check --format json` keeps
+  publishing the LSP diagnostic shape as a CLI projection, so existing baselines still apply.
+  Enforcement: `architecture.rs` pins the exact dependency sets of both hosts, fails if
+  `lsp_server/src/validation` reappears, and adds two AST guards — no host function takes SysML
+  text as a parameter, and no host field keys derived data by document — each against an
+  allow-list that only ever shrinks.
+
+- **Spec42 now has a sole-authority pipeline: the parser is depended on only by `sysml_resolution`,
+  `sysml_resolution` only by `sysml_query`, and `sysml_source` only by `sysml_resolution`; every
+  consumer works with the facade's services and nothing else.** `design.md` at the repository root
+  states the architecture: a source authority (`sysml_source`: admission, URI and line-ending
+  policy, providers, digests), a semantic authority (`sysml_resolution`: the one parser call and
+  its memo, lowering, resolution, library closure, publication and its session lifecycle), and the
+  `sysml_query` facade with `source`, `syntax`, `library` and `publication` services obtained from
+  one `Services` per host. A source revision is now parsed once — the editor's syntax queries and
+  the semantic build share one memoised tree — and the editor host's index holds reference-counted
+  documents and trees, so its actor's copy-on-write clone on every mutation no longer copies every
+  file's text and tree. `semantic_publication` and `workspace_session` are retired
+  (`session_actor` is the generic actor that remains); `workspace` is split into the
+  `library_catalog` provisioning crate and a batch host. The on-disk parse cache and the unwired
+  content-addressed cache substrate are deleted: the bundled standard library parses in
+  milliseconds in parallel, and a disk tier may return only with a benchmark showing it beats
+  recomputation. Enforcement: three `cargo deny` bans, std-only manifest and lockfile guards in
+  `source_identity`, exact dependency pins in `architecture.rs`, and a new
+  `syntax_authority.rs` guard that rejects retired helpers, shadowed service queries, caches and
+  SysML file reads outside the authorities, and string probes for SysML syntax; the heuristics it
+  still exempts are recorded with their retiring queries in `planning/SYNTAX_FOLLOW_UPS.md`.
+- **Editor answers about declarations, imports and the cursor now come from the syntax service,
+  with visible differences.** The outline publishes a typed `SyntaxOutlineKind` with the authored
+  keyword as an accessor, each declaration's short name, its typing, and — new — its true
+  multi-line extent, its header range and its body range; `ParsedSource` answers
+  `declaration_at`/`enclosing_declarations`, `imports`, `type_references`,
+  `referenced_namespace_roots`, `token_at`, `unit_literal_at` and `occurrences_of`. Consequences a
+  user sees: folding regions now cover multi-line declarations (outline ranges used to end on the
+  declaration's opening line, so almost nothing was foldable); workspace symbols and library
+  search are classified by their element kind instead of arriving uniformly as "variable"; linked
+  editing and the feature inspector no longer trigger from a keyword written in a comment or a
+  string, and renaming through linked editing no longer rewrites a name inside a comment or a
+  string literal; document links anchor to each import's own range rather than to any line
+  containing the word `import`; and whether a workspace uses the standard library is decided from
+  the namespaces its sources name rather than from a substring of its bytes. Signature help reads
+  the declaration the cursor is in rather than the leading keyword of its line.
+- **Library closure is resolved from parsed facts rather than text, with visible differences.**
+  A `SysML::` mention in a comment no longer admits the `SysML` package (authored imports and
+  typing references do); `import sysml::*` admits every package under a standard-library root by
+  provenance rather than by a `sysml.library` path suffix; a unit catalogue is recognised by an
+  attribute with a short name typed by a `…Unit` anywhere in the file, including at package level;
+  a malformed library file still contributes the packages and imports it did declare.
+- **Semantic-token highlighting no longer paints `provides`, `requires` or `value` as keywords.**
+  The lexer's keyword table was a second copy that included three words OMG 8.2.2.1.2 does not
+  reserve; both tables are now the facade's single 128-word vocabulary.
+- **Every publication now admits the standard-library packages its implied specializations
+  anchor into.** The library closure seeds the root packages of the resolver's generated library
+  rules (`Parts`, `Items`, `States`, `Views`, `Requirements`, …) from standard-library roots, so
+  `missing_library_anchor` no longer appears for models that never import them — including a
+  workspace that declares its own `package Views`, since anchors resolve by standard-library
+  role, not by bare name. `crates/server/tests/examples_are_clean.rs` now asserts every
+  `examples/` workspace validates with no errors, warnings or infos.
+- **Line endings are normalised to LF before a document is digested, on every path.** The
+  editor already sent LF text; batch snapshots of CRLF files now carry the same digests the
+  editor would, so `document_digests` in persisted artifact metadata change for CRLF files.
+
+- **`spec42 check` and the workspace comparison harness agree on severity labels.** Both surfaces
+  now render a severity through `sysml_diagnostics::severity_label`, the single owner. The
+  comparison harness previously emitted `"information"` where the CLI emitted `"info"` for the same
+  published diagnostic; the CLI's spelling wins, so comparison snapshots that recorded
+  `"information"` now record `"info"`. The CLI text, JUnit, JSON, and SARIF outputs are unchanged.
+
+- **`Definition::usage`/`directedUsage` and `Usage::usage`/`directedUsage` derive from the same
+  effective feature membership.** The four SysML collections read the specialization closure that
+  `Type::inheritedMembership` now publishes, selecting the usages a definition or usage owns *and*
+  inherits, rather than returning a typed unavailable-fact outcome. One snapshot fixture came off
+  `blocked_by` and the `lowering-gap-definition-usage-effective-feature-membership-closure` issue
+  is retired.
+
+- **KerML `Type` inherited-membership and feature collections derive from the canonical
+  specialization closure.** `deriveTypeInheritedMembership`, `deriveTypeFeatureMembership`,
+  `deriveTypeFeature`, `deriveTypeEndFeature`, `deriveTypeDirectedFeature`,
+  `deriveTypeInheritedFeature`, `deriveTypeInput` and `deriveTypeOutput` now publish values instead
+  of a typed unavailable-fact outcome. The inherited closure reuses the specialization ancestor
+  index the resolver already owns, and a member a nearer feature redefines -- authored `:>>` or
+  implied alike -- is not inherited. `deriveTypeOwnedFeatureMembership`,
+  `deriveTypeMultiplicity` and `deriveTypeOwnedConjugator` stay explicitly unsupported: their
+  normative result is a relationship or multiplicity identity the publication still does not own.
+  Two snapshot fixtures came off `blocked_by` and the
+  `lowering-gap-type-inherited-membership-closure` issue is retired.
+
+- **Bumped the pinned `sysml-v2-parser` revision `49bdf3f` -> `f52100f`.** The 24-commit "corpus
+  coverage wave 1" bump closes gap 68 in `planning/UPSTREAM_PARSER_GAPS.md` outright and narrows
+  eleven more (61, 62, 66, 69, 72, 73, 74, 76, 77, 78, 79), each re-probed at the new revision
+  through the blocked fixture's own source. Visible behavior changes: a metadata body
+  is its own `MetadataBody` production whose members are reference redefinitions rather than nested
+  attribute declarations, so `@Risk { totalRisk = 0.3; }` now publishes an anonymous feature with a
+  real `redefinition` relationship and its evaluated value instead of a fabricated declaration
+  named after the overridden feature; `flow`'s endpoints, `perform`'s target and `interface`'s
+  connect ends are grammar-owned productions rather than expressions, so their endpoints, action
+  references and endpoint labels are source-backed; and the newly typed `GuardedSuccession`,
+  `then if`, and KerML type-body `package`/`library package` members lower rather than falling
+  through. Across the snapshot corpus 24 fixtures leave `parse-recovery` -- 16 of them reaching
+  `complete` -- and no fixture regresses from `complete`.
+
+  One upstream regression came with it, recorded as gap 81 and pinned by two `sysml_resolution`
+  tests: a directed KerML-kinded parameter (`in expr p : T;`, `in bool redefines a { ... }`) in a
+  `calc`- or `constraint`-shaped body is now dropped to parse recovery. KerML `function`/`behavior`
+  bodies, where the standard libraries author that spelling, are unaffected.
+
+- **Two members the parser bump unblocked now lower.** A KerML `flow of T from a to b;` in a
+  calc-shaped body carries its payload feature and both connector ends through
+  `lower_flow_usage` instead of `unsupported_calc_definition_member`, and the declared
+  `verify requirement <name> : <Type>;` form lowers as a named `VerifyRequirement` usage, so the
+  generated requirement-verification library specialization applies to it. Five snapshot fixtures
+  came off `blocked_by` and the `lowering-requirement-members` issue is retired.
+
+- **The normative KerML and SysML validation constraints are now a traceable snapshot corpus.**
+  `tests/snapshots/validation` covers all 180 constraints the two specifications name `validate*`
+  -- 88 in KerML 1.0 and 92 in SysML 2.0 -- across 179 fixtures, each carrying its specification,
+  OMG document identifier, exact clause, constraint name, a conforming and a violating example, and
+  an authored `EXPECTED DIAGNOSTICS`. Rules the compiler does not enforce yet stay visible as
+  `BLOCKED` by a typed issue that names the owning layer and concrete gap.
+  The snapshot report now reconciles fixture evidence against the generated constraint manifest;
+  `derive*` and `check*` are represented alongside `validate*` constraints rather than hidden by
+  a separate planning inventory.
+
+- **Bumped the pinned `sysml-v2-parser` revision `ec47463` -> `49bdf3f`.** Control nodes are the
+  visible behavior change: `ControlNodeDeclaration` makes `merge continue;` a *declaration* rather
+  than a reference to an existing element, so a named control node publishes as a named
+  declaration instead of an anonymous node with an unresolved `joinInput`-style input reference.
+  `Expression` folds `Parenthesized` and `Tuple` into one `Sequence` production and replaces
+  `LiteralWithUnit` with `Bracket`, whose unit operand is a source-backed qualified reference
+  rather than copied text, so unit identity is now read from the arena. `KermlFeature` moves its
+  `chains`/`inverse of`/`featured by` clauses into `relationship_parts`, and `VariantUsage` gains
+  an explicit `Reference`/`Typed` form discriminant. Sixteen new body-element variants across the
+  usage families are reported as unsupported members rather than dropped.
+
+
+- **Diagrams now cross the generator boundary.** The repository-owned Rust WASM diagram plugin
+  emits a versioned JSON render product from the immutable model query API, and the VS Code webview
+  renders it with the relocated D3/ELK package. All eight view kinds are selectable from the start:
+  state transitions use their typed projection, while views awaiting owner-defined queries report
+  explicit incomplete products instead of reconstructing semantic graphs. The obsolete Rust
+  `diagram` crate is removed and `generator-plugins` is the home for production WASM plugins.
+
+- **Every diagnostic Spec42 reports is settled by the immutable publication.** `sysml_resolution`
+  now owns the conformance families the graph engine ran -- namespace identity, connection,
+  behavior, requirement/case, view and inherited-value conformance -- and the two authoring hints,
+  deciding each from a fact an earlier phase settled rather than from text. The typed contract
+  gains an owner-produced message, the identity of the element a diagnostic is about, a note per
+  related site, and `information` severity; `diagnostics().for_document()` answers one document
+  from a prebuilt index. Workspace validation, the LSP, and `spec42 check` read that one result:
+  the graph-backed engine, its check modules, helpers and entry points are deleted, and
+  `sysml_diagnostics` is now the neutral diagnostic shape plus the one reporting policy a host has
+  -- report only what the parser rejected for a document that does not parse.
+
+  Diagnostic codes change with it. Every unresolved endpoint reports `unresolved_reference` or
+  `unresolved_type_reference` at the same range instead of a per-relationship spelling
+  (`unresolved_satisfy_source`, `unresolved_allocate_target`, `unresolved_ref_type_reference` and
+  their siblings), because the publication settles every authored reference the same way;
+  `ambiguous_name_reference` becomes `ambiguous_reference`; port compatibility reports
+  `port_type_mismatch` or `flow_direction_incompatible` from the settled conjugation and feature
+  directions rather than from the spelling of a type reference. `unresolved_pending_relationship`
+  and its expression sibling described the graph's own pending queues and have no counterpart.
+  **This is a knowingly partial cutover.** Deleting the graph engine dropped the families whose
+  owning fact the publication does not hold -- metadata `about` and body bindings, user-defined
+  keywords, case objective and verdict shape, initial-transition cardinality, allocation-usage
+  typing, import kind conformance, and view expose filtering. Models that used to receive those
+  checks no longer do. View `expose` members are now lowered, so `view_expose_unresolved` and
+  `view_expose_empty` are owned and reported, and a view's expose members are no longer an
+  unsupported construct.
+  Three answers improve: a `connect a.fill to b.fill` is checked rather than skipped, two ports are
+  compatible when they offer each other the features they expect rather than when one definition
+  specializes the other, and a fan-out to distinct usages is no longer one connection repeated.
+
+- **The feature inspector reads the immutable publication.** `sysml_resolution` publishes
+  `element_details`: one cohesive answer per element carrying its inspection, what each authored
+  relationship family settled to, the types it has once inheritance is taken into account, the
+  features it inherits and the type that declares each, its metadata bindings, both directions of
+  its relationships with authored/implied provenance, and both evaluation channels -- the value and
+  a new `AnalysisEvaluation` verdict channel for analysis cases, verification cases, requirements
+  and constraints. `sysml/featureInspector` is now a projection of that and nothing else: the
+  qualified-name and simple-name target searches, the subsetting-chain and specialization-chain
+  walks, and the "found a target, call it resolved" status inference are deleted, as is the
+  unreachable inherited-attribute code lens that read evaluation facts by graph node. LSP type
+  hierarchy moves to `PublishedModel::types()`, where a subsetting or redefinition is a hierarchy
+  step as the specification says it is.
+
+  The `sysml/featureInspector` response changes with it. The generic `attributes` map is gone --
+  every key it carried is a typed field, and reading `evaluatedValue` out of a map is how
+  presentation became a second truth store. `evaluation` has one variant per published state so a
+  missing value cannot read as success, `analysis` is its own channel, relationship families report
+  `partial`, `ambiguous` and `unsupported` beside `resolved` and keep ambiguous candidates out of
+  `targets`, `referencedElement` becomes the tagged `referenced` outcome, relationships carry their
+  provenance, and element kinds are the published OMG metaclass names. Three answers change because
+  the publication owns them now: a KerML `feature`'s typing is authored-but-unresolved rather than
+  not applicable, an unqualified name does not cross two documents that both declare `package P`,
+  and an anonymously redefined feature is attributed to the type that declares it under a name.
+
+- **Expression, value and unit conformance moved to the immutable publication.** `sysml_resolution`
+  now lowers authored unit tokens, `filter` conditions and invocation arities as typed facts, settles
+  them at the publication barrier, and answers them through `PublishedModel::evaluation()` alongside
+  the evaluated value and the measurement reference a feature's type requires. A unit token resolves
+  to the unit declaration it names -- `[kg]` is `SI::kilogram` -- and its dimension is that unit's
+  measurement-reference type, so dimension compatibility is the ordinary specialization question
+  rather than a string comparison against a hand-maintained alias table. "No catalog admitted",
+  "unknown symbol", "ambiguous symbol" and "not a single unit symbol" are each their own outcome.
+  `sysml_diagnostics::checks::expression_conformance` and the graph-derived unit catalog it read
+  (`UnitRegistry::from_graph`, `graph_ingest`, `type_resolver`) are deleted. `invalid_enumeration_value`
+  is retired: a string literal is not an enumeration literal whether or not the enum declares a member
+  of that name, so `attribute_value_type_mismatch` reports it, and reports any value whose type is
+  unrelated to its feature's. Hover reads the published evaluation for both the evaluated value and
+  the unit literal.
+
+- **Bumped the pinned `sysml-v2-parser` revision `b6291cc` → `ec47463`.** One upstream commit,
+  closing the two gaps the previous bump left open. A keyword-less block comment ahead of a typed
+  feature carrying a KerML type-relationship clause (`/* c */ feature f : T unions x;`) parses
+  again in every calc-shaped body, for all four of `unions`, `intersects`, `differences` and
+  `disjoint from`; that removes the recovery diagnostics and the keyword-named expression operands
+  the previous pin published across seven fixtures. And a `requirement def` body now admits the
+  usage families it inherits from the general member grammar -- `action`, `succession`, `perform`,
+  `state`, `item`, `part`, `connect` and connection usages -- each dispatched here to the lowering
+  its package- or part-level spelling already uses, except `SuccessionUsage`, which has no lowering
+  in any scope and reports unsupported exactly as it does in part-usage and state-def bodies.
+  `FirstMergeBody` became the shared `Body<E>` container, so its brace arm is destructured by field.
+
+  Corpus-wide against the pre-bump baseline, parser recovery diagnostics fall 106 → 82 and
+  `unsupported_*` diagnostics 489 → 462.
+
+  **One pre-existing upstream defect is newly visible**, filed as gap 61 in
+  `planning/UPSTREAM_PARSER_GAPS.md`: a calc-shaped body shreds `flow a.y to b.x1;`,
+  `message m of T;` and the anonymous `redefines predecessors [0];` into bare expression members,
+  with each keyword arriving as an ordinary feature reference and no diagnostic raised.
+  `classifier`, `struct` and `behavior` bodies did this at `204ca48` already; `class` bodies joined
+  them when `b6291cc` routed `class` through the shared KerML classifier declaration, moving it off
+  the attribute-shaped body that parsed these members correctly. Keyword-shaped expression operands
+  rise 23 → 38 across eight fixtures, concentrated in `tests/snapshots/kerml/moments.md`, whose
+  `class` bodies author eleven `redefines <target> [mult];` members. The snapshots pin it.
+
+- **Bumped the pinned `sysml-v2-parser` revision `204ca48` → `b6291cc`.** Upstream replaced the
+  loose modifier booleans with the prefix components the grammar actually spells, and
+  `sysml_resolution` reads them through three new splitters. `OccurrenceUsagePrefix` (SysML BNF 564)
+  now carries `abstract`/`variation`, `derived`, `constant`, `ref`, `individual`, the portion kind
+  and the direction for `part`/`item`/`port`/`occurrence` usages, each as the authored keyword's own
+  span; `FeaturePrefix` (KerML BNF 584) does the same for KerML features, where `end`-ness is the
+  alternative taken rather than a flag beside it; and `MultiplicityPart`'s ordering and uniqueness
+  slots are two `Option`s over their authored spellings, so an authored `unique` is finally
+  distinguishable from omission. Every definition kind gained the `definition_prefix` slot, so
+  `variation` is recorded alongside `abstract` on requirement, case, analysis-case,
+  verification-case, use-case, view, rendering and occurrence definitions.
+
+  Three parser nodes were folded into the productions that spell them, and the model follows.
+  `ClassDef` is gone: `class` routes through the shared KerML classifier declaration, so
+  `DeclarationKind::ClassDefinition` is now the single kind every `class` spelling reaches and
+  `KermlClass` is deleted. `TypedParameterMember` merged into `KermlFeature`, so `in expr p :
+  Boolean = a;` lowers under the kind its keyword names (`kerml-expression`) instead of the generic
+  `parameter`, keeping its direction on both the declaration and its typing reference.
+  `KermlEndMember` merged into `FeaturePrefix`'s owned cross feature, which **inverts an ownership**:
+  in `end happensDuring subsets ... feature thatOccurrence : ...;` the end-prefixed feature now owns
+  the cross feature rather than the reverse.
+
+  Newly typed members are lowered rather than reported unsupported: `calc` usages at package level,
+  `ref` declarations in port bodies, `part` usages in constraint-def bodies, and nested
+  `requirement def`s, `port` usages and `allocate` members in requirement bodies. Across the
+  snapshot corpus that removes 31 `unsupported_*` diagnostics and adds 4.
+
+  Two follow-on effects of that refactor were resolved by the `ec47463` bump below.
+
+- **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
+  `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the
+  `in`/`out`/`inout` direction) is now accepted on every usage rather than a hand-picked few, and
+  nine body-element sets gained the members the spec always allowed them: `ref` declarations in
+  requirement, port, view, view-def, rendering and occurrence bodies; `end` and in/out parameter
+  declarations in part-usage bodies; connection usages in occurrence bodies; concern and calc
+  usages in requirement bodies; use-case, case and verification-case usages in use-case bodies;
+  viewpoint usages and `satisfy` members in view-def bodies; and `require` constraints in
+  constraint-def bodies. `sysml_resolution` lowers all of them through the owners that already
+  existed for each node kind, and `item` usages now carry their `variation`, `derived` and
+  `constant` modifier facts (`ItemUsage`'s bare `is_abstract` flag became the two-valued
+  `usage_prefix`, so `variation item` is representable for the first time). Across the snapshot
+  corpus `unsupported_parser_construct` falls 230 → 6 and `unsupported_grammar_form` 270 → 46,
+  parser recovery diagnostics fall 114 → 104, and resolved references rise 16839 → 17497 with no
+  fixture losing a resolution.
+- **Bumped the pinned `sysml-v2-parser-next` revision `cb026cd` → `7eb7869`.** The parser's opaque
+  `Other(String)` body member is gone from eleven scopes: content a scope cannot parse is now a
+  recovery node with its authored span and a diagnostic, and a spec-valid member the scope does not
+  model is an explicit `Unsupported` node. Body delimiters are retained (`Body<E>` is one container
+  for all 27 declaration bodies), the four annotating members are one `AnnotatingMember` production,
+  a `ref` body is the general usage-member set, an `if` branch keeps its authored braced/brace-less
+  spelling, and an action usage's absent body is distinct from `;`. Across the snapshot corpus,
+  parser recovery errors fall 224 → 81 and 49 fixtures reach `complete`; members that used to be
+  swallowed opaquely now lower for real (KerML classifier/connector/feature/invariant members in
+  part, attribute, package and relationship bodies; `bind`, `calc`, `connection` and constraint
+  members in attribute bodies; `attribute`/`calc`/nested `action def` in action bodies; `ref` and
+  in/out parameters in use-case bodies; `then send ...;` continuations; typed `flow` ends). A `:>`
+  clause on a parameter is now lowered as the subsetting it is rather than as a typing, an untyped
+  `actor x;` no longer invents a type reference, and `type X ...` gains its own `Type` element kind.
+  `subclassifier X specializes Y;` is the one construct whose coverage narrows: it is a
+  relationship declaration upstream now, not a classifier declaration, and is reported as an
+  unsupported package member until it is lowered.
+- Moved active plans under `planning/` and adopted a remove-on-completion policy.
+
 ## [0.50.0] - 2026-08-07
 
 - **Bumped `sysml-v2-parser` 0.53.0 → 0.54.0** ([#18](https://github.com/elan8/spec42/issues/18)) —

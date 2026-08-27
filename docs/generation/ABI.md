@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 4**. Compatibility token: `0xa18f24b386a7570d`.
+Current version: **ABI 4**. Compatibility token: `0x24daed6534b4630d`.
 <!-- /generated:abi-header -->
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
@@ -112,6 +112,11 @@ impossible and `0` unambiguously means "success, nothing written".
 | 5 | `typed_by` | `String` | `Option<ElementSummary>` |
 | 6 | `relationships` | `String` | `Vec<Relationship>` |
 | 7 | `effective_features` | `String` | `Vec<ElementSummary>` |
+| 8 | `requirement_typing` | `String` | `RequirementUsageTyping` |
+| 9 | `satisfy_relationships` | `()` | `Vec<SatisfyRelationship>` |
+| 10 | `requirement_verifications` | `()` | `Vec<RequirementVerification>` |
+| 11 | `diagram_views` | `()` | `Vec<DiagramViewSummary>` |
+| 12 | `diagram_view` | `String` | `DiagramViewProjection` |
 <!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
@@ -213,9 +218,14 @@ struct Relationship { kind: RelationshipKind, source: ElementSummary, target: El
 struct Artifact { file_path: String, contents: Vec<u8> }
 ```
 
-`handle` and `semantic_id` are both opaque strings and are **not** interchangeable. A handle
-addresses an element for the duration of one run; `semantic_id` is the stable provenance
-identity and is what to embed in generated output. Do not persist handles between runs.
+`handle` and `semantic_id` are both opaque strings and are **not** interchangeable. They address
+elements within an immutable publication and must not be persisted or embedded in externally
+consumed diagram output. Diagram queries translate them to `DiagramSemanticReference`: a
+document-scoped qualified name, an authoritative tooling/library element ID when one exists, or an
+explicit source anchor for an unnamed element. The diagram product interns these values and source
+documents/ranges into normalized tables. Its numeric indexes are local foreign keys for that one
+artifact and are not another identity domain. Do not persist handles or product-local indexes
+between runs.
 
 `metaclass` and `kind` are closed enumerations, so a guest can match them exhaustively and
 the compiler will point out variants it has not handled. The mapping from Spec42's internal
@@ -261,6 +271,6 @@ version, so it changes on every Spec42 release) in generated output.
 5. Return a Postcard `Result<Vec<Artifact>, String>` at a packed pointer and length.
 
 For Rust, `spec42-generator-sdk` does all of this; `export!(YourGenerator)` emits the export
-set. See `generator-examples/rust`. For other languages, the table above is the whole
+set. See `generator-plugins/example`. For other languages, the table above is the whole
 contract — `crates/generator_conformance` can run its corpus against any module, so a new
 implementation can be checked against the same suite the Rust SDK is.

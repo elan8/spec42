@@ -1,4 +1,3 @@
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -8,257 +7,89 @@ use tracing::{info, warn};
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
+use crate::session::state::ServerState;
+use crate::session::{parse_scanned_documents, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
 use crate::views::dto::SemanticIndexReadyNotificationDto;
-use crate::workspace::state::ServerState;
-use crate::workspace::{parse_scanned_entries, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
-use workspace_session::{RelinkToken, TracksRelink};
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
-use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
+use super::lifecycle::{project_boundary_for_uri, scan_roots, workspace_roots_from_initialize};
+use super::project_registry::ProjectRegistry;
 
-static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
-const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 700;
 
 fn schedule_workspace_diagnostics_republish(
     client: &Client,
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
+    let generation = handle.next_diagnostics_debounce_generation();
     let client = client.clone();
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
-        if WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
+        if !handle.is_current_diagnostics_debounce_generation(generation) {
             return;
         }
         let lifecycle = handle.snapshot().session.lifecycle();
-        if !crate::workspace::state::supports_semantic_queries(lifecycle) {
+        if !crate::session::state::supports_semantic_queries(lifecycle) {
             return;
         }
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
     });
 }
 
-/// Schedules an async semantic relink with a debounce (see `SEMANTIC_RELINK_DEBOUNCE_MS`).
-///
-/// `token` is issued by [`workspace::WorkspaceSession::schedule_relink`] and
-/// encapsulates the current relink generation and snapshot version.
-/// Only the relink task whose token is still current when the debounce
-/// fires will run; all earlier tasks self-cancel via
-/// [`workspace_session::TracksRelink::is_token_current`].
-fn schedule_semantic_relink_after_change(
+/// Commits the edit token and publishes the one canonical semantic rebuild before returning.
+/// Requests arriving after `didOpen`/`didChange` therefore observe that exact source revision;
+/// there is no second host-side graph build or symbol derivation racing the authority.
+async fn publish_semantic_change(
     client: &Client,
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     changed_uri: Url,
-    token: RelinkToken,
 ) {
-    let client = client.clone();
-    let handle = handle.clone();
-    let runtime_config = Arc::clone(runtime_config);
-    tokio::spawn(async move {
-        tokio::time::sleep(Duration::from_millis(SEMANTIC_RELINK_DEBOUNCE_MS)).await;
+    let old = handle.snapshot();
+    let mut diagnostic_uris = diagnostic_fanout(&old, &changed_uri);
+    drop(old);
 
-        let snapshot = {
-            let snap = handle.snapshot();
-            if !snap.is_token_current(&token) {
-                return;
-            }
-            (
-                snap.index.clone(),
-                snap.library_paths.clone(),
-                snap.standard_library_paths.clone(),
-                // Library files are not stored in the index when loaded from the
-                // graph cache (cache hit path). Pass the library graph snapshot so
-                // library types survive the workspace rebuild regardless of whether
-                // library_paths is empty or not.
-                snap.library_graph_snapshot.clone(),
-            )
-        };
-        let (index, library_paths, standard_library_paths, base_graph) = snapshot;
-        let perf_logging_enabled = runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
-        let relink_start = Instant::now();
-        let staged = tokio::task::spawn_blocking(move || {
-            // Wave 1: structural relink only (`evaluate: false`) — publish diagnostics from
-            // this as fast as possible. Expression evaluation runs separately afterward, as
-            // Wave 2 (`schedule_expression_evaluation`), so a slow whole-graph evaluation pass
-            // never delays the near-instant structural feedback (unresolved references, etc.)
-            // a live edit should get. See Track C in `docs/engineering`.
-            crate::workspace::rebuild_semantic_graph_staged(
-                &index,
-                &library_paths,
-                &standard_library_paths,
-                base_graph,
-                false,
-            )
-        })
-        .await;
-        let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
-            client
-                .log_message(
-                    MessageType::WARNING,
-                    "Async semantic relink failed before completion.",
-                )
-                .await;
-            return;
-        };
-
-        // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths.
-        // This function only ever reads raw source/parsed data, never the semantic graph, so
-        // the pre-relink snapshot's index is exactly as good as a post-commit read would be.
-        let snap_for_diag = handle.snapshot();
-        let mut diag_uris =
-            crate::workspace::import_graph::workspace_uris_importing_declarations_from(
-                &snap_for_diag.index,
-                &snap_for_diag.library_paths,
-                &changed_uri,
-            );
-        drop(snap_for_diag);
-        // Always include the changed file — it was skipped during the fast
-        // graph update and needs diagnostics from the fully-resolved graph.
-        if !diag_uris.contains(&changed_uri) {
-            diag_uris.push(changed_uri.clone());
-        }
-
-        // `report_relink_result` is now synchronized via `mutate`: awaiting it guarantees the
-        // committed graph/lifecycle are visible to any subsequent `handle.snapshot()` call,
-        // closing the race where diagnostics collection could previously read a stale
-        // (pre-commit) lifecycle and wrongly suppress transient-startup diagnostic codes.
-        let committed = handle
-            .report_relink_result(token, new_graph, new_symbols)
-            .await
-            .unwrap_or(false);
-
-        if !committed {
-            // Superseded by a newer relink token — that newer relink is already in flight and
-            // will publish its own (fresher) diagnostics, so publishing here would just
-            // redundantly republish stale results.
-            return;
-        }
-
-        publish_workspace_diagnostics(&client, &handle, &runtime_config, Some(&diag_uris)).await;
-
-        // Wave 2: evaluate expressions in the background against the structural graph just
-        // committed, and republish diagnostics again once that lands (e.g.
-        // `analysis_constraint_failed`, which depends on evaluation having run). Read the
-        // version *after* `report_relink_result` above so a superseding edit that arrives
-        // between now and Wave 2's debounce firing is correctly detected as stale.
-        let post_relink_publication = handle.snapshot().session.publication();
-        schedule_expression_evaluation(&client, &handle, &runtime_config, post_relink_publication);
-
-        log_perf(
-            &client,
-            perf_logging_enabled,
-            "backend:asyncSemanticRelink",
-            vec![
-                ("uri", format!("{:?}", changed_uri.as_str())),
-                ("generation", token.generation().to_string()),
-                ("librarySnapshotUris", library_snapshot_uris.to_string()),
-                ("relinkTotalMs", relink_metrics.total_ms.to_string()),
-                (
-                    "relinkRebuildGraphsMs",
-                    relink_metrics.rebuild_graphs_ms.to_string(),
-                ),
-                (
-                    "relinkCrossDocumentEdgesMs",
-                    relink_metrics.cross_document_edges_ms.to_string(),
-                ),
-                (
-                    "relinkCrossEdgeResolutionMs",
-                    relink_metrics.cross_edge_resolution_ms.to_string(),
-                ),
-                (
-                    "relinkWorkspaceRelationshipLinkingMs",
-                    relink_metrics.workspace_relationship_linking_ms.to_string(),
-                ),
-                (
-                    "relinkPendingRelationshipResolutionMs",
-                    relink_metrics
-                        .pending_relationship_resolution_ms
-                        .to_string(),
-                ),
-                (
-                    "relinkExpressionEvaluationMs",
-                    relink_metrics.expression_evaluation_ms.to_string(),
-                ),
-                (
-                    "relinkRefreshSymbolsMs",
-                    relink_metrics.refresh_symbols_ms.to_string(),
-                ),
-                ("diagUrisCount", diag_uris.len().to_string()),
-                ("elapsedMs", relink_start.elapsed().as_millis().to_string()),
-            ],
-        )
-        .await;
-    });
+    if handle.rebuild_publication().await.unwrap_or(false) {
+        let new = handle.snapshot();
+        diagnostic_uris =
+            merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, &changed_uri));
+        publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
+    }
 }
 
-/// "Wave 2" of the two-wave diagnostics split (see Track C design notes): runs expression
-/// evaluation against the structural graph Wave 1 (`schedule_semantic_relink_after_change`)
-/// just committed, debounced by `WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS` (reusing the same constant
-/// this file already uses elsewhere for "let things settle before doing more work" — not a new
-/// number). `expected_publication` is the owner-scoped session identity right after Wave 1 committed; checked
-/// both before starting evaluation (skip the work entirely if already superseded) and again by
-/// `report_evaluation_result`'s own version gate at commit time (skip publishing a stale
-/// result if a newer edit landed while evaluation was running).
-///
-/// Publishes workspace-wide (`target_uris: None`), not scoped to the edited file: unlike
-/// Wave 1's structural relink, `evaluate_workspace_graph` evaluates expressions across the
-/// *entire* graph with no per-file scoping, so evaluation-derived diagnostics
-/// (`analysis_constraint_failed`, `analysis_evaluation_unresolved`, etc.) can change on any file
-/// in the workspace, not just the one that was edited. Publishing only the edited file here
-/// left every other affected file stuck showing whatever Wave 1 last published for it
-/// (structural diagnostics with no evaluation attribute at all) until that specific file was
-/// itself edited — i.e. evaluation diagnostics could get cleared by an edit elsewhere and never
-/// come back.
-fn schedule_expression_evaluation(
-    client: &Client,
-    handle: &WorkspaceHandle,
-    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
-    expected_publication: workspace::PublicationToken,
-) {
-    let client = client.clone();
-    let handle = handle.clone();
-    let runtime_config = Arc::clone(runtime_config);
-    tokio::spawn(async move {
-        tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
+fn merge_diagnostic_fanout(mut old: Vec<Url>, new: Vec<Url>) -> Vec<Url> {
+    old.extend(new);
+    old.sort_unstable_by(|left, right| left.as_str().cmp(right.as_str()));
+    old.dedup();
+    old
+}
 
-        if !handle
-            .snapshot()
-            .session
-            .is_publication_current(&expected_publication)
-        {
-            return; // superseded before evaluation even started — don't waste the work
-        }
-        let graph = handle.snapshot().semantic_graph.clone(); // cheap Arc clone
-
-        let evaluated = tokio::task::spawn_blocking(move || {
-            let mut graph = graph;
-            crate::semantic::evaluate_workspace_graph(&mut graph);
-            graph
+/// Both sides of the publication barrier contribute to diagnostic fanout: the old graph owns
+/// dependants whose diagnostics must be cleared, while the new graph owns newly introduced
+/// dependants whose diagnostics must be published.
+fn diagnostic_fanout(state: &ServerState, changed_uri: &Url) -> Vec<Url> {
+    let workspace_uris = state
+        .index
+        .keys()
+        .filter(|uri| {
+            !crate::common::util::uri_under_any_library(uri, &state.library_paths)
+                && !crate::common::util::uri_under_any_library(uri, &state.standard_library_paths)
         })
-        .await;
-        let Ok(evaluated_graph) = evaluated else {
-            return;
-        };
-
-        let committed = handle
-            .report_evaluation_result(expected_publication, evaluated_graph)
-            .await
-            .unwrap_or(false);
-        if committed {
-            // Workspace-wide, not `[changed_uri]` — see the doc comment above.
-            publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
-        }
-    });
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut diagnostic_uris = state
+        .published_model()
+        .dependencies()
+        .workspace_documents_affected_by(workspace_uris, changed_uri)
+        .into_uris();
+    if !diagnostic_uris.contains(changed_uri) {
+        diagnostic_uris.push(changed_uri.clone());
+    }
+    diagnostic_uris
 }
 
 async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
@@ -280,9 +111,10 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
 
 fn workspace_file_count(state: &ServerState) -> usize {
     state
-        .semantic_graph
-        .workspace_uris_excluding_libraries(&state.library_paths)
-        .len()
+        .index
+        .keys()
+        .filter(|uri| !crate::common::util::uri_under_any_library(uri, &state.library_paths))
+        .count()
 }
 
 pub(crate) struct SemanticIndexReady;
@@ -322,6 +154,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn diagnostic_fanout_retains_old_dependants_and_adds_new_dependants() {
+        let changed = Url::parse("file:///changed.sysml").unwrap();
+        let removed_dependant = Url::parse("file:///old-dependant.sysml").unwrap();
+        let added_dependant = Url::parse("file:///new-dependant.sysml").unwrap();
+
+        assert_eq!(
+            merge_diagnostic_fanout(
+                vec![removed_dependant.clone(), changed.clone()],
+                vec![changed.clone(), added_dependant.clone()],
+            ),
+            vec![changed, added_dependant, removed_dependant]
+        );
+    }
+
+    #[test]
     fn semantic_index_ready_notification_includes_version_and_file_count() {
         let mut state = ServerState::default();
         state.session.begin_startup();
@@ -347,12 +194,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry {
-                content: "package Demo { part def Thing; }".to_string(),
-                parsed: None,
-                parse_metadata: Default::default(),
-                include_in_semantic_graph: true,
-            },
+            crate::session::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 
@@ -371,12 +213,7 @@ mod tests {
         let mut state = ServerState::default();
         state.index.insert(
             uri.clone(),
-            crate::workspace::state::IndexEntry {
-                content: "package Demo { part def Thing; }".to_string(),
-                parsed: None,
-                parse_metadata: Default::default(),
-                include_in_semantic_graph: true,
-            },
+            crate::session::state::IndexEntry::for_test(&uri, "package Demo { part def Thing; }"),
         );
         let handle = WorkspaceHandle::spawn(state);
 

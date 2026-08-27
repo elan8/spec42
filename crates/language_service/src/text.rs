@@ -1,4 +1,16 @@
-//! Position and word resolution for editor services (line/character to byte offset, word at cursor, etc.).
+//! Position arithmetic for editor services: LSP offsets, and the line prefix completion reads.
+//!
+//! What is *under* the cursor is a syntax question, and `ParsedSource::token_at` and
+//! `unit_literal_at` answer it. What remains here counts UTF-16 code units and slices a line,
+//! which is protocol arithmetic and knows nothing about SysML.
+
+/// Length of `text` in UTF-16 code units — the unit LSP character offsets are expressed in.
+///
+/// The single owner: hosts computing a character offset must not re-derive it, because a copy
+/// that counts `char`s instead silently disagrees on anything outside the basic plane.
+pub fn utf16_len(text: &str) -> u32 {
+    text.encode_utf16().count() as u32
+}
 
 /// Converts an LSP-style (line, character) position to a byte offset in `text`.
 /// Positions are expressed in UTF-16 code units, so this helper only returns offsets that
@@ -32,125 +44,6 @@ pub fn position_to_byte_offset(source: &str, line: u32, character: u32) -> Optio
         .sum::<usize>();
     Some(line_start + byte_in_line)
 }
-/// Returns the (line, start_char, end_char) and the word at the given position.
-/// A word is a contiguous run of identifier characters (alphanumeric, underscore, or `:` for qualified names).
-pub fn word_at_position(text: &str, line: u32, character: u32) -> Option<(u32, u32, u32, String)> {
-    fn is_ident_char(c: char) -> bool {
-        c.is_alphanumeric() || c == '_' || c == ':' || c == '>'
-    }
-    let line_str = text.lines().nth(line as usize)?;
-    let char_in_line = character as usize;
-    let line_chars: Vec<char> = line_str.chars().collect();
-    if line_chars.is_empty() || char_in_line > line_chars.len() {
-        return None;
-    }
-    let mut start = char_in_line;
-    while start > 0 && is_ident_char(line_chars[start - 1]) {
-        start -= 1;
-    }
-    let mut end = char_in_line;
-    while end < line_chars.len() && is_ident_char(line_chars[end]) {
-        end += 1;
-    }
-    if start >= end {
-        return None;
-    }
-    let word: String = line_chars[start..end].iter().collect();
-    Some((line, start as u32, end as u32, word))
-}
-
-/// Unit expression inside a value suffix `[...]` when the cursor is within the brackets and
-/// a numeric literal immediately precedes `[` on the same line (e.g. `10 [kV]`).
-pub fn unit_value_suffix_at_position(text: &str, line: u32, character: u32) -> Option<String> {
-    unit_value_suffix_selection_at_position(text, line, character).map(|(unit, _)| unit)
-}
-
-/// Unit expression and exact inner-token range inside a value suffix `[...]`.
-pub fn unit_value_suffix_selection_at_position(
-    text: &str,
-    line: u32,
-    character: u32,
-) -> Option<(String, sysml_model::TextRange)> {
-    let line_str = text.lines().nth(line as usize)?;
-    let chars: Vec<char> = line_str.chars().collect();
-    let pos = character as usize;
-    if pos > chars.len() {
-        return None;
-    }
-
-    let mut best: Option<(usize, usize)> = None;
-    let mut stack = Vec::new();
-    for (i, &c) in chars.iter().enumerate() {
-        if c == '[' {
-            stack.push(i);
-        } else if c == ']' {
-            if let Some(open) = stack.pop() {
-                if pos >= open && pos <= i && is_likely_unit_suffix_before_bracket(&chars, open) {
-                    match best {
-                        None => best = Some((open, i)),
-                        Some((best_open, _)) if open > best_open => best = Some((open, i)),
-                        _ => {}
-                    }
-                }
-            }
-        }
-    }
-
-    let (open, close) = best?;
-    let inner_start = open + 1;
-    let inner_end = close;
-    if inner_start >= inner_end {
-        return None;
-    }
-    let inner_text: String = chars[inner_start..inner_end].iter().collect();
-    let leading = inner_text
-        .chars()
-        .take_while(|ch| ch.is_whitespace())
-        .count();
-    let trailing = inner_text
-        .chars()
-        .rev()
-        .take_while(|ch| ch.is_whitespace())
-        .count();
-    let inner_text = inner_text.trim();
-    if inner_text.is_empty() {
-        return None;
-    }
-    let start = (inner_start + leading) as u32;
-    let end = (inner_end - trailing) as u32;
-    Some((
-        inner_text.to_string(),
-        sysml_model::TextRange {
-            start: sysml_model::TextPosition {
-                line,
-                character: start,
-            },
-            end: sysml_model::TextPosition {
-                line,
-                character: end,
-            },
-        },
-    ))
-}
-
-fn is_likely_unit_suffix_before_bracket(chars: &[char], open_idx: usize) -> bool {
-    let before: String = chars[..open_idx].iter().collect();
-    let before = before.trim_end();
-    let Some(last_token) = before.split_whitespace().last() else {
-        return false;
-    };
-    let mut chars = last_token.chars();
-    let Some(first) = chars.next() else {
-        return false;
-    };
-    if !(first.is_ascii_digit() || ((first == '+' || first == '-') && last_token.len() > 1)) {
-        return false;
-    }
-    last_token
-        .chars()
-        .all(|c| c.is_ascii_digit() || matches!(c, '.' | 'e' | 'E' | '+' | '-'))
-}
-
 /// Returns the text of the line up to (but not including) the given (line, character).
 pub fn line_prefix_at_position(text: &str, line: u32, character: u32) -> String {
     let line_str = match text.lines().nth(line as usize) {
@@ -197,12 +90,5 @@ mod tests {
         assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
         assert_eq!(position_to_byte_offset(text, 0, 2), Some(2));
         assert_eq!(position_to_byte_offset(text, 1, 0), Some(4));
-    }
-
-    #[test]
-    fn test_word_at_position() {
-        let text = "  part foo : Bar  ";
-        let (_, _, _, word) = word_at_position(text, 0, 5).unwrap();
-        assert_eq!(word, "part");
     }
 }

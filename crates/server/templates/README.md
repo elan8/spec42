@@ -9,8 +9,14 @@ The template contains:
 - `README.md` with the `spec42 check model --workspace-root .` command;
 - a root system definition and baseline configuration;
 - basic requirements; and
-- a small domain-type library.
+- a small domain-type library; and
+- a root `.project.json` manifest suitable for workspace discovery and bundling.
 
-The scaffold deliberately has no project manifest: Spec42's workspace contract is
-the model directory itself. It also remains separate from the repository's curated
-examples catalogue, which serves a different tutorial and demonstration purpose.
+The generated manifest pins the exact standard-library KPAR resources and versions resolved by the
+current Spec42 installation. Bundling preserves those usages; another installation must provide
+compatible local libraries when it opens the project.
+
+For a non-empty model directory, `spec42 init` preserves the existing model and adds only a missing
+`.project.json`. An existing manifest is authoritative and is never overwritten. The starter remains
+separate from the repository's curated examples catalogue, which serves a different tutorial and
+demonstration purpose.

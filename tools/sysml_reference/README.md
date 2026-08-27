@@ -10,7 +10,6 @@ derived reference material from the OMG SysML v2 specification; see
 ```sh
 python3 tools/sysml_reference/query_grammar.py show PartUsage
 python3 tools/sysml_reference/query_grammar.py search connector --source sysml
-python3 tools/audit_spec42_metamodel.py
 python3 tools/sysml_reference/query_specification.py --spec /path/to/specification.md list
 python3 tools/sysml_reference/query_specification.py --spec /path/to/specification.md show "Element rules"
 python3 tools/sysml_reference/query_specification.py --spec /path/to/specification.md search constraint
@@ -18,11 +17,6 @@ python3 tools/sysml_reference/inspect_standard_library.py --library /path/to/lib
 python3 tools/sysml_reference/inspect_standard_library.py --library /path/to/library-or-archive search PartUsage
 python3 -m unittest tools/sysml_reference/test_tools.py
 ```
-
-`audit_spec42_metamodel.py` checks the Rust `ElementKind -> Metaclass` arms,
-the published `Metaclass` enumeration, and the workspace projected
-relationship metaclass mapping. The audit is limited to Spec42's own semantic
-projection and does not claim to validate external model properties.
 
 `query_specification.py` accepts an external Markdown specification and offers
 section listing, exact heading lookup, and case-insensitive text search.

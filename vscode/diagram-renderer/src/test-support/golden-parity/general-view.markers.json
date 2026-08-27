@@ -1,0 +1,40 @@
+{
+  "classCounts": {
+    "definition-node": 1,
+    "general-connector": 1,
+    "general-node": 2,
+    "graph-node-background": 2,
+    "node-name-text": 2,
+    "sysml-compartment-divider": 1,
+    "sysml-compartment-item": 1,
+    "sysml-compartment-label": 1,
+    "sysml-header-compartment": 1,
+    "sysml-node-bg": 2,
+    "sysml-node-chrome-style": 1,
+    "sysml-node-stereotype": 2,
+    "sysml-node-typing": 1,
+    "sysml-viz-svg": 1,
+    "usage-node": 1,
+    "viz-bg": 1,
+    "viz-edge": 1,
+    "viz-edge--typing": 1,
+    "viz-edge-hit-target": 1,
+    "viz-edges": 1,
+    "viz-node": 2,
+    "viz-node--definition": 1,
+    "viz-node--usage": 1,
+    "viz-node-name": 2,
+    "viz-nodes": 1,
+    "viz-root": 1
+  },
+  "markerIds": [
+    "general-d3-arrow",
+    "general-d3-arrow-open",
+    "general-d3-diamond",
+    "general-d3-specializes",
+    "ibd-connection-dot",
+    "ibd-flow-arrow",
+    "ibd-interface-arrow",
+    "viz-arrow"
+  ]
+}

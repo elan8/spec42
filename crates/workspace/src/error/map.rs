@@ -1,35 +1,27 @@
-﻿//! Map internal `String` errors from dependencies into structured host errors.
+//! Provider-error mapping.
 
 use super::WorkspaceError;
+use sysml_query::source::SourceError;
 
-pub(crate) fn map_provider_error(message: String) -> WorkspaceError {
-    if looks_like_parse_failure(&message) {
-        return WorkspaceError::parser_failure(None::<String>, message);
+pub(crate) fn map_provider_error(error: SourceError) -> WorkspaceError {
+    match error {
+        SourceError::Read { .. } | SourceError::NotUtf8 { .. } => {
+            WorkspaceError::parser_failure(None::<String>, error.to_string())
+        }
+        SourceError::InvalidUri { .. } | SourceError::EmptyIdentity => {
+            WorkspaceError::invalid_document_uri(error.to_string())
+        }
+        SourceError::PathNotFound { .. } | SourceError::NoSourcesFound => {
+            WorkspaceError::unresolved_library_environment(error.to_string())
+        }
+        SourceError::Provider(message) => {
+            if looks_like_parse_failure(&message) {
+                WorkspaceError::parser_failure(None::<String>, message)
+            } else {
+                WorkspaceError::unresolved_library_environment(message)
+            }
+        }
     }
-    WorkspaceError::unresolved_library_environment(message)
-}
-
-pub(crate) fn map_view_error(view: &str, message: String) -> WorkspaceError {
-    let lowered = message.to_ascii_lowercase();
-    if lowered.contains("unsupported")
-        || lowered.contains("view")
-        || lowered.contains("renderer")
-        || lowered.contains("empty state")
-    {
-        return WorkspaceError::unsupported_view(view, message);
-    }
-    WorkspaceError::unsupported_view(view, message)
-}
-
-pub(crate) fn map_language_service_error(message: String) -> WorkspaceError {
-    if looks_like_parse_failure(&message) {
-        return WorkspaceError::parser_failure(None::<String>, message);
-    }
-    WorkspaceError::internal_invariant_failure(message)
-}
-
-pub(crate) fn map_render_snapshot_error(message: String) -> WorkspaceError {
-    WorkspaceError::internal_invariant_failure(message)
 }
 
 fn looks_like_parse_failure(message: &str) -> bool {

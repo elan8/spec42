@@ -1,17 +1,14 @@
-//! Deterministic regression coverage for the checked-in SysML fuzz seeds.
-//!
-//! Fuzzing is exploratory. Any finding that is minimized into this corpus is
-//! exercised here by the same public APIs so it remains a normal test failure.
-
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use language_service::{format_document_text, FormatOptions};
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+use std::sync::Arc;
 
-const CORPUS: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/corpus/sysml");
-const SEED_COUNT: usize = 6;
-const OPTIONS: [FormatOptions; 2] = [
+use sysml_query::resolved_slice::PublishedModel;
+use sysml_query::source::SourceKind;
+use sysml_query::Services;
+
+const FORMAT_OPTIONS: [FormatOptions; 2] = [
     FormatOptions {
         tab_size: 4,
         insert_spaces: true,
@@ -23,65 +20,75 @@ const OPTIONS: [FormatOptions; 2] = [
 ];
 
 #[test]
-fn sysml_seed_corpus_exercises_public_language_apis() {
-    let seeds = seed_paths(Path::new(CORPUS));
-    assert_eq!(
-        seeds.len(),
-        SEED_COUNT,
-        "update the seed count when intentionally changing the corpus"
+fn checked_in_sysml_seeds_satisfy_the_language_fuzz_contracts() {
+    let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("corpus/sysml");
+    let seeds = seed_paths(&corpus);
+    assert!(
+        !seeds.is_empty(),
+        "{} must contain at least one checked-in seed",
+        corpus.display()
     );
 
-    for seed in seeds {
-        let bytes = fs::read(&seed).expect("read seed");
-        let source = std::str::from_utf8(&bytes).expect("seed must be valid UTF-8 for text APIs");
+    for path in seeds {
+        let bytes = fs::read(&path)
+            .unwrap_or_else(|error| panic!("{}: seed read failed: {error}", path.display()));
+        assert!(
+            !bytes.is_empty(),
+            "{}: seed must not be empty",
+            path.display()
+        );
+        let source = std::str::from_utf8(&bytes)
+            .unwrap_or_else(|error| panic!("{}: seed is not UTF-8: {error}", path.display()));
 
-        let recovered = sysml_v2_parser::parse_for_editor(source);
-        let strict = sysml_v2_parser::parse(source);
-        if recovered.is_ok() {
-            assert!(
-                strict.is_ok(),
-                "{}: clean editor parse must pass strict parsing",
-                seed.display()
-            );
-        }
+        let first = publish_seed(&path, source);
+        let second = publish_seed(&path, source);
+        assert_eq!(
+            first.publication().identity(),
+            second.publication().identity(),
+            "{}: identical input must have a stable publication identity",
+            path.display()
+        );
+        assert_eq!(
+            first.publication().completeness(),
+            second.publication().completeness(),
+            "{}: identical input must have stable completeness",
+            path.display()
+        );
 
-        let document = SysmlDocument::from_memory_path(
-            "fuzz-seed",
-            seed.file_name()
-                .and_then(|name| name.to_str())
-                .expect("UTF-8 seed file name"),
-            source.to_owned(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .expect("fixed memory URI must be valid");
-        let (_graph, parsed) = build_semantic_graph_from_documents(&[document])
-            .expect("recovery-mode semantic graph construction");
-        assert_eq!(parsed.len(), 1, "{}", seed.display());
-        assert_eq!(parsed[0].content, source, "{}", seed.display());
-
-        for options in OPTIONS {
+        for options in FORMAT_OPTIONS {
             let formatted = format_document_text(source, options);
             assert_eq!(
                 format_document_text(&formatted, options),
                 formatted,
                 "{}: formatter must converge after one pass",
-                seed.display()
+                path.display()
             );
         }
     }
 }
 
-fn seed_paths(root: &Path) -> Vec<PathBuf> {
-    let mut paths = fs::read_dir(root)
-        .expect("read seed corpus")
+fn seed_paths(corpus: &Path) -> Vec<PathBuf> {
+    let mut paths = fs::read_dir(corpus)
+        .unwrap_or_else(|error| panic!("{}: corpus read failed: {error}", corpus.display()))
         .map(|entry| entry.expect("seed directory entry").path())
-        .filter(|path| {
-            path.extension()
-                .is_some_and(|extension| extension == "sysml")
-        })
+        .filter(|path| path.is_file())
         .collect::<Vec<_>>();
     paths.sort();
     paths
+}
+
+fn publish_seed(path: &Path, source: &str) -> Arc<PublishedModel> {
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .expect("seed filename is UTF-8");
+    let services = Services::new();
+    let document = services
+        .source
+        .admit_memory("fuzz-seed", name, source, SourceKind::Workspace)
+        .unwrap_or_else(|error| panic!("{}: admission failed: {error}", path.display()));
+    services
+        .publication
+        .publish(&[document], std::iter::empty::<Box<str>>())
+        .unwrap_or_else(|error| panic!("{}: publication failed: {error}", path.display()))
 }

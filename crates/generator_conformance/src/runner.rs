@@ -15,9 +15,8 @@ use generator_host::{
 };
 use rayon::prelude::*;
 use serde::Serialize;
-use workspace::{
-    EngineBuilder, HostContext, HostFilesystemProvider, ValidationTiming, WorkspaceLoadRequest,
-};
+use sysml_query::resolved_slice::PublishedModel;
+use sysml_query::source::SourceKind;
 
 use crate::case::{Case, Expectation};
 
@@ -127,6 +126,7 @@ impl Corpus {
                     }
                     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
                         fuel_metering: metered,
+                        compilation_cache: false,
                     })
                     .map_err(|error| error.to_string())?;
                     let module =
@@ -153,24 +153,28 @@ impl Corpus {
         Ok(runs)
     }
 
-    fn load_model(&self, name: &str) -> Result<Arc<workspace::HostWorkspaceSnapshot>, String> {
+    fn load_model(&self, name: &str) -> Result<Arc<PublishedModel>, String> {
         let path = self.model_path(name);
         if !path.is_file() {
             return Err(format!("model `{name}` not found at {}", path.display()));
         }
-        let root = path.parent().expect("model has a parent").to_path_buf();
-        let engine = EngineBuilder::default()
-            .cache_dir(root.join(".cache"))
-            .no_stdlib(true)
-            .build()
+        let services = sysml_query::Services::new();
+        let content = services
+            .source
+            .read_text(&path)
+            .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
+        let source = services
+            .source
+            .admit_memory(
+                "generator-conformance",
+                "model.sysml",
+                content,
+                SourceKind::Workspace,
+            )
             .map_err(|error| error.to_string())?;
-        let provider =
-            HostFilesystemProvider::from_paths(&path, Some(&root), engine.package_roots());
-        let request = WorkspaceLoadRequest::single_target(path)
-            .with_workspace_root(Some(root))
-            .with_validation_timing(ValidationTiming::Deferred);
-        engine
-            .load_workspace(provider, request, HostContext::default())
+        services
+            .publication
+            .publish(&[source], std::iter::empty::<Box<str>>())
             .map_err(|error| format!("failed to load model `{name}`: {error}"))
     }
 }
@@ -178,16 +182,21 @@ impl Corpus {
 fn run_one(
     runtime: &GeneratorRuntime,
     prepared: &PreparedGenerator,
-    snapshot: &Arc<workspace::HostWorkspaceSnapshot>,
+    snapshot: &Arc<PublishedModel>,
     case: Case,
 ) -> CaseRun {
     // A fresh view per case: the handle index accumulates as elements are exposed, so a
     // shared view would let one case resolve a handle it never legitimately obtained,
     // masking exactly the unknown-handle behaviour the suite exists to pin.
-    let model = Arc::new(GeneratorModelView::new(
-        Arc::clone(snapshot),
-        QueryLimits::default(),
-    ));
+    let model = Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(snapshot),
+            snapshot.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .expect("conformance fixtures publish a complete model"),
+    );
 
     let defaults = ArtifactLimits::default();
     let limits = ArtifactLimits {

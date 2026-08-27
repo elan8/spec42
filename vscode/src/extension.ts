@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { ModelExplorerProvider } from "./explorer/modelExplorerProvider";
 import { FeatureInspectorViewProvider } from "./inspector/featureInspectorViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import { KPAR_LIBRARIES_DEFAULTS } from "./generated/kparLibrariesDefaults";
@@ -7,14 +6,11 @@ import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
 import { log, logPerfEvent, logStartupEvent } from "./logger";
 import {
   createExamplesViewProvider,
-  onRestartServerComplete,
   registerExplorerCommands,
 } from "./activation/commands/explorer";
 import { registerLibraryCommands } from "./activation/commands/library";
 import { HelpViewProvider } from "./help/helpViewProvider";
 import { SysmlReferencePanel } from "./help/sysmlReferencePanel";
-import { registerVisualizerCommands } from "./activation/commands/visualizer";
-import { VisualizationPanel } from "./visualization/visualizationPanel";
 import {
   deactivateLanguageClient,
   registerLanguageClientDebugCommands,
@@ -31,8 +27,8 @@ import {
   deactivateWorkspaceIndexing,
   registerWorkspaceIndexing,
   resetSemanticIndexTracking,
-  scheduleModelExplorerRefreshForCurrentMode,
 } from "./activation/workspaceIndexing";
+import { registerDiagramViewer } from "./diagram/diagramViewer";
 
 export function activate(context: vscode.ExtensionContext): void {
   const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -75,7 +71,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const handles = startLanguageClient(
     context,
     startupTraceId,
-    () => scheduleModelExplorerRefreshForCurrentMode("languageClient:ready"),
+    () => {},
     logStartupPhase,
     logPerf
   );
@@ -83,7 +79,6 @@ export function activate(context: vscode.ExtensionContext): void {
   setLspModelProviderForStatus(handles.lspModelProvider);
   registerStatusBar(context);
 
-  const modelExplorerProvider = new ModelExplorerProvider(handles.lspModelProvider);
   const featureInspectorProvider = new FeatureInspectorViewProvider(
     context.extensionUri,
     handles.lspModelProvider
@@ -113,41 +108,25 @@ export function activate(context: vscode.ExtensionContext): void {
   registerWorkspaceIndexing(
     context,
     handles,
-    modelExplorerProvider,
     featureInspectorProvider,
     logStartupPhase,
     logPerf
   );
 
-  VisualizationPanel.register(context, handles.lspModelProvider, (uri, range) => {
-    // Pin before revealing the lazily-created view so its initial `ready` message cannot replace
-    // the diagram selection with the current editor cursor.
-    void featureInspectorProvider.inspectAt(uri, range.start);
-    void vscode.commands.executeCommand("sysmlFeatureInspectorView.focus");
-  });
-  registerVisualizerCommands(context, handles);
   registerExplorerCommands(
     context,
     handles,
-    modelExplorerProvider,
     examplesViewProvider,
-    logStartupPhase,
-    logPerf
   );
   registerLibraryCommands(context, libraryWebviewProvider, handles);
+  registerDiagramViewer(context, handles);
 
   registerRestartServerCommand(context, handles, {
     onBeforeRestart: resetSemanticIndexTracking,
-    onRestartComplete: onRestartServerComplete,
+    onRestartComplete: () => {},
   });
   registerLanguageClientDebugCommands(context, handles);
   registerServerConfigChangeHandler(context, handles.lspModelProvider);
-
-  const treeView = vscode.window.createTreeView("sysmlModelExplorer", {
-    treeDataProvider: modelExplorerProvider,
-  });
-  modelExplorerProvider.setTreeView(treeView);
-  context.subscriptions.push(treeView);
 
   const examplesTreeView = vscode.window.createTreeView("spec42Examples", {
     treeDataProvider: examplesViewProvider,
@@ -162,15 +141,6 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("spec42.help.openReference", () => {
       SysmlReferencePanel.open(context);
-    })
-  );
-
-  context.subscriptions.push(
-    treeView.onDidChangeVisibility((event) => {
-      if (!event.visible) {
-        return;
-      }
-      scheduleModelExplorerRefreshForCurrentMode("treeView:visible");
     })
   );
 

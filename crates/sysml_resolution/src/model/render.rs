@@ -1,0 +1,1799 @@
+//! Owner-side canonical rendering for the private resolved semantic model.
+//!
+//! The writer accepts only the resolved owner and a caller-provided `fmt::Write`. It does not
+//! expose storage collections or return projections that could become a second semantic model.
+
+#[cfg(test)]
+#[cfg(test)]
+#[cfg(test)]
+use crate::evaluation::EvaluationPolicy;
+use crate::index::expressions as expression;
+use crate::index::types;
+use crate::lower::facts::AnnotationForm;
+use crate::lower::facts::AuthoredImportFacts;
+use crate::lower::facts::AuthoredImportShape;
+use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::FeatureValueKind;
+use crate::lower::facts::FilterForm;
+use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::ParameterDirection;
+use crate::lower::facts::PortionKind;
+#[cfg(test)]
+use crate::lower::intern::{SymbolPathArenaBuilder, SymbolTableBuilder};
+#[cfg(test)]
+use crate::lower::storage::SemanticModelStorage;
+use crate::model::resolver::PublicationPhase;
+use crate::model::resolver::ResolvedSemanticModel;
+use crate::model::resolver::SemanticModel;
+use crate::model::span::document_range;
+use crate::model::AuthoredReferenceId;
+use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
+use crate::model::DocumentIdx;
+use crate::model::MembershipKind;
+use crate::model::ReferenceKind;
+use crate::model::SymbolPathId;
+use crate::model::Visibility;
+use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::results::ResolutionStatus;
+use crate::Diagnostic;
+use crate::TextRange;
+use source_identity::SourceRole;
+
+use std::fmt;
+
+use crate::evaluation::EvaluatedScalar;
+
+pub(crate) fn write_semantic(
+    model: &ResolvedSemanticModel,
+    source_digest: &source_identity::RootDigest,
+    _semantic_contract_version: &str,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "(semantic-model")?;
+    write_metadata(model, source_digest, output)?;
+    write_declarations(model, output)?;
+    write_references(model, output)?;
+    write_relationships(model, output)?;
+    write_evaluation(model, output)?;
+    write!(output, ")")
+}
+
+pub(crate) fn write_navigation_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_navigation(model, output)
+}
+
+pub(crate) fn write_types_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_types(model, output)
+}
+
+/// Renders the settled specialization closure of each projected declaration.
+///
+/// A declaration with no transitive supertype and no cycle contributes nothing, so this section
+/// stays proportional to the type structure a fixture actually authors rather than to its
+/// declaration count. Each supertype carries the scopes whose paths reach it, which is what makes
+/// one closure answer both the Pilot's all-subkinds reading and the narrower classifier-only one.
+pub(crate) fn write_types(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "(types")?;
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        let cyclic = model.types.specialization().is_cyclic(declaration);
+        let supertypes = canonical_targets(
+            model,
+            model
+                .types
+                .specialization()
+                .scoped_ancestors(declaration)
+                .collect(),
+        );
+        let direct_types = canonical_targets(model, model.types.direct_types(declaration).to_vec());
+        let subtypes = canonical_targets(model, model.types.subtypes(declaration).to_vec());
+        let effective_types =
+            canonical_targets(model, model.types.effective_types(declaration).to_vec());
+        let featuring = model.types.featuring_type(declaration);
+        let set_operands = model.types.set_operands(declaration);
+        let authored_ends = model.types.authored_ends(declaration);
+        let effective_ends = model.types.effective_ends(declaration);
+        if !cyclic
+            && supertypes.is_empty()
+            && direct_types.is_empty()
+            && subtypes.is_empty()
+            && effective_types.is_empty()
+            && featuring.is_none()
+            && set_operands.is_empty()
+            && effective_ends == 0
+        {
+            continue;
+        }
+        write!(output, "    (declaration (id ")?;
+        write_node_identity(model, declaration, output)?;
+        write!(output, ")")?;
+        if cyclic {
+            write!(output, " (cyclic true)")?;
+        }
+        writeln!(output)?;
+        if effective_ends > 0 {
+            // Both counts, always: a reader cannot tell an inherited end pair from an authored one
+            // if only the effective total is published.
+            writeln!(
+                output,
+                "      (positional-ends (authored {authored_ends}) (effective {effective_ends}))",
+            )?;
+        }
+        if let Some(featuring) = featuring {
+            write!(output, "      (featured-by ")?;
+            write_node_identity(model, featuring, output)?;
+            writeln!(output, ")")?;
+        }
+        for (target, provenance) in direct_types {
+            write!(output, "      (type ")?;
+            write_node_identity(model, target, output)?;
+            writeln!(output, " (provenance {}))", fact_provenance(provenance))?;
+        }
+        for (target, source) in effective_types {
+            write!(output, "      (effective-type ")?;
+            write_node_identity(model, target, output)?;
+            match source {
+                types::EffectiveTypeSource::Direct => write!(output, " (source direct)")?,
+                types::EffectiveTypeSource::Inherited(from) => {
+                    write!(output, " (source inherited) (from ")?;
+                    write_node_identity(model, from, output)?;
+                    write!(output, ")")?;
+                }
+            }
+            writeln!(output, ")")?;
+        }
+        // Authored order, not the canonical target order the other rows use: `differences` reads
+        // its first operand as the type being reduced and the rest as exclusions, so sorting these
+        // by target would destroy the fact. The row is already in ordinal order.
+        for (ordinal, operator, target) in set_operands {
+            write!(
+                output,
+                "      (set-operand (operator {}) (ordinal {ordinal}) ",
+                set_operator_name(*operator),
+            )?;
+            write_node_identity(model, *target, output)?;
+            writeln!(output, ")")?;
+        }
+        for (ancestor, scopes) in supertypes {
+            write!(output, "      (supertype ")?;
+            write_node_identity(model, ancestor, output)?;
+            write_scopes(output, scopes.into_iter())?;
+            writeln!(output, ")")?;
+        }
+        for (subtype, scopes) in subtypes {
+            write!(output, "      (subtype ")?;
+            write_node_identity(model, subtype, output)?;
+            write_scopes(output, types::scopes_of(scopes))?;
+            writeln!(output, ")")?;
+        }
+        writeln!(output, "    )")?;
+    }
+    write!(output, ")")
+}
+
+/// Orders target-carrying entries by document identity then declaration path, the same key every
+/// other owned projection sorts by, so rendering never exposes storage order.
+pub(crate) fn canonical_targets<T>(
+    model: &ResolvedSemanticModel,
+    mut entries: Vec<(DeclarationId, T)>,
+) -> Vec<(DeclarationId, T)> {
+    entries.sort_by_key(|(target, _)| {
+        (
+            model
+                .storage
+                .declaration(*target)
+                .map(|declaration| document_identity(model, declaration.document).to_string())
+                .unwrap_or_else(|| "<invalid-document>".to_string()),
+            declaration_path_key(model, *target),
+        )
+    });
+    entries
+}
+
+pub(crate) fn write_scopes(
+    output: &mut dyn fmt::Write,
+    scopes: impl Iterator<Item = types::ScopeBits>,
+) -> fmt::Result {
+    write!(output, " (scopes")?;
+    for scope in scopes {
+        write!(output, " {}", specialization_scope(scope))?;
+    }
+    output.write_char(')')
+}
+
+pub(crate) fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
+    match provenance {
+        types::FactProvenance::Authored => "authored",
+        types::FactProvenance::Implied => "implied",
+    }
+}
+
+pub(crate) fn set_operator_name(operator: types::SetOperator) -> &'static str {
+    match operator {
+        types::SetOperator::Union => "union",
+        types::SetOperator::Intersection => "intersection",
+        types::SetOperator::Difference => "difference",
+        types::SetOperator::Disjoint => "disjoint",
+    }
+}
+
+pub(crate) fn specialization_scope(scope: types::ScopeBits) -> &'static str {
+    match scope {
+        types::ScopeBits::AnySpecialization => "any",
+        types::ScopeBits::Subclassification => "subclassification",
+        types::ScopeBits::FeatureSpecialization => "feature",
+    }
+}
+
+/// The canonical S-expression adapter over the publication's typed diagnostics.
+///
+/// It decides layout and nothing else: every code, severity, origin, range, and related location
+/// below is read from [`crate::Diagnostic`]. Categories stay available on that typed contract but
+/// are deliberately absent from this compatibility S-expression.
+pub(crate) fn write_diagnostics(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    // The publication groups diagnostics by document in this same canonical order, so one cursor
+    // walks them. A document with none still prints its empty group: "this document reported
+    // nothing" is an answer the fixture should show.
+    let diagnostics = model.diagnostics();
+    let mut next = 0;
+    writeln!(output, "(fixture-diagnostics")?;
+    for document_index in canonical_document_indices(model) {
+        let document = &model.storage.documents[document_index];
+        writeln!(output, "  (document {:?}", document.identity)?;
+        writeln!(output, "    (diagnostics")?;
+        while let Some(diagnostic) = diagnostics.get(next) {
+            if diagnostic.location.document != document.identity {
+                break;
+            }
+            write_diagnostic(diagnostic, output)?;
+            next += 1;
+        }
+        writeln!(output, "    )\n  )")?;
+    }
+    write!(output, ")")
+}
+
+pub(crate) fn write_diagnostic(
+    diagnostic: &Diagnostic,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let range = diagnostic.location.range;
+    writeln!(output, "      (diagnostic")?;
+    writeln!(
+        output,
+        "        (severity {})",
+        diagnostic.severity.as_str()
+    )?;
+    write!(output, "        (code ")?;
+    write_quoted(output, diagnostic.code.as_str())?;
+    writeln!(output, ")")?;
+    writeln!(output, "        (source {:?})", diagnostic.origin.as_str())?;
+    writeln!(
+        output,
+        "        (range (start {} {}) (end {} {}))",
+        range.start.line, range.start.character, range.end.line, range.end.character,
+    )?;
+    if !diagnostic.related.is_empty() {
+        writeln!(output, "        (related-information")?;
+        for related in diagnostic.related.iter() {
+            writeln!(output, "          (related")?;
+            writeln!(output, "            (uri {:?})", related.location.document)?;
+            writeln!(
+                output,
+                "            (range (start {} {}) (end {} {}))",
+                related.location.range.start.line,
+                related.location.range.start.character,
+                related.location.range.end.line,
+                related.location.range.end.character,
+            )?;
+            writeln!(output, "          )")?;
+        }
+        writeln!(output, "        )")?;
+    }
+    writeln!(output, "      )")
+}
+
+pub(crate) fn write_metadata(
+    model: &ResolvedSemanticModel,
+    source_digest: &source_identity::RootDigest,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let phase = match model.metadata.phase {
+        PublicationPhase::Resolved => "resolved",
+    };
+    let completeness = if model.metadata.completeness.is_complete() {
+        "complete".to_owned()
+    } else {
+        model
+            .metadata
+            .completeness
+            .obstacles()
+            .map(|obstacle| match obstacle {
+                crate::PublicationObstacle::ParseRecovery => "parse-recovery",
+                crate::PublicationObstacle::UnsupportedSyntax => "unsupported-syntax",
+                crate::PublicationObstacle::NonConverged => "non-converged",
+            })
+            .collect::<Vec<_>>()
+            .join(",")
+    };
+    write!(
+        output,
+        "  (publication (phase {phase}) (completeness {completeness}) (has-evaluation {}) (source-digest ",
+        model.metadata.has_evaluation
+    )?;
+    write_quoted(output, &source_digest.to_string())?;
+    write!(output, ")")?;
+    write_admitted_sources(model, output)?;
+    writeln!(output, ")")
+}
+
+/// Reports the non-workspace sources this publication admitted.
+///
+/// Emitted only when the publication admitted one, so a workspace-only build renders exactly as it
+/// did before libraries could be admitted. Without it, admission would be visible only through an
+/// opaque source digest, and a projection scoped to workspace documents would look identical
+/// whether or not a library took part in resolution.
+pub(crate) fn write_admitted_sources(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut standard_library = 0usize;
+    let mut library = 0usize;
+    let mut external = 0usize;
+    for document in model.storage.documents.iter() {
+        match document.role {
+            SourceRole::Workspace => {}
+            SourceRole::StandardLibrary => standard_library += 1,
+            SourceRole::Library => library += 1,
+            SourceRole::External => external += 1,
+        }
+    }
+    if standard_library == 0 && library == 0 && external == 0 {
+        return Ok(());
+    }
+    output.write_str(" (admitted")?;
+    if standard_library > 0 {
+        write!(output, " (standard-library {standard_library})")?;
+    }
+    if library > 0 {
+        write!(output, " (library {library})")?;
+    }
+    if external > 0 {
+        write!(output, " (external {external})")?;
+    }
+    output.write_char(')')
+}
+
+pub(crate) fn write_declarations(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "  (declarations")?;
+    for index in canonical_declaration_indices(model) {
+        let declaration = &model.storage.declarations[index];
+        write!(output, "    (declaration (id ")?;
+        write_node_identity(model, DeclarationId(index as u32), output)?;
+        write!(output, ") (kind {})", declaration_kind(declaration.kind))?;
+        if let Some(membership) = model
+            .storage
+            .memberships
+            .iter()
+            .find(|membership| membership.member == DeclarationId(index as u32))
+        {
+            write_membership(membership, output)?;
+        }
+        write_declaration_facts(model, DeclarationId(index as u32), output)?;
+        write_effective_identification(model, DeclarationId(index as u32), output)?;
+        write_documentation(model, DeclarationId(index as u32), output)?;
+        write_feature_values(model, DeclarationId(index as u32), output)?;
+        write_operator_expression(model, DeclarationId(index as u32), output)?;
+        write_constructor_expression(model, DeclarationId(index as u32), output)?;
+        write_authored(model, DeclarationId(index as u32), output)?;
+        writeln!(output, ")")?;
+    }
+    writeln!(output, "  )")
+}
+
+fn write_effective_identification(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(facts) = model.resolution.effective_names.get(declaration.index()) else {
+        return Ok(());
+    };
+    if !facts.derived_from_redefinition {
+        return Ok(());
+    }
+    output.write_str(" (effective-identification")?;
+    match facts.name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (name non-converged)")?,
+    }
+    match facts.short_name {
+        EffectiveNameOutcome::Resolved(name) => {
+            let text = model.storage.symbol(name).ok_or(fmt::Error)?;
+            write!(output, " (short-name {text:?})")?;
+        }
+        EffectiveNameOutcome::Absent => output.write_str(" (short-name absent)")?,
+        EffectiveNameOutcome::Unresolved => output.write_str(" (short-name unresolved)")?,
+        EffectiveNameOutcome::NonConverged => output.write_str(" (short-name non-converged)")?,
+    }
+    output.write_str(" (provenance first-redefinition))")
+}
+
+fn write_constructor_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(constructor) = model
+        .storage
+        .constructor_expressions
+        .iter()
+        .find(|constructor| constructor.expression == declaration)
+    else {
+        return Ok(());
+    };
+    output.write_str(" (constructor-expression (result ")?;
+    write_node_identity(model, constructor.result, output)?;
+    output.write_str("))")
+}
+
+fn write_operator_expression(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(operator) = model
+        .storage
+        .operator_expressions
+        .iter()
+        .find(|operator| operator.expression == declaration)
+    else {
+        return Ok(());
+    };
+    let kind = match operator.kind {
+        crate::lower::facts::OperatorExpressionKind::Index => "index",
+        crate::lower::facts::OperatorExpressionKind::Select => "select",
+    };
+    write!(output, " (operator-expression (kind {kind}) (arguments")?;
+    let mut arguments = model
+        .storage
+        .expression_arguments
+        .iter()
+        .filter(|argument| argument.expression == declaration)
+        .collect::<Vec<_>>();
+    arguments.sort_by_key(|argument| argument.ordinal);
+    for argument in arguments {
+        write!(
+            output,
+            " (argument (ordinal {}) (expression ",
+            argument.ordinal
+        )?;
+        write_node_identity(model, argument.argument, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, argument.result, output)?;
+        output.write_str("))")?;
+    }
+    output.write_str("))")
+}
+
+/// Renders the authored short name, modifiers, portion kind, direction, and multiplicity of one
+/// declaration.
+///
+/// Only facts that are actually present are emitted, so a declaration whose parser node carries
+/// none of them renders exactly as it did before this fact family existed.
+pub(crate) fn write_declaration_facts(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(facts) = model.storage.declaration_facts(declaration) else {
+        return Ok(());
+    };
+    let modifiers = declaration_modifier_names(&facts.modifiers);
+    if facts.short_name.is_none()
+        && modifiers.is_empty()
+        && facts.portion_kind.is_none()
+        && facts.direction.is_none()
+        && facts.multiplicity.is_none()
+        && facts.positional_end.is_none()
+        && facts.cross_feature_projection.is_none()
+        && facts.expression_result.is_none()
+    {
+        return Ok(());
+    }
+    output.write_str(" (facts")?;
+    if let Some(short_name) = facts.short_name {
+        let text = model.storage.symbol(short_name).ok_or(fmt::Error)?;
+        write!(output, " (short-name {text:?})")?;
+    }
+    if !modifiers.is_empty() {
+        output.write_str(" (modifiers")?;
+        for name in modifiers {
+            write!(output, " {name}")?;
+        }
+        output.write_char(')')?;
+    }
+    if let Some(portion_kind) = facts.portion_kind {
+        write!(output, " (portion {})", portion_kind_name(portion_kind))?;
+    }
+    if let Some(direction) = facts.direction {
+        write!(output, " (direction {})", parameter_direction(direction))?;
+    }
+    if let Some(multiplicity) = &facts.multiplicity {
+        output.write_str(" (multiplicity (lower ")?;
+        write_multiplicity_bound(multiplicity.lower, output)?;
+        output.write_str(") (upper ")?;
+        write_multiplicity_bound(multiplicity.upper, output)?;
+        output.write_str("))")?;
+    }
+    if let Some(position) = facts.positional_end {
+        write!(output, " (positional-end {position})")?;
+    }
+    if let Some(projection) = facts.cross_feature_projection {
+        output.write_str(" (cross-feature-projection (cross-feature ")?;
+        write_node_identity(model, projection.cross_feature, output)?;
+        output.write_str(") (owned-cross-feature ")?;
+        write_node_identity(model, projection.owned_cross_feature, output)?;
+        output.write_str("))")?;
+    }
+    if let Some(result) = facts.expression_result {
+        output.write_str(" (expression-result ")?;
+        write_node_identity(model, result, output)?;
+        output.write_char(')')?;
+    }
+    output.write_char(')')
+}
+
+pub(crate) fn write_multiplicity_bound(
+    bound: MultiplicityBound,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    match bound {
+        MultiplicityBound::Unbounded => output.write_str("unbounded"),
+        MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::Expression => output.write_str("expression"),
+    }
+}
+
+/// The present modifier names in a fixed canonical order, so snapshot output never depends on
+/// field or hash ordering.
+pub(crate) fn declaration_modifier_names(modifiers: &DeclarationModifiers) -> Vec<&'static str> {
+    let candidates = [
+        (modifiers.is_abstract, "abstract"),
+        (modifiers.variation, "variation"),
+        (modifiers.individual, "individual"),
+        (modifiers.derived, "derived"),
+        (modifiers.end, "end"),
+        (modifiers.reference, "reference"),
+        (modifiers.constant, "constant"),
+        (modifiers.event, "event"),
+        (modifiers.standard, "standard"),
+        (modifiers.all, "all"),
+        (modifiers.composite, "composite"),
+        (modifiers.portion, "portion"),
+        (modifiers.var, "var"),
+        (modifiers.member, "member"),
+        (modifiers.parallel, "parallel"),
+        (modifiers.ordered, "ordered"),
+        (modifiers.nonunique, "nonunique"),
+    ];
+    candidates
+        .into_iter()
+        .filter_map(|(present, name)| present.then_some(name))
+        .collect()
+}
+
+pub(crate) fn portion_kind_name(kind: PortionKind) -> &'static str {
+    match kind {
+        PortionKind::Snapshot => "snapshot",
+        PortionKind::Timeslice => "timeslice",
+    }
+}
+
+pub(crate) fn annotation_form_name(form: AnnotationForm) -> &'static str {
+    match form {
+        AnnotationForm::Documentation => "doc",
+        AnnotationForm::Comment => "comment",
+        AnnotationForm::TextualRepresentation => "rep",
+    }
+}
+
+/// Renders the `doc`/`comment`/`rep` annotations bound to one declaration, in authored order.
+pub(crate) fn write_documentation(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut wrote_header = false;
+    for record in model
+        .storage
+        .documentation
+        .iter()
+        .filter(|record| record.declaration == declaration)
+    {
+        if !wrote_header {
+            output.write_str(" (documentation")?;
+            wrote_header = true;
+        }
+        write!(output, " ({}", annotation_form_name(record.form))?;
+        if let Some(locale) = record.locale {
+            let text = model.storage.symbol(locale).ok_or(fmt::Error)?;
+            write!(output, " (locale {text:?})")?;
+        }
+        if let Some(language) = record.language {
+            let text = model.storage.symbol(language).ok_or(fmt::Error)?;
+            write!(output, " (language {text:?})")?;
+        }
+        let text = model.storage.symbol(record.text).ok_or(fmt::Error)?;
+        write!(output, " (text {text:?}))")?;
+    }
+    if wrote_header {
+        output.write_char(')')?;
+    }
+    Ok(())
+}
+
+/// Renders the authored feature-value spelling(s) of one declaration.
+pub(crate) fn write_feature_values(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    for record in model
+        .storage
+        .feature_values
+        .iter()
+        .filter(|record| record.declaration == declaration)
+    {
+        let kind = match record.kind {
+            FeatureValueKind::Bind => "bind",
+            FeatureValueKind::Assign => "assign",
+        };
+        // Deliberately not `(value ...)`: that head is already the evaluation section's computed
+        // value, and this is the authored spelling of the value clause.
+        write!(output, " (feature-value (kind {kind})")?;
+        output.write_str(" (value ")?;
+        write_node_identity(model, record.value, output)?;
+        output.write_str(") (result ")?;
+        write_node_identity(model, record.result, output)?;
+        output.write_char(')')?;
+        if record.is_default {
+            output.write_str(" (default true)")?;
+        }
+        if !record.has_operator {
+            output.write_str(" (operator false)")?;
+        }
+        output.write_char(')')?;
+    }
+    Ok(())
+}
+
+pub(crate) fn write_references(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "  (references")?;
+    for index in canonical_reference_indices(model) {
+        let reference = &model.storage.references[index];
+        let id = AuthoredReferenceId(index as u32);
+        write!(output, "    (reference (id (source ")?;
+        write_node_identity(model, reference.source, output)?;
+        writeln!(
+            output,
+            ") (kind {}) (ordinal {}))",
+            reference_kind(reference.kind),
+            reference.ordinal,
+        )?;
+        write!(output, "      (authored-target ")?;
+        write_reference_path(model, reference.path, output)?;
+        writeln!(output, ")")?;
+        write!(output, "      ")?;
+        write_outcome(model, id, output)?;
+        writeln!(output, ")")?;
+    }
+    writeln!(output, "  )")
+}
+
+pub(crate) fn write_relationships(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "  (relationships")?;
+    for index in canonical_reference_indices(model) {
+        let reference = &model.storage.references[index];
+        let id = AuthoredReferenceId(index as u32);
+        let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
+            continue;
+        };
+        let Some(kind) = relationship_kind(reference.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind})")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
+        }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
+        }
+        write!(output, " (source ")?;
+        write_node_identity(model, reference.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, target, output)?;
+        write!(
+            output,
+            ") (provenance authored) (authored-reference (source "
+        )?;
+        write_node_identity(model, reference.source, output)?;
+        writeln!(
+            output,
+            ") (kind {}) (ordinal {})))",
+            reference_kind(reference.kind),
+            reference.ordinal,
+        )?;
+    }
+    let mut authored = model
+        .resolution
+        .authored_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect::<Vec<_>>();
+    authored.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in authored {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance authored))")?;
+    }
+    let mut implied: Vec<&ImpliedRelationship> = model
+        .resolution
+        .implied_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect();
+    implied.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in implied {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance implied))")?;
+    }
+    writeln!(output, "  )")
+}
+
+pub(crate) fn write_evaluation(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "  (evaluation")?;
+    for index in canonical_evaluation_indices(model) {
+        let fact = &model.evaluation[index];
+        write!(output, "    (evaluated (declaration ")?;
+        write_node_identity(model, fact.declaration, output)?;
+        write!(output, ") (state {})", fact.state.as_str())?;
+        // The value is rendered only where the state carries one, so a failure cannot be mistaken
+        // for a value of some fallback kind.
+        if let Some(value) = fact.state.value() {
+            write!(output, " ")?;
+            write_evaluated_scalar(value, output)?;
+        }
+        writeln!(output, ")")?;
+    }
+    write_units(model, output)?;
+    write_measurements(model, output)?;
+    write_filters(model, output)?;
+    write_invocations(model, output)?;
+    writeln!(output, "  )")
+}
+
+/// Every authored unit token, with the spelling the author used and what it resolved to.
+pub(crate) fn write_units(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        for unit in model.expressions.units(declaration) {
+            write!(output, "    (unit (declaration ")?;
+            write_node_identity(model, unit.declaration, output)?;
+            write!(
+                output,
+                ") (ordinal {}) (authored {:?}) ",
+                unit.ordinal,
+                model.storage.symbol(unit.text).unwrap_or_default()
+            )?;
+            match document_range(&model.storage, unit.document, &unit.span) {
+                Ok(range) => write_range(output, range)?,
+                Err(_) => write!(output, "(range invalid)")?,
+            }
+            write!(output, " (outcome ")?;
+            match &unit.outcome {
+                expression::UnitOutcome::Resolved { unit, dimensions } => {
+                    write!(output, "(status resolved) (unit ")?;
+                    write_node_identity(model, *unit, output)?;
+                    write!(output, ")")?;
+                    for dimension in dimensions.iter() {
+                        write!(output, " (dimension ")?;
+                        write_node_identity(model, *dimension, output)?;
+                        write!(output, ")")?;
+                    }
+                }
+                expression::UnitOutcome::UnknownSymbol => write!(output, "(status unknown)")?,
+                expression::UnitOutcome::Ambiguous(candidates) => {
+                    write!(output, "(status ambiguous)")?;
+                    for candidate in candidates.iter() {
+                        write!(output, " (candidate ")?;
+                        write_node_identity(model, *candidate, output)?;
+                        write!(output, ")")?;
+                    }
+                }
+                expression::UnitOutcome::UnsupportedExpression => {
+                    write!(output, "(status unsupported)")?
+                }
+                expression::UnitOutcome::CatalogUnavailable => {
+                    write!(output, "(status catalog-unavailable)")?
+                }
+            }
+            writeln!(output, "))")?;
+        }
+    }
+    Ok(())
+}
+
+/// The measurement reference each quantity-valued declaration requires of its values.
+///
+/// Only declarations that require one are rendered: "this is not a quantity" is the common case,
+/// and printing it for every declaration would bury the ones that are.
+pub(crate) fn write_measurements(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        match model.expressions.required_measurement(declaration) {
+            expression::RequiredMeasurement::NotApplicable => continue,
+            expression::RequiredMeasurement::Indeterminate => {
+                write!(output, "    (measurement (declaration ")?;
+                write_node_identity(model, declaration, output)?;
+                writeln!(output, ") (status indeterminate))")?;
+            }
+            expression::RequiredMeasurement::Required(dimensions) => {
+                write!(output, "    (measurement (declaration ")?;
+                write_node_identity(model, declaration, output)?;
+                write!(output, ") (status required)")?;
+                for dimension in dimensions.iter() {
+                    write!(output, " (dimension ")?;
+                    write_node_identity(model, *dimension, output)?;
+                    write!(output, ")")?;
+                }
+                writeln!(output, ")")?;
+            }
+        }
+    }
+    Ok(())
+}
+
+pub(crate) fn write_filters(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut filters = model
+        .expressions
+        .filters()
+        .iter()
+        .filter(|filter| is_projected_declaration(model, filter.owner))
+        .collect::<Vec<_>>();
+    filters.sort_by_key(|filter| {
+        (
+            document_identity(model, filter.document),
+            declaration_path_key(model, filter.owner),
+        )
+    });
+    for filter in filters {
+        write!(output, "    (filter (owner ")?;
+        write_node_identity(model, filter.owner, output)?;
+        write!(
+            output,
+            ") (form {}) (state {}) ",
+            filter_form_name(filter.form),
+            filter.state.as_str()
+        )?;
+        match document_range(&model.storage, filter.document, &filter.span) {
+            Ok(range) => write_range(output, range)?,
+            Err(_) => write!(output, "(range invalid)")?,
+        }
+        if let Some(value) = filter.state.value() {
+            write!(output, " ")?;
+            write_evaluated_scalar(value, output)?;
+        }
+        writeln!(output, ")")?;
+    }
+    Ok(())
+}
+
+pub(crate) fn filter_form_name(form: FilterForm) -> &'static str {
+    match form {
+        FilterForm::View => "view",
+        FilterForm::Rendering => "rendering",
+        FilterForm::PackageImport => "package-import",
+    }
+}
+
+pub(crate) fn write_invocations(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut invocations = model
+        .expressions
+        .invocations()
+        .iter()
+        .filter(|invocation| is_projected_declaration(model, invocation.declaration))
+        .collect::<Vec<_>>();
+    invocations.sort_by_key(|invocation| {
+        (
+            document_identity(model, invocation.document),
+            declaration_path_key(model, invocation.declaration),
+        )
+    });
+    for invocation in invocations {
+        write!(output, "    (invocation (declaration ")?;
+        write_node_identity(model, invocation.declaration, output)?;
+        write!(output, ") (callee ")?;
+        write_node_identity(model, invocation.callee, output)?;
+        write!(
+            output,
+            ") (supplied {}) (required {}) ",
+            invocation.supplied, invocation.required
+        )?;
+        match document_range(&model.storage, invocation.document, &invocation.span) {
+            Ok(range) => write_range(output, range)?,
+            Err(_) => write!(output, "(range invalid)")?,
+        }
+        writeln!(output, ")")?;
+    }
+    Ok(())
+}
+
+pub(crate) fn write_evaluated_scalar(
+    value: &EvaluatedScalar,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    match value {
+        EvaluatedScalar::Boolean(value) => {
+            write!(output, "(value (kind boolean) (boolean {value}))")
+        }
+        EvaluatedScalar::Integer(value) => {
+            write!(output, "(value (kind integer) (integer {value}))")
+        }
+        EvaluatedScalar::Real(value) => write!(output, "(value (kind real) (real {value}))"),
+        EvaluatedScalar::String(value) => {
+            write!(output, "(value (kind string) (value {value:?}))")
+        }
+        EvaluatedScalar::Quantity { magnitude, unit } => {
+            write!(output, "(value (kind quantity) (magnitude ")?;
+            write_evaluated_scalar(magnitude, output)?;
+            write!(output, ") (unit {unit:?}))")
+        }
+    }
+}
+
+pub(crate) fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.evaluation.len())
+        .filter(|index| is_projected_declaration(model, model.evaluation[*index].declaration))
+        .collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_fact = &model.evaluation[*left];
+        let right_fact = &model.evaluation[*right];
+        let left_document = model
+            .storage
+            .declaration(left_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        let right_document = model
+            .storage
+            .declaration(right_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        left_document
+            .cmp(right_document)
+            .then_with(|| {
+                declaration_path_key(model, left_fact.declaration)
+                    .cmp(&declaration_path_key(model, right_fact.declaration))
+            })
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+pub(crate) fn write_navigation(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    writeln!(output, "(navigation")?;
+    for index in canonical_reference_indices(model) {
+        let reference = &model.storage.references[index];
+        let id = AuthoredReferenceId(index as u32);
+        let source = model
+            .storage
+            .declaration(reference.source)
+            .ok_or(fmt::Error)?;
+        let range = document_range(&model.storage, source.document, &reference.span)
+            .map_err(|_| fmt::Error)?;
+        write!(output, "  (query (document ")?;
+        write_quoted(output, document_identity(model, source.document))?;
+        write!(output, ") (range ")?;
+        write_range(output, range)?;
+        write!(
+            output,
+            ") (probe (position {} {}))\n    (reference (id (source ",
+            range.start.line, range.start.character,
+        )?;
+        write_node_identity(model, reference.source, output)?;
+        write!(
+            output,
+            ") (kind {}) (ordinal {}) (authored-target ",
+            reference_kind(reference.kind),
+            reference.ordinal,
+        )?;
+        write_reference_path(model, reference.path, output)?;
+        write!(output, ")\n      ")?;
+        write_outcome(model, id, output)?;
+        // Closes `(id`, then `(reference`, then `(query`. The last one was missing, so every
+        // rendered query left its element open.
+        writeln!(output, ")\n    )\n  )")?;
+    }
+    write!(output, ")")
+}
+
+pub(crate) fn write_outcome(
+    model: &ResolvedSemanticModel,
+    id: AuthoredReferenceId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    match model.resolution.outcome(id).ok_or(fmt::Error)? {
+        ResolutionStatus::Resolved(target) => {
+            output.write_str("(outcome (status resolved) (target ")?;
+            write_node_identity(model, target, output)?;
+            output.write_str("))")
+        }
+        ResolutionStatus::Unresolved => output.write_str("(outcome (status unresolved))"),
+        ResolutionStatus::Unsupported => output.write_str("(outcome (status unsupported))"),
+        ResolutionStatus::NonConverged => output.write_str("(outcome (status nonConverged))"),
+        ResolutionStatus::Ambiguous(range) => {
+            output.write_str("(outcome (status ambiguous) (candidates")?;
+            for candidate in model.resolution.ambiguous_candidates(range) {
+                output.write_char(' ')?;
+                write_node_identity(model, *candidate, output)?;
+            }
+            output.write_str("))")
+        }
+    }
+}
+
+pub(crate) fn write_authored(
+    model: &ResolvedSemanticModel,
+    source: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut references = model
+        .storage
+        .references
+        .iter()
+        .filter(|reference| reference.source == source)
+        .collect::<Vec<_>>();
+    if references.is_empty() {
+        return Ok(());
+    }
+    references.sort_by_key(|reference| (reference.kind, reference.ordinal));
+    output.write_str(" (authored")?;
+    if let Some(membership) = model
+        .storage
+        .memberships
+        .iter()
+        .find(|membership| membership.member == source)
+    {
+        write_membership(membership, output)?;
+    }
+    output.write_str(" (relationships")?;
+    for reference in references {
+        write!(output, " ({} (reference ", reference_kind(reference.kind))?;
+        write_reference_path(model, reference.path, output)?;
+        write!(output, ")")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
+        }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
+        }
+        if let Some(import) = reference.import {
+            write_import(import, output)?;
+        }
+        output.write_char(')')?;
+    }
+    // Closes `(relationships` and then `(authored`. Only the first was emitted before, so the
+    // declaration's own closer was consumed by `(authored` and every declaration carrying
+    // authored facts left its element open.
+    output.write_str("))")
+}
+
+fn write_membership(
+    membership: &crate::lower::facts::MembershipRecord,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write!(
+        output,
+        " (membership (kind {}) (visibility {})",
+        membership_kind(membership.kind),
+        visibility(membership.visibility),
+    )?;
+    if let Some(role) = membership.role {
+        write!(output, " (role {role})")?;
+    }
+    output.write_char(')')
+}
+
+pub(crate) fn write_import(
+    import: AuthoredImportFacts,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write!(
+        output,
+        " (import (shape {}) (recursive {}))",
+        import_shape(import.shape),
+        import.recursive,
+    )
+}
+
+pub(crate) fn import_shape(shape: AuthoredImportShape) -> &'static str {
+    match shape {
+        AuthoredImportShape::Membership => "membership",
+        AuthoredImportShape::Namespace => "namespace",
+        AuthoredImportShape::Filter => "filtered-namespace",
+    }
+}
+
+pub(crate) fn write_declaration_name(
+    model: &ResolvedSemanticModel,
+    id: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    output.write_char('"')?;
+    write_declaration_name_body(model, id, output)?;
+    output.write_char('"')
+}
+
+pub(crate) fn write_node_identity(
+    model: &ResolvedSemanticModel,
+    id: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let declaration = model.storage.declaration(id).ok_or(fmt::Error)?;
+    write!(output, "(node (document ")?;
+    write_quoted(output, document_identity(model, declaration.document))?;
+    if model.identities.allows_qualified_name_shorthand(id) {
+        // The readable shorthand, used only where the qualified name recovers the whole identity:
+        // every segment named, no same-named sibling, and nothing else rendering the same name.
+        output.write_str(") (qualified-name ")?;
+        write_declaration_name(model, id, output)?;
+        output.write_char(')')?;
+    } else {
+        // `write_declaration_path` closes its own `(path ...)`, so only the node itself is left
+        // open here. Closing both forms with one shared `))` emitted an extra paren for every
+        // explicit path and left the section unbalanced.
+        output.write_str(") ")?;
+        write_declaration_path(model, id, output)?;
+    }
+    output.write_char(')')
+}
+
+/// Renders the explicit root-to-leaf scope path used whenever the qualified name alone would not
+/// recover the identity.
+///
+/// Every segment carries its kind, matching the identity encoding: a `metadata def X` and the
+/// `metadata X about ...` annotating it are distinct elements sharing one name, and only the kind
+/// separates them.
+pub(crate) fn write_declaration_path(
+    model: &ResolvedSemanticModel,
+    id: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut chain = vec![id];
+    let mut cursor = model.storage.declaration(id).ok_or(fmt::Error)?.owner;
+    while let Some(current) = cursor {
+        if chain.len() > model.storage.declarations.len() {
+            return Err(fmt::Error);
+        }
+        chain.push(current);
+        cursor = model.storage.declaration(current).ok_or(fmt::Error)?.owner;
+    }
+    output.write_str("(path")?;
+    for current in chain.iter().rev() {
+        let declaration = model.storage.declaration(*current).ok_or(fmt::Error)?;
+        match declaration.name {
+            Some(name) => {
+                write!(
+                    output,
+                    " (named (kind {}) (name ",
+                    declaration_kind(declaration.kind)
+                )?;
+                write_quoted(output, model.storage.symbol(name).ok_or(fmt::Error)?)?;
+                output.write_char(')')?;
+                let occurrence = model
+                    .identities
+                    .name_occurrence(*current)
+                    .ok_or(fmt::Error)?;
+                if occurrence > 0 {
+                    // Only a same-named sibling after the first carries this, so a later duplicate
+                    // never disturbs the identity already published for the original.
+                    write!(output, " (occurrence {occurrence})")?;
+                }
+                output.write_char(')')?;
+            }
+            None => write!(
+                output,
+                " (anonymous (kind {}) (ordinal {}))",
+                declaration_kind(declaration.kind),
+                declaration.anonymous_ordinal.ok_or(fmt::Error)?,
+            )?,
+        }
+    }
+    output.write_char(')')
+}
+
+pub(crate) fn write_declaration_name_body(
+    model: &ResolvedSemanticModel,
+    id: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let declaration = model.storage.declaration(id).ok_or(fmt::Error)?;
+    if let Some(owner) = declaration.owner {
+        write_declaration_name_body(model, owner, output)?;
+        output.write_str("::")?;
+    }
+    if let Some(name) = declaration.name {
+        write_escaped(output, model.storage.symbol(name).ok_or(fmt::Error)?)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn write_reference_path(
+    model: &ResolvedSemanticModel,
+    id: SymbolPathId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let (segments, rooted) = model.storage.paths.get(id).ok_or(fmt::Error)?;
+    output.write_char('"')?;
+    if rooted {
+        output.write_str("$::")?;
+    }
+    for (index, segment) in segments.iter().enumerate() {
+        if index != 0 {
+            output.write_str("::")?;
+        }
+        write_escaped(output, model.storage.symbol(*segment).ok_or(fmt::Error)?)?;
+    }
+    output.write_char('"')
+}
+
+pub(crate) fn write_quoted(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
+    output.write_char('"')?;
+    write_escaped(output, value)?;
+    output.write_char('"')
+}
+
+pub(crate) fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
+    for character in value.chars() {
+        match character {
+            '\\' => output.write_str("\\\\")?,
+            '"' => output.write_str("\\\"")?,
+            '\n' => output.write_str("\\n")?,
+            '\r' => output.write_str("\\r")?,
+            '\t' => output.write_str("\\t")?,
+            character => output.write_char(character)?,
+        }
+    }
+    Ok(())
+}
+
+/// Whether one document's facts belong in an owner-defined projection.
+///
+/// Projections report the authored workspace. A library is admitted so that workspace references
+/// resolve against it, not so that every publication renders the whole standard library; a
+/// consumer that wants library content projected admits it as a workspace source, exactly as the
+/// library snapshot corpus does. This is a rendering scope, never an admission or resolution
+/// filter -- library declarations, references and outcomes are all still fully published.
+pub(crate) fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentIdx) -> bool {
+    model
+        .storage
+        .document(document)
+        .is_some_and(|document| document.role == SourceRole::Workspace)
+}
+
+pub(crate) fn is_projected_declaration(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+) -> bool {
+    model
+        .storage
+        .declaration(declaration)
+        .is_some_and(|declaration| is_projected_document(model, declaration.document))
+}
+
+pub(crate) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.documents.len())
+        .filter(|index| is_projected_document(model, DocumentIdx(*index as u32)))
+        .collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        model.storage.documents[*left]
+            .identity
+            .cmp(&model.storage.documents[*right].identity)
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+pub(crate) fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.declarations.len())
+        .filter(|index| is_projected_declaration(model, DeclarationId(*index as u32)))
+        .collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_declaration = &model.storage.declarations[*left];
+        let right_declaration = &model.storage.declarations[*right];
+        document_identity(model, left_declaration.document)
+            .cmp(document_identity(model, right_declaration.document))
+            .then_with(|| {
+                declaration_path_key(model, DeclarationId(*left as u32))
+                    .cmp(&declaration_path_key(model, DeclarationId(*right as u32)))
+            })
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+pub(crate) fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.storage.references.len())
+        .filter(|index| is_projected_declaration(model, model.storage.references[*index].source))
+        .collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_reference = &model.storage.references[*left];
+        let right_reference = &model.storage.references[*right];
+        let left_source = model.storage.declaration(left_reference.source);
+        let right_source = model.storage.declaration(right_reference.source);
+        let left_document = left_source
+            .map(|source| document_identity(model, source.document))
+            .unwrap_or("<invalid-document>");
+        let right_document = right_source
+            .map(|source| document_identity(model, source.document))
+            .unwrap_or("<invalid-document>");
+        left_document
+            .cmp(right_document)
+            .then_with(|| {
+                declaration_path_key(model, left_reference.source)
+                    .cmp(&declaration_path_key(model, right_reference.source))
+            })
+            .then_with(|| left_reference.kind.cmp(&right_reference.kind))
+            .then_with(|| left_reference.ordinal.cmp(&right_reference.ordinal))
+            .then_with(|| left.cmp(right))
+    });
+    indices
+}
+
+pub(crate) fn declaration_path_key(model: &ResolvedSemanticModel, id: DeclarationId) -> String {
+    let mut path = String::new();
+    if write_declaration_name_body(model, id, &mut path).is_err() {
+        path.push('\u{fffd}');
+    }
+    if path.is_empty() {
+        if let Some(declaration) = model.storage.declaration(id) {
+            path = format!(
+                "<anonymous:{}:{}>",
+                declaration_kind(declaration.kind),
+                declaration.anonymous_ordinal.unwrap_or(u32::MAX)
+            );
+        }
+    }
+    path
+}
+
+pub(crate) fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
+    write!(
+        output,
+        "(start {} {}) (end {} {})",
+        range.start.line, range.start.character, range.end.line, range.end.character,
+    )
+}
+
+pub(crate) fn document_identity<D>(model: &SemanticModel<D>, id: DocumentIdx) -> &str {
+    model
+        .storage
+        .document(id)
+        .map_or("<invalid-document>", |document| document.identity.as_ref())
+}
+
+pub(crate) fn parameter_direction(direction: ParameterDirection) -> &'static str {
+    match direction {
+        ParameterDirection::In => "in",
+        ParameterDirection::Out => "out",
+        ParameterDirection::InOut => "inout",
+    }
+}
+
+pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
+    match kind {
+        DeclarationKind::Namespace => "namespace",
+        DeclarationKind::Package => "package",
+        DeclarationKind::LibraryPackage => "library-package",
+        DeclarationKind::PartDefinition => "part-def",
+        DeclarationKind::PartUsage => "part",
+        DeclarationKind::AttributeDefinition => "attribute-def",
+        DeclarationKind::AttributeUsage => "attribute",
+        DeclarationKind::Import => "import",
+        DeclarationKind::Expose => "expose",
+        DeclarationKind::Alias => "alias",
+        DeclarationKind::EnumerationDefinition => "enum-def",
+        DeclarationKind::EnumerationUsage => "enum",
+        DeclarationKind::EnumerationLiteral => "enum-literal",
+        DeclarationKind::RequirementDefinition => "requirement-def",
+        DeclarationKind::RequirementUsage => "requirement",
+        DeclarationKind::PortDefinition => "port-def",
+        DeclarationKind::PortUsage => "port",
+        DeclarationKind::ItemDefinition => "item-def",
+        DeclarationKind::ItemUsage => "item",
+        DeclarationKind::ActionDefinition => "action-def",
+        DeclarationKind::ActionUsage => "action",
+        DeclarationKind::AcceptActionUsage => "accept-action",
+        DeclarationKind::SendActionUsage => "send-action",
+        DeclarationKind::TerminateActionUsage => "terminate-action",
+        DeclarationKind::Succession => "succession",
+        DeclarationKind::StateDefinition => "state-def",
+        DeclarationKind::StateUsage => "state",
+        DeclarationKind::MetadataDefinition => "metadata-def",
+        DeclarationKind::MetadataUsage => "metadata",
+        DeclarationKind::ConnectionDefinition => "connection-def",
+        DeclarationKind::InterfaceDefinition => "interface-def",
+        DeclarationKind::ConnectionUsage => "connection",
+        DeclarationKind::OccurrenceDefinition => "occurrence-def",
+        DeclarationKind::OccurrenceUsage => "occurrence",
+        DeclarationKind::AnalysisCaseDefinition => "analysis-def",
+        DeclarationKind::AnalysisCaseUsage => "analysis",
+        DeclarationKind::ViewDefinition => "view-def",
+        DeclarationKind::CaseDefinition => "case-def",
+        DeclarationKind::CaseUsage => "case",
+        DeclarationKind::VerificationCaseDefinition => "verification-def",
+        DeclarationKind::UseCaseDefinition => "use-case-def",
+        DeclarationKind::ViewpointDefinition => "viewpoint-def",
+        DeclarationKind::RenderingDefinition => "rendering-def",
+        DeclarationKind::AllocationDefinition => "allocation-def",
+        DeclarationKind::FlowDefinition => "flow-def",
+        DeclarationKind::ViewUsage => "view",
+        DeclarationKind::RenderingUsage => "rendering",
+        DeclarationKind::UseCaseUsage => "use-case",
+        DeclarationKind::VerificationCaseUsage => "verification",
+        DeclarationKind::ViewpointUsage => "viewpoint",
+        DeclarationKind::InterfaceUsage => "interface",
+        DeclarationKind::ConstraintDefinition => "constraint-def",
+        DeclarationKind::ConstraintUsage => "constraint",
+        DeclarationKind::AssertConstraintUsage => "assert-constraint",
+        DeclarationKind::AssumeConstraintUsage => "assume-constraint",
+        DeclarationKind::RequireConstraintUsage => "require-constraint",
+        DeclarationKind::ConcernDefinition => "concern-def",
+        DeclarationKind::ConcernUsage => "concern",
+        DeclarationKind::CalcDefinition => "calc-def",
+        DeclarationKind::CalcUsage => "calc",
+        DeclarationKind::ClassDefinition => "class-def",
+        DeclarationKind::EntryActionBinding => "entry-action-binding",
+        DeclarationKind::DoActionBinding => "do-action-binding",
+        DeclarationKind::ExitActionBinding => "exit-action-binding",
+        DeclarationKind::InitialState => "initial-state",
+        DeclarationKind::FinalState => "final-state",
+        DeclarationKind::ParameterUsage => "parameter",
+        DeclarationKind::SubjectUsage => "subject",
+        DeclarationKind::PerformActionUsage => "perform-action",
+        DeclarationKind::Transition => "transition",
+        DeclarationKind::Satisfy => "satisfy",
+        DeclarationKind::Allocate => "allocate",
+        DeclarationKind::Bind => "bind",
+        DeclarationKind::ReferenceUsage => "ref",
+        DeclarationKind::Decide => "decide",
+        DeclarationKind::Merge => "merge",
+        DeclarationKind::Fork => "fork",
+        DeclarationKind::Join => "join",
+        DeclarationKind::ThenContinuation => "then-continuation",
+        DeclarationKind::Flow => "flow",
+        DeclarationKind::StakeholderUsage => "stakeholder",
+        DeclarationKind::RequirementActor => "requirement-actor",
+        DeclarationKind::CaseActor => "case-actor",
+        DeclarationKind::Frame => "frame",
+        DeclarationKind::VerifyRequirement => "verify-requirement",
+        // One name per KerML metaclass; see `DeclarationKind`'s own doc comments for why the
+        // keyword spellings are distinct metaclasses rather than one bucket.
+        DeclarationKind::KermlClassifier => "kerml-classifier",
+        DeclarationKind::KermlStructure => "kerml-structure",
+        DeclarationKind::KermlAssociation => "kerml-association",
+        DeclarationKind::KermlAssociationStructure => "kerml-association-structure",
+        DeclarationKind::KermlDataType => "kerml-datatype",
+        DeclarationKind::KermlMetaclass => "kerml-metaclass",
+        DeclarationKind::KermlBehavior => "kerml-behavior",
+        DeclarationKind::KermlFunction => "kerml-function",
+        DeclarationKind::KermlPredicate => "kerml-predicate",
+        DeclarationKind::KermlInteraction => "kerml-interaction",
+        DeclarationKind::KermlMultiplicity => "kerml-multiplicity",
+        DeclarationKind::KermlType => "kerml-type",
+        DeclarationKind::KermlStep => "kerml-step",
+        DeclarationKind::KermlExpression => "kerml-expression",
+        DeclarationKind::KermlBooleanExpression => "kerml-boolean-expression",
+        DeclarationKind::KermlFeature => "kerml-feature",
+        DeclarationKind::DefaultReferenceUsage => "default-reference",
+        DeclarationKind::ExtendedUsage => "extended-usage",
+        DeclarationKind::KermlConnector => "kerml-connector",
+        DeclarationKind::KermlBinding => "kerml-binding",
+        DeclarationKind::KermlInvariant => "kerml-invariant",
+        DeclarationKind::KermlEnd => "kerml-end",
+        DeclarationKind::Assign => "assign",
+        DeclarationKind::While => "while",
+        DeclarationKind::Loop => "loop",
+        DeclarationKind::If => "if",
+        DeclarationKind::ForLoop => "for-loop",
+        DeclarationKind::ForLoopVariable => "for-loop-variable",
+        DeclarationKind::Dependency => "dependency",
+        DeclarationKind::ExtendedDefinition => "extended-definition",
+        DeclarationKind::IndividualDefinition => "individual-definition",
+        DeclarationKind::BareConnect => "bare-connect",
+        DeclarationKind::PerformParameterBinding => "perform-parameter-binding",
+    }
+}
+
+pub(crate) fn membership_kind(kind: MembershipKind) -> &'static str {
+    match kind {
+        MembershipKind::Owning => "owning",
+        MembershipKind::Feature => "feature",
+        MembershipKind::Import => "import",
+        MembershipKind::Alias => "alias",
+    }
+}
+
+pub(crate) fn visibility(value: Visibility) -> &'static str {
+    match value {
+        Visibility::Default => "default",
+        Visibility::Public => "public",
+        Visibility::Private => "private",
+        Visibility::Protected => "protected",
+    }
+}
+
+pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
+    match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => "explicitRelationshipEndpoint",
+        ReferenceKind::NamespaceImport => "namespaceImport",
+        ReferenceKind::MembershipImport => "membershipImport",
+        ReferenceKind::FilterImport => "filterImport",
+        ReferenceKind::FeatureTyping => "featureTyping",
+        ReferenceKind::TypeFeaturing => "typeFeaturing",
+        ReferenceKind::FeatureChaining => "featureChaining",
+        ReferenceKind::Subclassification => "specialization",
+        ReferenceKind::Conjugation => "conjugation",
+        ReferenceKind::FeatureInverting => "featureInverting",
+        ReferenceKind::Subsetting => "subsetting",
+        ReferenceKind::Redefinition => "redefinition",
+        ReferenceKind::References => "referenceSubsetting",
+        ReferenceKind::Crosses => "crossSubsetting",
+        ReferenceKind::Intersects => "intersects",
+        ReferenceKind::Unioning => "unioning",
+        ReferenceKind::Intersecting => "intersecting",
+        ReferenceKind::Differencing => "differencing",
+        ReferenceKind::Disjoining => "disjoining",
+        ReferenceKind::AliasBinding => "aliasBinding",
+        ReferenceKind::ConnectorEnd => "connectorEnd",
+        ReferenceKind::Succession => "succession",
+        ReferenceKind::EntryActionBinding => "entryActionBinding",
+        ReferenceKind::DoActionBinding => "doActionBinding",
+        ReferenceKind::ExitActionBinding => "exitActionBinding",
+        ReferenceKind::InitialState => "initialState",
+        ReferenceKind::ExpressionOperand => "expressionOperand",
+        ReferenceKind::TransitionSource => "transitionSource",
+        ReferenceKind::TransitionTarget => "transitionTarget",
+        ReferenceKind::TransitionTrigger => "transitionTrigger",
+        ReferenceKind::TransitionEffect => "transitionEffect",
+        ReferenceKind::MetadataAnnotation => "metadataAnnotation",
+        ReferenceKind::FilterMetadataTest => "filterMetadataTest",
+        ReferenceKind::SatisfySource => "satisfySource",
+        ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::AllocateSource => "allocateSource",
+        ReferenceKind::AllocateTarget => "allocateTarget",
+        ReferenceKind::BindSource => "bindSource",
+        ReferenceKind::BindTarget => "bindTarget",
+        ReferenceKind::IncludeUseCase => "includeUseCase",
+        ReferenceKind::ViewExpose => "viewExpose",
+        ReferenceKind::MemberAccessOperand => "memberAccessOperand",
+        ReferenceKind::InvocationCallee => "invocationCallee",
+        ReferenceKind::ThenTarget => "thenTarget",
+        ReferenceKind::AcceptVia => "acceptVia",
+        ReferenceKind::SendTarget => "sendTarget",
+        ReferenceKind::AcceptPayloadType => "acceptPayloadType",
+        ReferenceKind::TerminateTarget => "terminateTarget",
+        ReferenceKind::FlowSource => "flowSource",
+        ReferenceKind::FlowTarget => "flowTarget",
+        ReferenceKind::TypeCheckTarget => "typeCheckTarget",
+        ReferenceKind::MetaCastTarget => "metaCastTarget",
+        ReferenceKind::StakeholderTarget => "stakeholderTarget",
+        ReferenceKind::PurposeTarget => "purposeTarget",
+        ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
+        ReferenceKind::AssignTarget => "assignTarget",
+        ReferenceKind::DependencyClient => "dependencyClient",
+        ReferenceKind::DependencySupplier => "dependencySupplier",
+        ReferenceKind::PerformParameterTarget => "performParameterTarget",
+        ReferenceKind::FlowPayloadType => "flowPayloadType",
+    }
+}
+
+/// The relationship one reference kind states, named in the relationship channel.
+///
+/// Distinct from [`reference_kind`], which names the production that wrote it: `featureTyping` is
+/// the reference an author writes and `typing` is the relationship it establishes. `None` for the
+/// import kinds, which bring names into scope rather than relating two elements.
+pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
+    match kind {
+        ReferenceKind::ExplicitRelationshipEndpoint => None,
+        ReferenceKind::FeatureTyping => Some("typing"),
+        ReferenceKind::TypeFeaturing => Some("typeFeaturing"),
+        ReferenceKind::FeatureChaining => Some("featureChaining"),
+        ReferenceKind::Subclassification => Some("specialization"),
+        ReferenceKind::Conjugation => Some("conjugation"),
+        ReferenceKind::FeatureInverting => Some("featureInverting"),
+        ReferenceKind::Subsetting => Some("subsetting"),
+        ReferenceKind::Redefinition => Some("redefinition"),
+        ReferenceKind::References => Some("referenceSubsetting"),
+        ReferenceKind::Crosses => Some("crossSubsetting"),
+        ReferenceKind::Intersects => Some("intersects"),
+        ReferenceKind::Unioning => Some("unioning"),
+        ReferenceKind::Intersecting => Some("intersecting"),
+        ReferenceKind::Differencing => Some("differencing"),
+        ReferenceKind::Disjoining => Some("disjoining"),
+        ReferenceKind::AliasBinding => Some("aliasBinding"),
+        ReferenceKind::ConnectorEnd => Some("connectorEnd"),
+        ReferenceKind::Succession => Some("succession"),
+        ReferenceKind::EntryActionBinding => Some("entryActionBinding"),
+        ReferenceKind::DoActionBinding => Some("doActionBinding"),
+        ReferenceKind::ExitActionBinding => Some("exitActionBinding"),
+        ReferenceKind::InitialState => Some("initialState"),
+        ReferenceKind::ExpressionOperand => Some("expressionOperand"),
+        ReferenceKind::TransitionSource => Some("transitionSource"),
+        ReferenceKind::TransitionTarget => Some("transitionTarget"),
+        ReferenceKind::TransitionTrigger => Some("transitionTrigger"),
+        ReferenceKind::TransitionEffect => Some("transitionEffect"),
+        ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
+        ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
+        ReferenceKind::SatisfySource => Some("satisfySource"),
+        ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
+        ReferenceKind::AllocateSource => Some("allocateSource"),
+        ReferenceKind::AllocateTarget => Some("allocateTarget"),
+        ReferenceKind::BindSource => Some("bindSource"),
+        ReferenceKind::BindTarget => Some("bindTarget"),
+        ReferenceKind::IncludeUseCase => Some("includeUseCase"),
+        ReferenceKind::ViewExpose => Some("viewExpose"),
+        ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),
+        ReferenceKind::InvocationCallee => Some("invocationCallee"),
+        ReferenceKind::ThenTarget => Some("thenTarget"),
+        ReferenceKind::AcceptVia => Some("acceptVia"),
+        ReferenceKind::SendTarget => Some("sendTarget"),
+        ReferenceKind::AcceptPayloadType => Some("acceptPayloadType"),
+        ReferenceKind::TerminateTarget => Some("terminateTarget"),
+        ReferenceKind::FlowSource => Some("flowSource"),
+        ReferenceKind::FlowTarget => Some("flowTarget"),
+        ReferenceKind::TypeCheckTarget => Some("typeCheckTarget"),
+        ReferenceKind::MetaCastTarget => Some("metaCastTarget"),
+        ReferenceKind::StakeholderTarget => Some("stakeholderTarget"),
+        ReferenceKind::PurposeTarget => Some("purposeTarget"),
+        ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
+        ReferenceKind::AssignTarget => Some("assignTarget"),
+        ReferenceKind::DependencyClient => Some("dependencyClient"),
+        ReferenceKind::DependencySupplier => Some("dependencySupplier"),
+        ReferenceKind::PerformParameterTarget => Some("performParameterTarget"),
+        ReferenceKind::FlowPayloadType => Some("flowPayloadType"),
+        ReferenceKind::NamespaceImport
+        | ReferenceKind::MembershipImport
+        | ReferenceKind::FilterImport => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_resolved_model_writes_all_owned_sections() {
+        let storage = SemanticModelStorage {
+            documents: Box::new([]),
+            declarations: Box::new([]),
+            declaration_facts: Box::new([]),
+            memberships: Box::new([]),
+            references: Box::new([]),
+            relationship_declarations: Box::new([]),
+            documentation: Box::new([]),
+            feature_values: Box::new([]),
+            operator_expressions: Box::new([]),
+            expression_arguments: Box::new([]),
+            constructor_expressions: Box::new([]),
+            feature_chain_expressions: Box::new([]),
+            feature_reference_expressions: Box::new([]),
+            metadata_annotations: Box::new([]),
+            unsupported: Box::new([]),
+            recovery: Box::new([]),
+            symbols: SymbolTableBuilder::default().freeze(),
+            paths: SymbolPathArenaBuilder::default().freeze(),
+            evaluation_facts: Box::new([]),
+            unit_tokens: Box::new([]),
+            filter_conditions: Box::new([]),
+            invocations: Box::new([]),
+        };
+        let (model, _) = crate::pipeline::phase::build_model(
+            storage,
+            crate::lower::storage::ParsedSources::default(),
+            EvaluationPolicy::Evaluate,
+            None,
+            &[],
+        )
+        .unwrap();
+        let mut output = String::new();
+        model
+            .write_semantic_sexpr(
+                &source_identity::RootDigest::of_bytes(b"test"),
+                "test-contract",
+                &mut output,
+            )
+            .unwrap();
+        assert!(output.starts_with("(semantic-model\n"));
+        assert!(output.contains("  (declarations\n  )"));
+        assert!(output.contains("  (references\n  )"));
+        assert!(output.contains("  (relationships\n  )"));
+        assert!(output.contains("  (evaluation\n  )"));
+        output.clear();
+        model.write_navigation_sexpr(&mut output).unwrap();
+        assert_eq!(output, "(navigation\n)");
+    }
+}

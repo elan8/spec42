@@ -6,12 +6,16 @@
 
 use std::sync::Arc;
 
-use generator_api::{ArtifactLimits, GeneratorModelView, QueryLimits};
+use generator_api::{ArtifactLimits, GeneratorModelView};
 use generator_host::{
     CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
     RuntimeLimits,
 };
 use spec42_generator_protocol::{Operation, COMPATIBILITY_TOKEN};
+
+mod common;
+
+use common::published_model_view;
 
 /// Postcard encoding of `Ok::<Vec<Artifact>, String>(vec![])`: variant 0, then length 0.
 const EMPTY_RESULT: &str = "\\00\\00";
@@ -43,30 +47,7 @@ fn conforming_guest() -> Vec<u8> {
 }
 
 fn model() -> Arc<GeneratorModelView> {
-    use std::fs;
-    use workspace::{
-        EngineBuilder, HostContext, HostFilesystemProvider, ValidationTiming, WorkspaceLoadRequest,
-    };
-
-    // Leaked deliberately: the snapshot borrows nothing, but the temp dir must outlive it and
-    // these are short-lived test processes.
-    let temp = Box::leak(Box::new(tempfile::tempdir().unwrap()));
-    let path = temp.path().join("model.sysml");
-    fs::write(&path, "package P { part def Widget { attribute mass; } }\n").unwrap();
-    let engine = EngineBuilder::default()
-        .cache_dir(temp.path().join("cache"))
-        .no_stdlib(true)
-        .build()
-        .unwrap();
-    let provider =
-        HostFilesystemProvider::from_paths(&path, Some(temp.path()), engine.package_roots());
-    let request = WorkspaceLoadRequest::single_target(path)
-        .with_workspace_root(Some(temp.path().to_path_buf()))
-        .with_validation_timing(ValidationTiming::Deferred);
-    let snapshot = engine
-        .load_workspace(provider, request, HostContext::default())
-        .unwrap();
-    Arc::new(GeneratorModelView::new(snapshot, QueryLimits::default()))
+    published_model_view("package P { part def Widget { attribute mass; } }\n")
 }
 
 fn run(module: &[u8]) -> Result<generator_host::GeneratorExecution, GeneratorHostError> {
@@ -201,6 +182,7 @@ fn fuel_exhaustion_is_resource_exhaustion_when_a_budget_is_requested() {
     let spin = guest(COMPATIBILITY_TOKEN, "(loop $forever (br $forever))", "");
     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
         fuel_metering: true,
+        compilation_cache: false,
     })
     .expect("runtime");
     let error = runtime

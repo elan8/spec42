@@ -1,51 +1,45 @@
+use sysml_query::syntax::SyntaxImport;
 use tower_lsp::lsp_types::{DocumentLink, Position, Range, Url};
 
+/// Document links for the imports the syntax service found, in source order.
+///
+/// Every link is anchored to an import's own published range. The line scan this replaced found
+/// the keyword anywhere on a line -- including inside a comment or a string -- and could not tell
+/// a two-line import from two imports.
 pub(crate) fn collect_document_links(
-    text: &str,
+    imports: &[SyntaxImport],
     symbol_uri_for_import_name: impl Fn(&str) -> Option<Url>,
 ) -> Vec<DocumentLink> {
     let mut links = Vec::new();
-    for (line_idx, line) in text.lines().enumerate() {
-        if let Some(import_idx) = line.find("import ") {
-            if let Some(file_idx) = line.find("file://") {
-                let target_start = file_idx as u32;
-                let target_text = line[file_idx..]
-                    .split_whitespace()
-                    .next()
-                    .unwrap_or("")
-                    .trim_matches('"')
-                    .trim_matches('\'');
-                if let Ok(target) = Url::parse(target_text) {
-                    links.push(DocumentLink {
-                        range: Range::new(
-                            Position::new(line_idx as u32, target_start),
-                            Position::new(
-                                line_idx as u32,
-                                target_start + target_text.chars().count() as u32,
-                            ),
+    for import in imports {
+        let range = Range::new(
+            Position::new(import.range.start_line, import.range.start_character),
+            Position::new(import.range.end_line, import.range.end_character),
+        );
+        if let Some(file_target) = import.file_target {
+            if let Ok(target) = Url::parse(file_target.value) {
+                links.push(DocumentLink {
+                    range: Range::new(
+                        Position::new(
+                            file_target.range.start_line,
+                            file_target.range.start_character,
                         ),
-                        target: Some(target),
-                        tooltip: Some("Open import target".to_string()),
-                        data: None,
-                    });
-                }
-            } else {
-                let import_name = line[(import_idx + "import ".len())..]
-                    .trim()
-                    .trim_matches('"')
-                    .trim_matches('\'');
-                if let Some(uri) = symbol_uri_for_import_name(import_name) {
-                    links.push(DocumentLink {
-                        range: Range::new(
-                            Position::new(line_idx as u32, import_idx as u32),
-                            Position::new(line_idx as u32, line.chars().count() as u32),
-                        ),
-                        target: Some(uri),
-                        tooltip: Some("Open imported symbol".to_string()),
-                        data: None,
-                    });
-                }
+                        Position::new(file_target.range.end_line, file_target.range.end_character),
+                    ),
+                    target: Some(target),
+                    tooltip: Some("Open import target".to_string()),
+                    data: None,
+                });
+                continue;
             }
+        }
+        if let Some(uri) = symbol_uri_for_import_name(import.target) {
+            links.push(DocumentLink {
+                range,
+                target: Some(uri),
+                tooltip: Some("Open imported symbol".to_string()),
+                data: None,
+            });
         }
     }
     links
@@ -53,16 +47,17 @@ pub(crate) fn collect_document_links(
 
 pub(crate) fn selection_ranges_for_positions(
     text: &str,
+    parsed: &sysml_query::syntax::ParsedSource,
     positions: &[Position],
-    word_at: impl Fn(&str, u32, u32) -> Option<(u32, u32, u32, String)>,
 ) -> Vec<tower_lsp::lsp_types::SelectionRange> {
     let mut out = Vec::new();
     for pos in positions {
         let mut ranges = Vec::<Range>::new();
-        if let Some((line, start, end, _)) = word_at(text, pos.line, pos.character) {
+        // The innermost selection is the token the syntax service finds under the cursor.
+        if let Some(token) = parsed.token_at(pos.line, pos.character) {
             ranges.push(Range::new(
-                Position::new(line, start),
-                Position::new(line, end),
+                Position::new(token.range.start_line, token.range.start_character),
+                Position::new(token.range.end_line, token.range.end_character),
             ));
         }
         let line_len = text

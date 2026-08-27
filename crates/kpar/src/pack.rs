@@ -154,6 +154,20 @@ pub fn default_domain_excludes() -> Vec<String> {
 
 /// Pack source trees into a KPAR file at `dest`.
 pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
+    let syntax = sysml_query::syntax::SyntaxService::new();
+    build_kpar_with_syntax(options, dest, &syntax)
+}
+
+/// Pack source trees using the caller's syntax service.
+///
+/// Long-lived hosts should use this entry point so packing participates in their process-wide
+/// parse memo. [`build_kpar`] remains the convenient standalone entry point and shares one syntax
+/// service across every source in that archive.
+pub fn build_kpar_with_syntax(
+    options: &PackOptions,
+    dest: &Path,
+    syntax: &sysml_query::syntax::SyntaxService,
+) -> Result<()> {
     options.project.validate_identity()?;
     let mut files = Vec::new();
     for root in &options.source_roots {
@@ -161,13 +175,13 @@ pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
             continue;
         }
         let root_name = root.file_name().and_then(|n| n.to_str()).unwrap_or("src");
-        collect_sources(root, root, root_name, &options.excludes, &mut files)?;
+        collect_sources(root, root, root_name, &options.excludes, syntax, &mut files)?;
     }
     for (prefix, root) in &options.named_source_roots {
         if !root.is_dir() {
             continue;
         }
-        collect_sources(root, root, prefix, &options.excludes, &mut files)?;
+        collect_sources(root, root, prefix, &options.excludes, syntax, &mut files)?;
     }
     if files.is_empty() {
         return Err(KparError::InvalidArchive(
@@ -285,6 +299,7 @@ fn collect_sources(
     current: &Path,
     prefix: &str,
     excludes: &[String],
+    syntax: &sysml_query::syntax::SyntaxService,
     out: &mut Vec<SourceFile>,
 ) -> Result<()> {
     for entry in WalkDir::new(current).follow_links(false) {
@@ -327,7 +342,7 @@ fn collect_sources(
             path: path.display().to_string(),
             source,
         })?;
-        let logical_name = package_name_from_strict_ast(&archive_path, &bytes)?;
+        let logical_name = package_name_from_strict_ast(syntax, &archive_path, &bytes)?;
         out.push(SourceFile {
             archive_path,
             bytes,
@@ -378,24 +393,26 @@ fn build_index(files: &[SourceFile]) -> BTreeMap<String, String> {
         .collect()
 }
 
-fn package_name_from_strict_ast(path: &str, bytes: &[u8]) -> Result<Option<String>> {
+fn package_name_from_strict_ast(
+    syntax: &sysml_query::syntax::SyntaxService,
+    path: &str,
+    bytes: &[u8],
+) -> Result<Option<String>> {
     let source = std::str::from_utf8(bytes).map_err(|error| {
         KparError::InvalidArchive(format!("source '{path}' is not valid UTF-8: {error}"))
     })?;
-    let ast = sysml_v2_parser::parse(source).map_err(|error| {
-        KparError::InvalidArchive(format!("source '{path}' failed strict parsing: {error}"))
-    })?;
-    let names = ast
-        .elements
-        .iter()
-        .filter_map(|element| match &element.value {
-            sysml_v2_parser::RootElement::Package(package) => package.identification.name.clone(),
-            sysml_v2_parser::RootElement::LibraryPackage(package) => {
-                package.identification.name.clone()
-            }
-            _ => None,
-        })
-        .collect::<Vec<_>>();
+    // The syntax service answers this. `kpar` needs a package identity, not a syntax tree, and
+    // parsing here would be a second parse of the same text against an AST this crate would then
+    // have to keep in step with the pinned revision. Any diagnostic is a rejection: an archive
+    // entry's identity is decided, never recovered.
+    let parsed = syntax.parse_text(source);
+    if let Some(error) = parsed.first_error() {
+        return Err(KparError::InvalidArchive(format!(
+            "source '{path}' failed strict parsing: {}",
+            error.message
+        )));
+    }
+    let names = parsed.top_level_package_names();
     if names.len() == 1 {
         Ok(names.into_iter().next())
     } else {
@@ -413,6 +430,27 @@ mod tests {
     use super::*;
     use crate::read::{materialize, open_kpar_path, verify_checksums};
     use tempfile::tempdir;
+
+    #[test]
+    fn archive_identity_is_strict_a_malformed_source_is_rejected_not_recovered() {
+        let syntax = sysml_query::syntax::SyntaxService::new();
+        assert_eq!(
+            package_name_from_strict_ast(&syntax, "ok.sysml", b"package Only { part def P; }")
+                .unwrap()
+                .as_deref(),
+            Some("Only")
+        );
+        assert_eq!(
+            package_name_from_strict_ast(&syntax, "two.sysml", b"package A; package B;").unwrap(),
+            None
+        );
+        let error = package_name_from_strict_ast(&syntax, "bad.sysml", b"package Broken { @@@ ")
+            .expect_err("a source with any diagnostic has no archive identity");
+        assert!(
+            error.to_string().contains("failed strict parsing"),
+            "{error}"
+        );
+    }
 
     fn test_project() -> Project {
         Project {

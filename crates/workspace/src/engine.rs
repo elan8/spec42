@@ -1,13 +1,15 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{WorkspaceError, WorkspaceResult};
-use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
+use library_catalog::{
+    resolve_library_catalog, HostLibraryRequest, LibraryCatalog, StandardLibraryConfig,
+};
 use std::sync::Arc;
-use sysml_model::SysmlDocumentProvider;
+use sysml_query::source::{SourceProvider, SourceService};
+use sysml_query::Services;
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -21,16 +23,17 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
-    experimental_incremental_updates: bool,
+    services: Services,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct EngineBuilder {
     cache_dir: Option<PathBuf>,
     server_embedding_mode: bool,
     no_stdlib: bool,
     stdlib_path_override: Option<PathBuf>,
     kpar_library_path_overrides: BTreeMap<String, PathBuf>,
+    project_library_paths: BTreeMap<String, PathBuf>,
     disabled_kpar_libraries: BTreeSet<String>,
     library_paths: Vec<PathBuf>,
     extra_library_paths: Vec<PathBuf>,
@@ -39,28 +42,6 @@ pub struct EngineBuilder {
     use_embedded_kpar_libraries: bool,
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
-    experimental_incremental_updates: bool,
-}
-
-impl Default for EngineBuilder {
-    fn default() -> Self {
-        Self {
-            cache_dir: None,
-            server_embedding_mode: false,
-            no_stdlib: false,
-            stdlib_path_override: None,
-            kpar_library_path_overrides: BTreeMap::new(),
-            disabled_kpar_libraries: BTreeSet::new(),
-            library_paths: Vec::new(),
-            extra_library_paths: Vec::new(),
-            standard_library: StandardLibraryConfig::default(),
-            use_embedded_stdlib: false,
-            use_embedded_kpar_libraries: false,
-            config_stdlib_path: None,
-            config_no_stdlib: false,
-            experimental_incremental_updates: true,
-        }
-    }
 }
 
 impl Spec42Engine {
@@ -84,17 +65,24 @@ impl Spec42Engine {
         &self.metadata
     }
 
+    /// The one set of services this engine publishes through. A host embedding the engine in a
+    /// server shares these with the editor host rather than constructing its own.
+    pub fn services(&self) -> &Services {
+        &self.services
+    }
+
+    /// The source service every document of this engine is admitted through.
+    pub fn source(&self) -> &SourceService {
+        &self.services.source
+    }
+
     pub fn schema_versions(&self) -> HostSchemaVersions {
         self.metadata.schema_versions
     }
 
-    pub fn experimental_incremental_updates(&self) -> bool {
-        self.experimental_incremental_updates
-    }
-
     pub fn load_workspace(
         &self,
-        provider: impl SysmlDocumentProvider,
+        provider: impl SourceProvider,
         request: WorkspaceLoadRequest,
         context: HostContext,
     ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
@@ -139,6 +127,16 @@ impl EngineBuilder {
         self
     }
 
+    pub fn project_library_path(
+        mut self,
+        resource: impl Into<String>,
+        path: impl Into<PathBuf>,
+    ) -> Self {
+        self.project_library_paths
+            .insert(resource.into(), path.into());
+        self
+    }
+
     pub fn disable_kpar_library(mut self, id: impl Into<String>) -> Self {
         self.disabled_kpar_libraries.insert(id.into());
         self
@@ -179,11 +177,6 @@ impl EngineBuilder {
         self
     }
 
-    pub fn experimental_incremental_updates(mut self, enabled: bool) -> Self {
-        self.experimental_incremental_updates = enabled;
-        self
-    }
-
     pub fn build(self) -> WorkspaceResult<Spec42Engine> {
         let cache_dir = self.cache_dir.ok_or_else(|| {
             WorkspaceError::unresolved_library_environment(
@@ -196,6 +189,7 @@ impl EngineBuilder {
             no_stdlib: self.no_stdlib,
             stdlib_path_override: self.stdlib_path_override,
             kpar_library_path_overrides: self.kpar_library_path_overrides,
+            project_library_paths: self.project_library_paths,
             disabled_kpar_libraries: self.disabled_kpar_libraries,
             library_paths: self.library_paths,
             standard_library: self.standard_library,
@@ -206,7 +200,8 @@ impl EngineBuilder {
             extra_library_paths: self.extra_library_paths,
         };
 
-        let catalog = resolve_library_catalog(&request)?;
+        let catalog = resolve_library_catalog(&request)
+            .map_err(|error| WorkspaceError::unresolved_library_environment(error.to_string()))?;
         Ok(Spec42Engine {
             cache_dir,
             catalog,
@@ -214,7 +209,7 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
-            experimental_incremental_updates: self.experimental_incremental_updates,
+            services: Services::new(),
         })
     }
 
@@ -227,6 +222,7 @@ impl EngineBuilder {
             .extra_library_paths(request.extra_library_paths)
             .standard_library_config(request.standard_library);
         builder.kpar_library_path_overrides = request.kpar_library_path_overrides;
+        builder.project_library_paths = request.project_library_paths;
         builder.disabled_kpar_libraries = request.disabled_kpar_libraries;
         if let Some(path) = request.stdlib_path_override {
             builder = builder.standard_library_path(path);

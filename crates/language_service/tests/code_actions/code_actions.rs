@@ -1,18 +1,108 @@
 use language_service::{
-    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
-    suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
-    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
-    suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
-    InMemoryWorkspace, WorkspaceSnapshot,
+    suggest_add_import_quick_fixes,
+    suggest_add_missing_case_subject_quick_fix as suggest_missing_subject,
+    suggest_create_definition_for_unresolved_type_quick_fix as suggest_definition,
+    suggest_create_matching_part_def_quick_fix as suggest_matching_part,
+    suggest_create_usage_from_definition as suggest_usage,
+    suggest_create_verification_case as suggest_verification,
+    suggest_explicit_redefinition_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
+    suggest_wrap_in_package as suggest_wrap, DiagnosticLine, WorkspaceSnapshot,
 };
 
-use crate::support::{document, multi_doc};
+use crate::support::{document, multi_doc, single_doc, workspace_from_docs};
 
 const PATH: &str = "test.sysml";
 
 fn diagnostic_line(line: u32) -> DiagnosticLine {
     DiagnosticLine { line }
+}
+
+fn with_document<T>(source: &str, f: impl FnOnce(&dyn WorkspaceSnapshot, &url::Url) -> T) -> T {
+    let workspace = single_doc(PATH, source);
+    let uri = workspace
+        .index_uris()
+        .into_iter()
+        .next()
+        .expect("document URI");
+    f(&workspace, &uri)
+}
+
+fn suggest_wrap_in_package(
+    source: &str,
+    path: &str,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        let parsed = workspace.parsed(uri)?;
+        suggest_wrap(source, &parsed, path)
+    })
+}
+
+fn suggest_create_matching_part_def_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_matching_part(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            diagnostic,
+        )
+    })
+}
+
+fn suggest_create_definition_for_unresolved_type_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_definition(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            diagnostic,
+        )
+    })
+}
+
+fn suggest_create_verification_case(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_verification(
+            source,
+            &workspace.parsed(uri)?,
+            workspace.published_model()?,
+            path,
+            line,
+        )
+    })
+}
+
+fn suggest_add_missing_case_subject_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_missing_subject(source, &workspace.parsed(uri)?, path, diagnostic)
+    })
+}
+
+fn suggest_create_usage_from_definition(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<language_service::TextEditSuggestion> {
+    with_document(source, |workspace, uri| {
+        suggest_usage(source, &workspace.parsed(uri)?, path, line)
+    })
 }
 
 #[test]
@@ -72,6 +162,33 @@ fn suggest_create_matching_part_def_noop_for_typed_usage() {
     assert!(
         suggest_create_matching_part_def_quick_fix(source, PATH, diagnostic_line(2),).is_none()
     );
+}
+
+#[test]
+fn suggest_create_matching_part_def_reuses_definition_from_another_document() {
+    let source = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
+    let workspace = multi_doc(&[
+        (PATH, source),
+        ("definitions.sysml", "package Q { part def Display { } }"),
+    ]);
+    let uri = workspace
+        .index_uris()
+        .into_iter()
+        .find(|uri| uri.path().ends_with(PATH))
+        .expect("source URI");
+    let suggestion = suggest_matching_part(
+        source,
+        &workspace.parsed(&uri).expect("parsed source"),
+        workspace.published_model().expect("publication"),
+        PATH,
+        diagnostic_line(2),
+    )
+    .expect("quick fix");
+    assert_eq!(suggestion.edits.len(), 1);
+    assert!(suggestion.edits[0]
+        .replacement
+        .trim()
+        .ends_with("part display : Display;"));
 }
 
 #[test]
@@ -237,7 +354,7 @@ fn suggest_create_usage_from_definition_noop_when_matching_usage_exists() {
 }
 
 #[test]
-fn suggest_qualify_ambiguous_name_offers_candidates() {
+fn suggest_qualify_ambiguous_name_is_disabled_without_typed_candidate_query() {
     let workspace = multi_doc(&[
         (
             "a.sysml",
@@ -262,29 +379,14 @@ fn suggest_qualify_ambiguous_name_offers_candidates() {
         &source,
         "c.sysml",
         diagnostic_line(line),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
-    let titles: Vec<_> = suggestions.iter().map(|s| s.title.as_str()).collect();
-    assert!(
-        titles.iter().any(|t| t.contains("Alpha::Vehicle")),
-        "titles={titles:?}"
-    );
-    assert!(
-        titles.iter().any(|t| t.contains("Beta::Vehicle")),
-        "titles={titles:?}"
-    );
-    let alpha = suggestions
-        .iter()
-        .find(|s| s.title.contains("Alpha::Vehicle"))
-        .expect("alpha");
-    assert!(alpha.edits[0]
-        .replacement
-        .contains("part car : Alpha::Vehicle;"));
+    assert!(suggestions.is_empty());
 }
 
 #[test]
-fn suggest_add_import_for_cross_package_type() {
+fn suggest_add_import_is_disabled_without_typed_import_query() {
     let workspace = multi_doc(&[
         ("defs.sysml", "package Defs {\n  part def Vehicle;\n}\n"),
         ("use.sysml", "package Use {\n  part car : Vehicle;\n}\n"),
@@ -299,32 +401,25 @@ fn suggest_add_import_for_cross_package_type() {
         &source,
         "use.sysml",
         diagnostic_line(line),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
-    assert_eq!(suggestions.len(), 1, "suggestions={suggestions:?}");
-    assert_eq!(suggestions[0].title, "Import `Defs::Vehicle`");
-    assert!(suggestions[0].is_preferred);
-    assert_eq!(
-        suggestions[0].edits[0].replacement.trim(),
-        "private import Defs::Vehicle;"
-    );
+    assert!(suggestions.is_empty());
 }
 
 #[test]
 fn suggest_add_import_empty_when_no_candidates() {
-    let workspace = InMemoryWorkspace::from_documents(vec![document(
+    let workspace = workspace_from_docs(vec![document(
         "lonely.sysml",
         "package Lonely {\n  part car : MissingType;\n}\n",
-    )])
-    .expect("workspace");
+    )]);
     let uri = workspace.resolve_uri_for_path("lonely.sysml").expect("uri");
     let source = workspace.document_text(&uri).expect("text").to_string();
     let suggestions = suggest_add_import_quick_fixes(
         &source,
         "lonely.sysml",
         diagnostic_line(1),
-        workspace.semantic_graph(),
+        workspace.published_model().expect("publication"),
         &uri,
     );
     assert!(suggestions.is_empty(), "suggestions={suggestions:?}");

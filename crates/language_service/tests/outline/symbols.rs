@@ -1,5 +1,14 @@
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
-use sysml_v2_parser::{parse, RootNamespace};
+use sysml_query::syntax::ParsedSource;
+use sysml_query::syntax::SyntaxOutlineKind;
+
+fn parse(text: &str) -> Result<ParsedSource, String> {
+    let parsed = sysml_query::syntax::SyntaxService::new().parse_text(text);
+    match parsed.first_error() {
+        Some(error) => Err(error.message.clone()),
+        None => Ok(parsed),
+    }
+}
 
 fn multiline_outline_regions(symbols: &[OutlineSymbol]) -> Vec<(u32, u32)> {
     let mut out = Vec::new();
@@ -46,7 +55,7 @@ fn folding_ranges_match_multiline_outline_regions() {
 
 #[test]
 fn document_symbols_empty() {
-    let root = RootNamespace { elements: vec![] };
+    let root = parse("").expect("parse empty");
     let symbols = document_symbols(&root);
     assert!(symbols.is_empty());
 }
@@ -54,36 +63,36 @@ fn document_symbols_empty() {
 #[test]
 fn document_symbols_package() {
     let text = "package P { }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     assert_eq!(symbols.len(), 1);
     assert_eq!(symbols[0].name, "P");
-    assert_eq!(symbols[0].kind, "package");
+    assert_eq!(symbols[0].kind, SyntaxOutlineKind::Package);
 }
 
 #[test]
 fn document_symbols_nested() {
     let text = "package P { part def Engine { } }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     assert_eq!(symbols.len(), 1);
     assert_eq!(symbols[0].name, "P");
     let children = &symbols[0].children;
     assert_eq!(children.len(), 1);
     assert_eq!(children[0].name, "Engine");
-    assert_eq!(children[0].kind, "part def");
+    assert_eq!(children[0].kind, SyntaxOutlineKind::PartDef);
 }
 
 #[test]
 fn document_symbols_feature_and_classifier_decls() {
     let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-    let root = sysml_v2_parser::parse(text).expect("parse");
+    let root = parse(text).expect("parse");
     let symbols = document_symbols(&root);
     let children = &symbols[0].children;
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "myFeature" && child.kind == "feature decl" }));
-    assert!(children
-        .iter()
-        .any(|child| { child.name == "VehicleClass" && child.kind == "classifier decl" }));
+    assert!(children.iter().any(|child| {
+        child.name == "myFeature" && child.kind == SyntaxOutlineKind::FeatureDecl
+    }));
+    assert!(children.iter().any(|child| {
+        child.name == "VehicleClass" && child.kind == SyntaxOutlineKind::ClassifierDecl
+    }));
 }

@@ -11,19 +11,34 @@ pub(crate) async fn did_open(
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
+    let project_boundary = {
+        let snap = handle.snapshot();
+        project_boundary_for_uri(&uri_norm, &snap.workspace_roots)
+    };
+    if let Some(boundary) = project_boundary {
+        tracing::debug!(
+            document = %uri_norm,
+            project_root = %boundary.project_root().display(),
+            manifest = ?boundary.project_manifest().map(|path| path.display().to_string()),
+            "resolved document project boundary"
+        );
+    }
+    // Recorded before diagnostics are computed: an opened library file is an authoring surface,
+    // and the publication only reports one it was told about.
+    let _ = handle.set_document_open(uri_norm.clone(), true).await;
     let perf_logging_enabled = runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
         .perf_logging_enabled;
 
     // Check whether the file is already indexed with identical content before
-    // mutating. If so, the startup scan already built the semantic graph for
-    // this URI and no expensive re-evaluation is needed.
+    // mutating. If so, the startup scan already published this URI and no expensive
+    // rebuild is needed.
     let open_status = {
         let snap = handle.snapshot();
         match snap.index.get(&uri_norm) {
             None => "newFile",
-            Some(entry) if entry.content != text => "contentChanged",
+            Some(entry) if entry.content() != text => "contentChanged",
             _ => "alreadyIndexed",
         }
     };
@@ -39,21 +54,13 @@ pub(crate) async fn did_open(
         // evaluation pass, then schedule an async relink so that cross-document
         // edges and expression evaluation happen outside the lock.
         let lock_start = Instant::now();
-        let (warning, token) = handle
+        let warning = handle
             .store_document_text_fast(uri_norm.clone(), text.clone())
             .await
             .unwrap_or_default();
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let scheduled_relink = token.is_some();
-        if let Some(token) = token {
-            schedule_semantic_relink_after_change(
-                client,
-                handle,
-                runtime_config,
-                uri_norm.clone(),
-                token,
-            );
-        }
+        let scheduled_relink = true;
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
         (warning, lock_wait_ms, scheduled_relink)
     };
 
@@ -81,7 +88,7 @@ pub(crate) async fn did_open(
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text).await;
+            publish_document_diagnostics(&client, &handle, &runtime_config, uri).await;
             if perf_logging_enabled {
                 client
                     .log_message(
@@ -129,20 +136,23 @@ pub(crate) async fn did_change(
     // it as a `mutate` closure would stall every other in-flight request
     // (hover, completion, further edits) behind it. `spawn_blocking` also
     // keeps this off the async executor thread.
-    let mut token = None;
+    let mut semantic_inputs_changed = false;
     if let Some(edit) = edit {
-        let content = edit.content.clone();
+        let services = handle.snapshot().services.clone();
+        let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
         let parse_start = Instant::now();
-        let parse_outcome =
-            tokio::task::spawn_blocking(move || util::parse_for_editor(&content)).await;
+        let parse_outcome = tokio::task::spawn_blocking(move || {
+            crate::session::handle::PreparedDocumentEdit::admit_text(admit_uri, &content, &services)
+        })
+        .await;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
-            Ok(parsed_result) => {
-                let (relink, parse_warnings) = handle
-                    .apply_parsed_document_update(edit, parsed_result, parse_time_ms)
+            Ok((document, parsed)) => {
+                let parse_warnings = handle
+                    .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
-                token = relink;
+                semantic_inputs_changed = true;
                 warnings.extend(parse_warnings);
             }
             Err(_) => {
@@ -172,14 +182,8 @@ pub(crate) async fn did_change(
     // Diagnostics are NOT published here. Cross-document edges and expression
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
-    if let Some(token) = token {
-        schedule_semantic_relink_after_change(
-            client,
-            handle,
-            runtime_config,
-            uri_norm.clone(),
-            token,
-        );
+    if semantic_inputs_changed {
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
     }
     log_perf(
         client,
@@ -195,10 +199,16 @@ pub(crate) async fn did_change(
     schedule_workspace_diagnostics_republish(client, handle, runtime_config);
 }
 
-pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
-    client
-        .publish_diagnostics(params.text_document.uri, vec![], None)
+pub(crate) async fn did_close(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    params: DidCloseTextDocumentParams,
+) {
+    let uri = params.text_document.uri;
+    let _ = handle
+        .set_document_open(util::normalize_file_uri(&uri), false)
         .await;
+    client.publish_diagnostics(uri, vec![], None).await;
 }
 
 /// Whether `content` (freshly read from disk for `uri`) already matches what the server has
@@ -215,7 +225,7 @@ pub(crate) fn watched_file_content_already_current(
         .snapshot()
         .index
         .get(uri)
-        .map(|entry| entry.content == content)
+        .map(|entry| entry.content() == content)
         .unwrap_or(false)
 }
 
@@ -240,38 +250,55 @@ pub(crate) async fn did_change_watched_files(
     for event in params.changes {
         let uri_norm = util::normalize_file_uri(&event.uri);
         if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
-            match event.uri.to_file_path() {
-                Ok(path) => match tokio::fs::read_to_string(&path).await {
-                    Ok(content) => {
-                        // The editor already sent `textDocument/didChange` for its own edits
-                        // (handled cheaply/incrementally); saving that same content to disk
-                        // then fires this notification too, with disk content that's already
-                        // byte-identical to what the server has tracked. Doing the full,
-                        // synchronous `refresh_document` (whole-graph relink + eager evaluate)
-                        // again in that case is pure waste — skip it. A genuinely external
-                        // edit (another editor, git checkout, a formatter) still has different
-                        // content and gets the full treatment below, unchanged.
-                        if watched_file_content_already_current(handle, &uri_norm, &content) {
-                            continue;
-                        }
-
-                        let refresh_start = Instant::now();
-                        let warning = handle
-                            .refresh_document(uri_norm.clone(), content)
-                            .await
-                            .unwrap_or_default();
-                        refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
-                        if let Some(message) = warning {
-                            runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
-                        }
-                        changed_or_created_uris.push(uri_norm.clone());
+            // The source authority reads the file: admission, line-ending policy and digest are
+            // its decisions, and the document is a memo candidate for the publication.
+            let admitted = match event.uri.to_file_path() {
+                Ok(path) => {
+                    let services = handle.snapshot().services.clone();
+                    Some(
+                        tokio::task::spawn_blocking(move || {
+                            services
+                                .source
+                                .admit_path(&path, sysml_query::source::SourceKind::Workspace)
+                                .map_err(|error| error.to_string())
+                        })
+                        .await
+                        .unwrap_or_else(|error| Err(error.to_string())),
+                    )
+                }
+                Err(_) => None,
+            };
+            match admitted {
+                Some(Ok(document)) => {
+                    let content = document.content().to_owned();
+                    // The editor already sent `textDocument/didChange` for its own edits
+                    // (handled cheaply/incrementally); saving that same content to disk
+                    // then fires this notification too, with disk content that's already
+                    // byte-identical to what the server has tracked. Doing the full,
+                    // synchronous `refresh_document` (whole-graph relink + eager evaluate)
+                    // again in that case is pure waste — skip it. A genuinely external
+                    // edit (another editor, git checkout, a formatter) still has different
+                    // content and gets the full treatment below, unchanged.
+                    if watched_file_content_already_current(handle, &uri_norm, &content) {
+                        continue;
                     }
-                    Err(error) => runtime_warnings.push(format!(
-                        "didChangeWatchedFiles: failed to read changed file {}: {}",
-                        uri_norm, error
-                    )),
-                },
-                Err(_) => runtime_warnings.push(format!(
+
+                    let refresh_start = Instant::now();
+                    let warning = handle
+                        .refresh_document(uri_norm.clone(), content)
+                        .await
+                        .unwrap_or_default();
+                    refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
+                    if let Some(message) = warning {
+                        runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
+                    }
+                    changed_or_created_uris.push(uri_norm.clone());
+                }
+                Some(Err(error)) => runtime_warnings.push(format!(
+                    "didChangeWatchedFiles: failed to read changed file {}: {}",
+                    uri_norm, error
+                )),
+                None => runtime_warnings.push(format!(
                     "didChangeWatchedFiles: ignored non-file URI {}",
                     uri_norm
                 )),
@@ -344,6 +371,7 @@ pub(crate) async fn did_change_configuration(
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
+    let source = handle.snapshot().services.source.clone();
     tokio::spawn(async move {
         let perf_logging_enabled = runtime_config
             .get()
@@ -352,7 +380,7 @@ pub(crate) async fn did_change_configuration(
         let total_start = Instant::now();
         let discover_read_start = Instant::now();
         let (entries, summary) =
-            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths))
+            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
                 .await
                 .unwrap_or_default();
         let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
@@ -362,8 +390,9 @@ pub(crate) async fn did_change_configuration(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
+        let services = handle.snapshot().services.clone();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse, None)
+            parse_scanned_documents(entries, should_parallel_parse, &services)
         })
         .await
         .unwrap_or_default();

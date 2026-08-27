@@ -3,8 +3,8 @@ use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
-use crate::workspace::snapshot::ServerStateSnapshot;
-use crate::workspace::ServerState;
+use crate::session::snapshot::ServerStateSnapshot;
+use crate::session::ServerState;
 
 use language_service::{
     complete as ls_complete, CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot,
@@ -90,10 +90,7 @@ fn map_completion_item(dto: CompletionItemDto) -> CompletionItem {
     }
 }
 
-pub(crate) fn completion_resolve(
-    _state: &ServerState,
-    mut item: CompletionItem,
-) -> Result<CompletionItem> {
+pub(crate) fn completion_resolve(mut item: CompletionItem) -> Result<CompletionItem> {
     let Some(data) = item.data.as_ref() else {
         return Ok(item);
     };
@@ -140,7 +137,7 @@ mod tests {
     use super::map_completion_item;
     use language_service::dto::CompletionTextEditDto;
     use language_service::{CompletionItemDto, CompletionItemKindDto};
-    use sysml_model::{TextPosition, TextRange};
+    use sysml_query::resolved_slice::{TextPosition, TextRange};
     use tower_lsp::lsp_types::CompletionItemKind;
 
     #[test]

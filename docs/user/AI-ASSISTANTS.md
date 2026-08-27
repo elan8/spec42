@@ -6,7 +6,7 @@ Spec42 gives chatbots **structured** SysML v2 / KerML feedback through the CLI. 
 
 | Surface | Best for |
 | --- | --- |
-| **LSP (VS Code extension)** | Human editing: live diagnostics, hover, completion, navigation, diagrams |
+| **LSP (VS Code extension)** | Human editing: live diagnostics, hover, completion, navigation, and typed feature inspection |
 | **VS Code Language Model Tools** (Copilot Agent, VS Code 1.99+) | Four built-in tools via the bundled `spec42` CLI — no extra config in VS Code |
 | **CLI** `spec42 check` / `doctor` / `explain-diagnostic` / `model-summary` | CI, scripts, other AI hosts (Cursor, non-VS-Code Copilot), LM Tools backend |
 
@@ -32,7 +32,7 @@ Recommended order when debugging a workspace:
 1. **`spec42 doctor`** — standard library, config dirs, library paths, Sysand detection
 2. **`spec42 check`** — validation report (`summary.error_count`, per-file `diagnostics[].code`, `advice`)
 3. **`spec42 explain-diagnostic --code <code>`** — stable explanation for a diagnostic code (optional concrete instances via `--path` + `--line`)
-4. **`spec42 model-summary <path>`** — compact semantic graph (nodes + selected relationships), not full AST
+4. **`spec42 model-summary <path>`** — validation summary only during the immutable-query rebuild; semantic nodes and relationships are intentionally unavailable
 
 ```bash
 spec42 check path/to/model.sysml --format json
@@ -57,7 +57,7 @@ Use `summary.error_count` to decide if the model is clean.
 2. Run **`spec42 check`** on the changed file or project directory; pass **`--workspace-root`** when validating a single file inside a multi-file project.
 3. For each distinct **`code`**, use **`spec42 explain-diagnostic`** if the fix strategy is unclear.
 4. If many `unresolved_*` diagnostics appear, run **`spec42 doctor`** before rewriting imports or types.
-5. For structural questions ("what connects to X?"), use **`spec42 model-summary`** with a modest `--max-nodes`.
+5. Structural assistant queries are a follow-up typed-query product. Do not infer them from the current validation-only `model-summary` output.
 
 Repo-level conventions for Copilot are in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md).
 

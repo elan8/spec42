@@ -2,7 +2,7 @@ use language_service::{
     CompletionItemDto, CompletionItemKindDto, CompletionResult, FoldingRangeDto,
     FoldingRangeKindDto, OutlineSymbol, TextEditDto, TextEditSuggestion, WorkspaceSymbolMatch,
 };
-use sysml_model::{TextPosition, TextRange};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 #[test]
 fn dto_roundtrip_serde_phase1() {
@@ -20,12 +20,14 @@ fn dto_roundtrip_serde_phase1() {
                 character: 6,
             },
         }),
+        semantic_status: Default::default(),
     };
     let json = serde_json::to_string(&hover).expect("serialize hover");
     let parsed: HoverResult = serde_json::from_str(&json).expect("deserialize hover");
     assert_eq!(hover, parsed);
 
     let definition = DefinitionResult {
+        semantic_status: Default::default(),
         locations: vec![SourceLocation {
             path: "model.sysml".to_string(),
             range: hover.range.unwrap(),
@@ -36,6 +38,7 @@ fn dto_roundtrip_serde_phase1() {
     assert_eq!(definition, parsed);
 
     let references = ReferencesResult {
+        semantic_status: Default::default(),
         locations: definition.locations,
     };
     let json = serde_json::to_string(&references).expect("serialize references");
@@ -46,6 +49,7 @@ fn dto_roundtrip_serde_phase1() {
 #[test]
 fn dto_roundtrip_serde_extended() {
     let completion = CompletionResult {
+        semantic_status: Default::default(),
         items: vec![CompletionItemDto {
             label: "part def".to_string(),
             kind: Some(CompletionItemKindDto::Snippet),
@@ -70,7 +74,7 @@ fn dto_roundtrip_serde_extended() {
 
     let outline = OutlineSymbol {
         name: "P".to_string(),
-        kind: "package".to_string(),
+        kind: sysml_query::syntax::SyntaxOutlineKind::Package,
         range: TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 10)),
         selection_range: TextRange::new(TextPosition::new(0, 8), TextPosition::new(0, 9)),
         children: vec![],

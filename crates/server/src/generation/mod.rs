@@ -10,11 +10,10 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, GeneratorDiagnosticLevel, GeneratorModelView, QueryLimits,
 };
 use generator_host::{
-    CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
-    RuntimeLimits, RuntimeOptions, GENERATOR_ABI_VERSION,
+    artifact_digest, CancellationHandle, GeneratorFailureCategory, GeneratorHostError,
+    GeneratorRuntime, RuntimeLimits, RuntimeOptions, GENERATOR_ABI_VERSION,
 };
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 
 pub mod apply;
 pub mod plan;
@@ -117,6 +116,10 @@ pub struct GenerationTimings {
     pub guest_execution_ms: u128,
     /// Microseconds, because a guest run routinely rounds to 0 ms.
     pub guest_execution_us: u128,
+    pub compilation_cache_enabled: bool,
+    pub compilation_cache_hits: usize,
+    pub compilation_cache_misses: usize,
+    pub compilation_cache_error: Option<String>,
     pub output_plan_ms: u128,
     pub output_commit_ms: u128,
 }
@@ -135,6 +138,8 @@ impl GenerationOperations {
 pub struct GenerationReport {
     pub status: GenerationStatus,
     pub model_digest: String,
+    pub publication_complete: bool,
+    pub publication_obstacles: Vec<String>,
     pub generator_digest: String,
     pub api_version: String,
     pub spec42_version: String,
@@ -187,6 +192,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     // asked for a budget, which is also what makes `fuel_consumed` reportable.
     let runtime = match GeneratorRuntime::with_options(RuntimeOptions {
         fuel_metering: args.max_fuel.is_some(),
+        compilation_cache: true,
     }) {
         Ok(runtime) => runtime,
         Err(error) => return emit_host_failure(args.format, &error),
@@ -254,7 +260,19 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         return Ok(ExitCode::from(EXIT_MODEL_INVALID));
     }
 
-    let model = Arc::new(GeneratorModelView::new(snapshot, QueryLimits::default()));
+    // The host snapshot owns the coherent publication for this exact document revision. Reusing
+    // it keeps validation and generation on one semantic identity instead of rebuilding a second
+    // model with independently mapped source provenance.
+    let publication = snapshot.published_model_arc();
+    let model = Arc::new(
+        GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .map_err(|error| format!("generator model is unavailable: {error}"))?,
+    );
     let model_digest = model.model_digest();
     let spec42_version = model.spec42_version().to_owned();
     let execution = match runtime.execute_prepared(
@@ -356,6 +374,12 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let report = GenerationReport {
         status,
         model_digest,
+        publication_complete: execution.publication_completeness.is_complete(),
+        publication_obstacles: execution
+            .publication_completeness
+            .obstacles()
+            .map(|obstacle| format!("{obstacle:?}"))
+            .collect(),
         generator_digest: execution.generator_digest,
         api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version,
@@ -373,6 +397,10 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
             validation_ms,
             guest_execution_ms: execution.duration.as_millis(),
             guest_execution_us: execution.duration.as_micros(),
+            compilation_cache_enabled: runtime.compilation_cache_enabled(),
+            compilation_cache_hits: runtime.compilation_cache_hits(),
+            compilation_cache_misses: runtime.compilation_cache_misses(),
+            compilation_cache_error: runtime.compilation_cache_error().map(str::to_owned),
             output_plan_ms,
             output_commit_ms,
         },
@@ -409,7 +437,7 @@ fn manifest_for(
             .chain(
                 artifacts
                     .entries()
-                    .map(|(path, content)| (path.to_string(), digest(content))),
+                    .map(|(path, content)| (path.to_string(), artifact_digest(content))),
             )
             .collect(),
     }
@@ -458,7 +486,7 @@ fn plan_outputs(
             .iter()
             .map(|(path, existing)| {
                 let seen = match existing {
-                    plan::Existing::File { content } => Some(digest(content)),
+                    plan::Existing::File { content } => Some(artifact_digest(content)),
                     _ => None,
                 };
                 (path.to_string(), seen)
@@ -466,7 +494,7 @@ fn plan_outputs(
             .collect(),
     };
 
-    let planned = plan::plan(&entries, &observation, force, &digest);
+    let planned = plan::plan(&entries, &observation, force, &artifact_digest);
     Ok((
         GenerationOperations {
             created: planned.paths_with(plan::Operation::Create),
@@ -704,10 +732,6 @@ fn artifact_path(root: &Path, normalized: &str) -> PathBuf {
             path.push(segment);
             path
         })
-}
-
-fn digest(bytes: &[u8]) -> String {
-    format!("sha256:{:x}", Sha256::digest(bytes))
 }
 
 fn emit_report(report: &GenerationReport, format: OutputFormat) -> Result<(), String> {

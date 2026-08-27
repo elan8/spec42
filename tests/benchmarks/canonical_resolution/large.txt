@@ -1,0 +1,6 @@
+# source-kind snapshot
+workspace tests/snapshots/sysml/examples/sys_ml_v2_spec_annex_a_simple_vehicle_model.md
+library tests/snapshots/sysml.library/sys_ml.md
+library tests/snapshots/sysml.library/ker_ml.md
+library tests/snapshots/sysml.library/actions.md
+library tests/snapshots/sysml.library/quantities.md

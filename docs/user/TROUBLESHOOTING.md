@@ -117,22 +117,7 @@ Workspace indexing uses `spec42.workspace.maxFilesPerPattern`.
 What to do:
 
 1. Increase `spec42.workspace.maxFilesPerPattern` for larger repositories.
-2. Re-run `SysML: Refresh SysML Model Explorer`.
-3. Use smaller focused workspaces if indexing becomes too slow.
-
-## Visualizer Or Model Explorer Looks Wrong
-
-Possible causes:
-
-- the workspace model is only partially indexed
-- the current view is experimental
-- the visualizer is stale after file changes
-
-What to do:
-
-1. Run `SysML: Refresh SysML Model Explorer`.
-2. Run `SysML: Refresh Visualization`.
-3. If needed, enable `spec42.logging.verbose` and inspect the SysML output channel.
+2. Use smaller focused workspaces if indexing becomes too slow.
 
 ## Connection And Port Semantic Warnings
 

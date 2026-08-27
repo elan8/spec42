@@ -3,13 +3,10 @@
 use std::path::PathBuf;
 
 use serde::Serialize;
-use tower_lsp::lsp_types::NumberOrString;
 
 use crate::cli::{CheckArgs, Cli, OutputFormat};
 use crate::diagnostic_catalog;
-use crate::{
-    build_model_summary, perform_check, perform_check_with_semantics, ModelSummaryResponse,
-};
+use crate::{build_model_summary, perform_check, ModelSummaryResponse};
 
 #[derive(Debug, Clone)]
 pub struct ExplainDiagnosticArgs {
@@ -82,10 +79,7 @@ pub fn perform_explain_diagnostic(
         let report = perform_check(cli, &check_args)?;
         for doc in &report.documents {
             for diagnostic in &doc.diagnostics {
-                let Some(NumberOrString::String(found)) = &diagnostic.code else {
-                    continue;
-                };
-                if found != &args.code {
+                if diagnostic.code != args.code {
                     continue;
                 }
                 let line = diagnostic.range.start.line;
@@ -127,6 +121,6 @@ pub fn perform_model_summary(
         baseline: None,
         strict_diagnostics: false,
     };
-    let report = perform_check_with_semantics(cli, &check_args)?;
+    let report = perform_check(cli, &check_args)?;
     Ok(build_model_summary(report, args.max_nodes))
 }
